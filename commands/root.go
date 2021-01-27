@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/common-nighthawk/go-figure"
+	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -13,15 +14,18 @@ import (
 
 var (
 	// RootCmd is the root level command that all other commands attach to
-	rootCmd = &cobra.Command{
-		Use:              "ionosctl",
-		Short:            "ionosctl is a command line interface (CLI) for the Ionos Cloud SDK",
-		Long:             asciiLogo.String(),
-		TraverseChildren: true,
+	rootCmd = &builder.Command{
+		Command: &cobra.Command{
+			Use:              "ionosctl",
+			Short:            "ionosctl is a command line interface (CLI) for the Ionos Cloud",
+			Long:             asciiLogo.String(),
+			TraverseChildren: true,
+		},
 	}
 
 	ServerURL string
 	Output    string
+	Quiet     bool
 	Verbose   bool
 
 	cfgFile   string
@@ -31,8 +35,7 @@ var (
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+	if err := rootCmd.Command.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
@@ -40,18 +43,29 @@ func Execute() {
 func init() {
 	initConfig()
 
+	rootCmd.Command.SetUsageTemplate(usageTemplate)
+
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootPFlagSet := rootCmd.PersistentFlags()
+	rootPFlagSet := rootCmd.Command.PersistentFlags()
 	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, "c", config.GetConfigFilePath(), "Specify a custom config file")
 	viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
 
-	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, "u", config.DefaultApiUrl, "Override default API endpoint")
+	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, "u", config.DefaultApiURL, "Override default API endpoint")
 	viper.BindPFlag(config.ArgServerUrl, rootPFlagSet.Lookup(config.ArgServerUrl))
 
 	rootPFlagSet.StringVarP(&Output, config.ArgOutput, "o", config.DefaultOutputFormat, "Desired output format [text|json]")
 	viper.BindPFlag(config.ArgOutput, rootPFlagSet.Lookup(config.ArgOutput))
+	rootCmd.Command.RegisterFlagCompletionFunc(config.ArgOutput, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"json", "text"}, cobra.ShellCompDirectiveNoFileComp
+	})
+
+	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, "q", false, "Quiet output")
+	viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
+
+	rootPFlagSet.Bool(config.ArgIgnoreStdin, false, "Ignore stdin option")
+	viper.BindPFlag(config.ArgIgnoreStdin, rootPFlagSet.Lookup(config.ArgIgnoreStdin))
 
 	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, "v", false, "Enable verbose output")
 
@@ -75,7 +89,7 @@ func initConfig() {
 
 		viper.AddConfigPath(home)
 		viper.SetConfigName("ionosctl-config")
-		viper.SetConfigType("yaml")
+		viper.SetConfigType("json")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -85,9 +99,35 @@ func initConfig() {
 // AddCommands adds sub commands to the base command.
 func addCommands() {
 	rootCmd.AddCommand(login())
+	rootCmd.AddCommand(version())
 	rootCmd.AddCommand(completion())
-	rootCmd.AddCommand(list())
-	rootCmd.AddCommand(create())
-	rootCmd.AddCommand(update())
-	rootCmd.AddCommand(delete())
+	rootCmd.AddCommand(datacenter())
 }
+
+const usageTemplate = `USAGE: {{if .Runnable}}
+  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
+  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
+
+ALIASES:
+  {{.NameAndAliases}}{{end}}{{if .HasExample}}
+
+EXAMPLES:
+{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
+
+AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+
+FLAGS:
+{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
+
+GLOBAL FLAGS:
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
+
+SEE ALSO:
+{{.Annotations.SeeAlsos}}{{end}}{{if .HasHelpSubCommands}}
+
+Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
+`

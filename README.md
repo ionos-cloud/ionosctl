@@ -2,7 +2,7 @@
 # ionosctl
 
 ```bash
-ionosctl is a command-line interface (CLI) for Ionos Cloud SDK.
+ionosctl is a command-line interface (CLI) for Ionos Cloud.
     _                                         __     __
    (_)  ____    ____   ____    _____  _____  / /_   / /
   / /  / __ \  / __ \ / __ \  / ___/ / ___/ / __/  / /
@@ -14,12 +14,10 @@ Usage:
 
 Available Commands:
   completion  Modify your shell so ionosctl commands autocomplete with TAB
-  create      Create command for resources
-  delete      Delete command for resources
+  datacenter  Data Center operations
   help        Help about any command
-  list        List command for resources
   login       Authentication command for SDK
-  update      Update command for resources
+  version     Show latest version
 
 Flags:
   -c, --config string       Specify a custom config file (default "$XDG_CONFIG_HOME/ionosctl-config.yaml")

@@ -3,75 +3,76 @@ package commands
 import (
 	"bufio"
 	"context"
-	"errors"
-	"fmt"
-	"os"
+	"strings"
 	"syscall"
 
+	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/sdk-go/v5"
-	"github.com/spf13/cobra"
+	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-func login() *cobra.Command {
-	var (
-		user string
-	)
-	loginCmd := &cobra.Command{
-		Use:   "login",
-		Short: "Authentication command for SDK",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			err := preRunLoginUser(user)
-			return err
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			err := runLoginUser()
-			return err
-		},
-	}
-	flags := loginCmd.Flags()
-	flags.StringVar(&user, "user", "", "Username to login")
+func login() *builder.Command {
+	loginCmd := builder.NewCommand(context.TODO(), nil, RunLoginUser, "login", "Authentication command for SDK", "", false)
+	loginCmd.AddStringFlag("user", "", "", "Username to authenticate")
+	loginCmd.AddStringFlag("password", "", "", "Password to authenticate")
 
 	return loginCmd
 }
 
-func preRunLoginUser(user string) error {
-	if user == "" {
-		fmt.Println("Enter your username:")
-		scanner := bufio.NewScanner(os.Stdin)
-		scanner.Scan()
-		user = scanner.Text()
-	}
+func RunLoginUser(c *builder.CommandConfig) error {
+	var err error
+	user := viper.GetString(builder.GetFlagName(c.Name, "user"))
+	pwd := viper.GetString(builder.GetFlagName(c.Name, "password"))
 
-	fmt.Println("Enter your password:")
-	bytesPwd, err := terminal.ReadPassword(syscall.Stdin)
-	if err != nil {
-		return err
+	if user == "" {
+		c.Printer.Log().Println("Enter your username:")
+		in := bufio.NewReader(c.Printer.Stdin)
+		user, err = in.ReadString('\n')
+		if err != nil {
+			return err
+		}
+		// Delete the delimiter from the string
+		user = strings.TrimRight(user, "\r\n")
 	}
-	pwd := string(bytesPwd)
+	if pwd == "" {
+		c.Printer.Log().Println("Enter your password:")
+		bytesPwd, err := terminal.ReadPassword(syscall.Stdin)
+		if err != nil {
+			return err
+		}
+		pwd = string(bytesPwd)
+	}
 
 	viper.Set(config.Username, user)
 	viper.Set(config.Password, pwd)
-	return nil
-}
 
-func runLoginUser() error {
-	cfg := config.GetAPIClientConfig()
-	apiClient := ionoscloud.NewAPIClient(cfg)
+	clientSvc, err := resources.NewClientService(
+		viper.GetString(config.Username),
+		viper.GetString(config.Password),
+		viper.GetString(config.ArgServerUrl),
+	)
+	if err != nil {
+		return err
+	}
 
-	req := apiClient.DataCenterApi.DatacentersGet(context.Background())
-	_, resp, _ := apiClient.DataCenterApi.DatacentersGetExecute(req)
-	if resp != nil {
-		if resp.StatusCode == 401 {
-			return errors.New("user credentials are invalid")
-		} else {
-			fmt.Println("Authentication successful!")
-		}
+	dcsSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
+	_, _, err = dcsSvc.List()
+	if err != nil {
+		return err
 	}
 
 	// Store credentials
-	err := config.WriteConfigFile()
-	return err
+	err = config.WriteFile()
+	if err != nil {
+		return err
+	}
+
+	c.Printer.Result(&utils.SuccessResult{
+		Message: "Authentication successful!",
+	})
+
+	return nil
 }

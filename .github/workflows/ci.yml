@@ -1,0 +1,44 @@
+# CI workflow
+
+name: CI
+
+on:
+  push:
+    branches: [ main, SDK-144 ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  install:
+    name: Install ionosctl
+    env:
+      go-version: ^1.14
+      package-name: ionoscloud
+
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    outputs:
+      go-version: ${{ env.go-version }}
+      package-name: ${{ env.package-name }}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+
+      # Checkout ionosctl
+      - name: Checkout ionosctl
+        uses: actions/checkout@v2
+
+      # Setup Go
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.go-version }}
+
+      # Install ionosctl
+      - name: Install
+        run: go install -i
+
+      # Testing ionosctl
+      - name: Run tests
+        run: go test -v ./...

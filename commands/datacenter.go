@@ -2,238 +2,216 @@ package commands
 
 import (
 	"context"
-	"errors"
-	"fmt"
+	"io"
 	"os"
-	"text/tabwriter"
 
+	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/helpers"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-func listDataCenter() *cobra.Command {
-	listDataCenterCmd := &cobra.Command{
-		Use:     "datacenter",
-		Aliases: []string{"dc"},
-		Short:   "List command for Data Center",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			err := runListDataCenter()
-			return err
+func datacenter() *builder.Command {
+	datacenterCmd := &builder.Command{
+		Command: &cobra.Command{
+			Use:     "datacenter",
+			Aliases: []string{"dc"},
+			Short:   "Data Center operations",
 		},
 	}
-	return listDataCenterCmd
+
+	/*
+		List Command
+	*/
+	list := builder.NewCommand(context.TODO(), datacenterCmd, RunDataCenterList, "list", "List Data Centers", "", true)
+	list.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id")
+	list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	/*
+		Create Command
+	*/
+	create := builder.NewCommand(context.TODO(), datacenterCmd, RunDataCenterCreate, "create", "Create a Data Center",
+		"Create a Data Center. The name, description or region can be specified.", true)
+	create.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
+	create.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
+	create.AddStringFlag(config.ArgDataCenterRegion, "", "de/txl", "Location for the Data Center")
+
+	/*
+		Update Command
+	*/
+	update := builder.NewCommand(context.TODO(), datacenterCmd, RunDataCenterUpdate, "update", "Update a Data Center",
+		"Update a Data Center. Data Center Id is required", true)
+	update.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id [Required flag]")
+	update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
+	update.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
+
+	/*
+		Delete Command
+	*/
+	delete := builder.NewCommand(context.TODO(), datacenterCmd, RunDataCenterDelete, "delete", "Delete a Data Center",
+		"Delete a Data Center. Data Center Id is required.", true)
+	delete.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id [Required flag]")
+	delete.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	return datacenterCmd
 }
 
-func createDataCenter() *cobra.Command {
-	var datacenter resources.DataCenter
-
-	postCmd := &cobra.Command{
-		Use:     "datacenter",
-		Aliases: []string{"dc"},
-		Short:   "Create command for Data Center",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			err := runCreateDataCenter(
-				datacenter.GetName(),
-				datacenter.GetDescription(),
-				datacenter.GetRegion())
-			return err
-		},
-	}
-
-	flags := postCmd.Flags()
-	flags.StringVarP(&datacenter.Name, "name", "n", "", "Name of the Data Center")
-	flags.StringVarP(&datacenter.Description, "description", "d", "", "Description of the Data Center")
-	flags.StringVarP(&datacenter.Region, "region", "l", "de/txl", "Location of the Data Center")
-
-	return postCmd
-}
-
-func updateDataCenter() *cobra.Command {
-	var datacenter resources.DataCenter
-
-	updateCmd := &cobra.Command{
-		Use:     "datacenter",
-		Aliases: []string{"dc"},
-		Short:   "Update command for Data Center",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if datacenter.GetId() == "" {
-				return errors.New("no data center id provided")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			err := runUpdateDataCenter(
-				datacenter.GetId(),
-				datacenter.GetName(),
-				datacenter.GetDescription())
-			return err
-		},
-	}
-
-	flags := updateCmd.Flags()
-	flags.StringVarP(&datacenter.Id, "id", "i", "", "The unique ID of the Data Center")
-	flags.StringVarP(&datacenter.Description, "description", "d", "", "Description of the Data Center")
-	flags.StringVarP(&datacenter.Name, "name", "n", "", "Name of the Data Center")
-
-	return updateCmd
-}
-
-func deleteDataCenter() *cobra.Command {
-	var (
-		datacenter resources.DataCenter
-		deleteAll  bool
-	)
-	deleteCmd := &cobra.Command{
-		Use:     "datacenter",
-		Aliases: []string{"dc"},
-		Short:   "Delete command for Data Center",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if datacenter.GetId() == "" && !deleteAll {
-				return errors.New("no data center id provided")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			err := runDeleteDataCenter(datacenter.GetId(), deleteAll)
-			return err
-		},
-	}
-
-	flags := deleteCmd.Flags()
-	flags.StringVarP(&datacenter.Id, "id", "i", "", "The unique ID of the Data Center")
-	flags.BoolVar(&deleteAll, "all", false, "If set, it deletes all Data Centers")
-
-	return deleteCmd
-}
-
-func runListDataCenter() error {
-	apiClient, err := config.GetAPIClient()
-	if err != nil {
-		return err
-	}
-
-	req := apiClient.DataCenterApi.DatacentersGet(context.Background())
-	datacenters, _, err := apiClient.DataCenterApi.DatacentersGetExecute(req)
-	if err != nil {
-		return err
-	}
-
-	if len(*datacenters.Items) != 0 {
-		w := tabwriter.NewWriter(os.Stdout, 5, 0, 3, ' ', tabwriter.Debug)
-		_, err = fmt.Fprintln(w, "Id\t Name\t Region\t")
+func RunDataCenterList(c *builder.CommandConfig) error {
+	if viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterId)) == "" {
+		datacenters, _, err := c.DataCenters().List()
 		if err != nil {
 			return err
 		}
-
-		for _, item := range *datacenters.Items {
-			properties := item.GetProperties()
-
-			datacenterName := *properties.GetName()
-			datacenterRegion := *properties.GetLocation()
-			datacenterId := *item.GetId()
-
-			_, err = fmt.Fprintln(w,
-				datacenterId, "\t",
-				datacenterName, "\t",
-				datacenterRegion, "\t")
-			if err != nil {
-				return err
-			}
-		}
-		err = w.Flush()
-		if err != nil {
-			return err
-		}
+		dcs := getDataCenters(datacenters)
+		c.Printer.Result(&utils.SuccessResult{
+			OutputJSON: datacenters,
+			KeyValue:   getDataCentersKVMaps(dcs),
+			Columns:    getDataCenterCols(),
+		})
+		return nil
 	} else {
-		fmt.Println("no data centers found")
+		datacenter, _, err := c.DataCenters().Get(viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterId)))
+		if err != nil {
+			return err
+		}
+
+		c.Printer.Result(&utils.SuccessResult{
+			KeyValue:   getDataCentersKVMaps([]resources.Datacenter{*datacenter}),
+			Columns:    getDataCenterCols(),
+			OutputJSON: datacenter,
+		})
+
+		return nil
 	}
+}
+
+func RunDataCenterCreate(c *builder.CommandConfig) error {
+	name := viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterName))
+	description := viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterDescription))
+	region := viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterRegion))
+	dc, resp, err := c.DataCenters().Create(name, description, region)
+	if err != nil {
+		return err
+	}
+
+	c.Printer.Result(&utils.SuccessResult{
+		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
+		Columns:     getDataCenterCols(),
+		OutputJSON:  dc,
+		ApiResponse: resp,
+		Resource:    "datacenter",
+		Verb:        "create",
+	})
+
 	return nil
 }
 
-func runCreateDataCenter(name, description, region string) error {
-	apiClient, err := config.GetAPIClient()
+func RunDataCenterUpdate(c *builder.CommandConfig) error {
+	if viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterId)) == "" {
+		return utils.NewRequiredFlagErr(config.ArgDataCenterId)
+	}
+
+	dc, resp, err := c.DataCenters().Update(
+		viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterName)),
+		viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterDescription)),
+	)
 	if err != nil {
 		return err
 	}
 
-	req := apiClient.DataCenterApi.DatacentersPost(context.Background())
-	datacenter := ionoscloud.Datacenter{
-		Properties: &ionoscloud.DatacenterProperties{
-			Name:        &name,
-			Description: &description,
-			Location:    &region,
-		},
-	}
-	req = req.Datacenter(datacenter)
-	_, _, err = apiClient.DataCenterApi.DatacentersPostExecute(req)
-	return err
-}
+	c.Printer.Result(&utils.SuccessResult{
+		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
+		Columns:     getDataCenterCols(),
+		OutputJSON:  dc,
+		ApiResponse: resp,
+		Resource:    "datacenter",
+		Verb:        "update",
+	})
 
-func runUpdateDataCenter(datacenterId, name, description string) error {
-	apiClient, err := config.GetAPIClient()
-	if err != nil {
-		return err
-	}
-
-	properties := ionoscloud.DatacenterProperties{}
-	if name != "" {
-		properties.SetName(name)
-	}
-	if description != "" {
-		properties.SetDescription(description)
-	}
-
-	req := apiClient.DataCenterApi.DatacentersPatch(context.Background(), datacenterId)
-	req = req.Datacenter(properties)
-	_, _, err = apiClient.DataCenterApi.DatacentersPatchExecute(req)
-	return err
-}
-
-func runDeleteDataCenter(datacenterId string, deleteAll bool) error {
-	apiClient, err := config.GetAPIClient()
-	if err != nil {
-		return err
-	}
-	if datacenterId != "" {
-		err = helpers.AskForConfirm("delete data center")
-		if err != nil {
-			return err
-		}
-		err = deleteDataCenterById(apiClient, datacenterId)
-		if err != nil {
-			return err
-		}
-	}
-
-	if deleteAll {
-		req := apiClient.DataCenterApi.DatacentersGet(context.Background())
-		datacenters, _, err := apiClient.DataCenterApi.DatacentersGetExecute(req)
-		if err != nil {
-			return err
-		}
-		err = helpers.AskForConfirm("delete all data centers")
-		if err != nil {
-			return err
-		}
-		if len(*datacenters.Items) != 0 {
-			for _, item := range *datacenters.Items {
-				datacenterId := *item.GetId()
-				err := deleteDataCenterById(apiClient, datacenterId)
-				if err != nil {
-					return err
-				}
-			}
-		}
-	}
 	return nil
 }
 
-func deleteDataCenterById(apiClient *ionoscloud.APIClient, datacenterId string) error {
-	req := apiClient.DataCenterApi.DatacentersDelete(context.Background(), datacenterId)
+func RunDataCenterDelete(c *builder.CommandConfig) error {
+	if viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterId)) == "" {
+		return utils.NewRequiredFlagErr(config.ArgDataCenterId)
+	}
+	err := utils.AskForConfirm(c.Printer.Stdin, c.Printer.Stdout, "delete data center")
+	if err != nil {
+		return err
+	}
+	resp, err := c.DataCenters().Delete(viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterId)))
+	if err != nil {
+		return err
+	}
 
-	_, _, err := apiClient.DataCenterApi.DatacentersDeleteExecute(req)
-	return err
+	c.Printer.Result(&utils.SuccessResult{
+		ApiResponse: resp,
+		Resource:    "datacenter",
+		Verb:        "delete",
+	})
+
+	return nil
+}
+
+func getDataCenterCols() []string {
+	return []string{"ID", "Name", "Location", "Description"}
+}
+
+func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
+	dc := make([]resources.Datacenter, 0)
+	for _, d := range *datacenters.Items {
+		dc = append(dc, resources.Datacenter{d})
+	}
+	return dc
+}
+
+func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(dcs))
+	for _, dc := range dcs {
+		properties := dc.GetProperties()
+		o := map[string]interface{}{
+			"ID":       *dc.GetId(),
+			"Name":     *properties.GetName(),
+			"Location": *properties.GetLocation(),
+		}
+		if description, ok := properties.GetDescriptionOk(); ok {
+			o["Description"] = *description
+		}
+		out = append(out, o)
+	}
+	return out
+}
+
+func getDataCentersIds(outErr io.Writer) []string {
+	err := config.LoadFile()
+	utils.CheckError(err, outErr)
+
+	clientSvc, err := resources.NewClientService(
+		viper.GetString(config.Username),
+		viper.GetString(config.Password),
+		viper.GetString(config.ArgServerUrl),
+	)
+	utils.CheckError(err, outErr)
+
+	datacenterSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
+	datacenters, _, err := datacenterSvc.List()
+	utils.CheckError(err, outErr)
+
+	dcIds := make([]string, 0)
+	if datacenters.Datacenters.Items != nil {
+		for _, d := range *datacenters.Datacenters.Items {
+			dcIds = append(dcIds, *d.GetId())
+		}
+	}
+	return dcIds
 }
