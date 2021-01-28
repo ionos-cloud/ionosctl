@@ -64,7 +64,7 @@ func RunCompletionBash(c *builder.CommandConfig) error {
 	code := buf.String()
 	code = strings.Replace(code, `commands+=("completion")`, "", -1)
 
-	fmt.Fprintf(c.Printer.Stdout, code)
+	fmt.Println(code)
 	return nil
 }
 
@@ -80,6 +80,6 @@ func RunCompletionZsh(c *builder.CommandConfig) error {
 	code := buf.String()
 	code = strings.Replace(code, `commands+=("completion")`, "", -1)
 
-	fmt.Fprintf(c.Printer.Stdout, code)
+	fmt.Println(code)
 	return nil
 }

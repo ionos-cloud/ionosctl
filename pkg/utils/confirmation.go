@@ -35,7 +35,7 @@ func readUserInput(reader io.Reader, writer io.Writer, message string) (string, 
 
 // AskForConfirm parses and verifies user input for confirmation.
 func AskForConfirm(reader io.Reader, writer io.Writer, message string) error {
-	if viper.GetBool(config.ArgIgnoreStdin) {
+	if viper.GetBool(config.ArgIgnoreStdin) || viper.GetBool(config.ArgQuiet) {
 		return nil
 	}
 	answer, err := getUserInput(reader, writer, message)

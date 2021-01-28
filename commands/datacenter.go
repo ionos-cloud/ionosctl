@@ -212,6 +212,8 @@ func getDataCentersIds(outErr io.Writer) []string {
 		for _, d := range *datacenters.Datacenters.Items {
 			dcIds = append(dcIds, *d.GetId())
 		}
+	} else {
+		return nil
 	}
 	return dcIds
 }
