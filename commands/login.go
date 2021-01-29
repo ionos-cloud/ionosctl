@@ -28,8 +28,8 @@ func RunLoginUser(c *builder.CommandConfig) error {
 	pwd := viper.GetString(builder.GetFlagName(c.Name, "password"))
 
 	if user == "" {
-		c.Printer.Log().Println("Enter your username:")
-		in := bufio.NewReader(c.Printer.Stdin)
+		c.Printer.Print("Enter your username:")
+		in := bufio.NewReader(c.Stdin)
 		user, err = in.ReadString('\n')
 		if err != nil {
 			return err
@@ -38,7 +38,7 @@ func RunLoginUser(c *builder.CommandConfig) error {
 		user = strings.TrimRight(user, "\r\n")
 	}
 	if pwd == "" {
-		c.Printer.Log().Println("Enter your password:")
+		c.Printer.Print("Enter your password:")
 		bytesPwd, err := terminal.ReadPassword(syscall.Stdin)
 		if err != nil {
 			return err
@@ -70,7 +70,7 @@ func RunLoginUser(c *builder.CommandConfig) error {
 		return err
 	}
 
-	c.Printer.Result(&utils.SuccessResult{
+	c.Printer.Print(utils.Result{
 		Message: "Authentication successful!",
 	})
 

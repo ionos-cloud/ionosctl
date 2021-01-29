@@ -72,7 +72,7 @@ func RunDataCenterList(c *builder.CommandConfig) error {
 			return err
 		}
 		dcs := getDataCenters(datacenters)
-		c.Printer.Result(&utils.SuccessResult{
+		c.Printer.Print(utils.Result{
 			OutputJSON: datacenters,
 			KeyValue:   getDataCentersKVMaps(dcs),
 			Columns:    getDataCenterCols(),
@@ -84,7 +84,7 @@ func RunDataCenterList(c *builder.CommandConfig) error {
 			return err
 		}
 
-		c.Printer.Result(&utils.SuccessResult{
+		c.Printer.Print(utils.Result{
 			KeyValue:   getDataCentersKVMaps([]resources.Datacenter{*datacenter}),
 			Columns:    getDataCenterCols(),
 			OutputJSON: datacenter,
@@ -103,7 +103,7 @@ func RunDataCenterCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	c.Printer.Result(&utils.SuccessResult{
+	c.Printer.Print(utils.Result{
 		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
 		Columns:     getDataCenterCols(),
 		OutputJSON:  dc,
@@ -129,7 +129,7 @@ func RunDataCenterUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	c.Printer.Result(&utils.SuccessResult{
+	c.Printer.Print(utils.Result{
 		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
 		Columns:     getDataCenterCols(),
 		OutputJSON:  dc,
@@ -145,7 +145,7 @@ func RunDataCenterDelete(c *builder.CommandConfig) error {
 	if viper.GetString(builder.GetFlagName(c.Name, config.ArgDataCenterId)) == "" {
 		return utils.NewRequiredFlagErr(config.ArgDataCenterId)
 	}
-	err := utils.AskForConfirm(c.Printer.Stdin, c.Printer.Stdout, "delete data center")
+	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "delete data center")
 	if err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func RunDataCenterDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	c.Printer.Result(&utils.SuccessResult{
+	c.Printer.Print(utils.Result{
 		ApiResponse: resp,
 		Resource:    "datacenter",
 		Verb:        "delete",

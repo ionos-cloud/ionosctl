@@ -6,9 +6,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	mocks "github.com/ionos-cloud/ionosctl/pkg/resources/mocks"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/spf13/viper"
 )
 
 type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocks)
@@ -22,20 +24,17 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	printer := &utils.Printer{
-		OutputFlag: "text",
-		Stdout:     writer,
-		Stderr:     writer,
-	}
+	printer := utils.NewPrinterRegistry(writer, writer)
+	prt := printer[viper.GetString(config.ArgOutput)]
 
 	tm := &ResourcesMocks{
 		Client:     mocks.NewMockClientService(ctrl),
 		Datacenter: mocks.NewMockDatacentersService(ctrl),
 	}
 
-	config := &CommandConfig{
+	cmdConfig := &CommandConfig{
 		Name:         "test",
-		Printer:      printer,
+		Printer:      prt,
 		Context:      context.TODO(),
 		initServices: func(c *CommandConfig) error { return nil },
 		DataCenters: func() resources.DatacentersService {
@@ -43,5 +42,5 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		},
 	}
 
-	runner(config, tm)
+	runner(cmdConfig, tm)
 }

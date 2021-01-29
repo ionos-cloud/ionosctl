@@ -4,6 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"os"
+	"regexp"
+	"testing"
+
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
@@ -11,9 +15,6 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"regexp"
-	"testing"
 )
 
 var (
@@ -199,7 +200,7 @@ func TestRunDataCenterDelete_AskForConfirm(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, false)
 		viper.Set(builder.GetFlagName(cfg.Name, config.ArgDataCenterId), testVar)
-		cfg.Printer.Stdin = bytes.NewReader([]byte("YES\n"))
+		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.Datacenter.EXPECT().Delete(testVar).Return(nil, nil)
 		err := RunDataCenterDelete(cfg)
 		assert.NoError(t, err)
@@ -213,7 +214,7 @@ func TestRunDataCenterDelete_AskForConfirmErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, false)
 		viper.Set(builder.GetFlagName(cfg.Name, config.ArgDataCenterId), testVar)
-		cfg.Printer.Stdin = os.Stdin
+		cfg.Stdin = os.Stdin
 		err := RunDataCenterDelete(cfg)
 		assert.Error(t, err)
 	})

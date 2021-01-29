@@ -1,19 +1,17 @@
 package utils
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 	"text/tabwriter"
 
 	"github.com/fatih/color"
+	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -32,106 +30,145 @@ const (
 	PrinterTypeText = PrinterType("text")
 )
 
-type Printer struct {
-	OutputFlag string
-	Stdin      io.Reader
-	Stdout     io.Writer
-	Stderr     io.Writer
-}
+type PrinterRegistry map[string]PrintService
 
-func NewPrinter() *Printer {
-	var out, outErr io.Writer
-	if viper.GetBool(config.ArgQuiet) {
-		var execOut bytes.Buffer
-		out = &execOut
-		outErr = os.Stderr
-	} else {
-		out = os.Stdout
-		outErr = os.Stderr
-	}
-
+func NewPrinterRegistry(out, outErr io.Writer) PrinterRegistry {
 	if viper.GetString(config.ArgOutput) != PrinterTypeJSON.String() &&
 		viper.GetString(config.ArgOutput) != PrinterTypeText.String() {
 		err := errors.New(fmt.Sprintf(unknownTypeFormatErr, viper.GetString(config.ArgOutput)))
 		CheckError(err, outErr)
 	}
 
-	return &Printer{
-		OutputFlag: viper.GetString(config.ArgOutput),
-		Stdin:      os.Stdin,
-		Stdout:     out,
-		Stderr:     outErr,
+	return PrinterRegistry{
+		PrinterTypeJSON.String(): &JSONPrinter{
+			Stderr: outErr,
+			Stdout: out,
+		},
+		PrinterTypeText.String(): &TextPrinter{
+			Stderr: outErr,
+			Stdout: out,
+		},
 	}
 }
 
-func (p *Printer) Result(res *SuccessResult) {
-	if viper.GetBool(config.ArgQuiet) {
-		return
-	}
+type PrintService interface {
+	Print(interface{})
 
-	var msg PrintResult
+	GetStdout() io.Writer
+	SetStdout(io.Writer)
+	GetStderr() io.Writer
+	SetStderr(io.Writer)
+}
 
-	if res.Resource != "" && res.Verb != "" {
-		msg.Message = fmt.Sprintf(standardSuccessMessages, res.Resource, res.Verb)
-	} else {
-		msg.Message = res.Message
-	}
-	if res.ApiResponse != nil {
-		path, err := getRequestId(res.ApiResponse.Header.Get("location"))
-		CheckError(err, p.Stderr)
-		msg.Response = path
-	}
+type JSONPrinter struct {
+	Stdout io.Writer
+	Stderr io.Writer
+}
 
-	switch p.OutputFlag {
-	case PrinterTypeJSON.String():
-		msg.Output = res.OutputJSON
-		err := writeJSON(&msg, p.Stdout)
-		CheckError(err, p.Stderr)
-	case PrinterTypeText.String():
-		if res.KeyValue != nil {
-			err := printText(p.Stdout, res.Columns, res.KeyValue)
+func (p *JSONPrinter) Print(v interface{}) {
+	var resultPrint ResultPrint
+
+	switch v.(type) {
+	case Result:
+		if v.(Result).Resource != "" && v.(Result).Verb != "" {
+			resultPrint.Message = fmt.Sprintf(standardSuccessMessages, v.(Result).Resource, v.(Result).Verb)
+		} else if v.(Result).Message != "" {
+			resultPrint.Message = v.(Result).Message
+		}
+		if v.(Result).ApiResponse != nil {
+			path, err := getRequestId(v.(Result).ApiResponse.Header.Get("location"))
+			CheckError(err, p.Stderr)
+			if path != nil {
+				resultPrint.Response = *path
+			}
+		}
+		resultPrint.Output = v.(Result).OutputJSON
+		if !structs.IsZero(resultPrint) {
+			err := writeJSON(&resultPrint, p.Stdout)
 			CheckError(err, p.Stderr)
 		}
-		if msg.Response != nil {
-			requestIdMsg(p.Stdout, "%s", msg.Response)
-		}
-		if msg.Message != "" {
-			succesMsg(p.Stdout, msg.Message)
-		}
 	default:
-		err := errors.New(fmt.Sprintf(unknownTypeFormatErr, p.OutputFlag))
-		CheckError(err, p.Stderr)
-	}
-}
-
-func (p *Printer) Log() *Logger {
-	l := logrus.New()
-	l.SetOutput(p.Stdout)
-
-	switch p.OutputFlag {
-	case PrinterTypeJSON.String():
-		jsonFormat := new(logrus.JSONFormatter)
-		jsonFormat.PrettyPrint = true
-		l.SetFormatter(jsonFormat)
-	case PrinterTypeText.String():
-		txtFormat := new(logrus.TextFormatter)
-		txtFormat.ForceColors = true
-		l.SetFormatter(txtFormat)
-	default:
-		err := errors.New(fmt.Sprintf(unknownTypeFormatErr, p.OutputFlag))
+		resultPrint.Message = v
+		err := writeJSON(&resultPrint, p.Stdout)
 		CheckError(err, p.Stderr)
 	}
 
-	return &Logger{
-		Logger: l,
-	}
+	return
 }
 
-/*
-	Printer Result
-*/
+func (p *JSONPrinter) GetStdout() io.Writer {
+	return p.Stdout
+}
 
-type SuccessResult struct {
+func (p *JSONPrinter) SetStdout(writer io.Writer) {
+	p.Stdout = writer
+}
+
+func (p *JSONPrinter) GetStderr() io.Writer {
+	return p.Stderr
+}
+
+func (p *JSONPrinter) SetStderr(writer io.Writer) {
+	p.Stderr = writer
+}
+
+type TextPrinter struct {
+	Stdout io.Writer
+	Stderr io.Writer
+}
+
+func (p *TextPrinter) Print(v interface{}) {
+	var resultPrint ResultPrint
+
+	switch v.(type) {
+	case Result:
+		if v.(Result).Resource != "" && v.(Result).Verb != "" {
+			resultPrint.Message = fmt.Sprintf(standardSuccessMessages, v.(Result).Resource, v.(Result).Verb)
+		} else if v.(Result).Message != "" {
+			resultPrint.Message = v.(Result).Message
+		}
+		if v.(Result).ApiResponse != nil {
+			path, err := getRequestId(v.(Result).ApiResponse.Header.Get("location"))
+			CheckError(err, p.Stderr)
+			if path != nil {
+				resultPrint.Response = *path
+			}
+		}
+		if v.(Result).KeyValue != nil && v.(Result).Columns != nil {
+			err := printText(p.Stdout, v.(Result).Columns, v.(Result).KeyValue)
+			CheckError(err, p.Stderr)
+		}
+		if resultPrint.Response != nil {
+			requestIdMsg(p.Stdout, "%v", resultPrint.Response)
+		}
+		if resultPrint.Message != nil {
+			succesMsg(p.Stdout, "%v", resultPrint.Message)
+		}
+	default:
+		_, err := fmt.Fprintf(p.Stdout, "%v\n", v)
+		CheckError(err, p.Stderr)
+	}
+
+	return
+}
+
+func (p *TextPrinter) GetStdout() io.Writer {
+	return p.Stdout
+}
+
+func (p *TextPrinter) SetStdout(writer io.Writer) {
+	p.Stdout = writer
+}
+
+func (p *TextPrinter) GetStderr() io.Writer {
+	return p.Stderr
+}
+
+func (p *TextPrinter) SetStderr(writer io.Writer) {
+	p.Stderr = writer
+}
+
+type Result struct {
 	Message  string
 	Resource string
 	Verb     string
@@ -143,8 +180,8 @@ type SuccessResult struct {
 	ApiResponse *resources.Response
 }
 
-type PrintResult struct {
-	Message  string      `json:"Status,omitempty"`
+type ResultPrint struct {
+	Message  interface{} `json:"Message,omitempty"`
 	Response interface{} `json:"RequestId,omitempty"`
 	Output   interface{} `json:"Resources,omitempty"`
 }
@@ -212,18 +249,10 @@ func writeJSON(item interface{}, writer io.Writer) error {
 	return nil
 }
 
-func getRequestId(path string) (string, error) {
+func getRequestId(path string) (*string, error) {
 	if !strings.Contains(path, config.DefaultApiURL) {
-		return "", errors.New("path does not contain " + config.DefaultApiURL)
+		return nil, errors.New("path does not contain " + config.DefaultApiURL)
 	}
 	str := strings.Split(path, "/")
-	return str[len(str)-2], nil
-}
-
-/*
-	Printer Log
-*/
-
-type Logger struct {
-	*logrus.Logger
+	return &str[len(str)-2], nil
 }

@@ -16,7 +16,7 @@ func TestRunLoginUser_BufferUserErr(t *testing.T) {
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Set(builder.GetFlagName(cfg.Name, "user"), "")
 		viper.Set(builder.GetFlagName(cfg.Name, "password"), "test")
-		cfg.Printer.Stdin = bytes.NewReader([]byte("test@test.com\n"))
+		cfg.Stdin = bytes.NewReader([]byte("test@test.com\n"))
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 		assert.True(t, err.Error() == "401 Unauthorized")
@@ -29,7 +29,7 @@ func TestRunLoginUser_BufferErr(t *testing.T) {
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Set(builder.GetFlagName(cfg.Name, "user"), "")
 		viper.Set(builder.GetFlagName(cfg.Name, "password"), "test")
-		cfg.Printer.Stdin = bytes.NewReader([]byte("test@test.com"))
+		cfg.Stdin = bytes.NewReader([]byte("test@test.com"))
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 	})

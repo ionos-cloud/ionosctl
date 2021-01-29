@@ -1,8 +1,12 @@
 package builder
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
@@ -53,21 +57,31 @@ func NewCommand(ctx context.Context, parent *Command, cr CommandRunner, clitext,
 		Short: shortdesc,
 		Long:  longdesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			p := utils.NewPrinter()
+			var out io.Writer
+			if viper.GetBool(config.ArgQuiet) {
+				var execOut bytes.Buffer
+				out = &execOut
+			} else {
+				out = os.Stdout
+			}
+			printReg := utils.NewPrinterRegistry(out, os.Stderr)
+			printer := printReg[viper.GetString(config.ArgOutput)]
 			// Set Buffers
-			cmd.SetIn(p.Stdin)
-			cmd.SetOut(p.Stdout)
-			cmd.SetErr(p.Stderr)
+			cmd.SetIn(os.Stdin)
+			cmd.SetOut(printer.GetStdout())
+			cmd.SetErr(printer.GetStderr())
+
 			cmdConfig, err := NewCommandConfig(
 				ctx,
+				os.Stdin,
+				printer,
 				clitext,
 				initServices,
-				p,
 			)
-			utils.CheckError(err, p.Stderr)
+			utils.CheckError(err, printer.GetStderr())
 			err = cr(cmdConfig)
 
-			utils.CheckError(err, p.Stderr)
+			utils.CheckError(err, printer.GetStderr())
 		},
 	}
 	c := &Command{
@@ -83,9 +97,10 @@ func NewCommand(ctx context.Context, parent *Command, cr CommandRunner, clitext,
 type CommandRunner func(*CommandConfig) error
 
 type CommandConfig struct {
-	Name string
+	Name  string
+	Stdin io.Reader
 
-	Printer *utils.Printer
+	Printer utils.PrintService
 	Context context.Context
 
 	initServices func(*CommandConfig) error
@@ -93,9 +108,10 @@ type CommandConfig struct {
 	DataCenters func() resources.DatacentersService
 }
 
-func NewCommandConfig(ctx context.Context, name string, initServices bool, p *utils.Printer) (*CommandConfig, error) {
+func NewCommandConfig(ctx context.Context, in io.Reader, p utils.PrintService, name string, initServices bool, ) (*CommandConfig, error) {
 	cmdConfig := &CommandConfig{
 		Name:    name,
+		Stdin:   in,
 		Printer: p,
 
 		initServices: func(c *CommandConfig) error {

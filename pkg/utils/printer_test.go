@@ -3,7 +3,6 @@ package utils
 import (
 	"bufio"
 	"bytes"
-	"io"
 	"net/http"
 	"regexp"
 	"testing"
@@ -15,8 +14,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var r io.Reader
-
 func TestNewPrinter_JSON(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 	var b bytes.Buffer
@@ -25,7 +22,7 @@ func TestNewPrinter_JSON(t *testing.T) {
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	NewPrinter()
+	NewPrinterRegistry(w, w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -38,31 +35,18 @@ func TestNewPrinter_Text(t *testing.T) {
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	NewPrinter()
+	NewPrinterRegistry(w, w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
 
-func TestNewPrinter_TextQuiet(t *testing.T) {
-	defer func(a func()) { ErrAction = a }(ErrAction)
-	var b bytes.Buffer
-	ErrAction = func() {}
-
-	viper.Set(config.ArgOutput, "text")
-	viper.Set(config.ArgQuiet, true)
-	w := bufio.NewWriter(&b)
-	NewPrinter()
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-func TestPrinter_ResultJson(t *testing.T) {
+func TestPrinter_PrintResultJson(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 
 	var (
 		b   bytes.Buffer
 		str = `{
-  "Status": "command executed"
+  "Message": "command executed"
 }`
 	)
 	ErrAction = func() {}
@@ -70,21 +54,102 @@ func TestPrinter_ResultJson(t *testing.T) {
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "json",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
-	res := &SuccessResult{
+	reg := NewPrinterRegistry(w, w)
+	p := reg["json"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
 		Message: "command executed",
 	}
 
-	p.Result(res)
+	p.Print(res)
 	err := w.Flush()
 	assert.NoError(t, err)
 
 	re := regexp.MustCompile(str)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestPrinter_PrintStandardResultJson(t *testing.T) {
+	defer func(a func()) { ErrAction = a }(ErrAction)
+
+	var (
+		b   bytes.Buffer
+		str = `{
+  "Message": "datacenter create command has been successfully executed"
+}`
+	)
+	ErrAction = func() {}
+
+	viper.Set(config.ArgOutput, "json")
+	viper.Set(config.ArgQuiet, false)
+	w := bufio.NewWriter(&b)
+	reg := NewPrinterRegistry(w, w)
+	p := reg["json"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
+		Resource: "datacenter",
+		Verb:     "create",
+	}
+
+	p.Print(res)
+	err := w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(str)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestPrinter_PrintDefaultJson(t *testing.T) {
+	defer func(a func()) { ErrAction = a }(ErrAction)
+
+	var (
+		b   bytes.Buffer
+		str = `{
+  "Message": "command executed"
+}`
+	)
+	ErrAction = func() {}
+
+	viper.Set(config.ArgOutput, "json")
+	viper.Set(config.ArgQuiet, false)
+	w := bufio.NewWriter(&b)
+	reg := NewPrinterRegistry(w, w)
+	p := reg["json"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	input := "command executed"
+
+	p.Print(input)
+	err := w.Flush()
+	assert.NoError(t, err)
+
+	re := regexp.MustCompile(str)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestPrinter_PrintDefaultQuietJson(t *testing.T) {
+	defer func(a func()) { ErrAction = a }(ErrAction)
+
+	var (
+		b bytes.Buffer
+	)
+	ErrAction = func() {}
+
+	viper.Set(config.ArgOutput, "json")
+	viper.Set(config.ArgQuiet, true)
+	w := bufio.NewWriter(&b)
+	reg := NewPrinterRegistry(w, w)
+	p := reg["json"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	input := "command executed"
+
+	p.Print(input)
+	err := w.Flush()
+	assert.NoError(t, err)
+
+	re := regexp.MustCompile(``)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
@@ -103,14 +168,11 @@ func TestPrinter_ResultJsonRequestId(t *testing.T) {
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "json",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
-	res := &SuccessResult{
-		Message: "",
+	reg := NewPrinterRegistry(w, w)
+	p := reg["json"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
 		ApiResponse: &resources.Response{
 			APIResponse: ionoscloud.APIResponse{
 				Message: "Status OK",
@@ -122,7 +184,7 @@ func TestPrinter_ResultJsonRequestId(t *testing.T) {
 	}
 	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v5/requests/123456/status")
 
-	p.Result(res)
+	p.Print(res)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -133,20 +195,24 @@ func TestPrinter_ResultJsonRequestId(t *testing.T) {
 func TestPrinter_ResultJsonRequestIdErr(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 
-	var b bytes.Buffer
+	var (
+		b      bytes.Buffer
+		strErr = `{
+  "Error": {},
+  "Detail": "path does not contain https://api.ionos.com/cloudapi/v5"
+}
+`
+	)
 	ErrAction = func() {}
 
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "json",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
-	res := &SuccessResult{
-		Message: "",
+	reg := NewPrinterRegistry(w, w)
+	p := reg["json"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
 		ApiResponse: &resources.Response{
 			APIResponse: ionoscloud.APIResponse{
 				Message: "Status OK",
@@ -158,15 +224,53 @@ func TestPrinter_ResultJsonRequestIdErr(t *testing.T) {
 	}
 	res.ApiResponse.Header.Add("location", "https://api.ionos.com/requests/123456/status")
 
-	p.Result(res)
+	p.Print(res)
 	err := w.Flush()
 	assert.NoError(t, err)
 
-	re := regexp.MustCompile(`{"error":{},"detail":"path does not contain https://api.ionos.com/cloudapi/v5"}`)
+	re := regexp.MustCompile(strErr)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_ResultText(t *testing.T) {
+func TestPrinter_GetStdoutJSON(t *testing.T) {
+	defer func(a func()) { ErrAction = a }(ErrAction)
+
+	var (
+		b bytes.Buffer
+	)
+	ErrAction = func() {}
+
+	viper.Set(config.ArgOutput, "json")
+	viper.Set(config.ArgQuiet, false)
+	w := bufio.NewWriter(&b)
+	reg := NewPrinterRegistry(w, w)
+	out := reg["json"].GetStdout()
+
+	err := w.Flush()
+	assert.NoError(t, err)
+	assert.True(t, out == w)
+}
+
+func TestPrinter_GetStderrJSON(t *testing.T) {
+	defer func(a func()) { ErrAction = a }(ErrAction)
+
+	var (
+		b bytes.Buffer
+	)
+	ErrAction = func() {}
+
+	viper.Set(config.ArgOutput, "json")
+	viper.Set(config.ArgQuiet, false)
+	w := bufio.NewWriter(&b)
+	reg := NewPrinterRegistry(w, w)
+	out := reg["json"].GetStderr()
+
+	err := w.Flush()
+	assert.NoError(t, err)
+	assert.True(t, out == w)
+}
+
+func TestPrinter_PrintResultText(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 
 	var b bytes.Buffer
@@ -175,17 +279,15 @@ func TestPrinter_ResultText(t *testing.T) {
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "text",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
-	res := &SuccessResult{
+	reg := NewPrinterRegistry(w, w)
+	p := reg["text"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
 		Message: "command executed",
 	}
 
-	p.Result(res)
+	p.Print(res)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -193,7 +295,7 @@ func TestPrinter_ResultText(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_ResultTextRequestId(t *testing.T) {
+func TestPrinter_PrintResultTextRequestId(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 
 	var (
@@ -205,14 +307,11 @@ func TestPrinter_ResultTextRequestId(t *testing.T) {
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "text",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
-	res := &SuccessResult{
-		Message: "",
+	reg := NewPrinterRegistry(w, w)
+	p := reg["text"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
 		ApiResponse: &resources.Response{
 			APIResponse: ionoscloud.APIResponse{
 				Message: "Status OK",
@@ -224,7 +323,7 @@ func TestPrinter_ResultTextRequestId(t *testing.T) {
 	}
 	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v5/requests/123456/status")
 
-	p.Result(res)
+	p.Print(res)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -232,7 +331,7 @@ func TestPrinter_ResultTextRequestId(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_ResultTextResource(t *testing.T) {
+func TestPrinter_PrintResultTextResource(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 
 	var (
@@ -244,17 +343,15 @@ func TestPrinter_ResultTextResource(t *testing.T) {
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "text",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
-	res := &SuccessResult{
+	reg := NewPrinterRegistry(w, w)
+	p := reg["text"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
 		Resource: "datacenter",
 		Verb:     "create",
 	}
-	p.Result(res)
+	p.Print(res)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -262,7 +359,7 @@ func TestPrinter_ResultTextResource(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_ResultTextKeyValue(t *testing.T) {
+func TestPrinter_PrintResultTextKeyValue(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 
 	var (
@@ -276,12 +373,10 @@ func TestPrinter_ResultTextKeyValue(t *testing.T) {
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "text",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
+	reg := NewPrinterRegistry(w, w)
+	p := reg["text"]
+	p.SetStderr(w)
+	p.SetStdout(w)
 	keyValueMap := map[string]interface{}{
 		"ID":          123,
 		"Name":        "dummy",
@@ -289,12 +384,12 @@ func TestPrinter_ResultTextKeyValue(t *testing.T) {
 		"Age[min]":    1.23,
 		"Description": "dummy",
 	}
-	res := &SuccessResult{
+	res := Result{
 		Columns:  []string{"ID", "Name", "Authorized", "Age[min]"},
 		KeyValue: []map[string]interface{}{keyValueMap},
 	}
 
-	p.Result(res)
+	p.Print(res)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -302,7 +397,33 @@ func TestPrinter_ResultTextKeyValue(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_ResultDefault(t *testing.T) {
+func TestPrinter_PrintDefaultText(t *testing.T) {
+	defer func(a func()) { ErrAction = a }(ErrAction)
+
+	var (
+		b bytes.Buffer
+	)
+
+	ErrAction = func() {}
+
+	viper.Set(config.ArgOutput, "text")
+	viper.Set(config.ArgQuiet, false)
+	w := bufio.NewWriter(&b)
+	reg := NewPrinterRegistry(w, w)
+	p := reg["text"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	input := "dummy"
+
+	p.Print(input)
+	err := w.Flush()
+	assert.NoError(t, err)
+
+	re := regexp.MustCompile(input)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestPrinter_UnknownFormatType(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 
 	var b bytes.Buffer
@@ -311,17 +432,7 @@ func TestPrinter_ResultDefault(t *testing.T) {
 	viper.Set(config.ArgOutput, "dummy")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "dummy",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
-	res := &SuccessResult{
-		Message: "command executed",
-	}
-
-	p.Result(res)
+	NewPrinterRegistry(w, w)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -338,17 +449,15 @@ func TestPrinter_ResultQuiet(t *testing.T) {
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, true)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "text",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
-	res := &SuccessResult{
+	reg := NewPrinterRegistry(w, w)
+	p := reg["text"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
 		Message: "command executed",
 	}
 
-	p.Result(res)
+	p.Print(res)
 	err := w.Flush()
 	assert.NoError(t, err)
 
@@ -356,74 +465,40 @@ func TestPrinter_ResultQuiet(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_LogText(t *testing.T) {
+func TestPrinter_GetStdoutText(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 
-	var b bytes.Buffer
+	var (
+		b bytes.Buffer
+	)
 	ErrAction = func() {}
 
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "text",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
+	reg := NewPrinterRegistry(w, w)
+	out := reg["text"].GetStdout()
 
-	p.Log()
 	err := w.Flush()
 	assert.NoError(t, err)
-
-	re := regexp.MustCompile(``)
-	assert.True(t, re.Match(b.Bytes()))
+	assert.True(t, out == w)
 }
 
-func TestPrinter_LogJSON(t *testing.T) {
+func TestPrinter_GetStderrText(t *testing.T) {
 	defer func(a func()) { ErrAction = a }(ErrAction)
 
-	var b bytes.Buffer
+	var (
+		b bytes.Buffer
+	)
 	ErrAction = func() {}
 
-	viper.Set(config.ArgOutput, "json")
+	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "json",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
+	reg := NewPrinterRegistry(w, w)
+	out := reg["text"].GetStderr()
 
-	p.Log()
 	err := w.Flush()
 	assert.NoError(t, err)
-
-	re := regexp.MustCompile(``)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestPrinter_LogDefault(t *testing.T) {
-	defer func(a func()) { ErrAction = a }(ErrAction)
-
-	var b bytes.Buffer
-	ErrAction = func() {}
-
-	viper.Set(config.ArgOutput, "dummy")
-	viper.Set(config.ArgQuiet, false)
-	w := bufio.NewWriter(&b)
-	p := &Printer{
-		OutputFlag: "dummy",
-		Stdin:      r,
-		Stdout:     w,
-		Stderr:     w,
-	}
-
-	p.Log()
-	err := w.Flush()
-	assert.NoError(t, err)
-
-	re := regexp.MustCompile(`unknown type format dummy. Hint: use --output json|text`)
-	assert.True(t, re.Match(b.Bytes()))
+	assert.True(t, out == w)
 }
