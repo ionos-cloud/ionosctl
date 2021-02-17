@@ -9,7 +9,6 @@ IonosCTL is a tool to help you manage your Ionos Cloud resources directly from y
 Run `ionosctl`, `ionosctl -h`, `ionosctl --help` or `ionosctl help`:
 ```text
 IonosCTL is a command-line interface (CLI) for the Ionos Cloud API. 
-Its main purpose is to help you manage your Ionos Cloud resources directly from your terminal.
 
 USAGE: 
   ionosctl [command]

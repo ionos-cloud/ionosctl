@@ -17,8 +17,7 @@ var (
 		Command: &cobra.Command{
 			Use:              "ionosctl",
 			Short:            "ionosctl is a command-line interface for the Ionos Cloud",
-			Long:             `IonosCTL is a command-line interface (CLI) for the Ionos Cloud API. 
-Its main purpose is to help you manage your Ionos Cloud resources directly from your terminal.`,
+			Long:             `IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.`,
 			TraverseChildren: true,
 		},
 	}
