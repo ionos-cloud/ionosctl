@@ -15,21 +15,9 @@ var (
 	// RootCmd is the root level command that all other commands attach to
 	rootCmd = &builder.Command{
 		Command: &cobra.Command{
-			Use:   "ionosctl",
-			Short: "ionosctl is a command line interface (CLI) for the Ionos Cloud",
-			Long: `
-        _                                         __     __
-       (_)  ____    ____   ____    _____  _____  / /_   / /
-      / /  / __ \  / __ \ / __ \  / ___/ / ___/ / __/  / /
-     / /  / /_/ / / / / // /_/ / (__  ) / /__  / /_   / /
-    /_/   \____/ /_/ /_/ \____/ /____/  \___/  \__/  /_/
-
-The IonosCTL wraps the Ionos Cloud API allowing you to interact with it from a command-line interface.
-The command ` + "`" + `ionosctl` + "`" + ` is the root command that all other commands are attached to.
-IonosCTL supports json format for all output commands by setting ` + "`" + `--output=json` + "`" + ` option.
-
-Note: if error, it returns exit code 1.
-`,
+			Use:              "ionosctl",
+			Short:            "Ionos Cloud CLI",
+			Long:             `IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.`,
 			TraverseChildren: true,
 		},
 	}
@@ -114,7 +102,7 @@ func initConfig() {
 func addCommands() {
 	rootCmd.AddCommand(login())
 	rootCmd.AddCommand(version())
-	rootCmd.AddCommand(generate())
+	rootCmd.AddCommand(completion())
 	rootCmd.AddCommand(location())
 	rootCmd.AddCommand(datacenter())
 	rootCmd.AddCommand(server())
@@ -125,30 +113,30 @@ func addCommands() {
 	rootCmd.AddCommand(request())
 }
 
-const usageTemplate = `USAGE: {{if .Runnable}}
-  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
-  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
+const usageTemplate = `USAGE: {{if.Runnable}}
+			{{.UseLine}}{{end}}{{if.HasAvailableSubCommands}}
+			{{.CommandPath}} [command]{{end}}{{if gt (len.Aliases) 0}}
 
-ALIASES:
-  {{.NameAndAliases}}{{end}}{{if .HasExample}}
+			ALIASES:
+			{{.NameAndAliases}}{{end}}{{if.HasExample}}
 
-EXAMPLES:
-{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
+			EXAMPLES:
+			{{.Example}}{{end}}{{if.HasAvailableSubCommands}}
 
-AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+			AVAILABLE COMMANDS:{{range.Commands}}{{if (or.IsAvailableCommand (eq.Name "help"))}}
+			{{rpad.Name.NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if.HasAvailableLocalFlags}}
 
-FLAGS:
-{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
+			FLAGS:
+			{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if.HasAvailableInheritedFlags}}
 
-GLOBAL FLAGS:
-{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
+			GLOBAL FLAGS:
+			{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if.HasHelpSubCommands}}
 
-SEE ALSO:
-{{.Annotations.SeeAlsos}}{{end}}{{if .HasHelpSubCommands}}
+			SEE ALSO:
+			{{.Annotations.SeeAlsos}}{{end}}{{if.HasHelpSubCommands}}
 
-Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
-  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+			Additional help topics:{{range.Commands}}{{if.IsAdditionalHelpTopicCommand}}
+			{{rpad.CommandPath.CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if.HasAvailableSubCommands}}
 
-Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
-`
+			Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
+		`
