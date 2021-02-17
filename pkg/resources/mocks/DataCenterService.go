@@ -82,9 +82,9 @@ func (mr *MockDatacentersServiceMockRecorder) Create(name, description, region i
 }
 
 // Update mocks base method
-func (m *MockDatacentersService) Update(datacenterId, name, description string) (*resources.Datacenter, *resources.Response, error) {
+func (m *MockDatacentersService) Update(datacenterId string, input resources.DatacenterProperties) (*resources.Datacenter, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", datacenterId, name, description)
+	ret := m.ctrl.Call(m, "Update", datacenterId, input)
 	ret0, _ := ret[0].(*resources.Datacenter)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,9 +92,9 @@ func (m *MockDatacentersService) Update(datacenterId, name, description string) 
 }
 
 // Update indicates an expected call of Update
-func (mr *MockDatacentersServiceMockRecorder) Update(datacenterId, name, description interface{}) *gomock.Call {
+func (mr *MockDatacentersServiceMockRecorder) Update(datacenterId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockDatacentersService)(nil).Update), datacenterId, name, description)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockDatacentersService)(nil).Update), datacenterId, input)
 }
 
 // Delete mocks base method

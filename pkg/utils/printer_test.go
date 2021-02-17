@@ -46,7 +46,7 @@ func TestPrinter_PrintResultJson(t *testing.T) {
 	var (
 		b   bytes.Buffer
 		str = `{
-  "Message": "command executed"
+  "Status": "command executed"
 }`
 	)
 	ErrAction = func() {}
@@ -76,7 +76,7 @@ func TestPrinter_PrintStandardResultJson(t *testing.T) {
 	var (
 		b   bytes.Buffer
 		str = `{
-  "Message": "datacenter create command has been successfully executed"
+  "Status": "Command datacenter create has been successfully executed"
 }`
 	)
 	ErrAction = func() {}
@@ -350,12 +350,42 @@ func TestPrinter_PrintResultTextResource(t *testing.T) {
 	res := Result{
 		Resource: "datacenter",
 		Verb:     "create",
+		WaitFlag: false,
 	}
 	p.Print(res)
 	err := w.Flush()
 	assert.NoError(t, err)
 
-	re := regexp.MustCompile(`datacenter create command has been successfully executed`)
+	re := regexp.MustCompile(`Command datacenter create has been successfully executed`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestPrinter_PrintResultTextWaitResource(t *testing.T) {
+	defer func(a func()) { ErrAction = a }(ErrAction)
+
+	var (
+		b bytes.Buffer
+	)
+
+	ErrAction = func() {}
+
+	viper.Set(config.ArgOutput, "text")
+	viper.Set(config.ArgQuiet, false)
+	w := bufio.NewWriter(&b)
+	reg := NewPrinterRegistry(w, w)
+	p := reg["text"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
+		Resource: "datacenter",
+		Verb:     "create",
+		WaitFlag: true,
+	}
+	p.Print(res)
+	err := w.Flush()
+	assert.NoError(t, err)
+
+	re := regexp.MustCompile(`Command datacenter create and request have been successfully executed`)
 	assert.True(t, re.Match(b.Bytes()))
 }
 

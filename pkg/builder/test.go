@@ -13,11 +13,36 @@ import (
 	"github.com/spf13/viper"
 )
 
+type PreCmdRunnerTest func(c *PreCommandConfig)
+
+func PreCmdConfigTest(t *testing.T, writer io.Writer, prerunner PreCmdRunnerTest) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	printer := utils.NewPrinterRegistry(writer, writer)
+	prt := printer[viper.GetString(config.ArgOutput)]
+
+	preCmdConfig := &PreCommandConfig{
+		Name:       "test",
+		ParentName: "test",
+		Printer:    prt,
+	}
+
+	prerunner(preCmdConfig)
+}
+
 type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocks)
 
 type ResourcesMocks struct {
-	Client     *mocks.MockClientService
-	Datacenter *mocks.MockDatacentersService
+	Client       *mocks.MockClientService
+	Location     *mocks.MockLocationsService
+	Datacenter   *mocks.MockDatacentersService
+	Server       *mocks.MockServersService
+	Volume       *mocks.MockVolumesService
+	Lan          *mocks.MockLansService
+	Nic          *mocks.MockNicsService
+	Loadbalancer *mocks.MockLoadbalancersService
+	Request      *mocks.MockRequestsService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -28,8 +53,15 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	prt := printer[viper.GetString(config.ArgOutput)]
 
 	tm := &ResourcesMocks{
-		Client:     mocks.NewMockClientService(ctrl),
-		Datacenter: mocks.NewMockDatacentersService(ctrl),
+		Client:       mocks.NewMockClientService(ctrl),
+		Location:     mocks.NewMockLocationsService(ctrl),
+		Datacenter:   mocks.NewMockDatacentersService(ctrl),
+		Server:       mocks.NewMockServersService(ctrl),
+		Lan:          mocks.NewMockLansService(ctrl),
+		Volume:       mocks.NewMockVolumesService(ctrl),
+		Nic:          mocks.NewMockNicsService(ctrl),
+		Loadbalancer: mocks.NewMockLoadbalancersService(ctrl),
+		Request:      mocks.NewMockRequestsService(ctrl),
 	}
 
 	cmdConfig := &CommandConfig{
@@ -37,8 +69,29 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Printer:      prt,
 		Context:      context.TODO(),
 		initServices: func(c *CommandConfig) error { return nil },
+		Locations: func() resources.LocationsService {
+			return tm.Location
+		},
 		DataCenters: func() resources.DatacentersService {
 			return tm.Datacenter
+		},
+		Servers: func() resources.ServersService {
+			return tm.Server
+		},
+		Volumes: func() resources.VolumesService {
+			return tm.Volume
+		},
+		Lans: func() resources.LansService {
+			return tm.Lan
+		},
+		Nics: func() resources.NicsService {
+			return tm.Nic
+		},
+		Loadbalancers: func() resources.LoadbalancersService {
+			return tm.Loadbalancer
+		},
+		Requests: func() resources.RequestsService {
+			return tm.Request
 		},
 	}
 

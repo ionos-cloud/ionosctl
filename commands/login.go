@@ -15,7 +15,13 @@ import (
 )
 
 func login() *builder.Command {
-	loginCmd := builder.NewCommand(context.TODO(), nil, RunLoginUser, "login", "Authentication command for SDK", "", false)
+	loginCmd := builder.NewCommand(context.TODO(), nil, noPreRun, RunLoginUser, "login", "Authentication command for SDK",
+		`Use this command to authenticate. User data will be saved in `+"`"+`$XDG_CONFIG_HOME/ionosctl-config.json`+"`"+` file. 
+
+You can use another configuration file for authentication with `+"`"+`--config`+"`"+` global option.
+
+Note: The command can also be used without `+"`"+`--user`+"`"+` and `+"`"+`--password`+"`"+` flags (see Examples).`,
+		loginExamples, false)
 	loginCmd.AddStringFlag("user", "", "", "Username to authenticate")
 	loginCmd.AddStringFlag("password", "", "", "Password to authenticate")
 
@@ -24,8 +30,8 @@ func login() *builder.Command {
 
 func RunLoginUser(c *builder.CommandConfig) error {
 	var err error
-	user := viper.GetString(builder.GetFlagName(c.Name, "user"))
-	pwd := viper.GetString(builder.GetFlagName(c.Name, "password"))
+	user := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "user"))
+	pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "password"))
 
 	if user == "" {
 		c.Printer.Print("Enter your username:")
@@ -73,6 +79,5 @@ func RunLoginUser(c *builder.CommandConfig) error {
 	c.Printer.Print(utils.Result{
 		Message: "Authentication successful!",
 	})
-
 	return nil
 }

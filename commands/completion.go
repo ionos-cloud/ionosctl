@@ -11,43 +11,42 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func completion() *builder.Command {
+func generate() *builder.Command {
+	const (
+		completionBashLong = `Use this command to generate completion code for BASH terminal. IonosCTL supports completion for commands and flags.
+
+Follow the next steps to enable it:
+
+Linux:
+
+- Generate completion code:
+` + "`" + `ionosctl completion bash > $PWD/ionosctl_bash_completion.sh` + "`" + `
+- Copy generated code to ` + "`" + `/etc/bash_completion.d/` + "`" + `:
+` + "`" + `sudo cp $PWD/ionosctl_bash_completion.sh /etc/bash_completion.d/` + "`" + `
+- Restart terminal to use auto-completion with TAB key.
+- Clean-up:
+` + "`" + `rm $PWD/ionosctl_bash_completion.sh` + "`" + `
+
+Mac OS:
+
+` + "`" + `ionosctl generate completion bash > /usr/local/etc/bash_completion.d/ionosctl_bash_completion.sh` + "`" + ``
+		completionZshLong = `Use this command to generate completion code for ZSH terminal. IonosCTL supports completion for commands and flags.
+Add the following line to your .profile or .bashrc.
+
+` + "`" + `source  <(ionosctl completion zsh)` + "`" + `
+
+Note:
+- ZSH completions require zsh 5.2 or newer.`
+	)
+
 	completionCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:   "completion",
-			Short: "Modify your shell so `ionosctl` commands and flags autocomplete with <TAB>",
-			Long: `
-ionosctl completion helps you to enable autocompletion with <TAB> key for ionosctl commands and flags.
-`,
-		},
-	}
-
-	const (
-		completionBashLong = `
-# To load completions for each session, execute once:
-Linux:
-  $ ionosctl completion bash > $PWD/ionosctl_bash_completion.sh
-  $ sudo cp $PWD/ionosctl_bash_completion.sh /etc/bash_completion.d/
-  $ rm $PWD/ionosctl_bash_completion.sh
-
-  Restart terminal to use auto-completion with <TAB>.
-
-MacOS:
-  $ ionosctl completion bash > /usr/local/etc/bash_completion.d/ionosctl_bash_completion.sh
-`
-		completionZshLong = `
-# Add the following line to your .profile or .bashrc.
-
-	source  <(ionosctl completion zsh)
-
-Note:
-
-- zsh completions requires zsh 5.2 or newer.
-`
-	)
-
-	builder.NewCommand(context.TODO(), completionCmd, RunCompletionBash, "bash", "Generate completion code for bash", completionBashLong, false)
-	builder.NewCommand(context.TODO(), completionCmd, RunCompletionZsh, "zsh", "Generate completion code for zsh", completionZshLong, false)
+			Short: "Generate code to enable auto-completion with TAB key",
+			Long:  "Use this command to generate completion code for specific shell for `ionosctl` commands and flags.",
+		}}
+	builder.NewCommand(context.TODO(), completionCmd, noPreRun, RunCompletionBash, "bash", "Generate code to enable auto-completion with TAB key for BASH terminal", completionBashLong, "", false)
+	builder.NewCommand(context.TODO(), completionCmd, noPreRun, RunCompletionZsh, "zsh", "Generate code to enable auto-completion with TAB key for ZSH terminal", completionZshLong, "", false)
 
 	return completionCmd
 }

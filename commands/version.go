@@ -7,11 +7,14 @@ import (
 )
 
 func version() *builder.Command {
-	versionCmd := builder.NewCommand(context.TODO(),
+	versionCmd := builder.NewCommand(
+		context.TODO(),
 		nil,
+		noPreRun,
 		RunVersion,
 		"version",
-		"Show current CLI version",
+		"Show the current version",
+		"The `ionosctl version` command displays the version of the ionosctl software.",
 		"",
 		false)
 

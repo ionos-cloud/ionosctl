@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/common-nighthawk/go-figure"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/mitchellh/go-homedir"
@@ -16,20 +15,31 @@ var (
 	// RootCmd is the root level command that all other commands attach to
 	rootCmd = &builder.Command{
 		Command: &cobra.Command{
-			Use:              "ionosctl",
-			Short:            "ionosctl is a command line interface (CLI) for the Ionos Cloud",
-			Long:             asciiLogo.String(),
+			Use:   "ionosctl",
+			Short: "ionosctl is a command line interface (CLI) for the Ionos Cloud",
+			Long: `
+        _                                         __     __
+       (_)  ____    ____   ____    _____  _____  / /_   / /
+      / /  / __ \  / __ \ / __ \  / ___/ / ___/ / __/  / /
+     / /  / /_/ / / / / // /_/ / (__  ) / /__  / /_   / /
+    /_/   \____/ /_/ /_/ \____/ /____/  \___/  \__/  /_/
+
+The IonosCTL wraps the Ionos Cloud API allowing you to interact with it from a command-line interface.
+The command ` + "`" + `ionosctl` + "`" + ` is the root command that all other commands are attached to.
+IonosCTL supports json format for all output commands by setting ` + "`" + `--output=json` + "`" + ` option.
+
+Note: if error, it returns exit code 1.
+`,
 			TraverseChildren: true,
 		},
 	}
-
+	noPreRun  = func(c *builder.PreCommandConfig) error { return nil }
 	ServerURL string
 	Output    string
 	Quiet     bool
 	Verbose   bool
 
-	cfgFile   string
-	asciiLogo = figure.NewFigure("ionosctl", "slant", true)
+	cfgFile string
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -38,6 +48,10 @@ func Execute() {
 	if err := rootCmd.Command.Execute(); err != nil {
 		os.Exit(1)
 	}
+}
+
+func GetRootCmd() *builder.Command {
+	return rootCmd
 }
 
 func init() {
@@ -49,7 +63,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootPFlagSet := rootCmd.Command.PersistentFlags()
-	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, "c", config.GetConfigFilePath(), "Specify a custom config file")
+	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, "c", config.GetConfigFilePath(), "Configuration file used for authentication")
 	viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
 
 	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, "u", config.DefaultApiURL, "Override default API endpoint")
@@ -64,7 +78,7 @@ func init() {
 	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, "q", false, "Quiet output")
 	viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
 
-	rootPFlagSet.Bool(config.ArgIgnoreStdin, false, "Ignore stdin option")
+	rootPFlagSet.Bool(config.ArgIgnoreStdin, false, "Force command to execute without user input")
 	viper.BindPFlag(config.ArgIgnoreStdin, rootPFlagSet.Lookup(config.ArgIgnoreStdin))
 
 	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, "v", false, "Enable verbose output")
@@ -100,8 +114,15 @@ func initConfig() {
 func addCommands() {
 	rootCmd.AddCommand(login())
 	rootCmd.AddCommand(version())
-	rootCmd.AddCommand(completion())
+	rootCmd.AddCommand(generate())
+	rootCmd.AddCommand(location())
 	rootCmd.AddCommand(datacenter())
+	rootCmd.AddCommand(server())
+	rootCmd.AddCommand(volume())
+	rootCmd.AddCommand(lan())
+	rootCmd.AddCommand(nic())
+	rootCmd.AddCommand(loadbalancer())
+	rootCmd.AddCommand(request())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

@@ -71,15 +71,15 @@ func (p *JSONPrinter) Print(v interface{}) {
 	switch v.(type) {
 	case Result:
 		if v.(Result).Resource != "" && v.(Result).Verb != "" {
-			resultPrint.Message = fmt.Sprintf(standardSuccessMessages, v.(Result).Resource, v.(Result).Verb)
+			resultPrint.Message = standardSuccessMsg(v.(Result).Resource, v.(Result).Verb, v.(Result).WaitFlag)
 		} else if v.(Result).Message != "" {
 			resultPrint.Message = v.(Result).Message
 		}
 		if v.(Result).ApiResponse != nil {
-			path, err := getRequestId(v.(Result).ApiResponse.Header.Get("location"))
+			requestId, err := GetRequestId(GetRequestPath(v.(Result).ApiResponse))
 			CheckError(err, p.Stderr)
-			if path != nil {
-				resultPrint.Response = *path
+			if requestId != nil {
+				resultPrint.RequestId = *requestId
 			}
 		}
 		resultPrint.Output = v.(Result).OutputJSON
@@ -88,11 +88,11 @@ func (p *JSONPrinter) Print(v interface{}) {
 			CheckError(err, p.Stderr)
 		}
 	default:
-		resultPrint.Message = v
-		err := writeJSON(&resultPrint, p.Stdout)
+		var msg DefaultMsgPrint
+		msg.Message = v
+		err := writeJSON(&msg, p.Stdout)
 		CheckError(err, p.Stderr)
 	}
-
 	return
 }
 
@@ -123,26 +123,26 @@ func (p *TextPrinter) Print(v interface{}) {
 	switch v.(type) {
 	case Result:
 		if v.(Result).Resource != "" && v.(Result).Verb != "" {
-			resultPrint.Message = fmt.Sprintf(standardSuccessMessages, v.(Result).Resource, v.(Result).Verb)
+			resultPrint.Message = standardSuccessMsg(v.(Result).Resource, v.(Result).Verb, v.(Result).WaitFlag)
 		} else if v.(Result).Message != "" {
 			resultPrint.Message = v.(Result).Message
 		}
 		if v.(Result).ApiResponse != nil {
-			path, err := getRequestId(v.(Result).ApiResponse.Header.Get("location"))
+			requestId, err := GetRequestId(GetRequestPath(v.(Result).ApiResponse))
 			CheckError(err, p.Stderr)
-			if path != nil {
-				resultPrint.Response = *path
+			if requestId != nil {
+				resultPrint.RequestId = *requestId
 			}
 		}
 		if v.(Result).KeyValue != nil && v.(Result).Columns != nil {
 			err := printText(p.Stdout, v.(Result).Columns, v.(Result).KeyValue)
 			CheckError(err, p.Stderr)
 		}
-		if resultPrint.Response != nil {
-			requestIdMsg(p.Stdout, "%v", resultPrint.Response)
+		if resultPrint.RequestId != nil {
+			requestIdMsg(p.Stdout, "%v", resultPrint.RequestId)
 		}
 		if resultPrint.Message != nil {
-			succesMsg(p.Stdout, "%v", resultPrint.Message)
+			statusMsg(p.Stdout, "%v", resultPrint.Message)
 		}
 	default:
 		_, err := fmt.Fprintf(p.Stdout, "%v\n", v)
@@ -172,6 +172,7 @@ type Result struct {
 	Message  string
 	Resource string
 	Verb     string
+	WaitFlag bool
 
 	Columns    []string
 	KeyValue   []map[string]interface{}
@@ -181,22 +182,34 @@ type Result struct {
 }
 
 type ResultPrint struct {
-	Message  interface{} `json:"Message,omitempty"`
-	Response interface{} `json:"RequestId,omitempty"`
-	Output   interface{} `json:"Resources,omitempty"`
+	Message   interface{} `json:"Status,omitempty"`
+	RequestId interface{} `json:"RequestId,omitempty"`
+	Output    interface{} `json:"Resources,omitempty"`
+}
+
+type DefaultMsgPrint struct {
+	Message interface{} `json:"Message,omitempty"`
 }
 
 var (
-	standardSuccessMessages = "%s %s command has been successfully executed"
-	unknownTypeFormatErr    = "unknown type format %s. Hint: use --output json|text"
+	standardSuccessMessages     = "Command %s %s has been successfully executed"
+	waitStandardSuccessMessages = "Command %s %s and request have been successfully executed"
+	unknownTypeFormatErr        = "unknown type format %s. Hint: use --output json|text"
 )
 
+func standardSuccessMsg(resource, verb string, wait bool) string {
+	if wait {
+		return fmt.Sprintf(waitStandardSuccessMessages, resource, verb)
+	}
+	return fmt.Sprintf(standardSuccessMessages, resource, verb)
+}
+
 func requestIdMsg(writer io.Writer, msg string, args ...interface{}) {
-	colorWarn := color.BlueString("Request Id")
+	colorWarn := color.BlueString("RequestId")
 	fmt.Fprintf(writer, "\u2714 %s: %s\n", colorWarn, fmt.Sprintf(msg, args...))
 }
 
-func succesMsg(writer io.Writer, msg string, args ...interface{}) {
+func statusMsg(writer io.Writer, msg string, args ...interface{}) {
 	colorWarn := color.GreenString("Status")
 	fmt.Fprintf(writer, "\u2714 %s: %s\n", colorWarn, fmt.Sprintf(msg, args...))
 }
@@ -249,10 +262,17 @@ func writeJSON(item interface{}, writer io.Writer) error {
 	return nil
 }
 
-func getRequestId(path string) (*string, error) {
+func GetRequestId(path string) (*string, error) {
 	if !strings.Contains(path, config.DefaultApiURL) {
 		return nil, errors.New("path does not contain " + config.DefaultApiURL)
 	}
 	str := strings.Split(path, "/")
 	return &str[len(str)-2], nil
+}
+
+func GetRequestPath(r *resources.Response) string {
+	if r != nil {
+		return r.Header.Get("location")
+	}
+	return ""
 }

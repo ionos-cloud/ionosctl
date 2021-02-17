@@ -43,7 +43,7 @@ func WriteFile() error {
 
 	defer f.Close()
 
-	b, err := json.MarshalIndent(GetUserData(), "","  ")
+	b, err := json.MarshalIndent(GetUserData(), "", "  ")
 	if err != nil {
 		return errors.New("unable to encode configuration to JSON format")
 	}

@@ -1,0 +1,508 @@
+package commands
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"io"
+	"os"
+
+	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/pkg/builder"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+func server() *builder.Command {
+	serverCmd := &builder.Command{
+		Command: &cobra.Command{
+			Use:              "server",
+			Short:            "Server Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl server` + "`" + ` allow you to create, list, get, update, delete, start, stop, reboot Servers.`,
+			TraverseChildren: true,
+		},
+	}
+	globalFlags := serverCmd.Command.PersistentFlags()
+	globalFlags.StringP(config.ArgDataCenterId, "", "", "The unique Data Center Id")
+	viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	serverCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
+	viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+
+	/*
+		List Command
+	*/
+	builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdValidate, RunServerList, "list", "List Servers",
+		"Use this command to list Servers from a specified Data Center.\n\nRequired values to run command:\n- Data Center Id",
+		listServerExample, true)
+
+	/*
+		Get Command
+	*/
+	get := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerGet, "get", "Get a Server",
+		"Use this command to get information about a specified Server from a Data Center.\n\nRequired values to run command:\n- Data Center Id\n- Server Id",
+		getServerExample, true)
+	get.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	/*
+		Create Command
+	*/
+	create := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdValidate, RunServerCreate, "create", "Create a Server",
+		`Use this command to create a Server in a specified Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
+
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+
+Required values to run command:
+- Data Center Id`, createServerExample, true)
+	create.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
+	create.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
+	create.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
+	create.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family for the Server")
+	create.Command.RegisterFlagCompletionFunc(config.ArgServerCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"AMD_OPTERON", "INTEL_XEON"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgServerZone, "", "AUTO", "Availability zone of the Server")
+	create.Command.RegisterFlagCompletionFunc(config.ArgServerZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be created")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+
+	/*
+		Update Command
+	*/
+	update := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerUpdate, "update", "Update a Server",
+		`Use this command to update a specified Server from a Data Center.
+
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+
+Required values to run command:
+- Data Center Id
+- Server Id`, updateServerExample, true)
+	update.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
+	update.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
+	update.Command.RegisterFlagCompletionFunc(config.ArgServerCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"AMD_OPTERON", "INTEL_XEON"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(config.ArgServerZone, "", "", "Availability zone of the Server")
+	update.Command.RegisterFlagCompletionFunc(config.ArgServerZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
+	update.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
+	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be updated")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+
+	/*
+		Delete Command
+	*/
+	delete := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerDelete, "delete", "Delete a Server",
+		`Use this command to delete a specified Server from a Data Center.
+
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+
+Required values to run command:
+- Data Center Id
+- Server Id`, deleteServerExample, true)
+	delete.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	delete.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+	})
+	delete.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be deleted")
+	delete.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+
+	/*
+		Start Command
+	*/
+	start := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStart, "start", "Start a Server",
+		`Use this command to start specified Server from a Data Center.
+
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+
+Required values to run command:
+- Data Center Id
+- Server Id`, startServerExample, true)
+	start.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	start.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+	})
+	start.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to start")
+	start.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+
+	/*
+		Stop Command
+	*/
+	stop := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStop, "stop", "Stop a Server",
+		`Use this command to stop specified Server from a Data Center.
+
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+
+Required values to run command:
+- Data Center Id
+- Server Id`, stopServerExample, true)
+	stop.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	stop.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+	})
+	stop.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to stop")
+	stop.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+
+	/*
+		Reboot Command
+	*/
+	reboot := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerReboot, "reboot", "Force a hard reboot of a Server",
+		`Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
+
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+
+Required values to run command:
+- Data Center Id
+- Server Id`, resetServerExample, true)
+	reboot.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	reboot.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	return serverCmd
+}
+
+func PreRunGlobalDcIdServerIdValidate(c *builder.PreCommandConfig) error {
+	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
+	if err != nil {
+		return err
+	}
+	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgServerId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func RunServerList(c *builder.CommandConfig) error {
+	servers, _, err := c.Servers().List(viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)))
+	if err != nil {
+		return err
+	}
+	ss := getServers(servers)
+	c.Printer.Print(utils.Result{
+		OutputJSON: servers,
+		KeyValue:   getServersKVMaps(ss),
+		Columns:    getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+	})
+	return nil
+}
+
+func RunServerGet(c *builder.CommandConfig) error {
+	server, _, err := c.Servers().Get(
+		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+	)
+	if err != nil {
+		return err
+	}
+	c.Printer.Print(utils.Result{
+		OutputJSON: server,
+		KeyValue:   getServersKVMaps([]resources.Server{*server}),
+		Columns:    getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+	})
+	return nil
+}
+
+func RunServerCreate(c *builder.CommandConfig) error {
+	server, resp, err := c.Servers().Create(
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerName)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCPUFamily)),
+		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerZone)),
+		viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCores)),
+		viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = waitForAction(c, utils.GetRequestPath(resp))
+	if err != nil {
+		return err
+	}
+	c.Printer.Print(utils.Result{
+		OutputJSON:  server,
+		KeyValue:    getServersKVMaps([]resources.Server{*server}),
+		Columns:     getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		ApiResponse: resp,
+		Resource:    "server",
+		Verb:        "create",
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+	})
+	return nil
+}
+
+func RunServerUpdate(c *builder.CommandConfig) error {
+	input := resources.ServerProperties{}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerName)) {
+		input.SetName(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerName)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCPUFamily)) {
+		input.SetCpuFamily(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCPUFamily)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerZone)) {
+		input.SetAvailabilityZone(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerZone)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCores)) {
+		input.SetCores(viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCores)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)) {
+		input.SetRam(viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)))
+	}
+	server, resp, err := c.Servers().Update(
+		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+		input,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = waitForAction(c, utils.GetRequestPath(resp))
+	if err != nil {
+		return err
+	}
+	c.Printer.Print(utils.Result{
+		KeyValue:    getServersKVMaps([]resources.Server{*server}),
+		Columns:     getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		OutputJSON:  server,
+		ApiResponse: resp,
+		Resource:    "server",
+		Verb:        "update",
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+	})
+	return nil
+}
+
+func RunServerDelete(c *builder.CommandConfig) error {
+	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "delete server")
+	if err != nil {
+		return err
+	}
+	resp, err := c.Servers().Delete(
+		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = waitForAction(c, utils.GetRequestPath(resp))
+	if err != nil {
+		return err
+	}
+	c.Printer.Print(utils.Result{
+		ApiResponse: resp,
+		Resource:    "server",
+		Verb:        "delete",
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+	})
+	return nil
+}
+
+func RunServerStart(c *builder.CommandConfig) error {
+	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "start server")
+	if err != nil {
+		return err
+	}
+	resp, err := c.Servers().Start(
+		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = waitForAction(c, utils.GetRequestPath(resp))
+	if err != nil {
+		return err
+	}
+	c.Printer.Print(utils.Result{
+		ApiResponse: resp,
+		Resource:    "server",
+		Verb:        "start",
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+	})
+	return nil
+}
+
+func RunServerStop(c *builder.CommandConfig) error {
+	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "stop server")
+	if err != nil {
+		return err
+	}
+	resp, err := c.Servers().Stop(
+		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = waitForAction(c, utils.GetRequestPath(resp))
+	if err != nil {
+		return err
+	}
+	c.Printer.Print(utils.Result{
+		ApiResponse: resp,
+		Resource:    "server",
+		Verb:        "stop",
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+	})
+	return nil
+}
+
+func RunServerReboot(c *builder.CommandConfig) error {
+	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "reboot server")
+	if err != nil {
+		return err
+	}
+	resp, err := c.Servers().Reboot(
+		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = waitForAction(c, utils.GetRequestPath(resp))
+	if err != nil {
+		return err
+	}
+	c.Printer.Print(utils.Result{
+		ApiResponse: resp,
+		Resource:    "server",
+		Verb:        "reboot",
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+	})
+	return nil
+}
+
+var defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "State", "Cores", "Ram", "CpuFamily"}
+
+type ServerPrint struct {
+	ServerId         string `json:"ServerId,omitempty"`
+	Name             string `json:"Name,omitempty"`
+	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
+	State            string `json:"State,omitempty"`
+	Cores            int32  `json:"Cores,omitempty"`
+	Ram              string `json:"Ram,omitempty"`
+	CpuFamily        string `json:"CpuFamily,omitempty"`
+}
+
+func getServersCols(flagName string, outErr io.Writer) []string {
+	var cols []string
+	if viper.IsSet(flagName) {
+		cols = viper.GetStringSlice(flagName)
+	} else {
+		return defaultServerCols
+	}
+
+	columnsMap := map[string]string{
+		"ServerId":         "ServerId",
+		"Name":             "Name",
+		"AvailabilityZone": "AvailabilityZone",
+		"State":            "State",
+		"Cores":            "Cores",
+		"Ram":              "Ram",
+		"CpuFamily":        "CpuFamily",
+	}
+	var serverCols []string
+	for _, k := range cols {
+		col := columnsMap[k]
+		if col != "" {
+			serverCols = append(serverCols, col)
+		} else {
+			utils.CheckError(errors.New("unknown column "+k), outErr)
+		}
+	}
+	return serverCols
+}
+
+func getServers(servers resources.Servers) []resources.Server {
+	ss := make([]resources.Server, 0)
+	for _, s := range *servers.Items {
+		ss = append(ss, resources.Server{s})
+	}
+	return ss
+}
+
+func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(ss))
+	for _, s := range ss {
+		properties := s.GetProperties()
+		metadata := s.GetMetadata()
+		var serverPrint ServerPrint
+		if id, ok := s.GetIdOk(); ok && id != nil {
+			serverPrint.ServerId = *id
+		}
+		if name, ok := properties.GetNameOk(); ok && name != nil {
+			serverPrint.Name = *name
+		}
+		if cores, ok := properties.GetCoresOk(); ok && cores != nil {
+			serverPrint.Cores = *cores
+		}
+		if ram, ok := properties.GetRamOk(); ok && ram != nil {
+			serverPrint.Ram = fmt.Sprintf("%vMB", *ram)
+		}
+		if cpuFamily, ok := properties.GetCpuFamilyOk(); ok && cpuFamily != nil {
+			serverPrint.CpuFamily = *cpuFamily
+		}
+		if zone, ok := properties.GetAvailabilityZoneOk(); ok && zone != nil {
+			serverPrint.AvailabilityZone = *zone
+		}
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			serverPrint.State = *state
+		}
+		o := structs.Map(serverPrint)
+		out = append(out, o)
+	}
+	return out
+}
+
+func getServersIds(outErr io.Writer, parentCmdName string) []string {
+	err := config.LoadFile()
+	utils.CheckError(err, outErr)
+
+	clientSvc, err := resources.NewClientService(
+		viper.GetString(config.Username),
+		viper.GetString(config.Password),
+		viper.GetString(config.ArgServerUrl),
+	)
+	utils.CheckError(err, outErr)
+
+	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
+	servers, _, err := serverSvc.List(viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)))
+	utils.CheckError(err, outErr)
+
+	ssIds := make([]string, 0)
+	if servers.Servers.Items != nil {
+		for _, s := range *servers.Servers.Items {
+			ssIds = append(ssIds, *s.GetId())
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
