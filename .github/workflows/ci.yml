@@ -4,9 +4,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
 
@@ -35,10 +35,22 @@ jobs:
         with:
           go-version: ${{ env.go-version }}
 
+      # Test ionosctl
+      - name: Run tests
+        run: make test_unit
+
+      # Build ionosctl
+      - name: Build
+        run: make build
+
       # Install ionosctl
       - name: Install
-        run: go install -i
+        run: make install
 
-      # Testing ionosctl
-      - name: Run tests
-        run: go test -cover ./...
+      # Show ionosctl version
+      - name: Version
+        run: ionosctl version
+
+      # Clean-up ionosctl
+      - name: Clean artifacts
+        run: make clean
