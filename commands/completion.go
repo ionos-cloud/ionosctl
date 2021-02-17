@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func generate() *builder.Command {
+func completion() *builder.Command {
 	const (
 		completionBashLong = `Use this command to generate completion code for BASH terminal. IonosCTL supports completion for commands and flags.
 

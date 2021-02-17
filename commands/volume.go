@@ -20,6 +20,7 @@ func volume() *builder.Command {
 	volumeCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "volume",
+			Aliases:          []string{"vol"},
 			Short:            "Volume Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes or attaching, detaching a Volume from a Server.`,
 			TraverseChildren: true,

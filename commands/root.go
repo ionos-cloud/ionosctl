@@ -15,21 +15,9 @@ var (
 	// RootCmd is the root level command that all other commands attach to
 	rootCmd = &builder.Command{
 		Command: &cobra.Command{
-			Use:   "ionosctl",
-			Short: "ionosctl is a command line interface (CLI) for the Ionos Cloud",
-			Long: `
-        _                                         __     __
-       (_)  ____    ____   ____    _____  _____  / /_   / /
-      / /  / __ \  / __ \ / __ \  / ___/ / ___/ / __/  / /
-     / /  / /_/ / / / / // /_/ / (__  ) / /__  / /_   / /
-    /_/   \____/ /_/ /_/ \____/ /____/  \___/  \__/  /_/
-
-The IonosCTL wraps the Ionos Cloud API allowing you to interact with it from a command-line interface.
-The command ` + "`" + `ionosctl` + "`" + ` is the root command that all other commands are attached to.
-IonosCTL supports json format for all output commands by setting ` + "`" + `--output=json` + "`" + ` option.
-
-Note: if error, it returns exit code 1.
-`,
+			Use:              "ionosctl",
+			Short:            "Ionos Cloud CLI",
+			Long:             "IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.",
 			TraverseChildren: true,
 		},
 	}
@@ -114,7 +102,7 @@ func initConfig() {
 func addCommands() {
 	rootCmd.AddCommand(login())
 	rootCmd.AddCommand(version())
-	rootCmd.AddCommand(generate())
+	rootCmd.AddCommand(completion())
 	rootCmd.AddCommand(location())
 	rootCmd.AddCommand(datacenter())
 	rootCmd.AddCommand(server())
