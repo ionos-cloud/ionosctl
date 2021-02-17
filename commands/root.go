@@ -114,7 +114,7 @@ func initConfig() {
 func addCommands() {
 	rootCmd.AddCommand(login())
 	rootCmd.AddCommand(version())
-	rootCmd.AddCommand(generate())
+	rootCmd.AddCommand(completion())
 	rootCmd.AddCommand(location())
 	rootCmd.AddCommand(datacenter())
 	rootCmd.AddCommand(server())
