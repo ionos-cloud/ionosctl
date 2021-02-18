@@ -13,6 +13,9 @@ test_unit:
 	@go test -cover ./commands/... ./pkg/utils/...
 	@echo "DONE"
 
+.PHONY: test
+test: test_unit
+
 .PHONY: docs
 docs:
 	@echo "--- Generate Markdown documentation in ${DOCS_OUT} ---"

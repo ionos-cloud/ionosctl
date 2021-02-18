@@ -1,5 +1,5 @@
 ---
-description: ionosctl is a command-line interface for the Ionos Cloud
+description: Ionos Cloud CLI
 ---
 
 # Ionosctl

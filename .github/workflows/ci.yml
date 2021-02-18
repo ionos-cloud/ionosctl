@@ -37,7 +37,7 @@ jobs:
 
       # Test ionosctl
       - name: Run tests
-        run: make test_unit
+        run: make test
 
       # Build ionosctl
       - name: Build

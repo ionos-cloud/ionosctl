@@ -1,5 +1,5 @@
 ---
-description: Generate code to enable auto-completion with TAB key
+description: Generate code to enable auto-completion with `TAB` key
 ---
 
 # Completion
