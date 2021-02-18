@@ -48,7 +48,3 @@ LoadbalancerId                         Name               Dhcp
 ✔ Status: Command loadbalancer create has been successfully executed
 ```
 
-## See also
-
-* [ionosctl loadbalancer](./)
-

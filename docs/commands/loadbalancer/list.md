@@ -40,7 +40,3 @@ f16dfcc1-9181-400b-a08d-7fe15ca0e9af   demoLoadbalancer   true
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   false
 ```
 
-## See also
-
-* [ionosctl loadbalancer](./)
-

@@ -27,8 +27,9 @@ The sub-command of `ionosctl location` allows you to see information about locat
   -v, --verbose          Enable verbose output
 ```
 
-## See also
+## Related commands
 
-* [ionosctl](../)
-* [ionosctl location list](list.md)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl location list](list.md) | List Locations |
 

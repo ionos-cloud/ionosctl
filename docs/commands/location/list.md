@@ -39,7 +39,3 @@ de/txl       berlin      [SSD]
 gb/lhr       london      [SSD]
 ```
 
-## See also
-
-* [ionosctl location](./)
-

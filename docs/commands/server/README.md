@@ -10,6 +10,12 @@ description: Server Operations
 ionosctl server [command]
 ```
 
+## Aliases
+
+```text
+[svr]
+```
+
 ## Description
 
 The sub-commands of `ionosctl server` allow you to create, list, get, update, delete, start, stop, reboot Servers.
@@ -28,15 +34,16 @@ The sub-commands of `ionosctl server` allow you to create, list, get, update, de
   -v, --verbose                Enable verbose output
 ```
 
-## See also
+## Related commands
 
-* [ionosctl](../)
-* [ionosctl server create](create.md)
-* [ionosctl server delete](delete.md)
-* [ionosctl server get](get.md)
-* [ionosctl server list](list.md)
-* [ionosctl server reboot](reboot.md)
-* [ionosctl server start](start.md)
-* [ionosctl server stop](stop.md)
-* [ionosctl server update](update.md)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl server create](create.md) | Create a Server |
+| [ionosctl server delete](delete.md) | Delete a Server |
+| [ionosctl server get](get.md) | Get a Server |
+| [ionosctl server list](list.md) | List Servers |
+| [ionosctl server reboot](reboot.md) | Force a hard reboot of a Server |
+| [ionosctl server start](start.md) | Start a Server |
+| [ionosctl server stop](stop.md) | Stop a Server |
+| [ionosctl server update](update.md) | Update a Server |
 

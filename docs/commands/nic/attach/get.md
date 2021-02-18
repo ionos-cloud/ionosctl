@@ -44,7 +44,3 @@ NicId                                  Name      Dhcp   LanId   Ips
 c7903181-daa1-4e16-a65a-e9b495c1b324   demoNIC   true   2       []
 ```
 
-## See also
-
-* [ionosctl nic attach](./)
-

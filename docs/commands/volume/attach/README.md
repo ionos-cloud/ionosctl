@@ -56,9 +56,10 @@ VolumeId                               Name         Size   Type   LicenseType   
 ✔ Status: Command volume attach and request have been successfully executed
 ```
 
-## See also
+## Related commands
 
-* [ionosctl volume](../)
-* [ionosctl volume attach get](get.md)
-* [ionosctl volume attach list](list.md)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl volume attach get](get.md) | Get an attached Volume from a Server |
+| [ionosctl volume attach list](list.md) | List attached Volumes from a Server |
 

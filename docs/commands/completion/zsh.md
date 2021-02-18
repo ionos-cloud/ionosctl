@@ -1,5 +1,5 @@
 ---
-description: Generate code to enable auto-completion with `TAB` key for ZSH terminal
+description: Generate code to enable auto-completion with TAB key for ZSH terminal
 ---
 
 # Zsh
@@ -31,8 +31,4 @@ Note:
   -q, --quiet            Quiet output
   -v, --verbose          Enable verbose output
 ```
-
-## See also
-
-* [ionosctl completion](./)
 

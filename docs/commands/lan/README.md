@@ -28,12 +28,13 @@ The sub-commands of `ionosctl lan` allow you to create, list, get, update, delet
   -v, --verbose                Enable verbose output
 ```
 
-## See also
+## Related commands
 
-* [ionosctl](../)
-* [ionosctl lan create](create.md)
-* [ionosctl lan delete](delete.md)
-* [ionosctl lan get](get.md)
-* [ionosctl lan list](list.md)
-* [ionosctl lan update](update.md)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl lan create](create.md) | Create a LAN |
+| [ionosctl lan delete](delete.md) | Delete a LAN |
+| [ionosctl lan get](get.md) | Get a LAN |
+| [ionosctl lan list](list.md) | List LANs |
+| [ionosctl lan update](update.md) | Update a LAN |
 

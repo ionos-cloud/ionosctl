@@ -29,14 +29,15 @@ The sub-commands of `ionosctl nic` allow you to create, list, get, update, delet
   -v, --verbose                Enable verbose output
 ```
 
-## See also
+## Related commands
 
-* [ionosctl](../)
-* [ionosctl nic attach](attach/)
-* [ionosctl nic create](create.md)
-* [ionosctl nic delete](delete.md)
-* [ionosctl nic detach](detach.md)
-* [ionosctl nic get](get.md)
-* [ionosctl nic list](list.md)
-* [ionosctl nic update](update.md)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl nic attach](attach/) | Attach a NIC to a Load Balancer |
+| [ionosctl nic create](create.md) | Create a NIC |
+| [ionosctl nic delete](delete.md) | Delete a NIC |
+| [ionosctl nic detach](detach.md) | Detach a NIC from a Load Balancer |
+| [ionosctl nic get](get.md) | Get a NIC |
+| [ionosctl nic list](list.md) | List NICs |
+| [ionosctl nic update](update.md) | Update a NIC |
 

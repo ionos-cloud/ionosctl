@@ -57,7 +57,3 @@ ServerId                               Name         AvailabilityZone   State   C
 ✔ Status: Command server create and request have been successfully executed
 ```
 
-## See also
-
-* [ionosctl server](./)
-

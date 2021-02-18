@@ -49,7 +49,3 @@ LanId   Name      Public
 ✔ Status: Command lan update has been successfully executed
 ```
 
-## See also
-
-* [ionosctl lan](./)
-

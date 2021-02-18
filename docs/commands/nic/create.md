@@ -51,7 +51,3 @@ NicId                                  Name      Dhcp   LanId   Ips
 ✔ Status: Command nic create has been successfully executed
 ```
 
-## See also
-
-* [ionosctl nic](./)
-

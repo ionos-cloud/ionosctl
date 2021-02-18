@@ -26,17 +26,19 @@ IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.
   -v, --verbose          Enable verbose output
 ```
 
-## See also
+## Related commands
 
-* [ionosctl completion](completion/)
-* [ionosctl datacenter](datacenter/)
-* [ionosctl lan](lan/)
-* [ionosctl loadbalancer](loadbalancer/)
-* [ionosctl location](location/)
-* [ionosctl login](login.md)
-* [ionosctl nic](nic/)
-* [ionosctl request](request/)
-* [ionosctl server](server/)
-* [ionosctl version](version.md)
-* [ionosctl volume](volume/)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl completion](completion/) | Generate code to enable auto-completion with TAB key |
+| [ionosctl datacenter](datacenter/) | Data Center Operations |
+| [ionosctl lan](lan/) | LAN Operations |
+| [ionosctl loadbalancer](loadbalancer/) | Load Balancer Operations |
+| [ionosctl location](location/) | Location Operations |
+| [ionosctl login](login.md) | Authentication command for SDK |
+| [ionosctl nic](nic/) | Network Interfaces Operations |
+| [ionosctl request](request/) | Request Operations |
+| [ionosctl server](server/) | Server Operations |
+| [ionosctl version](version.md) | Show the current version |
+| [ionosctl volume](volume/) | Volume Operations |
 

@@ -10,7 +10,6 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/commands"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
-	"github.com/spf13/cobra"
 )
 
 func main() {
@@ -151,6 +150,11 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 		buf.WriteString(fmt.Sprintf("```text\n%s [command]\n```\n\n", cmd.Command.CommandPath()))
 	}
 
+	if len(cmd.Command.Aliases) > 0 {
+		buf.WriteString("## Aliases\n\n")
+		buf.WriteString(fmt.Sprintf("```text\n%s\n```\n\n", cmd.Command.Aliases))
+	}
+
 	buf.WriteString("## Description\n\n")
 	if len(cmd.Command.Long) > 0 {
 		buf.WriteString(cmd.Command.Long + "\n\n")
@@ -180,24 +184,10 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 
 	var link string
 	if hasSeeAlso(cmd) {
-		buf.WriteString("## See also\n\n")
-		if cmd.Command.HasParent() {
-			parent := cmd.Command.Parent()
-			pname := parent.CommandPath()
-			if !cmd.Command.HasAvailableSubCommands() {
-				link = "./"
-			} else {
-				link = "../"
-			}
-			buf.WriteString(fmt.Sprintf("* [%s](%s)\n", pname, link))
-			cmd.Command.VisitParents(func(c *cobra.Command) {
-				if c.DisableAutoGenTag {
-					cmd.Command.DisableAutoGenTag = c.DisableAutoGenTag
-				}
-			})
-		}
-
 		children := cmd.Command.Commands()
+		buf.WriteString("## Related commands\n\n")
+		buf.WriteString("| Command | Description |\n")
+		buf.WriteString("| :------ | :---------- |\n")
 		for _, child := range children {
 			if !child.IsAvailableCommand() || child.IsAdditionalHelpTopicCommand() {
 				continue
@@ -208,7 +198,7 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 			} else {
 				link = child.Name() + "/"
 			}
-			buf.WriteString(fmt.Sprintf("* [%s](%s)\n", cname, link))
+			buf.WriteString(fmt.Sprintf("| [%s](%s) | %s |\n", cname, link, child.Short))
 		}
 		buf.WriteString("\n")
 	}
@@ -218,7 +208,7 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 }
 
 func hasSeeAlso(cmd *builder.Command) bool {
-	if cmd.Command.HasParent() {
+	if cmd.Command.HasParent() && cmd.Command.HasAvailableSubCommands() {
 		return true
 	}
 	for _, c := range cmd.ChildCommands() {

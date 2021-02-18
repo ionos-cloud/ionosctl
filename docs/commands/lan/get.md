@@ -41,7 +41,3 @@ LanId   Name      Public
 4       demoLan   false
 ```
 
-## See also
-
-* [ionosctl lan](./)
-

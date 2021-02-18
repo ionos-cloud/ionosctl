@@ -50,7 +50,3 @@ ionosctl datacenter delete --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774 
 ✔ Status: Command datacenter delete and request have been successfully executed
 ```
 
-## See also
-
-* [ionosctl datacenter](./)
-

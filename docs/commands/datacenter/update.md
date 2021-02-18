@@ -47,7 +47,3 @@ DatacenterId                           Description
 ✔ Status: Command datacenter update has been successfully executed
 ```
 
-## See also
-
-* [ionosctl datacenter](./)
-

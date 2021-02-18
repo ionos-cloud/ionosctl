@@ -27,7 +27,3 @@ Use this command to list all Requests on your account
   -v, --verbose          Enable verbose output
 ```
 
-## See also
-
-* [ionosctl request](./)
-

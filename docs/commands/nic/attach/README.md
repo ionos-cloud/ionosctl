@@ -56,9 +56,10 @@ c7903181-daa1-4e16-a65a-e9b495c1b324   demoNIC   true   1       []
 ✔ Status: Command nic attach has been successfully executed
 ```
 
-## See also
+## Related commands
 
-* [ionosctl nic](../)
-* [ionosctl nic attach get](get.md)
-* [ionosctl nic attach list](list.md)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl nic attach get](get.md) | Get an attached NIC to a Load Balancer |
+| [ionosctl nic attach list](list.md) | List attached NICs from a Load Balancer |
 

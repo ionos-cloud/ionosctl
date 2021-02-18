@@ -47,7 +47,3 @@ ionosctl server start --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --ser
 ✔ Status: Command server start has been successfully executed
 ```
 
-## See also
-
-* [ionosctl server](./)
-

@@ -39,7 +39,3 @@ DatacenterId                           Name             Location
 ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las
 ```
 
-## See also
-
-* [ionosctl datacenter](./)
-

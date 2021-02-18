@@ -55,7 +55,3 @@ ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   20GB   HDD    LINUX         
 ✔ Status: Command volume update has been successfully executed
 ```
 
-## See also
-
-* [ionosctl volume](./)
-

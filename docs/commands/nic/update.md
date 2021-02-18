@@ -61,7 +61,3 @@ NicId                                  Name      Dhcp   LanId   Ips
 ✔ Status: Command nic update and request have been successfully executed
 ```
 
-## See also
-
-* [ionosctl nic](./)
-

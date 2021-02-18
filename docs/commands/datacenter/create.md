@@ -52,7 +52,3 @@ DatacenterId                           Name             Location
 ✔ Status: Command datacenter create and request have been successfully executed
 ```
 
-## See also
-
-* [ionosctl datacenter](./)
-

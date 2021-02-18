@@ -10,6 +10,12 @@ description: Load Balancer Operations
 ionosctl loadbalancer [command]
 ```
 
+## Aliases
+
+```text
+[lb]
+```
+
 ## Description
 
 The sub-commands of `ionosctl loadbalancer` manage your Load Balancers on your account.
@@ -29,12 +35,13 @@ With the `ionosctl loadbalancer` command, you can list, create, delete Load Bala
   -v, --verbose                Enable verbose output
 ```
 
-## See also
+## Related commands
 
-* [ionosctl](../)
-* [ionosctl loadbalancer create](create.md)
-* [ionosctl loadbalancer delete](delete.md)
-* [ionosctl loadbalancer get](get.md)
-* [ionosctl loadbalancer list](list.md)
-* [ionosctl loadbalancer update](update.md)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl loadbalancer create](create.md) | Create a Load Balancer |
+| [ionosctl loadbalancer delete](delete.md) | Delete a Load Balancer |
+| [ionosctl loadbalancer get](get.md) | Get a Load Balancer |
+| [ionosctl loadbalancer list](list.md) | List Load Balancers |
+| [ionosctl loadbalancer update](update.md) | Update a Load Balancer |
 

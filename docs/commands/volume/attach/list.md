@@ -41,7 +41,3 @@ VolumeId                               Name         Size   Type   LicenseType   
 15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         AVAILABLE         
 ```
 
-## See also
-
-* [ionosctl volume attach](./)
-

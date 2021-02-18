@@ -52,7 +52,3 @@ f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    4
 ✔ Status: Command server update has been successfully executed
 ```
 
-## See also
-
-* [ionosctl server](./)
-

@@ -48,7 +48,3 @@ ionosctl nic delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --serve
 ✔ Status: Command nic delete has been successfully executed
 ```
 
-## See also
-
-* [ionosctl nic](./)
-

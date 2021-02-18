@@ -1,5 +1,5 @@
 ---
-description: Generate code to enable auto-completion with `TAB` key for BASH terminal
+description: Generate code to enable auto-completion with TAB key for BASH terminal
 ---
 
 # Bash
@@ -34,8 +34,4 @@ To make these changes permanent, append the above line to your `.bashrc` file an
   -q, --quiet            Quiet output
   -v, --verbose          Enable verbose output
 ```
-
-## See also
-
-* [ionosctl completion](./)
 

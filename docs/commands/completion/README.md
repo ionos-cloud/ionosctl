@@ -1,5 +1,5 @@
 ---
-description: Generate code to enable auto-completion with `TAB` key
+description: Generate code to enable auto-completion with TAB key
 ---
 
 # Completion
@@ -26,9 +26,10 @@ Use this command to generate completion code for specific shell for `ionosctl` c
   -v, --verbose          Enable verbose output
 ```
 
-## See also
+## Related commands
 
-* [ionosctl](../)
-* [ionosctl completion bash](bash.md)
-* [ionosctl completion zsh](zsh.md)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl completion bash](bash.md) | Generate code to enable auto-completion with TAB key for BASH terminal |
+| [ionosctl completion zsh](zsh.md) | Generate code to enable auto-completion with TAB key for ZSH terminal |
 

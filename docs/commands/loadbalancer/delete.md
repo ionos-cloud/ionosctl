@@ -47,7 +47,3 @@ ionosctl loadbalancer delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3
 ✔ Status: Command loadbalancer delete and request have been successfully executed
 ```
 
-## See also
-
-* [ionosctl loadbalancer](./)
-

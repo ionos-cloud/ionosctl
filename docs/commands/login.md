@@ -46,7 +46,3 @@ Enter your password:
 ✔ Status: Authentication successful!
 ```
 
-## See also
-
-* [ionosctl](./)
-

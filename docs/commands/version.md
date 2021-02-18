@@ -26,7 +26,3 @@ The `ionosctl version` command displays the version of the ionosctl software.
   -v, --verbose          Enable verbose output
 ```
 
-## See also
-
-* [ionosctl](./)
-

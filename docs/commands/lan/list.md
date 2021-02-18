@@ -42,7 +42,3 @@ LanId   Name                                                Public
 1       Switch of LB 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   false
 ```
 
-## See also
-
-* [ionosctl lan](./)
-

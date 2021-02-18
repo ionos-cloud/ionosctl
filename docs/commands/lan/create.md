@@ -48,7 +48,3 @@ LanId   Name      Public
 ✔ Status: Command lan create has been successfully executed
 ```
 
-## See also
-
-* [ionosctl lan](./)
-

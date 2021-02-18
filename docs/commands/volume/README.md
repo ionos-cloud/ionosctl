@@ -10,6 +10,12 @@ description: Volume Operations
 ionosctl volume [command]
 ```
 
+## Aliases
+
+```text
+[vol]
+```
+
 ## Description
 
 The sub-commands of `ionosctl volume` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes or attaching, detaching a Volume from a Server.
@@ -28,14 +34,15 @@ The sub-commands of `ionosctl volume` manage your block storage volumes by creat
   -v, --verbose                Enable verbose output
 ```
 
-## See also
+## Related commands
 
-* [ionosctl](../)
-* [ionosctl volume attach](attach/)
-* [ionosctl volume create](create.md)
-* [ionosctl volume delete](delete.md)
-* [ionosctl volume detach](detach.md)
-* [ionosctl volume get](get.md)
-* [ionosctl volume list](list.md)
-* [ionosctl volume update](update.md)
+| Command | Description |
+| :------ | :---------- |
+| [ionosctl volume attach](attach/) | Attach a Volume to a Server |
+| [ionosctl volume create](create.md) | Create a Volume |
+| [ionosctl volume delete](delete.md) | Delete a Volume |
+| [ionosctl volume detach](detach.md) | Detach a Volume from a Server |
+| [ionosctl volume get](get.md) | Get a Volume |
+| [ionosctl volume list](list.md) | List Volumes |
+| [ionosctl volume update](update.md) | Update a Volume |
 
