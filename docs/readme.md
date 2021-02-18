@@ -14,16 +14,16 @@ Before you begin you will need to have signed-up for a [Ionos Cloud](https://www
 #### Building a local version
 
 If you have a Go environment configured, you can build and install the development version of `ionosctl` with: 
-```text
-go get -u github.com/ionos-cloud/ionosctl
+```
+go get github.com/ionos-cloud/ionosctl
 ```
 
 After cloning the repository, you can build `ionosctl` locally with:
-```text
+```
 make build
 ```
 To install `ionosctl` locally, you can use: 
-```text
+```
 make install 
 ```
 
@@ -35,11 +35,11 @@ Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Mod
 
 Before using `ionosctl` to perform any operations, you will need to set your credentials for Ionos Cloud account: 
 
-```text
+```
 ionosctl login --user username --password **** 
 ```
 The command can also be used without setting the `--user` and `--password` flags:
-```text
+```
 ionosctl login
 Enter your username:
 username
@@ -49,11 +49,11 @@ Enter your password:
 
 After providing credentials, you will be notified if you logged in successfully or not:
 
-```text
+```
 ✔ Status: Authentication successful!
 ```
 
-```text
+```
 ✖ Error: 401 Unauthorized
 ```
 
@@ -67,23 +67,90 @@ Same goes for flags, especially for the flags for resources ids, displaying opti
 
 To enable auto-completion, you need to use `ionosctl completion [shell]`, depending on the shell you are using.
 
-- Bash
+#### Enabling Bash Shell Auto-Completion
 
 To load completions for the current session, execute: 
-```text
+```
 source <(ionosctl completion bash)
 ```
 
 To make these changes permanent, append the above line to your `.bashrc` file and use:
-```text
+```
 source ~/.bashrc
 ```
 
-- Zsh
+#### Enabling Fish Shell Auto-Completion
 
-- PowerShell
+To load completions into the current shell execute:
+```
+ionosctl completion fish | source
+```
 
-- Fish
+In order to make the completions permanent execute once:
+```
+ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
+```
+
+#### Enabling Zsh Shell Auto-Completion
+
+If shell completions are not already enabled for your environment, you need to enable them. 
+Add the following line to your `~/.zshrc` file:
+```
+autoload -Uz compinit; compinit
+```
+
+To load completions for each session execute the following commands:
+```
+mkdir -p ~/.config/ionosctl/completion/zsh
+ionosctl completion zsh > ~/.config/ionosctl/completion/zsh/_ionosctl
+```
+
+Finally add the following line to your `~/.zshrc`file, *before* you
+call the `compinit` function:
+```
+fpath+=(~/.config/ionosctl/completion/zsh)
+```
+
+In the end your `~/.zshrc` file should contain the following two lines in the order given here:
+```
+fpath+=(~/.config/ionosctl/completion/zsh)
+#  ... anything else that needs to be done before compinit
+autoload -Uz compinit; compinit
+# ...
+```
+
+You will need to start a new shell for this setup to take effect.
+Note: ZSH completions require zsh 5.2 or newer.
+
+#### Enabling PowerShell Auto-Completion
+
+PowerShell supports three different completion modes:
+
+- TabCompleteNext (default Windows style - on each key press the next option is displayed)
+- Complete (works like Bash)
+- MenuComplete (works like Zsh)
+
+You set the mode with `Set-PSReadLineKeyHandler -Key Tab -Function <mode>`
+
+Descriptions will only be supported for Complete and MenuComplete.
+
+Follow the next steps to enable it:
+
+To load completions for the current session, execute: 
+```
+PS> ionosctl completion powershell | Out-String | Invoke-Expression
+```
+
+To load completions for every new session, run:
+```
+PS> ionosctl completion powershell > ionosctl.ps1
+```
+
+and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file. 
+
+You will need to start a new PowerShell for this setup to take effect.
+
+Note: PowerShell completions require version 5.0 or above, which comes with Windows 10 and can be downloaded separately for Windows 7 or 8.1. 
 
 ### Output configuration
 
@@ -109,7 +176,7 @@ For more information about each available command, including examples, use `iono
 
 #### Local version
 
-To uninstall a local version built with the steps from [Installation](#build-a-local-version), use:
+To uninstall a local version built with the steps from [Installing Ionosctl](#building-a-local-version), use:
 ```text
 make clean
 ```

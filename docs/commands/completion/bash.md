@@ -1,5 +1,5 @@
 ---
-description: Generate code to enable auto-completion with TAB key for BASH terminal
+description: Generate code to enable auto-completion with `TAB` key for BASH terminal
 ---
 
 # Bash
@@ -14,14 +14,15 @@ ionosctl completion bash [flags]
 
 Use this command to generate completion code for BASH terminal. IonosCTL supports completion for commands and flags.
 
-Follow the next steps to enable it:
-
 To load completions for the current session, execute: 
-- `source <(ionosctl completion bash)`
+
+    source <(ionosctl completion bash)
 
 To make these changes permanent, append the above line to your `.bashrc` file and use:
-- `source ~/.bashrc`
 
+    source ~/.bashrc
+
+You will need to start a new shell for this setup to take effect.
 
 ## Options
 

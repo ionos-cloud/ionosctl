@@ -3,8 +3,8 @@ package commands
 import (
 	"bufio"
 	"context"
+	"os"
 	"strings"
-	"syscall"
 
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -45,7 +45,7 @@ func RunLoginUser(c *builder.CommandConfig) error {
 	}
 	if pwd == "" {
 		c.Printer.Print("Enter your password:")
-		bytesPwd, err := terminal.ReadPassword(syscall.Stdin)
+		bytesPwd, err := terminal.ReadPassword(int(os.Stdin.Fd()))
 		if err != nil {
 			return err
 		}

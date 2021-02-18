@@ -112,31 +112,30 @@ func addCommands() {
 	rootCmd.AddCommand(loadbalancer())
 	rootCmd.AddCommand(request())
 }
+const usageTemplate = `USAGE: {{if .Runnable}}
+  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
+  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
 
-const usageTemplate = `USAGE: {{if.Runnable}}
-			{{.UseLine}}{{end}}{{if.HasAvailableSubCommands}}
-			{{.CommandPath}} [command]{{end}}{{if gt (len.Aliases) 0}}
+ALIASES:
+  {{.NameAndAliases}}{{end}}{{if .HasExample}}
 
-			ALIASES:
-			{{.NameAndAliases}}{{end}}{{if.HasExample}}
+EXAMPLES:
+{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
 
-			EXAMPLES:
-			{{.Example}}{{end}}{{if.HasAvailableSubCommands}}
+AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
 
-			AVAILABLE COMMANDS:{{range.Commands}}{{if (or.IsAvailableCommand (eq.Name "help"))}}
-			{{rpad.Name.NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if.HasAvailableLocalFlags}}
+FLAGS:
+{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
 
-			FLAGS:
-			{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if.HasAvailableInheritedFlags}}
+GLOBAL FLAGS:
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
 
-			GLOBAL FLAGS:
-			{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if.HasHelpSubCommands}}
+SEE ALSO:
+{{.Annotations.SeeAlsos}}{{end}}{{if .HasHelpSubCommands}}
 
-			SEE ALSO:
-			{{.Annotations.SeeAlsos}}{{end}}{{if.HasHelpSubCommands}}
+Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
 
-			Additional help topics:{{range.Commands}}{{if.IsAdditionalHelpTopicCommand}}
-			{{rpad.CommandPath.CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if.HasAvailableSubCommands}}
-
-			Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
-		`
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
+`

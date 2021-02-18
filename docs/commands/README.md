@@ -30,7 +30,7 @@ IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.
 
 | Command | Description |
 | :------ | :---------- |
-| [ionosctl completion](completion/) | Generate code to enable auto-completion with TAB key |
+| [ionosctl completion](completion/) | Generate code to enable auto-completion with `TAB` key |
 | [ionosctl datacenter](datacenter/) | Data Center Operations |
 | [ionosctl lan](lan/) | LAN Operations |
 | [ionosctl loadbalancer](loadbalancer/) | Load Balancer Operations |

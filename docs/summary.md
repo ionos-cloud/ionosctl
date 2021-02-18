@@ -11,6 +11,8 @@
 * [Completion](commands/completion/README.md)
   * [Bash](commands/completion/bash.md)
   * [Zsh](commands/completion/zsh.md)
+  * [Fish](commands/completion/fish.md)
+  * [PowerShell](commands/completion/powershell.md)
 * [Location](commands/location/README.md)
   * [List](commands/location/list.md)
 * [DataCenter](commands/datacenter/README.md)
