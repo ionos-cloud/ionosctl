@@ -17,7 +17,7 @@ var (
 		Command: &cobra.Command{
 			Use:              "ionosctl",
 			Short:            "Ionos Cloud CLI",
-			Long:             `IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.`,
+			Long:             "IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.",
 			TraverseChildren: true,
 		},
 	}
@@ -112,6 +112,7 @@ func addCommands() {
 	rootCmd.AddCommand(loadbalancer())
 	rootCmd.AddCommand(request())
 }
+
 const usageTemplate = `USAGE: {{if .Runnable}}
   {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
   {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
