@@ -42,8 +42,8 @@ Required values to run command:
 
 ```text
 ionosctl server stop --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa
-⚠ Warning: Are you sure you want to stop server (y/N) ? y
-✔ RequestId: 8c06523d-8838-4409-aee3-68c042f5a256
-✔ Status: Command server stop has been successfully executed
+Warning: Are you sure you want to stop server (y/N) ? y
+RequestId: 8c06523d-8838-4409-aee3-68c042f5a256
+Status: Command server stop has been successfully executed
 ```
 

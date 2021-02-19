@@ -52,8 +52,8 @@ The sub-commands of `ionosctl nic attach` allow you to retrieve information abou
 ionosctl nic attach --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --loadbalancer-id f16dfcc1-9181-400b-a08d-7fe15ca0e9af --nic-id c7903181-daa1-4e16-a65a-e9b495c1b324 
 NicId                                  Name      Dhcp   LanId   Ips
 c7903181-daa1-4e16-a65a-e9b495c1b324   demoNIC   true   1       []
-✔ RequestId: 5d892b7c-69e3-4983-ac18-a75081145d32
-✔ Status: Command nic attach has been successfully executed
+RequestId: 5d892b7c-69e3-4983-ac18-a75081145d32
+Status: Command nic attach has been successfully executed
 ```
 
 ## Related commands

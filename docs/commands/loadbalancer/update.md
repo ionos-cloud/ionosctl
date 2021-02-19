@@ -44,10 +44,10 @@ Required values to run command:
 
 ```text
 ionosctl loadbalancer update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --loadbalancer-dhcp=false --wait
-⧖ Waiting for request: 0a9279d8-9757-41e0-b64f-b4cd2baf4717
+Waiting for request: 0a9279d8-9757-41e0-b64f-b4cd2baf4717
 LoadbalancerId                         Name               Dhcp
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   false
-✔ RequestId: 0a9279d8-9757-41e0-b64f-b4cd2baf4717
-✔ Status: Command loadbalancer update and request have been successfully executed
+RequestId: 0a9279d8-9757-41e0-b64f-b4cd2baf4717
+Status: Command loadbalancer update and request have been successfully executed
 ```
 

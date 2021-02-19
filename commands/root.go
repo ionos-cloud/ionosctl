@@ -112,6 +112,7 @@ func addCommands() {
 	rootCmd.AddCommand(loadbalancer())
 	rootCmd.AddCommand(request())
 }
+
 const usageTemplate = `USAGE: {{if .Runnable}}
   {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
   {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}

@@ -49,11 +49,11 @@ The sub-commands of `ionosctl volume attach` allow you to retrieve information a
 
 ```text
 ionosctl volume attach --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --volume-id 15546173-a100-4851-8bc4-872ec6bbee32 --wait 
-⧖ Waiting for request: dfd826bb-aace-4b1e-9ae2-17901e3cc792
+Waiting for request: dfd826bb-aace-4b1e-9ae2-17901e3cc792
 VolumeId                               Name         Size   Type   LicenseType   State   Image
 15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         BUSY    
-✔ RequestId: dfd826bb-aace-4b1e-9ae2-17901e3cc792
-✔ Status: Command volume attach and request have been successfully executed
+RequestId: dfd826bb-aace-4b1e-9ae2-17901e3cc792
+Status: Command volume attach and request have been successfully executed
 ```
 
 ## Related commands

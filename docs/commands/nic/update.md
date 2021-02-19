@@ -54,10 +54,10 @@ Required values to run command:
 
 ```text
 ionosctl nic update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 --lan-id 2 --wait 
-⧖ Waiting for request: b0361cf3-06b2-4cca-ae13-4035ace9f265
+Waiting for request: b0361cf3-06b2-4cca-ae13-4035ace9f265
 NicId                                  Name      Dhcp   LanId   Ips
 2978400e-da90-405f-905e-8200d4f48158   demoNic   true   2       []
-✔ RequestId: b0361cf3-06b2-4cca-ae13-4035ace9f265
-✔ Status: Command nic update and request have been successfully executed
+RequestId: b0361cf3-06b2-4cca-ae13-4035ace9f265
+Status: Command nic update and request have been successfully executed
 ```
 

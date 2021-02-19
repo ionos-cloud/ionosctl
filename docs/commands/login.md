@@ -36,13 +36,13 @@ Note: The command can also be used without `--user` and `--password` flags (see 
 
 ```text
 ionosctl login --user USERNAME --password PASSWORD
-✔ Status: Authentication successful!
+Status: Authentication successful!
 
 ionosctl login 
 Enter your username:
 USERNAME
 Enter your password:
 
-✔ Status: Authentication successful!
+Status: Authentication successful!
 ```
 

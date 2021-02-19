@@ -8,7 +8,6 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/fatih/color"
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
@@ -205,13 +204,11 @@ func standardSuccessMsg(resource, verb string, wait bool) string {
 }
 
 func requestIdMsg(writer io.Writer, msg string, args ...interface{}) {
-	colorWarn := color.BlueString("RequestId")
-	fmt.Fprintf(writer, "\u2714 %s: %s\n", colorWarn, fmt.Sprintf(msg, args...))
+	fmt.Fprintf(writer, "RequestId: %s\n", fmt.Sprintf(msg, args...))
 }
 
 func statusMsg(writer io.Writer, msg string, args ...interface{}) {
-	colorWarn := color.GreenString("Status")
-	fmt.Fprintf(writer, "\u2714 %s: %s\n", colorWarn, fmt.Sprintf(msg, args...))
+	fmt.Fprintf(writer, "Status: %s\n", fmt.Sprintf(msg, args...))
 }
 
 func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{}) error {
