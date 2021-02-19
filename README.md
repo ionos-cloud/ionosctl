@@ -17,7 +17,7 @@ Before you begin you will need to have signed-up for a [Ionos Cloud](https://www
 
 If you have a Go environment configured, you can build and install the development version of `ionosctl` with: 
 ```
-go get github.com/ionos-cloud/ionosctl
+git clone https://github.com/ionos-cloud/ionosctl.git
 ```
 
 After cloning the repository, you can build `ionosctl` locally with:
@@ -38,7 +38,7 @@ Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Mod
 Before using `ionosctl` to perform any operations, you will need to set your credentials for Ionos Cloud account: 
 
 ```
-ionosctl login --user username --password **** 
+ionosctl login --user username --password password 
 ```
 The command can also be used without setting the `--user` and `--password` flags:
 ```
@@ -52,24 +52,29 @@ Enter your password:
 After providing credentials, you will be notified if you logged in successfully or not:
 
 ```
-✔ Status: Authentication successful!
+Status: Authentication successful!
 ```
 
 ```
-✖ Error: 401 Unauthorized
+Error: 401 Unauthorized
 ```
 
 After a successful authentication, you will no longer need to provide credentials unless you want to change them. 
-They will be stored in `$XDG_CONFIG_HOME/ionosctl-config.json` file and retrieved every time you will perform an action on your account.
+By default, they will be stored in 
+- macOS: `${HOME}/Library/Application Support/ionosctl/config.json`
+- Linux: `${XDG_CONFIG_HOME}/ionosctl/config.json`
+- Windows: `%APPDATA%\ionosctl\config.json`
+and retrieved every time you will perform an action on your account.
+
+If you want to use a different configuration file, use `--config` option.
 
 ### Enabling Shell Auto-Completion
 
-`ionosctl` provides completions for various shells. If you partially type a command and the press `TAB`, the rest of the command will be automatically filled in. 
-Same goes for flags, especially for the flags for resources ids, displaying options from the existing resources on your account.
+`ionosctl` provides completions for various shells, for both commands and flags. If you partially type a command or a flag and then press `TAB`, the rest of the command will be automatically filled in. 
 
 To enable auto-completion, you need to use `ionosctl completion [shell]`, depending on the shell you are using.
 
-- Bash
+#### Enabling Bash Shell Auto-Completion
 
 To load completions for the current session, execute: 
 ```
@@ -81,7 +86,15 @@ To make these changes permanent, append the above line to your `.bashrc` file an
 source ~/.bashrc
 ```
 
-- Fish
+By default, `TAB` key in Bash is bound to `complete` readline command. 
+If you want to use `menu-complete` append the following line to `.bashrc` file:
+```
+bind 'TAB':menu-complete
+```
+
+You will need to start a new shell for this setup to take effect.
+
+#### Enabling Fish Shell Auto-Completion
 
 To load completions into the current shell execute:
 ```
@@ -93,7 +106,7 @@ In order to make the completions permanent execute once:
 ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
 ```
 
-- Zsh
+#### Enabling Zsh Shell Auto-Completion
 
 If shell completions are not already enabled for your environment, you need to enable them. 
 Add the following line to your `~/.zshrc` file:
@@ -124,7 +137,7 @@ autoload -Uz compinit; compinit
 You will need to start a new shell for this setup to take effect.
 Note: ZSH completions require zsh 5.2 or newer.
 
-- PowerShell
+#### Enabling PowerShell Auto-Completion
 
 PowerShell supports three different completion modes:
 
@@ -172,7 +185,7 @@ make test
 
 ### Examples
 
-For more information about each available command, including examples, use `ionosctl [command] --help` or `ionosctl help [command]` or see the [full reference documentation](./docs/commands/README.md). 
+For more information about each available command, including examples, use `ionosctl [command] --help` or `ionosctl help [command]` or see the [full reference documentation](./commands/README.md). 
 
 ### Uninstalling `ionosctl` 
 
