@@ -23,6 +23,11 @@ To make these changes permanent, append the above line to your ` + "`" + `.bashr
 
     source ~/.bashrc
 
+By default, ` + "`" + `TAB` + "`" + ` key in Bash is bound to ` + "`" + `complete` + "`" + ` readline command. 
+If you want to use ` + "`" + `menu-complete` + "`" + ` append the following line to ` + "`" + `.bashrc` + "`" + ` file:
+
+	bind 'TAB':menu-complete
+
 You will need to start a new shell for this setup to take effect.`
 		completionZshLong = `Use this command to generate completion code for ZSH terminal. IonosCTL supports completion for commands and flags.
 
