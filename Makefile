@@ -24,8 +24,8 @@ docs:
 
 .PHONY: gofmt_check
 gofmt_check:
-	@echo "--- Ensure code adheres to gofmt and change files accordingly ---"
-	@gofmt -w ${GOFILES}
+	@echo "--- Ensure code adheres to gofmt and list files whose formatting differs from gofmt's ---"
+	@gofmt -l ${GOFILES}
 	@echo "DONE"
 
 .PHONY: update_mocks
