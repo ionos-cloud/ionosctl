@@ -35,10 +35,26 @@ jobs:
         with:
           go-version: ${{ env.go-version }}
 
+      # Gofmt ionosctl
+      - name: Check code format
+        run: make gofmt_check
+
+      # Test ionosctl
+      - name: Run tests
+        run: make test
+
+      # Build ionosctl
+      - name: Build
+        run: make build
+
       # Install ionosctl
       - name: Install
-        run: go install -i
+        run: make install
 
-      # Testing ionosctl
-      - name: Run tests
-        run: go test -cover ./...
+      # Show ionosctl version
+      - name: Version
+        run: ionosctl version
+
+      # Clean-up ionosctl
+      - name: Clean artifacts
+        run: make clean

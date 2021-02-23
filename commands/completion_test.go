@@ -28,3 +28,23 @@ func TestRunCompletionZsh(t *testing.T) {
 		assert.NoError(t, err)
 	})
 }
+
+func TestRunCompletionFish(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		cfg.Printer.SetStderr(w)
+		err := RunCompletionFish(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunCompletionPowerShell(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		cfg.Printer.SetStderr(w)
+		err := RunCompletionPowerShell(cfg)
+		assert.NoError(t, err)
+	})
+}

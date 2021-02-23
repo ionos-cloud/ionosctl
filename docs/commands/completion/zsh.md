@@ -1,5 +1,5 @@
 ---
-description: Generate code to enable auto-completion with TAB key for ZSH terminal
+description: Generate code to enable auto-completion with `TAB` key for ZSH terminal
 ---
 
 # Zsh
@@ -13,12 +13,31 @@ ionosctl completion zsh [flags]
 ## Description
 
 Use this command to generate completion code for ZSH terminal. IonosCTL supports completion for commands and flags.
-Add the following line to your .profile or .bashrc.
 
-`source  <(ionosctl completion zsh)`
+If shell completions are not already enabled for your environment, you need to enable them. 
+Add the following line to your `~/.zshrc` file:
 
-Note:
-- ZSH completions require zsh 5.2 or newer.
+    autoload -Uz compinit; compinit
+
+To load completions for each session execute the following commands:
+
+    mkdir -p ~/.config/ionosctl/completion/zsh
+    ionosctl completion zsh > ~/.config/ionosctl/completion/zsh/_ionosctl
+
+Finally add the following line to your `~/.zshrc`file, *before* you
+call the `compinit` function:
+
+    fpath+=(~/.config/ionosctl/completion/zsh)
+
+In the end your `~/.zshrc` file should contain the following two lines in the order given here:
+
+    fpath+=(~/.config/ionosctl/completion/zsh)
+    #  ... anything else that needs to be done before compinit
+    autoload -Uz compinit; compinit
+    # ...
+
+You will need to start a new shell for this setup to take effect.
+Note: ZSH completions require zsh 5.2 or newer.
 
 ## Options
 
