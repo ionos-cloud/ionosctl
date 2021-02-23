@@ -35,6 +35,10 @@ jobs:
         with:
           go-version: ${{ env.go-version }}
 
+      # Gofmt ionosctl
+      - name: Check code format
+        run: make gofmt_check
+
       # Test ionosctl
       - name: Run tests
         run: make test
