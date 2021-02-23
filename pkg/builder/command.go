@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"io"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -108,34 +109,34 @@ func NewCommand(ctx context.Context, parent *Command, precr PreCommandRunner, cr
 		Long:    longdesc,
 		Example: example,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			printer := getPrinter()
+			p := getPrinter()
 			preCmdConfig := NewPreCommandConfig(
-				printer,
+				p,
 				clitext,
 				getParentName(parent),
 			)
 			err := precr(preCmdConfig)
-			utils.CheckError(err, printer.GetStderr())
+			clierror.CheckError(err, p.GetStderr())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			printer := getPrinter()
+			p := getPrinter()
 			// Set Buffers
 			cmd.SetIn(os.Stdin)
-			cmd.SetOut(printer.GetStdout())
-			cmd.SetErr(printer.GetStderr())
+			cmd.SetOut(p.GetStdout())
+			cmd.SetErr(p.GetStderr())
 
 			cmdConfig, err := NewCommandConfig(
 				ctx,
 				os.Stdin,
-				printer,
+				p,
 				clitext,
 				getParentName(parent),
 				initServices,
 			)
-			utils.CheckError(err, printer.GetStderr())
+			clierror.CheckError(err, p.GetStderr())
 			err = cr(cmdConfig)
 
-			utils.CheckError(err, printer.GetStderr())
+			clierror.CheckError(err, p.GetStderr())
 		},
 	}
 	c := &Command{
@@ -153,10 +154,11 @@ type PreCommandRunner func(*PreCommandConfig) error
 type PreCommandConfig struct {
 	Name       string
 	ParentName string
-	Printer    utils.PrintService
+
+	Printer printer.PrintService
 }
 
-func NewPreCommandConfig(p utils.PrintService, name, parentName string) *PreCommandConfig {
+func NewPreCommandConfig(p printer.PrintService, name, parentName string) *PreCommandConfig {
 	return &PreCommandConfig{
 		Name:       name,
 		ParentName: parentName,
@@ -170,7 +172,7 @@ type CommandConfig struct {
 	Name       string
 	ParentName string
 	Stdin      io.Reader
-	Printer    utils.PrintService
+	Printer    printer.PrintService
 	Context    context.Context
 
 	initServices func(*CommandConfig) error
@@ -186,7 +188,7 @@ type CommandConfig struct {
 	Requests      func() resources.RequestsService
 }
 
-func NewCommandConfig(ctx context.Context, in io.Reader, p utils.PrintService, name, parentName string, initServices bool) (*CommandConfig, error) {
+func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, initServices bool) (*CommandConfig, error) {
 	cmdConfig := &CommandConfig{
 		Name:       name,
 		ParentName: parentName,
@@ -234,7 +236,7 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p utils.PrintService, n
 func CheckRequiredGlobalFlags(parentCmdName string, globalFlagsName ...string) error {
 	for _, flagName := range globalFlagsName {
 		if viper.GetString(GetGlobalFlagName(parentCmdName, flagName)) == "" {
-			return utils.NewRequiredFlagErr(flagName)
+			return clierror.NewRequiredFlagErr(flagName)
 		}
 	}
 	return nil
@@ -243,7 +245,7 @@ func CheckRequiredGlobalFlags(parentCmdName string, globalFlagsName ...string) e
 func CheckRequiredFlags(parentCmdName, cmdName string, localFlagsName ...string) error {
 	for _, flagName := range localFlagsName {
 		if viper.GetString(GetFlagName(parentCmdName, cmdName, flagName)) == "" {
-			return utils.NewRequiredFlagErr(flagName)
+			return clierror.NewRequiredFlagErr(flagName)
 		}
 	}
 	return nil
@@ -269,7 +271,7 @@ func getParentName(parent *Command) string {
 	}
 }
 
-func getPrinter() utils.PrintService {
+func getPrinter() printer.PrintService {
 	var out io.Writer
 	if viper.GetBool(config.ArgQuiet) {
 		var execOut bytes.Buffer
@@ -277,6 +279,7 @@ func getPrinter() utils.PrintService {
 	} else {
 		out = os.Stdout
 	}
-	printReg := utils.NewPrinterRegistry(out, os.Stderr)
+	printReg, err := printer.NewPrinterRegistry(out, os.Stderr)
+	clierror.CheckError(err, os.Stderr)
 	return printReg[viper.GetString(config.ArgOutput)]
 }

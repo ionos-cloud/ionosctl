@@ -2,6 +2,7 @@ package builder
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"io"
 	"testing"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	mocks "github.com/ionos-cloud/ionosctl/pkg/resources/mocks"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/spf13/viper"
 )
 
@@ -19,8 +19,8 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, prerunner PreCmdRunnerTest
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	printer := utils.NewPrinterRegistry(writer, writer)
-	prt := printer[viper.GetString(config.ArgOutput)]
+	p, _ := printer.NewPrinterRegistry(writer, writer)
+	prt := p[viper.GetString(config.ArgOutput)]
 
 	preCmdConfig := &PreCommandConfig{
 		Name:       "test",
@@ -49,8 +49,8 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	printer := utils.NewPrinterRegistry(writer, writer)
-	prt := printer[viper.GetString(config.ArgOutput)]
+	p, _ := printer.NewPrinterRegistry(writer, writer)
+	prt := p[viper.GetString(config.ArgOutput)]
 
 	tm := &ResourcesMocks{
 		Client:       mocks.NewMockClientService(ctrl),

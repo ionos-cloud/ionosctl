@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -59,9 +59,9 @@ func TestRunLocationList_Err(t *testing.T) {
 }
 
 func TestGetLocationsCols(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("location", config.ArgCols), []string{"Name"})
@@ -71,9 +71,9 @@ func TestGetLocationsCols(t *testing.T) {
 }
 
 func TestGetLocationsCols_Err(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("location", config.ArgCols), []string{"Unknown"})
@@ -85,9 +85,9 @@ func TestGetLocationsCols_Err(t *testing.T) {
 }
 
 func TestGetLocationsIds(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

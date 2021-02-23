@@ -12,6 +12,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -227,12 +229,11 @@ func RunVolumeList(c *builder.CommandConfig) error {
 		return err
 	}
 	ss := getVolumes(volumes)
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: volumes,
 		KeyValue:   getVolumesKVMaps(ss),
 		Columns:    getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunVolumeGet(c *builder.CommandConfig) error {
@@ -243,12 +244,11 @@ func RunVolumeGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: volume,
 		KeyValue:   getVolumesKVMaps([]resources.Volume{*volume}),
 		Columns:    getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunVolumeCreate(c *builder.CommandConfig) error {
@@ -264,11 +264,11 @@ func RunVolumeCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  volume,
 		KeyValue:    getVolumesKVMaps([]resources.Volume{*volume}),
 		Columns:     getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -277,7 +277,6 @@ func RunVolumeCreate(c *builder.CommandConfig) error {
 		Verb:        "create",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunVolumeUpdate(c *builder.CommandConfig) error {
@@ -299,11 +298,11 @@ func RunVolumeUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  volume,
 		KeyValue:    getVolumesKVMaps([]resources.Volume{*volume}),
 		Columns:     getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -312,11 +311,10 @@ func RunVolumeUpdate(c *builder.CommandConfig) error {
 		Verb:        "update",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunVolumeDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "delete volume")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume")
 	if err != nil {
 		return err
 	}
@@ -327,17 +325,16 @@ func RunVolumeDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "volume",
 		Verb:        "delete",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func PreRunAttachGlobalDcIdServerVolumeIdsValidate(c *builder.PreCommandConfig) error {
@@ -375,11 +372,11 @@ func RunVolumeAttach(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  attachedvol,
 		KeyValue:    getVolumesKVMaps([]resources.Volume{*attachedvol}),
 		Columns:     getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -388,7 +385,6 @@ func RunVolumeAttach(c *builder.CommandConfig) error {
 		Verb:        "attach",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunVolumesAttachList(c *builder.CommandConfig) error {
@@ -400,12 +396,11 @@ func RunVolumesAttachList(c *builder.CommandConfig) error {
 		return err
 	}
 	vs := getAttachedVolumes(attachedvols)
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: attachedvols,
 		KeyValue:   getVolumesKVMaps(vs),
 		Columns:    getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunVolumeAttachGet(c *builder.CommandConfig) error {
@@ -417,16 +412,15 @@ func RunVolumeAttachGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: volume,
 		KeyValue:   getVolumesKVMaps([]resources.Volume{*volume}),
 		Columns:    getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunVolumeDetach(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "detach volume")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume")
 	if err != nil {
 		return err
 	}
@@ -439,17 +433,16 @@ func RunVolumeDetach(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "volume",
 		Verb:        "detach",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 var defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenseType", "State", "Image"}
@@ -495,7 +488,7 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			volumeCols = append(volumeCols, col)
 		} else {
-			utils.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return volumeCols
@@ -564,18 +557,18 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 
 func getVolumesIds(outErr io.Writer, parentCmdName string) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	volumeSvc := resources.NewVolumeService(clientSvc.Get(), context.TODO())
 	volumes, _, err := volumeSvc.List(viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)))
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	volumesIds := make([]string, 0)
 	if volumes.Volumes.Items != nil {
@@ -590,21 +583,21 @@ func getVolumesIds(outErr io.Writer, parentCmdName string) []string {
 
 func getAttachedVolumesIds(outErr io.Writer, parentCmdDcId, parentCmdName, nameCmd string) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	volumeSvc := resources.NewVolumeService(clientSvc.Get(), context.TODO())
 	volumes, _, err := volumeSvc.ListAttached(
 		viper.GetString(builder.GetGlobalFlagName(parentCmdDcId, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(parentCmdName, nameCmd, config.ArgServerId)),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	attachedVolumesIds := make([]string, 0)
 	if volumes.AttachedVolumes.Items != nil {

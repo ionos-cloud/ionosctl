@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -90,13 +90,13 @@ func TestPreRunGlobalDcIdVolumeIdValidate_RequiredFlagsErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testVolumeVar)
 		err := PreRunGlobalDcIdVolumeIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), "")
 		err = PreRunGlobalDcIdVolumeIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgVolumeId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgVolumeId).Error())
 	})
 }
 
@@ -121,20 +121,20 @@ func TestPreRunGlobalDcIdServerVolumeIdsValidate_RequiredFlagsErr(t *testing.T) 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		err := PreRunGlobalDcIdServerVolumeIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), "")
 		err = PreRunGlobalDcIdServerVolumeIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgServerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgServerId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testVolumeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), "")
 		err = PreRunGlobalDcIdServerVolumeIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgVolumeId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgVolumeId).Error())
 	})
 }
 
@@ -393,13 +393,13 @@ func TestPreRunAttachGlobalDcIdServerIdValidate_RequiredFlagsErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testVolumeVar)
 		err := PreRunAttachGlobalDcIdServerIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName("volume", config.ArgDataCenterId), testVolumeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), "")
 		err = PreRunAttachGlobalDcIdServerIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgServerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgServerId).Error())
 	})
 }
 
@@ -424,20 +424,20 @@ func TestPreRunAttachGlobalDcIdServerVolumeIdsValidate_RequiredFlagsErr(t *testi
 		viper.Set(builder.GetGlobalFlagName("volume", config.ArgDataCenterId), "")
 		err := PreRunAttachGlobalDcIdServerVolumeIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName("volume", config.ArgDataCenterId), testVolumeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), "")
 		err = PreRunAttachGlobalDcIdServerVolumeIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgServerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgServerId).Error())
 
 		viper.Set(builder.GetGlobalFlagName("volume", config.ArgDataCenterId), testVolumeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testVolumeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), "")
 		err = PreRunAttachGlobalDcIdServerVolumeIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgVolumeId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgVolumeId).Error())
 	})
 }
 
@@ -622,9 +622,9 @@ func TestRunVolumeDetach_AskForConfirmErr(t *testing.T) {
 }
 
 func TestVolumesCols(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("volume", config.ArgCols), []string{"Name"})
@@ -634,9 +634,9 @@ func TestVolumesCols(t *testing.T) {
 }
 
 func TestGetVolumesCols_Err(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("volume", config.ArgCols), []string{"Unknown"})
@@ -648,9 +648,9 @@ func TestGetVolumesCols_Err(t *testing.T) {
 }
 
 func TestGetVolumesIds(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
@@ -663,9 +663,9 @@ func TestGetVolumesIds(t *testing.T) {
 }
 
 func TestGetAttachedVolumesIds(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

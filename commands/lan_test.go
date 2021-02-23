@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -83,7 +83,7 @@ func TestPreRunGlobalDcIdValidate_RequiredFlagsErr(t *testing.T) {
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		err := PreRunGlobalDcIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 	})
 }
 
@@ -107,13 +107,13 @@ func TestPreRunGlobalDcIdLanIdValidate_RequiredFlagsErr(t *testing.T) {
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		err := PreRunGlobalDcIdLanIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), "")
 		err = PreRunGlobalDcIdLanIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgLanId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgLanId).Error())
 	})
 }
 
@@ -340,9 +340,9 @@ func TestRunLanDelete_AskForConfirmErr(t *testing.T) {
 }
 
 func TestGetLansCols(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("lan", config.ArgCols), []string{"Name"})
@@ -352,9 +352,9 @@ func TestGetLansCols(t *testing.T) {
 }
 
 func TestGetLansCols_Err(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("lan", config.ArgCols), []string{"Unknown"})
@@ -366,9 +366,9 @@ func TestGetLansCols_Err(t *testing.T) {
 }
 
 func TestGetLansIds(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

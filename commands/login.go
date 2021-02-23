@@ -9,7 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -38,7 +38,10 @@ func RunLoginUser(c *builder.CommandConfig) error {
 	pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "password"))
 
 	if user == "" {
-		c.Printer.Print("Enter your username:")
+		err := c.Printer.Print("Enter your username:")
+		if err != nil {
+			return err
+		}
 		in := bufio.NewReader(c.Stdin)
 		user, err = in.ReadString('\n')
 		if err != nil {
@@ -47,7 +50,10 @@ func RunLoginUser(c *builder.CommandConfig) error {
 		user = strings.TrimRight(user, "\r\n")
 	}
 	if pwd == "" {
-		c.Printer.Print("Enter your password:")
+		err := c.Printer.Print("Enter your password:")
+		if err != nil {
+			return err
+		}
 		bytesPwd, err := terminal.ReadPassword(int(os.Stdin.Fd()))
 		if err != nil {
 			return err
@@ -78,8 +84,7 @@ func RunLoginUser(c *builder.CommandConfig) error {
 		return err
 	}
 
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		Message: "Authentication successful!",
 	})
-	return nil
 }

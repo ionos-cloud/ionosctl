@@ -1,4 +1,4 @@
-package utils
+package printer
 
 import (
 	"encoding/json"
@@ -15,43 +15,42 @@ import (
 )
 
 // Type defines an formatter format.
-type PrinterType string
+type Type string
 
-func (p PrinterType) String() string {
+func (p Type) String() string {
 	return string(p)
 }
 
 const (
-	// PrinterTypeJSON defines a JSON formatter.
-	PrinterTypeJSON = PrinterType("json")
+	// TypeJSON defines a JSON formatter.
+	TypeJSON = Type("json")
 
 	// PrinterTypeText defines a human readable formatted formatter.
-	PrinterTypeText = PrinterType("text")
+	TypeText = Type("text")
 )
 
-type PrinterRegistry map[string]PrintService
+type Registry map[string]PrintService
 
-func NewPrinterRegistry(out, outErr io.Writer) PrinterRegistry {
-	if viper.GetString(config.ArgOutput) != PrinterTypeJSON.String() &&
-		viper.GetString(config.ArgOutput) != PrinterTypeText.String() {
-		err := errors.New(fmt.Sprintf(unknownTypeFormatErr, viper.GetString(config.ArgOutput)))
-		CheckError(err, outErr)
+func NewPrinterRegistry(out, outErr io.Writer) (Registry, error) {
+	if viper.GetString(config.ArgOutput) != TypeJSON.String() &&
+		viper.GetString(config.ArgOutput) != TypeText.String() {
+		return nil, errors.New(fmt.Sprintf(unknownTypeFormatErr, viper.GetString(config.ArgOutput)))
 	}
 
-	return PrinterRegistry{
-		PrinterTypeJSON.String(): &JSONPrinter{
+	return Registry{
+		TypeJSON.String(): &JSONPrinter{
 			Stderr: outErr,
 			Stdout: out,
 		},
-		PrinterTypeText.String(): &TextPrinter{
+		TypeText.String(): &TextPrinter{
 			Stderr: outErr,
 			Stdout: out,
 		},
-	}
+	}, nil
 }
 
 type PrintService interface {
-	Print(interface{})
+	Print(interface{}) error
 
 	GetStdout() io.Writer
 	SetStdout(io.Writer)
@@ -64,7 +63,7 @@ type JSONPrinter struct {
 	Stderr io.Writer
 }
 
-func (p *JSONPrinter) Print(v interface{}) {
+func (p *JSONPrinter) Print(v interface{}) error {
 	var resultPrint ResultPrint
 
 	switch v.(type) {
@@ -76,23 +75,29 @@ func (p *JSONPrinter) Print(v interface{}) {
 		}
 		if v.(Result).ApiResponse != nil {
 			requestId, err := GetRequestId(GetRequestPath(v.(Result).ApiResponse))
-			CheckError(err, p.Stderr)
+			if err != nil {
+				return err
+			}
 			if requestId != nil {
 				resultPrint.RequestId = *requestId
 			}
 		}
 		resultPrint.Output = v.(Result).OutputJSON
 		if !structs.IsZero(resultPrint) {
-			err := writeJSON(&resultPrint, p.Stdout)
-			CheckError(err, p.Stderr)
+			err := WriteJSON(&resultPrint, p.Stdout)
+			if err != nil {
+				return err
+			}
 		}
 	default:
 		var msg DefaultMsgPrint
 		msg.Message = v
-		err := writeJSON(&msg, p.Stdout)
-		CheckError(err, p.Stderr)
+		err := WriteJSON(&msg, p.Stdout)
+		if err != nil {
+			return err
+		}
 	}
-	return
+	return nil
 }
 
 func (p *JSONPrinter) GetStdout() io.Writer {
@@ -116,7 +121,7 @@ type TextPrinter struct {
 	Stderr io.Writer
 }
 
-func (p *TextPrinter) Print(v interface{}) {
+func (p *TextPrinter) Print(v interface{}) error {
 	var resultPrint ResultPrint
 
 	switch v.(type) {
@@ -128,14 +133,18 @@ func (p *TextPrinter) Print(v interface{}) {
 		}
 		if v.(Result).ApiResponse != nil {
 			requestId, err := GetRequestId(GetRequestPath(v.(Result).ApiResponse))
-			CheckError(err, p.Stderr)
+			if err != nil {
+				return err
+			}
 			if requestId != nil {
 				resultPrint.RequestId = *requestId
 			}
 		}
 		if v.(Result).KeyValue != nil && v.(Result).Columns != nil {
 			err := printText(p.Stdout, v.(Result).Columns, v.(Result).KeyValue)
-			CheckError(err, p.Stderr)
+			if err != nil {
+				return err
+			}
 		}
 		if resultPrint.RequestId != nil {
 			requestIdMsg(p.Stdout, "%v", resultPrint.RequestId)
@@ -145,10 +154,12 @@ func (p *TextPrinter) Print(v interface{}) {
 		}
 	default:
 		_, err := fmt.Fprintf(p.Stdout, "%v\n", v)
-		CheckError(err, p.Stderr)
+		if err != nil {
+			return err
+		}
 	}
 
-	return
+	return nil
 }
 
 func (p *TextPrinter) GetStdout() io.Writer {
@@ -250,7 +261,7 @@ func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{
 	return w.Flush()
 }
 
-func writeJSON(item interface{}, writer io.Writer) error {
+func WriteJSON(item interface{}, writer io.Writer) error {
 	j, err := json.MarshalIndent(item, "", "  ")
 	if err != nil {
 		return err

@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -74,13 +74,13 @@ func TestPreRunGlobalDcIdLoadbalancerIdValidate_RequiredFlagsErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
 		err := PreRunGlobalDcIdLoadbalancerIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), "")
 		err = PreRunGlobalDcIdLoadbalancerIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgLoadbalancerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgLoadbalancerId).Error())
 	})
 }
 
@@ -306,9 +306,9 @@ func TestRunLoadbalancerDelete_AskForConfirmErr(t *testing.T) {
 }
 
 func TestLoadbalancersCols(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Name"})
@@ -318,9 +318,9 @@ func TestLoadbalancersCols(t *testing.T) {
 }
 
 func TestGetLoadbalancersCols_Err(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Unknown"})
@@ -332,9 +332,9 @@ func TestGetLoadbalancersCols_Err(t *testing.T) {
 }
 
 func TestGetLoadbalancersIds(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
