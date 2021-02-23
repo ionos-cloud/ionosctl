@@ -559,7 +559,7 @@ func TestGetServersIds(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getServersIds(w, "server")
 	err := w.Flush()
 	assert.NoError(t, err)

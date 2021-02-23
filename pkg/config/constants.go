@@ -56,7 +56,7 @@ const (
 
 	// Default values for Global Flags
 	DefaultApiURL         = "https://api.ionos.com/cloudapi/v5"
-	DefaultConfigFileName = "/ionosctl-config.json"
+	DefaultConfigFileName = "/config.json"
 	DefaultOutputFormat   = "text"
 	DefaultWait           = false
 	DefaultTimeoutSeconds = 60

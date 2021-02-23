@@ -699,7 +699,7 @@ func TestGetNicsIds(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgDataCenterId), testNicVar)
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgServerId), testNicVar)
 	getNicsIds(w, "nic")
@@ -716,7 +716,7 @@ func TestGetNicsIds_Err(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgDataCenterId), "")
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgServerId), "")
 	getNicsIds(w, "nic")
@@ -733,7 +733,7 @@ func TestGetAttachedNicsIds(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgDataCenterId), testNicVar)
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgLoadbalancerId), testNicVar)
 	getAttachedNicsIds(w, "nic", "attach")
@@ -750,7 +750,7 @@ func TestGetAttachedNicsIds_Err(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgDataCenterId), "")
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgLoadbalancerId), "")
 	getAttachedNicsIds(w, "nic", "attach")

@@ -371,7 +371,7 @@ func TestGetLansIds(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	viper.Set(builder.GetGlobalFlagName("lan", config.ArgDataCenterId), testLanVar)
 	getLansIds(w, "lan")
 	err := w.Flush()

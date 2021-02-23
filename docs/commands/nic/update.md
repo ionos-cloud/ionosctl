@@ -33,7 +33,7 @@ Required values to run command:
       --add-ip string          Add IP
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings           Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips])
-  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl-config.json")
+  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id
   -h, --help                   help for update
       --ignore-stdin           Force command to execute without user input

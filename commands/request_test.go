@@ -175,7 +175,7 @@ func TestGetRequestsIds(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getRequestsIds(w)
 	err := w.Flush()
 	assert.NoError(t, err)

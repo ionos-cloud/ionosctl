@@ -90,7 +90,7 @@ func TestGetLocationsIds(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getLocationIds(w)
 	err := w.Flush()
 	assert.NoError(t, err)
