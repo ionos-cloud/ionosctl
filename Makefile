@@ -25,7 +25,13 @@ docs:
 .PHONY: gofmt_check
 gofmt_check:
 	@echo "--- Ensure code adheres to gofmt and list files whose formatting differs from gofmt's ---"
-	@gofmt -l ${GOFILES}
+	@if [ "$(shell echo $$(gofmt -l ${GOFILES}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES})) Hint: use \`make gofmt_update\`"; exit 1); fi
+	@echo "DONE"
+
+.PHONY: gofmt_update
+gofmt_update:
+	@echo "--- Ensure code adheres to gofmt and change files accordingly ---"
+	@gofmt -w ${GOFILES}
 	@echo "DONE"
 
 .PHONY: update_mocks
