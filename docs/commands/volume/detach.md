@@ -44,8 +44,8 @@ Required values to run command:
 
 ```text
 ionosctl volume detach --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --volume-id 15546173-a100-4851-8bc4-872ec6bbee32 
-⚠ Warning: Are you sure you want to detach volume (y/N) ? y
-✔ RequestId: bb4d79ef-129d-4e39-8f5c-519b7cefbc54
-✔ Status: Command volume detach has been successfully executed
+Warning: Are you sure you want to detach volume (y/N) ? y
+RequestId: bb4d79ef-129d-4e39-8f5c-519b7cefbc54
+Status: Command volume detach has been successfully executed
 ```
 

@@ -44,7 +44,7 @@ Required values to run command:
 
 ```text
 ionosctl nic delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 --ignore-stdin 
-✔ RequestId: 14a4bf17-48aa-4f87-b0dc-9c769a4cbdcb
-✔ Status: Command nic delete has been successfully executed
+RequestId: 14a4bf17-48aa-4f87-b0dc-9c769a4cbdcb
+Status: Command nic delete has been successfully executed
 ```
 

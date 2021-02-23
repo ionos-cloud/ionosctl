@@ -42,12 +42,12 @@ Required values to run command:
 
 ```text
 ionosctl server delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff 
-⚠ Warning: Are you sure you want to delete server (y/N) ? Y
-✔ RequestId: 1f00c6d9-072a-4dd0-8c09-c46f2f20a230
-✔ Status: Command server delete has been successfully executed
+Warning: Are you sure you want to delete server (y/N) ? Y
+RequestId: 1f00c6d9-072a-4dd0-8c09-c46f2f20a230
+Status: Command server delete has been successfully executed
 
 ionosctl server delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 35201d04-0ea2-43e7-abc4-56f92737bb9d --ignore-stdin 
-✔ RequestId: f596caba-78b7-4c99-8c9d-56198d3754b6
-✔ Status: Command server delete has been successfully executed
+RequestId: f596caba-78b7-4c99-8c9d-56198d3754b6
+Status: Command server delete has been successfully executed
 ```
 

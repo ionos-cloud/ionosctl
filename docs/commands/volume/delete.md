@@ -42,8 +42,8 @@ Required values to run command:
 
 ```text
 ionosctl volume delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-id ce510144-9bc6-4115-bd3d-b9cd232dd422 
-⚠ Warning: Are you sure you want to delete volume (y/N) ? y
-✔ RequestId: 6958b90b-54fa-4967-8be2-e32412559f9c
-✔ Status: Command volume delete has been successfully executed
+Warning: Are you sure you want to delete volume (y/N) ? y
+RequestId: 6958b90b-54fa-4967-8be2-e32412559f9c
+Status: Command volume delete has been successfully executed
 ```
 

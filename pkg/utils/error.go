@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/fatih/color"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/spf13/viper"
 )
@@ -47,6 +46,5 @@ func CheckError(err error, outErr io.Writer) {
 }
 
 func errorConfirm(writer io.Writer, msg string, args ...interface{}) {
-	colorWarn := color.RedString("Error")
-	fmt.Fprintf(writer, "\u2716 %s: %s\n", colorWarn, fmt.Sprintf(msg, args...))
+	fmt.Fprintf(writer, "Error: %s\n", fmt.Sprintf(msg, args...))
 }

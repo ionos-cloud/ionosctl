@@ -44,7 +44,7 @@ Required values to run command:
 ionosctl loadbalancer create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-name demoLoadBalancer
 LoadbalancerId                         Name               Dhcp
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   true
-✔ RequestId: 74441964-1134-4009-8b81-d7189170885e
-✔ Status: Command loadbalancer create has been successfully executed
+RequestId: 74441964-1134-4009-8b81-d7189170885e
+Status: Command loadbalancer create has been successfully executed
 ```
 

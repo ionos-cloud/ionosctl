@@ -40,8 +40,8 @@ Required values to run command:
 
 ```text
 ionosctl server reset --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa
-⚠ Warning: Are you sure you want to reboot server (y/N) ? y
-✔ RequestId: e6720605-2fa4-46d9-be74-42b733eb1128
-✔ Status: Command server reset has been successfully executed
+Warning: Are you sure you want to reboot server (y/N) ? y
+RequestId: e6720605-2fa4-46d9-be74-42b733eb1128
+Status: Command server reset has been successfully executed
 ```
 

@@ -7,7 +7,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/spf13/viper"
 )
@@ -17,8 +16,7 @@ var getUserInput = func(reader io.Reader, writer io.Writer, message string) (str
 }
 
 func warnConfirm(writer io.Writer, msg string, args ...interface{}) {
-	colorWarn := color.YellowString("Warning")
-	fmt.Fprintf(writer, "\u26A0 %s: %s", colorWarn, fmt.Sprintf(msg, args...))
+	fmt.Fprintf(writer, "Warning: %s", fmt.Sprintf(msg, args...))
 }
 
 func readUserInput(reader io.Reader, writer io.Writer, message string) (string, error) {
