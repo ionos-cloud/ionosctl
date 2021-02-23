@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -56,5 +57,17 @@ func TestRunLoginUser_BufferPwdErr(t *testing.T) {
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 		assert.True(t, err.Error() == "inappropriate ioctl for device")
+	})
+}
+
+func TestRunLoginUser_ConfigSet(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "user"), "test@test.com")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), "test")
+		err := RunLoginUser(cfg)
+		assert.Error(t, err)
 	})
 }

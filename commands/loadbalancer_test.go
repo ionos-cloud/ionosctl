@@ -337,7 +337,7 @@ func TestGetLoadbalancersIds(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getLoadbalancersIds(w, "loadbalancer")
 	err := w.Flush()
 	assert.NoError(t, err)

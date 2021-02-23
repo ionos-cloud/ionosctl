@@ -51,7 +51,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootPFlagSet := rootCmd.Command.PersistentFlags()
-	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, "c", config.GetConfigFilePath(), "Configuration file used for authentication")
+	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, "c", config.GetConfigFile(), "Configuration file used for authentication")
 	viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
 
 	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, "u", config.DefaultApiURL, "Override default API endpoint")
@@ -90,7 +90,7 @@ func initConfig() {
 		}
 
 		viper.AddConfigPath(home)
-		viper.SetConfigName("ionosctl-config")
+		viper.SetConfigName("config")
 		viper.SetConfigType("json")
 	}
 

@@ -653,7 +653,7 @@ func TestGetVolumesIds(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getVolumesIds(w, "volume")
 	err := w.Flush()
 	assert.NoError(t, err)
@@ -668,7 +668,7 @@ func TestGetAttachedVolumesIds(t *testing.T) {
 	utils.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/ionosctl-config.json")
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getAttachedVolumesIds(w, "volume", "volume", "test")
 	err := w.Flush()
 	assert.NoError(t, err)

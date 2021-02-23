@@ -18,12 +18,16 @@ func GetUserData() map[string]string {
 	}
 }
 
-func GetConfigFilePath() string {
+func GetConfigFile() string {
+	return filepath.Join(getConfigHomeDir(), DefaultConfigFileName)
+}
+
+func getConfigHomeDir() string {
 	configPath, err := os.UserConfigDir()
 	if err != nil {
 		return err.Error()
 	}
-	return filepath.Join(configPath, DefaultConfigFileName)
+	return filepath.Join(configPath, "ionosctl")
 }
 
 func LoadFile() error {
@@ -56,15 +60,19 @@ func WriteFile() error {
 }
 
 func configFileWriter() (io.WriteCloser, error) {
-	cfgFile := viper.GetString(ArgConfig)
-
-	f, err := os.Create(cfgFile)
+	if !viper.IsSet(ArgConfig) {
+		configPath := getConfigHomeDir()
+		err := os.MkdirAll(configPath, 0755)
+		if err != nil {
+			return nil, err
+		}
+	}
+	f, err := os.Create(viper.GetString(ArgConfig))
 	if err != nil {
 		return nil, err
 	}
-	if err := os.Chmod(cfgFile, 0600); err != nil {
+	if err := os.Chmod(viper.GetString(ArgConfig), 0600); err != nil {
 		return nil, err
 	}
-
 	return f, nil
 }

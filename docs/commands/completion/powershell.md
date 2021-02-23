@@ -44,7 +44,7 @@ Note: PowerShell completions require version 5.0 or above, which comes with Wind
 
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl-config.json")
+  -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -h, --help             help for powershell
       --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")

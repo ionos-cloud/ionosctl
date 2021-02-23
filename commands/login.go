@@ -16,7 +16,11 @@ import (
 
 func login() *builder.Command {
 	loginCmd := builder.NewCommand(context.TODO(), nil, noPreRun, RunLoginUser, "login", "Authentication command for SDK",
-		`Use this command to authenticate. User data will be saved in `+"`"+`$XDG_CONFIG_HOME/ionosctl-config.json`+"`"+` file. 
+		`Use this command to authenticate. By default, user data will be saved in:
+
+- macOS: `+"`"+`${HOME}/Library/Application Support/ionosctl/config.json`+"`"+`
+- Linux: `+"`"+`${XDG_CONFIG_HOME}/ionosctl/config.json`+"`"+`
+- Windows: `+"`"+`%APPDATA%\ionosctl\config.json`+"`"+`.
 
 You can use another configuration file for authentication with `+"`"+`--config`+"`"+` global option.
 
@@ -40,7 +44,6 @@ func RunLoginUser(c *builder.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		// Delete the delimiter from the string
 		user = strings.TrimRight(user, "\r\n")
 	}
 	if pwd == "" {
@@ -51,7 +54,6 @@ func RunLoginUser(c *builder.CommandConfig) error {
 		}
 		pwd = string(bytesPwd)
 	}
-
 	viper.Set(config.Username, user)
 	viper.Set(config.Password, pwd)
 
