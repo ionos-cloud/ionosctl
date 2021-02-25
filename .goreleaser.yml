@@ -1,0 +1,42 @@
+project_name: test
+
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - main: ./main.go
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    flags:
+      - -trimpath
+    ldflags:
+      - '-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}'
+    goos:
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - '386'
+      - arm64
+    ignore:
+      - goos: darwin
+        goarch: '386'
+    binary: '{{ .ProjectName }}_v{{ .Version }}'
+archives:
+  - name_template: '{{ .ProjectName }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}'
+    format_overrides:
+      - goos: windows
+        format: zip
+    files: [include-only-the-binary*]
+    wrap_in_directory: false
+checksum:
+  name_template: '{{ .ProjectName }}_v{{ .Version }}_SHA256SUMS'
+  algorithm: sha256
+release:
+# If you want to manually examine the release before its live, uncomment this line:
+# draft: true
+changelog:
+  skip: false
