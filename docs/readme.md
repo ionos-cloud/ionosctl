@@ -11,6 +11,27 @@ Before you begin you will need to have signed-up for a [Ionos Cloud](https://www
 
 ### Installing `ionosctl`
 
+#### Downloading a Release from Github
+
+Check the [Releases page](https://www.ionos.com/ionosctl/releases) and find the corresponding archive for your operating system and architecture. Download the archive from your browser and follow the next steps:
+
+```
+# Check if /usr/local/bin is part of your PATH
+echo $PATH
+
+# Extract the binary:
+tar xf ~/Downloads/ionosctl-$VERSION-linux-amd64.tar.gz
+
+# Move the binary somewhere in your $PATH:
+sudo mv ~/ionosctl /usr/local/bin
+
+# Allow executing file as program
+chmod +x /usr/local/bin/ionosctl
+
+# Use the ionosctl 
+ionosctl help
+```
+
 #### Building a local version
 
 If you have a Go environment configured, you can build and install the development version of `ionosctl` with: 
