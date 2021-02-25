@@ -11,6 +11,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -245,12 +247,11 @@ func RunNicList(c *builder.CommandConfig) error {
 		return err
 	}
 	ss := getNics(nics)
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: nics,
 		KeyValue:   getNicsKVMaps(ss),
 		Columns:    getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunNicGet(c *builder.CommandConfig) error {
@@ -262,12 +263,12 @@ func RunNicGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: nic,
 		KeyValue:   getNicsKVMaps([]resources.Nic{*nic}),
 		Columns:    getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
+
 }
 
 func RunNicCreate(c *builder.CommandConfig) error {
@@ -282,11 +283,11 @@ func RunNicCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  nic,
 		KeyValue:    getNicsKVMaps([]resources.Nic{*nic}),
 		Columns:     getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -295,7 +296,6 @@ func RunNicCreate(c *builder.CommandConfig) error {
 		Verb:        "create",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunNicUpdate(c *builder.CommandConfig) error {
@@ -318,11 +318,11 @@ func RunNicUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  nicUpd,
 		KeyValue:    getNicsKVMaps([]resources.Nic{*nicUpd}),
 		Columns:     getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -331,11 +331,10 @@ func RunNicUpdate(c *builder.CommandConfig) error {
 		Verb:        "update",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunNicDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "delete nic")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic")
 	if err != nil {
 		return err
 	}
@@ -347,17 +346,16 @@ func RunNicDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "nic",
 		Verb:        "delete",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func PreRunAttachGlobalDcIdLoadbalancerIdValidate(c *builder.PreCommandConfig) error {
@@ -393,11 +391,11 @@ func RunNicAttach(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  attachedNic,
 		KeyValue:    getNicsKVMaps([]resources.Nic{*attachedNic}),
 		Columns:     getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -406,7 +404,6 @@ func RunNicAttach(c *builder.CommandConfig) error {
 		Verb:        "attach",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunNicsAttachList(c *builder.CommandConfig) error {
@@ -418,12 +415,11 @@ func RunNicsAttachList(c *builder.CommandConfig) error {
 		return err
 	}
 	vs := getAttachedNics(attachedNics)
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: attachedNics,
 		KeyValue:   getNicsKVMaps(vs),
 		Columns:    getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunNicAttachGet(c *builder.CommandConfig) error {
@@ -435,16 +431,15 @@ func RunNicAttachGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: nic,
 		KeyValue:   getNicsKVMaps([]resources.Nic{*nic}),
 		Columns:    getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunNicDetach(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "detach nic")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic")
 	if err != nil {
 		return err
 	}
@@ -457,17 +452,16 @@ func RunNicDetach(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "nic",
 		Verb:        "detach",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 var defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips"}
@@ -505,7 +499,7 @@ func getNicsCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			nicCols = append(nicCols, col)
 		} else {
-			utils.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return nicCols
@@ -558,21 +552,21 @@ func getNicsKVMaps(ns []resources.Nic) []map[string]interface{} {
 
 func getNicsIds(outErr io.Writer, parentCmdName string) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	nicSvc := resources.NewNicService(clientSvc.Get(), context.TODO())
 	nics, _, err := nicSvc.List(
 		viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)),
 		viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgServerId)),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	nicsIds := make([]string, 0)
 	if nics.Nics.Items != nil {
@@ -587,21 +581,21 @@ func getNicsIds(outErr io.Writer, parentCmdName string) []string {
 
 func getAttachedNicsIds(outErr io.Writer, parentCmdName, nameCmd string) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	nicSvc := resources.NewNicService(clientSvc.Get(), context.TODO())
 	nics, _, err := nicSvc.ListAttachedToLoadBalancer(
 		viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(parentCmdName, nameCmd, config.ArgLoadbalancerId)),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	attachedNicsIds := make([]string, 0)
 	if nics.BalancedNics.Items != nil {

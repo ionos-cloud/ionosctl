@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -89,13 +89,13 @@ func TestPreRunGlobalDcServerIdsValidate_RequiredFlagsErr(t *testing.T) {
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		err := PreRunGlobalDcServerIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
 		err = PreRunGlobalDcServerIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgServerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgServerId).Error())
 	})
 }
 
@@ -121,20 +121,20 @@ func TestPreRunGlobalDcServerIdsNicIdValidate_RequiredFlagsErr(t *testing.T) {
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testNicVar)
 		err := PreRunGlobalDcServerIdsNicIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
 		err = PreRunGlobalDcServerIdsNicIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgServerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgServerId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testNicVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), "")
 		err = PreRunGlobalDcServerIdsNicIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgNicId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgNicId).Error())
 	})
 }
 
@@ -159,20 +159,20 @@ func TestPreRunGlobalDcIdNicLoadbalancerIdsValidate_RequiredFlagsErr(t *testing.
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		err := PreRunGlobalDcIdNicLoadbalancerIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), "")
 		err = PreRunGlobalDcIdNicLoadbalancerIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgLoadbalancerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgLoadbalancerId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testNicVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), "")
 		err = PreRunGlobalDcIdNicLoadbalancerIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgNicId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgNicId).Error())
 	})
 }
 
@@ -439,13 +439,13 @@ func TestPreRunAttachGlobalDcIdLoadbalancerIdValidate_RequiredFlagsErr(t *testin
 		viper.Set(builder.GetGlobalFlagName("nic", config.ArgDataCenterId), "")
 		err := PreRunAttachGlobalDcIdLoadbalancerIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName("nic", config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), "")
 		err = PreRunAttachGlobalDcIdLoadbalancerIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgLoadbalancerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgLoadbalancerId).Error())
 	})
 }
 
@@ -470,20 +470,20 @@ func TestPreRunAttachGlobalDcIdNicLoadbalancerIdsValidate_RequiredFlagsErr(t *te
 		viper.Set(builder.GetGlobalFlagName("nic", config.ArgDataCenterId), "")
 		err := PreRunAttachGlobalDcIdNicLoadbalancerIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName("nic", config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), "")
 		err = PreRunAttachGlobalDcIdNicLoadbalancerIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgNicId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgNicId).Error())
 
 		viper.Set(builder.GetGlobalFlagName("nic", config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), testNicVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), "")
 		err = PreRunAttachGlobalDcIdNicLoadbalancerIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == utils.NewRequiredFlagErr(config.ArgLoadbalancerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgLoadbalancerId).Error())
 	})
 }
 
@@ -668,9 +668,9 @@ func TestRunNicDetach_AskForConfirmErr(t *testing.T) {
 }
 
 func TestGetNicsCols(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgCols), []string{"Name"})
@@ -680,9 +680,9 @@ func TestGetNicsCols(t *testing.T) {
 }
 
 func TestGetNicsCols_Err(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgCols), []string{"Unknown"})
@@ -694,9 +694,9 @@ func TestGetNicsCols_Err(t *testing.T) {
 }
 
 func TestGetNicsIds(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
@@ -711,9 +711,9 @@ func TestGetNicsIds(t *testing.T) {
 }
 
 func TestGetNicsIds_Err(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
@@ -728,9 +728,9 @@ func TestGetNicsIds_Err(t *testing.T) {
 }
 
 func TestGetAttachedNicsIds(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
@@ -745,9 +745,9 @@ func TestGetAttachedNicsIds(t *testing.T) {
 }
 
 func TestGetAttachedNicsIds_Err(t *testing.T) {
-	defer func(a func()) { utils.ErrAction = a }(utils.ErrAction)
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	utils.ErrAction = func() {}
+	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

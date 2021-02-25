@@ -23,6 +23,5 @@ func version() *builder.Command {
 
 func RunVersion(c *builder.CommandConfig) error {
 	// TODO: to be updated to get the version automatically
-	c.Printer.Print("Version: 0.1")
-	return nil
+	return c.Printer.Print("Version: 0.1")
 }

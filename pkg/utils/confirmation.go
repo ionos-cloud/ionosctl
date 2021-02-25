@@ -3,25 +3,24 @@ package utils
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
 
-var getUserInput = func(reader io.Reader, writer io.Writer, message string) (string, error) {
+var getUserInput = func(reader io.Reader, writer printer.PrintService, message string) (string, error) {
 	return readUserInput(reader, writer, message)
 }
 
-func warnConfirm(writer io.Writer, msg string, args ...interface{}) {
-	fmt.Fprintf(writer, "Warning: %s", fmt.Sprintf(msg, args...))
-}
-
-func readUserInput(reader io.Reader, writer io.Writer, message string) (string, error) {
+func readUserInput(reader io.Reader, writer printer.PrintService, message string) (string, error) {
 	in := bufio.NewReader(reader)
-	warnConfirm(writer, "Are you sure you want to "+message+" (y/N) ? ")
+	err := writer.Print("Warning: Are you sure you want to " + message + " (y/N) ? ")
+	if err != nil {
+		return "", err
+	}
 	answer, err := in.ReadString('\n')
 	if err != nil {
 		return "", err
@@ -32,7 +31,7 @@ func readUserInput(reader io.Reader, writer io.Writer, message string) (string, 
 }
 
 // AskForConfirm parses and verifies user input for confirmation.
-func AskForConfirm(reader io.Reader, writer io.Writer, message string) error {
+func AskForConfirm(reader io.Reader, writer printer.PrintService, message string) error {
 	if viper.GetBool(config.ArgIgnoreStdin) || viper.GetBool(config.ArgQuiet) {
 		return nil
 	}

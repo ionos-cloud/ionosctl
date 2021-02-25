@@ -11,6 +11,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -131,12 +133,11 @@ func RunLanList(c *builder.CommandConfig) error {
 		return err
 	}
 	ss := getLans(lans)
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: lans,
 		KeyValue:   getLansKVMaps(ss),
 		Columns:    getLansCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunLanGet(c *builder.CommandConfig) error {
@@ -147,12 +148,11 @@ func RunLanGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: lan,
 		KeyValue:   getLansKVMaps([]resources.Lan{*lan}),
 		Columns:    getLansCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunLanCreate(c *builder.CommandConfig) error {
@@ -164,11 +164,11 @@ func RunLanCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  lan,
 		KeyValue:    getLanPostsKVMaps([]resources.LanPost{*lan}),
 		Columns:     getLansCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -177,7 +177,6 @@ func RunLanCreate(c *builder.CommandConfig) error {
 		Verb:        "create",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunLanUpdate(c *builder.CommandConfig) error {
@@ -196,11 +195,11 @@ func RunLanUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  lan,
 		KeyValue:    getLansKVMaps([]resources.Lan{*lan}),
 		Columns:     getLansCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -209,11 +208,10 @@ func RunLanUpdate(c *builder.CommandConfig) error {
 		Verb:        "update",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunLanDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "delete lan")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan")
 	if err != nil {
 		return err
 	}
@@ -224,17 +222,16 @@ func RunLanDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "lan",
 		Verb:        "delete",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 var defaultLanCols = []string{"LanId", "Name", "Public"}
@@ -266,7 +263,7 @@ func getLansCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			lanCols = append(lanCols, col)
 		} else {
-			utils.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return lanCols
@@ -328,19 +325,19 @@ func getLanPostsKVMaps(ls []resources.LanPost) []map[string]interface{} {
 
 func getLansIds(outErr io.Writer, parentCmdName string) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	lanSvc := resources.NewLanService(clientSvc.Get(), context.TODO())
 	lans, _, err := lanSvc.List(
 		viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	lansIds := make([]string, 0)
 	if lans.Lans.Items != nil {

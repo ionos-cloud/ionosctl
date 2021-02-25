@@ -12,7 +12,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -78,12 +79,11 @@ func RunRequestList(c *builder.CommandConfig) error {
 		return err
 	}
 	rqs := getRequests(requests)
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: requests,
 		Columns:    getRequestsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 		KeyValue:   getRequestsKVMaps(rqs),
 	})
-	return nil
 }
 
 func RunRequestGet(c *builder.CommandConfig) error {
@@ -91,12 +91,11 @@ func RunRequestGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: request,
 		KeyValue:   getRequestsKVMaps([]resources.Request{*request}),
 		Columns:    getRequestsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunRequestWait(c *builder.CommandConfig) error {
@@ -117,12 +116,11 @@ func RunRequestWait(c *builder.CommandConfig) error {
 	if _, err = c.Requests().Wait(fmt.Sprintf("%s/status", *request.GetHref())); err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: request,
 		KeyValue:   getRequestsKVMaps([]resources.Request{*request}),
 		Columns:    getRequestsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 var defaultRequestCols = []string{"RequestId", "Status", "Message"}
@@ -152,7 +150,7 @@ func getRequestsCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			requestCols = append(requestCols, col)
 		} else {
-			utils.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return requestCols
@@ -187,18 +185,18 @@ func getRequestsKVMaps(requests []resources.Request) []map[string]interface{} {
 
 func getRequestsIds(outErr io.Writer) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	reqSvc := resources.NewRequestService(clientSvc.Get(), context.TODO())
 	requests, _, err := reqSvc.List()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	dcIds := make([]string, 0)
 	if requests.Requests.Items != nil {

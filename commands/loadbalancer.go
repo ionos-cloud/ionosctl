@@ -11,6 +11,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -131,12 +133,11 @@ func RunLoadbalancerList(c *builder.CommandConfig) error {
 		return err
 	}
 	ss := getLoadbalancers(loadbalancers)
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: loadbalancers,
 		KeyValue:   getLoadbalancersKVMaps(ss),
 		Columns:    getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunLoadbalancerGet(c *builder.CommandConfig) error {
@@ -147,12 +148,11 @@ func RunLoadbalancerGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: loadbalancer,
 		KeyValue:   getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
 		Columns:    getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunLoadbalancerCreate(c *builder.CommandConfig) error {
@@ -164,11 +164,11 @@ func RunLoadbalancerCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  loadbalancer,
 		KeyValue:    getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
 		Columns:     getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -177,7 +177,6 @@ func RunLoadbalancerCreate(c *builder.CommandConfig) error {
 		Verb:        "create",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunLoadbalancerUpdate(c *builder.CommandConfig) error {
@@ -199,11 +198,11 @@ func RunLoadbalancerUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  loadbalancer,
 		KeyValue:    getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
 		Columns:     getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -212,11 +211,10 @@ func RunLoadbalancerUpdate(c *builder.CommandConfig) error {
 		Verb:        "update",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunLoadbalancerDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "delete loadbalancer")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer")
 	if err != nil {
 		return err
 	}
@@ -227,17 +225,16 @@ func RunLoadbalancerDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "loadbalancer",
 		Verb:        "delete",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 var defaultLoadbalancerCols = []string{"LoadbalancerId", "Name", "Dhcp"}
@@ -269,7 +266,7 @@ func getLoadbalancersCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			loadbalancerCols = append(loadbalancerCols, col)
 		} else {
-			utils.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return loadbalancerCols
@@ -308,18 +305,18 @@ func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{
 
 func getLoadbalancersIds(outErr io.Writer, parentCmdName string) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	loadbalancerSvc := resources.NewLoadbalancerService(clientSvc.Get(), context.TODO())
 	loadbalancers, _, err := loadbalancerSvc.List(viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)))
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	loadbalancersIds := make([]string, 0)
 	if loadbalancers.Loadbalancers.Items != nil {

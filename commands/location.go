@@ -9,7 +9,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -42,12 +43,11 @@ func RunLocationList(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: locations,
 		KeyValue:   getLocationsKVMaps(getLocations(locations)),
 		Columns:    getLocationCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 var defaultLocationCols = []string{"LocationId", "Name", "Features"}
@@ -77,7 +77,7 @@ func getLocationCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			datacenterCols = append(datacenterCols, col)
 		} else {
-			utils.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return datacenterCols
@@ -113,18 +113,18 @@ func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {
 
 func getLocationIds(outErr io.Writer) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	locationSvc := resources.NewLocationService(clientSvc.Get(), context.TODO())
 	locations, _, err := locationSvc.List()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	lcIds := make([]string, 0)
 	if locations.Locations.Items != nil {

@@ -7,19 +7,19 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
 
 var (
-	waitingForActionMsg = "\u29D6 Waiting for request: %s"
+	waitingForActionMsg = "Waiting for request: %s"
 )
 
 func waitForAction(c *builder.CommandConfig, path string) error {
 	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)) {
 		return nil
 	} else {
-		reqId, err := utils.GetRequestId(path)
+		reqId, err := printer.GetRequestId(path)
 		if err != nil {
 			return err
 		}
@@ -33,7 +33,10 @@ func waitForAction(c *builder.CommandConfig, path string) error {
 		defer cancel()
 
 		c.Context = ctxTimeout
-		c.Printer.Print(fmt.Sprintf(waitingForActionMsg, *reqId))
+		err = c.Printer.Print(fmt.Sprintf(waitingForActionMsg, *reqId))
+		if err != nil {
+			return err
+		}
 		if _, err = c.Requests().Wait(path); err != nil {
 			return err
 		}

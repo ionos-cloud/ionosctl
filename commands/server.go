@@ -12,6 +12,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -201,12 +203,11 @@ func RunServerList(c *builder.CommandConfig) error {
 		return err
 	}
 	ss := getServers(servers)
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: servers,
 		KeyValue:   getServersKVMaps(ss),
 		Columns:    getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunServerGet(c *builder.CommandConfig) error {
@@ -217,12 +218,11 @@ func RunServerGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: server,
 		KeyValue:   getServersKVMaps([]resources.Server{*server}),
 		Columns:    getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunServerCreate(c *builder.CommandConfig) error {
@@ -238,11 +238,11 @@ func RunServerCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON:  server,
 		KeyValue:    getServersKVMaps([]resources.Server{*server}),
 		Columns:     getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
@@ -251,7 +251,6 @@ func RunServerCreate(c *builder.CommandConfig) error {
 		Verb:        "create",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunServerUpdate(c *builder.CommandConfig) error {
@@ -280,11 +279,11 @@ func RunServerUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		KeyValue:    getServersKVMaps([]resources.Server{*server}),
 		Columns:     getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 		OutputJSON:  server,
@@ -293,11 +292,10 @@ func RunServerUpdate(c *builder.CommandConfig) error {
 		Verb:        "update",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunServerDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "delete server")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server")
 	if err != nil {
 		return err
 	}
@@ -309,21 +307,20 @@ func RunServerDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "server",
 		Verb:        "delete",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunServerStart(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "start server")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "start server")
 	if err != nil {
 		return err
 	}
@@ -335,21 +332,20 @@ func RunServerStart(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "server",
 		Verb:        "start",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunServerStop(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "stop server")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server")
 	if err != nil {
 		return err
 	}
@@ -361,21 +357,20 @@ func RunServerStop(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "server",
 		Verb:        "stop",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunServerReboot(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "reboot server")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server")
 	if err != nil {
 		return err
 	}
@@ -387,17 +382,16 @@ func RunServerReboot(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "server",
 		Verb:        "reboot",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 var defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "State", "Cores", "Ram", "CpuFamily"}
@@ -435,7 +429,7 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			serverCols = append(serverCols, col)
 		} else {
-			utils.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return serverCols
@@ -484,18 +478,18 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 
 func getServersIds(outErr io.Writer, parentCmdName string) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
 	servers, _, err := serverSvc.List(viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)))
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	ssIds := make([]string, 0)
 	if servers.Servers.Items != nil {

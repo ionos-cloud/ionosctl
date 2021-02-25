@@ -1,4 +1,4 @@
-package utils
+package clierror
 
 import (
 	"errors"
@@ -7,11 +7,13 @@ import (
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
 
 var (
-	ErrAction = func() {
+	unknownTypeFormatErr = "unknown type format %s. Hint: use --output json|text"
+	ErrAction            = func() {
 		os.Exit(1)
 	}
 )
@@ -33,9 +35,9 @@ func CheckError(err error, outErr io.Writer) {
 	}
 
 	switch viper.GetString(config.ArgOutput) {
-	case PrinterTypeJSON.String():
-		writeJSON(&cliErr, outErr)
-	case PrinterTypeText.String():
+	case printer.TypeJSON.String():
+		printer.WriteJSON(&cliErr, outErr)
+	case printer.TypeText.String():
 		errorConfirm(outErr, cliErr.Err.Error())
 	default:
 		err := errors.New(fmt.Sprintf(unknownTypeFormatErr, viper.GetString(config.ArgOutput)))

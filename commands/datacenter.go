@@ -11,6 +11,8 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -112,12 +114,11 @@ func RunDataCenterList(c *builder.CommandConfig) error {
 		return err
 	}
 	dcs := getDataCenters(datacenters)
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		OutputJSON: datacenters,
 		KeyValue:   getDataCentersKVMaps(dcs),
 		Columns:    getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
-	return nil
 }
 
 func RunDataCenterGet(c *builder.CommandConfig) error {
@@ -125,12 +126,11 @@ func RunDataCenterGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		KeyValue:   getDataCentersKVMaps([]resources.Datacenter{*datacenter}),
 		Columns:    getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 		OutputJSON: datacenter,
 	})
-	return nil
 }
 
 func RunDataCenterCreate(c *builder.CommandConfig) error {
@@ -142,11 +142,11 @@ func RunDataCenterCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
 		Columns:     getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 		OutputJSON:  dc,
@@ -155,7 +155,6 @@ func RunDataCenterCreate(c *builder.CommandConfig) error {
 		Verb:        "create",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunDataCenterUpdate(c *builder.CommandConfig) error {
@@ -174,11 +173,11 @@ func RunDataCenterUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
 		Columns:     getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 		OutputJSON:  dc,
@@ -187,11 +186,10 @@ func RunDataCenterUpdate(c *builder.CommandConfig) error {
 		Verb:        "update",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 func RunDataCenterDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer.GetStdout(), "delete data center")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center")
 	if err != nil {
 		return err
 	}
@@ -200,17 +198,16 @@ func RunDataCenterDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, utils.GetRequestPath(resp))
+	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	c.Printer.Print(utils.Result{
+	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
 		Resource:    "datacenter",
 		Verb:        "delete",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-	return nil
 }
 
 var defaultDatacenterCols = []string{"DatacenterId", "Name", "Location"}
@@ -244,7 +241,7 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 		if col != "" {
 			datacenterCols = append(datacenterCols, col)
 		} else {
-			utils.CheckError(errors.New("unknown column "+k), outErr)
+			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
 	return datacenterCols
@@ -286,18 +283,18 @@ func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
 
 func getDataCentersIds(outErr io.Writer) []string {
 	err := config.LoadFile()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.ArgServerUrl),
 	)
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	datacenterSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
 	datacenters, _, err := datacenterSvc.List()
-	utils.CheckError(err, outErr)
+	clierror.CheckError(err, outErr)
 
 	dcIds := make([]string, 0)
 	if datacenters.Datacenters.Items != nil {
