@@ -15,22 +15,19 @@ Before you begin you will need to have signed-up for a [Ionos Cloud](https://www
 
 #### Downloading a Release from Github
 
-Check the [Releases page](https://www.ionos.com/ionosctl/releases) and find the corresponding archive for your operating system and architecture. Download the archive from your browser and follow the next steps:
+Check the [Releases page](https://www.ionos.com/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps:
 
 ```
 # Check if /usr/local/bin is part of your PATH
 echo $PATH
 
-# Extract the binary:
-tar xf ~/Downloads/ionosctl-$VERSION-linux-amd64.tar.gz
+# Download and extract the binary (<version> is the full semantic version): 
+curl -sL https://github.com/ionos-cloud/ionosctl/releases/download/v<version>/ionosctl-<version>-linux-amd64.tar.gz | tar -xzv
 
 # Move the binary somewhere in your $PATH:
 sudo mv ~/ionosctl /usr/local/bin
 
-# Allow executing file as program
-chmod +x /usr/local/bin/ionosctl
-
-# Use the ionosctl 
+# Use the ionosctl CLI
 ionosctl help
 ```
 
