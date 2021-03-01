@@ -31,6 +31,8 @@ sudo mv ~/ionosctl /usr/local/bin
 ionosctl help
 ```
 
+For Windows users, you can download the latest release available on [Releases page](https://www.ionos.com/ionosctl/releases) and follow [this official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`. 
+
 #### Building a local version
 
 If you have a Go environment configured, you can build and install the development version of `ionosctl` with: 
