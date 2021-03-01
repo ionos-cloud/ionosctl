@@ -12,7 +12,10 @@ builds:
     flags:
       - -trimpath
     ldflags:
-      - '-s -w -X main.version=v{{.Version}}'
+      - "-X github.com/ionos-cloud/ionosctl/commands.Major={{ .Major }}"
+      - "-X github.com/ionos-cloud/ionosctl/commands.Minor={{ .Minor }}"
+      - "-X github.com/ionos-cloud/ionosctl/commands.Patch={{ .Patch }}"
+      - "-X github.com/ionos-cloud/ionosctl/commands.Label=release"
     goos:
       - windows
       - linux

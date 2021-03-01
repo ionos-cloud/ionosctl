@@ -49,8 +49,8 @@ build:
 
 .PHONY: install
 install:
-	@echo "--- Install ionosctl ---"
-	@go install
+	@echo "--- Install ionosctl via go install ---"
+	@GOOS=$(GOOS) GOARCH=$(GOARCH) tools/install.sh
 	@echo "DONE"
 
 .PHONY: clean
