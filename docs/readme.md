@@ -19,7 +19,7 @@ Before you begin you will need to have signed-up for a [Ionos Cloud](https://www
 
 #### Downloading a Release from Github
 
-Check the [Releases page](https://www.ionos.com/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps:
+Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps:
 
 ```
 # Check if /usr/local/bin is part of your PATH
@@ -35,7 +35,7 @@ sudo mv ~/ionosctl /usr/local/bin
 ionosctl help
 ```
 
-For Windows users, you can download the latest release available on [Releases page](https://www.ionos.com/ionosctl/releases) and follow [this official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`. 
+For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this [official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`. 
 
 #### Building a local version
 

@@ -1,5 +1,3 @@
-project_name: test
-
 before:
   hooks:
     - go mod tidy
