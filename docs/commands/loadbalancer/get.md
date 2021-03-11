@@ -15,8 +15,9 @@ ionosctl loadbalancer get [flags]
 Use this command to retrieve information about a Load Balancer instance.
 
 Required values to run command:
-- Data Center Id
-- Load Balancer Id
+
+* Data Center Id
+* Load Balancer Id
 
 ## Options
 

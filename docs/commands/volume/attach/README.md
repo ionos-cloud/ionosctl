@@ -16,14 +16,15 @@ ionosctl volume attach [command]
 
 ## Description
 
-Use this command to attach a Volume to a Server from a Data Center. 
+Use this command to attach a Volume to a Server from a Data Center.
 
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id
-- Volume Id
+
+* Data Center Id
+* Server Id
+* Volume Id
 
 The sub-commands of `ionosctl volume attach` allow you to retrieve information about attached Volumes or about a specified attached Volume.
 
@@ -59,7 +60,7 @@ Status: Command volume attach and request have been successfully executed
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl volume attach get](get.md) | Get an attached Volume from a Server |
 | [ionosctl volume attach list](list.md) | List attached Volumes from a Server |
 

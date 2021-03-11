@@ -14,13 +14,13 @@ ionosctl nic delete [flags]
 
 This command deletes a specified NIC.
 
-You can wait for the action to be executed using `--wait` option.
-You can force the command to execute without user input using `--ignore-stdin` option.
+You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id
-- NIC Id
+
+* Data Center Id
+* Server Id
+* NIC Id
 
 ## Options
 

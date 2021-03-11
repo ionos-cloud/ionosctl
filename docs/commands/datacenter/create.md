@@ -12,10 +12,9 @@ ionosctl datacenter create [flags]
 
 ## Description
 
-Use this command to create a Data Center. You can specify the name, description or location for the object. 
+Use this command to create a Data Center. You can specify the name, description or location for the object.
 
 You can wait for the action to be executed using `--wait` option.
-
 
 ## Options
 

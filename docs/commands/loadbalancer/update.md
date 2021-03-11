@@ -17,8 +17,9 @@ Use this command to update the configuration of a specified Load Balancer.
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
-- Data Center Id
-- Load Balancer Id
+
+* Data Center Id
+* Load Balancer Id
 
 ## Options
 

@@ -14,13 +14,13 @@ ionosctl login [flags]
 
 Use this command to authenticate. By default, user data will be saved in:
 
-- macOS: `${HOME}/Library/Application Support/ionosctl/config.json`
-- Linux: `${XDG_CONFIG_HOME}/ionosctl/config.json`
-- Windows: `%APPDATA%\ionosctl\config.json`.
+* macOS: `${HOME}/Library/Application Support/ionosctl/config.json`
+* Linux: `${XDG_CONFIG_HOME}/ionosctl/config.json`
+* Windows: `%APPDATA%\ionosctl\config.json`.
 
 You can use another configuration file for authentication with `--config` global option.
 
-Note: The command can also be used without `--user` and `--password` flags (see Examples).
+Note: The command can also be used without `--user` and `--password` flags \(see Examples\).
 
 ## Options
 

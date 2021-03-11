@@ -17,8 +17,9 @@ Use this command to update a specified Server from a Data Center.
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id
+
+* Data Center Id
+* Server Id
 
 ## Options
 

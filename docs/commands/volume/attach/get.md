@@ -15,9 +15,10 @@ ionosctl volume attach get [flags]
 Use this command to retrieve information about an attached Volume.
 
 Required values to run command:
-- Data Center Id
-- Server Id
-- Volume Id
+
+* Data Center Id
+* Server Id
+* Volume Id
 
 ## Options
 
@@ -40,6 +41,6 @@ Required values to run command:
 ```text
 ionosctl volume attach get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --volume-id 15546173-a100-4851-8bc4-872ec6bbee32 
 VolumeId                               Name         Size   Type   LicenseType   State       Image
-15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         AVAILABLE         
+15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         AVAILABLE
 ```
 

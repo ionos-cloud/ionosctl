@@ -2,7 +2,7 @@
 description: Data Center Operations
 ---
 
-# Datacenter
+# DataCenter
 
 ## Usage
 
@@ -36,7 +36,7 @@ The sub-commands of `ionosctl datacenter` allow you to create, list, get, update
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl datacenter create](create.md) | Create a Data Center |
 | [ionosctl datacenter delete](delete.md) | Delete a Data Center |
 | [ionosctl datacenter get](get.md) | Get a Data Center |

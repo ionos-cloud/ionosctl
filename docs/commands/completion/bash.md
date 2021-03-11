@@ -14,13 +14,17 @@ ionosctl completion bash [flags]
 
 Use this command to generate completion code for BASH terminal. IonosCTL supports completion for commands and flags.
 
-To load completions for the current session, execute: 
+To load completions for the current session, execute:
 
-    source <(ionosctl completion bash)
+```text
+source <(ionosctl completion bash)
+```
 
 To make these changes permanent, append the above line to your `.bashrc` file and use:
 
-    source ~/.bashrc
+```text
+source ~/.bashrc
+```
 
 You will need to start a new shell for this setup to take effect.
 

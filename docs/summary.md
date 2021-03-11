@@ -5,7 +5,7 @@
 
 ## Commands
 
-* [Ionosctl](commands/README.md)
+* [Ionosctl](commands/commands.md)
 * [Login](commands/login.md)
 * [Version](commands/version.md)
 * [Completion](commands/completion/README.md)

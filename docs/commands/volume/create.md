@@ -17,7 +17,8 @@ Use this command to create a Volume on your account. You can specify the name, s
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
-- Data Center Id
+
+* Data Center Id
 
 ## Options
 

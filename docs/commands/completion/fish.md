@@ -16,11 +16,15 @@ Use this command to generate completion code for Fish terminal. IonosCTL support
 
 To load completions into the current shell execute:
 
-    ionosctl completion fish | source
+```text
+ionosctl completion fish | source
+```
 
 In order to make the completions permanent execute once:
 
-    ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
+```text
+ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
+```
 
 ## Options
 

@@ -17,8 +17,9 @@ Use this command to update a specified LAN.
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
-- Data Center Id
-- LAN Id
+
+* Data Center Id
+* LAN Id
 
 ## Options
 

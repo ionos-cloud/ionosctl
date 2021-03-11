@@ -15,8 +15,9 @@ ionosctl nic list [flags]
 Use this command to get a list of NICs on your account.
 
 Required values to run command:
-- Data Center Id
-- Server Id
+
+* Data Center Id
+* Server Id
 
 ## Options
 

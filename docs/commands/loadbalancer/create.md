@@ -17,7 +17,8 @@ Use this command to create a new Load Balancer on your account. The name, IP and
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
-- Data Center Id
+
+* Data Center Id
 
 ## Options
 

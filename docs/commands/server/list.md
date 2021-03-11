@@ -15,7 +15,8 @@ ionosctl server list [flags]
 Use this command to list Servers from a specified Data Center.
 
 Required values to run command:
-- Data Center Id
+
+* Data Center Id
 
 ## Options
 

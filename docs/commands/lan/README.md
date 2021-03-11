@@ -31,7 +31,7 @@ The sub-commands of `ionosctl lan` allow you to create, list, get, update, delet
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl lan create](create.md) | Create a LAN |
 | [ionosctl lan delete](delete.md) | Delete a LAN |
 | [ionosctl lan get](get.md) | Get a LAN |

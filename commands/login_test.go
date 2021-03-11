@@ -56,7 +56,6 @@ func TestRunLoginUser_BufferPwdErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), "")
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == "inappropriate ioctl for device")
 	})
 }
 

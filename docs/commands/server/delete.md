@@ -14,12 +14,12 @@ ionosctl server delete [flags]
 
 Use this command to delete a specified Server from a Data Center.
 
-You can wait for the action to be executed using `--wait` option.
-You can force the command to execute without user input using `--ignore-stdin` option.
+You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id
+
+* Data Center Id
+* Server Id
 
 ## Options
 
