@@ -5,51 +5,36 @@
 package mock_resources
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	resources "github.com/ionos-cloud/ionosctl/pkg/resources"
-	reflect "reflect"
 )
 
-// MockRequestsService is a mock of RequestsService interface
+// MockRequestsService is a mock of RequestsService interface.
 type MockRequestsService struct {
 	ctrl     *gomock.Controller
 	recorder *MockRequestsServiceMockRecorder
 }
 
-// MockRequestsServiceMockRecorder is the mock recorder for MockRequestsService
+// MockRequestsServiceMockRecorder is the mock recorder for MockRequestsService.
 type MockRequestsServiceMockRecorder struct {
 	mock *MockRequestsService
 }
 
-// NewMockRequestsService creates a new mock instance
+// NewMockRequestsService creates a new mock instance.
 func NewMockRequestsService(ctrl *gomock.Controller) *MockRequestsService {
 	mock := &MockRequestsService{ctrl: ctrl}
 	mock.recorder = &MockRequestsServiceMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockRequestsService) EXPECT() *MockRequestsServiceMockRecorder {
 	return m.recorder
 }
 
-// List mocks base method
-func (m *MockRequestsService) List() (resources.Requests, *resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
-	ret0, _ := ret[0].(resources.Requests)
-	ret1, _ := ret[1].(*resources.Response)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
-}
-
-// List indicates an expected call of List
-func (mr *MockRequestsServiceMockRecorder) List() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRequestsService)(nil).List))
-}
-
-// Get mocks base method
+// Get mocks base method.
 func (m *MockRequestsService) Get(requestId string) (*resources.Request, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", requestId)
@@ -59,13 +44,13 @@ func (m *MockRequestsService) Get(requestId string) (*resources.Request, *resour
 	return ret0, ret1, ret2
 }
 
-// Get indicates an expected call of Get
+// Get indicates an expected call of Get.
 func (mr *MockRequestsServiceMockRecorder) Get(requestId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockRequestsService)(nil).Get), requestId)
 }
 
-// GetStatus mocks base method
+// GetStatus mocks base method.
 func (m *MockRequestsService) GetStatus(requestId string) (*resources.RequestStatus, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetStatus", requestId)
@@ -75,13 +60,29 @@ func (m *MockRequestsService) GetStatus(requestId string) (*resources.RequestSta
 	return ret0, ret1, ret2
 }
 
-// GetStatus indicates an expected call of GetStatus
+// GetStatus indicates an expected call of GetStatus.
 func (mr *MockRequestsServiceMockRecorder) GetStatus(requestId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStatus", reflect.TypeOf((*MockRequestsService)(nil).GetStatus), requestId)
 }
 
-// Wait mocks base method
+// List mocks base method.
+func (m *MockRequestsService) List() (resources.Requests, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List")
+	ret0, _ := ret[0].(resources.Requests)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// List indicates an expected call of List.
+func (mr *MockRequestsServiceMockRecorder) List() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRequestsService)(nil).List))
+}
+
+// Wait mocks base method.
 func (m *MockRequestsService) Wait(requestId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Wait", requestId)
@@ -90,7 +91,7 @@ func (m *MockRequestsService) Wait(requestId string) (*resources.Response, error
 	return ret0, ret1
 }
 
-// Wait indicates an expected call of Wait
+// Wait indicates an expected call of Wait.
 func (mr *MockRequestsServiceMockRecorder) Wait(requestId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Wait", reflect.TypeOf((*MockRequestsService)(nil).Wait), requestId)
