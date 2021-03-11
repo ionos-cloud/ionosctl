@@ -15,7 +15,8 @@ ionosctl volume list [flags]
 Use this command to list all Volumes from a Data Center on your account.
 
 Required values to run command:
-- Data Center Id
+
+* Data Center Id
 
 ## Options
 

@@ -12,7 +12,7 @@ ionosctl [command]
 
 ## Description
 
-IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.
+IonosCTL is a command-line interface \(CLI\) for the Ionos Cloud API.
 
 ## Options
 
@@ -29,7 +29,7 @@ IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl completion](completion/) | Generate code to enable auto-completion with `TAB` key |
 | [ionosctl datacenter](datacenter/) | Data Center Operations |
 | [ionosctl lan](lan/) | LAN Operations |

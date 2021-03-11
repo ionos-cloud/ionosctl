@@ -15,9 +15,10 @@ ionosctl nic get [flags]
 Use this command to get information about a specified NIC from specified Data Center and Server.
 
 Required values to run command:
-- Data Center Id
-- Server Id
-- NIC Id
+
+* Data Center Id
+* Server Id
+* NIC Id
 
 ## Options
 

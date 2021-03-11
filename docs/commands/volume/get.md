@@ -15,8 +15,9 @@ ionosctl volume get [flags]
 Use this command to retrieve information about a Volume using its ID.
 
 Required values to run command:
-- Data Center Id
-- Volume Id
+
+* Data Center Id
+* Volume Id
 
 ## Options
 

@@ -32,7 +32,7 @@ The sub-commands of `ionosctl nic` allow you to create, list, get, update, delet
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl nic attach](attach/) | Attach a NIC to a Load Balancer |
 | [ionosctl nic create](create.md) | Create a NIC |
 | [ionosctl nic delete](delete.md) | Delete a NIC |

@@ -21,9 +21,10 @@ Use this command to attach a specified NIC to a Load Balancer on your account.
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
-- Data Center Id
-- Load Balancer Id
-- NIC Id
+
+* Data Center Id
+* Load Balancer Id
+* NIC Id
 
 The sub-commands of `ionosctl nic attach` allow you to retrieve information about attached NICs or about a specified attached NIC.
 
@@ -59,7 +60,7 @@ Status: Command nic attach has been successfully executed
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl nic attach get](get.md) | Get an attached NIC to a Load Balancer |
 | [ionosctl nic attach list](list.md) | List attached NICs from a Load Balancer |
 

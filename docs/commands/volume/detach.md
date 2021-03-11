@@ -12,15 +12,15 @@ ionosctl volume detach [flags]
 
 ## Description
 
-Use this command to detach a Volume from a Server. 
+Use this command to detach a Volume from a Server.
 
-You can wait for the action to be executed using `--wait` option.
-You can force the command to execute without user input using `--ignore-stdin` option.
+You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
 
-Required values to run command: 
-- Data Center Id
-- Server Id
-- Volume Id
+Required values to run command:
+
+* Data Center Id
+* Server Id
+* Volume Id
 
 ## Options
 

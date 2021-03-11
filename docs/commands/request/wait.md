@@ -17,7 +17,8 @@ Use this command to wait for a specified Request to execute. Commands used for c
 You can specify a timeout for the action to be executed using `--timeout` option.
 
 Required values to run command:
-- Request Id
+
+* Request Id
 
 ## Options
 

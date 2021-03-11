@@ -15,8 +15,9 @@ ionosctl volume attach list [flags]
 Use this command to get a list of attached Volumes to a Server from a Data Center.
 
 Required values to run command:
-- Data Center Id
-- Server Id
+
+* Data Center Id
+* Server Id
 
 ## Options
 
@@ -38,6 +39,6 @@ Required values to run command:
 ```text
 ionosctl volume attach list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa 
 VolumeId                               Name         Size   Type   LicenseType   State       Image
-15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         AVAILABLE         
+15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         AVAILABLE
 ```
 

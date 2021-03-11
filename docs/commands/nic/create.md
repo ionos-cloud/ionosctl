@@ -17,8 +17,9 @@ Use this command to create a new NIC on your account. You can specify the name, 
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run a command:
-- Data Center Id
-- Server Id
+
+* Data Center Id
+* Server Id
 
 ## Options
 

@@ -15,7 +15,8 @@ ionosctl lan list [flags]
 Use this command to get a list of LANs on your account.
 
 Required values to run command:
-- Data Center Id
+
+* Data Center Id
 
 ## Options
 

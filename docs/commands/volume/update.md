@@ -12,17 +12,16 @@ ionosctl volume update [flags]
 
 ## Description
 
-Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. 
-The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards. 
+Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards.
 
-Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API.
-Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
+Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API. Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
 
 You can wait for the action to be executed using `--wait` option.
 
-Required values to run command: 
-- Data Center Id
-- Volume Id
+Required values to run command:
+
+* Data Center Id
+* Volume Id
 
 ## Options
 

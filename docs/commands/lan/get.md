@@ -15,8 +15,9 @@ ionosctl lan get [flags]
 Use this command to retrieve information of a specified LAN.
 
 Required values to run command:
-- Data Center Id
-- LAN Id
+
+* Data Center Id
+* LAN Id
 
 ## Options
 

@@ -15,8 +15,9 @@ ionosctl nic attach list [flags]
 Use this command to get a list of attached NICs to a Load Balancer from a Data Center.
 
 Required values to run command:
-- Data Center Id
-- Load Balancer Id
+
+* Data Center Id
+* Load Balancer Id
 
 ## Options
 

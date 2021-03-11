@@ -15,7 +15,8 @@ ionosctl request get [flags]
 Use this command to get information about a specified Request.
 
 Required values to run command:
-- Request Id
+
+* Request Id
 
 ## Options
 

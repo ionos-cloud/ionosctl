@@ -37,7 +37,7 @@ The sub-commands of `ionosctl server` allow you to create, list, get, update, de
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl server create](create.md) | Create a Server |
 | [ionosctl server delete](delete.md) | Delete a Server |
 | [ionosctl server get](get.md) | Get a Server |

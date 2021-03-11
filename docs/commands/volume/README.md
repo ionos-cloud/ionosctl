@@ -37,7 +37,7 @@ The sub-commands of `ionosctl volume` manage your block storage volumes by creat
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl volume attach](attach/) | Attach a Volume to a Server |
 | [ionosctl volume create](create.md) | Create a Volume |
 | [ionosctl volume delete](delete.md) | Delete a Volume |

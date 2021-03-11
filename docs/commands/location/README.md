@@ -30,6 +30,6 @@ The sub-command of `ionosctl location` allows you to see information about locat
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl location list](list.md) | List Locations |
 

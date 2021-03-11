@@ -14,12 +14,12 @@ ionosctl lan delete [flags]
 
 Use this command to delete a specified LAN from a Virtual Data Center.
 
-You can wait for the action to be executed using `--wait` option.
-You can force the command to execute without user input using `--ignore-stdin` option.
+You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
 
 Required values to run command:
-- Data Center Id
-- LAN Id
+
+* Data Center Id
+* LAN Id
 
 ## Options
 

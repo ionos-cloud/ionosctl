@@ -15,8 +15,9 @@ ionosctl server get [flags]
 Use this command to get information about a specified Server from a Data Center.
 
 Required values to run command:
-- Data Center Id
-- Server Id
+
+* Data Center Id
+* Server Id
 
 ## Options
 

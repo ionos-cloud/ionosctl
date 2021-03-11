@@ -15,9 +15,10 @@ ionosctl nic attach get [flags]
 Use this command to retrieve information about an attached NIC.
 
 Required values to run the command:
-- Data Center Id
-- Load Balancer Id
-- NIC Id
+
+* Data Center Id
+* Load Balancer Id
+* NIC Id
 
 ## Options
 

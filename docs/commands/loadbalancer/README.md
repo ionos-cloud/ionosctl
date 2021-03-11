@@ -2,7 +2,7 @@
 description: Load Balancer Operations
 ---
 
-# Loadbalancer
+# LoadBalancer
 
 ## Usage
 
@@ -18,8 +18,7 @@ ionosctl loadbalancer [command]
 
 ## Description
 
-The sub-commands of `ionosctl loadbalancer` manage your Load Balancers on your account.
-With the `ionosctl loadbalancer` command, you can list, create, delete Load Balancers and manage their configuration details.
+The sub-commands of `ionosctl loadbalancer` manage your Load Balancers on your account. With the `ionosctl loadbalancer` command, you can list, create, delete Load Balancers and manage their configuration details.
 
 ## Options
 
@@ -38,7 +37,7 @@ With the `ionosctl loadbalancer` command, you can list, create, delete Load Bala
 ## Related commands
 
 | Command | Description |
-| :------ | :---------- |
+| :--- | :--- |
 | [ionosctl loadbalancer create](create.md) | Create a Load Balancer |
 | [ionosctl loadbalancer delete](delete.md) | Delete a Load Balancer |
 | [ionosctl loadbalancer get](get.md) | Get a Load Balancer |
