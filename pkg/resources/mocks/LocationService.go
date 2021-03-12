@@ -5,35 +5,36 @@
 package mock_resources
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	resources "github.com/ionos-cloud/ionosctl/pkg/resources"
-	reflect "reflect"
 )
 
-// MockLocationsService is a mock of LocationsService interface
+// MockLocationsService is a mock of LocationsService interface.
 type MockLocationsService struct {
 	ctrl     *gomock.Controller
 	recorder *MockLocationsServiceMockRecorder
 }
 
-// MockLocationsServiceMockRecorder is the mock recorder for MockLocationsService
+// MockLocationsServiceMockRecorder is the mock recorder for MockLocationsService.
 type MockLocationsServiceMockRecorder struct {
 	mock *MockLocationsService
 }
 
-// NewMockLocationsService creates a new mock instance
+// NewMockLocationsService creates a new mock instance.
 func NewMockLocationsService(ctrl *gomock.Controller) *MockLocationsService {
 	mock := &MockLocationsService{ctrl: ctrl}
 	mock.recorder = &MockLocationsServiceMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockLocationsService) EXPECT() *MockLocationsServiceMockRecorder {
 	return m.recorder
 }
 
-// List mocks base method
+// List mocks base method.
 func (m *MockLocationsService) List() (resources.Locations, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List")
@@ -43,7 +44,7 @@ func (m *MockLocationsService) List() (resources.Locations, *resources.Response,
 	return ret0, ret1, ret2
 }
 
-// List indicates an expected call of List
+// List indicates an expected call of List.
 func (mr *MockLocationsServiceMockRecorder) List() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLocationsService)(nil).List))

@@ -5,67 +5,36 @@
 package mock_resources
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	resources "github.com/ionos-cloud/ionosctl/pkg/resources"
-	reflect "reflect"
 )
 
-// MockServersService is a mock of ServersService interface
+// MockServersService is a mock of ServersService interface.
 type MockServersService struct {
 	ctrl     *gomock.Controller
 	recorder *MockServersServiceMockRecorder
 }
 
-// MockServersServiceMockRecorder is the mock recorder for MockServersService
+// MockServersServiceMockRecorder is the mock recorder for MockServersService.
 type MockServersServiceMockRecorder struct {
 	mock *MockServersService
 }
 
-// NewMockServersService creates a new mock instance
+// NewMockServersService creates a new mock instance.
 func NewMockServersService(ctrl *gomock.Controller) *MockServersService {
 	mock := &MockServersService{ctrl: ctrl}
 	mock.recorder = &MockServersServiceMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockServersService) EXPECT() *MockServersServiceMockRecorder {
 	return m.recorder
 }
 
-// List mocks base method
-func (m *MockServersService) List(datacenterId string) (resources.Servers, *resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", datacenterId)
-	ret0, _ := ret[0].(resources.Servers)
-	ret1, _ := ret[1].(*resources.Response)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
-}
-
-// List indicates an expected call of List
-func (mr *MockServersServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockServersService)(nil).List), datacenterId)
-}
-
-// Get mocks base method
-func (m *MockServersService) Get(datacenterId, serverId string) (*resources.Server, *resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", datacenterId, serverId)
-	ret0, _ := ret[0].(*resources.Server)
-	ret1, _ := ret[1].(*resources.Response)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
-}
-
-// Get indicates an expected call of Get
-func (mr *MockServersServiceMockRecorder) Get(datacenterId, serverId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockServersService)(nil).Get), datacenterId, serverId)
-}
-
-// Create mocks base method
+// Create mocks base method.
 func (m *MockServersService) Create(name, cpufamily, datacenterId, zone string, cores, ram int32) (*resources.Server, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name, cpufamily, datacenterId, zone, cores, ram)
@@ -75,13 +44,105 @@ func (m *MockServersService) Create(name, cpufamily, datacenterId, zone string, 
 	return ret0, ret1, ret2
 }
 
-// Create indicates an expected call of Create
+// Create indicates an expected call of Create.
 func (mr *MockServersServiceMockRecorder) Create(name, cpufamily, datacenterId, zone, cores, ram interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockServersService)(nil).Create), name, cpufamily, datacenterId, zone, cores, ram)
 }
 
-// Update mocks base method
+// Delete mocks base method.
+func (m *MockServersService) Delete(datacenterId, serverId string) (*resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", datacenterId, serverId)
+	ret0, _ := ret[0].(*resources.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockServersServiceMockRecorder) Delete(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockServersService)(nil).Delete), datacenterId, serverId)
+}
+
+// Get mocks base method.
+func (m *MockServersService) Get(datacenterId, serverId string) (*resources.Server, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", datacenterId, serverId)
+	ret0, _ := ret[0].(*resources.Server)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockServersServiceMockRecorder) Get(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockServersService)(nil).Get), datacenterId, serverId)
+}
+
+// List mocks base method.
+func (m *MockServersService) List(datacenterId string) (resources.Servers, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", datacenterId)
+	ret0, _ := ret[0].(resources.Servers)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// List indicates an expected call of List.
+func (mr *MockServersServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockServersService)(nil).List), datacenterId)
+}
+
+// Reboot mocks base method.
+func (m *MockServersService) Reboot(datacenterId, serverId string) (*resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Reboot", datacenterId, serverId)
+	ret0, _ := ret[0].(*resources.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Reboot indicates an expected call of Reboot.
+func (mr *MockServersServiceMockRecorder) Reboot(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reboot", reflect.TypeOf((*MockServersService)(nil).Reboot), datacenterId, serverId)
+}
+
+// Start mocks base method.
+func (m *MockServersService) Start(datacenterId, serverId string) (*resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Start", datacenterId, serverId)
+	ret0, _ := ret[0].(*resources.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Start indicates an expected call of Start.
+func (mr *MockServersServiceMockRecorder) Start(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Start", reflect.TypeOf((*MockServersService)(nil).Start), datacenterId, serverId)
+}
+
+// Stop mocks base method.
+func (m *MockServersService) Stop(datacenterId, serverId string) (*resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Stop", datacenterId, serverId)
+	ret0, _ := ret[0].(*resources.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Stop indicates an expected call of Stop.
+func (mr *MockServersServiceMockRecorder) Stop(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Stop", reflect.TypeOf((*MockServersService)(nil).Stop), datacenterId, serverId)
+}
+
+// Update mocks base method.
 func (m *MockServersService) Update(datacenterId, serverId string, input resources.ServerProperties) (*resources.Server, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", datacenterId, serverId, input)
@@ -91,68 +152,8 @@ func (m *MockServersService) Update(datacenterId, serverId string, input resourc
 	return ret0, ret1, ret2
 }
 
-// Update indicates an expected call of Update
+// Update indicates an expected call of Update.
 func (mr *MockServersServiceMockRecorder) Update(datacenterId, serverId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockServersService)(nil).Update), datacenterId, serverId, input)
-}
-
-// Delete mocks base method
-func (m *MockServersService) Delete(datacenterId, serverId string) (*resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", datacenterId, serverId)
-	ret0, _ := ret[0].(*resources.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Delete indicates an expected call of Delete
-func (mr *MockServersServiceMockRecorder) Delete(datacenterId, serverId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockServersService)(nil).Delete), datacenterId, serverId)
-}
-
-// Start mocks base method
-func (m *MockServersService) Start(datacenterId, serverId string) (*resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Start", datacenterId, serverId)
-	ret0, _ := ret[0].(*resources.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Start indicates an expected call of Start
-func (mr *MockServersServiceMockRecorder) Start(datacenterId, serverId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Start", reflect.TypeOf((*MockServersService)(nil).Start), datacenterId, serverId)
-}
-
-// Stop mocks base method
-func (m *MockServersService) Stop(datacenterId, serverId string) (*resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Stop", datacenterId, serverId)
-	ret0, _ := ret[0].(*resources.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Stop indicates an expected call of Stop
-func (mr *MockServersServiceMockRecorder) Stop(datacenterId, serverId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Stop", reflect.TypeOf((*MockServersService)(nil).Stop), datacenterId, serverId)
-}
-
-// Reboot mocks base method
-func (m *MockServersService) Reboot(datacenterId, serverId string) (*resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Reboot", datacenterId, serverId)
-	ret0, _ := ret[0].(*resources.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Reboot indicates an expected call of Reboot
-func (mr *MockServersServiceMockRecorder) Reboot(datacenterId, serverId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reboot", reflect.TypeOf((*MockServersService)(nil).Reboot), datacenterId, serverId)
 }
