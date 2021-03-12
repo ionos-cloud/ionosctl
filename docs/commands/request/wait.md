@@ -2,7 +2,7 @@
 description: Wait a Request
 ---
 
-# Wait
+# Ionosctl Request Wait
 
 ## Usage
 

@@ -2,7 +2,7 @@
 description: Data Center Operations
 ---
 
-# Data Center
+# Ionosctl Data Center
 
 ## Usage
 

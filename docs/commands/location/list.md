@@ -2,7 +2,7 @@
 description: List Locations
 ---
 
-# List
+# Ionosctl Location List
 
 ## Usage
 

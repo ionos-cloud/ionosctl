@@ -2,7 +2,7 @@
 description: Start a Server
 ---
 
-# Start
+# Ionosctl Server Start
 
 ## Usage
 

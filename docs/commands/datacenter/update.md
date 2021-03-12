@@ -2,7 +2,7 @@
 description: Update a Data Center
 ---
 
-# Update
+# Ionosctl Data Center Update
 
 ## Usage
 

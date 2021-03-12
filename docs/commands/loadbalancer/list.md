@@ -2,7 +2,7 @@
 description: List Load Balancers
 ---
 
-# List
+# Ionosctl Load Balancer List
 
 ## Usage
 

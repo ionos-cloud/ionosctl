@@ -2,7 +2,7 @@
 description: Detach a Volume from a Server
 ---
 
-# Detach
+# Ionosctl Volume Detach
 
 ## Usage
 

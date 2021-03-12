@@ -2,7 +2,7 @@
 description: Delete a Data Center
 ---
 
-# Delete
+# Ionosctl Data Center Delete
 
 ## Usage
 

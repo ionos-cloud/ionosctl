@@ -2,7 +2,7 @@
 description: List attached NICs from a Load Balancer
 ---
 
-# List
+# Ionosctl Network Interface Attach List
 
 ## Usage
 

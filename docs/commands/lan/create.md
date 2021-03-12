@@ -2,7 +2,7 @@
 description: Create a LAN
 ---
 
-# Create
+# Ionosctl Lan Create
 
 ## Usage
 

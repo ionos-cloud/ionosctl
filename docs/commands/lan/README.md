@@ -2,7 +2,7 @@
 description: LAN Operations
 ---
 
-# Lan
+# Ionosctl Lan
 
 ## Usage
 

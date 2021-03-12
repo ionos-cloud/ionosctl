@@ -2,7 +2,7 @@
 description: Show the current version
 ---
 
-# Version
+# Ionosctl Version
 
 ## Usage
 

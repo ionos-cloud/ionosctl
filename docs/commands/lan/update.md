@@ -2,7 +2,7 @@
 description: Update a LAN
 ---
 
-# Update
+# Ionosctl Lan Update
 
 ## Usage
 

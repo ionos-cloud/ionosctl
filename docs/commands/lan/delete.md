@@ -2,7 +2,7 @@
 description: Delete a LAN
 ---
 
-# Delete
+# Ionosctl Lan Delete
 
 ## Usage
 

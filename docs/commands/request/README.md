@@ -2,7 +2,7 @@
 description: Request Operations
 ---
 
-# Request
+# Ionosctl Request
 
 ## Usage
 

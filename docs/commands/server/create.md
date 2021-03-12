@@ -2,7 +2,7 @@
 description: Create a Server
 ---
 
-# Create
+# Ionosctl Server Create
 
 ## Usage
 

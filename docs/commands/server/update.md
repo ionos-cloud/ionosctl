@@ -2,7 +2,7 @@
 description: Update a Server
 ---
 
-# Update
+# Ionosctl Server Update
 
 ## Usage
 

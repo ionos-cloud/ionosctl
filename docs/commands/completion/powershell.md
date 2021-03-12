@@ -2,7 +2,7 @@
 description: Generate code to enable auto-completion with `TAB` key for PowerShell terminal
 ---
 
-# PowerShell
+# Ionosctl Completion PowerShell
 
 ## Usage
 
@@ -53,6 +53,5 @@ Note: PowerShell completions require version 5.0 or above, which comes with Wind
       --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          Enable verbose output
 ```
 

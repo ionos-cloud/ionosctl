@@ -2,7 +2,7 @@
 description: List Requests
 ---
 
-# List
+# Ionosctl Request List
 
 ## Usage
 

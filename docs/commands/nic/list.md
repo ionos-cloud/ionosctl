@@ -2,7 +2,7 @@
 description: List NICs
 ---
 
-# List
+# Ionosctl Network Interface List
 
 ## Usage
 

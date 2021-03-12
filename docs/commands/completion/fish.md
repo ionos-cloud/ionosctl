@@ -2,7 +2,7 @@
 description: Generate code to enable auto-completion with `TAB` key for Fish terminal
 ---
 
-# Fish
+# Ionosctl Completion Fish
 
 ## Usage
 
@@ -35,6 +35,5 @@ ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
       --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          Enable verbose output
 ```
 
