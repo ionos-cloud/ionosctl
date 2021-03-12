@@ -111,6 +111,7 @@ func addCommands() {
 	rootCmd.AddCommand(nic())
 	rootCmd.AddCommand(loadbalancer())
 	rootCmd.AddCommand(request())
+	rootCmd.AddCommand(snapshot())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

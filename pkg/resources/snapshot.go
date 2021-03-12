@@ -24,7 +24,7 @@ type SnapshotsService interface {
 	Get(snapshotId string) (*Snapshot, *Response, error)
 	Create(datacenterId, volumeId, name, description, licenceType string) (*Snapshot, *Response, error)
 	Update(snapshotId string, snapshotProp SnapshotProperties) (*Snapshot, *Response, error)
-	Restore(datacenterId, volumeId string) (*Response, error)
+	Restore(datacenterId, volumeId, snapshotId string) (*Response, error)
 	Delete(snapshotId string) (*Response, error)
 }
 
@@ -75,8 +75,8 @@ func (s *snapshotsService) Update(snapshotId string, snapshotProp SnapshotProper
 	return &Snapshot{snapshot}, &Response{*resp}, err
 }
 
-func (s *snapshotsService) Restore(datacenterId, volumeId string) (*Response, error) {
-	req := s.client.VolumeApi.DatacentersVolumesRestoreSnapshotPost(s.context, datacenterId, volumeId)
+func (s *snapshotsService) Restore(datacenterId, volumeId, snapshotId string) (*Response, error) {
+	req := s.client.VolumeApi.DatacentersVolumesRestoreSnapshotPost(s.context, datacenterId, volumeId).SnapshotId(snapshotId)
 	_, resp, err := s.client.VolumeApi.DatacentersVolumesRestoreSnapshotPostExecute(req)
 	return &Response{*resp}, err
 }

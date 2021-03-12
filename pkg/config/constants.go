@@ -53,6 +53,11 @@ const (
 	ArgLoadbalancerDhcp = "loadbalancer-dhcp"
 	// Request Flags
 	ArgRequestId = "request-id"
+	// Snapshot Flags
+	ArgSnapshotName        = "snapshot-name"
+	ArgSnapshotDescription = "snapshot-description"
+	ArgSnapshotLicenceType = "snapshot-licencetype"
+	ArgSnapshotId          = "snapshot-id"
 
 	// Default values for Global Flags
 	DefaultApiURL         = "https://api.ionos.com/cloudapi/v5"

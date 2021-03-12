@@ -98,18 +98,18 @@ func (mr *MockSnapshotsServiceMockRecorder) List() *gomock.Call {
 }
 
 // Restore mocks base method.
-func (m *MockSnapshotsService) Restore(datacenterId, volumeId string) (*resources.Response, error) {
+func (m *MockSnapshotsService) Restore(datacenterId, volumeId, snapshotId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Restore", datacenterId, volumeId)
+	ret := m.ctrl.Call(m, "Restore", datacenterId, volumeId, snapshotId)
 	ret0, _ := ret[0].(*resources.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Restore indicates an expected call of Restore.
-func (mr *MockSnapshotsServiceMockRecorder) Restore(datacenterId, volumeId interface{}) *gomock.Call {
+func (mr *MockSnapshotsServiceMockRecorder) Restore(datacenterId, volumeId, snapshotId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Restore", reflect.TypeOf((*MockSnapshotsService)(nil).Restore), datacenterId, volumeId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Restore", reflect.TypeOf((*MockSnapshotsService)(nil).Restore), datacenterId, volumeId, snapshotId)
 }
 
 // Update mocks base method.
