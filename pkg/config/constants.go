@@ -36,10 +36,10 @@ const (
 	ArgLanName   = "lan-name"
 	ArgLanPublic = "lan-public"
 	// Nic Flags
-	ArgNicId       = "nic-id"
-	ArgNicName     = "nic-name"
-	ArgNicIps      = "nic-ips"
-	ArgNicDhcp     = "nic-dhcp"
+	ArgNicId   = "nic-id"
+	ArgNicName = "nic-name"
+	ArgNicIps  = "nic-ips"
+	ArgNicDhcp = "nic-dhcp"
 	// Load Balancer Flags
 	ArgLoadbalancerId   = "loadbalancer-id"
 	ArgLoadbalancerName = "loadbalancer-name"
