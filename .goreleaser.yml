@@ -1,3 +1,5 @@
+project_name: ionosctl
+
 before:
   hooks:
     - go mod tidy
@@ -9,6 +11,7 @@ builds:
     mod_timestamp: '{{ .CommitTimestamp }}'
     flags:
       - -trimpath
+      - -mod=vendor
     ldflags:
       - "-X github.com/ionos-cloud/ionosctl/commands.Major={{ .Major }}"
       - "-X github.com/ionos-cloud/ionosctl/commands.Minor={{ .Minor }}"
