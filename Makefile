@@ -1,7 +1,7 @@
 export CGO_ENABLED = 0
 export GO111MODULE := on
 
-GOFILES= $(shell find . -type f -name '*.go')
+GOFILES_NOVENDOR=$(shell find . -type f -name '*.go' | grep -v vendor)
 GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
 
@@ -24,18 +24,29 @@ docs:
 
 .PHONY: gofmt_check
 gofmt_check:
-	@echo "--- Ensure code adheres to gofmt and list files whose formatting differs from gofmt's ---"
-	@if [ "$(shell echo $$(gofmt -l ${GOFILES}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES})) Hint: use \`make gofmt_update\`"; exit 1); fi
+	@echo "--- Ensure code adheres to gofmt and list files whose formatting differs from gofmt's(vendor directory excluded) ---"
+	@if [ "$(shell echo $$(gofmt -l ${GOFILES_NOVENDOR}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES_NOVENDOR})) Hint: use \`make gofmt_update\`"; exit 1); fi
 	@echo "DONE"
 
 .PHONY: gofmt_update
 gofmt_update:
-	@echo "--- Ensure code adheres to gofmt and change files accordingly ---"
-	@gofmt -w ${GOFILES}
+	@echo "--- Ensure code adheres to gofmt and change files accordingly(vendor directory excluded) ---"
+	@gofmt -w ${GOFILES_NOVENDOR}
 	@echo "DONE"
 
-.PHONY: update_mocks
-update_mocks:
+.PHONY: vendor_status
+vendor_status:
+	@govendor status
+
+.PHONY: vendor_update
+vendor_update:
+	@echo "Update vendor dependencies"
+	@go mod vendor
+	@go mod tidy
+	@echo "DONE"
+
+.PHONY: mocks_update
+mocks_update:
 	@echo "--- Update mocks ---"
 	@tools/regenerate_mocks.sh
 	@echo "DONE"
