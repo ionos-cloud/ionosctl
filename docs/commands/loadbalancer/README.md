@@ -31,7 +31,6 @@ The sub-commands of `ionosctl loadbalancer` manage your Load Balancers on your a
       --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-  -v, --verbose                Enable verbose output
 ```
 
 ## Related commands

@@ -41,7 +41,7 @@ func datacenter() *builder.Command {
 		Get Command
 	*/
 	get := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterGet, "get", "Get a Data Center",
-		"Use this command to get information about a specified Data Center.\n\nRequired values to run command:\n- Data Center Id", getDatacenterExample, true)
+		"Use this command to get information about a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", getDatacenterExample, true)
 	get.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id [Required flag]")
 	get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -51,10 +51,9 @@ func datacenter() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(context.TODO(), datacenterCmd, noPreRun, RunDataCenterCreate, "create", "Create a Data Center",
-		`Use this command to create a Data Center. You can specify the name, description or location for the object. 
+		`Use this command to create a Data Center. You can specify the name, description or location for the object.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-`, createDatacenterExample, true)
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, createDatacenterExample, true)
 	create.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
 	create.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
 	create.AddStringFlag(config.ArgDataCenterRegion, "", "de/txl", "Location for the Data Center")
@@ -68,12 +67,13 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 		Update Command
 	*/
 	update := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterUpdate, "update", "Update a Data Center",
-		`Use this command to change a Data Center's name, description. 
+		`Use this command to change a Data Center's name, description.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id`, updateDatacenterExample, true)
+
+* Data Center Id`, updateDatacenterExample, true)
 	update.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id [Required flag]")
 	update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -86,20 +86,20 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	delete := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterDelete, "delete", "Delete a Data Center",
+	deleteCmd := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterDelete, "delete", "Delete a Data Center",
 		`Use this command to delete a specified Data Center from your account. This is irreversible.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id`, deleteDatacenterExample, true)
-	delete.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id [Required flag]")
-	delete.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+* Data Center Id`, deleteDatacenterExample, true)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id [Required flag]")
+	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	delete.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be deleted")
-	delete.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
 
 	return datacenterCmd
 }

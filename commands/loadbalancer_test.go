@@ -48,9 +48,9 @@ var (
 			},
 		},
 	}
-	testLoadbalancerVar    = "test-loadbalancer"
-	testLoadbalancerNewVar = "test-new-loadbalancer"
-	testLoadbalancerErr    = errors.New("loadbalancer test: error occurred")
+	testLoadbalancerVar    = "test-loadBalancer"
+	testLoadbalancerNewVar = "test-new-loadBalancer"
+	testLoadbalancerErr    = errors.New("loadBalancer test: error occurred")
 )
 
 func TestPreRunGlobalDcIdLoadbalancerIdValidate(t *testing.T) {
@@ -311,8 +311,8 @@ func TestLoadbalancersCols(t *testing.T) {
 	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Name"})
-	getLoadbalancersCols(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), w)
+	viper.Set(builder.GetGlobalFlagName("loadBalancer", config.ArgCols), []string{"Name"})
+	getLoadbalancersCols(builder.GetGlobalFlagName("loadBalancer", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -323,8 +323,8 @@ func TestGetLoadbalancersCols_Err(t *testing.T) {
 	clierror.ErrAction = func() {}
 
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Unknown"})
-	getLoadbalancersCols(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), w)
+	viper.Set(builder.GetGlobalFlagName("loadBalancer", config.ArgCols), []string{"Unknown"})
+	getLoadbalancersCols(builder.GetGlobalFlagName("loadBalancer", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
@@ -338,7 +338,7 @@ func TestGetLoadbalancersIds(t *testing.T) {
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getLoadbalancersIds(w, "loadbalancer")
+	getLoadbalancersIds(w, "loadBalancer")
 	err := w.Flush()
 	assert.NoError(t, err)
 

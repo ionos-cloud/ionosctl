@@ -39,7 +39,6 @@ Required values to run command:
       --server-ram int            RAM[GB] option for the Server (default 256)
       --server-zone string        Availability zone of the Server
       --timeout int               Timeout option [seconds] (default 60)
-  -v, --verbose                   Enable verbose output
       --wait                      Wait for Server to be updated
 ```
 

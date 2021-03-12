@@ -30,12 +30,10 @@ Required values to run command:
   -h, --help                       help for create
       --ignore-stdin               Force command to execute without user input
       --loadbalancer-dhcp          Indicates if the Load Balancer will reserve an IP using DHCP (default true)
-      --loadbalancer-ip string     IPv4 address of the Load Balancer. All attached NICs will inherit this IP
       --loadbalancer-name string   Name of the Load Balancer
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
       --timeout int                Timeout option [seconds] (default 60)
-  -v, --verbose                    Enable verbose output
       --wait                       Wait for Load Balancer to be created
 ```
 

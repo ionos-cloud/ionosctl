@@ -44,14 +44,14 @@ func nic() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsValidate, RunNicList, "list", "List NICs",
-		"Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n- Data Center Id\n- Server Id",
+		"Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		listNicExample, true)
 
 	/*
 		Get Command
 	*/
 	get := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicGet, "get", "Get a NIC",
-		"Use this command to get information about a specified NIC from specified Data Center and Server.\n\nRequired values to run command:\n- Data Center Id\n- Server Id\n- NIC Id",
+		"Use this command to get information about a specified NIC from specified Data Center and Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* NIC Id",
 		getNicExample, true)
 	get.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
 	get.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -67,8 +67,9 @@ func nic() *builder.Command {
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run a command:
-- Data Center Id
-- Server Id`, createNicExample, true)
+
+* Data Center Id
+* Server Id`, createNicExample, true)
 	create.AddStringFlag(config.ArgNicName, "", "", "The name of the NIC")
 	create.AddStringSliceFlag(config.ArgNicIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
 	create.AddBoolFlag(config.ArgNicDhcp, "", config.DefaultNicDhcp, "Set to false if you wish to disable DHCP on the NIC")
@@ -95,16 +96,14 @@ When the firewall is disabled, then all incoming traffic is routed directly to t
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- NIC Id`, updateNicExample, true)
+
+* Data Center Id
+* NIC Id`, updateNicExample, true)
 	update.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
 	update.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgNicName, "", "", "	The name of the NIC")
-	// TODO: TO BE UPDATED TO ADD/REMOVE IP
-	update.AddStringFlag(config.ArgNicAddIp, "", "", "Add IP")
-	update.AddStringFlag(config.ArgNicRemoveIp, "", "", "Remove IP")
 	update.AddIntFlag(config.ArgLanId, "", config.DefaultNicLanId, "The LAN ID the NIC sits on")
 	update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
@@ -116,22 +115,22 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	delete := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicDelete, "delete", "Delete a NIC",
+	deleteCmd := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicDelete, "delete", "Delete a NIC",
 		`This command deletes a specified NIC.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id
-- NIC Id`, deleteNicExample, true)
-	delete.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
-	delete.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+* Data Center Id
+* Server Id
+* NIC Id`, deleteNicExample, true)
+	deleteCmd.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
+	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
-	delete.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be deleted")
-	delete.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
 
 	/*
 		Attach Command
@@ -142,9 +141,10 @@ Required values to run command:
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Load Balancer Id
-- NIC Id
+
+* Data Center Id
+* Load Balancer Id
+* NIC Id
 
 The sub-commands of `+"`"+`ionosctl nic attach`+"`"+` allow you to retrieve information about attached NICs or about a specified attached NIC.`, attachNicExample, true)
 	attachNic.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
@@ -162,7 +162,7 @@ The sub-commands of `+"`"+`ionosctl nic attach`+"`"+` allow you to retrieve info
 		Attach List Command
 	*/
 	listAttached := builder.NewCommand(context.TODO(), attachNic, PreRunAttachGlobalDcIdLoadbalancerIdValidate, RunNicsAttachList, "list", "List attached NICs from a Load Balancer",
-		"Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n- Data Center Id\n- Load Balancer Id",
+		"Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		attachListNicExample, true)
 	listAttached.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
 	listAttached.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -173,7 +173,7 @@ The sub-commands of `+"`"+`ionosctl nic attach`+"`"+` allow you to retrieve info
 		Attach Get Command
 	*/
 	getAttached := builder.NewCommand(context.TODO(), attachNic, PreRunAttachGlobalDcIdNicLoadbalancerIdsValidate, RunNicAttachGet, "get", "Get an attached NIC to a Load Balancer",
-		"Use this command to retrieve information about an attached NIC.\n\nRequired values to run the command:\n- Data Center Id\n- Load Balancer Id\n- NIC Id",
+		"Use this command to retrieve information about an attached NIC.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
 		attachGetNicExample, true)
 	getAttached.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
 	getAttached.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -188,15 +188,15 @@ The sub-commands of `+"`"+`ionosctl nic attach`+"`"+` allow you to retrieve info
 		Detach Command
 	*/
 	detachNic := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcIdNicLoadbalancerIdsValidate, RunNicDetach, "detach", "Detach a NIC from a Load Balancer",
-		`Use this command to detach a NIC from a Load Balancer. 
+		`Use this command to detach a NIC from a Load Balancer.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Load Balancer Id
-- NIC Id`, detachNicExample, true)
+
+* Data Center Id
+* Load Balancer Id
+* NIC Id`, detachNicExample, true)
 	detachNic.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
 	detachNic.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedNicsIds(os.Stderr, nicCmd.Command.Name(), detachNic.Command.Name()), cobra.ShellCompDirectiveNoFileComp

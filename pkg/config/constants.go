@@ -9,10 +9,7 @@ const (
 	ArgTimeout     = "timeout"
 	ArgIgnoreStdin = "ignore-stdin"
 	ArgServerUrl   = "api-url"
-	ArgVerbose     = "verbose"
 	ArgCols        = "cols"
-	// Flags for Generate Doc Command
-	ArgDir = "dir"
 	// Data Center Flags
 	ArgDataCenterId          = "datacenter-id"
 	ArgDataCenterName        = "datacenter-name"
@@ -33,7 +30,6 @@ const (
 	ArgVolumeType        = "volume-type"
 	ArgVolumeName        = "volume-name"
 	ArgVolumeZone        = "volume-zone"
-	ArgVolumeImage       = "volume-image"
 	ArgVolumeSshKey      = "volume-sshkeys"
 	// Lan Flags
 	ArgLanId     = "lan-id"
@@ -44,8 +40,6 @@ const (
 	ArgNicName     = "nic-name"
 	ArgNicIps      = "nic-ips"
 	ArgNicDhcp     = "nic-dhcp"
-	ArgNicAddIp    = "add-ip"
-	ArgNicRemoveIp = "remove-ip"
 	// Load Balancer Flags
 	ArgLoadbalancerId   = "loadbalancer-id"
 	ArgLoadbalancerName = "loadbalancer-name"
