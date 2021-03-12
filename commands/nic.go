@@ -84,14 +84,11 @@ Required values to run a command:
 		Update Command
 	*/
 	update := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicUpdate, "update", "Update a NIC",
-		`Use this command to update the configuration of a specified NIC. Some restrictions are in place:
-The primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer. 
-You can also add additional reserved, public IPs to the NIC.
+		`Use this command to update the configuration of a specified NIC. Some restrictions are in place: The primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer. You can also add additional reserved, public IPs to the NIC.
 
 The user can specify and assign private IPs manually. Valid IP addresses for private networks are 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16.
 
-The value for firewallActive can be toggled between true and false to enable or disable the firewall. When the firewall is enabled, incoming traffic is filtered by all the firewall rules configured on the NIC. 
-When the firewall is disabled, then all incoming traffic is routed directly to the NIC and any configured firewall rules are ignored.
+The value for firewallActive can be toggled between true and false to enable or disable the firewall. When the firewall is enabled, incoming traffic is filtered by all the firewall rules configured on the NIC. When the firewall is disabled, then all incoming traffic is routed directly to the NIC and any configured firewall rules are ignored.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -103,7 +100,7 @@ Required values to run command:
 	update.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgNicName, "", "", "	The name of the NIC")
+	update.AddStringFlag(config.ArgNicName, "", "", "The name of the NIC")
 	update.AddIntFlag(config.ArgLanId, "", config.DefaultNicLanId, "The LAN ID the NIC sits on")
 	update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp

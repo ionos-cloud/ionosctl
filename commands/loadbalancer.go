@@ -101,6 +101,7 @@ Required values to run command:
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
+
 * Data Center Id
 * Load Balancer Id`, deleteLoadbalancerExample, true)
 	deleteCmd.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
@@ -171,7 +172,7 @@ func RunLoadbalancerCreate(c *builder.CommandConfig) error {
 		KeyValue:    getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
 		Columns:     getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse: resp,
-		Resource:    "loadBalancer",
+		Resource:    "loadbalancer",
 		Verb:        "create",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
@@ -205,14 +206,14 @@ func RunLoadbalancerUpdate(c *builder.CommandConfig) error {
 		KeyValue:    getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
 		Columns:     getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse: resp,
-		Resource:    "loadBalancer",
+		Resource:    "loadbalancer",
 		Verb:        "update",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
 }
 
 func RunLoadbalancerDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadBalancer")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer")
 	if err != nil {
 		return err
 	}
@@ -229,7 +230,7 @@ func RunLoadbalancerDelete(c *builder.CommandConfig) error {
 	}
 	return c.Printer.Print(printer.Result{
 		ApiResponse: resp,
-		Resource:    "loadBalancer",
+		Resource:    "loadbalancer",
 		Verb:        "delete",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})

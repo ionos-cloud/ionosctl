@@ -2,7 +2,7 @@
 description: Data Center Operations
 ---
 
-# DataCenter
+# Data Center
 
 ## Usage
 

@@ -1,5 +1,5 @@
 ---
-description: Ionos Cloud CLI
+description: IONOS Cloud CLI
 ---
 
 # Ionosctl

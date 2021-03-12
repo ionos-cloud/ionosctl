@@ -2,7 +2,7 @@
 description: Load Balancer Operations
 ---
 
-# LoadBalancer
+# Load Balancer
 
 ## Usage
 

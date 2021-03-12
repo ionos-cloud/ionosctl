@@ -140,12 +140,16 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 	buf.WriteString(fmt.Sprintf("description: %s\n", cmd.Command.Short))
 	buf.WriteString("---\n\n")
 
+	// Customize title
 	title := strings.Title(cmd.Command.Name())
 	if title == "Datacenter" {
-		title = "DataCenter"
+		title = "Data Center"
 	}
 	if title == "Loadbalancer" {
-		title = "LoadBalancer"
+		title = "Load Balancer"
+	}
+	if title == "Nic" {
+		title = "Network Interface"
 	}
 	buf.WriteString(fmt.Sprintf("# %s\n\n", title))
 

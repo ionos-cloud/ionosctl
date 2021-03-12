@@ -2,7 +2,7 @@
 description: Network Interfaces Operations
 ---
 
-# Nic
+# Network Interface
 
 ## Usage
 
