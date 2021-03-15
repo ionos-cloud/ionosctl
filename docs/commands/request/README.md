@@ -30,7 +30,6 @@ The sub-commands of `ionosctl request` allow you to see information about reques
       --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          Enable verbose output
 ```
 
 ## Related commands

@@ -29,7 +29,6 @@ Required values to run command:
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
       --request-id string   The unique Request Id. [Required flag]
-  -v, --verbose             Enable verbose output
 ```
 
 ## Examples

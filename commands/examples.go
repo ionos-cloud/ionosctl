@@ -141,10 +141,10 @@ RequestId: dfd826bb-aace-4b1e-9ae2-17901e3cc792
 Status: Command volume attach and request have been successfully executed`
 	attachListVolumeExample = `ionosctl volume attach list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa 
 VolumeId                               Name         Size   Type   LicenseType   State       Image
-15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         AVAILABLE         `
+15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         AVAILABLE`
 	attachGetVolumeExample = `ionosctl volume attach get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --volume-id 15546173-a100-4851-8bc4-872ec6bbee32 
 VolumeId                               Name         Size   Type   LicenseType   State       Image
-15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         AVAILABLE         `
+15546173-a100-4851-8bc4-872ec6bbee32   demoVolume   10GB   HDD    LINUX         AVAILABLE`
 	detachVolumeExample = `ionosctl volume detach --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --volume-id 15546173-a100-4851-8bc4-872ec6bbee32 
 Warning: Are you sure you want to detach volume (y/N) ? y
 RequestId: bb4d79ef-129d-4e39-8f5c-519b7cefbc54

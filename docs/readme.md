@@ -57,7 +57,7 @@ To install `ionosctl` locally, you can use:
 make install
 ```
 
-Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable.
+Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable. Check the latest releases in the [Release Page](https://github.com/ionos-cloud/ionosctl/releases).
 
 Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Modules) with vendoring.
 
@@ -247,3 +247,6 @@ The IONOS Cloud CLI aims to offer access to all resources in the IONOS Cloud API
 
 Bugs & feature requests can be open on the repository issues: [https://github.com/ionos-cloud/ionosctl/issues/new/choose](https://github.com/ionos-cloud/ionosctl/issues/new/choose)
 
+* Can I contribute to the IONOS Cloud CLI?
+
+Sure! Our repository is public, feel free to fork it and file a PR for one of the issues opened in the issues list. We will review it and work together to get it released.

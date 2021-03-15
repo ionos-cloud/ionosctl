@@ -18,13 +18,13 @@ func login() *builder.Command {
 	loginCmd := builder.NewCommand(context.TODO(), nil, noPreRun, RunLoginUser, "login", "Authentication command for SDK",
 		`Use this command to authenticate. By default, user data will be saved in:
 
-- macOS: `+"`"+`${HOME}/Library/Application Support/ionosctl/config.json`+"`"+`
-- Linux: `+"`"+`${XDG_CONFIG_HOME}/ionosctl/config.json`+"`"+`
-- Windows: `+"`"+`%APPDATA%\ionosctl\config.json`+"`"+`.
+* macOS: `+"`"+`${HOME}/Library/Application Support/ionosctl/config.json`+"`"+`
+* Linux: `+"`"+`${XDG_CONFIG_HOME}/ionosctl/config.json`+"`"+`
+* Windows: `+"`"+`%APPDATA%\ionosctl\config.json`+"`"+`.
 
 You can use another configuration file for authentication with `+"`"+`--config`+"`"+` global option.
 
-Note: The command can also be used without `+"`"+`--user`+"`"+` and `+"`"+`--password`+"`"+` flags (see Examples).`,
+Note: The command can also be used without `+"`"+`--user`+"`"+` and `+"`"+`--password`+"`"+` flags. For more details, see Examples.`,
 		loginExamples, false)
 	loginCmd.AddStringFlag("user", "", "", "Username to authenticate")
 	loginCmd.AddStringFlag("password", "", "", "Password to authenticate")

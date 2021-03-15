@@ -28,7 +28,6 @@ Required values to run command:
 ## Options
 
 ```text
-      --add-ip string          Add IP
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings           Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
@@ -38,13 +37,11 @@ Required values to run command:
       --lan-id int             The LAN ID the NIC sits on (default 1)
       --nic-dhcp               Boolean value that indicates if the NIC is using DHCP (true) or not (false) (default true)
       --nic-id string          The unique NIC Id [Required flag]
-      --nic-name string            The name of the NIC
+      --nic-name string        The name of the NIC
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --remove-ip string       Remove IP
       --server-id string       The unique Server Id
       --timeout int            Timeout option [seconds] (default 60)
-  -v, --verbose                Enable verbose output
       --wait                   Wait for NIC to be updated
 ```
 

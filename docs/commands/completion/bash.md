@@ -37,6 +37,5 @@ You will need to start a new shell for this setup to take effect.
       --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          Enable verbose output
 ```
 

@@ -1,10 +1,12 @@
-# ionosctl
+# Introduction
 
 ![CI](https://github.com/ionos-cloud/ionosctl/workflows/CI/badge.svg)
 
 ## Overview
 
-IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal. IonosCTL uses [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) libraries in order to manage commands and options.
+IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal. 
+
+IonosCTL uses [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) libraries in order to manage commands and options.
 Cobra is both a library for creating powerful modern command-line interface (CLI) applications as well as a program to generate applications and command files and it is used in many Go projects together with Viper library. 
 
 ## Getting started
@@ -49,7 +51,7 @@ To install `ionosctl` locally, you can use:
 make install 
 ```
 
-Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable.
+Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable. Check the latest releases in the [Release Page](https://github.com/ionos-cloud/ionosctl/releases).
 
 Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Modules) with vendoring.
 
@@ -205,7 +207,7 @@ make test
 
 ### Examples
 
-For more information about each available command, including examples, use `ionosctl [command] --help` or `ionosctl help [command]` or see the [full reference documentation](./commands/README.md). 
+For more information about each available command, including examples, use `ionosctl [command] --help` or `ionosctl help [command]` or see the [full reference documentation](./docs/commands/commands.md). 
 
 ### Uninstalling `ionosctl` 
 
@@ -226,3 +228,7 @@ The IONOS Cloud CLI aims to offer access to all resources in the IONOS Cloud API
 - How can I open a bug/feature request?
 
 Bugs & feature requests can be open on the repository issues: https://github.com/ionos-cloud/ionosctl/issues/new/choose
+
+- Can I contribute to IonosCTL?
+
+Sure! Our repository is public, feel free to fork it and file a PR for one of the issues opened in the issues list. We will review it and work together to get it released.

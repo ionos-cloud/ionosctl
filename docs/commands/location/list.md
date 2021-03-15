@@ -24,7 +24,6 @@ Use this command to get a list of available locations to create objects on.
       --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          Enable verbose output
 ```
 
 ## Examples

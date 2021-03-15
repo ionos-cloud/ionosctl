@@ -5,7 +5,8 @@ GOFILES_NOVENDOR=$(shell find . -type f -name '*.go' | grep -v vendor)
 GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
 
-OUT_D = $${OUT_D:-$(shell pwd)/builds}
+OUT_D=$${OUT_D:-$(shell pwd)/builds}
+DOCS_OUT=$${DOCS_OUT:-$(shell pwd)/docs/commands/}
 
 .PHONY: test_unit
 test_unit:
@@ -16,8 +17,8 @@ test_unit:
 .PHONY: test
 test: test_unit
 
-.PHONY: docs
-docs:
+.PHONY: docs_update
+docs_update:
 	@echo "--- Generate Markdown documentation in ${DOCS_OUT} ---"
 	@DOCS_OUT=${DOCS_OUT} go run tools/doc.go
 	@echo "DONE"
@@ -40,7 +41,7 @@ vendor_status:
 
 .PHONY: vendor_update
 vendor_update:
-	@echo "Update vendor dependencies"
+	@echo "--- Update vendor dependencies ---"
 	@go mod vendor
 	@go mod tidy
 	@echo "DONE"

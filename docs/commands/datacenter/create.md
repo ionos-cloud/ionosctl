@@ -30,7 +30,6 @@ You can wait for the action to be executed using `--wait` option.
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
       --timeout int                     Timeout option [seconds] (default 60)
-  -v, --verbose                         Enable verbose output
       --wait                            Wait for Data Center to be created
 ```
 

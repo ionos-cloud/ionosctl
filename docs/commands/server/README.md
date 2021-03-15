@@ -31,7 +31,6 @@ The sub-commands of `ionosctl server` allow you to create, list, get, update, de
       --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-  -v, --verbose                Enable verbose output
 ```
 
 ## Related commands

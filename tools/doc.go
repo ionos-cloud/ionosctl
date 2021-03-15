@@ -111,7 +111,7 @@ func createStructure(cmd *builder.Command, dir string) error {
 		}
 	} else {
 		if cmd.Command.Name() == rootCmdName {
-			file = filepath.Join(dir, "README.md")
+			file = filepath.Join(dir, "commands.md")
 		} else {
 			file = filepath.Join(dir, fmt.Sprintf("%s.md", cmd.Command.Name()))
 		}
@@ -140,7 +140,18 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 	buf.WriteString(fmt.Sprintf("description: %s\n", cmd.Command.Short))
 	buf.WriteString("---\n\n")
 
-	buf.WriteString(fmt.Sprintf("# %s\n\n", strings.Title(cmd.Command.Name())))
+	// Customize title
+	title := strings.Title(cmd.Command.Name())
+	if strings.Contains(title, "Datacenter") {
+		title = strings.ReplaceAll(title, "Datacenter", "Data Center")
+	}
+	if strings.Contains(title, "Loadbalancer") {
+		title = strings.ReplaceAll(title, "Loadbalancer", "Load Balancer")
+	}
+	if strings.Contains(title, "Nic") {
+		title = strings.ReplaceAll(title, "Nic", "Network Interface")
+	}
+	buf.WriteString(fmt.Sprintf("# %s\n\n", title))
 
 	buf.WriteString("## Usage\n\n")
 	if cmd.Command.Runnable() {
@@ -187,7 +198,7 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 		children := cmd.Command.Commands()
 		buf.WriteString("## Related commands\n\n")
 		buf.WriteString("| Command | Description |\n")
-		buf.WriteString("| :------ | :---------- |\n")
+		buf.WriteString("| :--- | :--- |\n")
 		for _, child := range children {
 			if !child.IsAvailableCommand() || child.IsAdditionalHelpTopicCommand() {
 				continue
