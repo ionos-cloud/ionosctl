@@ -39,14 +39,14 @@ func lan() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdValidate, RunLanList, "list", "List LANs",
-		"Use this command to get a list of LANs on your account.\n\nRequired values to run command:\n- Data Center Id",
+		"Use this command to get a list of LANs on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		listLanExample, true)
 
 	/*
 		Get Command
 	*/
 	get := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanGet, "get", "Get a LAN",
-		"Use this command to retrieve information of a specified LAN.\n\nRequired values to run command:\n- Data Center Id\n- LAN Id",
+		"Use this command to retrieve information of a specified LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		getLanExample, true)
 	get.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
 	get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -57,13 +57,13 @@ func lan() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdValidate, RunLanCreate, "create", "Create a LAN",
-		`Use this command to create a new LAN within a Virtual Data Center on your account. The name and public option can be set. 
-Please Note: IP Failover is configured after LAN creation using an update command.
+		`Use this command to create a new LAN within a Virtual Data Center on your account. The name and public option can be set. Please Note: IP Failover is configured after LAN creation using an update command.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id`, createLanExample, true)
+
+* Data Center Id`, createLanExample, true)
 	create.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
 	create.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Indicates if the LAN faces the public Internet (true) or not (false)")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be created")
@@ -78,8 +78,9 @@ Required values to run command:
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- LAN Id`, updateLanExample, true)
+
+* Data Center Id
+* LAN Id`, updateLanExample, true)
 	update.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
 	update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, lanCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
@@ -92,21 +93,21 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	delete := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanDelete, "delete", "Delete a LAN",
+	deleteCmd := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanDelete, "delete", "Delete a LAN",
 		`Use this command to delete a specified LAN from a Virtual Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- LAN Id`, deleteLanExample, true)
-	delete.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
-	delete.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+* Data Center Id
+* LAN Id`, deleteLanExample, true)
+	deleteCmd.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
+	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, lanCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
-	delete.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be deleted")
-	delete.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
 
 	return lanCmd
 }

@@ -20,7 +20,7 @@ Use this command to authenticate. By default, user data will be saved in:
 
 You can use another configuration file for authentication with `--config` global option.
 
-Note: The command can also be used without `--user` and `--password` flags \(see Examples\).
+Note: The command can also be used without `--user` and `--password` flags. For more details, see Examples.
 
 ## Options
 
@@ -33,7 +33,6 @@ Note: The command can also be used without `--user` and `--password` flags \(see
       --password string   Password to authenticate
   -q, --quiet             Quiet output
       --user string       Username to authenticate
-  -v, --verbose           Enable verbose output
 ```
 
 ## Examples

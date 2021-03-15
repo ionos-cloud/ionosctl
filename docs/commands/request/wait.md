@@ -32,7 +32,6 @@ Required values to run command:
   -q, --quiet               Quiet output
       --request-id string   The unique Request Id. [Required flag]
       --timeout int         Timeout option [seconds] (default 60)
-  -v, --verbose             Enable verbose output
 ```
 
 ## Examples

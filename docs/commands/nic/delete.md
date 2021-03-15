@@ -36,7 +36,6 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
       --timeout int            Timeout option [seconds] (default 60)
-  -v, --verbose                Enable verbose output
       --wait                   Wait for NIC to be deleted
 ```
 

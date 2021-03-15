@@ -21,11 +21,10 @@ import (
 func request() *builder.Command {
 	reqCmd := &builder.Command{
 		Command: &cobra.Command{
-			Use:     "request",
-			Aliases: []string{"req"},
-			Short:   "Request Operations",
-			Long: `The sub-commands of ` + "`" + `ionosctl request` + "`" + ` allow you to see information about requests on your account.
-With the ` + "`" + `ionosctl request` + "`" + ` command, you can list, get or wait for a Request.`,
+			Use:              "request",
+			Aliases:          []string{"req"},
+			Short:            "Request Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl request` + "`" + ` allow you to see information about requests on your account. With the ` + "`" + `ionosctl request` + "`" + ` command, you can list, get or wait for a Request.`,
 			TraverseChildren: true,
 		},
 	}
@@ -43,7 +42,7 @@ With the ` + "`" + `ionosctl request` + "`" + ` command, you can list, get or wa
 		Get Command
 	*/
 	get := builder.NewCommand(context.TODO(), reqCmd, PreRunRequestIdValidate, RunRequestGet, "get", "Get a Request",
-		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n- Request Id",
+		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		getRequestExample, true)
 	get.AddStringFlag(config.ArgRequestId, "", "", "The unique Request Id. [Required flag]")
 	get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -59,7 +58,8 @@ With the ` + "`" + `ionosctl request` + "`" + ` command, you can list, get or wa
 You can specify a timeout for the action to be executed using `+"`"+`--timeout`+"`"+` option.
 
 Required values to run command:
-- Request Id`, waitRequestExample, true)
+
+* Request Id`, waitRequestExample, true)
 	wait.AddStringFlag(config.ArgRequestId, "", "", "The unique Request Id. [Required flag]")
 	wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp

@@ -2,7 +2,7 @@
 description: Network Interfaces Operations
 ---
 
-# Nic
+# Network Interface
 
 ## Usage
 
@@ -26,7 +26,6 @@ The sub-commands of `ionosctl nic` allow you to create, list, get, update, delet
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
-  -v, --verbose                Enable verbose output
 ```
 
 ## Related commands

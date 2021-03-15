@@ -34,7 +34,6 @@ Required values to run the command:
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id
-  -v, --verbose                  Enable verbose output
 ```
 
 ## Examples

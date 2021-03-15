@@ -34,7 +34,6 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --timeout int            Timeout option [seconds] (default 60)
-  -v, --verbose                Enable verbose output
       --wait                   Wait for LAN to be deleted
 ```
 

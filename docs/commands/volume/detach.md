@@ -35,7 +35,6 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id [Required flag]
       --timeout int            Timeout option [seconds] (default 60)
-  -v, --verbose                Enable verbose output
       --volume-id string       The unique Volume Id [Required flag]
       --wait                   Wait for Volume to detach from Server
 ```

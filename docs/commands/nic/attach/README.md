@@ -43,7 +43,6 @@ The sub-commands of `ionosctl nic attach` allow you to retrieve information abou
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id
       --timeout int              Timeout option [seconds] (default 60)
-  -v, --verbose                  Enable verbose output
       --wait                     Wait for NIC to attach to a Load Balancer
 ```
 

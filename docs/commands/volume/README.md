@@ -31,7 +31,6 @@ The sub-commands of `ionosctl volume` manage your block storage volumes by creat
       --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-  -v, --verbose                Enable verbose output
 ```
 
 ## Related commands

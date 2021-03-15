@@ -16,8 +16,8 @@ var (
 	rootCmd = &builder.Command{
 		Command: &cobra.Command{
 			Use:              "ionosctl",
-			Short:            "Ionos Cloud CLI",
-			Long:             "IonosCTL is a command-line interface (CLI) for the Ionos Cloud API.",
+			Short:            "IONOS Cloud CLI",
+			Long:             "IonosCTL is a command-line interface for the Ionos Cloud API.",
 			TraverseChildren: true,
 		},
 	}
@@ -69,8 +69,6 @@ func init() {
 	rootPFlagSet.Bool(config.ArgIgnoreStdin, false, "Force command to execute without user input")
 	viper.BindPFlag(config.ArgIgnoreStdin, rootPFlagSet.Lookup(config.ArgIgnoreStdin))
 
-	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, "v", false, "Enable verbose output")
-
 	addCommands()
 
 	cobra.OnInitialize(initConfig)
@@ -109,7 +107,7 @@ func addCommands() {
 	rootCmd.AddCommand(volume())
 	rootCmd.AddCommand(lan())
 	rootCmd.AddCommand(nic())
-	rootCmd.AddCommand(loadbalancer())
+	rootCmd.AddCommand(loadBalancer())
 	rootCmd.AddCommand(request())
 }
 

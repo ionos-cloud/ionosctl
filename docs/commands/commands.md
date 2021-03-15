@@ -1,5 +1,5 @@
 ---
-description: Ionos Cloud CLI
+description: IONOS Cloud CLI
 ---
 
 # Ionosctl
@@ -12,7 +12,7 @@ ionosctl [command]
 
 ## Description
 
-IonosCTL is a command-line interface \(CLI\) for the Ionos Cloud API.
+IonosCTL is a command-line interface for the Ionos Cloud API.
 
 ## Options
 
@@ -23,7 +23,6 @@ IonosCTL is a command-line interface \(CLI\) for the Ionos Cloud API.
       --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          Enable verbose output
 ```
 
 ## Related commands
