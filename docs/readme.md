@@ -35,7 +35,7 @@ sudo mv ~/ionosctl /usr/local/bin
 ionosctl help
 ```
 
-For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this [official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`. 
+For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this \[official guide\]\([https://msdn.microsoft.com/en-us/library/office/ee537574\(v=office.14\).aspx](https://msdn.microsoft.com/en-us/library/office/ee537574%28v=office.14%29.aspx)\) that explains how to add tools to your `PATH`.
 
 #### Building a local version
 
@@ -250,3 +250,4 @@ Bugs & feature requests can be open on the repository issues: [https://github.co
 * Can I contribute to the IONOS Cloud CLI?
 
 Sure! Our repository is public, feel free to fork it and file a PR for one of the issues opened in the issues list. We will review it and work together to get it released.
+

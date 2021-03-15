@@ -2,7 +2,7 @@
 description: List LANs
 ---
 
-# List
+# ist
 
 ## Usage
 
