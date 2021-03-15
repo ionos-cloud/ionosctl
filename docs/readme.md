@@ -21,7 +21,7 @@ Before you begin you will need to have signed-up for a [Ionos Cloud](https://www
 
 Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps:
 
-```
+```text
 # Check if /usr/local/bin is part of your PATH
 echo $PATH
 
