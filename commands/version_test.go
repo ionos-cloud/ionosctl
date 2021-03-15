@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO: to be updated
 func TestRunVersion(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

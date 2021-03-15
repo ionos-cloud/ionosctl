@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -28,6 +29,16 @@ var (
 	Verbose   bool
 
 	cfgFile string
+
+	// Version
+	Major string
+	Minor string
+	Patch string
+	// If label is not set, it will append -dev to latest version
+	// If label is set as `release`, it will show the version released
+	Label string
+
+	IonosctlVersion cliVersion
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -44,8 +55,11 @@ func GetRootCmd() *builder.Command {
 
 func init() {
 	initConfig()
-
 	rootCmd.Command.SetUsageTemplate(usageTemplate)
+
+	// Init version
+	initVersion()
+	rootCmd.Command.Version = IonosctlVersion.GetVersion()
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -94,6 +108,41 @@ func initConfig() {
 
 	viper.AutomaticEnv() // read in environment variables that match
 	_ = viper.ReadInConfig()
+}
+
+func initVersion() {
+	if Major != "" {
+		i, _ := strconv.Atoi(Major)
+		IonosctlVersion.major = i
+	}
+	if Minor != "" {
+		i, _ := strconv.Atoi(Minor)
+		IonosctlVersion.minor = i
+	}
+	if Patch != "" {
+		i, _ := strconv.Atoi(Patch)
+		IonosctlVersion.patch = i
+	}
+	if Label == "" {
+		IonosctlVersion.label = "dev"
+	} else {
+		IonosctlVersion.label = Label
+	}
+}
+
+type cliVersion struct {
+	major int
+	minor int
+	patch int
+	label string
+}
+
+func (v cliVersion) GetVersion() string {
+	if v.label != "release" {
+		return fmt.Sprintf("%d.%d.%d-%s", v.major, v.minor, v.patch, v.label)
+	} else {
+		return fmt.Sprintf("%d.%d.%d", v.major, v.minor, v.patch)
+	}
 }
 
 // AddCommands adds sub commands to the base command.
