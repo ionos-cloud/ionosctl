@@ -2,7 +2,7 @@
 description: Volume Operations
 ---
 
-# Ionosctl Volume
+# Volume
 
 ## Usage
 

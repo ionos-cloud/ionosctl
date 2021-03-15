@@ -2,7 +2,7 @@
 description: Get a NIC
 ---
 
-# Ionosctl Network Interface Get
+# Get
 
 ## Usage
 

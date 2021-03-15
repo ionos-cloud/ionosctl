@@ -2,7 +2,7 @@
 description: List Volumes
 ---
 
-# Ionosctl Volume List
+# List
 
 ## Usage
 

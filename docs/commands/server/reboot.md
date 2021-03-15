@@ -2,7 +2,7 @@
 description: Force a hard reboot of a Server
 ---
 
-# Ionosctl Server Reboot
+# Reboot
 
 ## Usage
 

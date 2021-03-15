@@ -2,7 +2,7 @@
 description: Server Operations
 ---
 
-# Ionosctl Server
+# Server
 
 ## Usage
 

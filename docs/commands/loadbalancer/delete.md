@@ -2,7 +2,7 @@
 description: Delete a Load Balancer
 ---
 
-# Ionosctl Load Balancer Delete
+# Delete
 
 ## Usage
 

@@ -2,7 +2,7 @@
 description: Get a Volume
 ---
 
-# Ionosctl Volume Get
+# Get
 
 ## Usage
 

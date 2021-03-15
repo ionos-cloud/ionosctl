@@ -2,7 +2,7 @@
 description: Generate code to enable auto-completion with `TAB` key
 ---
 
-# Ionosctl Completion
+# Completion
 
 ## Usage
 

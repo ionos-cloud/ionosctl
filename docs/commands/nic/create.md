@@ -2,7 +2,7 @@
 description: Create a NIC
 ---
 
-# Ionosctl Network Interface Create
+# Create
 
 ## Usage
 

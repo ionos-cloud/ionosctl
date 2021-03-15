@@ -2,7 +2,7 @@
 description: Get a LAN
 ---
 
-# Ionosctl Lan Get
+# Get
 
 ## Usage
 

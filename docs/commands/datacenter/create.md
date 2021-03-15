@@ -2,7 +2,7 @@
 description: Create a Data Center
 ---
 
-# Ionosctl Data Center Create
+# Create
 
 ## Usage
 

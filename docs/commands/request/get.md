@@ -2,7 +2,7 @@
 description: Get a Request
 ---
 
-# Ionosctl Request Get
+# Get
 
 ## Usage
 

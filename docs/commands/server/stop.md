@@ -2,7 +2,7 @@
 description: Stop a Server
 ---
 
-# Ionosctl Server Stop
+# Stop
 
 ## Usage
 

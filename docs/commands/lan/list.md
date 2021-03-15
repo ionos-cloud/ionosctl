@@ -2,7 +2,7 @@
 description: List LANs
 ---
 
-# Ionosctl Lan List
+# List
 
 ## Usage
 

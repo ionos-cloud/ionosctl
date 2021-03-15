@@ -2,7 +2,7 @@
 description: Network Interfaces Operations
 ---
 
-# Ionosctl Network Interface
+# Network Interface
 
 ## Usage
 

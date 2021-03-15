@@ -2,7 +2,7 @@
 description: Generate code to enable auto-completion with `TAB` key for BASH terminal
 ---
 
-# Ionosctl Completion Bash
+# Bash
 
 ## Usage
 

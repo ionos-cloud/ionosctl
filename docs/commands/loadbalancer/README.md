@@ -2,7 +2,7 @@
 description: Load Balancer Operations
 ---
 
-# Ionosctl Load Balancer
+# Load Balancer
 
 ## Usage
 

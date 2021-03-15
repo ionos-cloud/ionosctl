@@ -2,7 +2,7 @@
 description: Update a Volume
 ---
 
-# Ionosctl Volume Update
+# Update
 
 ## Usage
 

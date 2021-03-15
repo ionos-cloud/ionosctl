@@ -2,7 +2,7 @@
 description: List Servers
 ---
 
-# Ionosctl Server List
+# List
 
 ## Usage
 

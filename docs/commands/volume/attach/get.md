@@ -2,7 +2,7 @@
 description: Get an attached Volume from a Server
 ---
 
-# Ionosctl Volume Attach Get
+# Get
 
 ## Usage
 

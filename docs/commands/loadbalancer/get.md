@@ -2,7 +2,7 @@
 description: Get a Load Balancer
 ---
 
-# Ionosctl Load Balancer Get
+# Get
 
 ## Usage
 

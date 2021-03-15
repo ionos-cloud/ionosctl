@@ -2,7 +2,7 @@
 description: Delete a Server
 ---
 
-# Ionosctl Server Delete
+# Delete
 
 ## Usage
 

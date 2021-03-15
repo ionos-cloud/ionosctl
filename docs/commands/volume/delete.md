@@ -2,7 +2,7 @@
 description: Delete a Volume
 ---
 
-# Ionosctl Volume Delete
+# Delete
 
 ## Usage
 

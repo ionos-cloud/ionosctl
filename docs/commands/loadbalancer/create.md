@@ -2,7 +2,7 @@
 description: Create a Load Balancer
 ---
 
-# Ionosctl Load Balancer Create
+# Create
 
 ## Usage
 

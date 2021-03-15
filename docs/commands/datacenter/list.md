@@ -2,7 +2,7 @@
 description: List Data Centers
 ---
 
-# Ionosctl Data Center List
+# List
 
 ## Usage
 

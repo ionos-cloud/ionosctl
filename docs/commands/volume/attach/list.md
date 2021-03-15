@@ -2,7 +2,7 @@
 description: List attached Volumes from a Server
 ---
 
-# Ionosctl Volume Attach List
+# List
 
 ## Usage
 

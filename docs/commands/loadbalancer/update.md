@@ -2,7 +2,7 @@
 description: Update a Load Balancer
 ---
 
-# Ionosctl Load Balancer Update
+# Update
 
 ## Usage
 

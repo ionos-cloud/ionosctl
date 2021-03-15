@@ -2,7 +2,7 @@
 description: Get a Data Center
 ---
 
-# Ionosctl Data Center Get
+# Get
 
 ## Usage
 

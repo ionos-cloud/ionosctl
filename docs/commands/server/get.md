@@ -2,7 +2,7 @@
 description: Get a Server
 ---
 
-# Ionosctl Server Get
+# Get
 
 ## Usage
 

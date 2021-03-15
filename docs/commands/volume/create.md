@@ -2,7 +2,7 @@
 description: Create a Volume
 ---
 
-# Ionosctl Volume Create
+# Create
 
 ## Usage
 

@@ -2,7 +2,7 @@
 description: Attach a NIC to a Load Balancer
 ---
 
-# Ionosctl Network Interface Attach
+# Attach
 
 ## Usage
 

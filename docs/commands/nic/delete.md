@@ -2,7 +2,7 @@
 description: Delete a NIC
 ---
 
-# Ionosctl Network Interface Delete
+# Delete
 
 ## Usage
 

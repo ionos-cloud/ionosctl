@@ -2,7 +2,7 @@
 description: Get an attached NIC to a Load Balancer
 ---
 
-# Ionosctl Network Interface Attach Get
+# Get
 
 ## Usage
 

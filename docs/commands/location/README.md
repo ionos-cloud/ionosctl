@@ -2,7 +2,7 @@
 description: Location Operations
 ---
 
-# Ionosctl Location
+# Location
 
 ## Usage
 

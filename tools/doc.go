@@ -141,7 +141,7 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 	buf.WriteString("---\n\n")
 
 	// Customize title
-	title := strings.Title(cmd.Command.CommandPath())
+	title := strings.Title(cmd.Command.Name())
 	if strings.Contains(title, "Datacenter") {
 		title = strings.ReplaceAll(title, "Datacenter", "Data Center")
 	}

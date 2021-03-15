@@ -2,7 +2,7 @@
 description: Detach a NIC from a Load Balancer
 ---
 
-# Ionosctl Network Interface Detach
+# Detach
 
 ## Usage
 

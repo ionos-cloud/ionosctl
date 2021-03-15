@@ -2,7 +2,7 @@
 description: Generate code to enable auto-completion with `TAB` key for PowerShell terminal
 ---
 
-# Ionosctl Completion PowerShell
+# PowerShell
 
 ## Usage
 

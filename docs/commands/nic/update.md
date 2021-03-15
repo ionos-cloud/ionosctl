@@ -2,7 +2,7 @@
 description: Update a NIC
 ---
 
-# Ionosctl Network Interface Update
+# Update
 
 ## Usage
 

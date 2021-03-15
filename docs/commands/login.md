@@ -2,7 +2,7 @@
 description: Authentication command for SDK
 ---
 
-# Ionosctl Login
+# Login
 
 ## Usage
 
