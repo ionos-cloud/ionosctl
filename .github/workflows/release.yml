@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Unshallow
+        run: git fetch --prune --unshallow
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -27,12 +29,12 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get the version
-        id: get_version
+      - name: Get the new version
+        id: new_version
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-      - name: Create release branch
-        uses: peterjgrainger/action-create-branch@v2.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          branch: release/${{ steps.get_version.outputs.VERSION }}
+      - name: Get the old version
+        id: old_version
+        run: echo ::set-output name=VERSION::$(git tag --list "v*" --sort=refname | tail -n 2 | head -n 1)
+      - name: Check version
+        run: |
+          /usr/bin/bash ./tools/git-versioning.sh ${{ steps.new_version.outputs.VERSION }} ${{ steps.old_version.outputs.VERSION }}
