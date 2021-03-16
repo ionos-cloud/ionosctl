@@ -100,7 +100,7 @@ if [ "${old_version}" != "" ]; then
         git checkout ${old_version} >/dev/null || exit 1
         git checkout -b "${branch_name}" >/dev/null || exit 1
         git push -u origin ${branch_name} >/dev/null || exit 1
-        git checkout ${new_version} >/dev/null || exit 1
+        git checkout ${version} >/dev/null || exit 1
       fi
     else
       info "no new release branch needed"
