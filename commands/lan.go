@@ -325,7 +325,7 @@ func getLanPostsKVMaps(ls []resources.LanPost) []map[string]interface{} {
 }
 
 func getLansIds(outErr io.Writer, parentCmdName string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),

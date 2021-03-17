@@ -282,7 +282,7 @@ func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
 }
 
 func getDataCentersIds(outErr io.Writer) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(

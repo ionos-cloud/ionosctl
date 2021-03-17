@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	sdk "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 )
 
@@ -37,6 +38,19 @@ func LoadFile() error {
 		return err
 	}
 	return nil
+}
+
+// Load collects config data from the config file, using environment variables as fallback.
+func Load() (err error) {
+	if err = LoadFile(); err != nil {
+		pathErr := &os.PathError{}
+		if errors.As(err, &viper.ConfigFileNotFoundError{}) || errors.As(err, &pathErr) {
+			_ = viper.BindEnv(Username, sdk.IonosUsernameEnvVar)
+			_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
+			return nil
+		}
+	}
+	return err
 }
 
 func WriteFile() error {

@@ -13,7 +13,7 @@ DOCS_OUT=$${DOCS_OUT:-$(shell pwd)/docs/commands/}
 .PHONY: test_unit
 test_unit:
 	@echo "--- Run unit tests ---"
-	@go test -cover ./commands/... ./pkg/utils/...
+	@go test -cover ./commands/... ./pkg/utils/... ./pkg/config/...
 	@echo "DONE"
 
 .PHONY: test
