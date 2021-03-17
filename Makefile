@@ -1,3 +1,5 @@
+.DEFAULT_GOAL := build
+
 export CGO_ENABLED = 0
 export GO111MODULE := on
 
