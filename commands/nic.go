@@ -554,6 +554,7 @@ func getNicsIds(outErr io.Writer, parentCmdName string) []string {
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
+		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
@@ -583,6 +584,7 @@ func getAttachedNicsIds(outErr io.Writer, parentCmdName, nameCmd string) []strin
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
+		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)

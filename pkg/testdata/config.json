@@ -1,5 +1,6 @@
 {
   "server-url": "https://api.ionos.com/cloudapi/v5",
   "userdata.name": "test@ionos.com",
-  "userdata.password": "test"
+  "userdata.password": "test",
+  "userdata.token": "jwt-token"
 }
