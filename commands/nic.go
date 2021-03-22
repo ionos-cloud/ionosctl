@@ -548,7 +548,7 @@ func getNicsKVMaps(ns []resources.Nic) []map[string]interface{} {
 }
 
 func getNicsIds(outErr io.Writer, parentCmdName string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
@@ -577,7 +577,7 @@ func getNicsIds(outErr io.Writer, parentCmdName string) []string {
 }
 
 func getAttachedNicsIds(outErr io.Writer, parentCmdName, nameCmd string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(

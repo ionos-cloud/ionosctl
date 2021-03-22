@@ -557,7 +557,7 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 }
 
 func getVolumesIds(outErr io.Writer, parentCmdName string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
@@ -583,7 +583,7 @@ func getVolumesIds(outErr io.Writer, parentCmdName string) []string {
 }
 
 func getAttachedVolumesIds(outErr io.Writer, parentCmdDcId, parentCmdName, nameCmd string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(

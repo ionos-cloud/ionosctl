@@ -184,7 +184,7 @@ func getRequestsKVMaps(requests []resources.Request) []map[string]interface{} {
 }
 
 func getRequestsIds(outErr io.Writer) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(

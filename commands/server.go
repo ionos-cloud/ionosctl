@@ -479,7 +479,7 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 }
 
 func getServersIds(outErr io.Writer, parentCmdName string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
