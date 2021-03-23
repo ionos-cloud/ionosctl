@@ -9,15 +9,15 @@ description: >-
 
 ## Overview
 
-IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal. IonosCTL uses [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) libraries in order to manage commands and options. Cobra is both a library for creating powerful modern command-line interface \(CLI\) applications as well as a program to generate applications and command files and it is used in many Go projects together with Viper library.
+IonosCTL is a tool to help you manage your IONOS Cloud resources directly from your terminal. IonosCTL uses [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) libraries in order to manage commands and options. Cobra is both a library for creating powerful modern command-line interface \(CLI\) applications as well as a program to generate applications and command files and it is used in many Go projects together with Viper library.
 
 ## Getting started
 
-Before you begin you will need to have signed-up for a [Ionos Cloud](https://www.ionos.com/enterprise-cloud/signup) account. The credentials you establish during sign-up will be used to authenticate against the [Ionos Cloud API](https://dcd.ionos.com/latest/).
+An IONOS account is required for access to the Cloud API; credentials from your registration are used to authenticate against the IONOS Cloud API.
 
 ### Installing `ionosctl`
 
-#### Downloading a Release from Github
+#### Downloading a Release from GitHub
 
 Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps:
 
