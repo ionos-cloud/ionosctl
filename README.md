@@ -1,6 +1,13 @@
-# Introduction
+# IONOSCTL CLI
 
 ![CI](https://github.com/ionos-cloud/ionosctl/workflows/CI/badge.svg)
+[![Gitter](https://img.shields.io/gitter/room/ionos-cloud/sdk-general)](https://gitter.im/ionos-cloud/sdk-general)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=alert_status)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=bugs)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=security_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 
 ## Overview
 
@@ -216,16 +223,9 @@ For more information about each available command, including examples, use `iono
 To uninstall a local version built with the steps from [Installing Ionosctl](#building-a-local-version), use:
 ```text
 make clean
-```
+``` 
 
-## Feature Reference 
-
-The IONOS Cloud CLI aims to offer access to all resources in the IONOS Cloud API and also offers some additional features that make the integration easier: 
-- authentication for API calls
-- handling of asynchronous requests 
-
-## FAQ
-- How can I open a bug/feature request?
+## Contributing
 
 Bugs & feature requests can be open on the repository issues: https://github.com/ionos-cloud/ionosctl/issues/new/choose
 
