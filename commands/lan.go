@@ -67,7 +67,7 @@ Required values to run command:
 	create.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
 	create.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Indicates if the LAN faces the public Internet (true) or not (false)")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be created [seconds]")
 
 	/*
 		Update Command
@@ -88,7 +88,7 @@ Required values to run command:
 	update.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
 	update.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Public option for LAN")
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be updated [seconds]")
 
 	/*
 		Delete Command
@@ -107,7 +107,7 @@ Required values to run command:
 		return getLansIds(os.Stderr, lanCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be deleted [seconds]")
 
 	return lanCmd
 }

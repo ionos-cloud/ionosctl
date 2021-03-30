@@ -14,7 +14,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewPrinter_JSON(t *testing.T) {
+var (
+	commandExecutedTestMsg = "command executed"
+	statusOkTestMsg        = "Status Ok"
+)
+
+func TestNewPrinterJSON(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "json")
@@ -24,7 +29,7 @@ func TestNewPrinter_JSON(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestNewPrinter_Text(t *testing.T) {
+func TestNewPrinterText(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "text")
@@ -34,7 +39,7 @@ func TestNewPrinter_Text(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPrinter_PrintResultJson(t *testing.T) {
+func TestPrinterPrintResultJson(t *testing.T) {
 	var (
 		b   bytes.Buffer
 		str = `{
@@ -51,7 +56,7 @@ func TestPrinter_PrintResultJson(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		Message: "command executed",
+		Message: commandExecutedTestMsg,
 	}
 
 	p.Print(res)
@@ -62,7 +67,7 @@ func TestPrinter_PrintResultJson(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_PrintStandardResultJson(t *testing.T) {
+func TestPrinterPrintStandardResultJson(t *testing.T) {
 	var (
 		b   bytes.Buffer
 		str = `{
@@ -90,7 +95,7 @@ func TestPrinter_PrintStandardResultJson(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_PrintDefaultJson(t *testing.T) {
+func TestPrinterPrintDefaultJson(t *testing.T) {
 	var (
 		b   bytes.Buffer
 		str = `{
@@ -106,9 +111,8 @@ func TestPrinter_PrintDefaultJson(t *testing.T) {
 	p := reg["json"]
 	p.SetStderr(w)
 	p.SetStdout(w)
-	input := "command executed"
 
-	p.Print(input)
+	p.Print(commandExecutedTestMsg)
 	err = w.Flush()
 	assert.NoError(t, err)
 
@@ -116,7 +120,7 @@ func TestPrinter_PrintDefaultJson(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_PrintDefaultQuietJson(t *testing.T) {
+func TestPrinterPrintDefaultQuietJson(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "json")
@@ -127,9 +131,8 @@ func TestPrinter_PrintDefaultQuietJson(t *testing.T) {
 	p := reg["json"]
 	p.SetStderr(w)
 	p.SetStdout(w)
-	input := "command executed"
 
-	p.Print(input)
+	p.Print(commandExecutedTestMsg)
 	err = w.Flush()
 	assert.NoError(t, err)
 
@@ -137,7 +140,7 @@ func TestPrinter_PrintDefaultQuietJson(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_ResultJsonRequestId(t *testing.T) {
+func TestPrinterResultJsonRequestId(t *testing.T) {
 	var (
 		b   bytes.Buffer
 		str = `{
@@ -156,7 +159,7 @@ func TestPrinter_ResultJsonRequestId(t *testing.T) {
 	res := Result{
 		ApiResponse: &resources.Response{
 			APIResponse: ionoscloud.APIResponse{
-				Message: "Status OK",
+				Message: statusOkTestMsg,
 				Response: &http.Response{
 					Header: map[string][]string{},
 				},
@@ -173,7 +176,7 @@ func TestPrinter_ResultJsonRequestId(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_ResultJsonRequestIdErr(t *testing.T) {
+func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 	var (
 		b      bytes.Buffer
 		strErr = `path does not contain https://api.ionos.com/cloudapi/v5`
@@ -190,7 +193,7 @@ func TestPrinter_ResultJsonRequestIdErr(t *testing.T) {
 	res := Result{
 		ApiResponse: &resources.Response{
 			APIResponse: ionoscloud.APIResponse{
-				Message: "Status OK",
+				Message: statusOkTestMsg,
 				Response: &http.Response{
 					Header: map[string][]string{},
 				},
@@ -204,7 +207,7 @@ func TestPrinter_ResultJsonRequestIdErr(t *testing.T) {
 	assert.True(t, err.Error() == strErr)
 }
 
-func TestPrinter_GetStdoutJSON(t *testing.T) {
+func TestPrinterGetStdoutJSON(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "json")
@@ -219,7 +222,7 @@ func TestPrinter_GetStdoutJSON(t *testing.T) {
 	assert.True(t, out == w)
 }
 
-func TestPrinter_GetStderrJSON(t *testing.T) {
+func TestPrinterGetStderrJSON(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "json")
@@ -234,7 +237,7 @@ func TestPrinter_GetStderrJSON(t *testing.T) {
 	assert.True(t, out == w)
 }
 
-func TestPrinter_PrintResultText(t *testing.T) {
+func TestPrinterPrintResultText(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "text")
@@ -246,18 +249,18 @@ func TestPrinter_PrintResultText(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		Message: "command executed",
+		Message: commandExecutedTestMsg,
 	}
 
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
 
-	re := regexp.MustCompile(`command executed`)
+	re := regexp.MustCompile(commandExecutedTestMsg)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_PrintResultTextRequestId(t *testing.T) {
+func TestPrinterPrintResultTextRequestId(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "text")
@@ -271,7 +274,7 @@ func TestPrinter_PrintResultTextRequestId(t *testing.T) {
 	res := Result{
 		ApiResponse: &resources.Response{
 			APIResponse: ionoscloud.APIResponse{
-				Message: "Status OK",
+				Message: statusOkTestMsg,
 				Response: &http.Response{
 					Header: map[string][]string{},
 				},
@@ -288,7 +291,7 @@ func TestPrinter_PrintResultTextRequestId(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_PrintResultTextResource(t *testing.T) {
+func TestPrinterPrintResultTextResource(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "text")
@@ -312,7 +315,7 @@ func TestPrinter_PrintResultTextResource(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_PrintResultTextWaitResource(t *testing.T) {
+func TestPrinterPrintResultTextWaitResource(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "text")
@@ -336,7 +339,7 @@ func TestPrinter_PrintResultTextWaitResource(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_PrintResultTextKeyValue(t *testing.T) {
+func TestPrinterPrintResultTextKeyValue(t *testing.T) {
 	var (
 		b      bytes.Buffer
 		tabwrt = `ID    Name    Authorized   Age\[min]
@@ -371,7 +374,7 @@ func TestPrinter_PrintResultTextKeyValue(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_PrintDefaultText(t *testing.T) {
+func TestPrinterPrintDefaultText(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "text")
@@ -392,7 +395,7 @@ func TestPrinter_PrintDefaultText(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_UnknownFormatType(t *testing.T) {
+func TestPrinterUnknownFormatType(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "dummy")
@@ -404,7 +407,7 @@ func TestPrinter_UnknownFormatType(t *testing.T) {
 	assert.True(t, err.Error() == `unknown type format dummy. Hint: use --output json|text`)
 }
 
-func TestPrinter_ResultQuiet(t *testing.T) {
+func TestPrinterResultQuiet(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "text")
@@ -416,7 +419,7 @@ func TestPrinter_ResultQuiet(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		Message: "command executed",
+		Message: commandExecutedTestMsg,
 	}
 
 	p.Print(res)
@@ -427,7 +430,7 @@ func TestPrinter_ResultQuiet(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestPrinter_GetStdoutText(t *testing.T) {
+func TestPrinterGetStdoutText(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "text")
@@ -442,7 +445,7 @@ func TestPrinter_GetStdoutText(t *testing.T) {
 	assert.True(t, out == w)
 }
 
-func TestPrinter_GetStderrText(t *testing.T) {
+func TestPrinterGetStderrText(t *testing.T) {
 	var b bytes.Buffer
 
 	viper.Set(config.ArgOutput, "text")

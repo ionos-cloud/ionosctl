@@ -75,7 +75,7 @@ func TestPreRunGlobalDcIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcIdValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -99,7 +99,7 @@ func TestPreRunGlobalDcIdLanIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcIdLanIdValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcIdLanIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -129,7 +129,7 @@ func TestRunLanList(t *testing.T) {
 	})
 }
 
-func TestRunLanList_Err(t *testing.T) {
+func TestRunLanListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -182,7 +182,7 @@ func TestRunLanCreate(t *testing.T) {
 	})
 }
 
-func TestRunLanCreate_Err(t *testing.T) {
+func TestRunLanCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -197,7 +197,7 @@ func TestRunLanCreate_Err(t *testing.T) {
 	})
 }
 
-func TestRunLanCreate_WaitErr(t *testing.T) {
+func TestRunLanCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -229,7 +229,7 @@ func TestRunLanUpdate(t *testing.T) {
 	})
 }
 
-func TestRunLanUpdate_Err(t *testing.T) {
+func TestRunLanUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -246,7 +246,7 @@ func TestRunLanUpdate_Err(t *testing.T) {
 	})
 }
 
-func TestRunLanUpdate_WaitErr(t *testing.T) {
+func TestRunLanUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -278,7 +278,7 @@ func TestRunLanDelete(t *testing.T) {
 	})
 }
 
-func TestRunLanDelete_Err(t *testing.T) {
+func TestRunLanDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -293,7 +293,7 @@ func TestRunLanDelete_Err(t *testing.T) {
 	})
 }
 
-func TestRunLanDelete_WaitErr(t *testing.T) {
+func TestRunLanDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -308,7 +308,7 @@ func TestRunLanDelete_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunLanDelete_AskForConfirm(t *testing.T) {
+func TestRunLanDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -324,7 +324,7 @@ func TestRunLanDelete_AskForConfirm(t *testing.T) {
 	})
 }
 
-func TestRunLanDelete_AskForConfirmErr(t *testing.T) {
+func TestRunLanDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -342,7 +342,7 @@ func TestRunLanDelete_AskForConfirmErr(t *testing.T) {
 func TestGetLansCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("lan", config.ArgCols), []string{"Name"})
@@ -351,10 +351,10 @@ func TestGetLansCols(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGetLansCols_Err(t *testing.T) {
+func TestGetLansColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("lan", config.ArgCols), []string{"Unknown"})
@@ -368,7 +368,7 @@ func TestGetLansCols_Err(t *testing.T) {
 func TestGetLansIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

@@ -30,7 +30,7 @@ func TestWaitForAction(t *testing.T) {
 	})
 }
 
-func TestWaitForAction_Err(t *testing.T) {
+func TestWaitForActionErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -42,7 +42,7 @@ func TestWaitForAction_Err(t *testing.T) {
 	})
 }
 
-func TestWaitForAction_PathErr(t *testing.T) {
+func TestWaitForActionPathErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {

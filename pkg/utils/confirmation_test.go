@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"testing"
@@ -20,11 +21,11 @@ var (
 	testErr = errors.New("error occurred")
 )
 
-func TestAskForConfirm_YesReader(t *testing.T) {
+func TestAskForConfirmYesReader(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
-	p.EXPECT().Print("Warning: Are you sure you want to " + testVar + " (y/N) ? ").Return(nil)
+	p.EXPECT().Print(getTestMessage(testVar)).Return(nil)
 
 	input := getUserInput
 	defer func() { getUserInput = input }()
@@ -39,11 +40,11 @@ func TestAskForConfirm_YesReader(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestAskForConfirm_PrinterErr(t *testing.T) {
+func TestAskForConfirmPrinterErr(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
-	p.EXPECT().Print("Warning: Are you sure you want to " + testVar + " (y/N) ? ").Return(testErr)
+	p.EXPECT().Print(getTestMessage(testVar)).Return(testErr)
 
 	input := getUserInput
 	defer func() { getUserInput = input }()
@@ -58,11 +59,11 @@ func TestAskForConfirm_PrinterErr(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestAskForConfirm_EOF(t *testing.T) {
+func TestAskForConfirmEOF(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
-	p.EXPECT().Print("Warning: Are you sure you want to " + testVar + " (y/N) ? ").Return(nil)
+	p.EXPECT().Print(getTestMessage(testVar)).Return(nil)
 
 	input := getUserInput
 	defer func() { getUserInput = input }()
@@ -77,7 +78,7 @@ func TestAskForConfirm_EOF(t *testing.T) {
 	assert.True(t, err.Error() == `unable to parse users input EOF`)
 }
 
-func TestAskForConfirm_Yes(t *testing.T) {
+func TestAskForConfirmYes(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
@@ -94,7 +95,7 @@ func TestAskForConfirm_Yes(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestAskForConfirm_No(t *testing.T) {
+func TestAskForConfirmNo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
@@ -111,7 +112,7 @@ func TestAskForConfirm_No(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestAskForConfirm_Any(t *testing.T) {
+func TestAskForConfirmAny(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
@@ -128,7 +129,7 @@ func TestAskForConfirm_Any(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestAskForConfirm_Error(t *testing.T) {
+func TestAskForConfirmError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
@@ -145,7 +146,7 @@ func TestAskForConfirm_Error(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestAskForConfirm_IgnoreStdin(t *testing.T) {
+func TestAskForConfirmIgnoreStdin(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
@@ -158,8 +159,12 @@ func TestGetUserInput(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
-	p.EXPECT().Print("Warning: Are you sure you want to " + testVar + " (y/N) ? ").Return(nil)
+	p.EXPECT().Print(getTestMessage(testVar)).Return(nil)
 	reader := bytes.NewReader([]byte("YES\n"))
 	_, err := getUserInput(reader, p, testVar)
 	assert.NoError(t, err)
+}
+
+func getTestMessage(msg string) string {
+	return fmt.Sprintf("Warning: Are you sure you want to %s (y/N) ? ", msg)
 }

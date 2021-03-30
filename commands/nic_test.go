@@ -22,7 +22,7 @@ var (
 	lanNewNicId = int32(2)
 	dhcpNic     = false
 	dhcpNewNic  = true
-	ipsNic      = []string{"1.1.1.1"}
+	ipsNic      = []string{"x.x.x.x"}
 	n           = ionoscloud.Nic{
 		Id: &testNicVar,
 		Properties: &ionoscloud.NicProperties{
@@ -81,7 +81,7 @@ func TestPreRunGlobalDcServerIdsValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcServerIdsValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcServerIdsValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -112,7 +112,7 @@ func TestPreRunGlobalDcServerIdsNicIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcServerIdsNicIdValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcServerIdsNicIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -151,7 +151,7 @@ func TestPreRunGlobalDcIdNicLoadbalancerIdsValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcIdNicLoadbalancerIdsValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcIdNicLoadbalancerIdsValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -189,7 +189,7 @@ func TestRunNicList(t *testing.T) {
 	})
 }
 
-func TestRunNicList_Err(t *testing.T) {
+func TestRunNicListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -216,7 +216,7 @@ func TestRunNicGet(t *testing.T) {
 	})
 }
 
-func TestRunNicGet_Err(t *testing.T) {
+func TestRunNicGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -248,7 +248,7 @@ func TestRunNicCreate(t *testing.T) {
 	})
 }
 
-func TestRunNicCreate_Err(t *testing.T) {
+func TestRunNicCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -266,7 +266,7 @@ func TestRunNicCreate_Err(t *testing.T) {
 	})
 }
 
-func TestRunNicCreate_WaitErr(t *testing.T) {
+func TestRunNicCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -302,7 +302,7 @@ func TestRunNicUpdate(t *testing.T) {
 	})
 }
 
-func TestRunNicUpdate_Err(t *testing.T) {
+func TestRunNicUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -320,7 +320,7 @@ func TestRunNicUpdate_Err(t *testing.T) {
 	})
 }
 
-func TestRunNicUpdate_WaitErr(t *testing.T) {
+func TestRunNicUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -354,7 +354,7 @@ func TestRunNicDelete(t *testing.T) {
 	})
 }
 
-func TestRunNicDelete_Err(t *testing.T) {
+func TestRunNicDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -370,7 +370,7 @@ func TestRunNicDelete_Err(t *testing.T) {
 	})
 }
 
-func TestRunNicDelete_WaitErr(t *testing.T) {
+func TestRunNicDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -386,7 +386,7 @@ func TestRunNicDelete_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunNicDelete_AskForConfirm(t *testing.T) {
+func TestRunNicDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -403,7 +403,7 @@ func TestRunNicDelete_AskForConfirm(t *testing.T) {
 	})
 }
 
-func TestRunNicDelete_AskForConfirmErr(t *testing.T) {
+func TestRunNicDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -431,7 +431,7 @@ func TestPreRunAttachGlobalDcIdLoadbalancerIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunAttachGlobalDcIdLoadbalancerIdValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunAttachGlobalDcIdLoadbalancerIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -462,7 +462,7 @@ func TestPreRunAttachGlobalDcIdNicLoadbalancerIdsValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunAttachGlobalDcIdNicLoadbalancerIdsValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunAttachGlobalDcIdNicLoadbalancerIdsValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -502,7 +502,7 @@ func TestRunNicAttach(t *testing.T) {
 	})
 }
 
-func TestRunNicAttach_Err(t *testing.T) {
+func TestRunNicAttachErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -517,7 +517,7 @@ func TestRunNicAttach_Err(t *testing.T) {
 	})
 }
 
-func TestRunNicAttach_WaitErr(t *testing.T) {
+func TestRunNicAttachWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -545,7 +545,7 @@ func TestRunNicAttachList(t *testing.T) {
 	})
 }
 
-func TestRunNicAttachList_Err(t *testing.T) {
+func TestRunNicAttachListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -572,7 +572,7 @@ func TestRunNicAttachGet(t *testing.T) {
 	})
 }
 
-func TestRunNicAttachGet_Err(t *testing.T) {
+func TestRunNicAttachGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -602,7 +602,7 @@ func TestRunNicDetach(t *testing.T) {
 	})
 }
 
-func TestRunNicDetach_Err(t *testing.T) {
+func TestRunNicDetachErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -618,7 +618,7 @@ func TestRunNicDetach_Err(t *testing.T) {
 	})
 }
 
-func TestRunNicDetach_WaitErr(t *testing.T) {
+func TestRunNicDetachWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -634,7 +634,7 @@ func TestRunNicDetach_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunNicDetach_AskForConfirm(t *testing.T) {
+func TestRunNicDetachAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -651,7 +651,7 @@ func TestRunNicDetach_AskForConfirm(t *testing.T) {
 	})
 }
 
-func TestRunNicDetach_AskForConfirmErr(t *testing.T) {
+func TestRunNicDetachAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -670,7 +670,7 @@ func TestRunNicDetach_AskForConfirmErr(t *testing.T) {
 func TestGetNicsCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgCols), []string{"Name"})
@@ -679,10 +679,10 @@ func TestGetNicsCols(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGetNicsCols_Err(t *testing.T) {
+func TestGetNicsColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("nic", config.ArgCols), []string{"Unknown"})
@@ -696,7 +696,7 @@ func TestGetNicsCols_Err(t *testing.T) {
 func TestGetNicsIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
@@ -710,10 +710,10 @@ func TestGetNicsIds(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestGetNicsIds_Err(t *testing.T) {
+func TestGetNicsIdsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
@@ -730,7 +730,7 @@ func TestGetNicsIds_Err(t *testing.T) {
 func TestGetAttachedNicsIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
@@ -744,10 +744,10 @@ func TestGetAttachedNicsIds(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestGetAttachedNicsIds_Err(t *testing.T) {
+func TestGetAttachedNicsIdsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

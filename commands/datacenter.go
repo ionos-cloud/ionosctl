@@ -61,7 +61,7 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, 
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be created [seconds]")
 
 	/*
 		Update Command
@@ -81,7 +81,7 @@ Required values to run command:
 	update.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
 	update.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be updated [seconds]")
 
 	/*
 		Delete Command
@@ -99,7 +99,7 @@ Required values to run command:
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be deleted [seconds]")
 
 	return datacenterCmd
 }

@@ -65,7 +65,7 @@ func TestPreRunGlobalDcIdLoadbalancerIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcIdLoadbalancerIdValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcIdLoadbalancerIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -96,7 +96,7 @@ func TestRunLoadbalancerList(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerList_Err(t *testing.T) {
+func TestRunLoadbalancerListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -121,7 +121,7 @@ func TestRunLoadbalancerGet(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerGet_Err(t *testing.T) {
+func TestRunLoadbalancerGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -149,7 +149,7 @@ func TestRunLoadbalancerCreate(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerCreate_Err(t *testing.T) {
+func TestRunLoadbalancerCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -165,7 +165,7 @@ func TestRunLoadbalancerCreate_Err(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerCreate_WaitErr(t *testing.T) {
+func TestRunLoadbalancerCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -197,7 +197,7 @@ func TestRunLoadbalancerUpdate(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerUpdate_Err(t *testing.T) {
+func TestRunLoadbalancerUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -213,7 +213,7 @@ func TestRunLoadbalancerUpdate_Err(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerUpdate_WaitErr(t *testing.T) {
+func TestRunLoadbalancerUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -244,7 +244,7 @@ func TestRunLoadbalancerDelete(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerDelete_Err(t *testing.T) {
+func TestRunLoadbalancerDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -259,7 +259,7 @@ func TestRunLoadbalancerDelete_Err(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerDelete_WaitErr(t *testing.T) {
+func TestRunLoadbalancerDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -274,7 +274,7 @@ func TestRunLoadbalancerDelete_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerDelete_AskForConfirm(t *testing.T) {
+func TestRunLoadbalancerDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -290,7 +290,7 @@ func TestRunLoadbalancerDelete_AskForConfirm(t *testing.T) {
 	})
 }
 
-func TestRunLoadbalancerDelete_AskForConfirmErr(t *testing.T) {
+func TestRunLoadbalancerDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -308,7 +308,7 @@ func TestRunLoadbalancerDelete_AskForConfirmErr(t *testing.T) {
 func TestLoadbalancersCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Name"})
@@ -317,10 +317,10 @@ func TestLoadbalancersCols(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGetLoadbalancersCols_Err(t *testing.T) {
+func TestGetLoadbalancersColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Unknown"})
@@ -334,7 +334,7 @@ func TestGetLoadbalancersCols_Err(t *testing.T) {
 func TestGetLoadbalancersIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

@@ -78,7 +78,7 @@ Required values to run command:
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be created [seconds]")
 
 	/*
 		Update Command
@@ -108,7 +108,7 @@ Required values to run command:
 	update.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
 	update.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be updated [seconds]")
 
 	/*
 		Delete Command
@@ -127,7 +127,7 @@ Required values to run command:
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be deleted [seconds]")
 
 	/*
 		Start Command
@@ -146,7 +146,7 @@ Required values to run command:
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	start.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to start")
-	start.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	start.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be started [seconds]")
 
 	/*
 		Stop Command
@@ -165,7 +165,7 @@ Required values to run command:
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	stop.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to stop")
-	stop.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	stop.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be stopped [seconds]")
 
 	/*
 		Reboot Command
