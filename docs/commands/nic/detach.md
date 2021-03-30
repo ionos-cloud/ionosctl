@@ -36,7 +36,7 @@ Required values to run command:
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id
-      --timeout int              Timeout option [seconds] (default 60)
+      --timeout int              Timeout option for NIC to be detached from a Load Balancer [seconds] (default 60)
       --wait                     Wait for NIC to detach from a Load Balancer
 ```
 

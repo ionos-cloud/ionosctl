@@ -33,7 +33,7 @@ Required values to run command:
       --lan-id string          The unique LAN Id [Required flag]
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option [seconds] (default 60)
+      --timeout int            Timeout option for LAN to be deleted [seconds] (default 60)
       --wait                   Wait for LAN to be deleted
 ```
 
