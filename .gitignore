@@ -1,5 +1,5 @@
 # Folders
 .idea/
 builds/
-
+coverage.out
 .envrc
