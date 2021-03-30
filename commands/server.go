@@ -41,14 +41,14 @@ func server() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdValidate, RunServerList, "list", "List Servers",
-		"Use this command to list Servers from a specified Data Center.\n\nRequired values to run command:\n- Data Center Id",
+		"Use this command to list Servers from a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		listServerExample, true)
 
 	/*
 		Get Command
 	*/
 	get := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerGet, "get", "Get a Server",
-		"Use this command to get information about a specified Server from a Data Center.\n\nRequired values to run command:\n- Data Center Id\n- Server Id",
+		"Use this command to get information about a specified Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
 	get.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
 	get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -64,13 +64,14 @@ func server() *builder.Command {
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id`, createServerExample, true)
+
+* Data Center Id`, createServerExample, true)
 	create.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
 	create.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
 	create.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
 	create.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family for the Server")
 	create.Command.RegisterFlagCompletionFunc(config.ArgServerCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"AMD_OPTERON", "INTEL_XEON"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgServerZone, "", "AUTO", "Availability zone of the Server")
 	create.Command.RegisterFlagCompletionFunc(config.ArgServerZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -88,8 +89,9 @@ Required values to run command:
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id`, updateServerExample, true)
+
+* Data Center Id
+* Server Id`, updateServerExample, true)
 	update.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
 	update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
@@ -97,7 +99,7 @@ Required values to run command:
 	update.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
 	update.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
 	update.Command.RegisterFlagCompletionFunc(config.ArgServerCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"AMD_OPTERON", "INTEL_XEON"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgServerZone, "", "", "Availability zone of the Server")
 	update.Command.RegisterFlagCompletionFunc(config.ArgServerZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -111,21 +113,21 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	delete := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerDelete, "delete", "Delete a Server",
+	deleteCmd := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerDelete, "delete", "Delete a Server",
 		`Use this command to delete a specified Server from a Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id`, deleteServerExample, true)
-	delete.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
-	delete.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+* Data Center Id
+* Server Id`, deleteServerExample, true)
+	deleteCmd.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
-	delete.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be deleted")
-	delete.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
 
 	/*
 		Start Command
@@ -133,12 +135,12 @@ Required values to run command:
 	start := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStart, "start", "Start a Server",
 		`Use this command to start specified Server from a Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id`, startServerExample, true)
+
+* Data Center Id
+* Server Id`, startServerExample, true)
 	start.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
 	start.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
@@ -152,12 +154,12 @@ Required values to run command:
 	stop := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStop, "stop", "Stop a Server",
 		`Use this command to stop specified Server from a Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id`, stopServerExample, true)
+
+* Data Center Id
+* Server Id`, stopServerExample, true)
 	stop.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
 	stop.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
@@ -171,12 +173,12 @@ Required values to run command:
 	reboot := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerReboot, "reboot", "Force a hard reboot of a Server",
 		`Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id`, resetServerExample, true)
+
+* Data Center Id
+* Server Id`, resetServerExample, true)
 	reboot.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
 	reboot.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
@@ -477,7 +479,7 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 }
 
 func getServersIds(outErr io.Writer, parentCmdName string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(

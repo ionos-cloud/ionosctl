@@ -199,7 +199,7 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 		Context:    ctx,
 
 		initServices: func(c *CommandConfig) error {
-			err := config.LoadFile()
+			err := config.Load()
 			if err != nil {
 				return err
 			}

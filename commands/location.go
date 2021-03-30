@@ -112,7 +112,7 @@ func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {
 }
 
 func getLocationIds(outErr io.Writer) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(

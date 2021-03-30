@@ -41,14 +41,14 @@ func volume() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdValidate, RunVolumeList, "list", "List Volumes",
-		"Use this command to list all Volumes from a Data Center on your account.\n\nRequired values to run command:\n- Data Center Id",
+		"Use this command to list all Volumes from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		listVolumeExample, true)
 
 	/*
 		Get Command
 	*/
 	get := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeGet, "get", "Get a Volume",
-		"Use this command to retrieve information about a Volume using its ID.\n\nRequired values to run command:\n- Data Center Id\n- Volume Id",
+		"Use this command to retrieve information about a Volume using its ID.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id",
 		getVolumeExample, true)
 	get.AddStringFlag(config.ArgVolumeId, "", "", "The unique Volume Id [Required flag]")
 	get.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -64,7 +64,8 @@ func volume() *builder.Command {
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id`,
+
+* Data Center Id`,
 		createVolumeExample, true)
 	create.AddStringFlag(config.ArgVolumeName, "", "", "Name of the Volume")
 	create.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
@@ -80,17 +81,16 @@ Required values to run command:
 		Update Command
 	*/
 	update := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeUpdate, "update", "Update a Volume",
-		`Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. 
-The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards. 
+		`Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards.
 
-Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API.
-Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
+Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API. Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
-Required values to run command: 
-- Data Center Id
-- Volume Id`, updateVolumeExample, true)
+Required values to run command:
+
+* Data Center Id
+* Volume Id`, updateVolumeExample, true)
 	update.AddStringFlag(config.ArgVolumeId, "", "", "The unique Volume Id [Required flag]")
 	update.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, volumeCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
@@ -105,34 +105,35 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	delete := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeDelete, "delete", "Delete a Volume",
+	deleteCmd := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeDelete, "delete", "Delete a Volume",
 		`Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Volume Id`, deleteVolumeExample, true)
-	delete.AddStringFlag(config.ArgVolumeId, "", "", "The unique Volume Id [Required flag]")
-	delete.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+* Data Center Id
+* Volume Id`, deleteVolumeExample, true)
+	deleteCmd.AddStringFlag(config.ArgVolumeId, "", "", "The unique Volume Id [Required flag]")
+	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, volumeCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
-	delete.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be deleted")
-	delete.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
 
 	/*
 		Attach Command
 	*/
 	attachVolume := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunVolumeAttach, "attach", "Attach a Volume to a Server",
-		`Use this command to attach a Volume to a Server from a Data Center. 
+		`Use this command to attach a Volume to a Server from a Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Server Id
-- Volume Id
+
+* Data Center Id
+* Server Id
+* Volume Id
 
 The sub-commands of `+"`"+`ionosctl volume attach`+"`"+` allow you to retrieve information about attached Volumes or about a specified attached Volume.`, attachVolumeExample, true)
 	attachVolume.AddStringFlag(config.ArgVolumeId, "", "", "The unique Volume Id [Required flag]")
@@ -150,7 +151,7 @@ The sub-commands of `+"`"+`ionosctl volume attach`+"`"+` allow you to retrieve i
 		Attach List Command
 	*/
 	listAttached := builder.NewCommand(context.TODO(), attachVolume, PreRunAttachGlobalDcIdServerIdValidate, RunVolumesAttachList, "list", "List attached Volumes from a Server",
-		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n- Data Center Id\n- Server Id",
+		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		attachListVolumeExample, true)
 	listAttached.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
 	listAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -161,7 +162,7 @@ The sub-commands of `+"`"+`ionosctl volume attach`+"`"+` allow you to retrieve i
 		Attach Get Command
 	*/
 	getAttached := builder.NewCommand(context.TODO(), attachVolume, PreRunAttachGlobalDcIdServerVolumeIdsValidate, RunVolumeAttachGet, "get", "Get an attached Volume from a Server",
-		"Use this command to retrieve information about an attached Volume.\n\nRequired values to run command:\n- Data Center Id\n- Server Id\n- Volume Id",
+		"Use this command to retrieve information about an attached Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
 		attachGetVolumeExample, true)
 	getAttached.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
 	getAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -176,15 +177,15 @@ The sub-commands of `+"`"+`ionosctl volume attach`+"`"+` allow you to retrieve i
 		Detach Command
 	*/
 	detachVolume := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunVolumeDetach, "detach", "Detach a Volume from a Server",
-		`Use this command to detach a Volume from a Server. 
+		`Use this command to detach a Volume from a Server.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
-Required values to run command: 
-- Data Center Id
-- Server Id
-- Volume Id`, detachVolumeExample, true)
+Required values to run command:
+
+* Data Center Id
+* Server Id
+* Volume Id`, detachVolumeExample, true)
 	detachVolume.AddStringFlag(config.ArgVolumeId, "", "", "The unique Volume Id [Required flag]")
 	detachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedVolumesIds(os.Stderr, volumeCmd.Command.Name(), volumeCmd.Command.Name(), detachVolume.Command.Name()), cobra.ShellCompDirectiveNoFileComp
@@ -556,7 +557,7 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 }
 
 func getVolumesIds(outErr io.Writer, parentCmdName string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
@@ -582,7 +583,7 @@ func getVolumesIds(outErr io.Writer, parentCmdName string) []string {
 }
 
 func getAttachedVolumesIds(outErr io.Writer, parentCmdDcId, parentCmdName, nameCmd string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(

@@ -35,7 +35,6 @@ Required values to run command:
   -o, --output string           Desired output format [text|json] (default "text")
   -q, --quiet                   Quiet output
       --timeout int             Timeout option [seconds] (default 60)
-  -v, --verbose                 Enable verbose output
       --volume-bus string       Bus of the Volume (default "VIRTIO")
       --volume-id string        The unique Volume Id [Required flag]
       --volume-name string      Name of the Volume

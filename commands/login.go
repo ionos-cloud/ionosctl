@@ -11,20 +11,20 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 func login() *builder.Command {
 	loginCmd := builder.NewCommand(context.TODO(), nil, noPreRun, RunLoginUser, "login", "Authentication command for SDK",
 		`Use this command to authenticate. By default, user data will be saved in:
 
-- macOS: `+"`"+`${HOME}/Library/Application Support/ionosctl/config.json`+"`"+`
-- Linux: `+"`"+`${XDG_CONFIG_HOME}/ionosctl/config.json`+"`"+`
-- Windows: `+"`"+`%APPDATA%\ionosctl\config.json`+"`"+`.
+* macOS: `+"`"+`${HOME}/Library/Application Support/ionosctl/config.json`+"`"+`
+* Linux: `+"`"+`${XDG_CONFIG_HOME}/ionosctl/config.json`+"`"+`
+* Windows: `+"`"+`%APPDATA%\ionosctl\config.json`+"`"+`.
 
 You can use another configuration file for authentication with `+"`"+`--config`+"`"+` global option.
 
-Note: The command can also be used without `+"`"+`--user`+"`"+` and `+"`"+`--password`+"`"+` flags (see Examples).`,
+Note: The command can also be used without `+"`"+`--user`+"`"+` and `+"`"+`--password`+"`"+` flags. For more details, see Examples.`,
 		loginExamples, false)
 	loginCmd.AddStringFlag("user", "", "", "Username to authenticate")
 	loginCmd.AddStringFlag("password", "", "", "Password to authenticate")
@@ -54,7 +54,7 @@ func RunLoginUser(c *builder.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		bytesPwd, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+		bytesPwd, err := term.ReadPassword(int(os.Stdin.Fd()))
 		if err != nil {
 			return err
 		}

@@ -9,13 +9,33 @@ description: >-
 
 ## Overview
 
-IonosCTL is a tool to help you manage your Ionos Cloud resources directly from your terminal. IonosCTL uses [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) libraries in order to manage commands and options. Cobra is both a library for creating powerful modern command-line interface \(CLI\) applications as well as a program to generate applications and command files and it is used in many Go projects together with Viper library.
+IonosCTL is a tool to help you manage your IONOS Cloud resources directly from your terminal. 
 
 ## Getting started
 
-Before you begin you will need to have signed-up for a [Ionos Cloud](https://www.ionos.com/enterprise-cloud/signup) account. The credentials you establish during sign-up will be used to authenticate against the [Ionos Cloud API](https://dcd.ionos.com/latest/).
+An IONOS account is required for access to the Cloud API; credentials from your registration are used to authenticate against the IONOS Cloud API.
 
 ### Installing `ionosctl`
+
+#### Downloading a Release from GitHub
+
+Check the [Release Page](https://github.com/ionos-cloud/ionosctl/releases) and find the corresponding archive for your operating system and architecture. You can download the archive from your browser or you can follow the next steps:
+
+```text
+# Check if /usr/local/bin is part of your PATH
+echo $PATH
+
+# Download and extract the binary (<version> is the full semantic version): 
+curl -sL https://github.com/ionos-cloud/ionosctl/releases/download/v<version>/ionosctl-<version>-linux-amd64.tar.gz | tar -xzv
+
+# Move the binary somewhere in your $PATH:
+sudo mv ~/ionosctl /usr/local/bin
+
+# Use the ionosctl CLI
+ionosctl help
+```
+
+For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this \[official guide\]\([https://msdn.microsoft.com/en-us/library/office/ee537574\(v=office.14\).aspx](https://msdn.microsoft.com/en-us/library/office/ee537574%28v=office.14%29.aspx)\) that explains how to add tools to your `PATH`.
 
 #### Building a local version
 
@@ -37,7 +57,7 @@ To install `ionosctl` locally, you can use:
 make install
 ```
 
-Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable.
+Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable. Check the latest releases in the [Release Page](https://github.com/ionos-cloud/ionosctl/releases).
 
 Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Modules) with vendoring.
 
@@ -226,4 +246,8 @@ The IONOS Cloud CLI aims to offer access to all resources in the IONOS Cloud API
 * How can I open a bug/feature request?
 
 Bugs & feature requests can be open on the repository issues: [https://github.com/ionos-cloud/ionosctl/issues/new/choose](https://github.com/ionos-cloud/ionosctl/issues/new/choose)
+
+* Can I contribute to the IONOS Cloud CLI?
+
+Sure! Our repository is public, feel free to fork it and file a PR for one of the issues opened in the issues list. We will review it and work together to get it released.
 

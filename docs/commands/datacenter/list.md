@@ -24,7 +24,6 @@ Use this command to list all Data Centers on your account.
       --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          Enable verbose output
 ```
 
 ## Examples

@@ -25,7 +25,6 @@ The sub-commands of `ionosctl lan` allow you to create, list, get, update, delet
       --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-  -v, --verbose                Enable verbose output
 ```
 
 ## Related commands

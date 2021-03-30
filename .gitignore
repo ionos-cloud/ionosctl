@@ -1,2 +1,5 @@
 # Folders
 .idea/
+builds/
+
+.envrc

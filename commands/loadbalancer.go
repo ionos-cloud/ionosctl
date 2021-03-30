@@ -17,14 +17,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-func loadbalancer() *builder.Command {
+func loadBalancer() *builder.Command {
 	loadbalancerCmd := &builder.Command{
 		Command: &cobra.Command{
-			Use:     "loadbalancer",
-			Aliases: []string{"lb"},
-			Short:   "Load Balancer Operations",
-			Long: `The sub-commands of ` + "`" + `ionosctl loadbalancer` + "`" + ` manage your Load Balancers on your account.
-With the ` + "`" + `ionosctl loadbalancer` + "`" + ` command, you can list, create, delete Load Balancers and manage their configuration details.`,
+			Use:              "loadbalancer",
+			Aliases:          []string{"lb"},
+			Short:            "Load Balancer Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl loadbalancer` + "`" + ` manage your Load Balancers on your account. With the ` + "`" + `ionosctl loadbalancer` + "`" + ` command, you can list, create, delete Load Balancers and manage their configuration details.`,
 			TraverseChildren: true,
 		},
 	}
@@ -41,14 +40,14 @@ With the ` + "`" + `ionosctl loadbalancer` + "`" + ` command, you can list, crea
 		List Command
 	*/
 	builder.NewCommand(context.TODO(), loadbalancerCmd, PreRunGlobalDcIdValidate, RunLoadbalancerList, "list", "List Load Balancers",
-		"Use this command to list all Load Balancers from a Data Center on your account.\n\nRequired values to run command:\n- Data Center Id",
+		"Use this command to list all Load Balancers from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		listLoadbalancerExample, true)
 
 	/*
 		Get Command
 	*/
 	get := builder.NewCommand(context.TODO(), loadbalancerCmd, PreRunGlobalDcIdLoadbalancerIdValidate, RunLoadbalancerGet, "get", "Get a Load Balancer",
-		"Use this command to retrieve information about a Load Balancer instance.\n\nRequired values to run command:\n- Data Center Id\n- Load Balancer Id",
+		"Use this command to retrieve information about a Load Balancer instance.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		getLoadbalancerExample, true)
 	get.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
 	get.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -64,10 +63,9 @@ With the ` + "`" + `ionosctl loadbalancer` + "`" + ` command, you can list, crea
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id`, createLoadbalancerExample, true)
+
+* Data Center Id`, createLoadbalancerExample, true)
 	create.AddStringFlag(config.ArgLoadbalancerName, "", "", "Name of the Load Balancer")
-	// TODO: TO BE UPDATED TO USE IP
-	create.AddStringFlag(config.ArgLoadbalancerIp, "", "", "IPv4 address of the Load Balancer. All attached NICs will inherit this IP")
 	create.AddBoolFlag(config.ArgLoadbalancerDhcp, "", config.DefaultLoadBalancerDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
@@ -81,8 +79,9 @@ Required values to run command:
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Load Balancer Id`, updateLoadbalancerExample, true)
+
+* Data Center Id
+* Load Balancer Id`, updateLoadbalancerExample, true)
 	update.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
 	update.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, loadbalancerCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
@@ -96,21 +95,21 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	delete := builder.NewCommand(context.TODO(), loadbalancerCmd, PreRunGlobalDcIdLoadbalancerIdValidate, RunLoadbalancerDelete, "delete", "Delete a Load Balancer",
+	deleteCmd := builder.NewCommand(context.TODO(), loadbalancerCmd, PreRunGlobalDcIdLoadbalancerIdValidate, RunLoadbalancerDelete, "delete", "Delete a Load Balancer",
 		`Use this command to permanently delete the specified Load Balancer. This action is irreversible.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Load Balancer Id`, deleteLoadbalancerExample, true)
-	delete.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
-	delete.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+* Data Center Id
+* Load Balancer Id`, deleteLoadbalancerExample, true)
+	deleteCmd.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
+	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, loadbalancerCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
-	delete.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be deleted")
-	delete.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
 
 	return loadbalancerCmd
 }
@@ -304,7 +303,7 @@ func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{
 }
 
 func getLoadbalancersIds(outErr io.Writer, parentCmdName string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 
 	clientSvc, err := resources.NewClientService(
