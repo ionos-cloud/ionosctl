@@ -1,5 +1,3 @@
-# IONOSCTL CLI
-
 ![CI](https://github.com/ionos-cloud/ionosctl/workflows/CI/badge.svg)
 [![Gitter](https://img.shields.io/gitter/room/ionos-cloud/sdk-general)](https://gitter.im/ionos-cloud/sdk-general)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=alert_status)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
@@ -8,6 +6,10 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=security_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
+
+![Alt text](.github/IONOS.CLOUD.BLU.svg?raw=true "Title")
+
+# IONOSCTL CLI
 
 ## Overview
 
