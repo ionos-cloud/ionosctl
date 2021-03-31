@@ -40,7 +40,7 @@ The sub-commands of `ionosctl volume attach` allow you to retrieve information a
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id [Required flag]
-      --timeout int            Timeout option [seconds] (default 60)
+      --timeout int            Timeout option for Volume to be attached to a Server [seconds] (default 60)
       --volume-id string       The unique Volume Id [Required flag]
       --wait                   Wait for Volume to attach to Server
 ```

@@ -47,7 +47,7 @@ func TestRunLocationList(t *testing.T) {
 	})
 }
 
-func TestRunLocationList_Err(t *testing.T) {
+func TestRunLocationListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -61,7 +61,7 @@ func TestRunLocationList_Err(t *testing.T) {
 func TestGetLocationsCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("location", config.ArgCols), []string{"Name"})
@@ -70,10 +70,10 @@ func TestGetLocationsCols(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGetLocationsCols_Err(t *testing.T) {
+func TestGetLocationsColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("location", config.ArgCols), []string{"Unknown"})
@@ -87,7 +87,7 @@ func TestGetLocationsCols_Err(t *testing.T) {
 func TestGetLocationsIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

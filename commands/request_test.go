@@ -52,7 +52,7 @@ func TestPreRunRequestIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunRequestIdValidate_RequiredFlagErr(t *testing.T) {
+func TestPreRunRequestIdValidateRequiredFlagErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -75,7 +75,7 @@ func TestRunRequestList(t *testing.T) {
 	})
 }
 
-func TestRunRequestList_Err(t *testing.T) {
+func TestRunRequestListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -100,7 +100,7 @@ func TestRunRequestGet(t *testing.T) {
 	})
 }
 
-func TestRunRequestGet_Err(t *testing.T) {
+func TestRunRequestGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -128,7 +128,7 @@ func TestRunRequestWait(t *testing.T) {
 	})
 }
 
-func TestRunRequestWait_Err(t *testing.T) {
+func TestRunRequestWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -146,7 +146,7 @@ func TestRunRequestWait_Err(t *testing.T) {
 func TestGetRequestsCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("request", config.ArgCols), []string{"RequestId"})
@@ -155,10 +155,10 @@ func TestGetRequestsCols(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGetRequestsCols_Err(t *testing.T) {
+func TestGetRequestsColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("request", config.ArgCols), []string{"Unknown"})
@@ -172,7 +172,7 @@ func TestGetRequestsCols_Err(t *testing.T) {
 func TestGetRequestsIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

@@ -36,7 +36,7 @@ Required values to run command:
       --loadbalancer-name string   Name of the Load Balancer
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
-      --timeout int                Timeout option [seconds] (default 60)
+      --timeout int                Timeout option for Load Balancer to be updated [seconds] (default 60)
       --wait                       Wait for Load Balancer to be updated
 ```
 

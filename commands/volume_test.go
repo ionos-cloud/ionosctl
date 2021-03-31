@@ -81,7 +81,7 @@ func TestPreRunGlobalDcIdVolumeIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcIdVolumeIdValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcIdVolumeIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -113,7 +113,7 @@ func TestPreRunGlobalDcIdServerVolumeIdsValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcIdServerVolumeIdsValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcIdServerVolumeIdsValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -150,7 +150,7 @@ func TestRunVolumeList(t *testing.T) {
 	})
 }
 
-func TestRunVolumeList_Err(t *testing.T) {
+func TestRunVolumeListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -175,7 +175,7 @@ func TestRunVolumeGet(t *testing.T) {
 	})
 }
 
-func TestRunVolumeGet_Err(t *testing.T) {
+func TestRunVolumeGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -207,7 +207,7 @@ func TestRunVolumeCreate(t *testing.T) {
 	})
 }
 
-func TestRunVolumeCreate_Err(t *testing.T) {
+func TestRunVolumeCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -226,7 +226,7 @@ func TestRunVolumeCreate_Err(t *testing.T) {
 	})
 }
 
-func TestRunVolumeCreate_WaitErr(t *testing.T) {
+func TestRunVolumeCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -262,7 +262,7 @@ func TestRunVolumeUpdate(t *testing.T) {
 	})
 }
 
-func TestRunVolumeUpdate_Err(t *testing.T) {
+func TestRunVolumeUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -279,7 +279,7 @@ func TestRunVolumeUpdate_Err(t *testing.T) {
 	})
 }
 
-func TestRunVolumeUpdate_WaitErr(t *testing.T) {
+func TestRunVolumeUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -311,7 +311,7 @@ func TestRunVolumeDelete(t *testing.T) {
 	})
 }
 
-func TestRunVolumeDelete_Err(t *testing.T) {
+func TestRunVolumeDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -326,7 +326,7 @@ func TestRunVolumeDelete_Err(t *testing.T) {
 	})
 }
 
-func TestRunVolumeDelete_WaitErr(t *testing.T) {
+func TestRunVolumeDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -341,7 +341,7 @@ func TestRunVolumeDelete_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunVolumeDelete_AskForConfirm(t *testing.T) {
+func TestRunVolumeDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -357,7 +357,7 @@ func TestRunVolumeDelete_AskForConfirm(t *testing.T) {
 	})
 }
 
-func TestRunVolumeDelete_AskForConfirmErr(t *testing.T) {
+func TestRunVolumeDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -384,7 +384,7 @@ func TestPreRunAttachGlobalDcIdServerIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunAttachGlobalDcIdServerIdValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunAttachGlobalDcIdServerIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -416,7 +416,7 @@ func TestPreRunAttachGlobalDcIdServerVolumeIdsValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunAttachGlobalDcIdServerVolumeIdsValidate_RequiredFlagsErr(t *testing.T) {
+func TestPreRunAttachGlobalDcIdServerVolumeIdsValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -456,7 +456,7 @@ func TestRunVolumeAttach(t *testing.T) {
 	})
 }
 
-func TestRunVolumeAttach_Err(t *testing.T) {
+func TestRunVolumeAttachErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -471,7 +471,7 @@ func TestRunVolumeAttach_Err(t *testing.T) {
 	})
 }
 
-func TestRunVolumeAttach_WaitErr(t *testing.T) {
+func TestRunVolumeAttachWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -499,7 +499,7 @@ func TestRunVolumeAttachList(t *testing.T) {
 	})
 }
 
-func TestRunVolumeAttachList_Err(t *testing.T) {
+func TestRunVolumeAttachListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -526,7 +526,7 @@ func TestRunVolumeAttachGet(t *testing.T) {
 	})
 }
 
-func TestRunVolumeAttachGet_Err(t *testing.T) {
+func TestRunVolumeAttachGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -556,7 +556,7 @@ func TestRunVolumeDetach(t *testing.T) {
 	})
 }
 
-func TestRunVolumeDetach_Err(t *testing.T) {
+func TestRunVolumeDetachErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -572,7 +572,7 @@ func TestRunVolumeDetach_Err(t *testing.T) {
 	})
 }
 
-func TestRunVolumeDetach_WaitErr(t *testing.T) {
+func TestRunVolumeDetachWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -588,7 +588,7 @@ func TestRunVolumeDetach_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunVolumeDetach_AskForConfirm(t *testing.T) {
+func TestRunVolumeDetachAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -605,7 +605,7 @@ func TestRunVolumeDetach_AskForConfirm(t *testing.T) {
 	})
 }
 
-func TestRunVolumeDetach_AskForConfirmErr(t *testing.T) {
+func TestRunVolumeDetachAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -624,7 +624,7 @@ func TestRunVolumeDetach_AskForConfirmErr(t *testing.T) {
 func TestVolumesCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("volume", config.ArgCols), []string{"Name"})
@@ -633,10 +633,10 @@ func TestVolumesCols(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGetVolumesCols_Err(t *testing.T) {
+func TestGetVolumesColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("volume", config.ArgCols), []string{"Unknown"})
@@ -650,7 +650,7 @@ func TestGetVolumesCols_Err(t *testing.T) {
 func TestGetVolumesIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
@@ -665,7 +665,7 @@ func TestGetVolumesIds(t *testing.T) {
 func TestGetAttachedVolumesIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

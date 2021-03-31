@@ -33,7 +33,7 @@ Required values to run command:
       --lan-public             Indicates if the LAN faces the public Internet (true) or not (false)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option [seconds] (default 60)
+      --timeout int            Timeout option for LAN to be created [seconds] (default 60)
       --wait                   Wait for LAN to be created
 ```
 

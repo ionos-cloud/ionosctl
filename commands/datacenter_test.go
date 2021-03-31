@@ -66,7 +66,7 @@ func TestPreRunDataCenterIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunDataCenterIdValidate_RequiredFlagErr(t *testing.T) {
+func TestPreRunDataCenterIdValidateRequiredFlagErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -90,7 +90,7 @@ func TestRunDataCenterList(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterList_Err(t *testing.T) {
+func TestRunDataCenterListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -115,7 +115,7 @@ func TestRunDataCenterGet(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterGet_Err(t *testing.T) {
+func TestRunDataCenterGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -143,7 +143,7 @@ func TestRunDataCenterCreate(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterCreate_WaitErr(t *testing.T) {
+func TestRunDataCenterCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -158,7 +158,7 @@ func TestRunDataCenterCreate_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterCreate_Err(t *testing.T) {
+func TestRunDataCenterCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -188,7 +188,7 @@ func TestRunDataCenterUpdate(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterUpdate_WaitErr(t *testing.T) {
+func TestRunDataCenterUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -203,7 +203,7 @@ func TestRunDataCenterUpdate_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterUpdate_Err(t *testing.T) {
+func TestRunDataCenterUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -231,7 +231,7 @@ func TestRunDataCenterDelete(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterDelete_Err(t *testing.T) {
+func TestRunDataCenterDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -245,7 +245,7 @@ func TestRunDataCenterDelete_Err(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterDelete_AskForConfirm(t *testing.T) {
+func TestRunDataCenterDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -260,7 +260,7 @@ func TestRunDataCenterDelete_AskForConfirm(t *testing.T) {
 	})
 }
 
-func TestRunDataCenterDelete_AskForConfirmErr(t *testing.T) {
+func TestRunDataCenterDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -277,7 +277,7 @@ func TestRunDataCenterDelete_AskForConfirmErr(t *testing.T) {
 func TestGetDatacentersCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("datacenter", config.ArgCols), []string{"Name"})
@@ -286,10 +286,10 @@ func TestGetDatacentersCols(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGetDatacentersCols_Err(t *testing.T) {
+func TestGetDatacentersColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("datacenter", config.ArgCols), []string{"Unknown"})
@@ -303,7 +303,7 @@ func TestGetDatacentersCols_Err(t *testing.T) {
 func TestGetDataCentersIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

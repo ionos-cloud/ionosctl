@@ -24,7 +24,7 @@ func TestCheckErrorText(t *testing.T) {
 	defer func(b bytes.Buffer) { b.Reset() }(b)
 	w := bufio.NewWriter(&b)
 	color.Output = w
-	ErrAction = func() {}
+	ErrAction = func() { return }
 
 	viper.Set(config.ArgOutput, "text")
 	CheckError(errChecking, w)
@@ -43,7 +43,7 @@ func TestCheckErrorNilText(t *testing.T) {
 	defer func(b bytes.Buffer) { b.Reset() }(b)
 	w := bufio.NewWriter(&b)
 	color.Output = w
-	ErrAction = func() {}
+	ErrAction = func() { return }
 
 	viper.Set(config.ArgOutput, "text")
 	CheckError(nil, w)
@@ -62,7 +62,7 @@ func TestCheckErrorDefault(t *testing.T) {
 	defer func(b bytes.Buffer) { b.Reset() }(b)
 	w := bufio.NewWriter(&b)
 	color.Output = w
-	ErrAction = func() {}
+	ErrAction = func() { return }
 
 	viper.Set(config.ArgOutput, "dummy")
 	CheckError(errChecking, w)
@@ -81,7 +81,7 @@ func TestCheckErrorNilDefault(t *testing.T) {
 	defer func(b bytes.Buffer) { b.Reset() }(b)
 	w := bufio.NewWriter(&b)
 	color.Output = w
-	ErrAction = func() {}
+	ErrAction = func() { return }
 
 	viper.Set(config.ArgOutput, "dummy")
 	CheckError(nil, w)
@@ -107,7 +107,7 @@ func TestCheckErrorJSON(t *testing.T) {
 	defer func(b bytes.Buffer) { b.Reset() }(b)
 	w := bufio.NewWriter(&b)
 	color.Output = w
-	ErrAction = func() {}
+	ErrAction = func() { return }
 
 	viper.Set(config.ArgOutput, "json")
 	CheckError(errChecking, w)
@@ -126,7 +126,7 @@ func TestCheckErrorNilJSON(t *testing.T) {
 	defer func(b bytes.Buffer) { b.Reset() }(b)
 	w := bufio.NewWriter(&b)
 	color.Output = w
-	ErrAction = func() {}
+	ErrAction = func() { return }
 
 	viper.Set(config.ArgOutput, "json")
 	CheckError(nil, w)

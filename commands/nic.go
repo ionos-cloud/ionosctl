@@ -78,7 +78,7 @@ Required values to run a command:
 		return getLansIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be created [seconds]")
 
 	/*
 		Update Command
@@ -107,7 +107,7 @@ Required values to run command:
 	})
 	update.AddBoolFlag(config.ArgNicDhcp, "", config.DefaultNicDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be updated [seconds]")
 
 	/*
 		Delete Command
@@ -127,7 +127,7 @@ Required values to run command:
 		return getNicsIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be deleted [seconds]")
 
 	/*
 		Attach Command
@@ -153,7 +153,7 @@ The sub-commands of `+"`"+`ionosctl nic attach`+"`"+` allow you to retrieve info
 		return getLoadbalancersIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to attach to a Load Balancer")
-	attachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	attachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be attached to a Load Balancer [seconds]")
 
 	/*
 		Attach List Command
@@ -203,7 +203,7 @@ Required values to run command:
 		return getLoadbalancersIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	detachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to detach from a Load Balancer")
-	detachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	detachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be detached from a Load Balancer [seconds]")
 
 	return nicCmd
 }

@@ -11,61 +11,66 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRunLoginUser_BufferUserErr(t *testing.T) {
+const (
+	testUsername = "test@ionos.com"
+	testPassword = "test"
+)
+
+func TestRunLoginUserBufferUserErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "user"), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), "test")
-		cfg.Stdin = bytes.NewReader([]byte("test@test.com\n"))
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), testPassword)
+		cfg.Stdin = bytes.NewReader([]byte(testUsername + "\n"))
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 		assert.True(t, err.Error() == "401 Unauthorized")
 	})
 }
 
-func TestRunLoginUser_BufferErr(t *testing.T) {
+func TestRunLoginUserBufferErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "user"), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), "test")
-		cfg.Stdin = bytes.NewReader([]byte("test@test.com"))
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), testPassword)
+		cfg.Stdin = bytes.NewReader([]byte(testUsername))
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoginUser_UnauthorizedErr(t *testing.T) {
+func TestRunLoginUserUnauthorizedErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "user"), "test@test.com")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), "test")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "user"), testUsername)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), testPassword)
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 		assert.True(t, err.Error() == "401 Unauthorized")
 	})
 }
 
-func TestRunLoginUser_BufferPwdErr(t *testing.T) {
+func TestRunLoginUserBufferPwdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "user"), "test@test.com")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "user"), testUsername)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), "")
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoginUser_ConfigSet(t *testing.T) {
+func TestRunLoginUserConfigSet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "user"), "test@test.com")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), "test")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "user"), testUsername)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, "password"), testPassword)
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 	})
