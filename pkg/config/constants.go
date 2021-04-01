@@ -52,6 +52,12 @@ const (
 	ArgSnapshotDescription = "snapshot-description"
 	ArgSnapshotLicenceType = "snapshot-licencetype"
 	ArgSnapshotId          = "snapshot-id"
+	// Images Flags
+	ArgImageId          = "image-id"
+	ArgImageLocation    = "image-location"
+	ArgImageLicenceType = "image-licencetype"
+	ArgImageType        = "image-type"
+	ArgImageSize        = "image-size"
 
 	// Default values for Global Flags
 	DefaultApiURL         = "https://api.ionos.com/cloudapi/v5"

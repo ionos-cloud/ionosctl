@@ -159,6 +159,7 @@ func addCommands() {
 	rootCmd.AddCommand(loadBalancer())
 	rootCmd.AddCommand(request())
 	rootCmd.AddCommand(snapshot())
+	rootCmd.AddCommand(image())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

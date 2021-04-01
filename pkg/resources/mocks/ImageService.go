@@ -80,3 +80,19 @@ func (mr *MockImagesServiceMockRecorder) List() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockImagesService)(nil).List))
 }
+
+// Update mocks base method.
+func (m *MockImagesService) Update(imageId, name, description, location string, size float32) (*resources.Image, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", imageId, name, description, location, size)
+	ret0, _ := ret[0].(*resources.Image)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockImagesServiceMockRecorder) Update(imageId, name, description, location, size interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockImagesService)(nil).Update), imageId, name, description, location, size)
+}
