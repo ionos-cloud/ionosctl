@@ -27,7 +27,7 @@ func nic() *builder.Command {
 		},
 	}
 	globalFlags := nicCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", "The unique Data Center Id")
+	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	viper.BindPFlag(builder.GetGlobalFlagName(nicCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	nicCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -53,7 +53,7 @@ func nic() *builder.Command {
 	get := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicGet, "get", "Get a NIC",
 		"Use this command to get information about a specified NIC from specified Data Center and Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* NIC Id",
 		getNicExample, true)
-	get.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
+	get.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -96,7 +96,7 @@ Required values to run command:
 
 * Data Center Id
 * NIC Id`, updateNicExample, true)
-	update.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
+	update.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	update.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -122,7 +122,7 @@ Required values to run command:
 * Data Center Id
 * Server Id
 * NIC Id`, deleteNicExample, true)
-	deleteCmd.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
+	deleteCmd.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -144,12 +144,12 @@ Required values to run command:
 * NIC Id
 
 The sub-commands of `+"`"+`ionosctl nic attach`+"`"+` allow you to retrieve information about attached NICs or about a specified attached NIC.`, attachNicExample, true)
-	attachNic.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
+	attachNic.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	attachNic.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
-	attachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	attachNic.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
+	attachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to attach to a Load Balancer")
@@ -161,8 +161,8 @@ The sub-commands of `+"`"+`ionosctl nic attach`+"`"+` allow you to retrieve info
 	listAttached := builder.NewCommand(context.TODO(), attachNic, PreRunAttachGlobalDcIdLoadbalancerIdValidate, RunNicsAttachList, "list", "List attached NICs from a Load Balancer",
 		"Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		attachListNicExample, true)
-	listAttached.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
-	listAttached.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	listAttached.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
+	listAttached.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -172,11 +172,11 @@ The sub-commands of `+"`"+`ionosctl nic attach`+"`"+` allow you to retrieve info
 	getAttached := builder.NewCommand(context.TODO(), attachNic, PreRunAttachGlobalDcIdNicLoadbalancerIdsValidate, RunNicAttachGet, "get", "Get an attached NIC to a Load Balancer",
 		"Use this command to retrieve information about an attached NIC.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
 		attachGetNicExample, true)
-	getAttached.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
-	getAttached.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getAttached.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
+	getAttached.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
-	getAttached.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
+	getAttached.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	getAttached.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedNicsIds(os.Stderr, nicCmd.Command.Name(), getAttached.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -194,12 +194,12 @@ Required values to run command:
 * Data Center Id
 * Load Balancer Id
 * NIC Id`, detachNicExample, true)
-	detachNic.AddStringFlag(config.ArgNicId, "", "", "The unique NIC Id [Required flag]")
+	detachNic.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	detachNic.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedNicsIds(os.Stderr, nicCmd.Command.Name(), detachNic.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddStringFlag(config.ArgLoadbalancerId, "", "", "The unique Load Balancer Id [Required flag]")
-	detachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadbalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	detachNic.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
+	detachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, nicCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	detachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to detach from a Load Balancer")
@@ -229,7 +229,7 @@ func PreRunGlobalDcIdNicLoadbalancerIdsValidate(c *builder.PreCommandConfig) err
 	if err != nil {
 		return err
 	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgNicId, config.ArgLoadbalancerId)
+	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgNicId, config.ArgLoadBalancerId)
 	if err != nil {
 		return err
 	}
@@ -360,7 +360,7 @@ func PreRunAttachGlobalDcIdLoadbalancerIdValidate(c *builder.PreCommandConfig) e
 	if err != nil {
 		return err
 	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLoadbalancerId)
+	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLoadBalancerId)
 	if err != nil {
 		return err
 	}
@@ -372,7 +372,7 @@ func PreRunAttachGlobalDcIdNicLoadbalancerIdsValidate(c *builder.PreCommandConfi
 	if err != nil {
 		return err
 	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgNicId, config.ArgLoadbalancerId)
+	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgNicId, config.ArgLoadBalancerId)
 	if err != nil {
 		return err
 	}
@@ -382,7 +382,7 @@ func PreRunAttachGlobalDcIdNicLoadbalancerIdsValidate(c *builder.PreCommandConfi
 func RunNicAttach(c *builder.CommandConfig) error {
 	attachedNic, resp, err := c.Nics().AttachToLoadBalancer(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadbalancerId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadBalancerId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgNicId)),
 	)
 	if err != nil {
@@ -406,7 +406,7 @@ func RunNicAttach(c *builder.CommandConfig) error {
 func RunNicsAttachList(c *builder.CommandConfig) error {
 	attachedNics, _, err := c.Nics().ListAttachedToLoadBalancer(
 		viper.GetString(builder.GetGlobalFlagName("nic", config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadbalancerId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadBalancerId)),
 	)
 	if err != nil {
 		return err
@@ -422,7 +422,7 @@ func RunNicsAttachList(c *builder.CommandConfig) error {
 func RunNicAttachGet(c *builder.CommandConfig) error {
 	nic, _, err := c.Nics().GetAttachedToLoadBalancer(
 		viper.GetString(builder.GetGlobalFlagName("nic", config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadbalancerId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadBalancerId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgNicId)),
 	)
 	if err != nil {
@@ -442,7 +442,7 @@ func RunNicDetach(c *builder.CommandConfig) error {
 	}
 	resp, err := c.Nics().DetachFromLoadBalancer(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadbalancerId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadBalancerId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgNicId)),
 	)
 	if err != nil {
@@ -592,7 +592,7 @@ func getAttachedNicsIds(outErr io.Writer, parentCmdName, nameCmd string) []strin
 	nicSvc := resources.NewNicService(clientSvc.Get(), context.TODO())
 	nics, _, err := nicSvc.ListAttachedToLoadBalancer(
 		viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(parentCmdName, nameCmd, config.ArgLoadbalancerId)),
+		viper.GetString(builder.GetFlagName(parentCmdName, nameCmd, config.ArgLoadBalancerId)),
 	)
 	clierror.CheckError(err, outErr)
 
