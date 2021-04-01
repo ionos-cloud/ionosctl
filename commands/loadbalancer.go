@@ -68,7 +68,7 @@ Required values to run command:
 	create.AddStringFlag(config.ArgLoadbalancerName, "", "", "Name of the Load Balancer")
 	create.AddBoolFlag(config.ArgLoadbalancerDhcp, "", config.DefaultLoadBalancerDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be created [seconds]")
 
 	/*
 		Update Command
@@ -90,7 +90,7 @@ Required values to run command:
 	update.AddStringFlag(config.ArgLoadbalancerIp, "", "", "The IP of the Load Balancer")
 	update.AddBoolFlag(config.ArgLoadbalancerDhcp, "", config.DefaultLoadBalancerDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be updated [seconds]")
 
 	/*
 		Delete Command
@@ -109,7 +109,7 @@ Required values to run command:
 		return getLoadbalancersIds(os.Stderr, loadbalancerCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be deleted [seconds]")
 
 	return loadbalancerCmd
 }

@@ -94,7 +94,7 @@ func TestPreRunGlobalDcIdServerIdValidate(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcIdServerIdValidate_RequiredFlagErr(t *testing.T) {
+func TestPreRunGlobalDcIdServerIdValidateRequiredFlagErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -124,7 +124,7 @@ func TestRunServerList(t *testing.T) {
 	})
 }
 
-func TestRunServerList_Err(t *testing.T) {
+func TestRunServerListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -149,7 +149,7 @@ func TestRunServerGet(t *testing.T) {
 	})
 }
 
-func TestRunServerGet_Err(t *testing.T) {
+func TestRunServerGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -180,7 +180,7 @@ func TestRunServerCreate(t *testing.T) {
 	})
 }
 
-func TestRunServerCreate_Err(t *testing.T) {
+func TestRunServerCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -197,7 +197,7 @@ func TestRunServerCreate_Err(t *testing.T) {
 	})
 }
 
-func TestRunServerCreate_WaitErr(t *testing.T) {
+func TestRunServerCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -233,7 +233,7 @@ func TestRunServerUpdate(t *testing.T) {
 	})
 }
 
-func TestRunServerUpdate_Err(t *testing.T) {
+func TestRunServerUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -252,7 +252,7 @@ func TestRunServerUpdate_Err(t *testing.T) {
 	})
 }
 
-func TestRunServerUpdate_WaitErr(t *testing.T) {
+func TestRunServerUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -286,7 +286,7 @@ func TestRunServerDelete(t *testing.T) {
 	})
 }
 
-func TestRunServerDelete_Err(t *testing.T) {
+func TestRunServerDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -301,7 +301,7 @@ func TestRunServerDelete_Err(t *testing.T) {
 	})
 }
 
-func TestRunServerDelete_WaitErr(t *testing.T) {
+func TestRunServerDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -316,7 +316,7 @@ func TestRunServerDelete_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunServerDelete_AskForConfirm(t *testing.T) {
+func TestRunServerDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -332,7 +332,7 @@ func TestRunServerDelete_AskForConfirm(t *testing.T) {
 	})
 }
 
-func TestRunServerDelete_AskForConfirmErr(t *testing.T) {
+func TestRunServerDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -362,7 +362,7 @@ func TestRunServerStart(t *testing.T) {
 	})
 }
 
-func TestRunServerStart_Err(t *testing.T) {
+func TestRunServerStartErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -377,7 +377,7 @@ func TestRunServerStart_Err(t *testing.T) {
 	})
 }
 
-func TestRunServerStart_WaitErr(t *testing.T) {
+func TestRunServerStartWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -392,7 +392,7 @@ func TestRunServerStart_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunServerStart_AskForConfirmErr(t *testing.T) {
+func TestRunServerStartAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -422,7 +422,7 @@ func TestRunServerStop(t *testing.T) {
 	})
 }
 
-func TestRunServerStop_Err(t *testing.T) {
+func TestRunServerStopErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -437,7 +437,7 @@ func TestRunServerStop_Err(t *testing.T) {
 	})
 }
 
-func TestRunServerStop_WaitErr(t *testing.T) {
+func TestRunServerStopWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -452,7 +452,7 @@ func TestRunServerStop_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunServerStop_AskForConfirmErr(t *testing.T) {
+func TestRunServerStopAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -482,7 +482,7 @@ func TestRunServerReboot(t *testing.T) {
 	})
 }
 
-func TestRunServerReboot_Err(t *testing.T) {
+func TestRunServerRebootErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -497,7 +497,7 @@ func TestRunServerReboot_Err(t *testing.T) {
 	})
 }
 
-func TestRunServerReboot_WaitErr(t *testing.T) {
+func TestRunServerRebootWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -512,7 +512,7 @@ func TestRunServerReboot_WaitErr(t *testing.T) {
 	})
 }
 
-func TestRunServerReboot_AskForConfirmErr(t *testing.T) {
+func TestRunServerRebootAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -530,7 +530,7 @@ func TestRunServerReboot_AskForConfirmErr(t *testing.T) {
 func TestGetServersCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("server", config.ArgCols), []string{"Name"})
@@ -539,10 +539,10 @@ func TestGetServersCols(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGetServersCols_Err(t *testing.T) {
+func TestGetServersColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("server", config.ArgCols), []string{"Unknown"})
@@ -556,7 +556,7 @@ func TestGetServersCols_Err(t *testing.T) {
 func TestGetServersIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
-	clierror.ErrAction = func() {}
+	clierror.ErrAction = func() { return }
 
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")

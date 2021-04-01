@@ -34,7 +34,7 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id [Required flag]
-      --timeout int            Timeout option [seconds] (default 60)
+      --timeout int            Timeout option for Server to be detached from a Server [seconds] (default 60)
       --volume-id string       The unique Volume Id [Required flag]
       --wait                   Wait for Volume to detach from Server
 ```

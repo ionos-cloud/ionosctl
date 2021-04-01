@@ -31,7 +31,7 @@ Required values to run command:
       --ignore-stdin                Force command to execute without user input
   -o, --output string               Desired output format [text|json] (default "text")
   -q, --quiet                       Quiet output
-      --timeout int                 Timeout option [seconds] (default 60)
+      --timeout int                 Timeout option for Volume to be created [seconds] (default 60)
       --volume-bus string           Bus for the Volume (default "VIRTIO")
       --volume-licencetype string   Licence Type of the Volume (default "LINUX")
       --volume-name string          Name of the Volume

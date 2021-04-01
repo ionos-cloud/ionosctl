@@ -75,7 +75,7 @@ Required values to run command:
 	create.AddStringFlag(config.ArgVolumeZone, "", "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
 	create.AddStringFlag(config.ArgVolumeSshKey, "", "", "Ssh Key of the Volume")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be created [seconds]")
 
 	/*
 		Update Command
@@ -100,7 +100,7 @@ Required values to run command:
 	update.AddStringFlag(config.ArgVolumeBus, "", "VIRTIO", "Bus of the Volume")
 	update.AddStringFlag(config.ArgVolumeSshKey, "", "", "Ssh Key of the Volume")
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be updated [seconds]")
 
 	/*
 		Delete Command
@@ -119,7 +119,7 @@ Required values to run command:
 		return getVolumesIds(os.Stderr, volumeCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be deleted [seconds]")
 
 	/*
 		Attach Command
@@ -145,7 +145,7 @@ The sub-commands of `+"`"+`ionosctl volume attach`+"`"+` allow you to retrieve i
 		return getServersIds(os.Stderr, volumeCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to attach to Server")
-	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
 
 	/*
 		Attach List Command
@@ -195,7 +195,7 @@ Required values to run command:
 		return getServersIds(os.Stderr, volumeCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
 	detachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to detach from Server")
-	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be detached from a Server [seconds]")
 
 	return volumeCmd
 }

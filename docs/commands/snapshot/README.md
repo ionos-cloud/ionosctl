@@ -10,9 +10,15 @@ description: Snapshot Operations
 ionosctl snapshot [command]
 ```
 
+## Aliases
+
+```text
+[sp snap]
+```
+
 ## Description
 
-The sub-command of `ionosctl snapshot` allows you to see information about snapshots available.
+The sub-command of `ionosctl snapshot` allows you to see information about snapshots.
 
 ## Options
 
@@ -30,7 +36,9 @@ The sub-command of `ionosctl snapshot` allows you to see information about snaps
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl snapshot create](create.md) | Create a Snapshot |
+| [ionosctl snapshot create](create.md) | Create a Snapshot of a Volume within the Virtual Data Center. |
+| [ionosctl snapshot delete](delete.md) | Delete a Snapshot |
 | [ionosctl snapshot get](get.md) | Get a Snapshot |
 | [ionosctl snapshot list](list.md) | List Snapshots |
+| [ionosctl snapshot restore](restore.md) | Restore a Snapshot onto a Volume |
 

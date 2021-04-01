@@ -12,7 +12,7 @@ ionosctl snapshot list [flags]
 
 ## Description
 
-Use this command to get a list of available snapshots to create objects on.
+Use this command to get a list of Snapshots.
 
 ## Options
 

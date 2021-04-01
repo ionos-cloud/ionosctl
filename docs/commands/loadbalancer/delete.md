@@ -33,7 +33,7 @@ Required values to run command:
       --loadbalancer-id string   The unique Load Balancer Id [Required flag]
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --timeout int              Timeout option [seconds] (default 60)
+      --timeout int              Timeout option for Load Balancer to be deleted [seconds] (default 60)
       --wait                     Wait for Load Balancer to be deleted
 ```
 

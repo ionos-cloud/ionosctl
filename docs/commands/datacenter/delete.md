@@ -31,7 +31,7 @@ Required values to run command:
       --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option [seconds] (default 60)
+      --timeout int            Timeout option for Data Center to be deleted [seconds] (default 60)
       --wait                   Wait for Data Center to be deleted
 ```
 

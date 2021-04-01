@@ -19,13 +19,13 @@ func main() {
 		os.Exit(1)
 	}
 	if _, err := os.Stat(dir); err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("Error getting directory: %v\n", err)
 		os.Exit(1)
 	}
 
 	err := WriteDocs(commands.GetRootCmd(), dir)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("Error writing docs: %v\n", err)
 		os.Exit(1)
 	}
 

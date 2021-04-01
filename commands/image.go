@@ -35,25 +35,25 @@ func image() *builder.Command {
 	/*
 		List Command
 	*/
-	listCmd := builder.NewCommand(context.TODO(), imageCmd, noPreRun, RunImageList, "list", "List images",
+	list := builder.NewCommand(context.TODO(), imageCmd, noPreRun, RunImageList, "list", "List images",
 		"Use this command to get a list of available public images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
 		"", true)
-	listCmd.AddFloat32Flag(config.ArgImageSize, "", 0, "")
-	listCmd.AddStringFlag(config.ArgImageType, "", "", "")
-	listCmd.AddStringFlag(config.ArgImageLicenceType, "", "", "")
-	listCmd.AddStringFlag(config.ArgImageLocation, "", "", "")
-	listCmd.Command.RegisterFlagCompletionFunc(config.ArgImageLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddFloat32Flag(config.ArgImageSize, "", 0, "")
+	list.AddStringFlag(config.ArgImageType, "", "", "")
+	list.AddStringFlag(config.ArgImageLicenceType, "", "", "")
+	list.AddStringFlag(config.ArgImageLocation, "", "", "")
+	list.Command.RegisterFlagCompletionFunc(config.ArgImageLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
 		Get Command
 	*/
-	getCmd := builder.NewCommand(context.TODO(), imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
+	get := builder.NewCommand(context.TODO(), imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
 		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		"", true)
-	getCmd.AddStringFlag(config.ArgImageId, "", "", "The unique Image Id. [Required flag]")
-	getCmd.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(config.ArgImageId, "", "", "The unique Image Id. [Required flag]")
+	get.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
