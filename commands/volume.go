@@ -563,6 +563,7 @@ func getVolumesIds(outErr io.Writer, parentCmdName string) []string {
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
+		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
@@ -589,6 +590,7 @@ func getAttachedVolumesIds(outErr io.Writer, parentCmdDcId, parentCmdName, nameC
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
+		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)

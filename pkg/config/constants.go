@@ -70,4 +70,5 @@ const (
 
 	Username = "userdata.name"
 	Password = "userdata.password"
+	Token    = "userdata.token"
 )

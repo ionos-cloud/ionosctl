@@ -26,13 +26,17 @@ type clientService struct {
 
 var _ ClientService = &clientService{}
 
-func NewClientService(name, pwd, url string) (ClientService, error) {
-	if name == "" || pwd == "" || url == "" {
-		return nil, errors.New("username, password or server-url incorrect")
+func NewClientService(name, pwd, token, url string) (ClientService, error) {
+	if url == "" {
+		return nil, errors.New("server-url incorrect")
+	}
+	if token == "" && (name == "" || pwd == "") {
+		return nil, errors.New("username, password or token incorrect")
 	}
 	clientConfig := &ionoscloud.Configuration{
 		Username: name,
 		Password: pwd,
+		Token:    token,
 		Servers: ionoscloud.ServerConfigurations{
 			ionoscloud.ServerConfiguration{
 				URL: url,
