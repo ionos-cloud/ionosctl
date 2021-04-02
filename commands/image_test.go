@@ -57,6 +57,19 @@ func TestPreImageIdValidate(t *testing.T) {
 	})
 }
 
+func TestPreImageIdValidateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), "")
+		err := PreRunImageIdValidate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunImageList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -97,6 +110,23 @@ func TestRunImageListSort(t *testing.T) {
 		rm.Image.EXPECT().List().Return(images, nil, nil)
 		err := RunImageList(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunImageListSortErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageLocation), testImageVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageLicenceType), testImageVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageType), testImageVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageSize), testImageSize)
+		rm.Image.EXPECT().List().Return(images, nil, testImageErr)
+		err := RunImageList(cfg)
+		assert.Error(t, err)
 	})
 }
 

@@ -30,7 +30,7 @@ func image() *builder.Command {
 	}
 	globalFlags := imageCmd.Command.PersistentFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
-	viper.BindPFlag(builder.GetGlobalFlagName(imageCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(imageCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -42,7 +42,7 @@ func image() *builder.Command {
 	list.AddStringFlag(config.ArgImageType, "", "", "The type of the Image")
 	list.AddStringFlag(config.ArgImageLicenceType, "", "", "The licence type of the Image")
 	list.AddStringFlag(config.ArgImageLocation, "", "", "The location of the Image")
-	list.Command.RegisterFlagCompletionFunc(config.ArgImageLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgImageLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -53,7 +53,7 @@ func image() *builder.Command {
 		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		getImageExample, true)
 	get.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
-	get.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -64,7 +64,7 @@ func image() *builder.Command {
 		"Use this command to delete the specified private image. This only applies to private images that you have uploaded.\n\nRequired values to run command:\n\n* Image Id",
 		"", true)
 	deleteCmd.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
-	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -178,7 +178,7 @@ func getImageCols(flagName string, outErr io.Writer) []string {
 func getImages(datacenters resources.Images) []resources.Image {
 	dc := make([]resources.Image, 0)
 	for _, d := range *datacenters.Items {
-		dc = append(dc, resources.Image{d})
+		dc = append(dc, resources.Image{Image: d})
 	}
 	return dc
 }

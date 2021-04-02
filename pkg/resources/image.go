@@ -22,7 +22,7 @@ type ImageProperties struct {
 type ImagesService interface {
 	List() (Images, *Response, error)
 	Get(imageId string) (*Image, *Response, error)
-	Update(imageId, name, description, location string, size float32) (*Image, *Response, error)
+	Update(imageId string, imgProp ImageProperties) (*Image, *Response, error)
 	Delete(imageId string) (*Response, error)
 }
 
@@ -52,21 +52,8 @@ func (s *imagesService) Get(imageId string) (*Image, *Response, error) {
 	return &Image{image}, &Response{*resp}, err
 }
 
-func (s *imagesService) Update(imageId, name, description, location string, size float32) (*Image, *Response, error) {
-	imgProperties := ionoscloud.ImageProperties{}
-	if name != "" {
-		imgProperties.Name = &name
-	}
-	if description != "" {
-		imgProperties.Description = &description
-	}
-	if location != "" {
-		imgProperties.Location = &location
-	}
-	if size != 0 {
-		imgProperties.Size = &size
-	}
-	req := s.client.ImageApi.ImagesPatch(s.context, imageId).Image(imgProperties)
+func (s *imagesService) Update(imageId string, imgProp ImageProperties) (*Image, *Response, error) {
+	req := s.client.ImageApi.ImagesPatch(s.context, imageId).Image(imgProp.ImageProperties)
 	image, resp, err := s.client.ImageApi.ImagesPatchExecute(req)
 	return &Image{image}, &Response{*resp}, err
 }

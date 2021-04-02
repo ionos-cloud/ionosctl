@@ -43,6 +43,7 @@ const (
 	ArgSnapshotName          = "snapshot-name"
 	ArgSnapshotDescription   = "snapshot-description"
 	ArgSnapshotLicenceType   = "snapshot-licence-type"
+	ArgSnapshotSize          = "snapshot-size"
 	ArgSnapshotId            = "snapshot-id"
 	ArgImageId               = "image-id"
 	ArgImageLocation         = "image-location"

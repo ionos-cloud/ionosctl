@@ -82,9 +82,9 @@ func (mr *MockImagesServiceMockRecorder) List() *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockImagesService) Update(imageId, name, description, location string, size float32) (*resources.Image, *resources.Response, error) {
+func (m *MockImagesService) Update(imageId string, imgProp resources.ImageProperties) (*resources.Image, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", imageId, name, description, location, size)
+	ret := m.ctrl.Call(m, "Update", imageId, imgProp)
 	ret0, _ := ret[0].(*resources.Image)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,7 +92,7 @@ func (m *MockImagesService) Update(imageId, name, description, location string, 
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockImagesServiceMockRecorder) Update(imageId, name, description, location, size interface{}) *gomock.Call {
+func (mr *MockImagesServiceMockRecorder) Update(imageId, imgProp interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockImagesService)(nil).Update), imageId, name, description, location, size)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockImagesService)(nil).Update), imageId, imgProp)
 }

@@ -303,6 +303,11 @@ SnapshotId                             Name           LicenceType   Size
 dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSnapshot   LINUX         0
 RequestId: fed5555a-ac00-41c8-abbe-cc53c8179716
 Status: Command snapshot create has been successfully executed`
+	updateSnapshotExample = `ionosctl snapshot update --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --snapshot-name test
+SnapshotId                             Name   LicenceType   Size
+dc688daf-8e54-4db8-ac4a-487ad5a34e9c   test   LINUX         10
+RequestId: 3540e9be-ed35-41c0-83d9-923882bfa9bd
+Status: Command snapshot update has been successfully executed`
 	restoreSnapshotExample = `ionosctl snapshot restore --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --wait 
 Warning: Are you sure you want to restore snapshot (y/N) ? 
 y

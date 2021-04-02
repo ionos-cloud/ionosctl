@@ -41,4 +41,5 @@ The sub-command of `ionosctl snapshot` allows you to see information about Snaps
 | [ionosctl snapshot get](get.md) | Get a Snapshot |
 | [ionosctl snapshot list](list.md) | List Snapshots |
 | [ionosctl snapshot restore](restore.md) | Restore a Snapshot onto a Volume |
+| [ionosctl snapshot update](update.md) | Update a Snapshot. |
 
