@@ -37,7 +37,7 @@ The sub-commands of `ionosctl nic attach` allow you to retrieve information abou
       --datacenter-id string     The unique Data Center Id [Required flag]
   -h, --help                     help for attach
       --ignore-stdin             Force command to execute without user input
-      --loadbalancer-id string   The unique Load Balance Id [Required flag]
+      --loadbalancer-id string   The unique Load Balancer Id [Required flag]
       --nic-id string            The unique NIC Id [Required flag]
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output

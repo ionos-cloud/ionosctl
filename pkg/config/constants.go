@@ -67,7 +67,7 @@ const (
 	RequiredFlag               = "[Required flag]"
 	RequiredFlagDatacenterId   = "The unique Data Center Id " + RequiredFlag
 	RequiredFlagLanId          = "The unique LAN Id " + RequiredFlag
-	RequiredFlagLoadBalancerId = "The unique Load Balance Id " + RequiredFlag
+	RequiredFlagLoadBalancerId = "The unique Load Balancer Id " + RequiredFlag
 	RequiredFlagNicId          = "The unique NIC Id " + RequiredFlag
 	RequiredFlagRequestId      = "The unique Request Id " + RequiredFlag
 	RequiredFlagServerId       = "The unique Server Id " + RequiredFlag

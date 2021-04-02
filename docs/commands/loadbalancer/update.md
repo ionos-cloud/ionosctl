@@ -31,7 +31,7 @@ Required values to run command:
   -h, --help                       help for update
       --ignore-stdin               Force command to execute without user input
       --loadbalancer-dhcp          Indicates if the Load Balancer will reserve an IP using DHCP (default true)
-      --loadbalancer-id string     The unique Load Balance Id [Required flag]
+      --loadbalancer-id string     The unique Load Balancer Id [Required flag]
       --loadbalancer-ip string     The IP of the Load Balancer
       --loadbalancer-name string   Name of the Load Balancer
   -o, --output string              Desired output format [text|json] (default "text")

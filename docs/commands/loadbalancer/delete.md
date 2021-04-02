@@ -30,7 +30,7 @@ Required values to run command:
       --datacenter-id string     The unique Data Center Id [Required flag]
   -h, --help                     help for delete
       --ignore-stdin             Force command to execute without user input
-      --loadbalancer-id string   The unique Load Balance Id [Required flag]
+      --loadbalancer-id string   The unique Load Balancer Id [Required flag]
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --timeout int              Timeout option for Load Balancer to be deleted [seconds] (default 60)
