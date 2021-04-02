@@ -81,4 +81,6 @@ const (
 	RequiredFlagRequestId      = "The unique Request Id " + RequiredFlag
 	RequiredFlagServerId       = "The unique Server Id " + RequiredFlag
 	RequiredFlagVolumeId       = "The unique Volume Id " + RequiredFlag
+	RequiredFlagSnapshotId     = "The unique Snapshot Id " + RequiredFlag
+	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
 )

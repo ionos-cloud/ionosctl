@@ -42,7 +42,7 @@ func snapshot() *builder.Command {
 	get := builder.NewCommand(context.TODO(), snapshotCmd, noPreRun, RunSnapshotGet, "get", "Get a Snapshot",
 		"Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n- Snapshot Id",
 		"", true)
-	get.AddStringFlag(config.ArgSnapshotId, "", "", "The unique Snapshot Id [Required flag]")
+	get.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -65,11 +65,11 @@ Required values to run command:
 	create.Command.RegisterFlagCompletionFunc(config.ArgSnapshotLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Datacenter Id [Required flag]")
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgVolumeId, "", "", "The unique Volume Id [Required flag]")
+	create.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	create.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, snapshotCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -82,15 +82,15 @@ Required values to run command:
 	restore := builder.NewCommand(context.TODO(), snapshotCmd, PreRunSnapshotIdDcIdVolumeIdValidate, RunSnapshotRestore, "restore", "Restore a Snapshot onto a Volume",
 		"Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
 		"", true)
-	restore.AddStringFlag(config.ArgSnapshotId, "", "", "The unique Snapshot Id. [Required flag]")
+	restore.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	restore.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Datacenter Id [Required flag]")
+	restore.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	restore.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddStringFlag(config.ArgVolumeId, "", "", "The unique Volume Id [Required flag]")
+	restore.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	restore.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, snapshotCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -101,7 +101,7 @@ Required values to run command:
 	deleteCmd := builder.NewCommand(context.TODO(), snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotDelete, "delete", "Delete a Snapshot",
 		"Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		"", true)
-	deleteCmd.AddStringFlag(config.ArgSnapshotId, "", "", "The unique Snapshot Id. [Required flag]")
+	deleteCmd.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

@@ -52,7 +52,7 @@ func image() *builder.Command {
 	get := builder.NewCommand(context.TODO(), imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
 		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		"", true)
-	get.AddStringFlag(config.ArgImageId, "", "", "The unique Image Id. [Required flag]")
+	get.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -63,7 +63,7 @@ func image() *builder.Command {
 	deleteCmd := builder.NewCommand(context.TODO(), imageCmd, PreRunImageIdValidate, RunImageDelete, "delete", "Delete a private Image",
 		"Use this command to delete the specified private image. This only applies to private images that you have uploaded.\n\nRequired values to run command:\n\n* Image Id",
 		"", true)
-	deleteCmd.AddStringFlag(config.ArgImageId, "", "", "The unique Image Id. [Required flag]")
+	deleteCmd.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

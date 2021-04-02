@@ -28,6 +28,6 @@ Required values to run command:
       --ignore-stdin         Force command to execute without user input
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --snapshot-id string   The unique Snapshot Id. [Required flag]
+      --snapshot-id string   The unique Snapshot Id [Required flag]
 ```
 
