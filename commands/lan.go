@@ -27,7 +27,7 @@ func lan() *builder.Command {
 		},
 	}
 	globalFlags := lanCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", "The unique Data Center Id")
+	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -48,7 +48,7 @@ func lan() *builder.Command {
 	get := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanGet, "get", "Get a LAN",
 		"Use this command to retrieve information of a specified LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		getLanExample, true)
-	get.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
+	get.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, lanCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -81,7 +81,7 @@ Required values to run command:
 
 * Data Center Id
 * LAN Id`, updateLanExample, true)
-	update.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
+	update.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, lanCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -102,7 +102,7 @@ Required values to run command:
 
 * Data Center Id
 * LAN Id`, deleteLanExample, true)
-	deleteCmd.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
+	deleteCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, lanCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})

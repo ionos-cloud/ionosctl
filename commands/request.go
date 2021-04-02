@@ -44,7 +44,7 @@ func request() *builder.Command {
 	get := builder.NewCommand(context.TODO(), reqCmd, PreRunRequestIdValidate, RunRequestGet, "get", "Get a Request",
 		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		getRequestExample, true)
-	get.AddStringFlag(config.ArgRequestId, "", "", "The unique Request Id. [Required flag]")
+	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -60,11 +60,11 @@ You can specify a timeout for the action to be executed using `+"`"+`--timeout`+
 Required values to run command:
 
 * Request Id`, waitRequestExample, true)
-	wait.AddStringFlag(config.ArgRequestId, "", "", "The unique Request Id. [Required flag]")
+	wait.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
 	wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option waiting for request [seconds]")
 
 	return reqCmd
 }

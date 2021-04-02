@@ -29,7 +29,7 @@ func server() *builder.Command {
 		},
 	}
 	globalFlags := serverCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", "The unique Data Center Id")
+	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	serverCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -50,7 +50,7 @@ func server() *builder.Command {
 	get := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerGet, "get", "Get a Server",
 		"Use this command to get information about a specified Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
-	get.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -92,7 +92,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, updateServerExample, true)
-	update.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	update.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -122,7 +122,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, deleteServerExample, true)
-	deleteCmd.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	deleteCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -141,7 +141,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, startServerExample, true)
-	start.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	start.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	start.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -160,7 +160,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, stopServerExample, true)
-	stop.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	stop.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	stop.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -179,7 +179,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, resetServerExample, true)
-	reboot.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	reboot.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	reboot.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
 	})

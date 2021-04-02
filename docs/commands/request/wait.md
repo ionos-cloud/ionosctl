@@ -30,8 +30,8 @@ Required values to run command:
       --ignore-stdin        Force command to execute without user input
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-      --request-id string   The unique Request Id. [Required flag]
-      --timeout int         Timeout option [seconds] (default 60)
+      --request-id string   The unique Request Id [Required flag]
+      --timeout int         Timeout option waiting for request [seconds] (default 60)
 ```
 
 ## Examples
