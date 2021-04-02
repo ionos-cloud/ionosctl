@@ -30,7 +30,7 @@ func request() *builder.Command {
 	}
 	globalFlags := reqCmd.Command.PersistentFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
-	viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -45,7 +45,7 @@ func request() *builder.Command {
 		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		getRequestExample, true)
 	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
-	get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -61,7 +61,7 @@ Required values to run command:
 
 * Request Id`, waitRequestExample, true)
 	wait.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
-	wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option waiting for request [seconds]")
@@ -159,7 +159,7 @@ func getRequestsCols(flagName string, outErr io.Writer) []string {
 func getRequests(requests resources.Requests) []resources.Request {
 	req := make([]resources.Request, 0)
 	for _, r := range *requests.Items {
-		req = append(req, resources.Request{r})
+		req = append(req, resources.Request{Request: r})
 	}
 	return req
 }

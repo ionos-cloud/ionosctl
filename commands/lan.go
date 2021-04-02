@@ -28,12 +28,12 @@ func lan() *builder.Command {
 	}
 	globalFlags := lanCmd.Command.PersistentFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
-	lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultLanCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
-	viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -49,7 +49,7 @@ func lan() *builder.Command {
 		"Use this command to retrieve information of a specified LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		getLanExample, true)
 	get.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
-	get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -82,7 +82,7 @@ Required values to run command:
 * Data Center Id
 * LAN Id`, updateLanExample, true)
 	update.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
-	update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
@@ -103,7 +103,7 @@ Required values to run command:
 * Data Center Id
 * LAN Id`, deleteLanExample, true)
 	deleteCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
-	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be deleted")
@@ -273,7 +273,7 @@ func getLansCols(flagName string, outErr io.Writer) []string {
 func getLans(lans resources.Lans) []resources.Lan {
 	ls := make([]resources.Lan, 0)
 	for _, s := range *lans.Items {
-		ls = append(ls, resources.Lan{s})
+		ls = append(ls, resources.Lan{Lan: s})
 	}
 	return ls
 }

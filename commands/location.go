@@ -26,7 +26,7 @@ func location() *builder.Command {
 	}
 	globalFlags := locationCmd.Command.PersistentFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultLocationCols, "Columns to be printed in the standard output")
-	viper.BindPFlag(builder.GetGlobalFlagName(locationCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(locationCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -86,7 +86,7 @@ func getLocationCols(flagName string, outErr io.Writer) []string {
 func getLocations(datacenters resources.Locations) []resources.Location {
 	dc := make([]resources.Location, 0)
 	for _, d := range *datacenters.Items {
-		dc = append(dc, resources.Location{d})
+		dc = append(dc, resources.Location{Location: d})
 	}
 	return dc
 }
