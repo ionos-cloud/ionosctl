@@ -38,5 +38,5 @@ The sub-command of `ionosctl image` allows you to see information about images a
 | :--- | :--- |
 | [ionosctl image delete](delete.md) | Delete a private Image |
 | [ionosctl image get](get.md) | Get a specified Image |
-| [ionosctl image list](list.md) | List images |
+| [ionosctl image list](list.md) | List Images |
 

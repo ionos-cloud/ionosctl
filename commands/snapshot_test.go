@@ -37,7 +37,7 @@ var (
 		},
 	}
 	testSnapshotSize = float32(2)
-	testSnapshotVar  = "test-Snapshot"
+	testSnapshotVar  = "test-snapshot"
 	testSnapshotErr  = errors.New("snapshot test error")
 )
 

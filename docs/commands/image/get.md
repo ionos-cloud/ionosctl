@@ -31,3 +31,11 @@ Required values to run command:
   -q, --quiet             Quiet output
 ```
 
+## Examples
+
+```text
+ionosctl image get --image-id 8fc5f591-338e-11eb-a681-1e659523cb7b 
+ImageId                                Name                             Location   Size   LicenceType   ImageType
+8fc5f591-338e-11eb-a681-1e659523cb7b   Ubuntu-19.10-server-2020-12-01   us/las     3      LINUX         HDD
+```
+

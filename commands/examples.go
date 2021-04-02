@@ -264,4 +264,53 @@ RequestId                              Status   Message
 	waitRequestExample = `ionosctl request wait --request-id 20333e60-d65c-4a95-846b-08c48b871186 
 RequestId                              Status   Message
 20333e60-d65c-4a95-846b-08c48b871186   DONE     Request has been successfully executed`
+
+	/*
+		Image Examples
+	*/
+	listImagesExample = `ionosctl image list --image-location us/las --image-type HDD
+ImageId                                Name                                 Location   Size   LicenceType   ImageType
+8991cf6c-8706-11eb-a1d6-72dfddd36b99   windows-2012-r2-server-2021-03       us/las     14     WINDOWS       HDD
+7ab978cb-870a-11eb-a1d6-72dfddd36b99   windows-2016-server-2021-03          us/las     14     WINDOWS2016   HDD
+aca2279d-870b-11eb-a1d6-72dfddd36b99   windows-2019-server-2021-03          us/las     15     WINDOWS2016   HDD
+33915e02-9291-11eb-b68e-9ad3ea4b1420   CentOS-7-server-2021-04-01           us/las     4      LINUX         HDD
+bc81846b-929c-11eb-b68e-9ad3ea4b1420   Debian-testing-server-2021-04-01     us/las     2      LINUX         HDD
+8eca30f5-92a0-11eb-b68e-9ad3ea4b1420   Ubuntu-16.04-LTS-server-2021-04-01   us/las     3      LINUX         HDD
+f1316493-92a4-11eb-b68e-9ad3ea4b1420   Ubuntu-18.04-LTS-server-2021-04-01   us/las     3      LINUX         HDD
+a86dd807-9297-11eb-b68e-9ad3ea4b1420   Debian-10-server-2021-04-01          us/las     2      LINUX         HDD
+4bf9c128-929a-11eb-b68e-9ad3ea4b1420   Debian-9-server-2021-04-01           us/las     2      LINUX         HDD
+378ecd34-9295-11eb-b68e-9ad3ea4b1420   CentOS-8-server-2021-04-01           us/las     4      LINUX         HDD
+02e06d34-92aa-11eb-b68e-9ad3ea4b1420   Ubuntu-20.04-LTS-server-2021-04-01   us/las     3      LINUX         HDD
+81adeb01-3379-11eb-a681-1e659523cb7b   CentOS-6-server-2020-12-01           us/las     2      LINUX         HDD
+6f9bae91-3386-11eb-a681-1e659523cb7b   Debian-8-server-2020-12-01           us/las     2      LINUX         HDD
+8fc5f591-338e-11eb-a681-1e659523cb7b   Ubuntu-19.10-server-2020-12-01       us/las     3      LINUX         HDD`
+	getImageExample = `ionosctl image get --image-id 8fc5f591-338e-11eb-a681-1e659523cb7b 
+ImageId                                Name                             Location   Size   LicenceType   ImageType
+8fc5f591-338e-11eb-a681-1e659523cb7b   Ubuntu-19.10-server-2020-12-01   us/las     3      LINUX         HDD`
+
+	/*
+		Snapshot Examples
+	*/
+	listSnapshotsExample = `ionosctl snapshot list 
+SnapshotId                             Name           LicenceType   Size
+dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSnapshot   LINUX         10
+8e0bc509-87ee-47f4-a382-302e4f7e103d   image          LINUX         10`
+	getSnapshotExample = `ionosctl snapshot get --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c 
+SnapshotId                             Name           LicenceType   Size
+dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSNapshot   LINUX         10`
+	createSnapshotExample = `ionosctl snapshot create --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --snapshot-name testSnapshot
+SnapshotId                             Name           LicenceType   Size
+dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSnapshot   LINUX         0
+RequestId: fed5555a-ac00-41c8-abbe-cc53c8179716
+Status: Command snapshot create has been successfully executed`
+	restoreSnapshotExample = `ionosctl snapshot restore --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --wait 
+Warning: Are you sure you want to restore snapshot (y/N) ? 
+y
+RequestId: 21ca5546-9314-4cd5-8832-6029638b1237
+Status: Command snapshot restore and request have been successfully executed`
+	deleteSnapshotExample = `ionosctl snapshot delete --snapshot-id 8e0bc509-87ee-47f4-a382-302e4f7e103d --wait 
+Warning: Are you sure you want to delete snapshot (y/N) ? 
+y
+RequestId: 6e029eb6-47e6-4dcd-a333-d620b49c01e5
+Status: Command snapshot delete and request have been successfully executed`
 )

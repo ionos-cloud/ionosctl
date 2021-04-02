@@ -29,5 +29,17 @@ Required values to run command:
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
       --snapshot-id string   The unique Snapshot Id [Required flag]
+      --timeout int          Timeout option for a Snapshot to be deleted [seconds] (default 60)
+      --wait                 Wait for Snapshot to be deleted
+```
+
+## Examples
+
+```text
+ionosctl snapshot delete --snapshot-id 8e0bc509-87ee-47f4-a382-302e4f7e103d --wait 
+Warning: Are you sure you want to delete snapshot (y/N) ? 
+y
+RequestId: 6e029eb6-47e6-4dcd-a333-d620b49c01e5
+Status: Command snapshot delete and request have been successfully executed
 ```
 

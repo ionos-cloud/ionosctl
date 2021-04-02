@@ -30,3 +30,11 @@ Required values to run command:
       --snapshot-id string   The unique Snapshot Id [Required flag]
 ```
 
+## Examples
+
+```text
+ionosctl snapshot get --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c 
+SnapshotId                             Name           LicenceType   Size
+dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSNapshot   LINUX         10
+```
+

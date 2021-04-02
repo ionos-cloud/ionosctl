@@ -37,7 +37,7 @@ func image() *builder.Command {
 	*/
 	list := builder.NewCommand(context.TODO(), imageCmd, noPreRun, RunImageList, "list", "List Images",
 		"Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
-		"", true)
+		listImagesExample, true)
 	list.AddFloat32Flag(config.ArgImageSize, "", 0, "The size of the Image")
 	list.AddStringFlag(config.ArgImageType, "", "", "The type of the Image")
 	list.AddStringFlag(config.ArgImageLicenceType, "", "", "The licence type of the Image")
@@ -51,7 +51,7 @@ func image() *builder.Command {
 	*/
 	get := builder.NewCommand(context.TODO(), imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
 		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		"", true)
+		getImageExample, true)
 	get.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp

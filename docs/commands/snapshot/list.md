@@ -26,3 +26,12 @@ Use this command to get a list of Snapshots.
   -q, --quiet            Quiet output
 ```
 
+## Examples
+
+```text
+ionosctl snapshot list 
+SnapshotId                             Name           LicenceType   Size
+dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSnapshot   LINUX         10
+8e0bc509-87ee-47f4-a382-302e4f7e103d   image          LINUX         10
+```
+
