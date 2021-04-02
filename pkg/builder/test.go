@@ -44,6 +44,7 @@ type ResourcesMocks struct {
 	Loadbalancer *mocks.MockLoadbalancersService
 	Request      *mocks.MockRequestsService
 	Image        *mocks.MockImagesService
+	Snapshot     *mocks.MockSnapshotsService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -64,6 +65,7 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Loadbalancer: mocks.NewMockLoadbalancersService(ctrl),
 		Request:      mocks.NewMockRequestsService(ctrl),
 		Image:        mocks.NewMockImagesService(ctrl),
+		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
 	}
 
 	cmdConfig := &CommandConfig{
@@ -97,6 +99,9 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		},
 		Images: func() resources.ImagesService {
 			return tm.Image
+		},
+		Snapshots: func() resources.SnapshotsService {
+			return tm.Snapshot
 		},
 	}
 

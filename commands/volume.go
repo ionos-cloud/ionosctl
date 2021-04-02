@@ -52,7 +52,7 @@ func volume() *builder.Command {
 		getVolumeExample, true)
 	get.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, volumeCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -93,7 +93,7 @@ Required values to run command:
 * Volume Id`, updateVolumeExample, true)
 	update.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	update.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, volumeCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgVolumeName, "", "", "Name of the Volume")
 	update.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
@@ -116,7 +116,7 @@ Required values to run command:
 * Volume Id`, deleteVolumeExample, true)
 	deleteCmd.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, volumeCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be deleted [seconds]")
@@ -138,7 +138,7 @@ Required values to run command:
 The sub-commands of `+"`"+`ionosctl volume attach`+"`"+` allow you to retrieve information about attached Volumes or about a specified attached Volume.`, attachVolumeExample, true)
 	attachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	attachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, volumeCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachVolume.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	attachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -556,10 +556,9 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 	return out
 }
 
-func getVolumesIds(outErr io.Writer, parentCmdName string) []string {
+func getVolumesIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
@@ -567,20 +566,23 @@ func getVolumesIds(outErr io.Writer, parentCmdName string) []string {
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-
-	volumeSvc := resources.NewVolumeService(clientSvc.Get(), context.TODO())
-	volumes, _, err := volumeSvc.List(viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)))
-	clierror.CheckError(err, outErr)
-
-	volumesIds := make([]string, 0)
-	if volumes.Volumes.Items != nil {
-		for _, v := range *volumes.Volumes.Items {
-			volumesIds = append(volumesIds, *v.GetId())
+	if clientSvc != nil {
+		volumeSvc := resources.NewVolumeService(clientSvc.Get(), context.TODO())
+		volumes, _, err := volumeSvc.List(datacenterId)
+		clierror.CheckError(err, outErr)
+		volumesIds := make([]string, 0)
+		if items, ok := volumes.Volumes.GetItemsOk(); ok && items != nil {
+			for _, item := range *items {
+				if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+					volumesIds = append(volumesIds, *itemId)
+				}
+			}
+		} else {
+			return nil
 		}
-	} else {
-		return nil
+		return volumesIds
 	}
-	return volumesIds
+	return nil
 }
 
 func getAttachedVolumesIds(outErr io.Writer, parentCmdDcId, parentCmdName, nameCmd string) []string {

@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"io"
 	"os"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -35,13 +35,13 @@ func image() *builder.Command {
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(context.TODO(), imageCmd, noPreRun, RunImageList, "list", "List images",
-		"Use this command to get a list of available public images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
+	list := builder.NewCommand(context.TODO(), imageCmd, noPreRun, RunImageList, "list", "List Images",
+		"Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
 		"", true)
-	list.AddFloat32Flag(config.ArgImageSize, "", 0, "")
-	list.AddStringFlag(config.ArgImageType, "", "", "")
-	list.AddStringFlag(config.ArgImageLicenceType, "", "", "")
-	list.AddStringFlag(config.ArgImageLocation, "", "", "")
+	list.AddFloat32Flag(config.ArgImageSize, "", 0, "The size of the Image")
+	list.AddStringFlag(config.ArgImageType, "", "", "The type of the Image")
+	list.AddStringFlag(config.ArgImageLicenceType, "", "", "The licence type of the Image")
+	list.AddStringFlag(config.ArgImageLocation, "", "", "The location of the Image")
 	list.Command.RegisterFlagCompletionFunc(config.ArgImageLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -232,9 +232,11 @@ func getImageIds(outErr io.Writer) []string {
 	images, _, err := imageSvc.List()
 	clierror.CheckError(err, outErr)
 	imgsIds := make([]string, 0)
-	if images.Images.Items != nil {
-		for _, d := range *images.Images.Items {
-			imgsIds = append(imgsIds, *d.GetId())
+	if items, ok := images.Images.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				imgsIds = append(imgsIds, *itemId)
+			}
 		}
 	} else {
 		return nil

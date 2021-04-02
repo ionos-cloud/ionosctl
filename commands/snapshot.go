@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"io"
 	"os"
 
@@ -22,7 +23,7 @@ func snapshot() *builder.Command {
 			Use:              "snapshot",
 			Aliases:          []string{"sp", "snap"},
 			Short:            "Snapshot Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl snapshot` + "`" + ` allows you to see information about snapshots.`,
+			Long:             `The sub-command of ` + "`" + `ionosctl snapshot` + "`" + ` allows you to see information about Snapshots.`,
 			TraverseChildren: true,
 		},
 	}
@@ -59,7 +60,7 @@ Required values to run command:
 - Data Center Id
 - Volume Id
 - Snapshot Name`, "", true)
-	create.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot [Required flag]")
+	create.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot")
 	create.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
 	create.AddStringFlag(config.ArgSnapshotLicenceType, "", "", "Licence Type of the Snapshot")
 	create.Command.RegisterFlagCompletionFunc(config.ArgSnapshotLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -71,7 +72,7 @@ Required values to run command:
 	})
 	create.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	create.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, snapshotCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Command.Name(), create.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be created [seconds]")
@@ -84,7 +85,7 @@ Required values to run command:
 		"", true)
 	restore.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	restore.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	restore.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	restore.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -92,8 +93,10 @@ Required values to run command:
 	})
 	restore.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	restore.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, snapshotCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Command.Name(), restore.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	restore.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be restored")
+	restore.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be restored [seconds]")
 
 	/*
 		Delete Command
@@ -105,6 +108,8 @@ Required values to run command:
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be deleted [seconds]")
 
 	return snapshotCmd
 }
@@ -114,15 +119,7 @@ func PreRunSnapshotIdValidate(c *builder.PreCommandConfig) error {
 }
 
 func PreRunSnapshotNameDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredFlags(c.ParentName, config.ArgDataCenterId)
-	if err != nil {
-		return err
-	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgVolumeId)
-	if err != nil {
-		return err
-	}
-	err = builder.CheckRequiredFlags(c.ParentName, config.ArgSnapshotName)
+	err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName)
 	if err != nil {
 		return err
 	}
@@ -130,15 +127,7 @@ func PreRunSnapshotNameDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
 }
 
 func PreRunSnapshotIdDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredFlags(c.ParentName, config.ArgDataCenterId)
-	if err != nil {
-		return err
-	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgVolumeId)
-	if err != nil {
-		return err
-	}
-	err = builder.CheckRequiredFlags(c.ParentName, config.ArgSnapshotId)
+	err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
 	if err != nil {
 		return err
 	}
@@ -146,25 +135,25 @@ func PreRunSnapshotIdDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
 }
 
 func RunSnapshotList(c *builder.CommandConfig) error {
-	snapshots, _, err := c.Snapshots().List()
+	ss, _, err := c.Snapshots().List()
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON: snapshots,
-		KeyValue:   getSnapshotsKVMaps(getSnapshots(snapshots)),
+		OutputJSON: ss,
+		KeyValue:   getSnapshotsKVMaps(getSnapshots(ss)),
 		Columns:    getSnapshotCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
 func RunSnapshotGet(c *builder.CommandConfig) error {
-	snapshot, _, err := c.Snapshots().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)))
+	s, _, err := c.Snapshots().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON: snapshot,
-		KeyValue:   getSnapshotsKVMaps([]resources.Snapshot{*snapshot}),
+		OutputJSON: s,
+		KeyValue:   getSnapshotsKVMaps([]resources.Snapshot{*s}),
 		Columns:    getSnapshotCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
@@ -196,6 +185,10 @@ func RunSnapshotCreate(c *builder.CommandConfig) error {
 }
 
 func RunSnapshotRestore(c *builder.CommandConfig) error {
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot")
+	if err != nil {
+		return err
+	}
 	datacenterId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId))
 	volumeId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId))
 	snapshotId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId))
@@ -212,6 +205,10 @@ func RunSnapshotRestore(c *builder.CommandConfig) error {
 }
 
 func RunSnapshotDelete(c *builder.CommandConfig) error {
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot")
+	if err != nil {
+		return err
+	}
 	snapshotId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId))
 	resp, err := c.Snapshots().Delete(snapshotId)
 	if err != nil {
@@ -294,7 +291,6 @@ func getSnapshotsKVMaps(dcs []resources.Snapshot) []map[string]interface{} {
 func getSnapshotIds(outErr io.Writer) []string {
 	err := config.LoadFile()
 	clierror.CheckError(err, outErr)
-
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
@@ -306,9 +302,11 @@ func getSnapshotIds(outErr io.Writer) []string {
 	snapshots, _, err := snapshotSvc.List()
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
-	if snapshots.Snapshots.Items != nil {
-		for _, d := range *snapshots.Snapshots.Items {
-			ssIds = append(ssIds, *d.GetId())
+	if items, ok := snapshots.Snapshots.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
 		}
 	} else {
 		return nil

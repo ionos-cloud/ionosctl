@@ -18,149 +18,143 @@ import (
 )
 
 var (
-	img = resources.Image{
-		Image: ionoscloud.Image{
-			Id: &testImageVar,
-			Properties: &ionoscloud.ImageProperties{
-				Name:        &testImageVar,
-				Location:    &testImageVar,
-				Description: &testImageVar,
-				Size:        &testImageSize,
-				LicenceType: &testImageVar,
-				ImageType:   &testImageVar,
-				Public:      &testImagePublic,
+	snapshotTest = resources.Snapshot{
+		Snapshot: ionoscloud.Snapshot{
+			Id: &testSnapshotVar,
+			Properties: &ionoscloud.SnapshotProperties{
+				Name:        &testSnapshotVar,
+				Location:    &testSnapshotVar,
+				Description: &testSnapshotVar,
+				Size:        &testSnapshotSize,
+				LicenceType: &testSnapshotVar,
 			},
 		},
 	}
-	images = resources.Images{
-		Images: ionoscloud.Images{
-			Id:    &testImageVar,
-			Items: &[]ionoscloud.Image{img.Image},
+	snapshots = resources.Snapshots{
+		Snapshots: ionoscloud.Snapshots{
+			Id:    &testSnapshotVar,
+			Items: &[]ionoscloud.Snapshot{snapshotTest.Snapshot},
 		},
 	}
-	testImageSize   = float32(2)
-	testImagePublic = true
-	testImageVar    = "test-image"
-	testImageErr    = errors.New("image test error")
+	testSnapshotSize = float32(2)
+	testSnapshotVar  = "test-Snapshot"
+	testSnapshotErr  = errors.New("snapshot test error")
 )
 
-func TestPreImageIdValidate(t *testing.T) {
+func TestPreSnapshotIdValidate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
-		err := PreRunImageIdValidate(cfg)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
+		err := PreRunSnapshotIdValidate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunImageList(t *testing.T) {
+func TestRunSnapshotList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.Image.EXPECT().List().Return(images, nil, nil)
-		err := RunImageList(cfg)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		rm.Snapshot.EXPECT().List().Return(snapshots, nil, nil)
+		err := RunSnapshotList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunImageListErr(t *testing.T) {
+func TestRunSnapshotListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.Image.EXPECT().List().Return(images, nil, testImageErr)
-		err := RunImageList(cfg)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		rm.Snapshot.EXPECT().List().Return(snapshots, nil, testSnapshotErr)
+		err := RunSnapshotList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunImageListSort(t *testing.T) {
+func TestRunSnapshotListSort(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageLocation), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageLicenceType), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageType), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageSize), testImageSize)
-		rm.Image.EXPECT().List().Return(images, nil, nil)
-		err := RunImageList(cfg)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), testSnapshotVar)
+		rm.Snapshot.EXPECT().List().Return(snapshots, nil, nil)
+		err := RunSnapshotList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunImageGet(t *testing.T) {
+func TestRunSnapshotGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
-		rm.Image.EXPECT().Get(testImageVar).Return(&img, nil, nil)
-		err := RunImageGet(cfg)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
+		rm.Snapshot.EXPECT().Get(testSnapshotVar).Return(&snapshotTest, nil, nil)
+		err := RunSnapshotGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunImageGetErr(t *testing.T) {
+func TestRunSnapshotGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
-		rm.Image.EXPECT().Get(testImageVar).Return(&img, nil, testImageErr)
-		err := RunImageGet(cfg)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
+		rm.Snapshot.EXPECT().Get(testSnapshotVar).Return(&snapshotTest, nil, testSnapshotErr)
+		err := RunSnapshotGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunImageDelete(t *testing.T) {
+func TestRunSnapshotDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgIgnoreStdin, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		rm.Image.EXPECT().Delete(testImageVar).Return(nil, nil)
-		err := RunImageDelete(cfg)
+		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(nil, nil)
+		err := RunSnapshotDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunImageDeleteErr(t *testing.T) {
+func TestRunSnapshotDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgIgnoreStdin, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		rm.Image.EXPECT().Delete(testImageVar).Return(nil, testImageErr)
-		err := RunImageDelete(cfg)
+		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(nil, testSnapshotErr)
+		err := RunSnapshotDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunImageDeleteAskForConfirm(t *testing.T) {
+func TestRunSnapshotDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -168,62 +162,62 @@ func TestRunImageDeleteAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
-		rm.Image.EXPECT().Delete(testImageVar).Return(nil, nil)
-		err := RunImageDelete(cfg)
+		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(nil, nil)
+		err := RunSnapshotDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunImageDeleteAskForConfirmErr(t *testing.T) {
+func TestRunSnapshotDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgIgnoreStdin, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		cfg.Stdin = os.Stdin
-		err := RunImageDelete(cfg)
+		err := RunSnapshotDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestGetImagesCols(t *testing.T) {
+func TestGetSnapshotsCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("image", config.ArgCols), []string{"Name"})
-	getImageCols(builder.GetGlobalFlagName("image", config.ArgCols), w)
+	viper.Set(builder.GetGlobalFlagName("snapshot", config.ArgCols), []string{"Name"})
+	getSnapshotCols(builder.GetGlobalFlagName("snapshot", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
 
-func TestGetImagesColsErr(t *testing.T) {
+func TestGetSnapshotsColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("image", config.ArgCols), []string{"Unknown"})
-	getImageCols(builder.GetGlobalFlagName("image", config.ArgCols), w)
+	viper.Set(builder.GetGlobalFlagName("snapshot", config.ArgCols), []string{"Unknown"})
+	getSnapshotCols(builder.GetGlobalFlagName("snapshot", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestGetImagesIds(t *testing.T) {
+func TestGetSnapshotsIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getImageIds(w)
+	getSnapshotIds(w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)
