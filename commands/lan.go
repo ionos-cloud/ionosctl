@@ -27,7 +27,7 @@ func lan() *builder.Command {
 		},
 	}
 	globalFlags := lanCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", "The unique Data Center Id")
+	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -48,9 +48,9 @@ func lan() *builder.Command {
 	get := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanGet, "get", "Get a LAN",
 		"Use this command to retrieve information of a specified LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		getLanExample, true)
-	get.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
+	get.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLansIds(os.Stderr, lanCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -81,9 +81,9 @@ Required values to run command:
 
 * Data Center Id
 * LAN Id`, updateLanExample, true)
-	update.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
+	update.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLansIds(os.Stderr, lanCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
 	update.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Public option for LAN")
@@ -102,9 +102,9 @@ Required values to run command:
 
 * Data Center Id
 * LAN Id`, deleteLanExample, true)
-	deleteCmd.AddStringFlag(config.ArgLanId, "", "", "The unique LAN Id [Required flag]")
+	deleteCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLansIds(os.Stderr, lanCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be deleted [seconds]")
@@ -324,7 +324,7 @@ func getLanPostsKVMaps(ls []resources.LanPost) []map[string]interface{} {
 	return out
 }
 
-func getLansIds(outErr io.Writer, parentCmdName string) []string {
+func getLansIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
 	clientSvc, err := resources.NewClientService(
@@ -334,17 +334,16 @@ func getLansIds(outErr io.Writer, parentCmdName string) []string {
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-
 	lanSvc := resources.NewLanService(clientSvc.Get(), context.TODO())
-	lans, _, err := lanSvc.List(
-		viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)),
-	)
+	lans, _, err := lanSvc.List(datacenterId)
+	//viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)), )
 	clierror.CheckError(err, outErr)
-
 	lansIds := make([]string, 0)
-	if lans.Lans.Items != nil {
-		for _, v := range *lans.Lans.Items {
-			lansIds = append(lansIds, *v.GetId())
+	if items, ok := lans.Lans.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				lansIds = append(lansIds, *itemId)
+			}
 		}
 	} else {
 		return nil

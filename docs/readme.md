@@ -98,6 +98,8 @@ After a successful authentication, you will no longer need to provide credential
 
 If you want to use a different configuration file, use `--config` option.
 
+Note: `ionosctl` also supports authentication with token.
+
 ### Enabling Shell Auto-Completion
 
 `ionosctl` provides completions for various shells, for both commands and flags. If you partially type a command or a flag and then press `TAB`, the rest of the command will be automatically filled in.

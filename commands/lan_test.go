@@ -68,6 +68,8 @@ func TestPreRunGlobalDcIdValidate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		err := PreRunGlobalDcIdValidate(cfg)
@@ -79,6 +81,8 @@ func TestPreRunGlobalDcIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		err := PreRunGlobalDcIdValidate(cfg)
@@ -91,6 +95,8 @@ func TestPreRunGlobalDcIdLanIdValidate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testLanVar)
@@ -103,6 +109,8 @@ func TestPreRunGlobalDcIdLanIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		err := PreRunGlobalDcIdLanIdValidate(cfg)
@@ -121,6 +129,8 @@ func TestRunLanList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		rm.Lan.EXPECT().List(testLanVar).Return(ls, nil, nil)
@@ -133,6 +143,8 @@ func TestRunLanListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		rm.Lan.EXPECT().List(testLanVar).Return(ls, nil, testLanErr)
@@ -145,6 +157,8 @@ func TestRunLanGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testLanVar)
@@ -158,6 +172,8 @@ func TestRunLanGet_Err(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testLanVar)
@@ -171,6 +187,8 @@ func TestRunLanCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
@@ -186,6 +204,8 @@ func TestRunLanCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
@@ -201,6 +221,8 @@ func TestRunLanCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
@@ -217,6 +239,8 @@ func TestRunLanUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
@@ -233,6 +257,8 @@ func TestRunLanUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
@@ -250,6 +276,8 @@ func TestRunLanUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
@@ -267,6 +295,8 @@ func TestRunLanDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, true)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
@@ -282,6 +312,8 @@ func TestRunLanDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, true)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
@@ -297,6 +329,8 @@ func TestRunLanDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, true)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
@@ -312,6 +346,8 @@ func TestRunLanDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
@@ -328,6 +364,8 @@ func TestRunLanDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, false)
 		cfg.Stdin = os.Stdin
@@ -343,7 +381,6 @@ func TestGetLansCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
-
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("lan", config.ArgCols), []string{"Name"})
 	getLansCols(builder.GetGlobalFlagName("lan", config.ArgCols), w)
@@ -355,7 +392,6 @@ func TestGetLansColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
-
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("lan", config.ArgCols), []string{"Unknown"})
 	getLansCols(builder.GetGlobalFlagName("lan", config.ArgCols), w)
@@ -369,14 +405,12 @@ func TestGetLansIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
-
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	viper.Set(builder.GetGlobalFlagName("lan", config.ArgDataCenterId), testLanVar)
-	getLansIds(w, "lan")
+	getLansIds(w, testLanVar)
 	err := w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }

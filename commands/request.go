@@ -44,7 +44,7 @@ func request() *builder.Command {
 	get := builder.NewCommand(context.TODO(), reqCmd, PreRunRequestIdValidate, RunRequestGet, "get", "Get a Request",
 		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		getRequestExample, true)
-	get.AddStringFlag(config.ArgRequestId, "", "", "The unique Request Id. [Required flag]")
+	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -60,11 +60,11 @@ You can specify a timeout for the action to be executed using `+"`"+`--timeout`+
 Required values to run command:
 
 * Request Id`, waitRequestExample, true)
-	wait.AddStringFlag(config.ArgRequestId, "", "", "The unique Request Id. [Required flag]")
+	wait.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
 	wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option [seconds]")
+	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option waiting for request [seconds]")
 
 	return reqCmd
 }
@@ -186,7 +186,6 @@ func getRequestsKVMaps(requests []resources.Request) []map[string]interface{} {
 func getRequestsIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
@@ -194,18 +193,18 @@ func getRequestsIds(outErr io.Writer) []string {
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-
 	reqSvc := resources.NewRequestService(clientSvc.Get(), context.TODO())
 	requests, _, err := reqSvc.List()
 	clierror.CheckError(err, outErr)
-
-	dcIds := make([]string, 0)
-	if requests.Requests.Items != nil {
-		for _, d := range *requests.Requests.Items {
-			dcIds = append(dcIds, *d.GetId())
+	reqIds := make([]string, 0)
+	if items, ok := requests.Requests.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				reqIds = append(reqIds, *itemId)
+			}
 		}
 	} else {
 		return nil
 	}
-	return dcIds
+	return reqIds
 }

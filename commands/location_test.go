@@ -40,8 +40,10 @@ func TestRunLocationList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
-		rm.Location.EXPECT().List().Return(locations, nil, nil)
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		rm.Location.EXPECT().List().Return(locations, nil, nil)
 		err := RunLocationList(cfg)
 		assert.NoError(t, err)
 	})
@@ -51,8 +53,10 @@ func TestRunLocationListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
-		rm.Location.EXPECT().List().Return(locations, nil, testLocationErr)
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		rm.Location.EXPECT().List().Return(locations, nil, testLocationErr)
 		err := RunLocationList(cfg)
 		assert.Error(t, err)
 	})
@@ -62,7 +66,6 @@ func TestGetLocationsCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
-
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("location", config.ArgCols), []string{"Name"})
 	getLocationCols(builder.GetGlobalFlagName("location", config.ArgCols), w)
@@ -74,7 +77,6 @@ func TestGetLocationsColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
-
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("location", config.ArgCols), []string{"Unknown"})
 	getLocationCols(builder.GetGlobalFlagName("location", config.ArgCols), w)
@@ -88,13 +90,11 @@ func TestGetLocationsIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
-
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getLocationIds(w)
 	err := w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }

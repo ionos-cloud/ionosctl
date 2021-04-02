@@ -53,254 +53,288 @@ var (
 	testLoadbalancerErr    = errors.New("loadbalancer test: error occurred")
 )
 
-func TestPreRunGlobalDcIdLoadbalancerIdValidate(t *testing.T) {
+func TestPreRunGlobalDcIdLoadBalancerIdValidate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
-		err := PreRunGlobalDcIdLoadbalancerIdValidate(cfg)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
+		err := PreRunGlobalDcIdLoadBalancerIdValidate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGlobalDcIdLoadbalancerIdValidateRequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcIdLoadBalancerIdValidateRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
-		err := PreRunGlobalDcIdLoadbalancerIdValidate(cfg)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
+		err := PreRunGlobalDcIdLoadBalancerIdValidate(cfg)
 		assert.Error(t, err)
 		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), "")
-		err = PreRunGlobalDcIdLoadbalancerIdValidate(cfg)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), "")
+		err = PreRunGlobalDcIdLoadBalancerIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgLoadbalancerId).Error())
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgLoadBalancerId).Error())
 	})
 }
 
-func TestRunLoadbalancerList(t *testing.T) {
+func TestRunLoadBalancerList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
 		rm.Loadbalancer.EXPECT().List(testLoadbalancerVar).Return(loadbs, nil, nil)
-		err := RunLoadbalancerList(cfg)
+		err := RunLoadBalancerList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunLoadbalancerListErr(t *testing.T) {
+func TestRunLoadBalancerListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
 		rm.Loadbalancer.EXPECT().List(testLoadbalancerVar).Return(loadbs, nil, testLoadbalancerErr)
-		err := RunLoadbalancerList(cfg)
+		err := RunLoadBalancerList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoadbalancerGet(t *testing.T) {
+func TestRunLoadBalancerGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		rm.Loadbalancer.EXPECT().Get(testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Loadbalancer{loadb}, nil, nil)
-		err := RunLoadbalancerGet(cfg)
+		err := RunLoadBalancerGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunLoadbalancerGetErr(t *testing.T) {
+func TestRunLoadBalancerGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		rm.Loadbalancer.EXPECT().Get(testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Loadbalancer{loadb}, nil, testLoadbalancerErr)
-		err := RunLoadbalancerGet(cfg)
+		err := RunLoadBalancerGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoadbalancerCreate(t *testing.T) {
+func TestRunLoadBalancerCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerName), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerDhcp), dhcpLoadbalancer)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerDhcp), dhcpLoadbalancer)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Loadbalancer.EXPECT().Create(testLoadbalancerVar, testLoadbalancerVar, dhcpLoadbalancer).Return(&resources.Loadbalancer{loadb}, nil, nil)
-		err := RunLoadbalancerCreate(cfg)
+		err := RunLoadBalancerCreate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunLoadbalancerCreateErr(t *testing.T) {
+func TestRunLoadBalancerCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerName), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerName), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerDhcp), dhcpLoadbalancer)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerDhcp), dhcpLoadbalancer)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Loadbalancer.EXPECT().Create(testLoadbalancerVar, testLoadbalancerVar, dhcpLoadbalancer).Return(&resources.Loadbalancer{loadb}, nil, testLoadbalancerErr)
-		err := RunLoadbalancerCreate(cfg)
+		err := RunLoadBalancerCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoadbalancerCreateWaitErr(t *testing.T) {
+func TestRunLoadBalancerCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerName), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerName), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerDhcp), dhcpLoadbalancer)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerDhcp), dhcpLoadbalancer)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Loadbalancer.EXPECT().Create(testLoadbalancerVar, testLoadbalancerVar, dhcpLoadbalancer).Return(&resources.Loadbalancer{loadb}, nil, nil)
-		err := RunLoadbalancerCreate(cfg)
+		err := RunLoadBalancerCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoadbalancerUpdate(t *testing.T) {
+func TestRunLoadBalancerUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerName), testLoadbalancerNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerDhcp), dhcpLoadbalancerNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerDhcp), dhcpLoadbalancerNew)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Loadbalancer.EXPECT().Update(testLoadbalancerVar, testLoadbalancerVar, loadbalancerProperties).Return(&loadbalancerNew, nil, nil)
-		err := RunLoadbalancerUpdate(cfg)
+		err := RunLoadBalancerUpdate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunLoadbalancerUpdateErr(t *testing.T) {
+func TestRunLoadBalancerUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerName), testLoadbalancerNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerDhcp), dhcpLoadbalancerNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerDhcp), dhcpLoadbalancerNew)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Loadbalancer.EXPECT().Update(testLoadbalancerVar, testLoadbalancerVar, loadbalancerProperties).Return(&loadbalancerNew, nil, testLoadbalancerErr)
-		err := RunLoadbalancerUpdate(cfg)
+		err := RunLoadBalancerUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoadbalancerUpdateWaitErr(t *testing.T) {
+func TestRunLoadBalancerUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerName), testLoadbalancerNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerDhcp), dhcpLoadbalancerNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerDhcp), dhcpLoadbalancerNew)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Loadbalancer.EXPECT().Update(testLoadbalancerVar, testLoadbalancerVar, loadbalancerProperties).Return(&loadbalancerNew, nil, nil)
-		err := RunLoadbalancerUpdate(cfg)
+		err := RunLoadBalancerUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoadbalancerDelete(t *testing.T) {
+func TestRunLoadBalancerDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, true)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(nil, nil)
-		err := RunLoadbalancerDelete(cfg)
+		err := RunLoadBalancerDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunLoadbalancerDeleteErr(t *testing.T) {
+func TestRunLoadBalancerDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, true)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(nil, testLoadbalancerErr)
-		err := RunLoadbalancerDelete(cfg)
+		err := RunLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoadbalancerDeleteWaitErr(t *testing.T) {
+func TestRunLoadBalancerDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, true)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(nil, nil)
-		err := RunLoadbalancerDelete(cfg)
+		err := RunLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunLoadbalancerDeleteAskForConfirm(t *testing.T) {
+func TestRunLoadBalancerDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(nil, nil)
-		err := RunLoadbalancerDelete(cfg)
+		err := RunLoadBalancerDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunLoadbalancerDeleteAskForConfirmErr(t *testing.T) {
+func TestRunLoadBalancerDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, false)
 		cfg.Stdin = os.Stdin
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLoadbalancerVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadbalancerId), testLoadbalancerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		err := RunLoadbalancerDelete(cfg)
+		err := RunLoadBalancerDelete(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -309,7 +343,6 @@ func TestLoadbalancersCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
-
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Name"})
 	getLoadbalancersCols(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), w)
@@ -321,7 +354,6 @@ func TestGetLoadbalancersColsErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
-
 	w := bufio.NewWriter(&b)
 	viper.Set(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), []string{"Unknown"})
 	getLoadbalancersCols(builder.GetGlobalFlagName("loadbalancer", config.ArgCols), w)
@@ -335,13 +367,11 @@ func TestGetLoadbalancersIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
-
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getLoadbalancersIds(w, "loadbalancer")
 	err := w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }

@@ -29,7 +29,7 @@ func server() *builder.Command {
 		},
 	}
 	globalFlags := serverCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", "The unique Data Center Id")
+	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	serverCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -50,9 +50,9 @@ func server() *builder.Command {
 	get := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerGet, "get", "Get a Server",
 		"Use this command to get information about a specified Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
-	get.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -92,9 +92,9 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, updateServerExample, true)
-	update.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	update.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
 	update.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
@@ -122,9 +122,9 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, deleteServerExample, true)
-	deleteCmd.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	deleteCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be deleted [seconds]")
@@ -141,9 +141,9 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, startServerExample, true)
-	start.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	start.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	start.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	start.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to start")
 	start.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be started [seconds]")
@@ -160,9 +160,9 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, stopServerExample, true)
-	stop.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	stop.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	stop.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	stop.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to stop")
 	stop.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be stopped [seconds]")
@@ -179,9 +179,9 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, resetServerExample, true)
-	reboot.AddStringFlag(config.ArgServerId, "", "", "The unique Server Id [Required flag]")
+	reboot.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	reboot.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, serverCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return serverCmd
@@ -478,10 +478,9 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 	return out
 }
 
-func getServersIds(outErr io.Writer, parentCmdName string) []string {
+func getServersIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
@@ -489,15 +488,15 @@ func getServersIds(outErr io.Writer, parentCmdName string) []string {
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-
 	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
-	servers, _, err := serverSvc.List(viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)))
+	servers, _, err := serverSvc.List(datacenterId)
 	clierror.CheckError(err, outErr)
-
 	ssIds := make([]string, 0)
-	if servers.Servers.Items != nil {
-		for _, s := range *servers.Servers.Items {
-			ssIds = append(ssIds, *s.GetId())
+	if items, ok := servers.Servers.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
 		}
 	} else {
 		return nil
