@@ -15,6 +15,7 @@ func GetUserData() map[string]string {
 	return map[string]string{
 		Username:     viper.GetString(Username),
 		Password:     viper.GetString(Password),
+		Token:        viper.GetString(Token),
 		ArgServerUrl: viper.GetString(ArgServerUrl),
 	}
 }
@@ -47,6 +48,7 @@ func Load() (err error) {
 		if errors.As(err, &viper.ConfigFileNotFoundError{}) || errors.As(err, &pathErr) {
 			_ = viper.BindEnv(Username, sdk.IonosUsernameEnvVar)
 			_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
+			_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
 			return nil
 		}
 	}

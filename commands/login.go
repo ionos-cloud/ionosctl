@@ -28,6 +28,7 @@ Note: The command can also be used without `+"`"+`--user`+"`"+` and `+"`"+`--pas
 		loginExamples, false)
 	loginCmd.AddStringFlag("user", "", "", "Username to authenticate")
 	loginCmd.AddStringFlag("password", "", "", "Password to authenticate")
+	loginCmd.AddStringFlag("token", "", "", "Token to authenticate")
 
 	return loginCmd
 }
@@ -36,6 +37,7 @@ func RunLoginUser(c *builder.CommandConfig) error {
 	var err error
 	user := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "user"))
 	pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "password"))
+	token := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "token"))
 
 	if user == "" {
 		err := c.Printer.Print("Enter your username:")
@@ -62,10 +64,12 @@ func RunLoginUser(c *builder.CommandConfig) error {
 	}
 	viper.Set(config.Username, user)
 	viper.Set(config.Password, pwd)
+	viper.Set(config.Token, token)
 
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
+		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	if err != nil {

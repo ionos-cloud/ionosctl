@@ -23,23 +23,23 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string              Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings                Columns to be printed in the standard output (default [DatacenterId,Name,Location])
-  -c, --config string               Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string        The unique Data Center Id
-  -h, --help                        help for create
-      --ignore-stdin                Force command to execute without user input
-  -o, --output string               Desired output format [text|json] (default "text")
-  -q, --quiet                       Quiet output
-      --timeout int                 Timeout option for Volume to be created [seconds] (default 60)
-      --volume-bus string           Bus for the Volume (default "VIRTIO")
-      --volume-licencetype string   Licence Type of the Volume (default "LINUX")
-      --volume-name string          Name of the Volume
-      --volume-size float32         Size in GB of the Volume (default 10)
-      --volume-sshkeys string       Ssh Key of the Volume
-      --volume-type string          Type of the Volume (default "HDD")
-      --volume-zone string          Availability zone of the Volume. Storage zone can only be selected prior provisioning (default "AUTO")
-      --wait                        Wait for Volume to be created
+  -u, --api-url string               Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings                 Columns to be printed in the standard output (default [DatacenterId,Name,Location])
+  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --datacenter-id string         The unique Data Center Id [Required flag]
+  -h, --help                         help for create
+      --ignore-stdin                 Force command to execute without user input
+  -o, --output string                Desired output format [text|json] (default "text")
+  -q, --quiet                        Quiet output
+      --timeout int                  Timeout option for Volume to be created [seconds] (default 60)
+      --volume-bus string            Bus for the Volume (default "VIRTIO")
+      --volume-licence-type string   Licence Type of the Volume (default "LINUX")
+      --volume-name string           Name of the Volume
+      --volume-size float32          Size in GB of the Volume (default 10)
+      --volume-ssh-keys string       Ssh Key of the Volume
+      --volume-type string           Type of the Volume (default "HDD")
+      --volume-zone string           Availability zone of the Volume. Storage zone can only be selected prior provisioning (default "AUTO")
+      --wait                         Wait for Volume to be created
 ```
 
 ## Examples

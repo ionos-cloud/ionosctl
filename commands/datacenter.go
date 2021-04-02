@@ -42,7 +42,7 @@ func datacenter() *builder.Command {
 	*/
 	get := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterGet, "get", "Get a Data Center",
 		"Use this command to get information about a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", getDatacenterExample, true)
-	get.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id [Required flag]")
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -74,7 +74,7 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 Required values to run command:
 
 * Data Center Id`, updateDatacenterExample, true)
-	update.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id [Required flag]")
+	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -94,7 +94,7 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. Yo
 Required values to run command:
 
 * Data Center Id`, deleteDatacenterExample, true)
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Data Center Id [Required flag]")
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -288,6 +288,7 @@ func getDataCentersIds(outErr io.Writer) []string {
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
+		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
