@@ -23,21 +23,21 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings              Columns to be printed in the standard output (default [DatacenterId,Name,Location])
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string      The unique Data Center Id
-  -h, --help                      help for create
-      --ignore-stdin              Force command to execute without user input
-  -o, --output string             Desired output format [text|json] (default "text")
-  -q, --quiet                     Quiet output
-      --server-cores int          Cores option of the Server (default 2)
-      --server-cpufamily string   CPU Family for the Server (default "AMD_OPTERON")
-      --server-name string        Name of the Server
-      --server-ram int            RAM[GB] option for the Server (default 256)
-      --server-zone string        Availability zone of the Server (default "AUTO")
-      --timeout int               Timeout option for Server to be created [seconds] (default 60)
-      --wait                      Wait for Server to be created
+  -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings               Columns to be printed in the standard output (default [DatacenterId,Name,Location])
+  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --datacenter-id string       The unique Data Center Id [Required flag]
+  -h, --help                       help for create
+      --ignore-stdin               Force command to execute without user input
+  -o, --output string              Desired output format [text|json] (default "text")
+  -q, --quiet                      Quiet output
+      --server-cores int           Cores option of the Server (default 2)
+      --server-cpu-family string   CPU Family for the Server (default "AMD_OPTERON")
+      --server-name string         Name of the Server
+      --server-ram int             RAM[GB] option for the Server (default 256)
+      --server-zone string         Availability zone of the Server (default "AUTO")
+      --timeout int                Timeout option for Server to be created [seconds] (default 60)
+      --wait                       Wait for Server to be created
 ```
 
 ## Examples
