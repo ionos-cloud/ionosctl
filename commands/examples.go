@@ -264,4 +264,31 @@ RequestId                              Status   Message
 	waitRequestExample = `ionosctl request wait --request-id 20333e60-d65c-4a95-846b-08c48b871186 
 RequestId                              Status   Message
 20333e60-d65c-4a95-846b-08c48b871186   DONE     Request has been successfully executed`
+
+	/*
+		IpBlock Examples
+	*/
+	listIpBlockExample = `ionosctl ipblock list 
+IpBlockId                              Name   Location   Size   Ips                                State
+bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [158.222.102.202]                  AVAILABLE
+3bb77993-dd2a-4845-8115-5001ae87d5e4   test   us/las     2      [158.222.102.13 158.222.102.114]   AVAILABLE`
+	getIpBlockExample = `ionosctl ipblock get --ipblock-id 3bb77993-dd2a-4845-8115-5001ae87d5e4 
+IpBlockId                              Name   Location   Size   Ips                                State
+3bb77993-dd2a-4845-8115-5001ae87d5e4   test   us/las     2      [158.222.102.13 158.222.102.114]   AVAILABLE`
+	createIpBlockExample = `ionosctl ipblock create --ipblock-name testing --ipblock-location us/las --ipblock-size 1
+IpBlockId                              Name      Location   Size   Ips                 State
+bf932826-d71b-4759-a7d0-0028261c1e8d   testing   us/las     1      [158.222.102.202]   BUSY
+RequestId: a99bd16c-bf7b-4966-8a30-437b5182226b
+Status: Command ipblock create has been successfully executed`
+	updateIpBlockExample = `ionosctl ipblock update --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --ipblock-name demo
+IpBlockId                              Name   Location   Size   Ips                 State
+bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [158.222.102.202]   BUSY
+RequestId: 5864afe5-4df5-4843-b548-4489857dc3c5
+Status: Command ipblock update has been successfully executed`
+	deleteIpBlockExample = `ionosctl ipblock delete --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --wait 
+Warning: Are you sure you want to delete ipblock (y/N) ? 
+y
+Waiting for request: 6b1aa258-799f-4712-9f90-ba4494d84026
+RequestId: 6b1aa258-799f-4712-9f90-ba4494d84026
+Status: Command ipblock delete and request have been successfully executed`
 )
