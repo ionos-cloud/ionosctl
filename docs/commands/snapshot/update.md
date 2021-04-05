@@ -33,6 +33,7 @@ Required values to run command:
       --snapshot-id string             The unique Snapshot Id [Required flag]
       --snapshot-licence-type string   Licence Type of the Snapshot
       --snapshot-name string           Name of the Snapshot
+      --snapshot-size float32          Size of the Snapshot (default 10)
       --timeout int                    Timeout option for a Snapshot to be created [seconds] (default 60)
       --wait                           Wait for Snapshot to be created
 ```
