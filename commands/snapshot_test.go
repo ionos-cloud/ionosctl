@@ -28,9 +28,13 @@ var (
 				Size:        &testSnapshotSize,
 				LicenceType: &testSnapshotVar,
 			},
+			Metadata: &ionoscloud.DatacenterElementMetadata{
+				State: &snapshotState,
+			},
 		},
 	}
-	snapshots = resources.Snapshots{
+	snapshotState = "BUSY"
+	snapshots     = resources.Snapshots{
 		Snapshots: ionoscloud.Snapshots{
 			Id:    &testSnapshotVar,
 			Items: &[]ionoscloud.Snapshot{snapshotTest.Snapshot},

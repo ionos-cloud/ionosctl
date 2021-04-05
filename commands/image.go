@@ -92,11 +92,7 @@ func RunImageList(c *builder.CommandConfig) error {
 	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageSize)) {
 		images = sortImagesBySize(images, float32(viper.GetFloat64(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageSize))))
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: images,
-		KeyValue:   getImagesKVMaps(getImages(images)),
-		Columns:    getImageCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getImagePrint(nil, c, getImages(images)))
 }
 
 func RunImageGet(c *builder.CommandConfig) error {
@@ -104,11 +100,7 @@ func RunImageGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: img,
-		KeyValue:   getImagesKVMaps([]resources.Image{*img}),
-		Columns:    getImageCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getImagePrint(nil, c, getImage(img)))
 }
 
 func RunImageDelete(c *builder.CommandConfig) error {
@@ -124,17 +116,12 @@ func RunImageDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "image",
-		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-	})
+	return c.Printer.Print(getImagePrint(resp, c, nil))
 }
 
 var defaultImageCols = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType"}
 
-type imagePrint struct {
+type ImagePrint struct {
 	ImageId     string  `json:"ImageId,omitempty"`
 	Name        string  `json:"Name,omitempty"`
 	Description string  `json:"Description,omitempty"`
@@ -143,6 +130,24 @@ type imagePrint struct {
 	LicenceType string  `json:"LicenceType,omitempty"`
 	ImageType   string  `json:"ImageType,omitempty"`
 	Public      bool    `json:"Public,omitempty"`
+}
+
+func getImagePrint(resp *resources.Response, c *builder.CommandConfig, imgs []resources.Image) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.ParentName
+			r.Verb = c.Name
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+		}
+		if imgs != nil {
+			r.OutputJSON = imgs
+			r.KeyValue = getImagesKVMaps(imgs)
+			r.Columns = getImageCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
 }
 
 func getImageCols(flagName string, outErr io.Writer) []string {
@@ -175,42 +180,53 @@ func getImageCols(flagName string, outErr io.Writer) []string {
 	return datacenterCols
 }
 
-func getImages(datacenters resources.Images) []resources.Image {
-	dc := make([]resources.Image, 0)
-	for _, d := range *datacenters.Items {
-		dc = append(dc, resources.Image{Image: d})
+func getImages(images resources.Images) []resources.Image {
+	imgs := make([]resources.Image, 0)
+	if items, ok := images.GetItemsOk(); ok && items != nil {
+		for _, d := range *items {
+			imgs = append(imgs, resources.Image{Image: d})
+		}
 	}
-	return dc
+	return imgs
+}
+
+func getImage(image *resources.Image) []resources.Image {
+	imgs := make([]resources.Image, 0)
+	if image != nil {
+		imgs = append(imgs, resources.Image{Image: image.Image})
+	}
+	return imgs
 }
 
 func getImagesKVMaps(imgs []resources.Image) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(imgs))
 	for _, img := range imgs {
-		properties := img.GetProperties()
-		var imgPrint imagePrint
+		var imgPrint ImagePrint
 		if imgId, ok := img.GetIdOk(); ok && imgId != nil {
 			imgPrint.ImageId = *imgId
 		}
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			imgPrint.Name = *name
-		}
-		if description, ok := properties.GetDescriptionOk(); ok && description != nil {
-			imgPrint.Description = *description
-		}
-		if loc, ok := properties.GetLocationOk(); ok && loc != nil {
-			imgPrint.Location = *loc
-		}
-		if size, ok := properties.GetSizeOk(); ok && size != nil {
-			imgPrint.Size = *size
-		}
-		if licType, ok := properties.GetLicenceTypeOk(); ok && licType != nil {
-			imgPrint.LicenceType = *licType
-		}
-		if imgType, ok := properties.GetImageTypeOk(); ok && imgType != nil {
-			imgPrint.ImageType = *imgType
-		}
-		if public, ok := properties.GetPublicOk(); ok && public != nil {
-			imgPrint.Public = *public
+		if properties, ok := img.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				imgPrint.Name = *name
+			}
+			if description, ok := properties.GetDescriptionOk(); ok && description != nil {
+				imgPrint.Description = *description
+			}
+			if loc, ok := properties.GetLocationOk(); ok && loc != nil {
+				imgPrint.Location = *loc
+			}
+			if size, ok := properties.GetSizeOk(); ok && size != nil {
+				imgPrint.Size = *size
+			}
+			if licType, ok := properties.GetLicenceTypeOk(); ok && licType != nil {
+				imgPrint.LicenceType = *licType
+			}
+			if imgType, ok := properties.GetImageTypeOk(); ok && imgType != nil {
+				imgPrint.ImageType = *imgType
+			}
+			if public, ok := properties.GetPublicOk(); ok && public != nil {
+				imgPrint.Public = *public
+			}
 		}
 		o := structs.Map(imgPrint)
 		out = append(out, o)
