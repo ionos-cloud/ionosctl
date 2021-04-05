@@ -40,7 +40,13 @@ func image() *builder.Command {
 		listImagesExample, true)
 	list.AddFloat32Flag(config.ArgImageSize, "", 0, "The size of the Image")
 	list.AddStringFlag(config.ArgImageType, "", "", "The type of the Image")
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgImageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"CDROM", "HDD"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	list.AddStringFlag(config.ArgImageLicenceType, "", "", "The licence type of the Image")
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgImageLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	list.AddStringFlag(config.ArgImageLocation, "", "", "The location of the Image")
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgImageLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp

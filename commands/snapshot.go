@@ -176,12 +176,13 @@ func RunSnapshotGet(c *builder.CommandConfig) error {
 }
 
 func RunSnapshotCreate(c *builder.CommandConfig) error {
-	datacenterId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId))
-	volumeId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId))
-	name := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName))
-	description := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription))
-	licenceType := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType))
-	s, resp, err := c.Snapshots().Create(datacenterId, volumeId, name, description, licenceType)
+	s, resp, err := c.Snapshots().Create(
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType)),
+	)
 	if err != nil {
 		return err
 	}
@@ -206,10 +207,7 @@ func RunSnapshotUpdate(c *builder.CommandConfig) error {
 	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSize)) {
 		input.SetSize(float32(viper.GetFloat64(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSize))))
 	}
-	s, resp, err := c.Snapshots().Update(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)),
-		input,
-	)
+	s, resp, err := c.Snapshots().Update(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)), input)
 	if err != nil {
 		return err
 	}
@@ -225,10 +223,11 @@ func RunSnapshotRestore(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	datacenterId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId))
-	volumeId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId))
-	snapshotId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId))
-	resp, err := c.Snapshots().Restore(datacenterId, volumeId, snapshotId)
+	resp, err := c.Snapshots().Restore(
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)),
+	)
 	if err != nil {
 		return err
 	}
@@ -240,8 +239,7 @@ func RunSnapshotDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	snapshotId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId))
-	resp, err := c.Snapshots().Delete(snapshotId)
+	resp, err := c.Snapshots().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)))
 	if err != nil {
 		return err
 	}
