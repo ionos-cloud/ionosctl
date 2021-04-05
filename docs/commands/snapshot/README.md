@@ -24,7 +24,7 @@ The sub-command of `ionosctl snapshot` allows you to see information about Snaps
 
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings     Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size])
+      --cols strings     Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size,State])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -h, --help             help for snapshot
       --ignore-stdin     Force command to execute without user input
