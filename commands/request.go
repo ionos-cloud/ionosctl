@@ -30,7 +30,7 @@ func request() *builder.Command {
 	}
 	globalFlags := reqCmd.Command.PersistentFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
-	viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -45,7 +45,7 @@ func request() *builder.Command {
 		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		getRequestExample, true)
 	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
-	get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -61,7 +61,7 @@ Required values to run command:
 
 * Request Id`, waitRequestExample, true)
 	wait.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
-	wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option waiting for request [seconds]")
@@ -159,7 +159,7 @@ func getRequestsCols(flagName string, outErr io.Writer) []string {
 func getRequests(requests resources.Requests) []resources.Request {
 	req := make([]resources.Request, 0)
 	for _, r := range *requests.Items {
-		req = append(req, resources.Request{r})
+		req = append(req, resources.Request{Request: r})
 	}
 	return req
 }
@@ -186,7 +186,6 @@ func getRequestsKVMaps(requests []resources.Request) []map[string]interface{} {
 func getRequestsIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
@@ -194,18 +193,18 @@ func getRequestsIds(outErr io.Writer) []string {
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-
 	reqSvc := resources.NewRequestService(clientSvc.Get(), context.TODO())
 	requests, _, err := reqSvc.List()
 	clierror.CheckError(err, outErr)
-
-	dcIds := make([]string, 0)
-	if requests.Requests.Items != nil {
-		for _, d := range *requests.Requests.Items {
-			dcIds = append(dcIds, *d.GetId())
+	reqIds := make([]string, 0)
+	if items, ok := requests.Requests.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				reqIds = append(reqIds, *itemId)
+			}
 		}
 	} else {
 		return nil
 	}
-	return dcIds
+	return reqIds
 }
