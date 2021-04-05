@@ -66,4 +66,9 @@
   * [List](commands/request/list.md)
   * [Get](commands/request/get.md)
   * [Wait](commands/request/wait.md)
+* [IpBlock](commands/ipblock/README.md)
+  * [List](commands/ipblock/list.md)
+  * [Get](commands/ipblock/get.md)
+  * [Create](commands/ipblock/create.md)
+  * [Delete](commands/ipblock/delete.md)
 

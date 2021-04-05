@@ -186,6 +186,7 @@ type CommandConfig struct {
 	Nics          func() resources.NicsService
 	Loadbalancers func() resources.LoadbalancersService
 	Requests      func() resources.RequestsService
+	IpBlocks      func() resources.IpBlocksService
 }
 
 func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, initServices bool) (*CommandConfig, error) {
@@ -220,6 +221,7 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 			c.Loadbalancers = func() resources.LoadbalancersService {
 				return resources.NewLoadbalancerService(clientSvc.Get(), c.Context)
 			}
+			c.IpBlocks = func() resources.IpBlocksService { return resources.NewIpBlockService(clientSvc.Get(), c.Context) }
 			c.Requests = func() resources.RequestsService { return resources.NewRequestService(clientSvc.Get(), c.Context) }
 			return nil
 		},

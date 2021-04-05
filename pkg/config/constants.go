@@ -40,6 +40,11 @@ const (
 	ArgLoadBalancerIp        = "loadbalancer-ip"
 	ArgLoadBalancerDhcp      = "loadbalancer-dhcp"
 	ArgRequestId             = "request-id"
+	ArgIpBlockId             = "ipblock-id"
+	ArgIpBlockName           = "ipblock-name"
+	ArgIpBlockLocation       = "ipblock-location"
+	ArgIpBlockSize           = "ipblock-size"
+	ArgIpBlockIps            = "ipblock-ips"
 )
 
 // Default values
@@ -72,4 +77,5 @@ const (
 	RequiredFlagRequestId      = "The unique Request Id " + RequiredFlag
 	RequiredFlagServerId       = "The unique Server Id " + RequiredFlag
 	RequiredFlagVolumeId       = "The unique Volume Id " + RequiredFlag
+	RequiredFlagIpBlockId      = "The unique IpBlock Id " + RequiredFlag
 )
