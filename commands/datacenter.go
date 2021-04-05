@@ -29,7 +29,7 @@ func datacenter() *builder.Command {
 	}
 	globalFlags := datacenterCmd.Command.PersistentFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
-	viper.BindPFlag(builder.GetGlobalFlagName(datacenterCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(datacenterCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -43,7 +43,7 @@ func datacenter() *builder.Command {
 	get := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterGet, "get", "Get a Data Center",
 		"Use this command to get information about a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", getDatacenterExample, true)
 	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -57,7 +57,7 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, 
 	create.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
 	create.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
 	create.AddStringFlag(config.ArgDataCenterRegion, "", "de/txl", "Location for the Data Center")
-	create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterRegion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterRegion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be created")
@@ -75,7 +75,7 @@ Required values to run command:
 
 * Data Center Id`, updateDatacenterExample, true)
 	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
@@ -95,7 +95,7 @@ Required values to run command:
 
 * Data Center Id`, deleteDatacenterExample, true)
 	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be deleted")
@@ -250,7 +250,7 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 	dc := make([]resources.Datacenter, 0)
 	for _, d := range *datacenters.Items {
-		dc = append(dc, resources.Datacenter{d})
+		dc = append(dc, resources.Datacenter{Datacenter: d})
 	}
 	return dc
 }
@@ -284,7 +284,6 @@ func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
 func getDataCentersIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
@@ -292,15 +291,15 @@ func getDataCentersIds(outErr io.Writer) []string {
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-
 	datacenterSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
 	datacenters, _, err := datacenterSvc.List()
 	clierror.CheckError(err, outErr)
-
 	dcIds := make([]string, 0)
-	if datacenters.Datacenters.Items != nil {
-		for _, d := range *datacenters.Datacenters.Items {
-			dcIds = append(dcIds, *d.GetId())
+	if items, ok := datacenters.Datacenters.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				dcIds = append(dcIds, *itemId)
+			}
 		}
 	} else {
 		return nil

@@ -26,7 +26,6 @@ var (
 	ServerURL string
 	Output    string
 	Quiet     bool
-	Verbose   bool
 
 	cfgFile string
 
@@ -66,22 +65,22 @@ func init() {
 	// will be global for your application.
 	rootPFlagSet := rootCmd.Command.PersistentFlags()
 	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, "c", config.GetConfigFile(), "Configuration file used for authentication")
-	viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
+	_ = viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
 
 	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, "u", config.DefaultApiURL, "Override default API endpoint")
-	viper.BindPFlag(config.ArgServerUrl, rootPFlagSet.Lookup(config.ArgServerUrl))
+	_ = viper.BindPFlag(config.ArgServerUrl, rootPFlagSet.Lookup(config.ArgServerUrl))
 
 	rootPFlagSet.StringVarP(&Output, config.ArgOutput, "o", config.DefaultOutputFormat, "Desired output format [text|json]")
-	viper.BindPFlag(config.ArgOutput, rootPFlagSet.Lookup(config.ArgOutput))
-	rootCmd.Command.RegisterFlagCompletionFunc(config.ArgOutput, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = viper.BindPFlag(config.ArgOutput, rootPFlagSet.Lookup(config.ArgOutput))
+	_ = rootCmd.Command.RegisterFlagCompletionFunc(config.ArgOutput, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"json", "text"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, "q", false, "Quiet output")
-	viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
+	_ = viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
 
 	rootPFlagSet.Bool(config.ArgIgnoreStdin, false, "Force command to execute without user input")
-	viper.BindPFlag(config.ArgIgnoreStdin, rootPFlagSet.Lookup(config.ArgIgnoreStdin))
+	_ = viper.BindPFlag(config.ArgIgnoreStdin, rootPFlagSet.Lookup(config.ArgIgnoreStdin))
 
 	addCommands()
 

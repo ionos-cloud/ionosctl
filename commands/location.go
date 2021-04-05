@@ -26,7 +26,7 @@ func location() *builder.Command {
 	}
 	globalFlags := locationCmd.Command.PersistentFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultLocationCols, "Columns to be printed in the standard output")
-	viper.BindPFlag(builder.GetGlobalFlagName(locationCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(locationCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -86,7 +86,7 @@ func getLocationCols(flagName string, outErr io.Writer) []string {
 func getLocations(datacenters resources.Locations) []resources.Location {
 	dc := make([]resources.Location, 0)
 	for _, d := range *datacenters.Items {
-		dc = append(dc, resources.Location{d})
+		dc = append(dc, resources.Location{Location: d})
 	}
 	return dc
 }
@@ -114,7 +114,6 @@ func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {
 func getLocationIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
@@ -122,15 +121,15 @@ func getLocationIds(outErr io.Writer) []string {
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-
 	locationSvc := resources.NewLocationService(clientSvc.Get(), context.TODO())
 	locations, _, err := locationSvc.List()
 	clierror.CheckError(err, outErr)
-
 	lcIds := make([]string, 0)
-	if locations.Locations.Items != nil {
-		for _, d := range *locations.Locations.Items {
-			lcIds = append(lcIds, *d.GetId())
+	if items, ok := locations.Locations.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				lcIds = append(lcIds, *itemId)
+			}
 		}
 	} else {
 		return nil

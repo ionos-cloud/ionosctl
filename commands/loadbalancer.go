@@ -29,12 +29,12 @@ func loadBalancer() *builder.Command {
 	}
 	globalFlags := loadbalancerCmd.Command.PersistentFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	viper.BindPFlag(builder.GetGlobalFlagName(loadbalancerCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
-	loadbalancerCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(loadbalancerCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = loadbalancerCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
-	viper.BindPFlag(builder.GetGlobalFlagName(loadbalancerCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(loadbalancerCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -50,8 +50,8 @@ func loadBalancer() *builder.Command {
 		"Use this command to retrieve information about a Load Balancer instance.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		getLoadbalancerExample, true)
 	get.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
-	get.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLoadbalancersIds(os.Stderr, loadbalancerCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(loadbalancerCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -83,8 +83,8 @@ Required values to run command:
 * Data Center Id
 * Load Balancer Id`, updateLoadbalancerExample, true)
 	update.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
-	update.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLoadbalancersIds(os.Stderr, loadbalancerCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(loadbalancerCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgLoadBalancerName, "", "", "Name of the Load Balancer")
 	update.AddStringFlag(config.ArgLoadBalancerIp, "", "", "The IP of the Load Balancer")
@@ -105,8 +105,8 @@ Required values to run command:
 * Data Center Id
 * Load Balancer Id`, deleteLoadbalancerExample, true)
 	deleteCmd.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
-	deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLoadbalancersIds(os.Stderr, loadbalancerCmd.Command.Name()), cobra.ShellCompDirectiveNoFileComp
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(loadbalancerCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be deleted [seconds]")
@@ -239,7 +239,7 @@ func RunLoadBalancerDelete(c *builder.CommandConfig) error {
 var defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp"}
 
 type LoadbalancerPrint struct {
-	LoadbalancerId string `json:"LoadBalancerId,omitempty"`
+	LoadBalancerId string `json:"LoadBalancerId,omitempty"`
 	Name           string `json:"Name,omitempty"`
 	Dhcp           bool   `json:"Dhcp,omitempty"`
 	Ip             string `json:"Ip,omitempty"`
@@ -274,7 +274,7 @@ func getLoadbalancersCols(flagName string, outErr io.Writer) []string {
 func getLoadbalancers(loadbalancers resources.Loadbalancers) []resources.Loadbalancer {
 	vs := make([]resources.Loadbalancer, 0)
 	for _, s := range *loadbalancers.Items {
-		vs = append(vs, resources.Loadbalancer{s})
+		vs = append(vs, resources.Loadbalancer{Loadbalancer: s})
 	}
 	return vs
 }
@@ -285,7 +285,7 @@ func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{
 		properties := v.GetProperties()
 		var loadbalancerPrint LoadbalancerPrint
 		if id, ok := v.GetIdOk(); ok && id != nil {
-			loadbalancerPrint.LoadbalancerId = *id
+			loadbalancerPrint.LoadBalancerId = *id
 		}
 		if name, ok := properties.GetNameOk(); ok && name != nil {
 			loadbalancerPrint.Name = *name
@@ -302,7 +302,7 @@ func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{
 	return out
 }
 
-func getLoadbalancersIds(outErr io.Writer, parentCmdName string) []string {
+func getLoadbalancersIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
 	clientSvc, err := resources.NewClientService(
@@ -313,12 +313,14 @@ func getLoadbalancersIds(outErr io.Writer, parentCmdName string) []string {
 	)
 	clierror.CheckError(err, outErr)
 	loadbalancerSvc := resources.NewLoadbalancerService(clientSvc.Get(), context.TODO())
-	loadbalancers, _, err := loadbalancerSvc.List(viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)))
+	loadbalancers, _, err := loadbalancerSvc.List(datacenterId)
 	clierror.CheckError(err, outErr)
 	loadbalancersIds := make([]string, 0)
-	if loadbalancers.Loadbalancers.Items != nil {
-		for _, v := range *loadbalancers.Loadbalancers.Items {
-			loadbalancersIds = append(loadbalancersIds, *v.GetId())
+	if items, ok := loadbalancers.Loadbalancers.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				loadbalancersIds = append(loadbalancersIds, *itemId)
+			}
 		}
 	} else {
 		return nil
