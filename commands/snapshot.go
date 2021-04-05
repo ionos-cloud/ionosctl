@@ -248,6 +248,8 @@ func RunSnapshotDelete(c *builder.CommandConfig) error {
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 
+// Output Printing
+
 var defaultSnapshotCols = []string{"SnapshotId", "Name", "LicenceType", "Size", "State"}
 
 type SnapshotPrint struct {
@@ -324,30 +326,34 @@ func getSnapshot(s *resources.Snapshot) []resources.Snapshot {
 func getSnapshotsKVMaps(ss []resources.Snapshot) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
-		var ssPrint SnapshotPrint
-		if ssId, ok := s.GetIdOk(); ok && ssId != nil {
-			ssPrint.SnapshotId = *ssId
-		}
-		if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				ssPrint.Name = *name
-			}
-			if licenceType, ok := properties.GetLicenceTypeOk(); ok && licenceType != nil {
-				ssPrint.LicenceType = *licenceType
-			}
-			if size, ok := properties.GetSizeOk(); ok && size != nil {
-				ssPrint.Size = *size
-			}
-		}
-		if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
-			if state, ok := metadata.GetStateOk(); ok && state != nil {
-				ssPrint.State = *state
-			}
-		}
-		o := structs.Map(ssPrint)
+		o := getSnapshotKVMap(s)
 		out = append(out, o)
 	}
 	return out
+}
+
+func getSnapshotKVMap(s resources.Snapshot) map[string]interface{} {
+	var ssPrint SnapshotPrint
+	if ssId, ok := s.GetIdOk(); ok && ssId != nil {
+		ssPrint.SnapshotId = *ssId
+	}
+	if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
+		if name, ok := properties.GetNameOk(); ok && name != nil {
+			ssPrint.Name = *name
+		}
+		if licenceType, ok := properties.GetLicenceTypeOk(); ok && licenceType != nil {
+			ssPrint.LicenceType = *licenceType
+		}
+		if size, ok := properties.GetSizeOk(); ok && size != nil {
+			ssPrint.Size = *size
+		}
+	}
+	if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			ssPrint.State = *state
+		}
+	}
+	return structs.Map(ssPrint)
 }
 
 func getSnapshotIds(outErr io.Writer) []string {

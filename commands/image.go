@@ -119,6 +119,8 @@ func RunImageDelete(c *builder.CommandConfig) error {
 	return c.Printer.Print(getImagePrint(resp, c, nil))
 }
 
+// Output Printing
+
 var defaultImageCols = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType"}
 
 type ImagePrint struct {
@@ -201,37 +203,41 @@ func getImage(image *resources.Image) []resources.Image {
 func getImagesKVMaps(imgs []resources.Image) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(imgs))
 	for _, img := range imgs {
-		var imgPrint ImagePrint
-		if imgId, ok := img.GetIdOk(); ok && imgId != nil {
-			imgPrint.ImageId = *imgId
-		}
-		if properties, ok := img.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				imgPrint.Name = *name
-			}
-			if description, ok := properties.GetDescriptionOk(); ok && description != nil {
-				imgPrint.Description = *description
-			}
-			if loc, ok := properties.GetLocationOk(); ok && loc != nil {
-				imgPrint.Location = *loc
-			}
-			if size, ok := properties.GetSizeOk(); ok && size != nil {
-				imgPrint.Size = *size
-			}
-			if licType, ok := properties.GetLicenceTypeOk(); ok && licType != nil {
-				imgPrint.LicenceType = *licType
-			}
-			if imgType, ok := properties.GetImageTypeOk(); ok && imgType != nil {
-				imgPrint.ImageType = *imgType
-			}
-			if public, ok := properties.GetPublicOk(); ok && public != nil {
-				imgPrint.Public = *public
-			}
-		}
-		o := structs.Map(imgPrint)
+		o := getImageKVMap(img)
 		out = append(out, o)
 	}
 	return out
+}
+
+func getImageKVMap(img resources.Image) map[string]interface{} {
+	var imgPrint ImagePrint
+	if imgId, ok := img.GetIdOk(); ok && imgId != nil {
+		imgPrint.ImageId = *imgId
+	}
+	if properties, ok := img.GetPropertiesOk(); ok && properties != nil {
+		if name, ok := properties.GetNameOk(); ok && name != nil {
+			imgPrint.Name = *name
+		}
+		if description, ok := properties.GetDescriptionOk(); ok && description != nil {
+			imgPrint.Description = *description
+		}
+		if loc, ok := properties.GetLocationOk(); ok && loc != nil {
+			imgPrint.Location = *loc
+		}
+		if size, ok := properties.GetSizeOk(); ok && size != nil {
+			imgPrint.Size = *size
+		}
+		if licType, ok := properties.GetLicenceTypeOk(); ok && licType != nil {
+			imgPrint.LicenceType = *licType
+		}
+		if imgType, ok := properties.GetImageTypeOk(); ok && imgType != nil {
+			imgPrint.ImageType = *imgType
+		}
+		if public, ok := properties.GetPublicOk(); ok && public != nil {
+			imgPrint.Public = *public
+		}
+	}
+	return structs.Map(imgPrint)
 }
 
 func getImageIds(outErr io.Writer) []string {
@@ -259,6 +265,8 @@ func getImageIds(outErr io.Writer) []string {
 	}
 	return imgsIds
 }
+
+// Output Columns Sorting
 
 func sortImagesByLocation(images resources.Images, location string) resources.Images {
 	var imgLocationItems []ionoscloud.Image
