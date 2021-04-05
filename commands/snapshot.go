@@ -164,11 +164,7 @@ func RunSnapshotList(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: ss,
-		KeyValue:   getSnapshotsKVMaps(getSnapshots(ss)),
-		Columns:    getSnapshotCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getSnapshotPrint(nil, c, getSnapshots(ss)))
 }
 
 func RunSnapshotGet(c *builder.CommandConfig) error {
@@ -176,11 +172,7 @@ func RunSnapshotGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: s,
-		KeyValue:   getSnapshotsKVMaps([]resources.Snapshot{*s}),
-		Columns:    getSnapshotCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getSnapshotPrint(nil, c, getSnapshot(s)))
 }
 
 func RunSnapshotCreate(c *builder.CommandConfig) error {
@@ -193,20 +185,11 @@ func RunSnapshotCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-
 	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "snapshot",
-		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-		OutputJSON:  s,
-		KeyValue:    getSnapshotsKVMaps([]resources.Snapshot{*s}),
-		Columns:     getSnapshotCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
 }
 
 func RunSnapshotUpdate(c *builder.CommandConfig) error {
@@ -230,20 +213,11 @@ func RunSnapshotUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-
 	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "snapshot",
-		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-		OutputJSON:  s,
-		KeyValue:    getSnapshotsKVMaps([]resources.Snapshot{*s}),
-		Columns:     getSnapshotCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
 }
 
 func RunSnapshotRestore(c *builder.CommandConfig) error {
@@ -258,12 +232,7 @@ func RunSnapshotRestore(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "snapshot",
-		Verb:        "restore",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-	})
+	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 
 func RunSnapshotDelete(c *builder.CommandConfig) error {
@@ -276,12 +245,7 @@ func RunSnapshotDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "snapshot",
-		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-	})
+	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 
 var defaultSnapshotCols = []string{"SnapshotId", "Name", "LicenceType", "Size"}
@@ -291,6 +255,24 @@ type SnapshotPrint struct {
 	Name        string  `json:"Name,omitempty"`
 	LicenceType string  `json:"LicenceType,omitempty"`
 	Size        float32 `json:"Size,omitempty"`
+}
+
+func getSnapshotPrint(resp *resources.Response, c *builder.CommandConfig, s []resources.Snapshot) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.ParentName
+			r.Verb = c.Name
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+		}
+		if s != nil {
+			r.OutputJSON = s
+			r.KeyValue = getSnapshotsKVMaps(s)
+			r.Columns = getSnapshotCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
 }
 
 func getSnapshotCols(flagName string, outErr io.Writer) []string {
@@ -321,18 +303,27 @@ func getSnapshotCols(flagName string, outErr io.Writer) []string {
 
 func getSnapshots(snapshots resources.Snapshots) []resources.Snapshot {
 	ss := make([]resources.Snapshot, 0)
-	for _, s := range *snapshots.Items {
-		ss = append(ss, resources.Snapshot{Snapshot: s})
+	if items, ok := snapshots.GetItemsOk(); ok && items != nil {
+		for _, s := range *items {
+			ss = append(ss, resources.Snapshot{Snapshot: s})
+		}
 	}
 	return ss
 }
 
-func getSnapshotsKVMaps(dcs []resources.Snapshot) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(dcs))
-	for _, dc := range dcs {
-		properties := dc.GetProperties()
+func getSnapshot(s *resources.Snapshot) []resources.Snapshot {
+	if s != nil {
+		return []resources.Snapshot{*s}
+	}
+	return nil
+}
+
+func getSnapshotsKVMaps(ss []resources.Snapshot) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(ss))
+	for _, s := range ss {
+		properties := s.GetProperties()
 		var ssPrint SnapshotPrint
-		if ssId, ok := dc.GetIdOk(); ok && ssId != nil {
+		if ssId, ok := s.GetIdOk(); ok && ssId != nil {
 			ssPrint.SnapshotId = *ssId
 		}
 		if name, ok := properties.GetNameOk(); ok && name != nil {
