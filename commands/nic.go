@@ -98,11 +98,7 @@ Required values to run command:
 * NIC Id`, updateNicExample, true)
 	update.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNicsIds(
-			os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgServerId)),
-		), cobra.ShellCompDirectiveNoFileComp
+		return getNicsIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgNicName, "", "", "The name of the NIC")
 	update.AddIntFlag(config.ArgLanId, "", config.DefaultNicLanId, "The LAN ID the NIC sits on")
@@ -128,11 +124,7 @@ Required values to run command:
 * NIC Id`, deleteNicExample, true)
 	deleteCmd.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNicsIds(
-			os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgServerId)),
-		), cobra.ShellCompDirectiveNoFileComp
+		return getNicsIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be deleted [seconds]")
@@ -186,11 +178,7 @@ The sub-commands of `+"`"+`ionosctl nic attach`+"`"+` allow you to retrieve info
 	})
 	getAttached.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedNicsIds(
-			os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetFlagName(attachNic.Command.Name(), getAttached.Command.Name(), config.ArgLoadBalancerId)),
-		), cobra.ShellCompDirectiveNoFileComp
+		return getAttachedNicsIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(attachNic.Command.Name(), getAttached.Command.Name(), config.ArgLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -208,11 +196,7 @@ Required values to run command:
 * NIC Id`, detachNicExample, true)
 	detachNic.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedNicsIds(
-			os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetFlagName(nicCmd.Command.Name(), detachNic.Command.Name(), config.ArgLoadBalancerId)),
-		), cobra.ShellCompDirectiveNoFileComp
+		return getAttachedNicsIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(nicCmd.Command.Name(), detachNic.Command.Name(), config.ArgLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	detachNic.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
