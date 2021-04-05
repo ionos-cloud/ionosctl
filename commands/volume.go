@@ -170,7 +170,11 @@ The sub-commands of `+"`"+`ionosctl volume attach`+"`"+` allow you to retrieve i
 	})
 	getAttached.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(attachVolume.Command.Name(), getAttached.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+		return getAttachedVolumesIds(
+			os.Stderr,
+			viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetFlagName(attachVolume.Command.Name(), getAttached.Command.Name(), config.ArgServerId)),
+		), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -188,7 +192,11 @@ Required values to run command:
 * Volume Id`, detachVolumeExample, true)
 	detachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(attachVolume.Command.Name(), getAttached.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+		return getAttachedVolumesIds(
+			os.Stderr,
+			viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetFlagName(volumeCmd.Command.Name(), detachVolume.Command.Name(), config.ArgServerId)),
+		), cobra.ShellCompDirectiveNoFileComp
 	})
 	detachVolume.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

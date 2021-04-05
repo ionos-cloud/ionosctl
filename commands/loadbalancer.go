@@ -239,7 +239,7 @@ func RunLoadBalancerDelete(c *builder.CommandConfig) error {
 var defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp"}
 
 type LoadbalancerPrint struct {
-	LoadbalancerId string `json:"LoadBalancerId,omitempty"`
+	LoadBalancerId string `json:"LoadBalancerId,omitempty"`
 	Name           string `json:"Name,omitempty"`
 	Dhcp           bool   `json:"Dhcp,omitempty"`
 	Ip             string `json:"Ip,omitempty"`
@@ -285,7 +285,7 @@ func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{
 		properties := v.GetProperties()
 		var loadbalancerPrint LoadbalancerPrint
 		if id, ok := v.GetIdOk(); ok && id != nil {
-			loadbalancerPrint.LoadbalancerId = *id
+			loadbalancerPrint.LoadBalancerId = *id
 		}
 		if name, ok := properties.GetNameOk(); ok && name != nil {
 			loadbalancerPrint.Name = *name
