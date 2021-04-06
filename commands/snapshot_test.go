@@ -42,23 +42,29 @@ var (
 	}
 	snapshotProperties = resources.SnapshotProperties{
 		SnapshotProperties: ionoscloud.SnapshotProperties{
-			Name:        &testSnapshotNewVar,
-			Description: &testSnapshotNewVar,
-			Size:        &testSnapshotNewSize,
+			Name:                &testSnapshotNewVar,
+			Description:         &testSnapshotNewVar,
+			CpuHotPlug:          &testSnapshotBoolVar,
+			CpuHotUnplug:        &testSnapshotBoolVar,
+			RamHotPlug:          &testSnapshotBoolVar,
+			RamHotUnplug:        &testSnapshotBoolVar,
+			NicHotPlug:          &testSnapshotBoolVar,
+			NicHotUnplug:        &testSnapshotBoolVar,
+			DiscVirtioHotPlug:   &testSnapshotBoolVar,
+			DiscVirtioHotUnplug: &testSnapshotBoolVar,
+			DiscScsiHotPlug:     &testSnapshotBoolVar,
+			DiscScsiHotUnplug:   &testSnapshotBoolVar,
+			SecAuthProtection:   &testSnapshotBoolVar,
 		},
 	}
 	snapshotNew = resources.Snapshot{
 		Snapshot: ionoscloud.Snapshot{
-			Id: &testSnapshotVar,
-			Properties: &ionoscloud.SnapshotProperties{
-				Name:        snapshotProperties.SnapshotProperties.Name,
-				Description: snapshotProperties.SnapshotProperties.Description,
-				Location:    &testSnapshotVar,
-			},
+			Id:         &testSnapshotVar,
+			Properties: &snapshotProperties.SnapshotProperties,
 		},
 	}
+	testSnapshotBoolVar = false
 	testSnapshotSize    = float32(2)
-	testSnapshotNewSize = float32(10)
 	testSnapshotVar     = "test-snapshot"
 	testSnapshotNewVar  = "test-new-snapshot"
 	testSnapshotErr     = errors.New("snapshot test error")
@@ -252,8 +258,18 @@ func TestRunSnapshotUpdate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDescription), testSnapshotNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotSize), testSnapshotNewSize)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotCpuHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotCpuHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotRamHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotRamHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotNicHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotNicHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscVirtioHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscVirtioHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscScsiHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscScsiHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotSecAuthProtection), testSnapshotBoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Snapshot.EXPECT().Update(testSnapshotVar, snapshotProperties).Return(&snapshotNew, nil, nil)
 		err := RunSnapshotUpdate(cfg)
@@ -270,8 +286,18 @@ func TestRunSnapshotUpdateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDescription), testSnapshotNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotSize), testSnapshotNewSize)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotCpuHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotCpuHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotRamHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotRamHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotNicHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotNicHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscVirtioHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscVirtioHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscScsiHotPlug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscScsiHotUnplug), testSnapshotBoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotSecAuthProtection), testSnapshotBoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Snapshot.EXPECT().Update(testSnapshotVar, snapshotProperties).Return(&snapshotNew, nil, testSnapshotErr)
 		err := RunSnapshotUpdate(cfg)
