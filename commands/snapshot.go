@@ -41,7 +41,7 @@ func snapshot() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, snapshotCmd, noPreRun, RunSnapshotGet, "get", "Get a Snapshot",
+	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotGet, "get", "Get a Snapshot",
 		"Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n- Snapshot Id",
 		getSnapshotExample, true)
 	get.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
@@ -53,7 +53,7 @@ func snapshot() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotNameDcIdVolumeIdValidate, RunSnapshotCreate, "create", "Create a Snapshot of a Volume within the Virtual Data Center.",
-		`Use this command to create a Snapshot in a specified Data Center. Creation of Snapshots is performed from the perspective of the storage volume. The name, description and licence type of the Snapshot can be set.
+		`Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -154,11 +154,7 @@ func PreRunSnapshotIdValidate(c *builder.PreCommandConfig) error {
 }
 
 func PreRunSnapshotNameDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName)
-	if err != nil {
-		return err
-	}
-	return nil
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName)
 }
 
 func PreRunSnapshotIdDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {

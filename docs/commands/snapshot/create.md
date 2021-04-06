@@ -12,7 +12,7 @@ ionosctl snapshot create [flags]
 
 ## Description
 
-Use this command to create a Snapshot in a specified Data Center. Creation of Snapshots is performed from the perspective of the storage volume. The name, description and licence type of the Snapshot can be set.
+Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
 You can wait for the action to be executed using `--wait` option.
 
