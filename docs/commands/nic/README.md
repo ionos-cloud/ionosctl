@@ -2,7 +2,7 @@
 description: Network Interfaces Operations
 ---
 
-# Network Interface
+# NetworkInterface
 
 ## Usage
 
