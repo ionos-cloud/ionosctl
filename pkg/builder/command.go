@@ -186,6 +186,8 @@ type CommandConfig struct {
 	Nics          func() resources.NicsService
 	Loadbalancers func() resources.LoadbalancersService
 	Requests      func() resources.RequestsService
+	Images        func() resources.ImagesService
+	Snapshots     func() resources.SnapshotsService
 	IpBlocks      func() resources.IpBlocksService
 }
 
@@ -223,6 +225,8 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 			}
 			c.IpBlocks = func() resources.IpBlocksService { return resources.NewIpBlockService(clientSvc.Get(), c.Context) }
 			c.Requests = func() resources.RequestsService { return resources.NewRequestService(clientSvc.Get(), c.Context) }
+			c.Images = func() resources.ImagesService { return resources.NewImageService(clientSvc.Get(), c.Context) }
+			c.Snapshots = func() resources.SnapshotsService { return resources.NewSnapshotService(clientSvc.Get(), c.Context) }
 			return nil
 		},
 	}
