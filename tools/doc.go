@@ -143,13 +143,13 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 	// Customize title
 	title := strings.Title(cmd.Command.Name())
 	if strings.Contains(title, "Datacenter") {
-		title = strings.ReplaceAll(title, "Datacenter", "Data Center")
+		title = strings.ReplaceAll(title, "Datacenter", "DataCenter")
 	}
 	if strings.Contains(title, "Loadbalancer") {
-		title = strings.ReplaceAll(title, "Loadbalancer", "Load Balancer")
+		title = strings.ReplaceAll(title, "Loadbalancer", "LoadBalancer")
 	}
 	if strings.Contains(title, "Nic") {
-		title = strings.ReplaceAll(title, "Nic", "Network Interface")
+		title = strings.ReplaceAll(title, "Nic", "NetworkInterface")
 	}
 	buf.WriteString(fmt.Sprintf("# %s\n\n", title))
 
