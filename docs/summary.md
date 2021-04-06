@@ -70,5 +70,6 @@
   * [List](commands/ipblock/list.md)
   * [Get](commands/ipblock/get.md)
   * [Create](commands/ipblock/create.md)
+  * [Update](commands/ipblock/update.md)
   * [Delete](commands/ipblock/delete.md)
 

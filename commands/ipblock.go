@@ -53,22 +53,20 @@ func ipblock() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, ipblockCmd, noPreRun, RunIpBlockCreate, "create", "Create/Reserve an IpBlock",
-		`Use this command to create/reserve an IpBlock in a specified location. The name, size, location options can be set.
+	create := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockLocationValidate, RunIpBlockCreate, "create", "Create/Reserve an IpBlock",
+		`Use this command to create/reserve an IpBlock in a specified location. The name, size options can be provided.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
 
-* IpBlock Location
-* IpBlock Name
-* IpBlock Size`, createIpBlockExample, true)
-	create.AddStringFlag(config.ArgIpBlockName, "", "", "Name of the IpBlock "+config.RequiredFlag)
+* IpBlock Location`, createIpBlockExample, true)
+	create.AddStringFlag(config.ArgIpBlockName, "", "", "Name of the IpBlock")
 	create.AddStringFlag(config.ArgIpBlockLocation, "", "", "Location of the IpBlock "+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgIpBlockLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(config.ArgIpBlockSize, "", 2, "Size of the IpBlock "+config.RequiredFlag)
+	create.AddIntFlag(config.ArgIpBlockSize, "", 2, "Size of the IpBlock")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IpBlock to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IpBlock to be created [seconds]")
 
@@ -112,12 +110,12 @@ Required values to run command:
 	return ipblockCmd
 }
 
+func PreRunIpBlockLocationValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgIpBlockLocation)
+}
+
 func PreRunIpBlockIdValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgIpBlockId)
-	if err != nil {
-		return err
-	}
-	return nil
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgIpBlockId)
 }
 
 func RunIpBlockList(c *builder.CommandConfig) error {

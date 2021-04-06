@@ -83,6 +83,32 @@ func TestPreRunIpBlockIdValidateErr(t *testing.T) {
 	})
 }
 
+func TestPreRunIpBlockLocationValidate(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockLocation), testIpBlockLocation)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunIpBlockLocationValidate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunIpBlockLocationValidateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockLocation), "")
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunIpBlockLocationValidate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunIpBlockList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
