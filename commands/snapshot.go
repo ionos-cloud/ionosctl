@@ -24,7 +24,7 @@ func snapshot() *builder.Command {
 			Use:              "snapshot",
 			Aliases:          []string{"sp", "snap"},
 			Short:            "Snapshot Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl snapshot` + "`" + ` allows you to see information about Snapshots.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl snapshot` + "`" + ` allow you to see information, to create, update, delete Snapshots.`,
 			TraverseChildren: true,
 		},
 	}

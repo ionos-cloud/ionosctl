@@ -19,12 +19,13 @@ import (
 )
 
 func image() *builder.Command {
+	ctx := context.TODO()
 	imageCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "image",
 			Aliases:          []string{"images", "img"},
 			Short:            "Image Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl image` + "`" + ` allows you to see information about images available.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl image` + "`" + ` allow you to see information about the Images available.`,
 			TraverseChildren: true,
 		},
 	}
@@ -35,7 +36,7 @@ func image() *builder.Command {
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(context.TODO(), imageCmd, noPreRun, RunImageList, "list", "List Images",
+	list := builder.NewCommand(ctx, imageCmd, noPreRun, RunImageList, "list", "List Images",
 		"Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
 		listImagesExample, true)
 	list.AddFloat32Flag(config.ArgImageSize, "", 0, "The size of the Image")
@@ -55,7 +56,7 @@ func image() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(context.TODO(), imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
+	get := builder.NewCommand(ctx, imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
 		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		getImageExample, true)
 	get.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
@@ -66,7 +67,7 @@ func image() *builder.Command {
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(context.TODO(), imageCmd, PreRunImageIdValidate, RunImageDelete, "delete", "Delete a private Image",
+	deleteCmd := builder.NewCommand(ctx, imageCmd, PreRunImageIdValidate, RunImageDelete, "delete", "Delete a private Image",
 		"Use this command to delete the specified private image. This only applies to private images that you have uploaded.\n\nRequired values to run command:\n\n* Image Id",
 		"", true)
 	deleteCmd.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)

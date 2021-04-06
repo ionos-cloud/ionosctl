@@ -18,7 +18,7 @@ ionosctl snapshot [command]
 
 ## Description
 
-The sub-command of `ionosctl snapshot` allows you to see information about Snapshots.
+The sub-commands of `ionosctl snapshot` allow you to see information, to create, update, delete Snapshots.
 
 ## Options
 

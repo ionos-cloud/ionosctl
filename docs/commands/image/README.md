@@ -18,7 +18,7 @@ ionosctl image [command]
 
 ## Description
 
-The sub-command of `ionosctl image` allows you to see information about images available.
+The sub-commands of `ionosctl image` allow you to see information about the Images available.
 
 ## Options
 
