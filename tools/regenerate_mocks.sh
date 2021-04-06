@@ -15,5 +15,7 @@ mockgen -source nic.go >mocks/NicService.go
 mockgen -source request.go >mocks/RequestService.go
 mockgen -source server.go >mocks/ServerService.go
 mockgen -source volume.go >mocks/VolumeService.go
+mockgen -source image.go >mocks/ImageService.go
+mockgen -source snapshot.go >mocks/SnapshotService.go
 
 pushd >/dev/null || exit
