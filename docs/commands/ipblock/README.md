@@ -2,7 +2,7 @@
 description: IpBlock Operations
 ---
 
-# Ipblock
+# IPBlock
 
 ## Usage
 
