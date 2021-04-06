@@ -23,8 +23,8 @@ func ipblock() *builder.Command {
 		Command: &cobra.Command{
 			Use:              "ipblock",
 			Aliases:          []string{"ip"},
-			Short:            "IpBlock Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl ipblock` + "`" + ` allow you to create/reserve, list, get, update, delete IpBlocks.`,
+			Short:            "IPBlock Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl ipblock` + "`" + ` allow you to create/reserve, list, get, update, delete IPBlocks.`,
 			TraverseChildren: true,
 		},
 	}
@@ -35,15 +35,15 @@ func ipblock() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, ipblockCmd, noPreRun, RunIpBlockList, "list", "List IpBlocks",
-		"Use this command to list IpBlocks.",
+	builder.NewCommand(ctx, ipblockCmd, noPreRun, RunIpBlockList, "list", "List IPBlocks",
+		"Use this command to list IPBlocks.",
 		listIpBlockExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockGet, "get", "Get an IpBlock",
-		"Use this command to get information about a specified IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
+	get := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockGet, "get", "Get an IPBlock",
+		"Use this command to get information about a specified IPBlock.\n\nRequired values to run command:\n\n* IPBlock Id",
 		getIpBlockExample, true)
 	get.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -53,59 +53,59 @@ func ipblock() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockLocationValidate, RunIpBlockCreate, "create", "Create/Reserve an IpBlock",
-		`Use this command to create/reserve an IpBlock in a specified location. The name, size options can be provided.
+	create := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockLocationValidate, RunIpBlockCreate, "create", "Create/Reserve an IPBlock",
+		`Use this command to create/reserve an IPBlock in a specified location. The name, size options can be provided.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
 
-* IpBlock Location`, createIpBlockExample, true)
-	create.AddStringFlag(config.ArgIpBlockName, "", "", "Name of the IpBlock")
-	create.AddStringFlag(config.ArgIpBlockLocation, "", "", "Location of the IpBlock "+config.RequiredFlag)
+* IPBlock Location`, createIpBlockExample, true)
+	create.AddStringFlag(config.ArgIpBlockName, "", "", "Name of the IPBlock")
+	create.AddStringFlag(config.ArgIpBlockLocation, "", "", "Location of the IPBlock "+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgIpBlockLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(config.ArgIpBlockSize, "", 2, "Size of the IpBlock")
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IpBlock to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IpBlock to be created [seconds]")
+	create.AddIntFlag(config.ArgIpBlockSize, "", 2, "Size of the IPBlock")
+	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IPBlock to be created")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IPBlock to be created [seconds]")
 
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockUpdate, "update", "Update an IpBlock",
-		`Use this command to update a specified IpBlock.
+	update := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockUpdate, "update", "Update an IPBlock",
+		`Use this command to update a specified IPBlock.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
 
-* IpBlock Id`, updateIpBlockExample, true)
+* IPBlock Id`, updateIpBlockExample, true)
 	update.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgIpBlockName, "", "", "Name of the IpBlock")
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IpBlock to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IpBlock to be updated [seconds]")
+	update.AddStringFlag(config.ArgIpBlockName, "", "", "Name of the IPBlock")
+	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IPBlock to be updated")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IPBlock to be updated [seconds]")
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockDelete, "delete", "Delete an IpBlock",
-		`Use this command to delete a specified IpBlock.
+	deleteCmd := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockDelete, "delete", "Delete an IPBlock",
+		`Use this command to delete a specified IPBlock.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
 
-* IpBlock Id`, deleteIpBlockExample, true)
+* IPBlock Id`, deleteIpBlockExample, true)
 	deleteCmd.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IpBlock to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IpBlock to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IPBlock to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IPBlock to be deleted [seconds]")
 
 	return ipblockCmd
 }

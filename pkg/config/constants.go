@@ -99,5 +99,5 @@ const (
 	RequiredFlagVolumeId       = "The unique Volume Id " + RequiredFlag
 	RequiredFlagSnapshotId     = "The unique Snapshot Id " + RequiredFlag
 	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
-	RequiredFlagIpBlockId      = "The unique IpBlock Id " + RequiredFlag
+	RequiredFlagIpBlockId      = "The unique IPBlock Id " + RequiredFlag
 )

@@ -1,5 +1,5 @@
 ---
-description: IpBlock Operations
+description: IPBlock Operations
 ---
 
 # IPBlock
@@ -18,7 +18,7 @@ ionosctl ipblock [command]
 
 ## Description
 
-The sub-commands of `ionosctl ipblock` allow you to create/reserve, list, get, update, delete IpBlocks.
+The sub-commands of `ionosctl ipblock` allow you to create/reserve, list, get, update, delete IPBlocks.
 
 ## Options
 
@@ -36,9 +36,9 @@ The sub-commands of `ionosctl ipblock` allow you to create/reserve, list, get, u
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl ipblock create](create.md) | Create/Reserve an IpBlock |
-| [ionosctl ipblock delete](delete.md) | Delete an IpBlock |
-| [ionosctl ipblock get](get.md) | Get an IpBlock |
-| [ionosctl ipblock list](list.md) | List IpBlocks |
-| [ionosctl ipblock update](update.md) | Update an IpBlock |
+| [ionosctl ipblock create](create.md) | Create/Reserve an IPBlock |
+| [ionosctl ipblock delete](delete.md) | Delete an IPBlock |
+| [ionosctl ipblock get](get.md) | Get an IPBlock |
+| [ionosctl ipblock list](list.md) | List IPBlocks |
+| [ionosctl ipblock update](update.md) | Update an IPBlock |
 

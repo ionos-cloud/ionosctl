@@ -1,5 +1,5 @@
 ---
-description: Get an IpBlock
+description: Get an IPBlock
 ---
 
 # Get
@@ -12,11 +12,11 @@ ionosctl ipblock get [flags]
 
 ## Description
 
-Use this command to get information about a specified IpBlock.
+Use this command to get information about a specified IPBlock.
 
 Required values to run command:
 
-* IpBlock Id
+* IPBlock Id
 
 ## Options
 
@@ -26,7 +26,7 @@ Required values to run command:
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -h, --help                help for get
       --ignore-stdin        Force command to execute without user input
-      --ipblock-id string   The unique IpBlock Id [Required flag]
+      --ipblock-id string   The unique IPBlock Id [Required flag]
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
 ```
@@ -35,7 +35,7 @@ Required values to run command:
 
 ```text
 ionosctl ipblock get --ipblock-id 3bb77993-dd2a-4845-8115-5001ae87d5e4 
-IpBlockId                              Name   Location   Size   Ips                                State
+IpBlockId                              Name   Location   Size   Ips                 State
 3bb77993-dd2a-4845-8115-5001ae87d5e4   test   us/las     2      [x.x.x.x x.x.x.x]   AVAILABLE
 ```
 

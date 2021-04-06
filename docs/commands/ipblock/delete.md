@@ -1,5 +1,5 @@
 ---
-description: Delete an IpBlock
+description: Delete an IPBlock
 ---
 
 # Delete
@@ -12,13 +12,13 @@ ionosctl ipblock delete [flags]
 
 ## Description
 
-Use this command to delete a specified IpBlock.
+Use this command to delete a specified IPBlock.
 
 You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
 
 Required values to run command:
 
-* IpBlock Id
+* IPBlock Id
 
 ## Options
 
@@ -28,11 +28,11 @@ Required values to run command:
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -h, --help                help for delete
       --ignore-stdin        Force command to execute without user input
-      --ipblock-id string   The unique IpBlock Id [Required flag]
+      --ipblock-id string   The unique IPBlock Id [Required flag]
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-      --timeout int         Timeout option for the IpBlock to be deleted [seconds] (default 60)
-      --wait                Wait for the IpBlock to be deleted
+      --timeout int         Timeout option for the IPBlock to be deleted [seconds] (default 60)
+      --wait                Wait for the IPBlock to be deleted
 ```
 
 ## Examples

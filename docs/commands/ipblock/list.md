@@ -1,5 +1,5 @@
 ---
-description: List IpBlocks
+description: List IPBlocks
 ---
 
 # List
@@ -12,7 +12,7 @@ ionosctl ipblock list [flags]
 
 ## Description
 
-Use this command to list IpBlocks.
+Use this command to list IPBlocks.
 
 ## Options
 
@@ -30,8 +30,8 @@ Use this command to list IpBlocks.
 
 ```text
 ionosctl ipblock list 
-IpBlockId                              Name   Location   Size   Ips                                State
-bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [x.x.x.x]                  AVAILABLE
+IpBlockId                              Name   Location   Size   Ips                 State
+bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [x.x.x.x]           AVAILABLE
 3bb77993-dd2a-4845-8115-5001ae87d5e4   test   us/las     2      [x.x.x.x x.x.x.x]   AVAILABLE
 ```
 
