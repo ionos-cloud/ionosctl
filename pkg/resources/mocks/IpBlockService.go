@@ -35,9 +35,9 @@ func (m *MockIpBlocksService) EXPECT() *MockIpBlocksServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockIpBlocksService) Create(location, name string, size int32) (*resources.IpBlock, *resources.Response, error) {
+func (m *MockIpBlocksService) Create(name, location string, size int32) (*resources.IpBlock, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", location, name, size)
+	ret := m.ctrl.Call(m, "Create", name, location, size)
 	ret0, _ := ret[0].(*resources.IpBlock)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,9 +45,9 @@ func (m *MockIpBlocksService) Create(location, name string, size int32) (*resour
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockIpBlocksServiceMockRecorder) Create(location, name, size interface{}) *gomock.Call {
+func (mr *MockIpBlocksServiceMockRecorder) Create(name, location, size interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIpBlocksService)(nil).Create), location, name, size)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIpBlocksService)(nil).Create), name, location, size)
 }
 
 // Delete mocks base method.

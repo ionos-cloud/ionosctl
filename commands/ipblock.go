@@ -18,6 +18,7 @@ import (
 )
 
 func ipblock() *builder.Command {
+	ctx := context.TODO()
 	ipblockCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "ipblock",
@@ -34,14 +35,14 @@ func ipblock() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(context.TODO(), ipblockCmd, noPreRun, RunIpBlockList, "list", "List IpBlocks",
+	builder.NewCommand(ctx, ipblockCmd, noPreRun, RunIpBlockList, "list", "List IpBlocks",
 		"Use this command to list IpBlocks.",
 		listIpBlockExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(context.TODO(), ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockGet, "get", "Get an IpBlock",
+	get := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockGet, "get", "Get an IpBlock",
 		"Use this command to get information about a specified IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
 		getIpBlockExample, true)
 	get.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
@@ -52,7 +53,7 @@ func ipblock() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(context.TODO(), ipblockCmd, noPreRun, RunIpBlockCreate, "create", "Create/Reserve an IpBlock",
+	create := builder.NewCommand(ctx, ipblockCmd, noPreRun, RunIpBlockCreate, "create", "Create/Reserve an IpBlock",
 		`Use this command to create/reserve an IpBlock in a specified location. The name, size, location options can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -74,7 +75,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(context.TODO(), ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockUpdate, "update", "Update an IpBlock",
+	update := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockUpdate, "update", "Update an IpBlock",
 		`Use this command to update a specified IpBlock.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -87,14 +88,13 @@ Required values to run command:
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgIpBlockName, "", "", "Name of the IpBlock")
-	update.AddStringSliceFlag(config.ArgIpBlockIps, "", []string{}, "Ips of the IpBlock")
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IpBlock to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IpBlock to be updated [seconds]")
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(context.TODO(), ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockDelete, "delete", "Delete an IpBlock",
+	deleteCmd := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockDelete, "delete", "Delete an IpBlock",
 		`Use this command to delete a specified IpBlock.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
@@ -156,9 +156,6 @@ func RunIpBlockUpdate(c *builder.CommandConfig) error {
 	input := resources.IpBlockProperties{}
 	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockName)) {
 		input.SetName(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockName)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockIps)) {
-		input.SetIps(viper.GetStringSlice(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockIps)))
 	}
 	i, resp, err := c.IpBlocks().Update(
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockId)),

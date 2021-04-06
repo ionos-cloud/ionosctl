@@ -44,7 +44,6 @@ const (
 	ArgIpBlockName           = "ipblock-name"
 	ArgIpBlockLocation       = "ipblock-location"
 	ArgIpBlockSize           = "ipblock-size"
-	ArgIpBlockIps            = "ipblock-ips"
 )
 
 // Default values

@@ -29,7 +29,6 @@ Required values to run command:
   -h, --help                  help for update
       --ignore-stdin          Force command to execute without user input
       --ipblock-id string     The unique IpBlock Id [Required flag]
-      --ipblock-ips strings   Ips of the IpBlock
       --ipblock-name string   Name of the IpBlock
   -o, --output string         Desired output format [text|json] (default "text")
   -q, --quiet                 Quiet output
