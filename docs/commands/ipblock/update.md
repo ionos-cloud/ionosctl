@@ -37,3 +37,13 @@ Required values to run command:
       --wait                  Wait for the IpBlock to be updated
 ```
 
+## Examples
+
+```text
+ionosctl ipblock update --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --ipblock-name demo
+IpBlockId                              Name   Location   Size   Ips                 State
+bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [x.x.x.x]   BUSY
+RequestId: 5864afe5-4df5-4843-b548-4489857dc3c5
+Status: Command ipblock update has been successfully executed
+```
+

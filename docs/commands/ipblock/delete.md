@@ -35,3 +35,14 @@ Required values to run command:
       --wait                Wait for the IpBlock to be deleted
 ```
 
+## Examples
+
+```text
+ionosctl ipblock delete --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --wait 
+Warning: Are you sure you want to delete ipblock (y/N) ? 
+y
+Waiting for request: 6b1aa258-799f-4712-9f90-ba4494d84026
+RequestId: 6b1aa258-799f-4712-9f90-ba4494d84026
+Status: Command ipblock delete and request have been successfully executed
+```
+

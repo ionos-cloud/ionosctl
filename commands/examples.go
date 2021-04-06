@@ -270,19 +270,19 @@ RequestId                              Status   Message
 	*/
 	listIpBlockExample = `ionosctl ipblock list 
 IpBlockId                              Name   Location   Size   Ips                                State
-bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [158.222.102.202]                  AVAILABLE
-3bb77993-dd2a-4845-8115-5001ae87d5e4   test   us/las     2      [158.222.102.13 158.222.102.114]   AVAILABLE`
+bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [x.x.x.x]                  AVAILABLE
+3bb77993-dd2a-4845-8115-5001ae87d5e4   test   us/las     2      [x.x.x.x x.x.x.x]   AVAILABLE`
 	getIpBlockExample = `ionosctl ipblock get --ipblock-id 3bb77993-dd2a-4845-8115-5001ae87d5e4 
 IpBlockId                              Name   Location   Size   Ips                                State
-3bb77993-dd2a-4845-8115-5001ae87d5e4   test   us/las     2      [158.222.102.13 158.222.102.114]   AVAILABLE`
+3bb77993-dd2a-4845-8115-5001ae87d5e4   test   us/las     2      [x.x.x.x x.x.x.x]   AVAILABLE`
 	createIpBlockExample = `ionosctl ipblock create --ipblock-name testing --ipblock-location us/las --ipblock-size 1
 IpBlockId                              Name      Location   Size   Ips                 State
-bf932826-d71b-4759-a7d0-0028261c1e8d   testing   us/las     1      [158.222.102.202]   BUSY
+bf932826-d71b-4759-a7d0-0028261c1e8d   testing   us/las     1      [x.x.x.x]   BUSY
 RequestId: a99bd16c-bf7b-4966-8a30-437b5182226b
 Status: Command ipblock create has been successfully executed`
 	updateIpBlockExample = `ionosctl ipblock update --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --ipblock-name demo
 IpBlockId                              Name   Location   Size   Ips                 State
-bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [158.222.102.202]   BUSY
+bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [x.x.x.x]   BUSY
 RequestId: 5864afe5-4df5-4843-b548-4489857dc3c5
 Status: Command ipblock update has been successfully executed`
 	deleteIpBlockExample = `ionosctl ipblock delete --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --wait 

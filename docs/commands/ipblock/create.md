@@ -39,3 +39,13 @@ Required values to run command:
       --wait                      Wait for the IpBlock to be created
 ```
 
+## Examples
+
+```text
+ionosctl ipblock create --ipblock-name testing --ipblock-location us/las --ipblock-size 1
+IpBlockId                              Name      Location   Size   Ips                 State
+bf932826-d71b-4759-a7d0-0028261c1e8d   testing   us/las     1      [x.x.x.x]   BUSY
+RequestId: a99bd16c-bf7b-4966-8a30-437b5182226b
+Status: Command ipblock create has been successfully executed
+```
+
