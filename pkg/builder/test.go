@@ -2,7 +2,6 @@ package builder
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"io"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	mocks "github.com/ionos-cloud/ionosctl/pkg/resources/mocks"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
 
@@ -42,6 +42,7 @@ type ResourcesMocks struct {
 	Lan          *mocks.MockLansService
 	Nic          *mocks.MockNicsService
 	Loadbalancer *mocks.MockLoadbalancersService
+	IpBlocks     *mocks.MockIpBlocksService
 	Request      *mocks.MockRequestsService
 	Image        *mocks.MockImagesService
 	Snapshot     *mocks.MockSnapshotsService
@@ -64,6 +65,7 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Volume:       mocks.NewMockVolumesService(ctrl),
 		Nic:          mocks.NewMockNicsService(ctrl),
 		Loadbalancer: mocks.NewMockLoadbalancersService(ctrl),
+		IpBlocks:     mocks.NewMockIpBlocksService(ctrl),
 		Request:      mocks.NewMockRequestsService(ctrl),
 		Image:        mocks.NewMockImagesService(ctrl),
 		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
@@ -95,6 +97,9 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		},
 		Loadbalancers: func() resources.LoadbalancersService {
 			return tm.Loadbalancer
+		},
+		IpBlocks: func() resources.IpBlocksService {
+			return tm.IpBlocks
 		},
 		Requests: func() resources.RequestsService {
 			return tm.Request
