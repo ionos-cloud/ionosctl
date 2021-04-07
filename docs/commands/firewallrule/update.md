@@ -30,12 +30,12 @@ Required values to run command:
       --cols strings                        Columns to be printed in the standard output. Example: --cols "ResourceId,Name" (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string                The unique Data Center Id [Required flag]
-      --firewallrule-icmp-code string       Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Unset option allows all codes.
-      --firewallrule-icmp-type string       Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Unset option allows all types.
+      --firewallrule-icmp-code int          Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Unset option allows all codes.
+      --firewallrule-icmp-type int          Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Unset option allows all types.
       --firewallrule-id string              The unique FirewallRule Id [Required flag]
       --firewallrule-name string            The name for the Firewall Rule
-      --firewallrule-port-range-end int     Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd unset to allow all ports.
-      --firewallrule-port-range-start int   Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd unset to allow all ports.
+      --firewallrule-port-range-end int     Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd unset to allow all ports. (default 1)
+      --firewallrule-port-range-start int   Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd unset to allow all ports. (default 1)
       --firewallrule-source-ip string       Only traffic originating from the respective IPv4 address is allowed. Unset option allows all source IPs.
       --firewallrule-source-mac string      Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses.
       --firewallrule-target-ip string       In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Unset option allows all target IPs.
