@@ -17,5 +17,6 @@ mockgen -source server.go >mocks/ServerService.go
 mockgen -source volume.go >mocks/VolumeService.go
 mockgen -source image.go >mocks/ImageService.go
 mockgen -source snapshot.go >mocks/SnapshotService.go
+mockgen -source ipblock.go >mocks/IpBlockService.go
 
 pushd >/dev/null || exit

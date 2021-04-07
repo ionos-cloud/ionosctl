@@ -61,6 +61,10 @@ const (
 	ArgImageLicenceType            = "image-licence-type"
 	ArgImageType                   = "image-type"
 	ArgImageSize                   = "image-size"
+	ArgIpBlockId                   = "ipblock-id"
+	ArgIpBlockName                 = "ipblock-name"
+	ArgIpBlockLocation             = "ipblock-location"
+	ArgIpBlockSize                 = "ipblock-size"
 )
 
 // Default values
@@ -95,4 +99,5 @@ const (
 	RequiredFlagVolumeId       = "The unique Volume Id " + RequiredFlag
 	RequiredFlagSnapshotId     = "The unique Snapshot Id " + RequiredFlag
 	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
+	RequiredFlagIpBlockId      = "The unique IPBlock Id " + RequiredFlag
 )
