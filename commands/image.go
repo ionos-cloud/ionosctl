@@ -142,7 +142,7 @@ type ImagePrint struct {
 }
 
 func getImagePrint(resp *resources.Response, c *builder.CommandConfig, imgs []resources.Image) printer.Result {
-	r := printer.Result{}
+	var r printer.Result
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
@@ -160,33 +160,30 @@ func getImagePrint(resp *resources.Response, c *builder.CommandConfig, imgs []re
 }
 
 func getImageCols(flagName string, outErr io.Writer) []string {
-	var cols []string
 	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+		var imageCols []string
+		columnsMap := map[string]string{
+			"ImageId":     "ImageId",
+			"Name":        "Name",
+			"Description": "Description",
+			"Location":    "Location",
+			"Size":        "Size",
+			"LicenceType": "LicenceType",
+			"ImageType":   "ImageType",
+			"Public":      "Public",
+		}
+		for _, k := range viper.GetStringSlice(flagName) {
+			col := columnsMap[k]
+			if col != "" {
+				imageCols = append(imageCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return imageCols
 	} else {
 		return defaultImageCols
 	}
-
-	columnsMap := map[string]string{
-		"ImageId":     "ImageId",
-		"Name":        "Name",
-		"Description": "Description",
-		"Location":    "Location",
-		"Size":        "Size",
-		"LicenceType": "LicenceType",
-		"ImageType":   "ImageType",
-		"Public":      "Public",
-	}
-	var datacenterCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			datacenterCols = append(datacenterCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return datacenterCols
 }
 
 func getImages(images resources.Images) []resources.Image {

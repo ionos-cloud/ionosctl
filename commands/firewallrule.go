@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -309,8 +310,10 @@ type FirewallRulePrint struct {
 	State          string `json:"State,omitempty"`
 }
 
-func getFirewallRulePrint(resp *resources.Response, c *builder.CommandConfig, s []resources.FirewallRule) printer.Result {
-	r := printer.Result{}
+func getFirewallRulePrint(resp *resources.Response, c *builder.CommandConfig, rule []resources.FirewallRule) printer.Result {
+	var r printer.Result
+	fmt.Println(builder.GetGlobalFlagName(c.ParentName, config.ArgCols))
+	fmt.Println(getFirewallRulesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()))
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
@@ -318,9 +321,9 @@ func getFirewallRulePrint(resp *resources.Response, c *builder.CommandConfig, s 
 			r.Verb = c.Name
 			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
 		}
-		if s != nil {
-			r.OutputJSON = s
-			r.KeyValue = getFirewallRulesKVMaps(s)
+		if rule != nil {
+			r.OutputJSON = rule
+			r.KeyValue = getFirewallRulesKVMaps(rule)
 			r.Columns = getFirewallRulesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
@@ -328,34 +331,31 @@ func getFirewallRulePrint(resp *resources.Response, c *builder.CommandConfig, s 
 }
 
 func getFirewallRulesCols(flagName string, outErr io.Writer) []string {
-	var cols []string
 	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+		var firewallRuleCols []string
+		columnsMap := map[string]string{
+			"FirewallRuleId": "FirewallRuleId",
+			"Name":           "Name",
+			"Protocol":       "Protocol",
+			"SourceMac":      "SourceMac",
+			"SourceIP":       "SourceIP",
+			"TargetIP":       "TargetIP",
+			"PortRangeStart": "PortRangeStart",
+			"PortRangeEnd":   "PortRangeEnd",
+			"State":          "State",
+		}
+		for _, k := range viper.GetStringSlice(flagName) {
+			col := columnsMap[k]
+			if col != "" {
+				firewallRuleCols = append(firewallRuleCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return firewallRuleCols
 	} else {
 		return defaultFirewallRuleCols
 	}
-
-	columnsMap := map[string]string{
-		"FirewallRuleId": "FirewallRuleId",
-		"Name":           "Name",
-		"Protocol":       "Protocol",
-		"SourceMac":      "SourceMac",
-		"SourceIP":       "SourceIP",
-		"TargetIP":       "TargetIP",
-		"PortRangeStart": "PortRangeStart",
-		"PortRangeEnd":   "PortRangeEnd",
-		"State":          "State",
-	}
-	var FirewallRuleCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			FirewallRuleCols = append(FirewallRuleCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return FirewallRuleCols
 }
 
 func getFirewallRules(firewallRules resources.FirewallRules) []resources.FirewallRule {
