@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -76,7 +75,7 @@ func firewallrule() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcIdValidate, RunFirewallRuleCreate, "create", "Create a Firewall Rule",
+	create := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleProtocolValidate, RunFirewallRuleCreate, "create", "Create a Firewall Rule",
 		`Use this command to create a new Firewall Rule. Please Note: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -162,16 +161,20 @@ func PreRunGlobalDcServerNicIdsValidate(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId)
 }
 
+func PreRunGlobalDcServerNicIdsFRuleProtocolValidate(c *builder.PreCommandConfig) error {
+	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId)
+	if err != nil {
+		return err
+	}
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgFirewallRuleProtocol)
+}
+
 func PreRunGlobalDcServerNicIdsFRuleIdValidate(c *builder.PreCommandConfig) error {
 	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId)
 	if err != nil {
 		return err
 	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgFirewallRuleId)
-	if err != nil {
-		return err
-	}
-	return nil
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgFirewallRuleId)
 }
 
 func RunFirewallRuleList(c *builder.CommandConfig) error {
@@ -312,8 +315,6 @@ type FirewallRulePrint struct {
 
 func getFirewallRulePrint(resp *resources.Response, c *builder.CommandConfig, rule []resources.FirewallRule) printer.Result {
 	var r printer.Result
-	fmt.Println(builder.GetGlobalFlagName(c.ParentName, config.ArgCols))
-	fmt.Println(getFirewallRulesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()))
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
