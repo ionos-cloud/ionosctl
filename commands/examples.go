@@ -318,4 +318,30 @@ Warning: Are you sure you want to delete snapshot (y/N) ?
 y
 RequestId: 6e029eb6-47e6-4dcd-a333-d620b49c01e5
 Status: Command snapshot delete and request have been successfully executed`
+
+	/*
+		Firewall Rule Examples
+	*/
+	listFirewallRuleExample = `ionosctl firewallrule list --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 
+FirewallRuleId                         Name        Protocol   PortRangeStart   PortRangeStop   State
+f537ff0e-8b2c-4ce6-8a92-297a5ad08ca1   test        TCP        80               80              AVAILABLE`
+	getFirewallRuleExample = `ionosctl firewallrule get --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id f537ff0e-8b2c-4ce6-8a92-297a5ad08ca1 
+FirewallRuleId                         Name        Protocol   PortRangeStart   PortRangeEnd   State
+f537ff0e-8b2c-4ce6-8a92-297a5ad08ca1   test        TCP        80               80             AVAILABLE`
+	createFirewallRuleExample = `ionosctl firewallrule create --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-protocol TCP --firewallrule-name demo --firewallrule-port-range-start 2476 --firewallrule-port-range-end 2476
+FirewallRuleId                         Name   Protocol   PortRangeStart   PortRangeEnd   State
+4221e2c8-0316-447c-aeed-69ac92e585be   demo   TCP        2476             2476           BUSY
+RequestId: 09a47137-e377-4a79-b2b9-16744e298ad5
+Status: Command firewallrule create has been successfully executed`
+	updateFirewallRuleExample = `ionosctl firewallrule update --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id 4221e2c8-0316-447c-aeed-69ac92e585be --firewallrule-name new-test --wait 
+Waiting for request: 2e3d6e81-2830-4d68-82ff-daee6f115864
+FirewallRuleId                         Name       Protocol   PortRangeStart   PortRangeEnd   State
+4221e2c8-0316-447c-aeed-69ac92e585be   new-test   TCP        2476             2476           BUSY
+RequestId: 2e3d6e81-2830-4d68-82ff-daee6f115864
+Status: Command firewallrule update and request have been successfully executed`
+	deleteFirewallRuleExample = `ionosctl firewallrule delete --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id e7c4e91a-d3e3-42db-bfb1-2d5e9ebc952b 
+Warning: Are you sure you want to delete firewall rule (y/N) ? 
+y
+RequestId: 481b6e7c-0c31-4395-81e4-36fad877b77b
+Status: Command firewallrule delete has been successfully executed`
 )

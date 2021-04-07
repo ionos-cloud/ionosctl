@@ -61,6 +61,16 @@ const (
 	ArgImageLicenceType            = "image-licence-type"
 	ArgImageType                   = "image-type"
 	ArgImageSize                   = "image-size"
+	ArgFirewallRuleId              = "firewallrule-id"
+	ArgFirewallRuleName            = "firewallrule-name"
+	ArgFirewallRuleProtocol        = "firewallrule-protocol"
+	ArgFirewallRuleSourceMac       = "firewallrule-source-mac"
+	ArgFirewallRuleSourceIp        = "firewallrule-source-ip"
+	ArgFirewallRuleTargetIp        = "firewallrule-target-ip"
+	ArgFirewallRuleIcmpCode        = "firewallrule-icmp-code"
+	ArgFirewallRuleIcmpType        = "firewallrule-icmp-type"
+	ArgFirewallRulePortRangeStart  = "firewallrule-port-range-start"
+	ArgFirewallRulePortRangeStop   = "firewallrule-port-range-end"
 )
 
 // Default values
@@ -95,4 +105,5 @@ const (
 	RequiredFlagVolumeId       = "The unique Volume Id " + RequiredFlag
 	RequiredFlagSnapshotId     = "The unique Snapshot Id " + RequiredFlag
 	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
+	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
 )
