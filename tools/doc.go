@@ -151,6 +151,9 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 	if strings.Contains(title, "Nic") {
 		title = strings.ReplaceAll(title, "Nic", "NetworkInterface")
 	}
+	if strings.Contains(title, "Firewallrule") {
+		title = strings.ReplaceAll(title, "Firewallrule", "FirewallRule")
+	}
 	buf.WriteString(fmt.Sprintf("# %s\n\n", title))
 
 	buf.WriteString("## Usage\n\n")
