@@ -200,6 +200,23 @@ func TestRunFirewallRuleGetErr(t *testing.T) {
 	})
 }
 
+func TestRunFirewallRuleGet(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
+		rm.FirewallRule.EXPECT().Get(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(&testRule, nil, nil)
+		err := RunFirewallRuleGet(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunFirewallRuleCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

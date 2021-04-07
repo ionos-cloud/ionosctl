@@ -332,7 +332,7 @@ func getFirewallRulePrint(resp *resources.Response, c *builder.CommandConfig, ru
 }
 
 func getFirewallRulesCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
+	if viper.IsSet(flagName) && len(viper.GetStringSlice(flagName)) > 0 {
 		var firewallRuleCols []string
 		columnsMap := map[string]string{
 			"FirewallRuleId": "FirewallRuleId",
@@ -361,8 +361,10 @@ func getFirewallRulesCols(flagName string, outErr io.Writer) []string {
 
 func getFirewallRules(firewallRules resources.FirewallRules) []resources.FirewallRule {
 	ls := make([]resources.FirewallRule, 0)
-	for _, s := range *firewallRules.Items {
-		ls = append(ls, resources.FirewallRule{FirewallRule: s})
+	if items, ok := firewallRules.GetItemsOk(); ok && items != nil {
+		for _, s := range *items {
+			ls = append(ls, resources.FirewallRule{FirewallRule: s})
+		}
 	}
 	return ls
 }
@@ -377,9 +379,11 @@ func getFirewallRule(firewallRule *resources.FirewallRule) []resources.FirewallR
 
 func getFirewallRulesKVMaps(ls []resources.FirewallRule) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ls))
-	for _, l := range ls {
-		o := getFirewallRuleKVMap(l)
-		out = append(out, o)
+	if len(ls) > 0 {
+		for _, l := range ls {
+			o := getFirewallRuleKVMap(l)
+			out = append(out, o)
+		}
 	}
 	return out
 }
