@@ -31,6 +31,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | :--- | :--- |
 | [ionosctl completion](completion/) | Generate code to enable auto-completion with `TAB` key |
 | [ionosctl datacenter](datacenter/) | Data Center Operations |
+| [ionosctl firewallrule](firewallrule/) | Firewall Rule Operations |
 | [ionosctl image](image/) | Image Operations |
 | [ionosctl ipblock](ipblock/) | IPBlock Operations |
 | [ionosctl lan](lan/) | LAN Operations |

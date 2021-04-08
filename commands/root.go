@@ -160,6 +160,7 @@ func addCommands() {
 	rootCmd.AddCommand(request())
 	rootCmd.AddCommand(snapshot())
 	rootCmd.AddCommand(image())
+	rootCmd.AddCommand(firewallrule())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

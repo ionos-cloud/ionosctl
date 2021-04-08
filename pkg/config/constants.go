@@ -65,6 +65,16 @@ const (
 	ArgIpBlockName                 = "ipblock-name"
 	ArgIpBlockLocation             = "ipblock-location"
 	ArgIpBlockSize                 = "ipblock-size"
+	ArgFirewallRuleId              = "firewallrule-id"
+	ArgFirewallRuleName            = "firewallrule-name"
+	ArgFirewallRuleProtocol        = "firewallrule-protocol"
+	ArgFirewallRuleSourceMac       = "firewallrule-source-mac"
+	ArgFirewallRuleSourceIp        = "firewallrule-source-ip"
+	ArgFirewallRuleTargetIp        = "firewallrule-target-ip"
+	ArgFirewallRuleIcmpCode        = "firewallrule-icmp-code"
+	ArgFirewallRuleIcmpType        = "firewallrule-icmp-type"
+	ArgFirewallRulePortRangeStart  = "firewallrule-port-range-start"
+	ArgFirewallRulePortRangeStop   = "firewallrule-port-range-end"
 )
 
 // Default values
@@ -100,4 +110,5 @@ const (
 	RequiredFlagSnapshotId     = "The unique Snapshot Id " + RequiredFlag
 	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
 	RequiredFlagIpBlockId      = "The unique IPBlock Id " + RequiredFlag
+	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
 )
