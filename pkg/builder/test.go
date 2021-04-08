@@ -47,6 +47,7 @@ type ResourcesMocks struct {
 	Image        *mocks.MockImagesService
 	Snapshot     *mocks.MockSnapshotsService
 	FirewallRule *mocks.MockFirewallRulesService
+	Label        *mocks.MockLabelResourcesService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -70,6 +71,7 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Image:        mocks.NewMockImagesService(ctrl),
 		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
 		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
+		Label:        mocks.NewMockLabelResourcesService(ctrl),
 	}
 
 	cmdConfig := &CommandConfig{
@@ -112,6 +114,9 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		},
 		FirewallRules: func() resources.FirewallRulesService {
 			return tm.FirewallRule
+		},
+		Labels: func() resources.LabelResourcesService {
+			return tm.Label
 		},
 	}
 
