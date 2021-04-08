@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"net/http"
 	"os"
 	"regexp"
 	"testing"
@@ -24,6 +25,9 @@ var (
 			Properties: &ionoscloud.FirewallruleProperties{
 				Name:           &testFirewallRuleVar,
 				Protocol:       &testFirewallRuleProtocol,
+				SourceMac:      &testFirewallRuleVar,
+				SourceIp:       &testFirewallRuleVar,
+				TargetIp:       &testFirewallRuleVar,
 				PortRangeStart: &testFirewallRulePortRangeStart,
 				PortRangeEnd:   &testFirewallRulePortRangeEnd,
 			},
@@ -38,6 +42,9 @@ var (
 			Protocol:       &testFirewallRuleProtocol,
 			PortRangeStart: &testFirewallRulePortRangeStart,
 			PortRangeEnd:   &testFirewallRulePortRangeEnd,
+			SourceMac:      &testFirewallRuleVar,
+			SourceIp:       &testFirewallRuleVar,
+			TargetIp:       &testFirewallRuleVar,
 		},
 	}
 	testInputFirewallRule = resources.FirewallRule{
@@ -49,6 +56,15 @@ var (
 		FirewallRules: ionoscloud.FirewallRules{
 			Id:    &testFirewallRuleVar,
 			Items: &[]ionoscloud.FirewallRule{testRule.FirewallRule},
+		},
+	}
+	testResponse = resources.Response{
+		APIResponse: ionoscloud.APIResponse{
+			Response: &http.Response{
+				Header: map[string][]string{
+					"location": {"https://api.ionos.com/cloudapi/v5/create/resource/status"},
+				},
+			},
 		},
 	}
 	testFirewallRuleProtocol       = "TCP"
@@ -231,6 +247,9 @@ func TestRunFirewallRuleCreate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.FirewallRule.EXPECT().Create(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRule).Return(&testInputFirewallRule, nil, nil)
 		err := RunFirewallRuleCreate(cfg)
@@ -252,8 +271,11 @@ func TestRunFirewallRuleCreateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		rm.FirewallRule.EXPECT().Create(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRule).Return(&testInputFirewallRule, nil, testFirewallRuleErr)
+		rm.FirewallRule.EXPECT().Create(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRule).Return(&testInputFirewallRule, &testResponse, nil)
 		err := RunFirewallRuleCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -274,6 +296,9 @@ func TestRunFirewallRuleUpdate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.FirewallRule.EXPECT().Update(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRuleProperties).Return(&testRule, nil, nil)
 		err := RunFirewallRuleUpdate(cfg)
@@ -296,6 +321,9 @@ func TestRunFirewallRuleUpdateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.FirewallRule.EXPECT().Update(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRuleProperties).Return(&testRule, nil, testFirewallRuleErr)
 		err := RunFirewallRuleUpdate(cfg)

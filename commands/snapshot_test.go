@@ -243,7 +243,7 @@ func TestRunSnapshotCreateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar).Return(&snapshotTest, nil, testSnapshotErr)
+		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar).Return(&snapshotTest, &testResponse, nil)
 		err := RunSnapshotCreate(cfg)
 		assert.Error(t, err)
 	})
