@@ -184,7 +184,7 @@ func TestRunImageDeleteErr(t *testing.T) {
 		viper.Set(config.ArgIgnoreStdin, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		rm.Image.EXPECT().Delete(testImageVar).Return(nil, testImageErr)
+		rm.Image.EXPECT().Delete(testImageVar).Return(&testResponse, nil)
 		err := RunImageDelete(cfg)
 		assert.Error(t, err)
 	})
