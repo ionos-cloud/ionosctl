@@ -43,7 +43,6 @@ const (
 	ArgSnapshotName                = "snapshot-name"
 	ArgSnapshotDescription         = "snapshot-description"
 	ArgSnapshotLicenceType         = "snapshot-licence-type"
-	ArgSnapshotSize                = "snapshot-size"
 	ArgSnapshotCpuHotPlug          = "snapshot-cpu-hot-plug"
 	ArgSnapshotCpuHotUnplug        = "snapshot-cpu-hot-unplug"
 	ArgSnapshotRamHotPlug          = "snapshot-ram-hot-plug"

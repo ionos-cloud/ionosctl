@@ -35,9 +35,9 @@ func (m *MockSnapshotsService) EXPECT() *MockSnapshotsServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockSnapshotsService) Create(datacenterId, volumeId, name, description, licenceType string) (*resources.Snapshot, *resources.Response, error) {
+func (m *MockSnapshotsService) Create(datacenterId, volumeId, name, description, licenceType string, secAuthProtection bool) (*resources.Snapshot, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", datacenterId, volumeId, name, description, licenceType)
+	ret := m.ctrl.Call(m, "Create", datacenterId, volumeId, name, description, licenceType, secAuthProtection)
 	ret0, _ := ret[0].(*resources.Snapshot)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,9 +45,9 @@ func (m *MockSnapshotsService) Create(datacenterId, volumeId, name, description,
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockSnapshotsServiceMockRecorder) Create(datacenterId, volumeId, name, description, licenceType interface{}) *gomock.Call {
+func (mr *MockSnapshotsServiceMockRecorder) Create(datacenterId, volumeId, name, description, licenceType, secAuthProtection interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockSnapshotsService)(nil).Create), datacenterId, volumeId, name, description, licenceType)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockSnapshotsService)(nil).Create), datacenterId, volumeId, name, description, licenceType, secAuthProtection)
 }
 
 // Delete mocks base method.

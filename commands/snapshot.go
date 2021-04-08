@@ -52,7 +52,7 @@ func snapshot() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotNameDcIdVolumeIdValidate, RunSnapshotCreate, "create", "Create a Snapshot of a Volume within the Virtual Data Center.",
+	create := builder.NewCommand(ctx, snapshotCmd, PreRunSnapNameLicenceDcIdVolumeIdValidate, RunSnapshotCreate, "create", "Create a Snapshot of a Volume within the Virtual Data Center.",
 		`Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -60,10 +60,11 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 Required values to run command:
 - Data Center Id
 - Volume Id
-- Snapshot Name`, createSnapshotExample, true)
-	create.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot")
+- Snapshot Name
+- Snapshot Licence Type`, createSnapshotExample, true)
+	create.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot"+config.RequiredFlag)
 	create.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
-	create.AddStringFlag(config.ArgSnapshotLicenceType, "", "", "Licence Type of the Snapshot")
+	create.AddStringFlag(config.ArgSnapshotLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgSnapshotLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -75,6 +76,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Command.Name(), create.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddBoolFlag(config.ArgSnapshotSecAuthProtection, "", false, "Enable secure authentication protection")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be created [seconds]")
 
@@ -153,8 +155,8 @@ func PreRunSnapshotIdValidate(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgSnapshotId)
 }
 
-func PreRunSnapshotNameDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName)
+func PreRunSnapNameLicenceDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName, config.ArgSnapshotLicenceType)
 }
 
 func PreRunSnapshotIdDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
@@ -188,6 +190,7 @@ func RunSnapshotCreate(c *builder.CommandConfig) error {
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType)),
+		viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSecAuthProtection)),
 	)
 	if err != nil {
 		return err
@@ -200,53 +203,7 @@ func RunSnapshotCreate(c *builder.CommandConfig) error {
 }
 
 func RunSnapshotUpdate(c *builder.CommandConfig) error {
-	input := resources.SnapshotProperties{}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName)) {
-		input.SetName(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription)) {
-		input.SetDescription(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType)) {
-		input.SetLicenceType(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSize)) {
-		input.SetSize(float32(viper.GetFloat64(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSize))))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotPlug)) {
-		input.SetCpuHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotPlug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotUnplug)) {
-		input.SetCpuHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotUnplug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotPlug)) {
-		input.SetRamHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotPlug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotUnplug)) {
-		input.SetRamHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotUnplug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotPlug)) {
-		input.SetNicHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotPlug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotUnplug)) {
-		input.SetNicHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotUnplug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotPlug)) {
-		input.SetDiscVirtioHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotPlug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotUnplug)) {
-		input.SetDiscVirtioHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotUnplug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotPlug)) {
-		input.SetDiscScsiHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotPlug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotUnplug)) {
-		input.SetDiscScsiHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotUnplug)))
-	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSecAuthProtection)) {
-		input.SetSecAuthProtection(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSecAuthProtection)))
-	}
-	s, resp, err := c.Snapshots().Update(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)), input)
+	s, resp, err := c.Snapshots().Update(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)), getSnapshotPropertiesSet(c))
 	if err != nil {
 		return err
 	}
@@ -283,6 +240,53 @@ func RunSnapshotDelete(c *builder.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
+}
+
+func getSnapshotPropertiesSet(c *builder.CommandConfig) resources.SnapshotProperties {
+	input := resources.SnapshotProperties{}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName)) {
+		input.SetName(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription)) {
+		input.SetDescription(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType)) {
+		input.SetLicenceType(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotPlug)) {
+		input.SetCpuHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotPlug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotUnplug)) {
+		input.SetCpuHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotUnplug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotPlug)) {
+		input.SetRamHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotPlug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotUnplug)) {
+		input.SetRamHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotUnplug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotPlug)) {
+		input.SetNicHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotPlug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotUnplug)) {
+		input.SetNicHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotUnplug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotPlug)) {
+		input.SetDiscVirtioHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotPlug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotUnplug)) {
+		input.SetDiscVirtioHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotUnplug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotPlug)) {
+		input.SetDiscScsiHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotPlug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotUnplug)) {
+		input.SetDiscScsiHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotUnplug)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSecAuthProtection)) {
+		input.SetSecAuthProtection(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSecAuthProtection)))
+	}
+	return input
 }
 
 // Output Printing
