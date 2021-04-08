@@ -22,7 +22,7 @@ type SnapshotProperties struct {
 type SnapshotsService interface {
 	List() (Snapshots, *Response, error)
 	Get(snapshotId string) (*Snapshot, *Response, error)
-	Create(datacenterId, volumeId, name, description, licenceType string) (*Snapshot, *Response, error)
+	Create(datacenterId, volumeId, name, description, licenceType string, secAuthProtection bool) (*Snapshot, *Response, error)
 	Update(snapshotId string, snapshotProp SnapshotProperties) (*Snapshot, *Response, error)
 	Restore(datacenterId, volumeId, snapshotId string) (*Response, error)
 	Delete(snapshotId string) (*Response, error)
@@ -54,17 +54,8 @@ func (s *snapshotsService) Get(snapshotId string) (*Snapshot, *Response, error) 
 	return &Snapshot{snapshot}, &Response{*resp}, err
 }
 
-func (s *snapshotsService) Create(datacenterId, volumeId, name, description, licenceType string) (*Snapshot, *Response, error) {
-	req := s.client.VolumeApi.DatacentersVolumesCreateSnapshotPost(s.context, datacenterId, volumeId)
-	if name != "" {
-		req = req.Name(name)
-	}
-	if description != "" {
-		req = req.Description(description)
-	}
-	if licenceType != "" {
-		req = req.LicenceType(licenceType)
-	}
+func (s *snapshotsService) Create(datacenterId, volumeId, name, description, licenceType string, secAuthProtection bool) (*Snapshot, *Response, error) {
+	req := s.client.VolumeApi.DatacentersVolumesCreateSnapshotPost(s.context, datacenterId, volumeId).Name(name).Description(description).LicenceType(licenceType).SecAuthProtection(secAuthProtection)
 	snapshot, resp, err := s.client.VolumeApi.DatacentersVolumesCreateSnapshotPostExecute(req)
 	return &Snapshot{snapshot}, &Response{*resp}, err
 }

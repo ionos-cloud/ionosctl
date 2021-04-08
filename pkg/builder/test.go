@@ -2,7 +2,6 @@ package builder
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"io"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	mocks "github.com/ionos-cloud/ionosctl/pkg/resources/mocks"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
 
@@ -42,9 +42,11 @@ type ResourcesMocks struct {
 	Lan          *mocks.MockLansService
 	Nic          *mocks.MockNicsService
 	Loadbalancer *mocks.MockLoadbalancersService
+	IpBlocks     *mocks.MockIpBlocksService
 	Request      *mocks.MockRequestsService
 	Image        *mocks.MockImagesService
 	Snapshot     *mocks.MockSnapshotsService
+	FirewallRule *mocks.MockFirewallRulesService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -63,9 +65,11 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Volume:       mocks.NewMockVolumesService(ctrl),
 		Nic:          mocks.NewMockNicsService(ctrl),
 		Loadbalancer: mocks.NewMockLoadbalancersService(ctrl),
+		IpBlocks:     mocks.NewMockIpBlocksService(ctrl),
 		Request:      mocks.NewMockRequestsService(ctrl),
 		Image:        mocks.NewMockImagesService(ctrl),
 		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
+		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
 	}
 
 	cmdConfig := &CommandConfig{
@@ -94,6 +98,9 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Loadbalancers: func() resources.LoadbalancersService {
 			return tm.Loadbalancer
 		},
+		IpBlocks: func() resources.IpBlocksService {
+			return tm.IpBlocks
+		},
 		Requests: func() resources.RequestsService {
 			return tm.Request
 		},
@@ -102,6 +109,9 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		},
 		Snapshots: func() resources.SnapshotsService {
 			return tm.Snapshot
+		},
+		FirewallRules: func() resources.FirewallRulesService {
+			return tm.FirewallRule
 		},
 	}
 

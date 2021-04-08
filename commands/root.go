@@ -156,9 +156,11 @@ func addCommands() {
 	rootCmd.AddCommand(lan())
 	rootCmd.AddCommand(nic())
 	rootCmd.AddCommand(loadBalancer())
+	rootCmd.AddCommand(ipblock())
 	rootCmd.AddCommand(request())
 	rootCmd.AddCommand(snapshot())
 	rootCmd.AddCommand(image())
+	rootCmd.AddCommand(firewallrule())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

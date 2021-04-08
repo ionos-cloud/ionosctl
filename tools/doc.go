@@ -142,15 +142,12 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 
 	// Customize title
 	title := strings.Title(cmd.Command.Name())
-	if strings.Contains(title, "Datacenter") {
-		title = strings.ReplaceAll(title, "Datacenter", "DataCenter")
-	}
-	if strings.Contains(title, "Loadbalancer") {
-		title = strings.ReplaceAll(title, "Loadbalancer", "LoadBalancer")
-	}
-	if strings.Contains(title, "Nic") {
-		title = strings.ReplaceAll(title, "Nic", "NetworkInterface")
-	}
+	title = customizeTitle(title, "Datacenter", "DataCenter")
+	title = customizeTitle(title, "Loadbalancer", "LoadBalancer")
+	title = customizeTitle(title, "Nic", "NetworkInterface")
+	title = customizeTitle(title, "Ipblock", "IPBlock")
+	title = customizeTitle(title, "Firewallrule", "FirewallRule")
+
 	buf.WriteString(fmt.Sprintf("# %s\n\n", title))
 
 	buf.WriteString("## Usage\n\n")
@@ -216,6 +213,13 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 
 	_, err := buf.WriteTo(w)
 	return err
+}
+
+func customizeTitle(title, old, new string) string {
+	if strings.Contains(title, old) {
+		title = strings.ReplaceAll(title, old, new)
+	}
+	return title
 }
 
 func hasSeeAlso(cmd *builder.Command) bool {
