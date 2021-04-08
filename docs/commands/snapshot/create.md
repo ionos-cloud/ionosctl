@@ -20,6 +20,7 @@ Required values to run command:
 - Data Center Id
 - Volume Id
 - Snapshot Name
+- Snapshot Licence Type
 
 ## Options
 
@@ -33,8 +34,9 @@ Required values to run command:
   -o, --output string                  Desired output format [text|json] (default "text")
   -q, --quiet                          Quiet output
       --snapshot-description string    Description of the Snapshot
-      --snapshot-licence-type string   Licence Type of the Snapshot
-      --snapshot-name string           Name of the Snapshot
+      --snapshot-licence-type string   Licence Type of the Snapshot[Required flag]
+      --snapshot-name string           Name of the Snapshot[Required flag]
+      --snapshot-sec-auth-protection   Enable secure authentication protection
       --timeout int                    Timeout option for a Snapshot to be created [seconds] (default 60)
       --volume-id string               The unique Volume Id [Required flag]
       --wait                           Wait for Snapshot to be created
