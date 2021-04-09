@@ -37,11 +37,15 @@ The sub-commands of `ionosctl server` allow you to create, list, get, update, de
 
 | Command | Description |
 | :--- | :--- |
+| [ionosctl server add-label](add-label.md) | Add a Label on a Server |
 | [ionosctl server create](create.md) | Create a Server |
 | [ionosctl server delete](delete.md) | Delete a Server |
 | [ionosctl server get](get.md) | Get a Server |
+| [ionosctl server get-label](get-label.md) | Get a Label from a Server |
 | [ionosctl server list](list.md) | List Servers |
+| [ionosctl server list-labels](list-labels.md) | List Labels from a Server |
 | [ionosctl server reboot](reboot.md) | Force a hard reboot of a Server |
+| [ionosctl server remove-label](remove-label.md) | Remove a Label from a Server |
 | [ionosctl server start](start.md) | Start a Server |
 | [ionosctl server stop](stop.md) | Stop a Server |
 | [ionosctl server update](update.md) | Update a Server |
