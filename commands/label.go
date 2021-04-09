@@ -30,15 +30,20 @@ func label() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(ctx, labelCmd, noPreRun, RunLabelList, "list", "List Labels from all Resources",
-		"Use this command to list all Labels from a specified Data Center.", listDatacenterExample, true)
+		"Use this command to list all Labels from all Resources under your account", listLabelsExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, labelCmd, noPreRun, RunLabelGet, "get", "Get a Label",
-		"Use this command to get information about a specified Label from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Label Key", getDatacenterExample, true)
-	get.AddStringFlag(config.ArgLabelUrn, "", "", "")
+	get := builder.NewCommand(ctx, labelCmd, PreRunLabelUrnValidate, RunLabelGet, "get", "Get a Label",
+		"Use this command to get information about a specified Label using its URN. A URN is for uniqueness of a Label and composed using urn:label:<resource_type>:<resource_uuid>:<key>.\n\nRequired values to run command:\n\n* Label URN",
+		getLabelExample, true)
+	get.AddStringFlag(config.ArgLabelUrn, "", "", "URN for the Label [urn:label:<resource_type>:<resource_uuid>:<key>]")
 	return labelCmd
+}
+
+func PreRunLabelUrnValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLabelUrn)
 }
 
 func RunLabelList(c *builder.CommandConfig) error {
@@ -50,8 +55,7 @@ func RunLabelList(c *builder.CommandConfig) error {
 }
 
 func RunLabelGet(c *builder.CommandConfig) error {
-	labelDc, _, err := c.Labels().GetByUrn(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelUrn)))
+	labelDc, _, err := c.Labels().GetByUrn(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelUrn)))
 	if err != nil {
 		return err
 	}
