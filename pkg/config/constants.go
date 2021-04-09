@@ -114,4 +114,5 @@ const (
 	RequiredFlagIpBlockId      = "The unique IPBlock Id " + RequiredFlag
 	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
 	RequiredFlagLabelKey       = "The unique Label Key " + RequiredFlag
+	RequiredFlagLabelValue     = "The unique Label Value " + RequiredFlag
 )

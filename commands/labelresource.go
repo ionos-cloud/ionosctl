@@ -2,8 +2,6 @@ package commands
 
 import (
 	"context"
-	"errors"
-	"io"
 	"os"
 
 	"github.com/fatih/structs"
@@ -11,97 +9,92 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func labelDatacenter() *builder.Command {
+func labelDatacenter(datacenterCmd *builder.Command) {
 	ctx := context.TODO()
-	labelDatacenterCmd := &builder.Command{
-		Command: &cobra.Command{
-			Use:              "datacenter",
-			Short:            "Label Data Center Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl label datacenter` + "`" + ` allow you to create, get, list, delete a Label from a Data Center`,
-			TraverseChildren: true,
-		},
-	}
-	globalFlags := labelDatacenterCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelDatacenterCmd.Command.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
-	_ = labelDatacenterCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+	/*
+		List Labels Command
+	*/
+	listLabels := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterListLabels, "list-labels", "List Labels from a Data Center",
+		"Use this command to list all Labels from a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", "", true)
+	listLabels.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = listLabels.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSlice(config.ArgCols, defaultLabelResourceCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelDatacenterCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
-		List Command
+		Get Label Command
 	*/
-	builder.NewCommand(ctx, labelDatacenterCmd, PreRunGlobalDcIdValidate, RunLabelDataCenterList, "list", "List Labels from a Data Center",
-		"Use this command to list all Labels from a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", listDatacenterExample, true)
-
-	/*
-		Get Command
-	*/
-	get := builder.NewCommand(ctx, labelDatacenterCmd, PreRunGlobalDcIdLabelKeyValidate, RunLabelDataCenterGet, "get", "Get a Label from a Data Center",
-		"Use this command to get information about a specified Label from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Label Key", getDatacenterExample, true)
+	get := builder.NewCommand(ctx, datacenterCmd, PreRunDcIdLabelKeyValidate, RunDataCenterGetLabel, "get-label", "Get a Label from a Data Center",
+		"Use this command to get information about a specified Label from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Label Key",
+		"", true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLabelResourceKeys(os.Stderr, viper.GetString(builder.GetGlobalFlagName(labelDatacenterCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
-		Create Command
+	 Add Label Command
 	*/
-	create := builder.NewCommand(ctx, labelDatacenterCmd, PreRunGlobalDcIdLabelKeyValidate, RunLabelDataCenterCreate, "create", "Create a Label on a Data Center",
-		`Use this command to create a Label on Data Center. You must specify the key and the value for the Label.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+	addLabel := builder.NewCommand(ctx, datacenterCmd, PreRunDcIdLabelKeyValueValidate, RunDataCenterAddLabel, "add-label", "Add a Label to a Data Center",
+		`Use this command to add a Label to a Data Center. You must specify the key and the value for the Label.
 
 Required values to run command: 
 
 * Data Center Id 
-* Label Key`, createDatacenterExample, true)
-	create.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	create.AddStringFlag(config.ArgLabelValue, "", "", "Value of the Label in the Data Center. If not set, it will take the value of the key.")
+* Label Key
+* Label Value`, "", true)
+	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.RequiredFlagLabelValue)
+	addLabel.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, labelDatacenterCmd, PreRunGlobalDcIdLabelKeyValidate, RunLabelDataCenterDelete, "delete", "Delete a Label from a Data Center",
-		`Use this command to delete a specified Label from a Data Center.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+	deleteLabel := builder.NewCommand(ctx, datacenterCmd, PreRunDcIdLabelKeyValidate, RunDataCenterRemoveLabel, "remove-label", "Remove a Label from a Data Center",
+		`Use this command to remove a specified Label from a Data Center.
 
 Required values to run command:
 
 * Data Center Id
-* Label Key`, deleteDatacenterExample, true)
-	deleteCmd.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	return labelDatacenterCmd
+* Label Key`, "", true)
+	deleteLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	deleteLabel.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = deleteLabel.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	return
 }
 
-func PreRunGlobalDcIdLabelKeyValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
-	if err != nil {
-		return err
-	}
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLabelKey)
+func PreRunDcIdLabelKeyValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgLabelKey)
 }
 
-func RunLabelDataCenterList(c *builder.CommandConfig) error {
-	labelDcs, _, err := c.Labels().DatacenterList(viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)))
+func PreRunDcIdLabelKeyValueValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgLabelKey, config.ArgLabelValue)
+}
+
+func RunDataCenterListLabels(c *builder.CommandConfig) error {
+	labelDcs, _, err := c.Labels().DatacenterList(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
 }
 
-func RunLabelDataCenterGet(c *builder.CommandConfig) error {
+func RunDataCenterGetLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().DatacenterGet(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)))
 	if err != nil {
 		return err
@@ -109,11 +102,11 @@ func RunLabelDataCenterGet(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelDataCenterCreate(c *builder.CommandConfig) error {
+func RunDataCenterAddLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().DatacenterCreate(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelValue)),
 	)
 	if err != nil {
 		return err
@@ -121,13 +114,13 @@ func RunLabelDataCenterCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelDataCenterDelete(c *builder.CommandConfig) error {
+func RunDataCenterRemoveLabel(c *builder.CommandConfig) error {
 	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete label from data center")
 	if err != nil {
 		return err
 	}
 	_, err = c.Labels().DatacenterDelete(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
 	)
 	if err != nil {
@@ -136,91 +129,90 @@ func RunLabelDataCenterDelete(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, nil))
 }
 
-func labelServer() *builder.Command {
+func labelServer(serverCmd *builder.Command) {
+	// Note: Data Center Id flag is Global Flag for serverCmd
 	ctx := context.TODO()
-	labelServerCmd := &builder.Command{
-		Command: &cobra.Command{
-			Use:              "server",
-			Short:            "Label Server Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl label server` + "`" + ` allow you to create, get, list, delete a Label from a Server`,
-			TraverseChildren: true,
-		},
-	}
-	globalFlags := labelServerCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelServerCmd.Command.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
-	_ = labelServerCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelServerCmd.Command.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
-	_ = labelServerCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(labelServerCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringSlice(config.ArgCols, defaultLabelResourceCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelServerCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
-		List Command
+		List Labels Command
 	*/
-	builder.NewCommand(ctx, labelServerCmd, PreRunGlobalDcServerIdsValidate, RunLabelServerList, "list", "List Labels from a Server",
-		"Use this command to list all Labels from a specified Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id", listServerExample, true)
+	list := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerListLabels, "list-labels", "List Labels from a Server",
+		"Use this command to list all Labels from a specified Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id", "", true)
+	list.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
-		Get Command
+		Get Label Command
 	*/
-	get := builder.NewCommand(ctx, labelServerCmd, PreRunGlobalDcServerIdLabelKeyValidate, RunLabelServerGet, "get", "Get a Label from a Server",
-		"Use this command to get information about a specified Label from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Label Key", getServerExample, true)
+	get := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerLabelKeyValidate, RunServerGetLabel, "get-label", "Get a Label from a Server",
+		"Use this command to get information about a specified Label from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Label Key",
+		"", true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLabelResourceKeys(os.Stderr, viper.GetString(builder.GetGlobalFlagName(labelServerCmd.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
-		Create Command
+		Add Label Command
 	*/
-	create := builder.NewCommand(ctx, labelServerCmd, PreRunGlobalDcServerIdLabelKeyValidate, RunLabelServerCreate, "create", "Create a Label on a Server",
-		`Use this command to create a Label on Server. You must specify the key and the value for the Label.
+	addLabel := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerLabelKeyValueValidate, RunServerAddLabel, "add-label", "Add a Label on a Server",
+		`Use this command to add/create a Label on Server. You must specify the key and the value for the Label.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-
-Required values to run command: 
+Required values to run command:
 
 * Data Center Id
-* Server Id 
-* Label Key`, createServerExample, true)
-	create.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	create.AddStringFlag(config.ArgLabelValue, "", "", "Value of the Label in the Server. If not set, it will take the value of the key.")
+* Server Id
+* Label Key
+* Label Value`, "", true)
+	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.RequiredFlagLabelValue)
+	addLabel.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
-		Delete Command
+		Remove Label Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, labelServerCmd, PreRunGlobalDcServerIdLabelKeyValidate, RunLabelServerDelete, "delete", "Delete a Label from a Server",
-		`Use this command to delete a specified Label from a Server.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+	removeLabel := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerLabelKeyValidate, RunServerRemoveLabel, "remove-label", "Remove a Label from a Server",
+		`Use this command to remove/delete a specified Label from a Server.
 
 Required values to run command:
 
 * Data Center Id
 * Server Id
 * Label Key`, deleteServerExample, true)
-	deleteCmd.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	return labelServerCmd
+	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	removeLabel.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	return
 }
 
-func PreRunGlobalDcServerIdLabelKeyValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId)
+func PreRunGlobalDcIdServerLabelKeyValidate(c *builder.PreCommandConfig) error {
+	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
 	if err != nil {
 		return err
 	}
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLabelKey)
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgServerId, config.ArgLabelKey)
 }
 
-func RunLabelServerList(c *builder.CommandConfig) error {
+func PreRunGlobalDcIdServerLabelKeyValueValidate(c *builder.PreCommandConfig) error {
+	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
+	if err != nil {
+		return err
+	}
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgServerId, config.ArgLabelKey, config.ArgLabelValue)
+}
+
+func RunServerListLabels(c *builder.CommandConfig) error {
 	labelDcs, _, err := c.Labels().ServerList(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 	)
 	if err != nil {
 		return err
@@ -228,10 +220,10 @@ func RunLabelServerList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
 }
 
-func RunLabelServerGet(c *builder.CommandConfig) error {
+func RunServerGetLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().ServerGet(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgServerId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)))
 	if err != nil {
 		return err
@@ -239,12 +231,12 @@ func RunLabelServerGet(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelServerCreate(c *builder.CommandConfig) error {
+func RunServerAddLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().ServerCreate(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgServerId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelValue)),
 	)
 	if err != nil {
 		return err
@@ -252,14 +244,14 @@ func RunLabelServerCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelServerDelete(c *builder.CommandConfig) error {
+func RunServerRemoveLabel(c *builder.CommandConfig) error {
 	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete label from server")
 	if err != nil {
 		return err
 	}
 	_, err = c.Labels().ServerDelete(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgServerId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
 	)
 	if err != nil {
@@ -268,92 +260,87 @@ func RunLabelServerDelete(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, nil))
 }
 
-func labelVolume() *builder.Command {
+func labelVolume(volumeCmd *builder.Command) {
+	// Note: Data Center Id flag is Global Flag for volumeCmd
 	ctx := context.TODO()
-	labelVolumeCmd := &builder.Command{
-		Command: &cobra.Command{
-			Use:              "volume",
-			Short:            "Label Volume Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl label volume` + "`" + ` allow you to create, get, list, delete a Label from a Volume`,
-			TraverseChildren: true,
-		},
-	}
-	globalFlags := labelVolumeCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelVolumeCmd.Command.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
-	_ = labelVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelVolumeCmd.Command.Name(), config.ArgVolumeId), globalFlags.Lookup(config.ArgVolumeId))
-	_ = labelVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(labelVolumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringSlice(config.ArgCols, defaultLabelResourceCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelVolumeCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
-		List Command
+		List Labels Command
 	*/
-	builder.NewCommand(ctx, labelVolumeCmd, PreRunGlobalDcVolumeIdsValidate, RunLabelVolumeList, "list", "List Labels from a Volume",
-		"Use this command to list all Labels from a specified Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id", listVolumeExample, true)
+	list := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeListLabels, "list-labels", "List Labels from a Volume",
+		"Use this command to list all Labels from a specified Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id", "", true)
+	list.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
-		Get Command
+		Get Label Command
 	*/
-	get := builder.NewCommand(ctx, labelVolumeCmd, PreRunGlobalDcVolumeIdLabelKeyValidate, RunLabelVolumeGet, "get", "Get a Label from a Volume",
-		"Use this command to get information about a specified Label from a Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id\n* Label Key", getVolumeExample, true)
+	get := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeLabelKeyValidate, RunVolumeGetLabel, "get-label", "Get a Label from a Volume",
+		"Use this command to get information about a specified Label from a Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id\n* Label Key",
+		"", true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLabelResourceKeys(os.Stderr, viper.GetString(builder.GetGlobalFlagName(labelVolumeCmd.Command.Name(), config.ArgVolumeId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
-		Create Command
+		Add Label Command
 	*/
-	create := builder.NewCommand(ctx, labelVolumeCmd, PreRunGlobalDcVolumeIdLabelKeyValidate, RunLabelVolumeCreate, "create", "Create a Label on a Volume",
-		`Use this command to create a Label on Volume. You must specify the key and the value for the Label.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+	addLabel := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeLabelKeyValueValidate, RunVolumeAddLabel, "add-label", "Add a Label on a Volume",
+		`Use this command to add/create a Label on Volume. You must specify the key and the value for the Label.
 
 Required values to run command:
 
 * Data Center Id
 * Volume Id
-* Label Key`, createVolumeExample, true)
-	create.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	create.AddStringFlag(config.ArgLabelValue, "", "", "Value of the Label in the Volume. If not set, it will take the value of the key.")
-
+* Label Key
+* Label Value`, createVolumeExample, true)
+	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.RequiredFlagLabelValue)
+	addLabel.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
 	/*
-		Delete Command
+		Remove Label Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, labelVolumeCmd, PreRunGlobalDcVolumeIdLabelKeyValidate, RunLabelVolumeDelete, "delete", "Delete a Label from a Volume",
-		`Use this command to delete a specified Label from a Volume.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+	removeLabel := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeLabelKeyValidate, RunVolumeRemoveLabel, "remove-label", "Remove a Label from a Volume",
+		`Use this command to remove/delete a specified Label from a Volume.
 
 Required values to run command:
 
 * Data Center Id
 * Volume Id
-* Label Key`, deleteVolumeExample, true)
-	deleteCmd.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	return labelVolumeCmd
+* Label Key
+* Label Value`, deleteVolumeExample, true)
+	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	removeLabel.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	return
 }
 
-func PreRunGlobalDcVolumeIdsValidate(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgVolumeId)
-}
-
-func PreRunGlobalDcVolumeIdLabelKeyValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgVolumeId)
+func PreRunGlobalDcIdVolumeLabelKeyValidate(c *builder.PreCommandConfig) error {
+	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
 	if err != nil {
 		return err
 	}
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLabelKey)
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgVolumeId, config.ArgLabelKey)
 }
 
-func RunLabelVolumeList(c *builder.CommandConfig) error {
+func PreRunGlobalDcIdVolumeLabelKeyValueValidate(c *builder.PreCommandConfig) error {
+	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
+	if err != nil {
+		return err
+	}
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgVolumeId, config.ArgLabelKey, config.ArgLabelValue)
+}
+
+func RunVolumeListLabels(c *builder.CommandConfig) error {
 	labelDcs, _, err := c.Labels().VolumeList(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
@@ -364,7 +351,7 @@ func RunLabelVolumeList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
 }
 
-func RunLabelVolumeGet(c *builder.CommandConfig) error {
+func RunVolumeGetLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().VolumeGet(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgVolumeId)),
@@ -375,7 +362,7 @@ func RunLabelVolumeGet(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelVolumeCreate(c *builder.CommandConfig) error {
+func RunVolumeAddLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().VolumeCreate(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgVolumeId)),
@@ -388,7 +375,7 @@ func RunLabelVolumeCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelVolumeDelete(c *builder.CommandConfig) error {
+func RunVolumeRemoveLabel(c *builder.CommandConfig) error {
 	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete label from volume")
 	if err != nil {
 		return err
@@ -404,95 +391,86 @@ func RunLabelVolumeDelete(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, nil))
 }
 
-func labelIpBlock() *builder.Command {
+func labelIpBlock(ipBlockCmd *builder.Command) {
 	ctx := context.TODO()
-	labelIpBlockCmd := &builder.Command{
-		Command: &cobra.Command{
-			Use:              "ipblock",
-			Short:            "Label IPBlock Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl label ipblock` + "`" + ` allow you to create, get, list, delete a Label from a IPBlock`,
-			TraverseChildren: true,
-		},
-	}
-	globalFlags := labelIpBlockCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelIpBlockCmd.Command.Name(), config.ArgIpBlockId), globalFlags.Lookup(config.ArgIpBlockId))
-	_ = labelIpBlockCmd.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+	/*
+		List Labels Command
+	*/
+	list := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdValidate, RunIpBlockListLabels, "list-labels", "List Labels from a IPBlock",
+		"Use this command to list all Labels from a specified IPBlock.\n\nRequired values to run command:\n\n* IPBlock Id", "", true)
+	list.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSlice(config.ArgCols, defaultLabelResourceCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelIpBlockCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
-		List Command
+		Get Label Command
 	*/
-	builder.NewCommand(ctx, labelIpBlockCmd, PreRunGlobalIpBlockIdValidate, RunLabelIpBlockList, "list", "List Labels from a IPBlock",
-		"Use this command to list all Labels from a specified IPBlock.\n\nRequired values to run command:\n\n* IPBlock Id", listIpBlockExample, true)
-
-	/*
-		Get Command
-	*/
-	get := builder.NewCommand(ctx, labelIpBlockCmd, PreRunGlobalIpBlockIdLabelKeyValidate, RunLabelIpBlockGet, "get", "Get a Label from a IPBlock",
-		"Use this command to get information about a specified Label from a IPBlock.\n\nRequired values to run command:\n\n* IPBlock Id\n* Label Key", getIpBlockExample, true)
+	get := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValidate, RunIpBlockGetLabel, "get-label", "Get a Label from a IPBlock",
+		"Use this command to get information about a specified Label from a IPBlock.\n\nRequired values to run command:\n\n* IPBlock Id\n* Label Key", "", true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLabelResourceKeys(os.Stderr, viper.GetString(builder.GetGlobalFlagName(labelIpBlockCmd.Command.Name(), config.ArgIpBlockId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
-		Create Command
+		Add Label Command
 	*/
-	create := builder.NewCommand(ctx, labelIpBlockCmd, PreRunGlobalIpBlockIdLabelKeyValidate, RunLabelIpBlockCreate, "create", "Create a Label on a IPBlock",
-		`Use this command to create a Label on IPBlock. You must specify the key and the value for the Label.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+	addLabel := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValueValidate, RunIpBlockAddLabel, "add-label", "Add a Label on a IPBlock",
+		`Use this command to add/create a Label on IPBlock. You must specify the key and the value for the Label.
 
 Required values to run command: 
 
 * IPBlock Id 
-* Label Key`, createIpBlockExample, true)
-	create.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	create.AddStringFlag(config.ArgLabelValue, "", "", "Value of the Label in the IPBlock. If not set, it will take the value of the key.")
+* Label Key
+* Label Value`, "", true)
+	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.RequiredFlagLabelValue)
+	addLabel.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
-		Delete Command
+		Remove Label Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, labelIpBlockCmd, PreRunGlobalIpBlockIdLabelKeyValidate, RunLabelIpBlockDelete, "delete", "Delete a Label from a IPBlock",
-		`Use this command to delete a specified Label from a IPBlock.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+	removeLabel := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValidate, RunIpBlockRemoveLabel, "remove-label", "Remove a Label from a IPBlock",
+		`Use this command to remove/delete a specified Label from a IPBlock.
 
 Required values to run command:
 
 * IPBlock Id
-* Label Key`, deleteIpBlockExample, true)
-	deleteCmd.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	return labelIpBlockCmd
+* Label Key`, "", true)
+	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	removeLabel.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	return
 }
 
-func PreRunGlobalIpBlockIdValidate(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgIpBlockId)
+func PreRunIpBlockIdLabelKeyValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgIpBlockId, config.ArgLabelKey)
 }
 
-func PreRunGlobalIpBlockIdLabelKeyValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgIpBlockId)
-	if err != nil {
-		return err
-	}
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLabelKey)
+func PreRunIpBlockIdLabelKeyValueValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgIpBlockId, config.ArgLabelKey, config.ArgLabelValue)
 }
 
-func RunLabelIpBlockList(c *builder.CommandConfig) error {
-	labelDcs, _, err := c.Labels().IpBlockList(viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgIpBlockId)))
+func RunIpBlockListLabels(c *builder.CommandConfig) error {
+	labelDcs, _, err := c.Labels().IpBlockList(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
 }
 
-func RunLabelIpBlockGet(c *builder.CommandConfig) error {
+func RunIpBlockGetLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().IpBlockGet(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgIpBlockId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)))
 	if err != nil {
 		return err
@@ -500,9 +478,9 @@ func RunLabelIpBlockGet(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelIpBlockCreate(c *builder.CommandConfig) error {
+func RunIpBlockAddLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().IpBlockCreate(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgIpBlockId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
 	)
@@ -512,13 +490,13 @@ func RunLabelIpBlockCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelIpBlockDelete(c *builder.CommandConfig) error {
+func RunIpBlockRemoveLabel(c *builder.CommandConfig) error {
 	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete label from ip block")
 	if err != nil {
 		return err
 	}
 	_, err = c.Labels().IpBlockDelete(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgIpBlockId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
 	)
 	if err != nil {
@@ -527,95 +505,83 @@ func RunLabelIpBlockDelete(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, nil))
 }
 
-func labelSnapshot() *builder.Command {
+func labelSnapshot(snapshotCmd *builder.Command) {
 	ctx := context.TODO()
-	labelSnapshotCmd := &builder.Command{
-		Command: &cobra.Command{
-			Use:              "snapshot",
-			Short:            "Label Snapshot Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl label snapshot` + "`" + ` allow you to create, get, list, delete a Label from a Snapshot`,
-			TraverseChildren: true,
-		},
-	}
-	globalFlags := labelSnapshotCmd.Command.PersistentFlags()
-	globalFlags.StringP(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelSnapshotCmd.Command.Name(), config.ArgSnapshotId), globalFlags.Lookup(config.ArgSnapshotId))
-	_ = labelSnapshotCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
+	/*
+		List Labels Command
+	*/
+	list := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotListLabels, "list-labels", "List Labels from a Snapshot",
+		"Use this command to list all Labels from a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id", "", true)
+	list.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSlice(config.ArgCols, defaultLabelResourceCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelSnapshotCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
-		List Command
+		Get Label Command
 	*/
-	builder.NewCommand(ctx, labelSnapshotCmd, PreRunGlobalSnapshotIdValidate, RunLabelSnapshotList, "list", "List Labels from a Snapshot",
-		"Use this command to list all Labels from a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id", "", true)
-
-	/*
-		Get Command
-	*/
-	get := builder.NewCommand(ctx, labelSnapshotCmd, PreRunGlobalSnapshotIdLabelKeyValidate, RunLabelSnapshotGet, "get", "Get a Label from a Snapshot",
-		"Use this command to get information about a specified Label from a Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id\n* Label Key", getSnapshotExample, true)
+	get := builder.NewCommand(ctx, snapshotCmd, PreRunGlobalSnapshotIdLabelKeyValidate, RunSnapshotGetLabel, "get", "Get a Label from a Snapshot",
+		"Use this command to get information about a specified Label from a Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id\n* Label Key", "", true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLabelResourceKeys(os.Stderr, viper.GetString(builder.GetGlobalFlagName(labelSnapshotCmd.Command.Name(), config.ArgSnapshotId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-
 	/*
-		Create Command
+		Add Label Command
 	*/
-	create := builder.NewCommand(ctx, labelSnapshotCmd, PreRunGlobalSnapshotIdLabelKeyValidate, RunLabelSnapshotCreate, "create", "Create a Label on a Snapshot",
+	addLabel := builder.NewCommand(ctx, snapshotCmd, PreRunGlobalSnapshotIdLabelKeyValueValidate, RunSnapshotAddLabel, "add-label", "Add a Label on a Snapshot",
 		`Use this command to create a Label on Snapshot. You must specify the key and the value for the Label.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command: 
 
 * Snapshot Id 
-* Label Key`, createSnapshotExample, true)
-	create.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	create.AddStringFlag(config.ArgLabelValue, "", "", "Value of the Label in the Snapshot. If not set, it will take the value of the key.")
-
+* Label Key
+* Label Value`, "", true)
+	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.RequiredFlagLabelValue)
+	addLabel.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	/*
-		Delete Command
+		Remove Label Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, labelSnapshotCmd, PreRunGlobalSnapshotIdLabelKeyValidate, RunLabelSnapshotDelete, "delete", "Delete a Label from a Snapshot",
-		`Use this command to delete a specified Label from a Snapshot.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+	removeLabel := builder.NewCommand(ctx, snapshotCmd, PreRunGlobalSnapshotIdLabelKeyValidate, RunSnapshotRemoveLabel, "remove-label", "Remove a Label from a Snapshot",
+		`Use this command to remove/delete a specified Label from a Snapshot.
 
 Required values to run command:
 
 * Snapshot Id
-* Label Key`, deleteSnapshotExample, true)
-	deleteCmd.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	return labelSnapshotCmd
-}
-
-func PreRunGlobalSnapshotIdValidate(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgSnapshotId)
+* Label Key`, "", true)
+	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	removeLabel.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	return
 }
 
 func PreRunGlobalSnapshotIdLabelKeyValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgSnapshotId)
-	if err != nil {
-		return err
-	}
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLabelKey)
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgSnapshotId, config.ArgLabelKey)
 }
 
-func RunLabelSnapshotList(c *builder.CommandConfig) error {
-	labelDcs, _, err := c.Labels().SnapshotList(viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgSnapshotId)))
+func PreRunGlobalSnapshotIdLabelKeyValueValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgSnapshotId, config.ArgLabelKey, config.ArgLabelValue)
+}
+
+func RunSnapshotListLabels(c *builder.CommandConfig) error {
+	labelDcs, _, err := c.Labels().SnapshotList(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
 }
 
-func RunLabelSnapshotGet(c *builder.CommandConfig) error {
+func RunSnapshotGetLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().SnapshotGet(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgSnapshotId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)))
 	if err != nil {
 		return err
@@ -623,9 +589,9 @@ func RunLabelSnapshotGet(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelSnapshotCreate(c *builder.CommandConfig) error {
+func RunSnapshotAddLabel(c *builder.CommandConfig) error {
 	labelDc, _, err := c.Labels().SnapshotCreate(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgSnapshotId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
 	)
@@ -635,13 +601,13 @@ func RunLabelSnapshotCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
 }
 
-func RunLabelSnapshotDelete(c *builder.CommandConfig) error {
+func RunSnapshotRemoveLabel(c *builder.CommandConfig) error {
 	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete label from ip block")
 	if err != nil {
 		return err
 	}
 	_, err = c.Labels().SnapshotDelete(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgSnapshotId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLabelKey)),
 	)
 	if err != nil {
@@ -664,37 +630,16 @@ func getLabelResourcePrint(resp *resources.Response, c *builder.CommandConfig, s
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
-			r.Resource = "label " + c.ParentName
+			r.Resource = c.ParentName
 			r.Verb = c.Name
 		}
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getLabelResourcesKVMaps(s)
-			r.Columns = getLabelResourceCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = defaultLabelResourceCols
 		}
 	}
 	return r
-}
-
-func getLabelResourceCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var labelCols []string
-		columnsMap := map[string]string{
-			"Key":   "Key",
-			"Value": "Value",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				labelCols = append(labelCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return labelCols
-	} else {
-		return defaultLabelResourceCols
-	}
 }
 
 func getLabelResources(labelResources resources.LabelResources) []resources.LabelResource {
@@ -735,32 +680,4 @@ func getLabelResourceKVMap(s resources.LabelResource) map[string]interface{} {
 		}
 	}
 	return structs.Map(ssPrint)
-}
-
-func getLabelResourceKeys(outErr io.Writer, datacenterId string) []string {
-	err := config.LoadFile()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
-	)
-	clierror.CheckError(err, outErr)
-	labelResourceSvc := resources.NewLabelResourceService(clientSvc.Get(), context.TODO())
-	labelResources, _, err := labelResourceSvc.DatacenterList(datacenterId)
-	clierror.CheckError(err, outErr)
-	labelsDc := make([]string, 0)
-	if items, ok := labelResources.LabelResources.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if properties, ok := item.GetPropertiesOk(); ok && properties != nil {
-				if key, ok := properties.GetKeyOk(); ok && key != nil {
-					labelsDc = append(labelsDc, *key)
-				}
-			}
-		}
-	} else {
-		return nil
-	}
-	return labelsDc
 }

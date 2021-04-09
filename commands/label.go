@@ -29,21 +29,15 @@ func label() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, labelCmd, noPreRun, RunLabelList, "list", "List Labels from a Data Center",
+	builder.NewCommand(ctx, labelCmd, noPreRun, RunLabelList, "list", "List Labels from all Resources",
 		"Use this command to list all Labels from a specified Data Center.", listDatacenterExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, labelCmd, noPreRun, RunLabelGet, "get", "Get a Label from a Data Center",
+	get := builder.NewCommand(ctx, labelCmd, noPreRun, RunLabelGet, "get", "Get a Label",
 		"Use this command to get information about a specified Label from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Label Key", getDatacenterExample, true)
 	get.AddStringFlag(config.ArgLabelUrn, "", "", "")
-
-	labelCmd.AddCommand(labelDatacenter())
-	labelCmd.AddCommand(labelServer())
-	labelCmd.AddCommand(labelVolume())
-	labelCmd.AddCommand(labelIpBlock())
-	labelCmd.AddCommand(labelSnapshot())
 	return labelCmd
 }
 
@@ -69,10 +63,10 @@ func RunLabelGet(c *builder.CommandConfig) error {
 var defaultLabelCols = []string{"Key", "Value", "ResourceType", "ResourceId"}
 
 type LabelPrint struct {
-	Key         string `json:"Key,omitempty"`
-	Value       string `json:"Value,omitempty"`
+	Key          string `json:"Key,omitempty"`
+	Value        string `json:"Value,omitempty"`
 	ResourceType string `json:"ResourceType,omitempty"`
-	ResourceId  string `json:"ResourceId,omitempty"`
+	ResourceId   string `json:"ResourceId,omitempty"`
 }
 
 func getLabelPrint(resp *resources.Response, c *builder.CommandConfig, s []resources.Label) printer.Result {

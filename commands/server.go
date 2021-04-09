@@ -184,6 +184,7 @@ Required values to run command:
 		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	labelServer(serverCmd)
 	return serverCmd
 }
 

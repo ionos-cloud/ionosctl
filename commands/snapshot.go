@@ -148,6 +148,7 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be deleted [seconds]")
 
+	labelSnapshot(snapshotCmd)
 	return snapshotCmd
 }
 

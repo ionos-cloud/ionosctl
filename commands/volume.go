@@ -197,6 +197,7 @@ Required values to run command:
 	detachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to detach from Server")
 	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be detached from a Server [seconds]")
 
+	labelVolume(volumeCmd)
 	return volumeCmd
 }
 
