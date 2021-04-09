@@ -305,8 +305,7 @@ Required values to run command:
 
 * Data Center Id
 * Volume Id
-* Label Key
-* Label Value`, removeVolumeLabelExample, true)
+* Label Key`, removeVolumeLabelExample, true)
 	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	removeLabel.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

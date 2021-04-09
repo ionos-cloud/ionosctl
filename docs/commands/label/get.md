@@ -12,7 +12,7 @@ ionosctl label get [flags]
 
 ## Description
 
-Use this command to get information about a specified Label using its URN. A URN is for uniqueness of a Label and composed using `urn:label:<resource_type>:<resource_uuid>:<key>`.
+Use this command to get information about a specified Label using its URN. A URN is used for uniqueness of a Label and composed using `urn:label:<resource_type>:<resource_uuid>:<key>`.
 
 Required values to run command:
 

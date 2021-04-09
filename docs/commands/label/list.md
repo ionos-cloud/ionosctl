@@ -12,7 +12,7 @@ ionosctl label list [flags]
 
 ## Description
 
-Use this command to list all Labels from all Resources under your account
+Use this command to list all Labels from all Resources under your account.
 
 ## Options
 

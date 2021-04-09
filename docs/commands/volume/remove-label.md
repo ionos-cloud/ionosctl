@@ -19,7 +19,6 @@ Required values to run command:
 * Data Center Id
 * Volume Id
 * Label Key
-* Label Value
 
 ## Options
 
