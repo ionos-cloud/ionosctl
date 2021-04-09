@@ -2,14 +2,10 @@ package commands
 
 import (
 	"context"
-	"errors"
-	"io"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -51,7 +47,7 @@ func RunLabelList(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelPrint(nil, c, getLabels(labelDcs)))
+	return c.Printer.Print(getLabelPrint(c, getLabels(labelDcs)))
 }
 
 func RunLabelGet(c *builder.CommandConfig) error {
@@ -59,7 +55,7 @@ func RunLabelGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelPrint(nil, c, getLabel(labelDc)))
+	return c.Printer.Print(getLabelPrint(c, getLabel(labelDc)))
 }
 
 // Output Printing
@@ -73,44 +69,16 @@ type LabelPrint struct {
 	ResourceId   string `json:"ResourceId,omitempty"`
 }
 
-func getLabelPrint(resp *resources.Response, c *builder.CommandConfig, s []resources.Label) printer.Result {
+func getLabelPrint(c *builder.CommandConfig, s []resources.Label) printer.Result {
 	r := printer.Result{}
 	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = "label " + c.ParentName
-			r.Verb = c.Name
-		}
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getLabelKVMaps(s)
-			r.Columns = getLabelCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = defaultLabelCols
 		}
 	}
 	return r
-}
-
-func getLabelCols(flagName string, outErr io.Writer) []string {
-	if viper.IsSet(flagName) {
-		var labelCols []string
-		columnsMap := map[string]string{
-			"Key":          "Key",
-			"Value":        "Value",
-			"ResourceType": "ResourceType",
-			"ResourceId":   "ResourceId",
-		}
-		for _, k := range viper.GetStringSlice(flagName) {
-			col := columnsMap[k]
-			if col != "" {
-				labelCols = append(labelCols, col)
-			} else {
-				clierror.CheckError(errors.New("unknown column "+k), outErr)
-			}
-		}
-		return labelCols
-	} else {
-		return defaultLabelCols
-	}
 }
 
 func getLabels(Labels resources.Labels) []resources.Label {

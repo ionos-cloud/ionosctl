@@ -77,7 +77,7 @@ func (ds *dataCentersService) Update(datacenterId string, input DatacenterProper
 }
 
 func (ds *dataCentersService) Delete(datacenterId string) (*Response, error) {
-	req := ds.client.DataCenterApi.DatacentersDelete(ds.context, datacenterId)
+	req := ds.client.DataCenterApi.DatacentersDelete(context.Background(), datacenterId)
 	_, res, err := ds.client.DataCenterApi.DatacentersDeleteExecute(req)
 	return &Response{*res}, err
 }

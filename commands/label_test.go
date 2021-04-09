@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"regexp"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
@@ -118,28 +117,4 @@ func TestRunLabelGetErr(t *testing.T) {
 		err := RunLabelGet(cfg)
 		assert.Error(t, err)
 	})
-}
-
-func TestGetLabelsCols(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("Label", config.ArgCols), []string{"LabelId"})
-	getLabelCols(builder.GetGlobalFlagName("Label", config.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-}
-
-func TestGetLabelsColsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("Label", config.ArgCols), []string{"Unknown"})
-	getLabelCols(builder.GetGlobalFlagName("Label", config.ArgCols), w)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`unknown column Unknown`)
-	assert.True(t, re.Match(b.Bytes()))
 }

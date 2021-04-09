@@ -88,7 +88,7 @@ func RunDataCenterListLabels(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResources(labelDcs)))
 }
 
 func RunDataCenterGetLabel(c *builder.CommandConfig) error {
@@ -98,7 +98,7 @@ func RunDataCenterGetLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunDataCenterAddLabel(c *builder.CommandConfig) error {
@@ -110,7 +110,7 @@ func RunDataCenterAddLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunDataCenterRemoveLabel(c *builder.CommandConfig) error {
@@ -121,7 +121,7 @@ func RunDataCenterRemoveLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, nil))
+	return c.Printer.Print(getLabelResourcePrint(c, nil))
 }
 
 func labelServer(serverCmd *builder.Command) {
@@ -212,7 +212,7 @@ func RunServerListLabels(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResources(labelDcs)))
 }
 
 func RunServerGetLabel(c *builder.CommandConfig) error {
@@ -223,7 +223,7 @@ func RunServerGetLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunServerAddLabel(c *builder.CommandConfig) error {
@@ -236,7 +236,7 @@ func RunServerAddLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunServerRemoveLabel(c *builder.CommandConfig) error {
@@ -248,7 +248,7 @@ func RunServerRemoveLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, nil))
+	return c.Printer.Print(getLabelResourcePrint(c, nil))
 }
 
 func labelVolume(volumeCmd *builder.Command) {
@@ -338,7 +338,7 @@ func RunVolumeListLabels(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResources(labelDcs)))
 }
 
 func RunVolumeGetLabel(c *builder.CommandConfig) error {
@@ -349,7 +349,7 @@ func RunVolumeGetLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunVolumeAddLabel(c *builder.CommandConfig) error {
@@ -362,7 +362,7 @@ func RunVolumeAddLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunVolumeRemoveLabel(c *builder.CommandConfig) error {
@@ -374,7 +374,7 @@ func RunVolumeRemoveLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, nil))
+	return c.Printer.Print(getLabelResourcePrint(c, nil))
 }
 
 func labelIpBlock(ipBlockCmd *builder.Command) {
@@ -452,7 +452,7 @@ func RunIpBlockListLabels(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResources(labelDcs)))
 }
 
 func RunIpBlockGetLabel(c *builder.CommandConfig) error {
@@ -462,7 +462,7 @@ func RunIpBlockGetLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunIpBlockAddLabel(c *builder.CommandConfig) error {
@@ -474,7 +474,7 @@ func RunIpBlockAddLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunIpBlockRemoveLabel(c *builder.CommandConfig) error {
@@ -485,7 +485,7 @@ func RunIpBlockRemoveLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, nil))
+	return c.Printer.Print(getLabelResourcePrint(c, nil))
 }
 
 func labelSnapshot(snapshotCmd *builder.Command) {
@@ -504,7 +504,7 @@ func labelSnapshot(snapshotCmd *builder.Command) {
 	/*
 		Get Label Command
 	*/
-	get := builder.NewCommand(ctx, snapshotCmd, PreRunGlobalSnapshotIdLabelKeyValidate, RunSnapshotGetLabel, "get-label", "Get a Label from a Snapshot",
+	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdLabelKeyValidate, RunSnapshotGetLabel, "get-label", "Get a Label from a Snapshot",
 		"Use this command to get information about a specified Label from a Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id\n* Label Key",
 		getSnapshotLabelExample, true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
@@ -515,7 +515,7 @@ func labelSnapshot(snapshotCmd *builder.Command) {
 	/*
 		Add Label Command
 	*/
-	addLabel := builder.NewCommand(ctx, snapshotCmd, PreRunGlobalSnapshotIdLabelKeyValueValidate, RunSnapshotAddLabel, "add-label", "Add a Label on a Snapshot",
+	addLabel := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdLabelKeyValueValidate, RunSnapshotAddLabel, "add-label", "Add a Label on a Snapshot",
 		`Use this command to create a Label on Snapshot. You must specify the key and the value for the Label.
 
 Required values to run command: 
@@ -532,7 +532,7 @@ Required values to run command:
 	/*
 		Remove Label Command
 	*/
-	removeLabel := builder.NewCommand(ctx, snapshotCmd, PreRunGlobalSnapshotIdLabelKeyValidate, RunSnapshotRemoveLabel, "remove-label", "Remove a Label from a Snapshot",
+	removeLabel := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdLabelKeyValidate, RunSnapshotRemoveLabel, "remove-label", "Remove a Label from a Snapshot",
 		`Use this command to remove/delete a specified Label from a Snapshot.
 
 Required values to run command:
@@ -547,11 +547,11 @@ Required values to run command:
 	return
 }
 
-func PreRunGlobalSnapshotIdLabelKeyValidate(c *builder.PreCommandConfig) error {
+func PreRunSnapshotIdLabelKeyValidate(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgSnapshotId, config.ArgLabelKey)
 }
 
-func PreRunGlobalSnapshotIdLabelKeyValueValidate(c *builder.PreCommandConfig) error {
+func PreRunSnapshotIdLabelKeyValueValidate(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgSnapshotId, config.ArgLabelKey, config.ArgLabelValue)
 }
 
@@ -560,7 +560,7 @@ func RunSnapshotListLabels(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResources(labelDcs)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResources(labelDcs)))
 }
 
 func RunSnapshotGetLabel(c *builder.CommandConfig) error {
@@ -570,7 +570,7 @@ func RunSnapshotGetLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunSnapshotAddLabel(c *builder.CommandConfig) error {
@@ -582,7 +582,7 @@ func RunSnapshotAddLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, getLabelResource(labelDc)))
+	return c.Printer.Print(getLabelResourcePrint(c, getLabelResource(labelDc)))
 }
 
 func RunSnapshotRemoveLabel(c *builder.CommandConfig) error {
@@ -593,7 +593,7 @@ func RunSnapshotRemoveLabel(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLabelResourcePrint(nil, c, nil))
+	return c.Printer.Print(getLabelResourcePrint(c, nil))
 }
 
 // Output Printing
@@ -605,14 +605,9 @@ type LabelResourcePrint struct {
 	Value string `json:"Value,omitempty"`
 }
 
-func getLabelResourcePrint(resp *resources.Response, c *builder.CommandConfig, s []resources.LabelResource) printer.Result {
+func getLabelResourcePrint(c *builder.CommandConfig, s []resources.LabelResource) printer.Result {
 	r := printer.Result{}
 	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.ParentName
-			r.Verb = c.Name
-		}
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getLabelResourcesKVMaps(s)
