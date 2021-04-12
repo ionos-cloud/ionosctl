@@ -74,6 +74,9 @@ const (
 	ArgFirewallRuleIcmpType        = "firewallrule-icmp-type"
 	ArgFirewallRulePortRangeStart  = "firewallrule-port-range-start"
 	ArgFirewallRulePortRangeStop   = "firewallrule-port-range-end"
+	ArgLabelUrn                    = "label-urn"
+	ArgLabelKey                    = "label-key"
+	ArgLabelValue                  = "label-value"
 )
 
 // Default values
@@ -110,4 +113,6 @@ const (
 	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
 	RequiredFlagIpBlockId      = "The unique IPBlock Id " + RequiredFlag
 	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
+	RequiredFlagLabelKey       = "The unique Label Key " + RequiredFlag
+	RequiredFlagLabelValue     = "The unique Label Value " + RequiredFlag
 )

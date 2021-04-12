@@ -36,9 +36,13 @@ The sub-commands of `ionosctl datacenter` allow you to create, list, get, update
 
 | Command | Description |
 | :--- | :--- |
+| [ionosctl datacenter add-label](add-label.md) | Add a Label to a Data Center |
 | [ionosctl datacenter create](create.md) | Create a Data Center |
 | [ionosctl datacenter delete](delete.md) | Delete a Data Center |
 | [ionosctl datacenter get](get.md) | Get a Data Center |
+| [ionosctl datacenter get-label](get-label.md) | Get a Label from a Data Center |
 | [ionosctl datacenter list](list.md) | List Data Centers |
+| [ionosctl datacenter list-labels](list-labels.md) | List Labels from a Data Center |
+| [ionosctl datacenter remove-label](remove-label.md) | Remove a Label from a Data Center |
 | [ionosctl datacenter update](update.md) | Update a Data Center |
 

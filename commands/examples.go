@@ -371,4 +371,70 @@ Warning: Are you sure you want to delete firewall rule (y/N) ?
 y
 RequestId: 481b6e7c-0c31-4395-81e4-36fad877b77b
 Status: Command firewallrule delete has been successfully executed`
+
+	/*
+		Label Examples
+	*/
+	listLabelsExample = `ionosctl label list 
+Key       Value            ResourceType   ResourceId
+test      testserver       server         27dde318-f0d4-4f97-a04d-9dafe4a89637
+test      testdatacenter   datacenter     ed612a0a-9506-4b56-8d1b-ce2b04090f19
+test      testsnapshot     snapshot       df7f4ad9-b942-4e79-939d-d1c10fb6fbff`
+	getLabelExample = `ionosctl label get --label-urn "urn:label:server:27dde318-f0d4-4f97-a04d-9dafe4a89637:test"
+Key    Value        ResourceType   ResourceId
+test   testserver   server         27dde318-f0d4-4f97-a04d-9dafe4a89637`
+
+	/*
+		Label Resources Examples
+	*/
+	listDataCenterLabelsExample = `ionosctl datacenter list-labels --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 
+Key    Value
+test   testdatacenter`
+	getDataCenterLabelExample = `ionosctl datacenter get-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --label-key test
+Key    Value
+test   testdatacenter`
+	addDataCenterLabelExample = `ionosctl datacenter add-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --label-key test --label-value testdatacenter
+Key    Value
+test   testdatacenter`
+	removeDataCenterLabelExample = `ionosctl datacenter remove-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --label-key test`
+	listServerLabelsExample      = `ionosctl server list-labels --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 
+Key    Value
+test   test`
+	getServerLabelExample = `ionosctl server get-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 --label-key test
+Key    Value
+test   test`
+	addServerLabelExample = `ionosctl server add-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 --label-key test --label-value test
+Key    Value
+test   test`
+	removeServerLabelExample = `ionosctl server remove-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 --label-key test`
+	listVolumeLabelsExample  = `ionosctl volume list-labels --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 
+Key    Value
+test   testvolume`
+	getVolumeLabelExample = `ionosctl volume get-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 --label-key test
+Key    Value
+test   testvolume`
+	addVolumeLabelExample = `ionosctl volume add-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 --label-key test --label-value testvolume
+Key    Value
+test   testvolume`
+	removeVolumeLabelExample = `ionosctl volume remove-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 --label-key test`
+	listIpBlockLabelsExample = `ionosctl ipblock list-labels --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 
+Key    Value
+test   testipblock`
+	getIpBlockLabelExample = `ionosctl ipblock get-label --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 --label-key test
+Key    Value
+test   testipblock`
+	addIpBlockLabelExample = `ionosctl ipblock add-label --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 --label-key test --label-value testipblock
+Key    Value
+test   testipblock`
+	removeIpBlockLabelExample = `ionosctl ipblock remove-label --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 --label-key test`
+	listSnapshotLabelsExample = `ionosctl snapshot list-labels --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff
+Key    Value
+test   testsnapshot`
+	getSnapshotLabelExample = ` ionosctl snapshot get-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test
+Key    Value
+test   testsnapshot`
+	addSnapshotLabelExample = `ionosctl snapshot add-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test --label-value testsnapshot
+Key    Value
+test   testsnapshot`
+	removeSnapshotLabelExample = `ionosctl snapshot remove-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test`
 )
