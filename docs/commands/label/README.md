@@ -12,7 +12,7 @@ ionosctl label [command]
 
 ## Description
 
-The sub-commands of `ionosctl label` allow you to get, list, create, delete Labels from a Resource
+The sub-commands of `ionosctl label` allow you to get, list, create, delete Labels from a resource. For each resource that supports labelling: Data Center, Server, Volume, IPBlock, Snapshot - commands to manage Labels are available. Example: `ionosctl <resource> add-label`.
 
 ## Options
 

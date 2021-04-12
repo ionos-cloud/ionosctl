@@ -17,7 +17,7 @@ func label() *builder.Command {
 		Command: &cobra.Command{
 			Use:              "label",
 			Short:            "Label Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl label` + "`" + ` allow you to get, list, create, delete Labels from a Resource`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl label` + "`" + ` allow you to get, list, create, delete Labels from a resource. For each resource that supports labelling: Data Center, Server, Volume, IPBlock, Snapshot - commands to manage Labels are available. Example: ` + "`" + `ionosctl <resource> add-label` + "`" + `.`,
 			TraverseChildren: true,
 		},
 	}
