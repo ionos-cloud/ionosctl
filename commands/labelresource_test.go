@@ -228,11 +228,37 @@ func TestPreRunGlobalDcIdServerLabelKeyValidateErr(t *testing.T) {
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), "")
-		viper.Set(config.ArgQuiet, false)
 		err := PreRunGlobalDcIdServerLabelKeyValidate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunGlobalDcIdServerLabelKeyValidateGlobalErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
+		err := PreRunGlobalDcIdServerLabelKeyValidate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunGlobalDcIdServerLabelKeyValueValidateGlobalErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
+		err := PreRunGlobalDcIdServerLabelKeyValueValidate(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -299,6 +325,19 @@ func TestPreRunGlobalDcIdVolumeLabelKeyValidateErr(t *testing.T) {
 	})
 }
 
+func TestPreRunGlobalDcIdVolumeLabelKeyValidateGlobalErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunGlobalDcIdVolumeLabelKeyValidate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunGlobalDcIdVolumeLabelKeyValueValidate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -325,6 +364,19 @@ func TestPreRunGlobalDcIdVolumeLabelKeyValueValidateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), "")
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunGlobalDcIdVolumeLabelKeyValueValidate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunGlobalDcIdVolumeLabelKeyValueValidateGlobalErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunGlobalDcIdVolumeLabelKeyValueValidate(cfg)
 		assert.Error(t, err)
