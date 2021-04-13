@@ -24,7 +24,7 @@ func volume() *builder.Command {
 			Use:              "volume",
 			Aliases:          []string{"vol"},
 			Short:            "Volume Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes or attaching, detaching a Volume from a Server.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command ` + "`" + `ionosctl server attach-volume` + "`" + `.`,
 			TraverseChildren: true,
 		},
 	}

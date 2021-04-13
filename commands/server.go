@@ -185,7 +185,7 @@ Required values to run command:
 	})
 
 	/*
-		Attach Command
+		Attach Volume Command
 	*/
 	attachVolume := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerAttachVolume, "attach-volume", "Attach a Volume to a Server",
 		`Use this command to attach a Volume to a Server from a Data Center.
@@ -209,7 +209,7 @@ Required values to run command:
 	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
 
 	/*
-		Detach Command
+		Detach Volume Command
 	*/
 	detachVolume := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerDetachVolume, "detach-volume", "Detach a Volume from a Server",
 		`Use this command to detach a Volume from a Server.
@@ -244,7 +244,7 @@ Required values to run command:
 	})
 
 	/*
-		Get Volumes Command
+		Get Volume Command
 	*/
 	getAttached := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerGetVolume, "get-volume", "Get an attached Volume from a Server",
 		"Use this command to retrieve information about an attached Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
