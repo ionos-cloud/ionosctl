@@ -38,10 +38,8 @@ The sub-commands of `ionosctl volume` manage your block storage volumes by creat
 | Command | Description |
 | :--- | :--- |
 | [ionosctl volume add-label](add-label.md) | Add a Label on a Volume |
-| [ionosctl volume attach](attach/) | Attach a Volume to a Server |
 | [ionosctl volume create](create.md) | Create a Volume |
 | [ionosctl volume delete](delete.md) | Delete a Volume |
-| [ionosctl volume detach](detach.md) | Detach a Volume from a Server |
 | [ionosctl volume get](get.md) | Get a Volume |
 | [ionosctl volume get-label](get-label.md) | Get a Label from a Volume |
 | [ionosctl volume list](list.md) | List Volumes |

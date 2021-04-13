@@ -2,16 +2,12 @@
 description: Attach a Volume to a Server
 ---
 
-# Attach
+# AttachVolume
 
 ## Usage
 
 ```text
-ionosctl volume attach [flags]
-```
-
-```text
-ionosctl volume attach [command]
+ionosctl server attach-volume [flags]
 ```
 
 ## Description
@@ -26,8 +22,6 @@ Required values to run command:
 * Server Id
 * Volume Id
 
-The sub-commands of `ionosctl volume attach` allow you to retrieve information about attached Volumes or about a specified attached Volume.
-
 ## Options
 
 ```text
@@ -35,7 +29,7 @@ The sub-commands of `ionosctl volume attach` allow you to retrieve information a
       --cols strings           Columns to be printed in the standard output (default [DatacenterId,Name,Location])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id [Required flag]
-  -h, --help                   help for attach
+  -h, --help                   help for attach-volume
       --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
@@ -55,11 +49,4 @@ VolumeId                               Name         Size   Type   LicenseType   
 RequestId: dfd826bb-aace-4b1e-9ae2-17901e3cc792
 Status: Command volume attach and request have been successfully executed
 ```
-
-## Related commands
-
-| Command | Description |
-| :--- | :--- |
-| [ionosctl volume attach get](get.md) | Get an attached Volume from a Server |
-| [ionosctl volume attach list](list.md) | List attached Volumes from a Server |
 
