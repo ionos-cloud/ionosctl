@@ -12,7 +12,7 @@ ionosctl server get-volume [flags]
 
 ## Description
 
-Use this command to retrieve information about an attached Volume.
+Use this command to retrieve information about an attached Volume on Server.
 
 Required values to run command:
 

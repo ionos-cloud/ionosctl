@@ -142,7 +142,7 @@ Required values to run command:
 	/*
 		List Nics Command
 	*/
-	listAttached := builder.NewCommand(context.TODO(), attachNic, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerListNics, "list-nics", "List attached NICs from a Load Balancer",
+	listAttached := builder.NewCommand(context.TODO(), loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerListNics, "list-nics", "List attached NICs from a Load Balancer",
 		"Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		attachListNicExample, true)
 	listAttached.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
@@ -153,7 +153,7 @@ Required values to run command:
 	/*
 		Get Nic Command
 	*/
-	getAttached := builder.NewCommand(context.TODO(), attachNic, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerGetNic, "get-nic", "Get an attached NIC to a Load Balancer",
+	getAttached := builder.NewCommand(context.TODO(), loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerGetNic, "get-nic", "Get an attached NIC to a Load Balancer",
 		"Use this command to retrieve information about an attached NIC.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
 		attachGetNicExample, true)
 	getAttached.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)

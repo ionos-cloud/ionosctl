@@ -12,7 +12,7 @@ ionosctl nic [command]
 
 ## Description
 
-The sub-commands of `ionosctl nic` allow you to create, list, get, update, delete NICs or attach, detach a NIC from a Load Balancer.
+The sub-commands of `ionosctl nic` allow you to create, list, get, update, delete NICs. To attach a NIC to a Load Balancer, use the Load Balancer command `ionosctl loadbalancer attach-nic`.
 
 ## Options
 
@@ -32,10 +32,8 @@ The sub-commands of `ionosctl nic` allow you to create, list, get, update, delet
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl nic attach](attach/) | Attach a NIC to a Load Balancer |
 | [ionosctl nic create](create.md) | Create a NIC |
 | [ionosctl nic delete](delete.md) | Delete a NIC |
-| [ionosctl nic detach](detach.md) | Detach a NIC from a Load Balancer |
 | [ionosctl nic get](get.md) | Get a NIC |
 | [ionosctl nic list](list.md) | List NICs |
 | [ionosctl nic update](update.md) | Update a NIC |

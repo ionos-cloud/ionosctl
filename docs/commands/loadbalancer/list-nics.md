@@ -2,12 +2,12 @@
 description: List attached NICs from a Load Balancer
 ---
 
-# List
+# ListNetworkInterfaces
 
 ## Usage
 
 ```text
-ionosctl nic attach list [flags]
+ionosctl loadbalancer list-nics [flags]
 ```
 
 ## Description
@@ -23,15 +23,14 @@ Required values to run command:
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings             Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips])
+      --cols strings             Columns to be printed in the standard output (default [DatacenterId,Name,Location])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id [Required flag]
-  -h, --help                     help for list
+  -h, --help                     help for list-nics
       --ignore-stdin             Force command to execute without user input
       --loadbalancer-id string   The unique Load Balancer Id [Required flag]
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --server-id string         The unique Server Id
 ```
 
 ## Examples
