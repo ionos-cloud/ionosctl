@@ -623,3 +623,283 @@ func TestGetServersIds(t *testing.T) {
 	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }
+
+func TestPreRunGlobalDcIdServerIdValidateRequiredFlagsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		err := PreRunGlobalDcIdServerIdValidate(cfg)
+		assert.Error(t, err)
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), "")
+		err = PreRunGlobalDcIdServerIdValidate(cfg)
+		assert.Error(t, err)
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgServerId).Error())
+	})
+}
+
+func TestPreRunGlobalDcIdServerVolumeIdsValidate(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		err := PreRunGlobalDcIdServerVolumeIdsValidate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunGlobalDcIdServerVolumeIdsValidateRequiredFlagsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
+		err := PreRunGlobalDcIdServerVolumeIdsValidate(cfg)
+		assert.Error(t, err)
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
+
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), "")
+		err = PreRunGlobalDcIdServerVolumeIdsValidate(cfg)
+		assert.Error(t, err)
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgServerId).Error())
+
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), "")
+		err = PreRunGlobalDcIdServerVolumeIdsValidate(cfg)
+		assert.Error(t, err)
+		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgVolumeId).Error())
+	})
+}
+
+func TestRunServerAttachVolume(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
+		rm.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{v}, nil, nil)
+		err := RunServerAttachVolume(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerAttachVolumeErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
+		rm.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{v}, nil, testVolumeErr)
+		err := RunServerAttachVolume(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerAttachVolumeWaitErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
+		rm.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{v}, nil, nil)
+		err := RunServerAttachVolume(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerListVolumes(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		rm.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttached, nil, nil)
+		err := RunServerListVolumes(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerListVolumesErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		rm.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttached, nil, testVolumeErr)
+		err := RunServerListVolumes(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerGetVolume(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		rm.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, nil)
+		err := RunServerGetVolume(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerGetVolumeErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		rm.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
+		err := RunServerGetVolume(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerDetachVolume(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
+		rm.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(nil, nil)
+		err := RunServerDetachVolume(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerDetachVolumeErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
+		rm.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(nil, testVolumeErr)
+		err := RunServerDetachVolume(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerDetachVolumeWaitErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
+		rm.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(nil, nil)
+		err := RunServerDetachVolume(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunVolumeDetachAskForConfirm(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgIgnoreStdin, false)
+		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
+		rm.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(nil, nil)
+		err := RunServerDetachVolume(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerDetachVolumeAskForConfirmErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgIgnoreStdin, false)
+		cfg.Stdin = os.Stdin
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
+		err := RunServerDetachVolume(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestGetAttachedVolumesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
+	w := bufio.NewWriter(&b)
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
+	getAttachedVolumesIds(w, testVolumeVar, testVolumeVar)
+	err := w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}

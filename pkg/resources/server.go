@@ -28,6 +28,11 @@ type ServersService interface {
 	Start(datacenterId, serverId string) (*Response, error)
 	Stop(datacenterId, serverId string) (*Response, error)
 	Reboot(datacenterId, serverId string) (*Response, error)
+	// Volume Actions
+	AttachVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
+	DetachVolume(datacenterId, serverId, volumeId string) (*Response, error)
+	ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error)
+	GetVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
 }
 
 type serversService struct {
@@ -98,5 +103,30 @@ func (ss *serversService) Stop(datacenterId, serverId string) (*Response, error)
 func (ss *serversService) Reboot(datacenterId, serverId string) (*Response, error) {
 	req := ss.client.ServerApi.DatacentersServersRebootPost(ss.context, datacenterId, serverId)
 	_, res, err := ss.client.ServerApi.DatacentersServersRebootPostExecute(req)
+	return &Response{*res}, err
+}
+
+func (vs *serversService) ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error) {
+	req := vs.client.ServerApi.DatacentersServersVolumesGet(vs.context, datacenterId, serverId)
+	vols, res, err := vs.client.ServerApi.DatacentersServersVolumesGetExecute(req)
+	return AttachedVolumes{vols}, &Response{*res}, err
+}
+
+func (vs *serversService) AttachVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
+	req := vs.client.ServerApi.DatacentersServersVolumesPost(vs.context, datacenterId, serverId)
+	req = req.Volume(ionoscloud.Volume{Id: &volumeId})
+	vol, res, err := vs.client.ServerApi.DatacentersServersVolumesPostExecute(req)
+	return &Volume{vol}, &Response{*res}, err
+}
+
+func (vs *serversService) GetVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
+	req := vs.client.ServerApi.DatacentersServersVolumesFindById(vs.context, datacenterId, serverId, volumeId)
+	vol, res, err := vs.client.ServerApi.DatacentersServersVolumesFindByIdExecute(req)
+	return &Volume{vol}, &Response{*res}, err
+}
+
+func (vs *serversService) DetachVolume(datacenterId, serverId, volumeId string) (*Response, error) {
+	req := vs.client.ServerApi.DatacentersServersVolumesDelete(vs.context, datacenterId, serverId, volumeId)
+	_, res, err := vs.client.ServerApi.DatacentersServersVolumesDeleteExecute(req)
 	return &Response{*res}, err
 }

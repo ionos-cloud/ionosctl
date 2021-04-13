@@ -28,11 +28,6 @@ type VolumesService interface {
 	Create(datacenterId, name, bus, volumetype, licencetype, zone string, size float32) (*Volume, *Response, error)
 	Update(datacenterId, volumeId string, input VolumeProperties) (*Volume, *Response, error)
 	Delete(datacenterId, volumeId string) (*Response, error)
-	// Volume Actions
-	Attach(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
-	Detach(datacenterId, serverId, volumeId string) (*Response, error)
-	ListAttached(datacenterId, serverId string) (AttachedVolumes, *Response, error)
-	GetAttached(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
 }
 
 type volumesService struct {
@@ -87,30 +82,5 @@ func (vs *volumesService) Update(datacenterId, volumeId string, input VolumeProp
 func (vs *volumesService) Delete(datacenterId, volumeId string) (*Response, error) {
 	req := vs.client.VolumeApi.DatacentersVolumesDelete(vs.context, datacenterId, volumeId)
 	_, res, err := vs.client.VolumeApi.DatacentersVolumesDeleteExecute(req)
-	return &Response{*res}, err
-}
-
-func (vs *volumesService) ListAttached(datacenterId, serverId string) (AttachedVolumes, *Response, error) {
-	req := vs.client.ServerApi.DatacentersServersVolumesGet(vs.context, datacenterId, serverId)
-	vols, res, err := vs.client.ServerApi.DatacentersServersVolumesGetExecute(req)
-	return AttachedVolumes{vols}, &Response{*res}, err
-}
-
-func (vs *volumesService) Attach(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
-	req := vs.client.ServerApi.DatacentersServersVolumesPost(vs.context, datacenterId, serverId)
-	req = req.Volume(ionoscloud.Volume{Id: &volumeId})
-	vol, res, err := vs.client.ServerApi.DatacentersServersVolumesPostExecute(req)
-	return &Volume{vol}, &Response{*res}, err
-}
-
-func (vs *volumesService) GetAttached(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
-	req := vs.client.ServerApi.DatacentersServersVolumesFindById(vs.context, datacenterId, serverId, volumeId)
-	vol, res, err := vs.client.ServerApi.DatacentersServersVolumesFindByIdExecute(req)
-	return &Volume{vol}, &Response{*res}, err
-}
-
-func (vs *volumesService) Detach(datacenterId, serverId, volumeId string) (*Response, error) {
-	req := vs.client.ServerApi.DatacentersServersVolumesDelete(vs.context, datacenterId, serverId, volumeId)
-	_, res, err := vs.client.ServerApi.DatacentersServersVolumesDeleteExecute(req)
 	return &Response{*res}, err
 }

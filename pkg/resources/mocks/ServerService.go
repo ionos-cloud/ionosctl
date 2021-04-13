@@ -34,6 +34,22 @@ func (m *MockServersService) EXPECT() *MockServersServiceMockRecorder {
 	return m.recorder
 }
 
+// AttachVolume mocks base method.
+func (m *MockServersService) AttachVolume(datacenterId, serverId, volumeId string) (*resources.Volume, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AttachVolume", datacenterId, serverId, volumeId)
+	ret0, _ := ret[0].(*resources.Volume)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// AttachVolume indicates an expected call of AttachVolume.
+func (mr *MockServersServiceMockRecorder) AttachVolume(datacenterId, serverId, volumeId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AttachVolume", reflect.TypeOf((*MockServersService)(nil).AttachVolume), datacenterId, serverId, volumeId)
+}
+
 // Create mocks base method.
 func (m *MockServersService) Create(name, cpufamily, datacenterId, zone string, cores, ram int32) (*resources.Server, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -65,6 +81,21 @@ func (mr *MockServersServiceMockRecorder) Delete(datacenterId, serverId interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockServersService)(nil).Delete), datacenterId, serverId)
 }
 
+// DetachVolume mocks base method.
+func (m *MockServersService) DetachVolume(datacenterId, serverId, volumeId string) (*resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DetachVolume", datacenterId, serverId, volumeId)
+	ret0, _ := ret[0].(*resources.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DetachVolume indicates an expected call of DetachVolume.
+func (mr *MockServersServiceMockRecorder) DetachVolume(datacenterId, serverId, volumeId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DetachVolume", reflect.TypeOf((*MockServersService)(nil).DetachVolume), datacenterId, serverId, volumeId)
+}
+
 // Get mocks base method.
 func (m *MockServersService) Get(datacenterId, serverId string) (*resources.Server, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -81,6 +112,22 @@ func (mr *MockServersServiceMockRecorder) Get(datacenterId, serverId interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockServersService)(nil).Get), datacenterId, serverId)
 }
 
+// GetVolume mocks base method.
+func (m *MockServersService) GetVolume(datacenterId, serverId, volumeId string) (*resources.Volume, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetVolume", datacenterId, serverId, volumeId)
+	ret0, _ := ret[0].(*resources.Volume)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetVolume indicates an expected call of GetVolume.
+func (mr *MockServersServiceMockRecorder) GetVolume(datacenterId, serverId, volumeId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVolume", reflect.TypeOf((*MockServersService)(nil).GetVolume), datacenterId, serverId, volumeId)
+}
+
 // List mocks base method.
 func (m *MockServersService) List(datacenterId string) (resources.Servers, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -95,6 +142,22 @@ func (m *MockServersService) List(datacenterId string) (resources.Servers, *reso
 func (mr *MockServersServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockServersService)(nil).List), datacenterId)
+}
+
+// ListVolumes mocks base method.
+func (m *MockServersService) ListVolumes(datacenterId, serverId string) (resources.AttachedVolumes, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListVolumes", datacenterId, serverId)
+	ret0, _ := ret[0].(resources.AttachedVolumes)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListVolumes indicates an expected call of ListVolumes.
+func (mr *MockServersServiceMockRecorder) ListVolumes(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVolumes", reflect.TypeOf((*MockServersService)(nil).ListVolumes), datacenterId, serverId)
 }
 
 // Reboot mocks base method.
