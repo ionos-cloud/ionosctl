@@ -34,22 +34,6 @@ func (m *MockVolumesService) EXPECT() *MockVolumesServiceMockRecorder {
 	return m.recorder
 }
 
-// Attach mocks base method.
-func (m *MockVolumesService) Attach(datacenterId, serverId, volumeId string) (*resources.Volume, *resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Attach", datacenterId, serverId, volumeId)
-	ret0, _ := ret[0].(*resources.Volume)
-	ret1, _ := ret[1].(*resources.Response)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
-}
-
-// Attach indicates an expected call of Attach.
-func (mr *MockVolumesServiceMockRecorder) Attach(datacenterId, serverId, volumeId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Attach", reflect.TypeOf((*MockVolumesService)(nil).Attach), datacenterId, serverId, volumeId)
-}
-
 // Create mocks base method.
 func (m *MockVolumesService) Create(datacenterId, name, bus, volumetype, licencetype, zone string, size float32) (*resources.Volume, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -81,21 +65,6 @@ func (mr *MockVolumesServiceMockRecorder) Delete(datacenterId, volumeId interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockVolumesService)(nil).Delete), datacenterId, volumeId)
 }
 
-// Detach mocks base method.
-func (m *MockVolumesService) Detach(datacenterId, serverId, volumeId string) (*resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Detach", datacenterId, serverId, volumeId)
-	ret0, _ := ret[0].(*resources.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Detach indicates an expected call of Detach.
-func (mr *MockVolumesServiceMockRecorder) Detach(datacenterId, serverId, volumeId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Detach", reflect.TypeOf((*MockVolumesService)(nil).Detach), datacenterId, serverId, volumeId)
-}
-
 // Get mocks base method.
 func (m *MockVolumesService) Get(datacenterId, volumeId string) (*resources.Volume, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -112,22 +81,6 @@ func (mr *MockVolumesServiceMockRecorder) Get(datacenterId, volumeId interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockVolumesService)(nil).Get), datacenterId, volumeId)
 }
 
-// GetAttached mocks base method.
-func (m *MockVolumesService) GetAttached(datacenterId, serverId, volumeId string) (*resources.Volume, *resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAttached", datacenterId, serverId, volumeId)
-	ret0, _ := ret[0].(*resources.Volume)
-	ret1, _ := ret[1].(*resources.Response)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
-}
-
-// GetAttached indicates an expected call of GetAttached.
-func (mr *MockVolumesServiceMockRecorder) GetAttached(datacenterId, serverId, volumeId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAttached", reflect.TypeOf((*MockVolumesService)(nil).GetAttached), datacenterId, serverId, volumeId)
-}
-
 // List mocks base method.
 func (m *MockVolumesService) List(datacenterId string) (resources.Volumes, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -142,22 +95,6 @@ func (m *MockVolumesService) List(datacenterId string) (resources.Volumes, *reso
 func (mr *MockVolumesServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockVolumesService)(nil).List), datacenterId)
-}
-
-// ListAttached mocks base method.
-func (m *MockVolumesService) ListAttached(datacenterId, serverId string) (resources.AttachedVolumes, *resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListAttached", datacenterId, serverId)
-	ret0, _ := ret[0].(resources.AttachedVolumes)
-	ret1, _ := ret[1].(*resources.Response)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
-}
-
-// ListAttached indicates an expected call of ListAttached.
-func (mr *MockVolumesServiceMockRecorder) ListAttached(datacenterId, serverId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAttached", reflect.TypeOf((*MockVolumesService)(nil).ListAttached), datacenterId, serverId)
 }
 
 // Update mocks base method.

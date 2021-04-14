@@ -24,7 +24,7 @@ func volume() *builder.Command {
 			Use:              "volume",
 			Aliases:          []string{"vol"},
 			Short:            "Volume Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes or attaching, detaching a Volume from a Server.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command ` + "`" + `ionosctl server attach-volume` + "`" + `.`,
 			TraverseChildren: true,
 		},
 	}
@@ -121,82 +121,6 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be deleted [seconds]")
 
-	/*
-		Attach Command
-	*/
-	attachVolume := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunVolumeAttach, "attach", "Attach a Volume to a Server",
-		`Use this command to attach a Volume to a Server from a Data Center.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-
-Required values to run command:
-
-* Data Center Id
-* Server Id
-* Volume Id
-
-The sub-commands of `+"`"+`ionosctl volume attach`+"`"+` allow you to retrieve information about attached Volumes or about a specified attached Volume.`, attachVolumeExample, true)
-	attachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	attachVolume.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	attachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to attach to Server")
-	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
-
-	/*
-		Attach List Command
-	*/
-	listAttached := builder.NewCommand(context.TODO(), attachVolume, PreRunAttachGlobalDcIdServerIdValidate, RunVolumesAttachList, "list", "List attached Volumes from a Server",
-		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		attachListVolumeExample, true)
-	listAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = listAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	/*
-		Attach Get Command
-	*/
-	getAttached := builder.NewCommand(context.TODO(), attachVolume, PreRunAttachGlobalDcIdServerVolumeIdsValidate, RunVolumeAttachGet, "get", "Get an attached Volume from a Server",
-		"Use this command to retrieve information about an attached Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
-		attachGetVolumeExample, true)
-	getAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	getAttached.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(attachVolume.Command.Name(), getAttached.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	/*
-		Detach Command
-	*/
-	detachVolume := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunVolumeDetach, "detach", "Detach a Volume from a Server",
-		`Use this command to detach a Volume from a Server.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
-
-Required values to run command:
-
-* Data Center Id
-* Server Id
-* Volume Id`, detachVolumeExample, true)
-	detachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(volumeCmd.Command.Name(), detachVolume.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	detachVolume.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	detachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to detach from Server")
-	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be detached from a Server [seconds]")
-
 	labelVolume(volumeCmd)
 	return volumeCmd
 }
@@ -207,18 +131,6 @@ func PreRunGlobalDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
 		return err
 	}
 	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgVolumeId)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func PreRunGlobalDcIdServerVolumeIdsValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
-	if err != nil {
-		return err
-	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgServerId, config.ArgVolumeId)
 	if err != nil {
 		return err
 	}
@@ -339,128 +251,38 @@ func RunVolumeDelete(c *builder.CommandConfig) error {
 	})
 }
 
-func PreRunAttachGlobalDcIdServerVolumeIdsValidate(c *builder.PreCommandConfig) error {
-	// Data Center Id is inherited from command "volume"
-	err := builder.CheckRequiredGlobalFlags("volume", config.ArgDataCenterId)
-	if err != nil {
-		return err
-	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgServerId, config.ArgVolumeId)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func PreRunAttachGlobalDcIdServerIdValidate(c *builder.PreCommandConfig) error {
-	// Data Center Id is inherited from command "volume"
-	err := builder.CheckRequiredGlobalFlags("volume", config.ArgDataCenterId)
-	if err != nil {
-		return err
-	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgServerId)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func RunVolumeAttach(c *builder.CommandConfig) error {
-	attachedvol, resp, err := c.Volumes().Attach(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
-	)
-	if err != nil {
-		return err
-	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:  attachedvol,
-		KeyValue:    getVolumesKVMaps([]resources.Volume{*attachedvol}),
-		Columns:     getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    "volume",
-		Verb:        "attach",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-	})
-}
-
-func RunVolumesAttachList(c *builder.CommandConfig) error {
-	attachedvols, _, err := c.Volumes().ListAttached(
-		viper.GetString(builder.GetGlobalFlagName("volume", config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-	)
-	if err != nil {
-		return err
-	}
-	vs := getAttachedVolumes(attachedvols)
-	return c.Printer.Print(printer.Result{
-		OutputJSON: attachedvols,
-		KeyValue:   getVolumesKVMaps(vs),
-		Columns:    getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
-}
-
-func RunVolumeAttachGet(c *builder.CommandConfig) error {
-	volume, _, err := c.Volumes().GetAttached(
-		viper.GetString(builder.GetGlobalFlagName("volume", config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
-	)
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: volume,
-		KeyValue:   getVolumesKVMaps([]resources.Volume{*volume}),
-		Columns:    getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
-}
-
-func RunVolumeDetach(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume")
-	if err != nil {
-		return err
-	}
-	resp, err := c.Volumes().Detach(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
-	)
-	if err != nil {
-		return err
-	}
-
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "volume",
-		Verb:        "detach",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-	})
-}
-
-var defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenseType", "State", "Image"}
+var defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
 
 type VolumePrint struct {
 	VolumeId         string   `json:"VolumeId,omitempty"`
 	Name             string   `json:"Name,omitempty"`
 	Size             string   `json:"Size,omitempty"`
 	Type             string   `json:"Type,omitempty"`
-	LicenseType      string   `json:"LicenseType,omitempty"`
+	LicenceType      string   `json:"LicenceType,omitempty"`
 	Bus              string   `json:"Bus,omitempty"`
 	AvailabilityZone string   `json:"AvailabilityZone,omitempty"`
 	State            string   `json:"State,omitempty"`
 	BackUpUnitId     string   `json:"BackUpUnitId,omitempty"`
 	Image            string   `json:"Image,omitempty"`
 	SshKeys          []string `json:"SshKeys,omitempty"`
+}
+
+func getVolumePrint(resp *resources.Response, c *builder.CommandConfig, vols []resources.Volume) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.ParentName
+			r.Verb = c.Name
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+		}
+		if vols != nil {
+			r.OutputJSON = vols
+			r.KeyValue = getVolumesKVMaps(vols)
+			r.Columns = getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
 }
 
 func getVolumesCols(flagName string, outErr io.Writer) []string {
@@ -476,7 +298,7 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 		"Name":             "Name",
 		"Size":             "Size",
 		"Type":             "Type",
-		"LicenseType":      "LicenseType",
+		"LicenceType":      "LicenceType",
 		"Bus":              "Bus",
 		"AvailabilityZone": "AvailabilityZone",
 		"State":            "State",
@@ -504,6 +326,14 @@ func getVolumes(volumes resources.Volumes) []resources.Volume {
 	return vs
 }
 
+func getVolume(vol *resources.Volume) []resources.Volume {
+	vols := make([]resources.Volume, 0)
+	if vol != nil {
+		vols = append(vols, resources.Volume{Volume: vol.Volume})
+	}
+	return vols
+}
+
 func getAttachedVolumes(volumes resources.AttachedVolumes) []resources.Volume {
 	vs := make([]resources.Volume, 0)
 	for _, s := range *volumes.AttachedVolumes.Items {
@@ -524,8 +354,8 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 		if name, ok := properties.GetNameOk(); ok && name != nil {
 			volumePrint.Name = *name
 		}
-		if licenseType, ok := properties.GetLicenceTypeOk(); ok && licenseType != nil {
-			volumePrint.LicenseType = *licenseType
+		if licenceType, ok := properties.GetLicenceTypeOk(); ok && licenceType != nil {
+			volumePrint.LicenceType = *licenceType
 		}
 		if size, ok := properties.GetSizeOk(); ok && size != nil {
 			volumePrint.Size = fmt.Sprintf("%vGB", *size)
@@ -593,8 +423,8 @@ func getAttachedVolumesIds(outErr io.Writer, datacenterId, serverId string) []st
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	volumeSvc := resources.NewVolumeService(clientSvc.Get(), context.TODO())
-	volumes, _, err := volumeSvc.ListAttached(datacenterId, serverId)
+	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
+	volumes, _, err := serverSvc.ListVolumes(datacenterId, serverId)
 	clierror.CheckError(err, outErr)
 	attachedVolumesIds := make([]string, 0)
 	if items, ok := volumes.AttachedVolumes.GetItemsOk(); ok && items != nil {

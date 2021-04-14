@@ -34,6 +34,22 @@ func (m *MockLoadbalancersService) EXPECT() *MockLoadbalancersServiceMockRecorde
 	return m.recorder
 }
 
+// AttachNic mocks base method.
+func (m *MockLoadbalancersService) AttachNic(datacenterId, loadbalancerId, nicId string) (*resources.Nic, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AttachNic", datacenterId, loadbalancerId, nicId)
+	ret0, _ := ret[0].(*resources.Nic)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// AttachNic indicates an expected call of AttachNic.
+func (mr *MockLoadbalancersServiceMockRecorder) AttachNic(datacenterId, loadbalancerId, nicId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AttachNic", reflect.TypeOf((*MockLoadbalancersService)(nil).AttachNic), datacenterId, loadbalancerId, nicId)
+}
+
 // Create mocks base method.
 func (m *MockLoadbalancersService) Create(datacenterId, name string, dhcp bool) (*resources.Loadbalancer, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -65,6 +81,21 @@ func (mr *MockLoadbalancersServiceMockRecorder) Delete(datacenterId, loadbalance
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockLoadbalancersService)(nil).Delete), datacenterId, loadbalancerId)
 }
 
+// DetachNic mocks base method.
+func (m *MockLoadbalancersService) DetachNic(datacenterId, loadbalancerId, nicId string) (*resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DetachNic", datacenterId, loadbalancerId, nicId)
+	ret0, _ := ret[0].(*resources.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DetachNic indicates an expected call of DetachNic.
+func (mr *MockLoadbalancersServiceMockRecorder) DetachNic(datacenterId, loadbalancerId, nicId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DetachNic", reflect.TypeOf((*MockLoadbalancersService)(nil).DetachNic), datacenterId, loadbalancerId, nicId)
+}
+
 // Get mocks base method.
 func (m *MockLoadbalancersService) Get(datacenterId, loadbalancerId string) (*resources.Loadbalancer, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -81,6 +112,22 @@ func (mr *MockLoadbalancersServiceMockRecorder) Get(datacenterId, loadbalancerId
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockLoadbalancersService)(nil).Get), datacenterId, loadbalancerId)
 }
 
+// GetNic mocks base method.
+func (m *MockLoadbalancersService) GetNic(datacenterId, loadbalancerId, nicId string) (*resources.Nic, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNic", datacenterId, loadbalancerId, nicId)
+	ret0, _ := ret[0].(*resources.Nic)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetNic indicates an expected call of GetNic.
+func (mr *MockLoadbalancersServiceMockRecorder) GetNic(datacenterId, loadbalancerId, nicId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNic", reflect.TypeOf((*MockLoadbalancersService)(nil).GetNic), datacenterId, loadbalancerId, nicId)
+}
+
 // List mocks base method.
 func (m *MockLoadbalancersService) List(datacenterId string) (resources.Loadbalancers, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -95,6 +142,22 @@ func (m *MockLoadbalancersService) List(datacenterId string) (resources.Loadbala
 func (mr *MockLoadbalancersServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLoadbalancersService)(nil).List), datacenterId)
+}
+
+// ListNics mocks base method.
+func (m *MockLoadbalancersService) ListNics(datacenterId, loadbalancerId string) (resources.BalancedNics, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListNics", datacenterId, loadbalancerId)
+	ret0, _ := ret[0].(resources.BalancedNics)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListNics indicates an expected call of ListNics.
+func (mr *MockLoadbalancersServiceMockRecorder) ListNics(datacenterId, loadbalancerId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNics", reflect.TypeOf((*MockLoadbalancersService)(nil).ListNics), datacenterId, loadbalancerId)
 }
 
 // Update mocks base method.

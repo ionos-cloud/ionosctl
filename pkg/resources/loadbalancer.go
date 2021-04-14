@@ -25,6 +25,11 @@ type LoadbalancersService interface {
 	Create(datacenterId, name string, dhcp bool) (*Loadbalancer, *Response, error)
 	Update(datacenterId, loadbalancerId string, input LoadbalancerProperties) (*Loadbalancer, *Response, error)
 	Delete(datacenterId, loadbalancerId string) (*Response, error)
+	// LoadBalancer Nic Actions
+	AttachNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error)
+	ListNics(datacenterId, loadbalancerId string) (BalancedNics, *Response, error)
+	GetNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error)
+	DetachNic(datacenterId, loadbalancerId, nicId string) (*Response, error)
 }
 
 type loadbalancersService struct {
@@ -75,4 +80,29 @@ func (ls *loadbalancersService) Delete(datacenterId, loadbalancerId string) (*Re
 	req := ls.client.LoadBalancerApi.DatacentersLoadbalancersDelete(ls.context, datacenterId, loadbalancerId)
 	_, res, err := ls.client.LoadBalancerApi.DatacentersLoadbalancersDeleteExecute(req)
 	return &Response{*res}, err
+}
+
+func (ns *loadbalancersService) AttachNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error) {
+	input := ionoscloud.Nic{Id: &nicId}
+	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsPost(ns.context, datacenterId, loadbalancerId).Nic(input)
+	nic, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsPostExecute(req)
+	return &Nic{nic}, &Response{*resp}, err
+}
+
+func (ns *loadbalancersService) ListNics(datacenterId, loadbalancerId string) (BalancedNics, *Response, error) {
+	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsGet(ns.context, datacenterId, loadbalancerId)
+	nics, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsGetExecute(req)
+	return BalancedNics{nics}, &Response{*resp}, err
+}
+
+func (ns *loadbalancersService) GetNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error) {
+	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsFindByNicId(ns.context, datacenterId, loadbalancerId, nicId)
+	n, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsFindByNicIdExecute(req)
+	return &Nic{n}, &Response{*resp}, err
+}
+
+func (ns *loadbalancersService) DetachNic(datacenterId, loadbalancerId, nicId string) (*Response, error) {
+	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsDelete(ns.context, datacenterId, loadbalancerId, nicId)
+	_, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsDeleteExecute(req)
+	return &Response{*resp}, err
 }

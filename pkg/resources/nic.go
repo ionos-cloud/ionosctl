@@ -33,15 +33,6 @@ type NicsService interface {
 	Create(datacenterId, serverId, name string, ips []string, dhcp bool, lan int32) (*Nic, *Response, error)
 	Update(datacenterId, serverId, nicId string, input NicProperties) (*Nic, *Response, error)
 	Delete(datacenterId, serverId, nicId string) (*Response, error)
-	//// Lan Nic Actions
-	//AttachToLan(datacenterId, lanId, nicId string) (*Nic, *Response, error)
-	//ListAttachedToLan(datacenterId, lanId string) (LanNics, *Response, error)
-	//GetAttachedToLan(datacenterId, lanId, nicId string) (*Nic, *Response, error)
-	//// LoadBalancer Nic Actions
-	AttachToLoadBalancer(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error)
-	ListAttachedToLoadBalancer(datacenterId, loadbalancerId string) (BalancedNics, *Response, error)
-	GetAttachedToLoadBalancer(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error)
-	DetachFromLoadBalancer(datacenterId, loadbalancerId, nicId string) (*Response, error)
 }
 
 type nicsService struct {
@@ -113,29 +104,4 @@ func (ns *nicsService) GetAttachedToLan(datacenterId, lanId, nicId string) (*Nic
 	req := ns.client.LanApi.DatacentersLansNicsFindById(ns.context, datacenterId, lanId, nicId)
 	n, resp, err := ns.client.LanApi.DatacentersLansNicsFindByIdExecute(req)
 	return &Nic{n}, &Response{*resp}, err
-}
-
-func (ns *nicsService) AttachToLoadBalancer(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error) {
-	input := ionoscloud.Nic{Id: &nicId}
-	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsPost(ns.context, datacenterId, loadbalancerId).Nic(input)
-	nic, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsPostExecute(req)
-	return &Nic{nic}, &Response{*resp}, err
-}
-
-func (ns *nicsService) ListAttachedToLoadBalancer(datacenterId, loadbalancerId string) (BalancedNics, *Response, error) {
-	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsGet(ns.context, datacenterId, loadbalancerId)
-	nics, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsGetExecute(req)
-	return BalancedNics{nics}, &Response{*resp}, err
-}
-
-func (ns *nicsService) GetAttachedToLoadBalancer(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error) {
-	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsFindByNicId(ns.context, datacenterId, loadbalancerId, nicId)
-	n, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsFindByNicIdExecute(req)
-	return &Nic{n}, &Response{*resp}, err
-}
-
-func (ns *nicsService) DetachFromLoadBalancer(datacenterId, loadbalancerId, nicId string) (*Response, error) {
-	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsDelete(ns.context, datacenterId, loadbalancerId, nicId)
-	_, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsDeleteExecute(req)
-	return &Response{*resp}, err
 }
