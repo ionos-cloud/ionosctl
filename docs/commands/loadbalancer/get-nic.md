@@ -12,7 +12,7 @@ ionosctl loadbalancer get-nic [flags]
 
 ## Description
 
-Use this command to retrieve information about an attached NIC.
+Use this command to retrieve information about an attached NIC to a Load Balancer.
 
 Required values to run the command:
 
@@ -38,8 +38,8 @@ Required values to run the command:
 ## Examples
 
 ```text
-ionosctl nic attach get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id f16dfcc1-9181-400b-a08d-7fe15ca0e9af --nic-id c7903181-daa1-4e16-a65a-e9b495c1b324
-NicId                                  Name      Dhcp   LanId   Ips
-c7903181-daa1-4e16-a65a-e9b495c1b324   demoNIC   true   2       []
+ionosctl loadbalancer get-nic --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
+NicId                                  Name   Dhcp   LanId   Ips
+6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   2       []
 ```
 

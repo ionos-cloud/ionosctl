@@ -196,7 +196,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-* Volume Id`, attachVolumeExample, true)
+* Volume Id`, attachVolumeServerExample, true)
 	attachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
@@ -207,6 +207,32 @@ Required values to run command:
 	})
 	attachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to attach to Server")
 	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
+
+	/*
+		List Volumes Command
+	*/
+	listAttached := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerListVolumes, "list-volumes", "List attached Volumes from a Server",
+		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		listVolumesServerExample, true)
+	listAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	_ = listAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	/*
+		Get Volume Command
+	*/
+	getAttached := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerGetVolume, "get-volume", "Get an attached Volume from a Server",
+		"Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
+		getVolumeServerExample, true)
+	getAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	getAttached.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(serverCmd.Command.Name(), getAttached.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Detach Volume Command
@@ -220,7 +246,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-* Volume Id`, detachVolumeExample, true)
+* Volume Id`, detachVolumeServerExample, true)
 	detachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(serverCmd.Command.Name(), detachVolume.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
@@ -231,32 +257,6 @@ Required values to run command:
 	})
 	detachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to detach from Server")
 	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be detached from a Server [seconds]")
-
-	/*
-		List Volumes Command
-	*/
-	listAttached := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerListVolumes, "list-volumes", "List attached Volumes from a Server",
-		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		attachListVolumeExample, true)
-	listAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = listAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	/*
-		Get Volume Command
-	*/
-	getAttached := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerGetVolume, "get-volume", "Get an attached Volume from a Server",
-		"Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
-		attachGetVolumeExample, true)
-	getAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	getAttached.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(serverCmd.Command.Name(), getAttached.Command.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
-	})
 
 	labelServer(serverCmd)
 	return serverCmd

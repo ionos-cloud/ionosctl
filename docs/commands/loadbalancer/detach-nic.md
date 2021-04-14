@@ -42,15 +42,10 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nic detach --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id f16dfcc1-9181-400b-a08d-7fe15ca0e9af --nic-id c7903181-daa1-4e16-a65a-e9b495c1b324 --wait 
-Warning: Are you sure you want to detach nic (y/N) ? y 
-Waiting for request: ccfb93cb-1493-4a2c-980c-5427e15a4b74
-RequestId: ccfb93cb-1493-4a2c-980c-5427e15a4b74
-Status: Command nic detach and request have been successfully executed
-
-ionosctl nic detach --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id f16dfcc1-9181-400b-a08d-7fe15ca0e9af --nic-id c7903181-daa1-4e16-a65a-e9b495c1b324 --wait --ignore-stdin 
-Waiting for request: 1cffbd14-3d8c-4530-91d9-aa3f522a5df6
-RequestId: 1cffbd14-3d8c-4530-91d9-aa3f522a5df6
-Status: Command nic detach and request have been successfully executed
+ionosctl loadbalancer detach-nic --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
+Warning: Are you sure you want to detach nic (y/N) ? 
+y
+RequestId: a2a136cd-7bce-40fe-ae53-ad0d7b322387
+Status: Command loadbalancer detach-nic has been successfully executed
 ```
 
