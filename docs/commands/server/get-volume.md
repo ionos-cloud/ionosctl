@@ -39,7 +39,7 @@ Required values to run command:
 
 ```text
 ionosctl server get-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
-VolumeId                               Name   Size   Type   LicenseType   State       Image
+VolumeId                               Name   Size   Type   LicenceType   State       Image
 1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         AVAILABLE
 ```
 

@@ -251,14 +251,14 @@ func RunVolumeDelete(c *builder.CommandConfig) error {
 	})
 }
 
-var defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenseType", "State", "Image"}
+var defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
 
 type VolumePrint struct {
 	VolumeId         string   `json:"VolumeId,omitempty"`
 	Name             string   `json:"Name,omitempty"`
 	Size             string   `json:"Size,omitempty"`
 	Type             string   `json:"Type,omitempty"`
-	LicenseType      string   `json:"LicenseType,omitempty"`
+	LicenceType      string   `json:"LicenceType,omitempty"`
 	Bus              string   `json:"Bus,omitempty"`
 	AvailabilityZone string   `json:"AvailabilityZone,omitempty"`
 	State            string   `json:"State,omitempty"`
@@ -298,7 +298,7 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 		"Name":             "Name",
 		"Size":             "Size",
 		"Type":             "Type",
-		"LicenseType":      "LicenseType",
+		"LicenceType":      "LicenceType",
 		"Bus":              "Bus",
 		"AvailabilityZone": "AvailabilityZone",
 		"State":            "State",
@@ -354,8 +354,8 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 		if name, ok := properties.GetNameOk(); ok && name != nil {
 			volumePrint.Name = *name
 		}
-		if licenseType, ok := properties.GetLicenceTypeOk(); ok && licenseType != nil {
-			volumePrint.LicenseType = *licenseType
+		if licenceType, ok := properties.GetLicenceTypeOk(); ok && licenceType != nil {
+			volumePrint.LicenceType = *licenceType
 		}
 		if size, ok := properties.GetSizeOk(); ok && size != nil {
 			volumePrint.Size = fmt.Sprintf("%vGB", *size)

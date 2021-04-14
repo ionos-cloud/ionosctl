@@ -35,7 +35,7 @@ Required values to run command:
 
 ```text
 ionosctl volume list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d 
-VolumeId                               Name         Size   Type   LicenseType   State       Image
+VolumeId                               Name         Size   Type   LicenceType   State       Image
 ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   20GB   HDD    LINUX         AVAILABLE
 ```
 

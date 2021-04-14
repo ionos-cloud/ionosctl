@@ -110,15 +110,15 @@ Warning: Are you sure you want to reboot server (y/N) ? y
 RequestId: e6720605-2fa4-46d9-be74-42b733eb1128
 Status: Command server reset has been successfully executed`
 	attachVolumeServerExample = `ionosctl server attach-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
-VolumeId                               Name   Size   Type   LicenseType   State   Image
+VolumeId                               Name   Size   Type   LicenceType   State   Image
 1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         BUSY    
 RequestId: b1d06478-b3d5-4069-bb75-86b56422698d
 Status: Command server attach-volume has been successfully executed`
 	listVolumesServerExample = `ionosctl server list-volumes --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 
-VolumeId                               Name   Size   Type   LicenseType   State       Image
+VolumeId                               Name   Size   Type   LicenceType   State       Image
 1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         AVAILABLE`
 	getVolumeServerExample = `ionosctl server get-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
-VolumeId                               Name   Size   Type   LicenseType   State       Image
+VolumeId                               Name   Size   Type   LicenceType   State       Image
 1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         AVAILABLE`
 	detachVolumeServerExample = `ionosctl server detach-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
 Warning: Are you sure you want to detach volume from server (y/N) ? 
@@ -130,20 +130,20 @@ Status: Command server detach-volume has been successfully executed`
 		Volume Examples
 	*/
 	createVolumeExample = `ionosctl volume create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-name demoVolume
-VolumeId                               Name         Size   Type   LicenseType   State   Image
+VolumeId                               Name         Size   Type   LicenceType   State   Image
 ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   10GB   HDD    LINUX         BUSY    
 RequestId: a2da3bb7-3851-4e80-a5e9-6e98a66cebab
 Status: Command volume create has been successfully executed`
 	updateVolumeExample = `ionosctl volume update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-id ce510144-9bc6-4115-bd3d-b9cd232dd422 --volume-size 20
-VolumeId                               Name         Size   Type   LicenseType   State   Image
+VolumeId                               Name         Size   Type   LicenceType   State   Image
 ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   20GB   HDD    LINUX         BUSY    
 RequestId: ad4080a9-a51f-4d81-ae40-660cbfe009f4
 Status: Command volume update has been successfully executed`
 	listVolumeExample = `ionosctl volume list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d 
-VolumeId                               Name         Size   Type   LicenseType   State       Image
+VolumeId                               Name         Size   Type   LicenceType   State       Image
 ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   20GB   HDD    LINUX         AVAILABLE`
 	getVolumeExample = `ionosctl volume get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-id ce510144-9bc6-4115-bd3d-b9cd232dd422 
-VolumeId                               Name         Size   Type   LicenseType   State       Image
+VolumeId                               Name         Size   Type   LicenceType   State       Image
 ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   20GB   HDD    LINUX         AVAILABLE`
 	deleteVolumeExample = `ionosctl volume delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-id ce510144-9bc6-4115-bd3d-b9cd232dd422 
 Warning: Are you sure you want to delete volume (y/N) ? y

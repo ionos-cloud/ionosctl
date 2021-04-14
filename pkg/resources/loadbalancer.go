@@ -25,7 +25,7 @@ type LoadbalancersService interface {
 	Create(datacenterId, name string, dhcp bool) (*Loadbalancer, *Response, error)
 	Update(datacenterId, loadbalancerId string, input LoadbalancerProperties) (*Loadbalancer, *Response, error)
 	Delete(datacenterId, loadbalancerId string) (*Response, error)
-	//// LoadBalancer Nic Actions
+	// LoadBalancer Nic Actions
 	AttachNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error)
 	ListNics(datacenterId, loadbalancerId string) (BalancedNics, *Response, error)
 	GetNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error)
