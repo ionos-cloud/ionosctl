@@ -43,7 +43,7 @@ Required values to run command:
 
 ```text
 ionosctl loadbalancer detach-nic --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
-Warning: Are you sure you want to detach nic (y/N) ? 
+Warning: Are you sure you want to detach nic from loadbalancer (y/N) ? 
 y
 RequestId: a2a136cd-7bce-40fe-ae53-ad0d7b322387
 Status: Command loadbalancer detach-nic has been successfully executed

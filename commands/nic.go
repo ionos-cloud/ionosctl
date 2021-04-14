@@ -267,6 +267,8 @@ func RunNicDelete(c *builder.CommandConfig) error {
 	})
 }
 
+// Output Printing
+
 var defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips"}
 
 type NicPrint struct {
@@ -277,6 +279,24 @@ type NicPrint struct {
 	Ips            []string `json:"Ips,omitempty"`
 	FirewallActive bool     `json:"FirewallActive,omitempty"`
 	Mac            string   `json:"Mac,omitempty"`
+}
+
+func getNicPrint(resp *resources.Response, c *builder.CommandConfig, nics []resources.Nic) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.ParentName
+			r.Verb = c.Name
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+		}
+		if nics != nil {
+			r.OutputJSON = nics
+			r.KeyValue = getNicsKVMaps(nics)
+			r.Columns = getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
 }
 
 func getNicsCols(flagName string, outErr io.Writer) []string {
@@ -314,6 +334,14 @@ func getNics(nics resources.Nics) []resources.Nic {
 		ns = append(ns, resources.Nic{Nic: s})
 	}
 	return ns
+}
+
+func getNic(n *resources.Nic) []resources.Nic {
+	nics := make([]resources.Nic, 0)
+	if n != nil {
+		nics = append(nics, resources.Nic{Nic: n.Nic})
+	}
+	return nics
 }
 
 func getAttachedNics(nics resources.BalancedNics) []resources.Nic {

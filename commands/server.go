@@ -479,38 +479,6 @@ func RunServerReboot(c *builder.CommandConfig) error {
 	})
 }
 
-func RunServerListVolumes(c *builder.CommandConfig) error {
-	attachedVols, _, err := c.Servers().ListVolumes(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-	)
-	if err != nil {
-		return err
-	}
-	vs := getAttachedVolumes(attachedVols)
-	return c.Printer.Print(printer.Result{
-		OutputJSON: attachedVols,
-		KeyValue:   getVolumesKVMaps(vs),
-		Columns:    getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
-}
-
-func RunServerGetVolume(c *builder.CommandConfig) error {
-	attachedVolume, _, err := c.Servers().GetVolume(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
-	)
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: attachedVolume,
-		KeyValue:   getVolumesKVMaps([]resources.Volume{*attachedVolume}),
-		Columns:    getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
-}
-
 func RunServerAttachVolume(c *builder.CommandConfig) error {
 	attachedVol, resp, err := c.Servers().AttachVolume(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
@@ -524,19 +492,34 @@ func RunServerAttachVolume(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:  attachedVol,
-		KeyValue:    getVolumesKVMaps([]resources.Volume{*attachedVol}),
-		Columns:     getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    c.ParentName,
-		Verb:        c.Name,
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-	})
+	return c.Printer.Print(getVolumePrint(resp, c, getVolume(attachedVol)))
+}
+
+func RunServerListVolumes(c *builder.CommandConfig) error {
+	attachedVols, _, err := c.Servers().ListVolumes(
+		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+	)
+	if err != nil {
+		return err
+	}
+	return c.Printer.Print(getVolumePrint(nil, c, getAttachedVolumes(attachedVols)))
+}
+
+func RunServerGetVolume(c *builder.CommandConfig) error {
+	attachedVolume, _, err := c.Servers().GetVolume(
+		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
+	)
+	if err != nil {
+		return err
+	}
+	return c.Printer.Print(getVolumePrint(nil, c, getVolume(attachedVolume)))
 }
 
 func RunServerDetachVolume(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server")
 	if err != nil {
 		return err
 	}
@@ -553,12 +536,7 @@ func RunServerDetachVolume(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    c.ParentName,
-		Verb:        c.Name,
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-	})
+	return c.Printer.Print(getVolumePrint(resp, c, nil))
 }
 
 // Output Printing

@@ -267,6 +267,24 @@ type VolumePrint struct {
 	SshKeys          []string `json:"SshKeys,omitempty"`
 }
 
+func getVolumePrint(resp *resources.Response, c *builder.CommandConfig, vols []resources.Volume) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.ParentName
+			r.Verb = c.Name
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+		}
+		if vols != nil {
+			r.OutputJSON = vols
+			r.KeyValue = getVolumesKVMaps(vols)
+			r.Columns = getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
+}
+
 func getVolumesCols(flagName string, outErr io.Writer) []string {
 	var cols []string
 	if viper.IsSet(flagName) {
@@ -306,6 +324,14 @@ func getVolumes(volumes resources.Volumes) []resources.Volume {
 		vs = append(vs, resources.Volume{Volume: s})
 	}
 	return vs
+}
+
+func getVolume(vol *resources.Volume) []resources.Volume {
+	vols := make([]resources.Volume, 0)
+	if vol != nil {
+		vols = append(vols, resources.Volume{Volume: vol.Volume})
+	}
+	return vols
 }
 
 func getAttachedVolumes(volumes resources.AttachedVolumes) []resources.Volume {

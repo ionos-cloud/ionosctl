@@ -339,15 +339,7 @@ func RunLoadBalancerAttachNic(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:  attachedNic,
-		KeyValue:    getNicsKVMaps([]resources.Nic{*attachedNic}),
-		Columns:     getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    c.ParentName,
-		Verb:        c.Name,
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-	})
+	return c.Printer.Print(getNicPrint(resp, c, getNic(attachedNic)))
 }
 
 func RunLoadBalancerListNics(c *builder.CommandConfig) error {
@@ -358,16 +350,11 @@ func RunLoadBalancerListNics(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	vs := getAttachedNics(attachedNics)
-	return c.Printer.Print(printer.Result{
-		OutputJSON: attachedNics,
-		KeyValue:   getNicsKVMaps(vs),
-		Columns:    getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getNicPrint(nil, c, getAttachedNics(attachedNics)))
 }
 
 func RunLoadBalancerGetNic(c *builder.CommandConfig) error {
-	nic, _, err := c.Loadbalancers().GetNic(
+	n, _, err := c.Loadbalancers().GetNic(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadBalancerId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgNicId)),
@@ -375,15 +362,11 @@ func RunLoadBalancerGetNic(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: nic,
-		KeyValue:   getNicsKVMaps([]resources.Nic{*nic}),
-		Columns:    getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getNicPrint(nil, c, getNic(n)))
 }
 
 func RunLoadBalancerDetachNic(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer")
 	if err != nil {
 		return err
 	}
@@ -400,12 +383,7 @@ func RunLoadBalancerDetachNic(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    c.ParentName,
-		Verb:        c.Name,
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
-	})
+	return c.Printer.Print(getNicPrint(resp, c, nil))
 }
 
 // Output Printing
