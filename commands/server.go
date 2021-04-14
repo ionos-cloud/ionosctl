@@ -648,29 +648,3 @@ func getServersIds(outErr io.Writer, datacenterId string) []string {
 	}
 	return ssIds
 }
-
-func getAttachedVolumesIds(outErr io.Writer, datacenterId, serverId string) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
-	)
-	clierror.CheckError(err, outErr)
-	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
-	volumes, _, err := serverSvc.ListVolumes(datacenterId, serverId)
-	clierror.CheckError(err, outErr)
-	attachedVolumesIds := make([]string, 0)
-	if items, ok := volumes.AttachedVolumes.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				attachedVolumesIds = append(attachedVolumesIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return attachedVolumesIds
-}

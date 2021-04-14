@@ -479,29 +479,3 @@ func getLoadbalancersIds(outErr io.Writer, datacenterId string) []string {
 	}
 	return loadbalancersIds
 }
-
-func getAttachedNicsIds(outErr io.Writer, datacenterId, loadbalancerId string) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
-	)
-	clierror.CheckError(err, outErr)
-	nicSvc := resources.NewLoadbalancerService(clientSvc.Get(), context.TODO())
-	nics, _, err := nicSvc.ListNics(datacenterId, loadbalancerId)
-	clierror.CheckError(err, outErr)
-	attachedNicsIds := make([]string, 0)
-	if items, ok := nics.BalancedNics.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				attachedNicsIds = append(attachedNicsIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return attachedNicsIds
-}

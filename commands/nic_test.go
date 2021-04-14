@@ -31,6 +31,7 @@ var (
 			Dhcp:           &dhcpNic,
 			Ips:            &ipsNic,
 			FirewallActive: &dhcpNic,
+			Mac:            &testNicVar,
 		},
 	}
 	nicProperties = resources.NicProperties{
@@ -485,5 +486,18 @@ func TestGetAttachedNicsIds(t *testing.T) {
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestGetAttachedNicsIdsErr(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
+	w := bufio.NewWriter(&b)
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
+	getAttachedNicsIds(w, "", "")
+	err := w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`404 Not Found`)
 	assert.True(t, re.Match(b.Bytes()))
 }

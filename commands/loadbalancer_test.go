@@ -25,6 +25,7 @@ var (
 		Properties: &ionoscloud.LoadbalancerProperties{
 			Name: &testLoadbalancerVar,
 			Dhcp: &dhcpLoadbalancer,
+			Ip:   &testLoadbalancerVar,
 		},
 	}
 	loadbs = resources.Loadbalancers{
@@ -561,7 +562,7 @@ func TestRunLoadBalancerDetachNicErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		rm.Loadbalancer.EXPECT().DetachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(nil, testLoadbalancerErr)
+		rm.Loadbalancer.EXPECT().DetachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
 		err := RunLoadBalancerDetachNic(cfg)
 		assert.Error(t, err)
 	})
@@ -620,17 +621,4 @@ func TestRunLoadBalancerDetachNicAskForConfirmErr(t *testing.T) {
 		err := RunLoadBalancerDetachNic(cfg)
 		assert.Error(t, err)
 	})
-}
-
-func TestGetAttachedNicsIdsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getAttachedNicsIds(w, "", "")
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`404 Not Found`)
-	assert.True(t, re.Match(b.Bytes()))
 }

@@ -408,3 +408,16 @@ func TestGetVolumesIds(t *testing.T) {
 	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }
+
+func TestGetAttachedVolumesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
+	w := bufio.NewWriter(&b)
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
+	getAttachedVolumesIds(w, testVolumeVar, testVolumeVar)
+	err := w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
