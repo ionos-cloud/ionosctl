@@ -19,6 +19,7 @@ mockgen -source image.go >mocks/ImageService.go
 mockgen -source snapshot.go >mocks/SnapshotService.go
 mockgen -source ipblock.go >mocks/IpBlockService.go
 mockgen -source firewallrule.go >mocks/FirewallRuleService.go
-mockgen -source label.go >mocks/LabelResourcesService.go
+mockgen -source label.go >mocks/LabelResourceService.go
+mockgen -source contract.go >mocks/ContractsService.go
 
 pushd >/dev/null || exit
