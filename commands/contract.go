@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -168,76 +169,115 @@ func getContract(c *resources.Contract) []resources.Contract {
 func getContractsKVMaps(cs []resources.Contract) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(cs))
 	for _, c := range cs {
-		var cPrint ContractPrint
-		if properties, ok := c.GetPropertiesOk(); ok && properties != nil {
-			if no, ok := properties.GetContractNumberOk(); ok && no != nil {
-				cPrint.ContractNumber = *no
-			}
-			if owner, ok := properties.GetOwnerOk(); ok && owner != nil {
-				cPrint.Owner = *owner
-			}
-			if status, ok := properties.GetStatusOk(); ok && status != nil {
-				cPrint.Status = *status
-			}
-			if regDomain, ok := properties.GetRegDomainOk(); ok && regDomain != nil {
-				cPrint.RegistrationDomain = *regDomain
-			}
-			if limits, ok := properties.GetResourceLimitsOk(); ok && limits != nil {
-				if coresServer, ok := limits.GetCoresPerServerOk(); ok && coresServer != nil {
-					cPrint.CoresPerServer = *coresServer
-				}
-				if coresContract, ok := limits.GetCoresPerContractOk(); ok && coresContract != nil {
-					cPrint.CoresPerContract = *coresContract
-				}
-				if coresProvisioned, ok := limits.GetCoresProvisionedOk(); ok && coresProvisioned != nil {
-					cPrint.CoresProvisioned = *coresProvisioned
-				}
-				if ramServer, ok := limits.GetRamPerServerOk(); ok && ramServer != nil {
-					cPrint.RamPerServer = *ramServer
-				}
-				if ramContract, ok := limits.GetRamPerContractOk(); ok && ramContract != nil {
-					cPrint.RamPerContract = *ramContract
-				}
-				if ramProvisioned, ok := limits.GetRamProvisionedOk(); ok && ramProvisioned != nil {
-					cPrint.RamProvisioned = *ramProvisioned
-				}
-				if hddVolume, ok := limits.GetHddLimitPerVolumeOk(); ok && hddVolume != nil {
-					cPrint.HddLimitPerVolume = *hddVolume
-				}
-				if hddVolumeContract, ok := limits.GetHddLimitPerContractOk(); ok && hddVolumeContract != nil {
-					cPrint.HddLimitPerContract = *hddVolumeContract
-				}
-				if hddVolumeProvisioned, ok := limits.GetHddVolumeProvisionedOk(); ok && hddVolumeProvisioned != nil {
-					cPrint.HddVolumeProvisioned = *hddVolumeProvisioned
-				}
-				if ssdVolume, ok := limits.GetSsdLimitPerVolumeOk(); ok && ssdVolume != nil {
-					cPrint.SsdLimitPerVolume = *ssdVolume
-				}
-				if ssdVolumeContract, ok := limits.GetSsdLimitPerContractOk(); ok && ssdVolumeContract != nil {
-					cPrint.SsdLimitPerContract = *ssdVolumeContract
-				}
-				if ssdVolumeProvisioned, ok := limits.GetSsdVolumeProvisionedOk(); ok && ssdVolumeProvisioned != nil {
-					cPrint.SsdVolumeProvisioned = *ssdVolumeProvisioned
-				}
-				if reservableIps, ok := limits.GetReservableIpsOk(); ok && reservableIps != nil {
-					cPrint.ReservableIps = *reservableIps
-				}
-				if reservedIpsContract, ok := limits.GetReservedIpsOnContractOk(); ok && reservedIpsContract != nil {
-					cPrint.ReservedIpsOnContract = *reservedIpsContract
-				}
-				if reservedIpsUse, ok := limits.GetReservedIpsInUseOk(); ok && reservedIpsUse != nil {
-					cPrint.ReservedIpsInUse = *reservedIpsUse
-				}
-				if clusterTotal, ok := limits.GetK8sClusterLimitTotalOk(); ok && clusterTotal != nil {
-					cPrint.K8sClusterLimitTotal = *clusterTotal
-				}
-				if clusterProvisioned, ok := limits.GetK8sClustersProvisionedOk(); ok && clusterProvisioned != nil {
-					cPrint.K8sClustersProvisioned = *clusterProvisioned
-				}
-			}
-		}
-		o := structs.Map(cPrint)
+		o := getContractKVMap(c)
 		out = append(out, o)
 	}
 	return out
+}
+
+func getContractKVMap(c resources.Contract) map[string]interface{} {
+	var cPrint ContractPrint
+	if properties, ok := c.GetPropertiesOk(); ok && properties != nil {
+		if no, ok := properties.GetContractNumberOk(); ok && no != nil {
+			cPrint.ContractNumber = *no
+		}
+		if owner, ok := properties.GetOwnerOk(); ok && owner != nil {
+			cPrint.Owner = *owner
+		}
+		if status, ok := properties.GetStatusOk(); ok && status != nil {
+			cPrint.Status = *status
+		}
+		if regDomain, ok := properties.GetRegDomainOk(); ok && regDomain != nil {
+			cPrint.RegistrationDomain = *regDomain
+		}
+		if limits, ok := properties.GetResourceLimitsOk(); ok && limits != nil {
+			cPrint = getResourceLimits(limits, cPrint)
+		}
+	}
+	return structs.Map(cPrint)
+}
+
+func getResourceLimits(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
+	cPrint = getResourceLimitsCores(limits, cPrint)
+	cPrint = getResourceLimitsRam(limits, cPrint)
+	cPrint = getResourceLimitsHDD(limits, cPrint)
+	cPrint = getResourceLimitsSSD(limits, cPrint)
+	cPrint = getResourceLimitsIPS(limits, cPrint)
+	cPrint = getResourceLimitsK8S(limits, cPrint)
+	return cPrint
+}
+
+func getResourceLimitsCores(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
+	if coresServer, ok := limits.GetCoresPerServerOk(); ok && coresServer != nil {
+		cPrint.CoresPerServer = *coresServer
+	}
+	if coresContract, ok := limits.GetCoresPerContractOk(); ok && coresContract != nil {
+		cPrint.CoresPerContract = *coresContract
+	}
+	if coresProvisioned, ok := limits.GetCoresProvisionedOk(); ok && coresProvisioned != nil {
+		cPrint.CoresProvisioned = *coresProvisioned
+	}
+	return cPrint
+}
+
+func getResourceLimitsRam(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
+	if ramServer, ok := limits.GetRamPerServerOk(); ok && ramServer != nil {
+		cPrint.RamPerServer = *ramServer
+	}
+	if ramContract, ok := limits.GetRamPerContractOk(); ok && ramContract != nil {
+		cPrint.RamPerContract = *ramContract
+	}
+	if ramProvisioned, ok := limits.GetRamProvisionedOk(); ok && ramProvisioned != nil {
+		cPrint.RamProvisioned = *ramProvisioned
+	}
+	return cPrint
+}
+
+func getResourceLimitsHDD(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
+	if hddVolume, ok := limits.GetHddLimitPerVolumeOk(); ok && hddVolume != nil {
+		cPrint.HddLimitPerVolume = *hddVolume
+	}
+	if hddVolumeContract, ok := limits.GetHddLimitPerContractOk(); ok && hddVolumeContract != nil {
+		cPrint.HddLimitPerContract = *hddVolumeContract
+	}
+	if hddVolumeProvisioned, ok := limits.GetHddVolumeProvisionedOk(); ok && hddVolumeProvisioned != nil {
+		cPrint.HddVolumeProvisioned = *hddVolumeProvisioned
+	}
+	return cPrint
+}
+
+func getResourceLimitsSSD(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
+	if ssdVolume, ok := limits.GetSsdLimitPerVolumeOk(); ok && ssdVolume != nil {
+		cPrint.SsdLimitPerVolume = *ssdVolume
+	}
+	if ssdVolumeContract, ok := limits.GetSsdLimitPerContractOk(); ok && ssdVolumeContract != nil {
+		cPrint.SsdLimitPerContract = *ssdVolumeContract
+	}
+	if ssdVolumeProvisioned, ok := limits.GetSsdVolumeProvisionedOk(); ok && ssdVolumeProvisioned != nil {
+		cPrint.SsdVolumeProvisioned = *ssdVolumeProvisioned
+	}
+	return cPrint
+}
+
+func getResourceLimitsIPS(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
+	if reservableIps, ok := limits.GetReservableIpsOk(); ok && reservableIps != nil {
+		cPrint.ReservableIps = *reservableIps
+	}
+	if reservedIpsContract, ok := limits.GetReservedIpsOnContractOk(); ok && reservedIpsContract != nil {
+		cPrint.ReservedIpsOnContract = *reservedIpsContract
+	}
+	if reservedIpsUse, ok := limits.GetReservedIpsInUseOk(); ok && reservedIpsUse != nil {
+		cPrint.ReservedIpsInUse = *reservedIpsUse
+	}
+	return cPrint
+}
+
+func getResourceLimitsK8S(limits *ionoscloud.ResourceLimits, cPrint ContractPrint) ContractPrint {
+	if clusterTotal, ok := limits.GetK8sClusterLimitTotalOk(); ok && clusterTotal != nil {
+		cPrint.K8sClusterLimitTotal = *clusterTotal
+	}
+	if clusterProvisioned, ok := limits.GetK8sClustersProvisionedOk(); ok && clusterProvisioned != nil {
+		cPrint.K8sClustersProvisioned = *clusterProvisioned
+	}
+	return cPrint
 }
