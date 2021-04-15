@@ -36,7 +36,7 @@ func contract() *builder.Command {
 	*/
 	get := builder.NewCommand(ctx, contractCmd, noPreRun, RunContractGet, "get", "Get information about the Contract on your account",
 		"Use this command to get information about the Contract on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
-		"", true)
+		getContractExample, true)
 	get.AddStringFlag(config.ArgResourceLimits, "", "", "Specify Resource Limits to see details about it")
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgResourceLimits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CORES", "RAM", "HDD", "SSD", "IPS", "K8S"}, cobra.ShellCompDirectiveNoFileComp

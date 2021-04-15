@@ -432,4 +432,9 @@ test   testsnapshot`
 Key    Value
 test   testsnapshot`
 	removeSnapshotLabelExample = `ionosctl snapshot remove-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test`
+
+	/*
+		Contract Resources Examples
+	*/
+	getContractExample = `ionosctl contract get --resource-limits [ CORES|RAM|HDD|SSD|IPS|K8S ]`
 )

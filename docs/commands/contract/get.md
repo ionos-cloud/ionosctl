@@ -27,3 +27,9 @@ Use this command to get information about the Contract on your account. Use `--r
       --resource-limits string   Specify Resource Limits to see details about it
 ```
 
+## Examples
+
+```text
+ionosctl contract get --resource-limits [ CORES|RAM|HDD|SSD|IPS|K8S ]
+```
+
