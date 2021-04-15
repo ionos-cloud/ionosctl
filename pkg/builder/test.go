@@ -48,6 +48,7 @@ type ResourcesMocks struct {
 	Snapshot     *mocks.MockSnapshotsService
 	FirewallRule *mocks.MockFirewallRulesService
 	Label        *mocks.MockLabelResourcesService
+	S3Key        *mocks.MockS3KeysService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -72,6 +73,7 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
 		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
 		Label:        mocks.NewMockLabelResourcesService(ctrl),
+		S3Key:        mocks.NewMockS3KeysService(ctrl),
 	}
 
 	cmdConfig := &CommandConfig{
@@ -117,6 +119,9 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		},
 		Labels: func() resources.LabelResourcesService {
 			return tm.Label
+		},
+		S3Keys: func() resources.S3KeysService {
+			return tm.S3Key
 		},
 	}
 

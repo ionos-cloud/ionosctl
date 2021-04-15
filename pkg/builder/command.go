@@ -191,6 +191,7 @@ type CommandConfig struct {
 	IpBlocks      func() resources.IpBlocksService
 	FirewallRules func() resources.FirewallRulesService
 	Labels        func() resources.LabelResourcesService
+	S3Keys        func() resources.S3KeysService
 }
 
 func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, initServices bool) (*CommandConfig, error) {
@@ -235,6 +236,7 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 			c.Labels = func() resources.LabelResourcesService {
 				return resources.NewLabelResourceService(clientSvc.Get(), c.Context)
 			}
+			c.S3Keys = func() resources.S3KeysService { return resources.NewS3KeyService(clientSvc.Get(), c.Context) }
 			return nil
 		},
 	}
