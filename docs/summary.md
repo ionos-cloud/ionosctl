@@ -12,6 +12,8 @@
     * [Fish](commands/completion/fish.md)
     * [PowerShell](commands/completion/powershell.md)
     * [Zsh](commands/completion/zsh.md)
+* [ContractResources](commands/contract/README.md)
+    * [Get](commands/contract/get.md)
 * [DataCenter](commands/datacenter/README.md)
     * [Create](commands/datacenter/create.md)
     * [Get](commands/datacenter/get.md)

@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"io"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -102,19 +102,15 @@ func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc st
 	}
 }
 
-func NewCommand(ctx context.Context, parent *Command, precr PreCommandRunner, cr CommandRunner, clitext, shortdesc, longdesc, example string, initServices bool) *Command {
+func NewCommand(ctx context.Context, parent *Command, precr PreCommandRunner, cr CommandRunner, name, shortDesc, longDesc, example string, init bool) *Command {
 	cc := &cobra.Command{
-		Use:     clitext,
-		Short:   shortdesc,
-		Long:    longdesc,
+		Use:     name,
+		Short:   shortDesc,
+		Long:    longDesc,
 		Example: example,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			p := getPrinter()
-			preCmdConfig := NewPreCommandConfig(
-				p,
-				clitext,
-				getParentName(parent),
-			)
+			preCmdConfig := NewPreCommandConfig(p, name, getParentName(parent))
 			err := precr(preCmdConfig)
 			clierror.CheckError(err, p.GetStderr())
 		},
@@ -124,24 +120,13 @@ func NewCommand(ctx context.Context, parent *Command, precr PreCommandRunner, cr
 			cmd.SetIn(os.Stdin)
 			cmd.SetOut(p.GetStdout())
 			cmd.SetErr(p.GetStderr())
-
-			cmdConfig, err := NewCommandConfig(
-				ctx,
-				os.Stdin,
-				p,
-				clitext,
-				getParentName(parent),
-				initServices,
-			)
+			cmdConfig, err := NewCommandConfig(ctx, os.Stdin, p, name, getParentName(parent), init)
 			clierror.CheckError(err, p.GetStderr())
 			err = cr(cmdConfig)
-
 			clierror.CheckError(err, p.GetStderr())
 		},
 	}
-	c := &Command{
-		Command: cc,
-	}
+	c := &Command{Command: cc}
 	if parent != nil {
 		parent.AddCommand(c)
 	}
@@ -174,11 +159,10 @@ type CommandConfig struct {
 	Stdin      io.Reader
 	Printer    printer.PrintService
 	Context    context.Context
-
-	initServices func(*CommandConfig) error
+	initSvc    func(*CommandConfig) error
 	// Locations
 	Locations func() resources.LocationsService
-	// Services
+	// Resources
 	DataCenters   func() resources.DatacentersService
 	Servers       func() resources.ServersService
 	Volumes       func() resources.VolumesService
@@ -191,9 +175,10 @@ type CommandConfig struct {
 	IpBlocks      func() resources.IpBlocksService
 	FirewallRules func() resources.FirewallRulesService
 	Labels        func() resources.LabelResourcesService
+	Contracts     func() resources.ContractsService
 }
 
-func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, initServices bool) (*CommandConfig, error) {
+func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, init bool) (*CommandConfig, error) {
 	cmdConfig := &CommandConfig{
 		Name:       name,
 		ParentName: parentName,
@@ -201,7 +186,7 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 		Printer:    p,
 		Context:    ctx,
 
-		initServices: func(c *CommandConfig) error {
+		initSvc: func(c *CommandConfig) error {
 			err := config.Load()
 			if err != nil {
 				return err
@@ -235,12 +220,12 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 			c.Labels = func() resources.LabelResourcesService {
 				return resources.NewLabelResourceService(clientSvc.Get(), c.Context)
 			}
+			c.Contracts = func() resources.ContractsService { return resources.NewContractService(clientSvc.Get(), c.Context) }
 			return nil
 		},
 	}
-
-	if initServices {
-		if err := cmdConfig.initServices(cmdConfig); err != nil {
+	if init {
+		if err := cmdConfig.initSvc(cmdConfig); err != nil {
 			return nil, err
 		}
 	}

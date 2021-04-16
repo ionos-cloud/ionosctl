@@ -77,6 +77,7 @@ const (
 	ArgLabelUrn                    = "label-urn"
 	ArgLabelKey                    = "label-key"
 	ArgLabelValue                  = "label-value"
+	ArgResourceLimits              = "resource-limits"
 )
 
 // Default values
