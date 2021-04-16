@@ -15,20 +15,17 @@ import (
 
 type PreCmdRunnerTest func(c *PreCommandConfig)
 
-func PreCmdConfigTest(t *testing.T, writer io.Writer, prerunner PreCmdRunnerTest) {
+func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunnerTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
 	p, _ := printer.NewPrinterRegistry(writer, writer)
 	prt := p[viper.GetString(config.ArgOutput)]
-
 	preCmdConfig := &PreCommandConfig{
 		Name:       "test",
 		ParentName: "test",
 		Printer:    prt,
 	}
-
-	prerunner(preCmdConfig)
+	preRunner(preCmdConfig)
 }
 
 type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocks)
@@ -48,13 +45,13 @@ type ResourcesMocks struct {
 	Snapshot     *mocks.MockSnapshotsService
 	FirewallRule *mocks.MockFirewallRulesService
 	Label        *mocks.MockLabelResourcesService
+	Contract     *mocks.MockContractsService
 	S3Key        *mocks.MockS3KeysService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
 	p, _ := printer.NewPrinterRegistry(writer, writer)
 	prt := p[viper.GetString(config.ArgOutput)]
 
@@ -73,14 +70,15 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
 		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
 		Label:        mocks.NewMockLabelResourcesService(ctrl),
+		Contract:     mocks.NewMockContractsService(ctrl),
 		S3Key:        mocks.NewMockS3KeysService(ctrl),
 	}
 
 	cmdConfig := &CommandConfig{
-		Name:         "test",
-		Printer:      prt,
-		Context:      context.TODO(),
-		initServices: func(c *CommandConfig) error { return nil },
+		Name:    "test",
+		Printer: prt,
+		Context: context.TODO(),
+		initSvc: func(c *CommandConfig) error { return nil },
 		Locations: func() resources.LocationsService {
 			return tm.Location
 		},
@@ -119,6 +117,9 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		},
 		Labels: func() resources.LabelResourcesService {
 			return tm.Label
+		},
+		Contracts: func() resources.ContractsService {
+			return tm.Contract
 		},
 		S3Keys: func() resources.S3KeysService {
 			return tm.S3Key

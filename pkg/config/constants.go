@@ -77,6 +77,7 @@ const (
 	ArgLabelUrn                    = "label-urn"
 	ArgLabelKey                    = "label-key"
 	ArgLabelValue                  = "label-value"
+	ArgResourceLimits              = "resource-limits"
 	ArgS3KeyId                     = "s3key-id"
 	ArgS3KeyActive                 = "s3key-active"
 	ArgUserId                      = "user-id"

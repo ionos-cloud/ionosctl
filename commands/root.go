@@ -162,6 +162,7 @@ func addCommands() {
 	rootCmd.AddCommand(image())
 	rootCmd.AddCommand(firewallrule())
 	rootCmd.AddCommand(label())
+	rootCmd.AddCommand(contract())
 	rootCmd.AddCommand(s3key())
 }
 
