@@ -77,6 +77,9 @@ const (
 	ArgLabelUrn                    = "label-urn"
 	ArgLabelKey                    = "label-key"
 	ArgLabelValue                  = "label-value"
+	ArgS3KeyId                     = "s3key-id"
+	ArgS3KeyActive                 = "s3key-active"
+	ArgUserId                      = "user-id"
 )
 
 // Default values
@@ -115,4 +118,6 @@ const (
 	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
 	RequiredFlagLabelKey       = "The unique Label Key " + RequiredFlag
 	RequiredFlagLabelValue     = "The unique Label Value " + RequiredFlag
+	RequiredFlagS3KeyId        = "The unique User S3Key Id " + RequiredFlag
+	RequiredFlagUserId         = "The unique User Id " + RequiredFlag
 )
