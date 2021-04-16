@@ -176,6 +176,7 @@ type CommandConfig struct {
 	FirewallRules func() resources.FirewallRulesService
 	Labels        func() resources.LabelResourcesService
 	Contracts     func() resources.ContractsService
+	Users         func() resources.UsersService
 }
 
 func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, init bool) (*CommandConfig, error) {
@@ -221,6 +222,7 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 				return resources.NewLabelResourceService(clientSvc.Get(), c.Context)
 			}
 			c.Contracts = func() resources.ContractsService { return resources.NewContractService(clientSvc.Get(), c.Context) }
+			c.Users = func() resources.UsersService { return resources.NewUserService(clientSvc.Get(), c.Context) }
 			return nil
 		},
 	}

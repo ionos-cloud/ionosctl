@@ -46,6 +46,7 @@ type ResourcesMocks struct {
 	FirewallRule *mocks.MockFirewallRulesService
 	Label        *mocks.MockLabelResourcesService
 	Contract     *mocks.MockContractsService
+	User         *mocks.MockUsersService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -70,6 +71,7 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
 		Label:        mocks.NewMockLabelResourcesService(ctrl),
 		Contract:     mocks.NewMockContractsService(ctrl),
+		User:         mocks.NewMockUsersService(ctrl),
 	}
 
 	cmdConfig := &CommandConfig{
@@ -118,6 +120,9 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 		},
 		Contracts: func() resources.ContractsService {
 			return tm.Contract
+		},
+		Users: func() resources.UsersService {
+			return tm.User
 		},
 	}
 
