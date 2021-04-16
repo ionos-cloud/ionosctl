@@ -159,8 +159,7 @@ type CommandConfig struct {
 	Stdin      io.Reader
 	Printer    printer.PrintService
 	Context    context.Context
-
-	initServices func(*CommandConfig) error
+	initSvc    func(*CommandConfig) error
 	// Locations
 	Locations func() resources.LocationsService
 	// Resources
@@ -187,7 +186,7 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 		Printer:    p,
 		Context:    ctx,
 
-		initServices: func(c *CommandConfig) error {
+		initSvc: func(c *CommandConfig) error {
 			err := config.Load()
 			if err != nil {
 				return err
@@ -225,9 +224,8 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 			return nil
 		},
 	}
-
 	if init {
-		if err := cmdConfig.initServices(cmdConfig); err != nil {
+		if err := cmdConfig.initSvc(cmdConfig); err != nil {
 			return nil, err
 		}
 	}
