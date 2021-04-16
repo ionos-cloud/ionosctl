@@ -10,10 +10,6 @@ type User struct {
 	ionoscloud.User
 }
 
-type UserProperties struct {
-	ionoscloud.UserProperties
-}
-
 type Users struct {
 	ionoscloud.Users
 }
@@ -22,8 +18,8 @@ type Users struct {
 type UsersService interface {
 	List() (Users, *Response, error)
 	Get(userId string) (*User, *Response, error)
-	Create(u User) (*User, *Response, error)
-	Update(userId string, input User) (*User, *Response, error)
+	Create(u *User) (*User, *Response, error)
+	Update(userId string, input *User) (*User, *Response, error)
 	Delete(userId string) (*Response, error)
 }
 
@@ -53,13 +49,13 @@ func (s *usersService) Get(userId string) (*User, *Response, error) {
 	return &User{user}, &Response{*res}, err
 }
 
-func (s *usersService) Create(u User) (*User, *Response, error) {
+func (s *usersService) Create(u *User) (*User, *Response, error) {
 	req := s.client.UserManagementApi.UmUsersPost(s.context).User(u.User)
 	user, res, err := s.client.UserManagementApi.UmUsersPostExecute(req)
 	return &User{user}, &Response{*res}, err
 }
 
-func (s *usersService) Update(userId string, input User) (*User, *Response, error) {
+func (s *usersService) Update(userId string, input *User) (*User, *Response, error) {
 	req := s.client.UserManagementApi.UmUsersPut(s.context, userId).User(input.User)
 	user, res, err := s.client.UserManagementApi.UmUsersPutExecute(req)
 	return &User{user}, &Response{*res}, err

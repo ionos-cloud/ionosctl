@@ -78,6 +78,13 @@ const (
 	ArgLabelKey                    = "label-key"
 	ArgLabelValue                  = "label-value"
 	ArgResourceLimits              = "resource-limits"
+	ArgUserId                      = "user-id"
+	ArgUserFirstName               = "user-first-name"
+	ArgUserLastName                = "user-last-name"
+	ArgUserEmail                   = "user-email"
+	ArgUserPassword                = "user-password"
+	ArgUserAdministrator           = "user-administrator"
+	ArgUserForceSecAuth            = "user-secure-auth"
 )
 
 // Default values
@@ -116,4 +123,5 @@ const (
 	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
 	RequiredFlagLabelKey       = "The unique Label Key " + RequiredFlag
 	RequiredFlagLabelValue     = "The unique Label Value " + RequiredFlag
+	RequiredFlagUserId         = "The unique User Id " + RequiredFlag
 )

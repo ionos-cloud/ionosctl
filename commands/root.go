@@ -163,6 +163,7 @@ func addCommands() {
 	rootCmd.AddCommand(firewallrule())
 	rootCmd.AddCommand(label())
 	rootCmd.AddCommand(contract())
+	rootCmd.AddCommand(user())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

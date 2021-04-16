@@ -35,7 +35,7 @@ func (m *MockUsersService) EXPECT() *MockUsersServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockUsersService) Create(u resources.User) (*resources.User, *resources.Response, error) {
+func (m *MockUsersService) Create(u *resources.User) (*resources.User, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", u)
 	ret0, _ := ret[0].(*resources.User)
@@ -98,7 +98,7 @@ func (mr *MockUsersServiceMockRecorder) List() *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockUsersService) Update(userId string, input resources.User) (*resources.User, *resources.Response, error) {
+func (m *MockUsersService) Update(userId string, input *resources.User) (*resources.User, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", userId, input)
 	ret0, _ := ret[0].(*resources.User)
