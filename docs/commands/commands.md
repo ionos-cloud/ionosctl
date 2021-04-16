@@ -44,6 +44,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | [ionosctl request](request/) | Request Operations |
 | [ionosctl server](server/) | Server Operations |
 | [ionosctl snapshot](snapshot/) | Snapshot Operations |
+| [ionosctl user](user/) | User Operations |
 | [ionosctl version](version.md) | Show the current version |
 | [ionosctl volume](volume/) | Volume Operations |
 
