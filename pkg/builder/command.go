@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -18,18 +19,18 @@ import (
 type Command struct {
 	Command *cobra.Command
 
-	childCommands []*Command
+	subCommands []*Command
 }
 
 func (c *Command) AddCommand(commands ...*Command) {
-	c.childCommands = append(c.childCommands, commands...)
+	c.subCommands = append(c.subCommands, commands...)
 	for _, cmd := range commands {
 		c.Command.AddCommand(cmd.Command)
 	}
 }
 
-func (c *Command) ChildCommands() []*Command {
-	return c.childCommands
+func (c *Command) SubCommands() []*Command {
+	return c.subCommands
 }
 
 func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string) {
@@ -40,9 +41,9 @@ func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string) {
 		flags.String(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
@@ -54,9 +55,9 @@ func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []stri
 		flags.StringSlice(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
@@ -68,9 +69,9 @@ func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc stri
 		flags.Int(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
@@ -82,9 +83,9 @@ func (c *Command) AddFloat32Flag(name, shorthand string, defaultValue float32, d
 		flags.Float32(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
@@ -96,13 +97,13 @@ func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc st
 		flags.Bool(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
-func NewCommand(ctx context.Context, parent *Command, precr PreCommandRunner, cr CommandRunner, name, shortDesc, longDesc, example string, init bool) *Command {
+func NewCommand(ctx context.Context, parent *Command, preCR PreCommandRun, cmdrunner CommandRun, name, shortDesc, longDesc, example string, init bool) *Command {
 	cc := &cobra.Command{
 		Use:     name,
 		Short:   shortDesc,
@@ -110,8 +111,8 @@ func NewCommand(ctx context.Context, parent *Command, precr PreCommandRunner, cr
 		Example: example,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			p := getPrinter()
-			preCmdConfig := NewPreCommandConfig(p, name, getParentName(parent))
-			err := precr(preCmdConfig)
+			preCmdConfig := NewPreCommandCfg(p, name, getParentName(parent))
+			err := preCR(preCmdConfig)
 			clierror.CheckError(err, p.GetStderr())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
@@ -120,9 +121,9 @@ func NewCommand(ctx context.Context, parent *Command, precr PreCommandRunner, cr
 			cmd.SetIn(os.Stdin)
 			cmd.SetOut(p.GetStdout())
 			cmd.SetErr(p.GetStderr())
-			cmdConfig, err := NewCommandConfig(ctx, os.Stdin, p, name, getParentName(parent), init)
+			cmdConfig, err := NewCommandCfg(ctx, os.Stdin, p, name, getParentName(parent), init)
 			clierror.CheckError(err, p.GetStderr())
-			err = cr(cmdConfig)
+			err = cmdrunner(cmdConfig)
 			clierror.CheckError(err, p.GetStderr())
 		},
 	}
@@ -134,16 +135,15 @@ func NewCommand(ctx context.Context, parent *Command, precr PreCommandRunner, cr
 	return c
 }
 
-type PreCommandRunner func(*PreCommandConfig) error
+type PreCommandRun func(commandConfig *PreCommandConfig) error
 
 type PreCommandConfig struct {
 	Name       string
 	ParentName string
-
-	Printer printer.PrintService
+	Printer    printer.PrintService
 }
 
-func NewPreCommandConfig(p printer.PrintService, name, parentName string) *PreCommandConfig {
+func NewPreCommandCfg(p printer.PrintService, name, parentName string) *PreCommandConfig {
 	return &PreCommandConfig{
 		Name:       name,
 		ParentName: parentName,
@@ -151,15 +151,16 @@ func NewPreCommandConfig(p printer.PrintService, name, parentName string) *PreCo
 	}
 }
 
-type CommandRunner func(*CommandConfig) error
+type CommandRun func(commandConfig *CommandConfig) error
 
+// Command Properties and Services
 type CommandConfig struct {
 	Name       string
 	ParentName string
 	Stdin      io.Reader
 	Printer    printer.PrintService
 	Context    context.Context
-	initSvc    func(*CommandConfig) error
+	initSvc    func(commandConfig *CommandConfig) error
 	// Locations
 	Locations func() resources.LocationsService
 	// Resources
@@ -178,7 +179,7 @@ type CommandConfig struct {
 	Contracts     func() resources.ContractsService
 }
 
-func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, init bool) (*CommandConfig, error) {
+func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, init bool) (*CommandConfig, error) {
 	cmdConfig := &CommandConfig{
 		Name:       name,
 		ParentName: parentName,
@@ -191,16 +192,12 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 			if err != nil {
 				return err
 			}
-			clientSvc, err := resources.NewClientService(
-				viper.GetString(config.Username),
-				viper.GetString(config.Password),
-				viper.GetString(config.Token),
-				viper.GetString(config.ArgServerUrl),
-			)
+			clientSvc, err := resources.NewClientService(viper.GetString(config.Username), viper.GetString(config.Password), viper.GetString(config.Token), viper.GetString(config.ArgServerUrl))
 			if err != nil {
 				return err
 			}
 
+			// Init services
 			c.Locations = func() resources.LocationsService { return resources.NewLocationService(clientSvc.Get(), c.Context) }
 			c.DataCenters = func() resources.DatacentersService { return resources.NewDataCenterService(clientSvc.Get(), c.Context) }
 			c.Servers = func() resources.ServersService { return resources.NewServerService(clientSvc.Get(), c.Context) }
@@ -225,28 +222,36 @@ func NewCommandConfig(ctx context.Context, in io.Reader, p printer.PrintService,
 		},
 	}
 	if init {
-		if err := cmdConfig.initSvc(cmdConfig); err != nil {
+		err := cmdConfig.initSvc(cmdConfig)
+		if err != nil {
 			return nil, err
 		}
 	}
-
 	return cmdConfig, nil
 }
 
 func CheckRequiredGlobalFlags(parentCmdName string, globalFlagsName ...string) error {
+	var multiErr *multierror.Error
 	for _, flagName := range globalFlagsName {
 		if viper.GetString(GetGlobalFlagName(parentCmdName, flagName)) == "" {
-			return clierror.NewRequiredFlagErr(flagName)
+			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
 		}
+	}
+	if multiErr != nil {
+		return multiErr
 	}
 	return nil
 }
 
 func CheckRequiredFlags(parentCmdName, cmdName string, localFlagsName ...string) error {
+	var multiErr *multierror.Error
 	for _, flagName := range localFlagsName {
 		if viper.GetString(GetFlagName(parentCmdName, cmdName, flagName)) == "" {
-			return clierror.NewRequiredFlagErr(flagName)
+			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
 		}
+	}
+	if multiErr != nil {
+		return multiErr
 	}
 	return nil
 }

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/hashicorp/go-multierror"
 	"io"
 	"os"
 
@@ -117,13 +118,15 @@ func PreRunGlobalDcIdValidate(c *builder.PreCommandConfig) error {
 }
 
 func PreRunGlobalDcIdLanIdValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
-	if err != nil {
-		return err
+	var result *multierror.Error
+	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
+		result = multierror.Append(result, err)
 	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLanId)
-	if err != nil {
-		return err
+	if err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLanId); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if result != nil {
+		return result
 	}
 	return nil
 }

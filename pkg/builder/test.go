@@ -20,12 +20,12 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunnerTest
 	defer ctrl.Finish()
 	p, _ := printer.NewPrinterRegistry(writer, writer)
 	prt := p[viper.GetString(config.ArgOutput)]
-	preCmdConfig := &PreCommandConfig{
+	preCmdCfg := &PreCommandConfig{
 		Name:       "test",
 		ParentName: "test",
 		Printer:    prt,
 	}
-	preRunner(preCmdConfig)
+	preRunner(preCmdCfg)
 }
 
 type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocks)
