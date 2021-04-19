@@ -1,5 +1,5 @@
 ---
-description: Contract Operations
+description: Contract Resources Operations
 ---
 
 # Contract
@@ -12,7 +12,7 @@ ionosctl contract [command]
 
 ## Description
 
-The sub-command of `ionosctl contract` allows you to see information about Contract for your account.
+The sub-command of `ionosctl contract` allows you to see information about Contract Resources for your account.
 
 ## Options
 
@@ -30,5 +30,5 @@ The sub-command of `ionosctl contract` allows you to see information about Contr
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl contract get](get.md) | Get information about the Contract on your account |
+| [ionosctl contract get](get.md) | Get information about the Contract Resources on your account |
 
