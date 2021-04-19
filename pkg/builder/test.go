@@ -49,6 +49,7 @@ type ResourcesMocks struct {
 	Label        *mocks.MockLabelResourcesService
 	Contract     *mocks.MockContractsService
 	User         *mocks.MockUsersService
+	Group        *mocks.MockGroupsService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -87,6 +88,7 @@ func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 		Label:        mocks.NewMockLabelResourcesService(ctrl),
 		Contract:     mocks.NewMockContractsService(ctrl),
 		User:         mocks.NewMockUsersService(ctrl),
+		Group:        mocks.NewMockGroupsService(ctrl),
 	}
 }
 
@@ -107,5 +109,6 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
 	c.Labels = func() resources.LabelResourcesService { return tm.Label }
 	c.Contracts = func() resources.ContractsService { return tm.Contract }
 	c.Users = func() resources.UsersService { return tm.User }
+	c.Group = func() resources.GroupsService { return tm.Group }
 	return c
 }
