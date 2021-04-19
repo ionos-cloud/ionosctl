@@ -64,7 +64,6 @@ func TestPreRunRequestIdValidateRequiredFlagErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunRequestIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgRequestId).Error())
 	})
 }
 

@@ -29,7 +29,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	for _, cmd := range commands.GetRootCmd().ChildCommands() {
+	for _, cmd := range commands.GetRootCmd().SubCommands() {
 		err := WriteDocs(cmd, dir)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
@@ -40,19 +40,6 @@ func main() {
 
 // Generate Markdown documentation based on information described in commands.
 // Using WriteDocs function, it will be created one structure in the path specified.
-// For example, for `ionosctl volume` commands, we will have the following structure generated:
-// $DOCS_OUT/volume/
-// ├── attach
-// │   ├── get.md
-// │   ├── list.md
-// │   └── README.md
-// ├── create.md
-// ├── delete.md
-// ├── detach.md
-// ├── get.md
-// ├── list.md
-// ├── README.md
-// └── update.md
 // For each command, an Markdown file is generated with the following fields:
 // # Usage
 // # Description
@@ -65,7 +52,7 @@ const rootCmdName = "ionosctl"
 
 func WriteDocs(cmd *builder.Command, dir string) error {
 	// Exit if there's an error
-	for _, c := range cmd.ChildCommands() {
+	for _, c := range cmd.SubCommands() {
 		if c.Command.HasParent() {
 			if !c.Command.IsAvailableCommand() || c.Command.Parent().Name() != rootCmdName {
 				continue
@@ -101,7 +88,7 @@ func createStructure(cmd *builder.Command, dir string) error {
 		if err != nil {
 			return err
 		}
-		for _, child := range cmd.ChildCommands() {
+		for _, child := range cmd.SubCommands() {
 			if !child.Command.IsAvailableCommand() || child.Command.IsAdditionalHelpTopicCommand() {
 				continue
 			}
@@ -227,7 +214,7 @@ func hasSeeAlso(cmd *builder.Command) bool {
 	if cmd.Command.HasParent() && cmd.Command.HasAvailableSubCommands() {
 		return true
 	}
-	for _, c := range cmd.ChildCommands() {
+	for _, c := range cmd.SubCommands() {
 		if !c.Command.IsAvailableCommand() || c.Command.IsAdditionalHelpTopicCommand() {
 			continue
 		}

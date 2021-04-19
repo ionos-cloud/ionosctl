@@ -21,18 +21,18 @@ type GroupsService interface {
 	Create(u *Group) (*Group, *Response, error)
 	Update(groupId string, input *Group) (*Group, *Response, error)
 	Delete(groupId string) (*Response, error)
-	// Users
-	ListUsers()
-	AddUser()
-	RemoveUser()
-	// Shares
-	ListShares()
-	GetShare()
-	AddShare()
-	UpdateShare()
-	DeleteShare()
-	// Resources
-	ListResources()
+	//// Users
+	//ListUsers()
+	//AddUser()
+	//RemoveUser()
+	//// Shares
+	//ListShares()
+	//GetShare()
+	//AddShare()
+	//UpdateShare()
+	//DeleteShare()
+	//// Resources
+	//ListResources()
 }
 
 type groupsService struct {

@@ -78,7 +78,6 @@ func TestPreRunDataCenterIdValidateRequiredFlagErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
 		err := PreRunDataCenterIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
 	})
 }
 

@@ -6,6 +6,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.4.4
+	github.com/hashicorp/go-multierror v1.0.0
 	github.com/ionos-cloud/sdk-go/v5 v5.0.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.1.3

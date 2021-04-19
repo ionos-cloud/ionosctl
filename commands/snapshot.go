@@ -163,11 +163,7 @@ func PreRunSnapNameLicenceDcIdVolumeIdValidate(c *builder.PreCommandConfig) erro
 }
 
 func PreRunSnapshotIdDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
-	if err != nil {
-		return err
-	}
-	return nil
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
 }
 
 func RunSnapshotList(c *builder.CommandConfig) error {
