@@ -1,5 +1,5 @@
 ---
-description: Get information about the Contract on your account
+description: Get information about the Contract Resources on your account
 ---
 
 # Get
@@ -12,7 +12,7 @@ ionosctl contract get [flags]
 
 ## Description
 
-Use this command to get information about the Contract on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.
+Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.
 
 ## Options
 

@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/hashicorp/go-multierror"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
@@ -197,13 +198,15 @@ Required values to run command:
 }
 
 func PreRunGlobalDcIdLoadBalancerIdValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
-	if err != nil {
-		return err
+	var result *multierror.Error
+	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
+		result = multierror.Append(result, err)
 	}
-	err = builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLoadBalancerId)
-	if err != nil {
-		return err
+	if err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLoadBalancerId); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if result != nil {
+		return result
 	}
 	return nil
 }
@@ -319,11 +322,17 @@ func RunLoadBalancerDelete(c *builder.CommandConfig) error {
 }
 
 func PreRunGlobalDcIdNicLoadBalancerIdsValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
-	if err != nil {
-		return err
+	var result *multierror.Error
+	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
+		result = multierror.Append(result, err)
 	}
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgNicId, config.ArgLoadBalancerId)
+	if err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgNicId, config.ArgLoadBalancerId); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if result != nil {
+		return result
+	}
+	return nil
 }
 
 func RunLoadBalancerAttachNic(c *builder.CommandConfig) error {

@@ -92,15 +92,9 @@ func TestPreRunGlobalDcServerIdsValidateRequiredFlagsErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
 		err := PreRunGlobalDcServerIdsValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
-
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
-		err = PreRunGlobalDcServerIdsValidate(cfg)
-		assert.Error(t, err)
-		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgServerId).Error())
 	})
 }
 
@@ -127,23 +121,10 @@ func TestPreRunGlobalDcServerIdsNicIdValidateRequiredFlagsErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testNicVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), "")
 		err := PreRunGlobalDcServerIdsNicIdValidate(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgDataCenterId).Error())
-
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
-		err = PreRunGlobalDcServerIdsNicIdValidate(cfg)
-		assert.Error(t, err)
-		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgServerId).Error())
-
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testNicVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), "")
-		err = PreRunGlobalDcServerIdsNicIdValidate(cfg)
-		assert.Error(t, err)
-		assert.True(t, err.Error() == clierror.NewRequiredFlagErr(config.ArgNicId).Error())
 	})
 }
 

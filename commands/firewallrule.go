@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/hashicorp/go-multierror"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
@@ -162,19 +163,31 @@ func PreRunGlobalDcServerNicIdsValidate(c *builder.PreCommandConfig) error {
 }
 
 func PreRunGlobalDcServerNicIdsFRuleProtocolValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId)
-	if err != nil {
-		return err
+	var result *multierror.Error
+	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
+		result = multierror.Append(result, err)
 	}
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgFirewallRuleProtocol)
+	if err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgFirewallRuleProtocol); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if result != nil {
+		return result
+	}
+	return nil
 }
 
 func PreRunGlobalDcServerNicIdsFRuleIdValidate(c *builder.PreCommandConfig) error {
-	err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId)
-	if err != nil {
-		return err
+	var result *multierror.Error
+	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
+		result = multierror.Append(result, err)
 	}
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgFirewallRuleId)
+	if err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgFirewallRuleId); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if result != nil {
+		return result
+	}
+	return nil
 }
 
 func RunFirewallRuleList(c *builder.CommandConfig) error {
