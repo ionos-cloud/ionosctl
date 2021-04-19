@@ -66,7 +66,7 @@ Required values to run a command:
 	create.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserPassword, "", "", "The password for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgUserPassword, "", "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
 	create.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User to be created")
@@ -75,7 +75,7 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, userCmd, PreRunUserIdNameEmailValidate, RunUserUpdate, "update", "Update a User",
+	update := builder.NewCommand(ctx, userCmd, noPreRun, RunUserUpdate, "update", "Update a User",
 		`Use this command to update details about a specific User including their privileges.
 
 Note: The password attribute is immutable. It is not allowed in update requests. It is recommended that the new User log into the DCD and change their password.
@@ -84,13 +84,10 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
 
-* User First Name
-* User Last Name
-* User Email
 * User Id`, "", true)
-	update.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
-	update.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User "+config.RequiredFlag)
-	update.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User "+config.RequiredFlag)
+	update.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User")
+	update.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User")
+	update.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User")
 	update.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
 	update.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 	update.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
@@ -127,10 +124,6 @@ func PreRunUserNameEmailPwdValidate(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgUserFirstName, config.ArgUserLastName, config.ArgUserEmail, config.ArgUserPassword)
 }
 
-func PreRunUserIdNameEmailValidate(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgUserId, config.ArgUserFirstName, config.ArgUserLastName, config.ArgUserEmail)
-}
-
 func RunUserList(c *builder.CommandConfig) error {
 	users, _, err := c.Users().List()
 	if err != nil {
@@ -154,7 +147,7 @@ func RunUserCreate(c *builder.CommandConfig) error {
 	pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserPassword))
 	secureAuth := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserForceSecAuth))
 	admin := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserAdministrator))
-	newUser := &resources.User{
+	newUser := resources.User{
 		User: ionoscloud.User{
 			Properties: &ionoscloud.UserProperties{
 				Firstname:     &firstname,
@@ -174,28 +167,25 @@ func RunUserCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getUserPrint(nil, c, getUser(u)))
+	return c.Printer.Print(getUserPrint(resp, c, getUser(u)))
 }
 
 func RunUserUpdate(c *builder.CommandConfig) error {
-	u, resp, err := c.Users().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)))
+	oldUser, resp, err := c.Users().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)))
 	if err != nil {
 		return err
 	}
-	if properties, ok := u.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserForceSecAuth)) {
-			properties.SetSecAuthActive(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserForceSecAuth)))
-		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserAdministrator)) {
-			properties.SetAdministrator(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserAdministrator)))
-		}
+	newProperties := getUserInfo(oldUser, c)
+	newUser := resources.User{
+		User: ionoscloud.User{
+			Properties: &newProperties.UserProperties,
+		},
 	}
-	userUpd, resp, err := c.Users().Update(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)), u)
+	userUpd, resp, err := c.Users().Update(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)), newUser)
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getUserPrint(resp, c, getUser(userUpd)))
@@ -215,6 +205,59 @@ func RunUserDelete(c *builder.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getUserPrint(resp, c, nil))
+}
+
+func getUserInfo(oldUser *resources.User, c *builder.CommandConfig) *resources.UserProperties {
+	var (
+		firstName, lastName, email string
+		forceSecureAuth, admin     bool
+	)
+	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserFirstName)) {
+			firstName = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserFirstName))
+		} else {
+			if name, ok := properties.GetFirstnameOk(); ok && name != nil {
+				firstName = *name
+			}
+		}
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserLastName)) {
+			lastName = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserLastName))
+		} else {
+			if name, ok := properties.GetLastnameOk(); ok && name != nil {
+				lastName = *name
+			}
+		}
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserEmail)) {
+			email = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserEmail))
+		} else {
+			if e, ok := properties.GetEmailOk(); ok && e != nil {
+				email = *e
+			}
+		}
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserForceSecAuth)) {
+			forceSecureAuth = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserForceSecAuth))
+		} else {
+			if secAuth, ok := properties.GetForceSecAuthOk(); ok && secAuth != nil {
+				forceSecureAuth = *secAuth
+			}
+		}
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserAdministrator)) {
+			admin = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserAdministrator))
+		} else {
+			if administrator, ok := properties.GetAdministratorOk(); ok && administrator != nil {
+				admin = *administrator
+			}
+		}
+	}
+	return &resources.UserProperties{
+		UserProperties: ionoscloud.UserProperties{
+			Firstname:     &firstName,
+			Lastname:      &lastName,
+			Email:         &email,
+			Administrator: &admin,
+			ForceSecAuth:  &forceSecureAuth,
+		},
+	}
 }
 
 // Output Printing
@@ -289,6 +332,16 @@ func getUsers(users resources.Users) []resources.User {
 	return u
 }
 
+func getGroupUsers(users resources.GroupMembers) []resources.User {
+	u := make([]resources.User, 0)
+	if items, ok := users.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			u = append(u, resources.User{User: item})
+		}
+	}
+	return u
+}
+
 func getUser(u *resources.User) []resources.User {
 	users := make([]resources.User, 0)
 	if u != nil {
@@ -351,6 +404,32 @@ func getUsersIds(outErr io.Writer) []string {
 	clierror.CheckError(err, outErr)
 	usersIds := make([]string, 0)
 	if items, ok := users.Users.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				usersIds = append(usersIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return usersIds
+}
+
+func getGroupUsersIds(outErr io.Writer, groupId string) []string {
+	err := config.Load()
+	clierror.CheckError(err, outErr)
+	clientSvc, err := resources.NewClientService(
+		viper.GetString(config.Username),
+		viper.GetString(config.Password),
+		viper.GetString(config.Token),
+		viper.GetString(config.ArgServerUrl),
+	)
+	clierror.CheckError(err, outErr)
+	groupSvc := resources.NewGroupService(clientSvc.Get(), context.TODO())
+	users, _, err := groupSvc.ListUsers(groupId)
+	clierror.CheckError(err, outErr)
+	usersIds := make([]string, 0)
+	if items, ok := users.GroupMembers.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				usersIds = append(usersIds, *itemId)
