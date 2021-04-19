@@ -2,11 +2,11 @@ package commands
 
 import (
 	"context"
-	"github.com/hashicorp/go-multierror"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/hashicorp/go-multierror"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"

@@ -41,9 +41,9 @@ func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string) {
 		flags.String(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
@@ -55,9 +55,9 @@ func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []stri
 		flags.StringSlice(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
@@ -69,9 +69,9 @@ func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc stri
 		flags.Int(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
@@ -83,9 +83,9 @@ func (c *Command) AddFloat32Flag(name, shorthand string, defaultValue float32, d
 		flags.Float32(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
@@ -97,9 +97,9 @@ func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc st
 		flags.Bool(name, defaultValue, desc)
 	}
 	if c.Command.Parent() != nil {
-		_ = viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName(c.Command.Parent().Name(), c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	} else {
-		_ = viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
+		viper.BindPFlag(GetFlagName("", c.Command.Name(), name), c.Command.Flags().Lookup(name))
 	}
 }
 
@@ -182,7 +182,7 @@ type CommandConfig struct {
 	Context context.Context
 }
 
-// Init Cloud Client for Commands
+// Init IONOS Cloud Client for Commands
 func (c *CommandConfig) InitClient() (*resources.Client, error) {
 	err := config.Load()
 	if err != nil {
@@ -200,7 +200,7 @@ func (c *CommandConfig) InitClient() (*resources.Client, error) {
 	return clientSvc.Get(), nil
 }
 
-// Init Services for Commands; only initiate once
+// Init Services for Commands
 func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.Locations = func() resources.LocationsService { return resources.NewLocationService(client, c.Context) }
 	c.DataCenters = func() resources.DatacentersService { return resources.NewDataCenterService(client, c.Context) }
