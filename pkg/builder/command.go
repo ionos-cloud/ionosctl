@@ -135,8 +135,11 @@ func NewCommand(ctx context.Context, parent *Command, preCR PreCommandRun, cmdru
 	return c
 }
 
+// PreCommandRun will run in PreRun of Cobra Command structure, before running the actual Command.
+// Its purpose is to keep the validate part separate from run part.
 type PreCommandRun func(commandConfig *PreCommandConfig) error
 
+// PreCommand Properties
 type PreCommandConfig struct {
 	Name       string
 	ParentName string
@@ -159,11 +162,9 @@ type CommandConfig struct {
 	ParentName string
 	Stdin      io.Reader
 	Printer    printer.PrintService
-	Context    context.Context
-	initSvc    func(commandConfig *CommandConfig) error
-	// Locations
-	Locations func() resources.LocationsService
-	// Resources
+	initCfg    func(commandConfig *CommandConfig) error
+	// Resources Services
+	Locations     func() resources.LocationsService
 	DataCenters   func() resources.DatacentersService
 	Servers       func() resources.ServersService
 	Volumes       func() resources.VolumesService
@@ -177,6 +178,45 @@ type CommandConfig struct {
 	FirewallRules func() resources.FirewallRulesService
 	Labels        func() resources.LabelResourcesService
 	Contracts     func() resources.ContractsService
+	// Context
+	Context context.Context
+}
+
+// Init Cloud Client for Commands
+func (c *CommandConfig) InitClient() (*resources.Client, error) {
+	err := config.Load()
+	if err != nil {
+		return nil, err
+	}
+	clientSvc, err := resources.NewClientService(
+		viper.GetString(config.Username),
+		viper.GetString(config.Password),
+		viper.GetString(config.Token), // Token support
+		viper.GetString(config.ArgServerUrl),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return clientSvc.Get(), nil
+}
+
+// Init Services for Commands; only initiate once
+func (c *CommandConfig) InitServices(client *resources.Client) error {
+	c.Locations = func() resources.LocationsService { return resources.NewLocationService(client, c.Context) }
+	c.DataCenters = func() resources.DatacentersService { return resources.NewDataCenterService(client, c.Context) }
+	c.Servers = func() resources.ServersService { return resources.NewServerService(client, c.Context) }
+	c.Volumes = func() resources.VolumesService { return resources.NewVolumeService(client, c.Context) }
+	c.Lans = func() resources.LansService { return resources.NewLanService(client, c.Context) }
+	c.Nics = func() resources.NicsService { return resources.NewNicService(client, c.Context) }
+	c.Loadbalancers = func() resources.LoadbalancersService { return resources.NewLoadbalancerService(client, c.Context) }
+	c.IpBlocks = func() resources.IpBlocksService { return resources.NewIpBlockService(client, c.Context) }
+	c.Requests = func() resources.RequestsService { return resources.NewRequestService(client, c.Context) }
+	c.Images = func() resources.ImagesService { return resources.NewImageService(client, c.Context) }
+	c.Snapshots = func() resources.SnapshotsService { return resources.NewSnapshotService(client, c.Context) }
+	c.FirewallRules = func() resources.FirewallRulesService { return resources.NewFirewallRuleService(client, c.Context) }
+	c.Labels = func() resources.LabelResourcesService { return resources.NewLabelResourceService(client, c.Context) }
+	c.Contracts = func() resources.ContractsService { return resources.NewContractService(client, c.Context) }
+	return nil
 }
 
 func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, init bool) (*CommandConfig, error) {
@@ -186,43 +226,20 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, na
 		Stdin:      in,
 		Printer:    p,
 		Context:    ctx,
-
-		initSvc: func(c *CommandConfig) error {
-			err := config.Load()
+		// Define init Command Config function for Command
+		initCfg: func(c *CommandConfig) error {
+			client, err := c.InitClient()
 			if err != nil {
 				return err
 			}
-			clientSvc, err := resources.NewClientService(viper.GetString(config.Username), viper.GetString(config.Password), viper.GetString(config.Token), viper.GetString(config.ArgServerUrl))
-			if err != nil {
+			if err = c.InitServices(client); err != nil {
 				return err
 			}
-
-			// Init services
-			c.Locations = func() resources.LocationsService { return resources.NewLocationService(clientSvc.Get(), c.Context) }
-			c.DataCenters = func() resources.DatacentersService { return resources.NewDataCenterService(clientSvc.Get(), c.Context) }
-			c.Servers = func() resources.ServersService { return resources.NewServerService(clientSvc.Get(), c.Context) }
-			c.Volumes = func() resources.VolumesService { return resources.NewVolumeService(clientSvc.Get(), c.Context) }
-			c.Lans = func() resources.LansService { return resources.NewLanService(clientSvc.Get(), c.Context) }
-			c.Nics = func() resources.NicsService { return resources.NewNicService(clientSvc.Get(), c.Context) }
-			c.Loadbalancers = func() resources.LoadbalancersService {
-				return resources.NewLoadbalancerService(clientSvc.Get(), c.Context)
-			}
-			c.IpBlocks = func() resources.IpBlocksService { return resources.NewIpBlockService(clientSvc.Get(), c.Context) }
-			c.Requests = func() resources.RequestsService { return resources.NewRequestService(clientSvc.Get(), c.Context) }
-			c.Images = func() resources.ImagesService { return resources.NewImageService(clientSvc.Get(), c.Context) }
-			c.Snapshots = func() resources.SnapshotsService { return resources.NewSnapshotService(clientSvc.Get(), c.Context) }
-			c.FirewallRules = func() resources.FirewallRulesService {
-				return resources.NewFirewallRuleService(clientSvc.Get(), c.Context)
-			}
-			c.Labels = func() resources.LabelResourcesService {
-				return resources.NewLabelResourceService(clientSvc.Get(), c.Context)
-			}
-			c.Contracts = func() resources.ContractsService { return resources.NewContractService(clientSvc.Get(), c.Context) }
 			return nil
 		},
 	}
 	if init {
-		err := cmdConfig.initSvc(cmdConfig)
+		err := cmdConfig.initCfg(cmdConfig)
 		if err != nil {
 			return nil, err
 		}
