@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -28,7 +29,6 @@ func CheckError(err error, outErr io.Writer) {
 	if err == nil {
 		return
 	}
-
 	cliErr := CliError{
 		Err:    err,
 		Detail: err.Error(),
@@ -48,5 +48,9 @@ func CheckError(err error, outErr io.Writer) {
 }
 
 func errorConfirm(writer io.Writer, msg string, args ...interface{}) {
-	fmt.Fprintf(writer, "Error: %s\n", fmt.Sprintf(msg, args...))
+	if strings.HasSuffix(msg, "\n") {
+		fmt.Fprintf(writer, "Error: %s", fmt.Sprintf(msg, args...))
+	} else {
+		fmt.Fprintf(writer, "Error: %s\n", fmt.Sprintf(msg, args...))
+	}
 }
