@@ -33,6 +33,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | [ionosctl contract](contract/) | Contract Resources Operations |
 | [ionosctl datacenter](datacenter/) | Data Center Operations |
 | [ionosctl firewallrule](firewallrule/) | Firewall Rule Operations |
+| [ionosctl group](group/) | Group Operations |
 | [ionosctl image](image/) | Image Operations |
 | [ionosctl ipblock](ipblock/) | IPBlock Operations |
 | [ionosctl label](label/) | Label Operations |
@@ -42,6 +43,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | [ionosctl login](login.md) | Authentication command for SDK |
 | [ionosctl nic](nic/) | Network Interfaces Operations |
 | [ionosctl request](request/) | Request Operations |
+| [ionosctl resource](resource/) | Resource Operations |
 | [ionosctl server](server/) | Server Operations |
 | [ionosctl snapshot](snapshot/) | Snapshot Operations |
 | [ionosctl user](user/) | User Operations |

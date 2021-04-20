@@ -28,8 +28,14 @@ Required values to run command:
       --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-      --timeout int      Timeout option for User to be deleted [seconds] (default 60)
       --user-id string   The unique User Id [Required flag]
-      --wait             Wait for User to be deleted
+```
+
+## Examples
+
+```text
+ionosctl user delete --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 --ignore-stdin 
+RequestId: a2f6e7fa-6030-4267-950e-1e0886316475
+Status: Command user delete has been successfully executed
 ```
 

@@ -12,7 +12,7 @@ ionosctl user create [flags]
 
 ## Description
 
-Use this command to create create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
+Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
 Please Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
 
@@ -33,13 +33,21 @@ Required values to run a command:
       --ignore-stdin             Force command to execute without user input
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --timeout int              Timeout option for User to be created [seconds] (default 60)
       --user-administrator       Assigns the User to have administrative rights
       --user-email string        The email for the User [Required flag]
       --user-first-name string   The firstname for the User [Required flag]
+      --user-force-secure        Indicates if secure (two-factor) authentication should be forced for the User
       --user-last-name string    The lastname for the User [Required flag]
-      --user-password string     The password for the User [Required flag]
-      --user-secure-auth         Indicates if secure (two-factor) authentication should be forced for the User
-      --wait                     Wait for User to be created
+      --user-password string     The password for the User (must be at least 5 characters long) [Required flag]
+```
+
+## Examples
+
+```text
+ionosctl user create --user-first-name test1 --user-last-name test1 --user-email testrandom16@gmail.com --user-password test123
+UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId   Active
+99499053-059e-4ee6-b56f-66b0df93262d   test1       test1      testrandom16@ionos.com   false           false          false                               true
+RequestId: ca349e08-5820-41ba-8252-ee4c8dd2ccdb
+Status: Command user create has been successfully executed
 ```
 

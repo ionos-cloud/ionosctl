@@ -31,3 +31,11 @@ Required values to run command:
       --user-id string   The unique User Id [Required flag]
 ```
 
+## Examples
+
+```text
+ionosctl user get --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 
+UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
+2470f439-1d73-42f8-90a9-f78cf2776c74   test1       test1      testrandom12@ionos.com   false           false          false           a74101e7c1948450432d5b6512f2712c   true
+```
+
