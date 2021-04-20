@@ -242,7 +242,7 @@ func getUserInfo(oldUser *resources.User, c *builder.CommandConfig) *resources.U
 
 // Output Printing
 
-var defaultUserCols = []string{"UserId", "Firstname", "Lastname", "Email", "Administrator", "ForceSecAuth", "SecAuthActive", "S3CanonicalUserId", "Active"}
+var defaultUserCols = []string{"UserId", "Firstname", "Lastname", "Email", "S3CanonicalUserId", "Administrator", "ForceSecAuth", "SecAuthActive", "Active"}
 
 type UserPrint struct {
 	UserId            string `json:"UserId,omitempty"`

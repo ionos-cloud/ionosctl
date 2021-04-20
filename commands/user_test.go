@@ -41,7 +41,6 @@ var (
 				ForceSecAuth:      &testUserBoolVar,
 				SecAuthActive:     &testUserBoolVar,
 				S3CanonicalUserId: &testUserVar,
-				Password:          &testUserVar,
 				Active:            &testUserBoolVar,
 			},
 		},

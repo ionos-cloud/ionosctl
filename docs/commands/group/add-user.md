@@ -30,9 +30,7 @@ Required values to run command:
       --ignore-stdin      Force command to execute without user input
   -o, --output string     Desired output format [text|json] (default "text")
   -q, --quiet             Quiet output
-      --timeout int       Timeout option for User to be added to a Group [seconds] (default 60)
       --user-id string    The unique User Id [Required flag]
-      --wait              Wait for User to be added to a Group
 ```
 
 ## Examples

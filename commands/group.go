@@ -138,8 +138,6 @@ Required values to run command:
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	addUser.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User to be added to a Group")
-	addUser.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for User to be added to a Group [seconds]")
 
 	/*
 		Remove User Command
@@ -154,8 +152,6 @@ Required values to run command:
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupUsersIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Command.Name(), removeUser.Command.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeUser.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User to be removed from a Group")
-	removeUser.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for User to be removed from a Group [seconds]")
 
 	shareGroup(groupCmd)
 	resourceGroup(groupCmd)
@@ -260,11 +256,11 @@ func RunGroupAddUser(c *builder.CommandConfig) error {
 			Id: &id,
 		},
 	}
-	userAdded, _, err := c.Groups().AddUser(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)), u)
+	userAdded, resp, err := c.Groups().AddUser(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)), u)
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getUserPrint(nil, c, getUser(userAdded)))
+	return c.Printer.Print(getUserPrint(resp, c, getUser(userAdded)))
 }
 
 func RunGroupRemoveUser(c *builder.CommandConfig) error {
@@ -276,9 +272,6 @@ func RunGroupRemoveUser(c *builder.CommandConfig) error {
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)),
 	)
 	if err != nil {
-		return err
-	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupPrint(resp, c, nil))
@@ -358,6 +351,13 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *builder.CommandConfig) *re
 		} else {
 			if s, ok := properties.GetCreateInternetAccessOk(); ok && s != nil {
 				createNic = *s
+			}
+		}
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateBackUpUnit)) {
+			createBackUp = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateBackUpUnit))
+		} else {
+			if s, ok := properties.GetCreateBackupUnitOk(); ok && s != nil {
+				createBackUp = *s
 			}
 		}
 		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupReserveIp)) {
