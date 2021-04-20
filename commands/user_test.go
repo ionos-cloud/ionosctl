@@ -344,7 +344,6 @@ func TestRunUserDeleteAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgIgnoreStdin, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.User.EXPECT().Delete(testUserVar).Return(nil, nil)
 		err := RunUserDelete(cfg)
