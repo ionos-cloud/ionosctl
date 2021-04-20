@@ -21,7 +21,6 @@ Required values to run a command:
 ## Options
 
 ```text
-      --all                     Use this option to see all Group privileges to true
   -u, --api-url string          Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings            Columns to be printed in the standard output (default [GroupId,Name,CreateDataCenter,CreateSnapshot,ReserveIp,AccessActivityLog,CreatePcc,S3Privilege,CreateBackupUnit,CreateInternetAccess,CreateK8s])
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

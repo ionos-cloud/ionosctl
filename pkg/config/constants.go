@@ -10,7 +10,6 @@ const (
 	ArgIgnoreStdin                 = "ignore-stdin"
 	ArgServerUrl                   = "api-url"
 	ArgCols                        = "cols"
-	ArgAll                         = "all"
 	ArgDataCenterId                = "datacenter-id"
 	ArgDataCenterName              = "datacenter-name"
 	ArgDataCenterDescription       = "datacenter-description"

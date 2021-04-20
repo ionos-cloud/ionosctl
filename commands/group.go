@@ -68,7 +68,6 @@ Required values to run a command:
 	create.AddBoolFlag(config.ArgGroupCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
 	create.AddBoolFlag(config.ArgGroupCreateNic, "", false, "The group will be allowed to create NICs")
 	create.AddBoolFlag(config.ArgGroupCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
-	create.AddBoolFlag(config.ArgAll, "", false, "Use this option to see all Group privileges to true")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Group to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Group to be created [seconds]")
 
@@ -287,46 +286,28 @@ func RunGroupRemoveUser(c *builder.CommandConfig) error {
 
 func getGroupCreateInfo(c *builder.CommandConfig) *resources.GroupProperties {
 	name := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupName))
-	if !viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgAll)) {
-		createDc := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateDc))
-		createSnap := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateSnapshot))
-		reserveIp := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupReserveIp))
-		accessLog := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupAccessLog))
-		createBackUp := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateBackUpUnit))
-		createPcc := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreatePcc))
-		createNic := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateNic))
-		createK8s := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateK8s))
-		s3 := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupS3Privilege))
-		return &resources.GroupProperties{
-			GroupProperties: ionoscloud.GroupProperties{
-				Name:                 &name,
-				CreateDataCenter:     &createDc,
-				CreateSnapshot:       &createSnap,
-				ReserveIp:            &reserveIp,
-				AccessActivityLog:    &accessLog,
-				CreatePcc:            &createPcc,
-				S3Privilege:          &s3,
-				CreateBackupUnit:     &createBackUp,
-				CreateInternetAccess: &createNic,
-				CreateK8sCluster:     &createK8s,
-			},
-		}
-	} else {
-		setPrivilegeTrue := true
-		return &resources.GroupProperties{
-			GroupProperties: ionoscloud.GroupProperties{
-				Name:                 &name,
-				CreateDataCenter:     &setPrivilegeTrue,
-				CreateSnapshot:       &setPrivilegeTrue,
-				ReserveIp:            &setPrivilegeTrue,
-				AccessActivityLog:    &setPrivilegeTrue,
-				CreatePcc:            &setPrivilegeTrue,
-				S3Privilege:          &setPrivilegeTrue,
-				CreateBackupUnit:     &setPrivilegeTrue,
-				CreateInternetAccess: &setPrivilegeTrue,
-				CreateK8sCluster:     &setPrivilegeTrue,
-			},
-		}
+	createDc := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateDc))
+	createSnap := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateSnapshot))
+	reserveIp := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupReserveIp))
+	accessLog := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupAccessLog))
+	createBackUp := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateBackUpUnit))
+	createPcc := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreatePcc))
+	createNic := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateNic))
+	createK8s := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateK8s))
+	s3 := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupS3Privilege))
+	return &resources.GroupProperties{
+		GroupProperties: ionoscloud.GroupProperties{
+			Name:                 &name,
+			CreateDataCenter:     &createDc,
+			CreateSnapshot:       &createSnap,
+			ReserveIp:            &reserveIp,
+			AccessActivityLog:    &accessLog,
+			CreatePcc:            &createPcc,
+			S3Privilege:          &s3,
+			CreateBackupUnit:     &createBackUp,
+			CreateInternetAccess: &createNic,
+			CreateK8sCluster:     &createK8s,
+		},
 	}
 }
 
