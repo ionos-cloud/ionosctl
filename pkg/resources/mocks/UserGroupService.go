@@ -35,9 +35,9 @@ func (m *MockGroupsService) EXPECT() *MockGroupsServiceMockRecorder {
 }
 
 // AddShare mocks base method.
-func (m *MockGroupsService) AddShare(groupId, resourceId string) (*resources.GroupShare, *resources.Response, error) {
+func (m *MockGroupsService) AddShare(groupId, resourceId string, input resources.GroupShare) (*resources.GroupShare, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddShare", groupId, resourceId)
+	ret := m.ctrl.Call(m, "AddShare", groupId, resourceId, input)
 	ret0, _ := ret[0].(*resources.GroupShare)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,13 +45,13 @@ func (m *MockGroupsService) AddShare(groupId, resourceId string) (*resources.Gro
 }
 
 // AddShare indicates an expected call of AddShare.
-func (mr *MockGroupsServiceMockRecorder) AddShare(groupId, resourceId interface{}) *gomock.Call {
+func (mr *MockGroupsServiceMockRecorder) AddShare(groupId, resourceId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddShare", reflect.TypeOf((*MockGroupsService)(nil).AddShare), groupId, resourceId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddShare", reflect.TypeOf((*MockGroupsService)(nil).AddShare), groupId, resourceId, input)
 }
 
 // AddUser mocks base method.
-func (m *MockGroupsService) AddUser(groupId string, input *resources.User) (*resources.User, *resources.Response, error) {
+func (m *MockGroupsService) AddUser(groupId string, input resources.User) (*resources.User, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddUser", groupId, input)
 	ret0, _ := ret[0].(*resources.User)
@@ -67,7 +67,7 @@ func (mr *MockGroupsServiceMockRecorder) AddUser(groupId, input interface{}) *go
 }
 
 // Create mocks base method.
-func (m *MockGroupsService) Create(u *resources.Group) (*resources.Group, *resources.Response, error) {
+func (m *MockGroupsService) Create(u resources.Group) (*resources.Group, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", u)
 	ret0, _ := ret[0].(*resources.Group)
@@ -224,7 +224,7 @@ func (mr *MockGroupsServiceMockRecorder) RemoveUser(groupId, userId interface{})
 }
 
 // Update mocks base method.
-func (m *MockGroupsService) Update(groupId string, input *resources.Group) (*resources.Group, *resources.Response, error) {
+func (m *MockGroupsService) Update(groupId string, input resources.Group) (*resources.Group, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", groupId, input)
 	ret0, _ := ret[0].(*resources.Group)
@@ -240,9 +240,9 @@ func (mr *MockGroupsServiceMockRecorder) Update(groupId, input interface{}) *gom
 }
 
 // UpdateShare mocks base method.
-func (m *MockGroupsService) UpdateShare(groupId, resourceId string) (*resources.GroupShare, *resources.Response, error) {
+func (m *MockGroupsService) UpdateShare(groupId, resourceId string, input resources.GroupShare) (*resources.GroupShare, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateShare", groupId, resourceId)
+	ret := m.ctrl.Call(m, "UpdateShare", groupId, resourceId, input)
 	ret0, _ := ret[0].(*resources.GroupShare)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -250,7 +250,7 @@ func (m *MockGroupsService) UpdateShare(groupId, resourceId string) (*resources.
 }
 
 // UpdateShare indicates an expected call of UpdateShare.
-func (mr *MockGroupsServiceMockRecorder) UpdateShare(groupId, resourceId interface{}) *gomock.Call {
+func (mr *MockGroupsServiceMockRecorder) UpdateShare(groupId, resourceId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateShare", reflect.TypeOf((*MockGroupsService)(nil).UpdateShare), groupId, resourceId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateShare", reflect.TypeOf((*MockGroupsService)(nil).UpdateShare), groupId, resourceId, input)
 }

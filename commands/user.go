@@ -36,14 +36,13 @@ func user() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(ctx, userCmd, noPreRun, RunUserList, "list", "List Users",
-		"Use this command to get a list of available Users available on your account.", "", true)
+		"Use this command to get a list of available Users available on your account.", listUserExample, true)
 
 	/*
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, userCmd, PreRunUserIdValidate, RunUserGet, "get", "Get a User",
-		"Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id",
-		"", true)
+		"Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id", getUserExample, true)
 	get.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -53,7 +52,7 @@ func user() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, userCmd, PreRunUserNameEmailPwdValidate, RunUserCreate, "create", "Create a User under a particular contract",
-		`Use this command to create create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
+		`Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
 Please Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
 
@@ -62,15 +61,13 @@ Required values to run a command:
 * User First Name
 * User Last Name
 * User Email
-* User Password`, "", true)
+* User Password`, createUserExample, true)
 	create.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgUserPassword, "", "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
 	create.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for User to be created [seconds]")
 
 	/*
 		Update Command
@@ -80,11 +77,9 @@ Required values to run a command:
 
 Note: The password attribute is immutable. It is not allowed in update requests. It is recommended that the new User log into the DCD and change their password.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-
 Required values to run command:
 
-* User Id`, "", true)
+* User Id`, updateUserExample, true)
 	update.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User")
 	update.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User")
 	update.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User")
@@ -94,8 +89,6 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User attributes to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for User to be updated [seconds]")
 
 	/*
 		Delete Command
@@ -105,13 +98,11 @@ Required values to run command:
 
 Required values to run command:
 
-* User Id`, "", true)
+* User Id`, deleteUserExample, true)
 	deleteCmd.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for User to be deleted [seconds]")
 
 	return userCmd
 }
@@ -163,10 +154,6 @@ func RunUserCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
-		return err
-	}
 	return c.Printer.Print(getUserPrint(resp, c, getUser(u)))
 }
 
@@ -185,9 +172,6 @@ func RunUserUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getUserPrint(resp, c, getUser(userUpd)))
 }
 
@@ -197,10 +181,6 @@ func RunUserDelete(c *builder.CommandConfig) error {
 		return err
 	}
 	resp, err := c.Users().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)))
-	if err != nil {
-		return err
-	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
 	if err != nil {
 		return err
 	}

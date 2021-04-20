@@ -18,6 +18,14 @@ type Users struct {
 	ionoscloud.Users
 }
 
+type Resource struct {
+	ionoscloud.Resource
+}
+
+type Resources struct {
+	ionoscloud.Resources
+}
+
 // UsersService is a wrapper around ionoscloud.User
 type UsersService interface {
 	List() (Users, *Response, error)
@@ -25,6 +33,10 @@ type UsersService interface {
 	Create(u User) (*User, *Response, error)
 	Update(userId string, input User) (*User, *Response, error)
 	Delete(userId string) (*Response, error)
+	// Resources
+	ListResources() (Resources, *Response, error)
+	GetResourcesByType(resourceType string) (Resources, *Response, error)
+	GetResourceByTypeAndId(resourceType, resourceId string) (*Resource, *Response, error)
 }
 
 type usersService struct {
@@ -69,4 +81,22 @@ func (s *usersService) Delete(userId string) (*Response, error) {
 	req := s.client.UserManagementApi.UmUsersDelete(s.context, userId)
 	_, res, err := s.client.UserManagementApi.UmUsersDeleteExecute(req)
 	return &Response{*res}, err
+}
+
+func (s *usersService) ListResources() (Resources, *Response, error) {
+	req := s.client.UserManagementApi.UmResourcesGet(s.context)
+	gs, res, err := s.client.UserManagementApi.UmResourcesGetExecute(req)
+	return Resources{gs}, &Response{*res}, err
+}
+
+func (s *usersService) GetResourcesByType(resourceType string) (Resources, *Response, error) {
+	req := s.client.UserManagementApi.UmResourcesFindByType(s.context, resourceType)
+	ss, res, err := s.client.UserManagementApi.UmResourcesFindByTypeExecute(req)
+	return Resources{ss}, &Response{*res}, err
+}
+
+func (s *usersService) GetResourceByTypeAndId(resourceType, resourceId string) (*Resource, *Response, error) {
+	req := s.client.UserManagementApi.UmResourcesFindByTypeAndId(s.context, resourceType, resourceId)
+	ss, res, err := s.client.UserManagementApi.UmResourcesFindByTypeAndIdExecute(req)
+	return &Resource{ss}, &Response{*res}, err
 }

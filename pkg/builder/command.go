@@ -179,7 +179,7 @@ type CommandConfig struct {
 	Labels        func() resources.LabelResourcesService
 	Contracts     func() resources.ContractsService
 	Users         func() resources.UsersService
-	Group         func() resources.GroupsService
+	Groups        func() resources.GroupsService
 	// Context
 	Context context.Context
 }
@@ -219,7 +219,7 @@ func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.Labels = func() resources.LabelResourcesService { return resources.NewLabelResourceService(client, c.Context) }
 	c.Contracts = func() resources.ContractsService { return resources.NewContractService(client, c.Context) }
 	c.Users = func() resources.UsersService { return resources.NewUserService(client, c.Context) }
-	c.Group = func() resources.GroupsService { return resources.NewGroupService(client, c.Context) }
+	c.Groups = func() resources.GroupsService { return resources.NewGroupService(client, c.Context) }
 	return nil
 }
 

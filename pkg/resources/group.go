@@ -10,6 +10,10 @@ type Group struct {
 	ionoscloud.Group
 }
 
+type GroupProperties struct {
+	ionoscloud.GroupProperties
+}
+
 type Groups struct {
 	ionoscloud.Groups
 }
@@ -20,6 +24,10 @@ type GroupMembers struct {
 
 type GroupShare struct {
 	ionoscloud.GroupShare
+}
+
+type GroupShareProperties struct {
+	ionoscloud.GroupShareProperties
 }
 
 type GroupShares struct {
@@ -34,18 +42,18 @@ type ResourceGroups struct {
 type GroupsService interface {
 	List() (Groups, *Response, error)
 	Get(groupId string) (*Group, *Response, error)
-	Create(u *Group) (*Group, *Response, error)
-	Update(groupId string, input *Group) (*Group, *Response, error)
+	Create(u Group) (*Group, *Response, error)
+	Update(groupId string, input Group) (*Group, *Response, error)
 	Delete(groupId string) (*Response, error)
 	// Users
 	ListUsers(groupId string) (GroupMembers, *Response, error)
-	AddUser(groupId string, input *User) (*User, *Response, error)
+	AddUser(groupId string, input User) (*User, *Response, error)
 	RemoveUser(groupId, userId string) (*Response, error)
 	// Shares
 	ListShares(groupId string) (GroupShares, *Response, error)
 	GetShare(groupId, resourceId string) (*GroupShare, *Response, error)
-	AddShare(groupId, resourceId string) (*GroupShare, *Response, error)
-	UpdateShare(groupId, resourceId string) (*GroupShare, *Response, error)
+	AddShare(groupId, resourceId string, input GroupShare) (*GroupShare, *Response, error)
+	UpdateShare(groupId, resourceId string, input GroupShare) (*GroupShare, *Response, error)
 	RemoveShare(groupId, resourceId string) (*Response, error)
 	// Resources
 	ListResources(groupId string) (ResourceGroups, *Response, error)
@@ -77,13 +85,13 @@ func (s *groupsService) Get(groupId string) (*Group, *Response, error) {
 	return &Group{group}, &Response{*res}, err
 }
 
-func (s *groupsService) Create(g *Group) (*Group, *Response, error) {
+func (s *groupsService) Create(g Group) (*Group, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsPost(s.context).Group(g.Group)
 	group, res, err := s.client.UserManagementApi.UmGroupsPostExecute(req)
 	return &Group{group}, &Response{*res}, err
 }
 
-func (s *groupsService) Update(groupId string, input *Group) (*Group, *Response, error) {
+func (s *groupsService) Update(groupId string, input Group) (*Group, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsPut(s.context, groupId).Group(input.Group)
 	group, res, err := s.client.UserManagementApi.UmGroupsPutExecute(req)
 	return &Group{group}, &Response{*res}, err
@@ -103,7 +111,7 @@ func (s *groupsService) ListUsers(groupId string) (GroupMembers, *Response, erro
 	return GroupMembers{groupMembers}, &Response{*res}, err
 }
 
-func (s *groupsService) AddUser(groupId string, input *User) (*User, *Response, error) {
+func (s *groupsService) AddUser(groupId string, input User) (*User, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsUsersPost(s.context, groupId).User(input.User)
 	u, res, err := s.client.UserManagementApi.UmGroupsUsersPostExecute(req)
 	return &User{u}, &Response{*res}, err
@@ -129,14 +137,14 @@ func (s *groupsService) GetShare(groupId, resourceId string) (*GroupShare, *Resp
 	return &GroupShare{groupShare}, &Response{*res}, err
 }
 
-func (s *groupsService) AddShare(groupId, resourceId string) (*GroupShare, *Response, error) {
-	req := s.client.UserManagementApi.UmGroupsSharesPost(s.context, groupId, resourceId)
+func (s *groupsService) AddShare(groupId, resourceId string, input GroupShare) (*GroupShare, *Response, error) {
+	req := s.client.UserManagementApi.UmGroupsSharesPost(s.context, groupId, resourceId).Resource(input.GroupShare)
 	groupShare, res, err := s.client.UserManagementApi.UmGroupsSharesPostExecute(req)
 	return &GroupShare{groupShare}, &Response{*res}, err
 }
 
-func (s *groupsService) UpdateShare(groupId, resourceId string) (*GroupShare, *Response, error) {
-	req := s.client.UserManagementApi.UmGroupsSharesPut(s.context, groupId, resourceId)
+func (s *groupsService) UpdateShare(groupId, resourceId string, input GroupShare) (*GroupShare, *Response, error) {
+	req := s.client.UserManagementApi.UmGroupsSharesPut(s.context, groupId, resourceId).Resource(input.GroupShare)
 	groupShare, res, err := s.client.UserManagementApi.UmGroupsSharesPutExecute(req)
 	return &GroupShare{groupShare}, &Response{*res}, err
 }

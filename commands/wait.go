@@ -24,12 +24,11 @@ func waitForAction(c *builder.CommandConfig, path string) error {
 			return err
 		}
 
-		// Default timeout: 60s
 		timeout := viper.GetInt(builder.GetFlagName(c.ParentName, c.Name, config.ArgTimeout))
-		ctxTimeout, cancel := context.WithTimeout(
-			c.Context,
-			time.Duration(timeout)*time.Second,
-		)
+		if timeout == 0 {
+			timeout = config.DefaultTimeoutSeconds
+		}
+		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
 		c.Context = ctxTimeout

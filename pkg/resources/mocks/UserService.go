@@ -81,6 +81,38 @@ func (mr *MockUsersServiceMockRecorder) Get(userId interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUsersService)(nil).Get), userId)
 }
 
+// GetResourceByTypeAndId mocks base method.
+func (m *MockUsersService) GetResourceByTypeAndId(resourceType, resourceId string) (*resources.Resource, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetResourceByTypeAndId", resourceType, resourceId)
+	ret0, _ := ret[0].(*resources.Resource)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetResourceByTypeAndId indicates an expected call of GetResourceByTypeAndId.
+func (mr *MockUsersServiceMockRecorder) GetResourceByTypeAndId(resourceType, resourceId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResourceByTypeAndId", reflect.TypeOf((*MockUsersService)(nil).GetResourceByTypeAndId), resourceType, resourceId)
+}
+
+// GetResourcesByType mocks base method.
+func (m *MockUsersService) GetResourcesByType(resourceType string) (resources.Resources, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetResourcesByType", resourceType)
+	ret0, _ := ret[0].(resources.Resources)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetResourcesByType indicates an expected call of GetResourcesByType.
+func (mr *MockUsersServiceMockRecorder) GetResourcesByType(resourceType interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResourcesByType", reflect.TypeOf((*MockUsersService)(nil).GetResourcesByType), resourceType)
+}
+
 // List mocks base method.
 func (m *MockUsersService) List() (resources.Users, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -95,6 +127,22 @@ func (m *MockUsersService) List() (resources.Users, *resources.Response, error) 
 func (mr *MockUsersServiceMockRecorder) List() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockUsersService)(nil).List))
+}
+
+// ListResources mocks base method.
+func (m *MockUsersService) ListResources() (resources.Resources, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListResources")
+	ret0, _ := ret[0].(resources.Resources)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListResources indicates an expected call of ListResources.
+func (mr *MockUsersServiceMockRecorder) ListResources() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResources", reflect.TypeOf((*MockUsersService)(nil).ListResources))
 }
 
 // Update mocks base method.

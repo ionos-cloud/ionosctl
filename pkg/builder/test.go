@@ -109,6 +109,6 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
 	c.Labels = func() resources.LabelResourcesService { return tm.Label }
 	c.Contracts = func() resources.ContractsService { return tm.Contract }
 	c.Users = func() resources.UsersService { return tm.User }
-	c.Group = func() resources.GroupsService { return tm.Group }
+	c.Groups = func() resources.GroupsService { return tm.Group }
 	return c
 }

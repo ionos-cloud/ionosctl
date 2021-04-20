@@ -164,6 +164,8 @@ func addCommands() {
 	rootCmd.AddCommand(label())
 	rootCmd.AddCommand(contract())
 	rootCmd.AddCommand(user())
+	rootCmd.AddCommand(group())
+	rootCmd.AddCommand(resource())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}
