@@ -42,6 +42,7 @@ var (
 				SecAuthActive:     &testUserBoolVar,
 				S3CanonicalUserId: &testUserVar,
 				Password:          &testUserVar,
+				Active:            &testUserBoolVar,
 			},
 		},
 	}
@@ -397,6 +398,19 @@ func TestGetUsersIds(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getUsersIds(w)
+	err := w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestGetGroupUsersIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() {}
+	w := bufio.NewWriter(&b)
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
+	getGroupUsersIds(w, testResourceVar)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)

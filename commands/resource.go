@@ -35,13 +35,13 @@ func resource() *builder.Command {
 	/*
 		List Resources Command
 	*/
-	builder.NewCommand(ctx, resourceCmd, noPreRun, RunResourcesList, "list", "List Resources",
+	builder.NewCommand(ctx, resourceCmd, noPreRun, RunResourceList, "list", "List Resources",
 		"Use this command to get a list of Resources.", listResourcesExample, true)
 
 	/*
 		Get Resource Command
 	*/
-	getRsc := builder.NewCommand(ctx, resourceCmd, PreRunResourceTypeValidate, RunResourcesGet, "get", "Get all Resources of a Type or a specific Resource Type",
+	getRsc := builder.NewCommand(ctx, resourceCmd, PreRunResourceTypeValidate, RunResourceGet, "get", "Get all Resources of a Type or a specific Resource Type",
 		"Use this command to get all Resources of a Type or a specific Resource Type.\n\nRequired values to run command:\n\n* Resource Type",
 		getResourceExample, true)
 	getRsc.AddStringFlag(config.ArgResourceType, "", "", "The specific Type of Resources to retrieve information about")
@@ -59,15 +59,15 @@ func PreRunResourceTypeValidate(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgResourceType)
 }
 
-func RunResourcesList(c *builder.CommandConfig) error {
+func RunResourceList(c *builder.CommandConfig) error {
 	resourcesListed, _, err := c.Users().ListResources()
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getResourcePrint(nil, c, getResources(resourcesListed)))
+	return c.Printer.Print(getResourcePrint(c, getResources(resourcesListed)))
 }
 
-func RunResourcesGet(c *builder.CommandConfig) error {
+func RunResourceGet(c *builder.CommandConfig) error {
 	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceId)) {
 		resourceListed, _, err := c.Users().GetResourceByTypeAndId(
 			viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceType)),
@@ -76,13 +76,13 @@ func RunResourcesGet(c *builder.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(getResourcePrint(nil, c, getResource(resourceListed)))
+		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
 		resourcesListed, _, err := c.Users().GetResourcesByType(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceType)))
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(getResourcePrint(nil, c, getResources(resourcesListed)))
+		return c.Printer.Print(getResourcePrint(c, getResources(resourcesListed)))
 	}
 }
 
@@ -109,7 +109,7 @@ func RunGroupListResources(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getResourcePrint(nil, c, getResourceGroups(resourcesListed)))
+	return c.Printer.Print(getResourcePrint(c, getResourceGroups(resourcesListed)))
 }
 
 // Output Printing
@@ -123,15 +123,9 @@ type ResourcePrint struct {
 	Type              string `json:"Type,omitempty"`
 }
 
-func getResourcePrint(resp *resources.Response, c *builder.CommandConfig, groups []resources.Resource) printer.Result {
+func getResourcePrint(c *builder.CommandConfig, groups []resources.Resource) printer.Result {
 	r := printer.Result{}
 	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.ParentName
-			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
-		}
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getResourcesKVMaps(groups)
