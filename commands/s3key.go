@@ -74,14 +74,15 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdValidate, RunS3KeyUpdate, "update", "Update a S3Key",
+	update := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdActiveValidate, RunS3KeyUpdate, "update", "Update a S3Key",
 		`Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
 * User Id
-* S3Key Id`, updateS3KeyExample, true)
+* S3Key Id
+* S3Key Active`, updateS3KeyExample, true)
 	update.AddBoolFlag(config.ArgS3KeyActive, "", false, "Enable or disable a S3Key")
 	update.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -124,6 +125,20 @@ func PreRunGlobalUserIdKeyIdValidate(c *builder.PreCommandConfig) error {
 	return nil
 }
 
+func PreRunGlobalUserIdKeyIdActiveValidate(c *builder.PreCommandConfig) error {
+	var result *multierror.Error
+	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgUserId); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgS3KeyId, config.ArgS3KeyActive); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if result != nil {
+		return result
+	}
+	return nil
+}
+
 func RunS3KeyList(c *builder.CommandConfig) error {
 	ss, _, err := c.S3Keys().List(viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgUserId)))
 	if err != nil {
@@ -147,8 +162,7 @@ func RunS3KeyCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, getS3Key(s)))
@@ -170,8 +184,7 @@ func RunS3KeyUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, getS3Key(s)))
@@ -186,6 +199,9 @@ func RunS3KeyDelete(c *builder.CommandConfig) error {
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgS3KeyId)),
 	)
 	if err != nil {
+		return err
+	}
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, nil))
