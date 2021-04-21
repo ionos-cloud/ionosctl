@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/hashicorp/go-multierror"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
@@ -23,29 +24,33 @@ func s3key() *builder.Command {
 	s3keyCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "s3key",
+			Aliases:          []string{"key"},
 			Short:            "S3Key Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl s3key` + "`" + ` allow you to see information, to create, update, delete Users S3Keys under your account.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl s3key` + "`" + ` allow you to see information, to list, get, create, update, delete Users S3Keys.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := s3keyCmd.Command.PersistentFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultS3KeyCols, "Columns to be printed in the standard output")
+	globalFlags.StringSlice(config.ArgCols, defaultS3KeyCols, "Columns to be printed in the standard output. You can also print SecretKey, using `--cols=\"S3KeyId,Active,SecretKey\"`")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(s3keyCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	globalFlags.String(config.ArgUserId, "", config.RequiredFlagUserId)
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(s3keyCmd.Command.Name(), config.ArgUserId), globalFlags.Lookup(config.ArgUserId))
+	_ = s3keyCmd.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, s3keyCmd, noPreRun, RunS3KeyList, "list", "List User S3Keys",
-		"Use this command to get a list of S3Keys of a specified User.\n\nRequired values to run command:\n\n* User Id", "", true)
+	builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdValidate, RunS3KeyList, "list", "List User S3Keys",
+		"Use this command to get a list of S3Keys of a specified User.\n\nRequired values to run command:\n\n* User Id", listS3KeysExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, s3keyCmd, noPreRun, RunS3KeyGet, "get", "Get a User S3Key",
+	get := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdValidate, RunS3KeyGet, "get", "Get a User S3Key",
 		"Use this command to get information about a specified S3Key from a specified User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
-		"", true)
+		getS3KeyExample, true)
 	get.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(s3keyCmd.Command.Name(), config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
@@ -54,30 +59,30 @@ func s3key() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, s3keyCmd, noPreRun, RunS3KeyCreate, "create", "Create a S3Key for a specified User.",
-		`Use this command to create a S3Key for a particular User. Note: A maximum of five S3 keys may be created for any given user.
+	create := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdValidate, RunS3KeyCreate, "create", "Create a S3Key for a User",
+		`Use this command to create a S3Key for a particular User. 
+
+Note: A maximum of five S3 keys may be created for any given user.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-* User Id
-* S3Key Id`, "", true)
+* User Id`, createS3KeyExample, true)
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for S3Key to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a S3Key to be created [seconds]")
 
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, s3keyCmd, noPreRun, RunS3KeyUpdate, "update", "Update a S3Key.",
+	update := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdValidate, RunS3KeyUpdate, "update", "Update a S3Key",
 		`Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
 * User Id
-* S3Key Id
-* S3Key Active`, "", true)
-	update.AddBoolFlag(config.ArgS3KeyActive, "", false, "Enable or disable a S3Key "+config.RequiredFlag)
+* S3Key Id`, updateS3KeyExample, true)
+	update.AddBoolFlag(config.ArgS3KeyActive, "", false, "Enable or disable a S3Key")
 	update.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(s3keyCmd.Command.Name(), config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
@@ -88,10 +93,10 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, s3keyCmd, noPreRun, RunS3KeyDelete, "delete", "Delete a S3Key",
-		"Use this command to delete a specific S3Key.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
-		"", true)
-	deleteCmd.AddStringFlag(config.ArgS3KeyId, "", "", "")
+	deleteCmd := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdValidate, RunS3KeyDelete, "delete", "Delete a S3Key",
+		"Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
+		deleteS3KeyExample, true)
+	deleteCmd.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(s3keyCmd.Command.Name(), config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -99,6 +104,24 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a S3Key to be deleted [seconds]")
 
 	return s3keyCmd
+}
+
+func PreRunGlobalUserIdValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgUserId)
+}
+
+func PreRunGlobalUserIdKeyIdValidate(c *builder.PreCommandConfig) error {
+	var result *multierror.Error
+	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgUserId); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgS3KeyId); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if result != nil {
+		return result
+	}
+	return nil
 }
 
 func RunS3KeyList(c *builder.CommandConfig) error {
@@ -173,8 +196,9 @@ func RunS3KeyDelete(c *builder.CommandConfig) error {
 var defaultS3KeyCols = []string{"S3KeyId", "Active"}
 
 type S3KeyPrint struct {
-	S3KeyId string `json:"S3KeyId,omitempty"`
-	Active  bool   `json:"Active,omitempty"`
+	S3KeyId   string `json:"S3KeyId,omitempty"`
+	Active    bool   `json:"Active,omitempty"`
+	SecretKey string `json:"SecretKey,omitempty"`
 }
 
 func getS3KeyPrint(resp *resources.Response, c *builder.CommandConfig, s []resources.S3Key) printer.Result {
@@ -199,8 +223,9 @@ func getS3KeyCols(flagName string, outErr io.Writer) []string {
 	if viper.IsSet(flagName) {
 		var keyCols []string
 		columnsMap := map[string]string{
-			"S3KeyId": "S3KeyId",
-			"Active":  "Active",
+			"S3KeyId":   "S3KeyId",
+			"Active":    "Active",
+			"SecretKey": "SecretKey",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -251,6 +276,9 @@ func getS3KeyKVMap(s resources.S3Key) map[string]interface{} {
 	if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
 		if active, ok := properties.GetActiveOk(); ok && active != nil {
 			ssPrint.Active = *active
+		}
+		if secretKey, ok := properties.GetSecretKeyOk(); ok && secretKey != nil {
+			ssPrint.SecretKey = *secretKey
 		}
 	}
 	return structs.Map(ssPrint)
