@@ -12,7 +12,7 @@ ionosctl group [command]
 
 ## Description
 
-The sub-command of `ionosctl group` allows you to list, get, create, update, delete Groups, but also operations: add User, remove User from the Group.
+The sub-command of `ionosctl group` allows you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User/Share from the Group.
 
 ## Options
 

@@ -12,13 +12,13 @@ ionosctl user [command]
 
 ## Description
 
-The sub-command of `ionosctl user` allows you to list, get, create, update, delete Users.
+The sub-command of `ionosctl user` allows you to list, get, create, update, delete Users under your account.
 
 ## Options
 
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings     Columns to be printed in the standard output (default [UserId,Firstname,Lastname,Email,Administrator,ForceSecAuth,SecAuthActive,S3CanonicalUserId,Active])
+      --cols strings     Columns to be printed in the standard output (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -h, --help             help for user
       --ignore-stdin     Force command to execute without user input

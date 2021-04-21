@@ -12,7 +12,7 @@ ionosctl group create [flags]
 
 ## Description
 
-Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false.
+Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
 
 Required values to run a command:
 

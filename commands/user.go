@@ -24,7 +24,7 @@ func user() *builder.Command {
 		Command: &cobra.Command{
 			Use:              "user",
 			Short:            "User Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl user` + "`" + ` allows you to list, get, create, update, delete Users.`,
+			Long:             `The sub-command of ` + "`" + `ionosctl user` + "`" + ` allows you to list, get, create, update, delete Users under your account.`,
 			TraverseChildren: true,
 		},
 	}
@@ -36,7 +36,7 @@ func user() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(ctx, userCmd, noPreRun, RunUserList, "list", "List Users",
-		"Use this command to get a list of available Users available on your account.", listUserExample, true)
+		"Use this command to get a list of existing Users available on your account.", listUserExample, true)
 
 	/*
 		Get Command
@@ -54,7 +54,7 @@ func user() *builder.Command {
 	create := builder.NewCommand(ctx, userCmd, PreRunUserNameEmailPwdValidate, RunUserCreate, "create", "Create a User under a particular contract",
 		`Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
-Please Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
+Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
 
 Required values to run a command:
 

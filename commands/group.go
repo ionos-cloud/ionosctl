@@ -24,7 +24,7 @@ func group() *builder.Command {
 		Command: &cobra.Command{
 			Use:              "group",
 			Short:            "Group Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl group` + "`" + ` allows you to list, get, create, update, delete Groups, but also operations: add User, remove User from the Group.`,
+			Long:             `The sub-command of ` + "`" + `ionosctl group` + "`" + ` allows you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User/Share from the Group.`,
 			TraverseChildren: true,
 		},
 	}
@@ -53,7 +53,7 @@ func group() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, groupCmd, PreRunGroupNameValidate, RunGroupCreate, "create", "Create a Group",
-		`Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false.
+		`Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
 
 Required values to run a command:
 
@@ -129,7 +129,7 @@ Required values to run command:
 		Add User Command
 	*/
 	addUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIdsValidate, RunGroupAddUser, "add-user", "Add User to a Group",
-		"Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n*User Id", addGroupUserExample, true)
+		"Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", addGroupUserExample, true)
 	addUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -143,7 +143,7 @@ Required values to run command:
 		Remove User Command
 	*/
 	removeUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIdsValidate, RunGroupRemoveUser, "remove-user", "Remove User from a Group",
-		"Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n*User Id", removeGroupUserExample, true)
+		"Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", removeGroupUserExample, true)
 	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp

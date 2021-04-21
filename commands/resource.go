@@ -36,13 +36,13 @@ func resource() *builder.Command {
 		List Resources Command
 	*/
 	builder.NewCommand(ctx, resourceCmd, noPreRun, RunResourceList, "list", "List Resources",
-		"Use this command to get a list of Resources.", listResourcesExample, true)
+		"Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.", listResourcesExample, true)
 
 	/*
 		Get Resource Command
 	*/
 	getRsc := builder.NewCommand(ctx, resourceCmd, PreRunResourceTypeValidate, RunResourceGet, "get", "Get all Resources of a Type or a specific Resource Type",
-		"Use this command to get all Resources of a Type or a specific Resource Type.\n\nRequired values to run command:\n\n* Resource Type",
+		"Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Resource Type",
 		getResourceExample, true)
 	getRsc.AddStringFlag(config.ArgResourceType, "", "", "The specific Type of Resources to retrieve information about")
 	_ = getRsc.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -95,7 +95,7 @@ func resourceGroup(groupCmd *builder.Command) {
 		List Resources Command
 	*/
 	listResources := builder.NewCommand(ctx, groupCmd, PreRunGroupIdValidate, RunGroupListResources, "list-resources", "List Resources from a Group",
-		"Use this command to get a list of Resources assigned to a Group. To see more details about Resources under a specific User, use `ionosctl user` commands.\n\nRequired values to run command:\n\n* Group Id",
+		"Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resources` commands.\n\nRequired values to run command:\n\n* Group Id",
 		listGroupResourcesExample, true)
 	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

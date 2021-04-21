@@ -14,8 +14,6 @@ ionosctl group get-share [flags]
 
 Use this command to retrieve the details of a specific Shared Resource available to a specified Group.
 
-.
-
 Required values to run command:
 
 * Group Id

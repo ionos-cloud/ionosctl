@@ -17,7 +17,7 @@ Use this command to remove a User from a Group.
 Required values to run command:
 
 * Group Id
-*User Id
+* User Id
 
 ## Options
 

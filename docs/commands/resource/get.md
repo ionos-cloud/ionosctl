@@ -12,7 +12,7 @@ ionosctl resource get [flags]
 
 ## Description
 
-Use this command to get all Resources of a Type or a specific Resource Type.
+Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.
 
 Required values to run command:
 

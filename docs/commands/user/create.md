@@ -14,7 +14,7 @@ ionosctl user create [flags]
 
 Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
-Please Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
+Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
 
 Required values to run a command:
 
@@ -27,7 +27,7 @@ Required values to run a command:
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings             Columns to be printed in the standard output (default [UserId,Firstname,Lastname,Email,Administrator,ForceSecAuth,SecAuthActive,S3CanonicalUserId,Active])
+      --cols strings             Columns to be printed in the standard output (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -h, --help                     help for create
       --ignore-stdin             Force command to execute without user input

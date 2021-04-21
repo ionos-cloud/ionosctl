@@ -36,7 +36,7 @@ func shareGroup(groupCmd *builder.Command) {
 		Get Command
 	*/
 	getShare := builder.NewCommand(ctx, groupCmd, PreRunGroupResourceIdsValidate, RunGroupGetShare, "get-share", "Get a Resource Share from a Group",
-		"Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\n.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
+		"Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
 		getGroupShareExample, true)
 	getShare.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = getShare.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

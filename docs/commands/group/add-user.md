@@ -17,7 +17,7 @@ Use this command to add an existing User to a specific Group.
 Required values to run command:
 
 * Group Id
-*User Id
+* User Id
 
 ## Options
 

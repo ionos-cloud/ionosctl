@@ -12,7 +12,7 @@ ionosctl resource list [flags]
 
 ## Description
 
-Use this command to get a list of Resources.
+Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.
 
 ## Options
 
