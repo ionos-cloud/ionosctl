@@ -17,7 +17,8 @@ Use this command to update a specified Snapshot.
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
-- Snapshot Id
+
+* Snapshot Id
 
 ## Options
 

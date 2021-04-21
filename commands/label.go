@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"

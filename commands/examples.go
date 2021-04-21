@@ -437,4 +437,109 @@ test   testsnapshot`
 		Contract Resources Examples
 	*/
 	getContractExample = `ionosctl contract get --resource-limits [ CORES|RAM|HDD|SSD|IPS|K8S ]`
+
+	/*
+		User Examples
+	*/
+	listUserExample = `ionosctl user list 
+UserId                                 Firstname   Lastname   Email                      Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
+2470f439-1d73-42f8-90a9-f78cf2776c74   test1       test1      testrandom12@ionos.com     false           false          false           a74101e7c1948450432d5b6512f2712c   true
+53d68de9-931a-4b61-b532-82f7b27afef3   test1       test1      testrandom13@ionos.com     false           false          false           8b9dd6f39e613adb7a837127edb67d38   true`
+	getUserExample = `ionosctl user get --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 
+UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
+2470f439-1d73-42f8-90a9-f78cf2776c74   test1       test1      testrandom12@ionos.com   false           false          false           a74101e7c1948450432d5b6512f2712c   true`
+	createUserExample = `ionosctl user create --user-first-name test1 --user-last-name test1 --user-email testrandom16@gmail.com --user-password test123
+UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId   Active
+99499053-059e-4ee6-b56f-66b0df93262d   test1       test1      testrandom16@ionos.com   false           false          false                               true
+RequestId: ca349e08-5820-41ba-8252-ee4c8dd2ccdb
+Status: Command user create has been successfully executed`
+	updateUserExample = `ionosctl user update --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 --user-administrator=true
+UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
+2470f439-1d73-42f8-90a9-f78cf2776c74   test1       test1      testrandom12@ionos.com   true            false          false           a74101e7c1948450432d5b6512f2712c   true
+RequestId: 439f79fc-5bfc-43da-92f3-0d804ebb28ac
+Status: Command user update has been successfully executed`
+	deleteUserExample = `ionosctl user delete --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 --ignore-stdin 
+RequestId: a2f6e7fa-6030-4267-950e-1e0886316475
+Status: Command user delete has been successfully executed`
+
+	/*
+		Group Examples
+	*/
+	createGroupExample = `ionosctl group create --group-name test --wait 
+Waiting for request: eae6bb8b-3736-4cf0-bc71-72a95d1b2a63
+GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
+1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false`
+	getGroupExample = `ionosctl group get --group-id 1d500d7a-43af-488a-a656-79e902433767 
+GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
+1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false`
+	listGroupExample = `ionosctl group list
+GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
+1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false`
+	updateGroupExample = `ionosctl group update --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --group-reserve-ip 
+GroupId                                Name         CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
+e99f4cdb-746d-4c3c-b38c-b749ca23f917   testUpdate   true               true             true        false               false       false         false              false                  true
+RequestId: 2bfe43a4-ea09-48fc-bb53-136c7f7d061f
+Status: Command group update has been successfully executed`
+	deleteGroupExample = `ionosctl group delete --group-id 1d500d7a-43af-488a-a656-79e902433767 
+Warning: Are you sure you want to delete group (y/N) ? 
+y
+RequestId: e20d2851-0d20-453d-b752-ed1c34a83625
+Status: Command group delete has been successfully executed`
+	/*
+		Group Users Examples
+	*/
+	listGroupUsersExample = `ionosctl group list-users --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 
+UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
+53d68de9-931a-4b61-b532-82f7b27afef3   test1       test1      testrandom13@ionos.com   false           false          false           8b9dd6f39e613adb7a837127edb67d38   true
+e3b5fefb-27b0-4eea-a7c4-c57934ad23cb   test1       test1      testrandom14@ionos.com   false           false          false           25e754c1f9f0169213ec4ad5e5e02dcd   true`
+	removeGroupUserExample = `ionosctl group remove-user --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --user-id e3b5fefb-27b0-4eea-a7c4-c57934ad23cb --wait 
+Warning: Are you sure you want to remove user from group (y/N) ? 
+y
+Waiting for request: 353eff98-120f-4d91-82f5-a8aff1ddb277
+RequestId: 353eff98-120f-4d91-82f5-a8aff1ddb277
+Status: Command group remove-user and request have been successfully executed`
+	addGroupUserExample = `ionosctl group add-user --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --user-id 53d68de9-931a-4b61-b532-82f7b27afef3
+UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
+53d68de9-931a-4b61-b532-82f7b27afef3   test1       test1      testrandom13@ionos.com   false           false          false           8b9dd6f39e613adb7a837127edb67d38   true`
+	/*
+		Group Shares Example
+	*/
+	listGroupSharesExample = `ionosctl group list-shares --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f 
+ShareId                                EditPrivilege   SharePrivilege
+cefc2175-001f-4b94-8693-6263d731fe8e   false           false`
+	getGroupShareExample = `ionosctl group get-share --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e 
+ShareId                                EditPrivilege   SharePrivilege
+cefc2175-001f-4b94-8693-6263d731fe8e   false           true`
+	addGroupShareExample = `ionosctl group add-share --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e
+ShareId                                EditPrivilege   SharePrivilege
+cefc2175-001f-4b94-8693-6263d731fe8e   false           false
+RequestId: ffb8e7ba-4a49-4ea5-a97e-e3a61e55c277
+Status: Command group add-share has been successfully executed`
+	updateGroupShareExample = `ionosctl group update-share --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --share-privilege 
+ShareId                                EditPrivilege   SharePrivilege
+cefc2175-001f-4b94-8693-6263d731fe8e   false           true
+RequestId: 0dfccab0-c148-40c8-9794-067d23f79f0e
+Status: Command group update-share has been successfully executed`
+	removeGroupShareExample = `ionosctl group remove-share --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --wait 
+Warning: Are you sure you want to remove share from group (y/N) ? 
+y
+Waiting for request: 9ff7e57f-b568-4257-b27f-13a4cf11a7fc
+RequestId: 9ff7e57f-b568-4257-b27f-13a4cf11a7fc
+Status: Command group remove-share and request have been successfully executed`
+	/*
+		Group Resources Example
+	*/
+	listGroupResourcesExample = `ionosctl group list-resources --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f 
+ResourceId                             Name   SecAuthProtection   Type
+cefc2175-001f-4b94-8693-6263d731fe8e          false               datacenter`
+	/*
+		Resources Example
+	*/
+	listResourcesExample = `ionosctl resource list 
+ResourceId                             Name                            SecAuthProtection   Type
+cefc2175-001f-4b94-8693-6263d731fe8e                                   false               datacenter
+d8922413-05f1-48bb-90ed-c2d407e05b1d   IP_BLOCK_2021-04-20T11:02:52Z   false               ipblock`
+	getResourceExample = `ionosctl resource get --resource-type ipblock
+ResourceId                             Name                            SecAuthProtection   Type
+d8922413-05f1-48bb-90ed-c2d407e05b1d   IP_BLOCK_2021-04-20T11:02:52Z   false               ipblock`
 )

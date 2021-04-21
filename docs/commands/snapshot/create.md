@@ -17,10 +17,11 @@ Use this command to create a Snapshot. Creation of Snapshots is performed from t
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
-- Data Center Id
-- Volume Id
-- Snapshot Name
-- Snapshot Licence Type
+
+* Data Center Id
+* Volume Id
+* Snapshot Name
+* Snapshot Licence Type
 
 ## Options
 

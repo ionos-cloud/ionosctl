@@ -163,6 +163,9 @@ func addCommands() {
 	rootCmd.AddCommand(firewallrule())
 	rootCmd.AddCommand(label())
 	rootCmd.AddCommand(contract())
+	rootCmd.AddCommand(user())
+	rootCmd.AddCommand(group())
+	rootCmd.AddCommand(resource())
 	rootCmd.AddCommand(s3key())
 }
 
