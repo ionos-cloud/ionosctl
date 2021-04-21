@@ -50,6 +50,7 @@ type ResourcesMocks struct {
 	Contract     *mocks.MockContractsService
 	User         *mocks.MockUsersService
 	Group        *mocks.MockGroupsService
+	S3Key        *mocks.MockS3KeysService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -89,6 +90,7 @@ func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 		Contract:     mocks.NewMockContractsService(ctrl),
 		User:         mocks.NewMockUsersService(ctrl),
 		Group:        mocks.NewMockGroupsService(ctrl),
+		S3Key:        mocks.NewMockS3KeysService(ctrl),
 	}
 }
 
@@ -110,5 +112,6 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
 	c.Contracts = func() resources.ContractsService { return tm.Contract }
 	c.Users = func() resources.UsersService { return tm.User }
 	c.Groups = func() resources.GroupsService { return tm.Group }
+	c.S3Keys = func() resources.S3KeysService { return tm.S3Key }
 	return c
 }

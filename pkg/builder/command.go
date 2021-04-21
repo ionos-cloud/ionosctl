@@ -180,6 +180,7 @@ type CommandConfig struct {
 	Contracts     func() resources.ContractsService
 	Users         func() resources.UsersService
 	Groups        func() resources.GroupsService
+	S3Keys        func() resources.S3KeysService
 	// Context
 	Context context.Context
 }
@@ -220,6 +221,7 @@ func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.Contracts = func() resources.ContractsService { return resources.NewContractService(client, c.Context) }
 	c.Users = func() resources.UsersService { return resources.NewUserService(client, c.Context) }
 	c.Groups = func() resources.GroupsService { return resources.NewGroupService(client, c.Context) }
+	c.S3Keys = func() resources.S3KeysService { return resources.NewS3KeyService(client, c.Context) }
 	return nil
 }
 

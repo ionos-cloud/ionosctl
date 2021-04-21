@@ -542,4 +542,29 @@ d8922413-05f1-48bb-90ed-c2d407e05b1d   IP_BLOCK_2021-04-20T11:02:52Z   false    
 	getResourceExample = `ionosctl resource get --resource-type ipblock
 ResourceId                             Name                            SecAuthProtection   Type
 d8922413-05f1-48bb-90ed-c2d407e05b1d   IP_BLOCK_2021-04-20T11:02:52Z   false               ipblock`
+
+	/*
+		S3Keys Example
+	*/
+	listS3KeysExample = `ionosctl s3key list --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
+S3KeyId                Active
+00a29d110b48daa3a18b   false`
+	getS3KeyExample = `ionosctl s3key get --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 00a29d110b48daa3a18b 
+S3KeyId                Active
+00a29d110b48daa3a18b   false`
+	createS3KeyExample = `ionosctl s3key create --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
+S3KeyId                Active
+75f4319cbf3f6d538da7   true
+RequestId: 869fc059-165d-480b-a913-a410d38d20e0
+Status: Command s3key create has been successfully executed`
+	updateS3KeyExample = `ionosctl s3key update --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 75f4319cbf3f6d538da7 --s3key-active=false
+S3KeyId                Active
+75f4319cbf3f6d538da7   false
+RequestId: 4cda4b65-f58b-492a-bf45-6f1d8fb42928
+Status: Command s3key update has been successfully executed`
+	deleteS3KeyExample = `ionosctl s3key delete --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 75f4319cbf3f6d538da7 --wait 
+Warning: Are you sure you want to delete S3Key (y/N) ? 
+y
+RequestId: 1529f8b7-08bb-4321-a996-08865660dee8
+Status: Command s3key delete and request have been successfully executed`
 )

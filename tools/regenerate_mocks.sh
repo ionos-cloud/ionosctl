@@ -23,5 +23,6 @@ mockgen -source label.go >mocks/LabelResourceService.go
 mockgen -source contract.go >mocks/ContractService.go
 mockgen -source user.go >mocks/UserService.go
 mockgen -source group.go >mocks/UserGroupService.go
+mockgen -source s3key.go >mocks/S3KeyService.go
 
 pushd >/dev/null || exit

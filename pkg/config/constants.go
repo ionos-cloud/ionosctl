@@ -100,6 +100,8 @@ const (
 	ArgResourceType                = "resource-type"
 	ArgEditPrivilege               = "edit-privilege"
 	ArgSharePrivilege              = "share-privilege"
+	ArgS3KeyId                     = "s3key-id"
+	ArgS3KeyActive                 = "s3key-active"
 )
 
 // Default values
@@ -141,4 +143,5 @@ const (
 	RequiredFlagUserId         = "The unique User Id " + RequiredFlag
 	RequiredFlagGroupId        = "The unique Group Id " + RequiredFlag
 	RequiredFlagResourceId     = "The unique Resource Id " + RequiredFlag
+	RequiredFlagS3KeyId        = "The unique User S3Key Id " + RequiredFlag
 )
