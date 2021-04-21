@@ -26,7 +26,7 @@ func s3key() *builder.Command {
 			Use:              "s3key",
 			Aliases:          []string{"key"},
 			Short:            "S3Key Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl s3key` + "`" + ` allow you to see information, to list, get, create, update, delete Users S3Keys.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl s3key` + "`" + ` allow you to see information, to list, get, create, update, delete Users S3Keys. To view details about Users, check the ` + "`" + `ionosctl user` + "`" + ` commands.`,
 			TraverseChildren: true,
 		},
 	}

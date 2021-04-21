@@ -24,7 +24,7 @@ func user() *builder.Command {
 		Command: &cobra.Command{
 			Use:              "user",
 			Short:            "User Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl user` + "`" + ` allows you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group` + "`" + ` commands.`,
+			Long:             `The sub-command of ` + "`" + `ionosctl user` + "`" + ` allows you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl s3key` + "`" + ` commands.`,
 			TraverseChildren: true,
 		},
 	}

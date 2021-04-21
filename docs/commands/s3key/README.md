@@ -18,7 +18,7 @@ ionosctl s3key [command]
 
 ## Description
 
-The sub-commands of `ionosctl s3key` allow you to see information, to list, get, create, update, delete Users S3Keys.
+The sub-commands of `ionosctl s3key` allow you to see information, to list, get, create, update, delete Users S3Keys. To view details about Users, check the `ionosctl user` commands.
 
 ## Options
 

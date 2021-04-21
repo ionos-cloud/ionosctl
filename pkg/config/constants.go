@@ -110,7 +110,7 @@ const (
 	DefaultConfigFileName   = "/config.json"
 	DefaultOutputFormat     = "text"
 	DefaultWait             = false
-	DefaultTimeoutSeconds   = 60
+	DefaultTimeoutSeconds   = int(60)
 	DefaultServerCores      = 2
 	DefaultServerRAM        = 256
 	DefaultServerCPUFamily  = "AMD_OPTERON"

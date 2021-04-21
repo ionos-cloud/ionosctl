@@ -19,6 +19,7 @@ You can wait for the action to be executed using `--wait` option.
 Required values to run command:
 * User Id
 * S3Key Id
+* S3Key Active
 
 ## Options
 
