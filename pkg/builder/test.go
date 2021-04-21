@@ -51,6 +51,7 @@ type ResourcesMocks struct {
 	User         *mocks.MockUsersService
 	Group        *mocks.MockGroupsService
 	S3Key        *mocks.MockS3KeysService
+	Pcc          *mocks.MockPccsService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -91,6 +92,7 @@ func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 		User:         mocks.NewMockUsersService(ctrl),
 		Group:        mocks.NewMockGroupsService(ctrl),
 		S3Key:        mocks.NewMockS3KeysService(ctrl),
+		Pcc:          mocks.NewMockPccsService(ctrl),
 	}
 }
 
@@ -113,5 +115,6 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
 	c.Users = func() resources.UsersService { return tm.User }
 	c.Groups = func() resources.GroupsService { return tm.Group }
 	c.S3Keys = func() resources.S3KeysService { return tm.S3Key }
+	c.Pccs = func() resources.PccsService { return tm.Pcc }
 	return c
 }
