@@ -167,6 +167,7 @@ func addCommands() {
 	rootCmd.AddCommand(group())
 	rootCmd.AddCommand(resource())
 	rootCmd.AddCommand(s3key())
+	rootCmd.AddCommand(backupunit())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}
