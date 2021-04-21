@@ -42,7 +42,7 @@ func snapshot() *builder.Command {
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotGet, "get", "Get a Snapshot",
-		"Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n- Snapshot Id",
+		"Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		getSnapshotExample, true)
 	get.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -58,10 +58,11 @@ func snapshot() *builder.Command {
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Data Center Id
-- Volume Id
-- Snapshot Name
-- Snapshot Licence Type`, createSnapshotExample, true)
+
+* Data Center Id
+* Volume Id
+* Snapshot Name
+* Snapshot Licence Type`, createSnapshotExample, true)
 	create.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot"+config.RequiredFlag)
 	create.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
 	create.AddStringFlag(config.ArgSnapshotLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag)
@@ -89,7 +90,8 @@ Required values to run command:
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
 Required values to run command:
-- Snapshot Id`, updateSnapshotExample, true)
+
+* Snapshot Id`, updateSnapshotExample, true)
 	update.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot")
 	update.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
 	update.AddStringFlag(config.ArgSnapshotLicenceType, "", "", "Licence Type of the Snapshot")

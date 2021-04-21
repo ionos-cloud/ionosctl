@@ -15,7 +15,8 @@ ionosctl snapshot get [flags]
 Use this command to get information about a specified Snapshot.
 
 Required values to run command:
-- Snapshot Id
+
+* Snapshot Id
 
 ## Options
 

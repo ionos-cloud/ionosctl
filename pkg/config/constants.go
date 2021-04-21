@@ -78,6 +78,28 @@ const (
 	ArgLabelKey                    = "label-key"
 	ArgLabelValue                  = "label-value"
 	ArgResourceLimits              = "resource-limits"
+	ArgUserId                      = "user-id"
+	ArgUserFirstName               = "user-first-name"
+	ArgUserLastName                = "user-last-name"
+	ArgUserEmail                   = "user-email"
+	ArgUserPassword                = "user-password"
+	ArgUserAdministrator           = "user-administrator"
+	ArgUserForceSecAuth            = "user-force-secure"
+	ArgGroupId                     = "group-id"
+	ArgGroupName                   = "group-name"
+	ArgGroupCreateDc               = "group-create-dc"
+	ArgGroupCreateSnapshot         = "group-create-snapshot"
+	ArgGroupReserveIp              = "group-reserve-ip"
+	ArgGroupAccessLog              = "group-access-logs"
+	ArgGroupS3Privilege            = "group-s3privilege"
+	ArgGroupCreateBackUpUnit       = "group-create-backup"
+	ArgGroupCreatePcc              = "group-create-pcc"
+	ArgGroupCreateNic              = "group-create-nic"
+	ArgGroupCreateK8s              = "group-create-k8s"
+	ArgResourceId                  = "resource-id"
+	ArgResourceType                = "resource-type"
+	ArgEditPrivilege               = "edit-privilege"
+	ArgSharePrivilege              = "share-privilege"
 )
 
 // Default values
@@ -86,7 +108,7 @@ const (
 	DefaultConfigFileName   = "/config.json"
 	DefaultOutputFormat     = "text"
 	DefaultWait             = false
-	DefaultTimeoutSeconds   = 60
+	DefaultTimeoutSeconds   = int(60)
 	DefaultServerCores      = 2
 	DefaultServerRAM        = 256
 	DefaultServerCPUFamily  = "AMD_OPTERON"
@@ -116,4 +138,7 @@ const (
 	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
 	RequiredFlagLabelKey       = "The unique Label Key " + RequiredFlag
 	RequiredFlagLabelValue     = "The unique Label Value " + RequiredFlag
+	RequiredFlagUserId         = "The unique User Id " + RequiredFlag
+	RequiredFlagGroupId        = "The unique Group Id " + RequiredFlag
+	RequiredFlagResourceId     = "The unique Resource Id " + RequiredFlag
 )
