@@ -102,6 +102,9 @@ const (
 	ArgSharePrivilege              = "share-privilege"
 	ArgS3KeyId                     = "s3key-id"
 	ArgS3KeyActive                 = "s3key-active"
+	ArgPccId                       = "pcc-id"
+	ArgPccName                     = "pcc-name"
+	ArgPccDescription              = "pcc-description"
 )
 
 // Default values
@@ -144,4 +147,5 @@ const (
 	RequiredFlagGroupId        = "The unique Group Id " + RequiredFlag
 	RequiredFlagResourceId     = "The unique Resource Id " + RequiredFlag
 	RequiredFlagS3KeyId        = "The unique User S3Key Id " + RequiredFlag
+	RequiredFlagPccId          = "The unique Private Cross-Connect Id " + RequiredFlag
 )

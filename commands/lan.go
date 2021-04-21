@@ -87,6 +87,10 @@ Required values to run command:
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
+	update.AddStringFlag(config.ArgPccId, "", "", "The name of the LAN")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	update.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Public option for LAN")
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be updated [seconds]")
@@ -190,6 +194,9 @@ func RunLanUpdate(c *builder.CommandConfig) error {
 	}
 	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgLanPublic)) {
 		input.SetPublic(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgLanPublic)))
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgPccId)) {
+		input.SetPcc(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgPccId)))
 	}
 	lan, resp, err := c.Lans().Update(
 		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),

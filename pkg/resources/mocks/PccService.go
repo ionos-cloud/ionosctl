@@ -81,6 +81,22 @@ func (mr *MockPccsServiceMockRecorder) Get(pccId interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockPccsService)(nil).Get), pccId)
 }
 
+// GetPeers mocks base method.
+func (m *MockPccsService) GetPeers(pccId string) (*[]resources.Peer, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPeers", pccId)
+	ret0, _ := ret[0].(*[]resources.Peer)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetPeers indicates an expected call of GetPeers.
+func (mr *MockPccsServiceMockRecorder) GetPeers(pccId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPeers", reflect.TypeOf((*MockPccsService)(nil).GetPeers), pccId)
+}
+
 // List mocks base method.
 func (m *MockPccsService) List() (resources.PrivateCrossConnects, *resources.Response, error) {
 	m.ctrl.T.Helper()

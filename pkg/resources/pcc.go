@@ -2,7 +2,6 @@ package resources
 
 import (
 	"context"
-
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 
@@ -18,10 +17,15 @@ type PrivateCrossConnects struct {
 	ionoscloud.PrivateCrossConnects
 }
 
+type Peer struct {
+	ionoscloud.Peer
+}
+
 // PrivateCrossConnectsService is a wrapper around ionoscloud.PrivateCrossConnect
 type PccsService interface {
 	List() (PrivateCrossConnects, *Response, error)
 	Get(pccId string) (*PrivateCrossConnect, *Response, error)
+	GetPeers(pccId string) (*[]Peer, *Response, error)
 	Create(u PrivateCrossConnect) (*PrivateCrossConnect, *Response, error)
 	Update(pccId string, input PrivateCrossConnectProperties) (*PrivateCrossConnect, *Response, error)
 	Delete(pccId string) (*Response, error)
@@ -51,6 +55,23 @@ func (s *pccsService) Get(pccId string) (*PrivateCrossConnect, *Response, error)
 	req := s.client.PrivateCrossConnectApi.PccsFindById(s.context, pccId)
 	pcc, res, err := s.client.PrivateCrossConnectApi.PccsFindByIdExecute(req)
 	return &PrivateCrossConnect{pcc}, &Response{*res}, err
+}
+
+func (s *pccsService) GetPeers(pccId string) (*[]Peer, *Response, error) {
+	peers := make([]Peer, 0)
+	req := s.client.PrivateCrossConnectApi.PccsFindById(s.context, pccId)
+	pcc, res, err := s.client.PrivateCrossConnectApi.PccsFindByIdExecute(req)
+	if err != nil {
+		return nil, nil, err
+	}
+	if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
+		if ps, ok := properties.GetPeersOk(); ok && ps != nil {
+			for _, p := range *ps {
+				peers = append(peers, Peer{p})
+			}
+		}
+	}
+	return &peers, &Response{*res}, err
 }
 
 func (s *pccsService) Create(u PrivateCrossConnect) (*PrivateCrossConnect, *Response, error) {
