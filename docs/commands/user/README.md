@@ -12,7 +12,7 @@ ionosctl user [command]
 
 ## Description
 
-The sub-command of `ionosctl user` allows you to list, get, create, update, delete Users under your account.
+The sub-command of `ionosctl user` allows you to list, get, create, update, delete Users under your account. To add Users to a Group, check the `ionosctl group` commands.
 
 ## Options
 
