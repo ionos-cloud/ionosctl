@@ -221,23 +221,23 @@ Status: Command nic delete has been successfully executed`
 		Lan Examples
 	*/
 	createLanExample = `ionosctl lan create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-name demoLan
-LanId   Name      Public
+LanId   Name      Public   PccId
 4       demoLan   false
 RequestId: da824a69-a12a-4153-b302-a797b3581c2b
 Status: Command lan create has been successfully executed`
 	updateLanExample = `ionosctl lan update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --lan-name demoLAN --lan-public=true
-LanId   Name      Public
+LanId   Name      Public    PccId
 3       demoLAN   true
 RequestId: 0a174dca-62b1-4360-aef8-89fd31c196f2
 Status: Command lan update has been successfully executed`
 	listLanExample = `ionosctl lan list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d 
-LanId   Name                                                Public
+LanId   Name                                                Public    PccId
 4       demoLan                                             false
 3       demoLAN                                             true
 2       Switch of LB f16dfcc1-9181-400b-a08d-7fe15ca0e9af   false
 1       Switch of LB 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   false`
 	getLanExample = `ionosctl lan get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 4
-LanId   Name      Public
+LanId   Name      Public    PccId
 4       demoLan   false`
 	deleteLanExample = `ionosctl lan delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 4
 Warning: Are you sure you want to delete lan (y/N) ? y

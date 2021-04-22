@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"io"
 	"os"
 
@@ -58,7 +59,9 @@ func lan() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdValidate, RunLanCreate, "create", "Create a LAN",
-		`Use this command to create a new LAN within a Virtual Data Center on your account. The name and public option can be set. Please Note: IP Failover is configured after LAN creation using an update command.
+		`Use this command to create a new LAN within a Virtual Data Center on your account. The name and public option can be set.
+
+Note: IP Failover is configured after LAN creation using an update command.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -67,6 +70,10 @@ Required values to run command:
 * Data Center Id`, createLanExample, true)
 	create.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
 	create.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Indicates if the LAN faces the public Internet (true) or not (false)")
+	create.AddStringFlag(config.ArgPccId, "", "", "The unique Id of the Private Cross-Connect the LAN will connect to")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be created [seconds]")
 
@@ -74,7 +81,7 @@ Required values to run command:
 		Update Command
 	*/
 	update := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanUpdate, "update", "Update a LAN",
-		`Use this command to update a specified LAN.
+		`Use this command to update a specified LAN. You can update the name, the public option for LAN and to connect the LAN to a specified Private Cross-Connect.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -87,7 +94,7 @@ Required values to run command:
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
-	update.AddStringFlag(config.ArgPccId, "", "", "The name of the LAN")
+	update.AddStringFlag(config.ArgPccId, "", "", "The unique Id of the Private Cross-Connect the LAN will connect to")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -164,11 +171,21 @@ func RunLanGet(c *builder.CommandConfig) error {
 }
 
 func RunLanCreate(c *builder.CommandConfig) error {
-	lan, resp, err := c.Lans().Create(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLanName)),
-		viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgLanPublic)),
-	)
+	name := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLanName))
+	public := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgLanPublic))
+	properties := ionoscloud.LanPropertiesPost{
+		Name:   &name,
+		Public: &public,
+	}
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgPccId)) {
+		properties.SetPcc(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgPccId)))
+	}
+	input := resources.LanPost{
+		LanPost: ionoscloud.LanPost{
+			Properties: &properties,
+		},
+	}
+	l, resp, err := c.Lans().Create(viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)), input)
 	if err != nil {
 		return err
 	}
@@ -177,8 +194,8 @@ func RunLanCreate(c *builder.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:  lan,
-		KeyValue:    getLanPostsKVMaps([]resources.LanPost{*lan}),
+		OutputJSON:  l,
+		KeyValue:    getLanPostsKVMaps([]resources.LanPost{*l}),
 		Columns:     getLansCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse: resp,
 		Resource:    "lan",
@@ -245,7 +262,7 @@ func RunLanDelete(c *builder.CommandConfig) error {
 	})
 }
 
-var defaultLanCols = []string{"LanId", "Name", "Public"}
+var defaultLanCols = []string{"LanId", "Name", "Public", "PccId"}
 
 type LanPrint struct {
 	LanId  string `json:"LanId,omitempty"`

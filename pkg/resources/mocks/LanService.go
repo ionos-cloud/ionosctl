@@ -35,9 +35,9 @@ func (m *MockLansService) EXPECT() *MockLansServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockLansService) Create(datacenterId, name string, public bool) (*resources.LanPost, *resources.Response, error) {
+func (m *MockLansService) Create(datacenterId string, input resources.LanPost) (*resources.LanPost, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", datacenterId, name, public)
+	ret := m.ctrl.Call(m, "Create", datacenterId, input)
 	ret0, _ := ret[0].(*resources.LanPost)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,9 +45,9 @@ func (m *MockLansService) Create(datacenterId, name string, public bool) (*resou
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockLansServiceMockRecorder) Create(datacenterId, name, public interface{}) *gomock.Call {
+func (mr *MockLansServiceMockRecorder) Create(datacenterId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockLansService)(nil).Create), datacenterId, name, public)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockLansService)(nil).Create), datacenterId, input)
 }
 
 // Delete mocks base method.
