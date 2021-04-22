@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"io"
 	"os"
 
@@ -15,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -59,7 +59,7 @@ func lan() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdValidate, RunLanCreate, "create", "Create a LAN",
-		`Use this command to create a new LAN within a Virtual Data Center on your account. The name and public option can be set.
+		`Use this command to create a new LAN within a Virtual Data Center on your account. The name, the public option and the Private Cross-Connect Id can be set.
 
 Note: IP Failover is configured after LAN creation using an update command.
 
@@ -81,7 +81,7 @@ Required values to run command:
 		Update Command
 	*/
 	update := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanUpdate, "update", "Update a LAN",
-		`Use this command to update a specified LAN. You can update the name, the public option for LAN and to connect the LAN to a specified Private Cross-Connect.
+		`Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Private Cross-Connect.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -363,7 +363,6 @@ func getLansIds(outErr io.Writer, datacenterId string) []string {
 	clierror.CheckError(err, outErr)
 	lanSvc := resources.NewLanService(clientSvc.Get(), context.TODO())
 	lans, _, err := lanSvc.List(datacenterId)
-	//viper.GetString(builder.GetGlobalFlagName(parentCmdName, config.ArgDataCenterId)), )
 	clierror.CheckError(err, outErr)
 	lansIds := make([]string, 0)
 	if items, ok := lans.Lans.GetItemsOk(); ok && items != nil {
