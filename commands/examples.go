@@ -569,6 +569,35 @@ RequestId: 1529f8b7-08bb-4321-a996-08865660dee8
 Status: Command s3key delete and request have been successfully executed`
 
 	/*
+		BackupUnit Example
+	*/
+	listBackupUnitsExample = `ionosctl backupunit list 
+BackupUnitId                           Name          Email
+9fa48167-6375-4d93-b33c-e1ba3f461c17   test1234567   testrandom20@ionos.com`
+	getBackupUnitExample = `ionosctl backupunit get --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17 
+BackupUnitId                           Name          Email
+9fa48167-6375-4d93-b33c-e1ba3f461c17   test1234567   testrandom20@ionos.com`
+	getBackupUnitSSOExample = `ionosctl backupunit get-sso-url --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17 
+BackupUnitSsoUrl
+https://backup.ionos.com?etc.etc.etc`
+	createBackupUnitExample = `ionosctl backupunit create --backupunit-name test1234test --backupunit-email testrandom18@ionos.com --backupunit-password ********
+NOTE: To login with backup agent use: https://backup.ionos.com, with CONTRACT_NUMBER-BACKUP_UNIT_NAME and BACKUP_UNIT_PASSWORD!
+BackupUnitId                           Name           Email
+271a0627-70eb-4e36-8ff5-2e190f88cd2b   test1234test   testrandom18@ionos.com
+RequestId: 2cd34841-f0b1-4ac7-9741-89a2575a9962
+Status: Command backupunit create has been successfully executed`
+	updateBackupUnitExample = `ionosctl backupunit update --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17 --backupunit-email testrandom22@ionos.com
+BackupUnitId                           Name          Email
+9fa48167-6375-4d93-b33c-e1ba3f461c17   test1234567   testrandom22@ionos.com
+RequestId: a91fbce0-bb98-4be1-9d7f-90d3f6da8ffe
+Status: Command backupunit update has been successfully executed`
+	deleteBackupUnitExample = `ionosctl backupunit delete --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17
+Warning: Are you sure you want to delete backup unit (y/N) ? 
+y
+RequestId: fa00ba7e-426d-4460-9ec4-8b480bf5b17f
+Status: Command backupunit delete has been successfully executed`
+
+	/*
 		Private Cross-Connect Example
 	*/
 	listPccsExample = `ionosctl pcc list 

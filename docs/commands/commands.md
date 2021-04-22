@@ -29,6 +29,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 
 | Command | Description |
 | :--- | :--- |
+| [ionosctl backupunit](backupunit/) | BackupUnit Operations |
 | [ionosctl completion](completion/) | Generate code to enable auto-completion with `TAB` key |
 | [ionosctl contract](contract/) | Contract Resources Operations |
 | [ionosctl datacenter](datacenter/) | Data Center Operations |

@@ -143,5 +143,12 @@
     * [GetLabel](commands/volume/get-label.md)
     * [ListLabels](commands/volume/list-labels.md)
     * [RemoveLabel](commands/volume/remove-label.md)
+* [BackupUnit](commands/backupunit/README.md)
+    * [Create](commands/backupunit/create.md)
+    * [Get](commands/backupunit/get.md)
+    * [GetSsoUrl](commands/backupunit/get-sso-url.md)
+    * [List](commands/backupunit/list.md)
+    * [Update](commands/backupunit/update.md)
+    * [Delete](commands/backupunit/delete.md)
 * [Version](commands/version.md)
 
