@@ -20,14 +20,17 @@ import (
 var (
 	publicLan    = true
 	publicNewLan = false
-	lp           = ionoscloud.LanPost{
-		Id: &testLanVar,
+	lanPostTest  = ionoscloud.LanPost{
 		Properties: &ionoscloud.LanPropertiesPost{
 			Name:       &testLanVar,
 			IpFailover: nil,
 			Pcc:        &testLanVar,
 			Public:     &publicLan,
 		},
+	}
+	lp = ionoscloud.LanPost{
+		Id:         &testLanVar,
+		Properties: lanPostTest.Properties,
 	}
 	l = ionoscloud.Lan{
 		Id: &testLanVar,
@@ -39,6 +42,7 @@ var (
 	lanProperties = resources.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
 			Name:   &testLanNewVar,
+			Pcc:    &testLanNewVar,
 			Public: &publicNewLan,
 		},
 	}
@@ -49,7 +53,7 @@ var (
 				Name:       lanProperties.LanProperties.Name,
 				Public:     lanProperties.LanProperties.Public,
 				IpFailover: nil,
-				Pcc:        &testLanVar,
+				Pcc:        &testLanNewVar,
 			},
 		},
 	}
@@ -186,8 +190,9 @@ func TestRunLanCreate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanName), testLanVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanPublic), publicLan)
-		rm.Lan.EXPECT().Create(testLanVar, testLanVar, publicLan).Return(&resources.LanPost{LanPost: lp}, nil, nil)
+		rm.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, nil)
 		err := RunLanCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -204,7 +209,8 @@ func TestRunLanCreateErr(t *testing.T) {
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanName), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanPublic), publicLan)
-		rm.Lan.EXPECT().Create(testLanVar, testLanVar, publicLan).Return(&resources.LanPost{LanPost: lp}, nil, testLanErr)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testLanVar)
+		rm.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, testLanErr)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -222,7 +228,8 @@ func TestRunLanCreateWaitErr(t *testing.T) {
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanName), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanPublic), publicLan)
-		rm.Lan.EXPECT().Create(testLanVar, testLanVar, publicLan).Return(&resources.LanPost{LanPost: lp}, nil, nil)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testLanVar)
+		rm.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, nil)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -240,6 +247,7 @@ func TestRunLanUpdate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanName), testLanNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanPublic), publicNewLan)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testLanNewVar)
 		rm.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, nil, nil)
 		err := RunLanUpdate(cfg)
 		assert.NoError(t, err)
@@ -259,6 +267,7 @@ func TestRunLanUpdateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanName), testLanNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanPublic), publicNewLan)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testLanNewVar)
 		rm.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, nil, testLanErr)
 		err := RunLanUpdate(cfg)
 		assert.Error(t, err)
@@ -278,6 +287,7 @@ func TestRunLanUpdateWaitErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanName), testLanNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanPublic), publicNewLan)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testLanNewVar)
 		rm.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, nil, nil)
 		err := RunLanUpdate(cfg)
 		assert.Error(t, err)

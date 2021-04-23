@@ -135,6 +135,7 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 	title = customizeTitle(title, "Ipblock", "IPBlock")
 	title = customizeTitle(title, "Firewallrule", "FirewallRule")
 	title = customizeTitle(title, "Backupunit", "BackupUnit")
+	title = customizeTitle(title, "Pcc", "PrivateCrossConnect")
 	title = customizeTitle(title, "-", "")
 
 	buf.WriteString(fmt.Sprintf("# %s\n\n", title))

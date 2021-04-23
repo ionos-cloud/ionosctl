@@ -43,6 +43,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | [ionosctl location](location/) | Location Operations |
 | [ionosctl login](login.md) | Authentication command for SDK |
 | [ionosctl nic](nic/) | Network Interfaces Operations |
+| [ionosctl pcc](pcc/) | Private Cross-Connect Operations |
 | [ionosctl request](request/) | Request Operations |
 | [ionosctl resource](resource/) | Resource Operations |
 | [ionosctl s3key](s3key/) | S3Key Operations |

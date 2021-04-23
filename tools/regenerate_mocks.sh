@@ -25,5 +25,6 @@ mockgen -source user.go >mocks/UserService.go
 mockgen -source group.go >mocks/UserGroupService.go
 mockgen -source s3key.go >mocks/S3KeyService.go
 mockgen -source backupunit.go >mocks/BackupUnitService.go
+mockgen -source pcc.go >mocks/PccService.go
 
 pushd >/dev/null || exit
