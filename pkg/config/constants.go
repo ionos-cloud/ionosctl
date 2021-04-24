@@ -106,6 +106,7 @@ const (
 	ArgBackupUnitName              = "backupunit-name"
 	ArgBackupUnitPassword          = "backupunit-password"
 	ArgBackupUnitEmail             = "backupunit-email"
+	ArgK8sId                       = "k8s-id"
 )
 
 // Default values
