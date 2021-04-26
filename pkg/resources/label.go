@@ -26,7 +26,6 @@ type LabelResources struct {
 type LabelResourcesService interface {
 	GetByUrn(labelurn string) (*Label, *Response, error)
 	List() (Labels, *Response, error)
-	// Label Resources
 	DatacenterList(datacenterId string) (LabelResources, *Response, error)
 	DatacenterGet(datacenterId, key string) (*LabelResource, *Response, error)
 	DatacenterCreate(datacenterId, key, value string) (*LabelResource, *Response, error)

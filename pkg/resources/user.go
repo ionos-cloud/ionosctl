@@ -33,7 +33,6 @@ type UsersService interface {
 	Create(u User) (*User, *Response, error)
 	Update(userId string, input User) (*User, *Response, error)
 	Delete(userId string) (*Response, error)
-	// Resources
 	ListResources() (Resources, *Response, error)
 	GetResourcesByType(resourceType string) (Resources, *Response, error)
 	GetResourceByTypeAndId(resourceType, resourceId string) (*Resource, *Response, error)

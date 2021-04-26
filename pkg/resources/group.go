@@ -45,17 +45,14 @@ type GroupsService interface {
 	Create(u Group) (*Group, *Response, error)
 	Update(groupId string, input Group) (*Group, *Response, error)
 	Delete(groupId string) (*Response, error)
-	// Users
 	ListUsers(groupId string) (GroupMembers, *Response, error)
 	AddUser(groupId string, input User) (*User, *Response, error)
 	RemoveUser(groupId, userId string) (*Response, error)
-	// Shares
 	ListShares(groupId string) (GroupShares, *Response, error)
 	GetShare(groupId, resourceId string) (*GroupShare, *Response, error)
 	AddShare(groupId, resourceId string, input GroupShare) (*GroupShare, *Response, error)
 	UpdateShare(groupId, resourceId string, input GroupShare) (*GroupShare, *Response, error)
 	RemoveShare(groupId, resourceId string) (*Response, error)
-	// Resources
 	ListResources(groupId string) (ResourceGroups, *Response, error)
 }
 

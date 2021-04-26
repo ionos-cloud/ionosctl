@@ -22,7 +22,7 @@ type Peer struct {
 	ionoscloud.Peer
 }
 
-// PrivateCrossConnectsService is a wrapper around ionoscloud.PrivateCrossConnect
+// PccsService is a wrapper around ionoscloud.PrivateCrossConnect
 type PccsService interface {
 	List() (PrivateCrossConnects, *Response, error)
 	Get(pccId string) (*PrivateCrossConnect, *Response, error)

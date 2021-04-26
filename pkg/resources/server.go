@@ -28,7 +28,6 @@ type ServersService interface {
 	Start(datacenterId, serverId string) (*Response, error)
 	Stop(datacenterId, serverId string) (*Response, error)
 	Reboot(datacenterId, serverId string) (*Response, error)
-	// Volume Actions
 	AttachVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
 	DetachVolume(datacenterId, serverId, volumeId string) (*Response, error)
 	ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error)
