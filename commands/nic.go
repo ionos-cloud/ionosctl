@@ -19,6 +19,7 @@ import (
 )
 
 func nic() *builder.Command {
+	ctx := context.TODO()
 	nicCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "nic",
@@ -41,11 +42,11 @@ func nic() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultNicCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsValidate, RunNicList, "list", "List NICs",
+	builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsValidate, RunNicList, "list", "List NICs",
 		"Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		listNicExample, true)
 
-	get := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicGet, "get", "Get a NIC",
+	get := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicGet, "get", "Get a NIC",
 		"Use this command to get information about a specified NIC from specified Data Center and Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* NIC Id",
 		getNicExample, true)
 	get.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
@@ -53,7 +54,7 @@ func nic() *builder.Command {
 		return getNicsIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	create := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsValidate, RunNicCreate, "create", "Create a NIC",
+	create := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsValidate, RunNicCreate, "create", "Create a NIC",
 		`Use this command to create a new NIC on your account. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -72,7 +73,7 @@ Required values to run a command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be created [seconds]")
 
-	update := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicUpdate, "update", "Update a NIC",
+	update := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicUpdate, "update", "Update a NIC",
 		`Use this command to update the configuration of a specified NIC. Some restrictions are in place: The primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer. You can also add additional reserved, public IPs to the NIC.
 
 The user can specify and assign private IPs manually. Valid IP addresses for private networks are 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16.
@@ -98,7 +99,7 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be updated [seconds]")
 
-	deleteCmd := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicDelete, "delete", "Delete a NIC",
+	deleteCmd := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicDelete, "delete", "Delete a NIC",
 		`This command deletes a specified NIC.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.

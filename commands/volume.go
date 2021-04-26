@@ -20,6 +20,7 @@ import (
 )
 
 func volume() *builder.Command {
+	ctx := context.TODO()
 	volumeCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "volume",
@@ -37,11 +38,11 @@ func volume() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdValidate, RunVolumeList, "list", "List Volumes",
+	builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdValidate, RunVolumeList, "list", "List Volumes",
 		"Use this command to list all Volumes from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		listVolumeExample, true)
 
-	get := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeGet, "get", "Get a Volume",
+	get := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeGet, "get", "Get a Volume",
 		"Use this command to retrieve information about a Volume using its ID.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id",
 		getVolumeExample, true)
 	get.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
@@ -49,7 +50,7 @@ func volume() *builder.Command {
 		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	create := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdValidate, RunVolumeCreate, "create", "Create a Volume",
+	create := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdValidate, RunVolumeCreate, "create", "Create a Volume",
 		`Use this command to create a Volume on your account. You can specify the name, size, type, licence type and availability zone for the object.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -68,7 +69,7 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be created [seconds]")
 
-	update := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeUpdate, "update", "Update a Volume",
+	update := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeUpdate, "update", "Update a Volume",
 		`Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards.
 
 Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API. Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
@@ -90,7 +91,7 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be updated [seconds]")
 
-	deleteCmd := builder.NewCommand(context.TODO(), volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeDelete, "delete", "Delete a Volume",
+	deleteCmd := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeDelete, "delete", "Delete a Volume",
 		`Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.

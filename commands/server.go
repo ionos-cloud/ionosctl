@@ -20,6 +20,7 @@ import (
 )
 
 func server() *builder.Command {
+	ctx := context.TODO()
 	serverCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "server",
@@ -37,11 +38,11 @@ func server() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdValidate, RunServerList, "list", "List Servers",
+	builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdValidate, RunServerList, "list", "List Servers",
 		"Use this command to list Servers from a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		listServerExample, true)
 
-	get := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerGet, "get", "Get a Server",
+	get := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerGet, "get", "Get a Server",
 		"Use this command to get information about a specified Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
 	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
@@ -49,7 +50,7 @@ func server() *builder.Command {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	create := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdValidate, RunServerCreate, "create", "Create a Server",
+	create := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdValidate, RunServerCreate, "create", "Create a Server",
 		`Use this command to create a Server in a specified Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -71,7 +72,7 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be created [seconds]")
 
-	update := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerUpdate, "update", "Update a Server",
+	update := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerUpdate, "update", "Update a Server",
 		`Use this command to update a specified Server from a Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -98,7 +99,7 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be updated [seconds]")
 
-	deleteCmd := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerDelete, "delete", "Delete a Server",
+	deleteCmd := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerDelete, "delete", "Delete a Server",
 		`Use this command to delete a specified Server from a Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
@@ -114,7 +115,7 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be deleted [seconds]")
 
-	start := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStart, "start", "Start a Server",
+	start := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStart, "start", "Start a Server",
 		`Use this command to start specified Server from a Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
@@ -130,7 +131,7 @@ Required values to run command:
 	start.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to start")
 	start.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be started [seconds]")
 
-	stop := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStop, "stop", "Stop a Server",
+	stop := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStop, "stop", "Stop a Server",
 		`Use this command to stop specified Server from a Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
@@ -146,7 +147,7 @@ Required values to run command:
 	stop.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to stop")
 	stop.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be stopped [seconds]")
 
-	reboot := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerReboot, "reboot", "Force a hard reboot of a Server",
+	reboot := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerReboot, "reboot", "Force a hard reboot of a Server",
 		`Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
@@ -160,7 +161,7 @@ Required values to run command:
 		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	attachVolume := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerAttachVolume, "attach-volume", "Attach a Volume to a Server",
+	attachVolume := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerAttachVolume, "attach-volume", "Attach a Volume to a Server",
 		`Use this command to attach a Volume to a Server from a Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -181,7 +182,7 @@ Required values to run command:
 	attachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to attach to Server")
 	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
 
-	listAttached := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerListVolumes, "list-volumes", "List attached Volumes from a Server",
+	listAttached := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerListVolumes, "list-volumes", "List attached Volumes from a Server",
 		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		listVolumesServerExample, true)
 	listAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
@@ -189,7 +190,7 @@ Required values to run command:
 		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	getAttached := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerGetVolume, "get-volume", "Get an attached Volume from a Server",
+	getAttached := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerGetVolume, "get-volume", "Get an attached Volume from a Server",
 		"Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
 		getVolumeServerExample, true)
 	getAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
@@ -201,7 +202,7 @@ Required values to run command:
 		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(serverCmd.Name(), getAttached.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	detachVolume := builder.NewCommand(context.TODO(), serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerDetachVolume, "detach-volume", "Detach a Volume from a Server",
+	detachVolume := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerDetachVolume, "detach-volume", "Detach a Volume from a Server",
 		`Use this command to detach a Volume from a Server.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.

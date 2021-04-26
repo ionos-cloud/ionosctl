@@ -19,6 +19,7 @@ import (
 )
 
 func request() *builder.Command {
+	ctx := context.TODO()
 	reqCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "request",
@@ -32,10 +33,10 @@ func request() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	builder.NewCommand(context.TODO(), reqCmd, noPreRun, RunRequestList, "list", "List Requests",
+	builder.NewCommand(ctx, reqCmd, noPreRun, RunRequestList, "list", "List Requests",
 		"Use this command to list all Requests on your account", "", true)
 
-	get := builder.NewCommand(context.TODO(), reqCmd, PreRunRequestIdValidate, RunRequestGet, "get", "Get a Request",
+	get := builder.NewCommand(ctx, reqCmd, PreRunRequestIdValidate, RunRequestGet, "get", "Get a Request",
 		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		getRequestExample, true)
 	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
@@ -43,7 +44,7 @@ func request() *builder.Command {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	wait := builder.NewCommand(context.TODO(), reqCmd, PreRunRequestIdValidate, RunRequestWait, "wait", "Wait a Request",
+	wait := builder.NewCommand(ctx, reqCmd, PreRunRequestIdValidate, RunRequestWait, "wait", "Wait a Request",
 		`Use this command to wait for a specified Request to execute. Commands used for create, update, delete, attach, detach also support this via `+"`"+`--wait`+"`"+`option.
 
 You can specify a timeout for the action to be executed using `+"`"+`--timeout`+"`"+` option.

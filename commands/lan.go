@@ -20,6 +20,7 @@ import (
 )
 
 func lan() *builder.Command {
+	ctx := context.TODO()
 	lanCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "lan",
@@ -37,11 +38,11 @@ func lan() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultLanCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdValidate, RunLanList, "list", "List LANs",
+	builder.NewCommand(ctx, lanCmd, PreRunGlobalDcIdValidate, RunLanList, "list", "List LANs",
 		"Use this command to get a list of LANs on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		listLanExample, true)
 
-	get := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanGet, "get", "Get a LAN",
+	get := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanGet, "get", "Get a LAN",
 		"Use this command to retrieve information of a specified LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		getLanExample, true)
 	get.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
@@ -49,7 +50,7 @@ func lan() *builder.Command {
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	create := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdValidate, RunLanCreate, "create", "Create a LAN",
+	create := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcIdValidate, RunLanCreate, "create", "Create a LAN",
 		`Use this command to create a new LAN within a Virtual Data Center on your account. The name, the public option and the Private Cross-Connect Id can be set.
 
 Note: IP Failover is configured after LAN creation using an update command.
@@ -68,7 +69,7 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be created [seconds]")
 
-	update := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanUpdate, "update", "Update a LAN",
+	update := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanUpdate, "update", "Update a LAN",
 		`Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Private Cross-Connect.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -90,7 +91,7 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be updated [seconds]")
 
-	deleteCmd := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanDelete, "delete", "Delete a LAN",
+	deleteCmd := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanDelete, "delete", "Delete a LAN",
 		`Use this command to delete a specified LAN from a Virtual Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
