@@ -30,7 +30,7 @@ func group() *builder.Command {
 	}
 	globalFlags := groupCmd.Command.PersistentFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(groupCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -150,7 +150,7 @@ Required values to run command:
 	})
 	removeUser.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupUsersIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Command.Name(), removeUser.Command.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return getGroupUsersIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Name(), removeUser.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	shareGroup(groupCmd)

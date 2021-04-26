@@ -44,7 +44,7 @@ func shareGroup(groupCmd *builder.Command) {
 	})
 	getShare.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
 	_ = getShare.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Command.Name(), getShare.Command.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Name(), getShare.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -88,7 +88,7 @@ Required values to run command:
 	})
 	updateShare.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
 	_ = updateShare.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Command.Name(), updateShare.Command.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Name(), updateShare.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	updateShare.AddBoolFlag(config.ArgEditPrivilege, "", false, "Update the group's permission to edit privileges on resource")
 	updateShare.AddBoolFlag(config.ArgSharePrivilege, "", false, "Update the group's permission to share resource")
@@ -111,7 +111,7 @@ Required values to run command:
 	})
 	removeShare.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
 	_ = removeShare.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Command.Name(), removeShare.Command.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Name(), removeShare.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeShare.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for a Resource Share to be remove from a Group")
 	removeShare.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Resource Share to be remove from a Group [seconds]")

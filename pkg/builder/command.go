@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -27,6 +28,34 @@ func (c *Command) AddCommand(commands ...*Command) {
 	for _, cmd := range commands {
 		c.Command.AddCommand(cmd.Command)
 	}
+}
+
+func (c *Command) Name() string {
+	return c.Command.Name()
+}
+
+func (c *Command) ParentName() string {
+	if c.Command.Parent() != nil {
+		return c.Command.Parent().Name()
+	} else {
+		return ""
+	}
+}
+
+func (c *Command) CommandPath() string {
+	return c.Command.CommandPath()
+}
+
+func (c *Command) MarkFlagRequired(name string) error {
+	if c.Command.Flag(name) != nil {
+		u := c.Command.Flag(name).Usage
+		c.Command.Flag(name).Usage = fmt.Sprintf("%s %s", u, "(required)")
+	}
+	return c.Command.MarkFlagRequired(name)
+}
+
+func (c *Command) GlobalFlags() *flag.FlagSet {
+	return c.Command.PersistentFlags()
 }
 
 func (c *Command) SubCommands() []*Command {

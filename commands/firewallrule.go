@@ -32,25 +32,25 @@ func firewallrule() *builder.Command {
 	}
 	globalFlags := firewallRuleCmd.Command.PersistentFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringP(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringP(config.ArgNicId, "", "", config.RequiredFlagNicId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgNicId), globalFlags.Lookup(config.ArgNicId))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId), globalFlags.Lookup(config.ArgNicId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultFirewallRuleCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -68,9 +68,9 @@ func firewallrule() *builder.Command {
 	get.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -124,9 +124,9 @@ Required values to run command:
 	update.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Firewall Rule to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Firewall Rule to be updated [seconds]")
@@ -148,9 +148,9 @@ Required values to run command:
 	deleteCmd.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Firewall Rule to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Firewall Rule to be deleted [seconds]")

@@ -44,7 +44,7 @@ func labelDatacenter(datacenterCmd *builder.Command) {
 		getDataCenterLabelExample, true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDatacenterLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(datacenterCmd.Command.Name(), get.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getDatacenterLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(datacenterCmd.Name(), get.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -81,7 +81,7 @@ Required values to run command:
 * Label Key`, removeDataCenterLabelExample, true)
 	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDatacenterLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(datacenterCmd.Command.Name(), removeLabel.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getDatacenterLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(datacenterCmd.Name(), removeLabel.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -177,7 +177,7 @@ func labelServer(serverCmd *builder.Command) {
 		"Use this command to list all Labels from a specified Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id", listServerLabelsExample, true)
 	list.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -189,13 +189,13 @@ func labelServer(serverCmd *builder.Command) {
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServerLabelIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetFlagName(serverCmd.Command.Name(), get.Command.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetFlagName(serverCmd.Name(), get.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -214,7 +214,7 @@ Required values to run command:
 	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.RequiredFlagLabelValue)
 	addLabel.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -231,13 +231,13 @@ Required values to run command:
 	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServerLabelIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetFlagName(serverCmd.Command.Name(), removeLabel.Command.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetFlagName(serverCmd.Name(), removeLabel.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	return
 }
@@ -354,7 +354,7 @@ func labelVolume(volumeCmd *builder.Command) {
 		"Use this command to list all Labels from a specified Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id", listVolumeLabelsExample, true)
 	list.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -366,13 +366,13 @@ func labelVolume(volumeCmd *builder.Command) {
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumeLabelIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetFlagName(volumeCmd.Command.Name(), get.Command.Name(), config.ArgVolumeId)),
+			viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetFlagName(volumeCmd.Name(), get.Name(), config.ArgVolumeId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -391,7 +391,7 @@ Required values to run command:
 	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.RequiredFlagLabelValue)
 	addLabel.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	/*
 		Remove Label Command
@@ -407,13 +407,13 @@ Required values to run command:
 	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumeLabelIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetFlagName(volumeCmd.Command.Name(), removeLabel.Command.Name(), config.ArgVolumeId)),
+			viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetFlagName(volumeCmd.Name(), removeLabel.Name(), config.ArgVolumeId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	return
 }
@@ -540,7 +540,7 @@ func labelIpBlock(ipBlockCmd *builder.Command) {
 		getIpBlockLabelExample, true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIPBlockLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(ipBlockCmd.Command.Name(), get.Command.Name(), config.ArgIpBlockId))), cobra.ShellCompDirectiveNoFileComp
+		return getIPBlockLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(ipBlockCmd.Name(), get.Name(), config.ArgIpBlockId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -577,7 +577,7 @@ Required values to run command:
 * Label Key`, removeIpBlockLabelExample, true)
 	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIPBlockLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(ipBlockCmd.Command.Name(), removeLabel.Command.Name(), config.ArgIpBlockId))), cobra.ShellCompDirectiveNoFileComp
+		return getIPBlockLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(ipBlockCmd.Name(), removeLabel.Name(), config.ArgIpBlockId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -683,7 +683,7 @@ func labelSnapshot(snapshotCmd *builder.Command) {
 		getSnapshotLabelExample, true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getSnapshotLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Command.Name(), get.Command.Name(), config.ArgSnapshotId))), cobra.ShellCompDirectiveNoFileComp
+		return getSnapshotLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Name(), get.Name(), config.ArgSnapshotId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -718,7 +718,7 @@ Required values to run command:
 * Label Key`, removeSnapshotLabelExample, true)
 	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getSnapshotLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Command.Name(), removeLabel.Command.Name(), config.ArgSnapshotId))), cobra.ShellCompDirectiveNoFileComp
+		return getSnapshotLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Name(), removeLabel.Name(), config.ArgSnapshotId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
