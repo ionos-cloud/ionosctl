@@ -30,17 +30,23 @@ func loadBalancer() *builder.Command {
 	}
 	globalFlags := loadbalancerCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(loadbalancerCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(loadbalancerCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = loadbalancerCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
+	globalFlags.StringSlice(config.ArgCols, defaultLoadbalancerCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(loadbalancerCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdValidate, RunLoadBalancerList, "list", "List Load Balancers",
 		"Use this command to list all Load Balancers from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		listLoadbalancerExample, true)
 
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerIdValidate, RunLoadBalancerGet, "get", "Get a Load Balancer",
 		"Use this command to retrieve information about a Load Balancer instance.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		getLoadbalancerExample, true)
@@ -49,6 +55,9 @@ func loadBalancer() *builder.Command {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(loadbalancerCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Create Command
+	*/
 	create := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdValidate, RunLoadBalancerCreate, "create", "Create a Load Balancer",
 		`Use this command to create a new Load Balancer on your account. The name, IP and DHCP for the Load Balancer can be set.
 
@@ -62,6 +71,9 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be created [seconds]")
 
+	/*
+		Update Command
+	*/
 	update := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerIdValidate, RunLoadBalancerUpdate, "update", "Update a Load Balancer",
 		`Use this command to update the configuration of a specified Load Balancer.
 
@@ -81,6 +93,9 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be updated [seconds]")
 
+	/*
+		Delete Command
+	*/
 	deleteCmd := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerIdValidate, RunLoadBalancerDelete, "delete", "Delete a Load Balancer",
 		`Use this command to permanently delete the specified Load Balancer. This action is irreversible.
 
@@ -97,6 +112,9 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Load Balancer to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be deleted [seconds]")
 
+	/*
+		Attach Command
+	*/
 	attachNic := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerAttachNic, "attach-nic", "Attach a NIC to a Load Balancer",
 		`Use this command to attach a specified NIC to a Load Balancer on your account.
 
@@ -122,6 +140,9 @@ Required values to run command:
 	attachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to attach to a Load Balancer")
 	attachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be attached to a Load Balancer [seconds]")
 
+	/*
+		List Command
+	*/
 	listAttached := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerIdValidate, RunLoadBalancerListNics, "list-nics", "List attached NICs from a Load Balancer",
 		"Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		listNicsLoadbalancerExample, true)
@@ -130,6 +151,9 @@ Required values to run command:
 		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(loadbalancerCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Get Command
+	*/
 	getAttached := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerGetNic, "get-nic", "Get an attached NIC to a Load Balancer",
 		"Use this command to retrieve information about an attached NIC to a Load Balancer.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
 		getNicLoadbalancerExample, true)
@@ -146,6 +170,9 @@ Required values to run command:
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Detach Command
+	*/
 	detachNic := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerDetachNic, "detach-nic", "Detach a NIC from a Load Balancer",
 		`Use this command to detach a NIC from a Load Balancer.
 

@@ -51,10 +51,16 @@ func firewallrule() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultFirewallRuleCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsValidate, RunFirewallRuleList, "list", "List Firewall Rules",
 		"Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id",
 		listFirewallRuleExample, true)
 
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleIdValidate, RunFirewallRuleGet, "get", "Get a Firewall Rule",
 		"Use this command to retrieve information of a specified Firewall Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id\n* FirewallRule Id",
 		getFirewallRuleExample, true)
@@ -66,6 +72,9 @@ func firewallrule() *builder.Command {
 			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Create Command
+	*/
 	create := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleProtocolValidate, RunFirewallRuleCreate, "create", "Create a Firewall Rule",
 		`Use this command to create a new Firewall Rule. Please Note: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
 
@@ -89,6 +98,9 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Firewall Rule to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Firewall Rule to be created [seconds]")
 
+	/*
+		Update Command
+	*/
 	update := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleIdValidate, RunFirewallRuleUpdate, "update", "Update a FirewallRule",
 		`Use this command to update a specified Firewall Rule.
 
@@ -118,6 +130,9 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Firewall Rule to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Firewall Rule to be updated [seconds]")
 
+	/*
+		Delete Command
+	*/
 	deleteCmd := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleIdValidate, RunFirewallRuleDelete, "delete", "Delete a FirewallRule",
 		`Use this command to delete a specified Firewall Rule from a Virtual Data Center.
 

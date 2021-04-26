@@ -31,10 +31,16 @@ func ipblock() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultIpBlockCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(ipblockCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, ipblockCmd, noPreRun, RunIpBlockList, "list", "List IpBlocks",
 		"Use this command to list IpBlocks.",
 		listIpBlockExample, true)
 
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockGet, "get", "Get an IpBlock",
 		"Use this command to get information about a specified IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
 		getIpBlockExample, true)
@@ -43,6 +49,9 @@ func ipblock() *builder.Command {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Create Command
+	*/
 	create := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockLocationValidate, RunIpBlockCreate, "create", "Create/Reserve an IpBlock",
 		`Use this command to create/reserve an IpBlock in a specified location. The name, size options can be provided.
 
@@ -60,6 +69,9 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IpBlock to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IpBlock to be created [seconds]")
 
+	/*
+		Update Command
+	*/
 	update := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockUpdate, "update", "Update an IpBlock",
 		`Use this command to update a specified IpBlock.
 
@@ -76,6 +88,9 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IpBlock to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IpBlock to be updated [seconds]")
 
+	/*
+		Delete Command
+	*/
 	deleteCmd := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockDelete, "delete", "Delete an IpBlock",
 		`Use this command to delete a specified IpBlock.
 

@@ -31,17 +31,23 @@ func server() *builder.Command {
 	}
 	globalFlags := serverCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
+	globalFlags.StringSlice(config.ArgCols, defaultServerCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdValidate, RunServerList, "list", "List Servers",
 		"Use this command to list Servers from a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		listServerExample, true)
 
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerGet, "get", "Get a Server",
 		"Use this command to get information about a specified Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
@@ -50,6 +56,9 @@ func server() *builder.Command {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Create Command
+	*/
 	create := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdValidate, RunServerCreate, "create", "Create a Server",
 		`Use this command to create a Server in a specified Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
@@ -72,6 +81,9 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be created [seconds]")
 
+	/*
+		Update Command
+	*/
 	update := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerUpdate, "update", "Update a Server",
 		`Use this command to update a specified Server from a Data Center.
 
@@ -99,6 +111,9 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be updated [seconds]")
 
+	/*
+		Delete Command
+	*/
 	deleteCmd := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerDelete, "delete", "Delete a Server",
 		`Use this command to delete a specified Server from a Data Center.
 
@@ -115,6 +130,9 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be deleted [seconds]")
 
+	/*
+		Start Command
+	*/
 	start := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStart, "start", "Start a Server",
 		`Use this command to start specified Server from a Data Center.
 
@@ -131,6 +149,9 @@ Required values to run command:
 	start.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to start")
 	start.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be started [seconds]")
 
+	/*
+		Stop Command
+	*/
 	stop := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStop, "stop", "Stop a Server",
 		`Use this command to stop specified Server from a Data Center.
 
@@ -147,6 +168,9 @@ Required values to run command:
 	stop.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to stop")
 	stop.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be stopped [seconds]")
 
+	/*
+		Reboot Command
+	*/
 	reboot := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerReboot, "reboot", "Force a hard reboot of a Server",
 		`Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
@@ -161,6 +185,9 @@ Required values to run command:
 		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Attach Command
+	*/
 	attachVolume := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerAttachVolume, "attach-volume", "Attach a Volume to a Server",
 		`Use this command to attach a Volume to a Server from a Data Center.
 
@@ -182,6 +209,9 @@ Required values to run command:
 	attachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to attach to Server")
 	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
 
+	/*
+		List Command
+	*/
 	listAttached := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerListVolumes, "list-volumes", "List attached Volumes from a Server",
 		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		listVolumesServerExample, true)
@@ -190,6 +220,9 @@ Required values to run command:
 		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Get Command
+	*/
 	getAttached := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerGetVolume, "get-volume", "Get an attached Volume from a Server",
 		"Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
 		getVolumeServerExample, true)
@@ -202,6 +235,9 @@ Required values to run command:
 		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(serverCmd.Name(), getAttached.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Detach Command
+	*/
 	detachVolume := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerDetachVolume, "detach-volume", "Detach a Volume from a Server",
 		`Use this command to detach a Volume from a Server.
 

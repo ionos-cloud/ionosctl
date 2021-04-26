@@ -27,7 +27,7 @@ func labelDatacenter(datacenterCmd *builder.Command) {
 	ctx := context.TODO()
 
 	/*
-		List Labels Command
+		List Command
 	*/
 	listLabels := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterListLabels, listLabelsCmd, "List Labels from a Data Center",
 		"Use this command to list all Labels from a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", listDataCenterLabelsExample, true)
@@ -37,7 +37,7 @@ func labelDatacenter(datacenterCmd *builder.Command) {
 	})
 
 	/*
-		Get Label Command
+		Get Command
 	*/
 	get := builder.NewCommand(ctx, datacenterCmd, PreRunDcIdLabelKeyValidate, RunDataCenterGetLabel, getLabelCmd, "Get a Label from a Data Center",
 		"Use this command to get information about a specified Label from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Label Key",
@@ -52,7 +52,7 @@ func labelDatacenter(datacenterCmd *builder.Command) {
 	})
 
 	/*
-	 Add Label Command
+		Add Command
 	*/
 	addLabel := builder.NewCommand(ctx, datacenterCmd, PreRunDcIdLabelKeyValueValidate, RunDataCenterAddLabel, addLabelCmd, "Add a Label to a Data Center",
 		`Use this command to add a Label to a Data Center. You must specify the key and the value for the Label.
@@ -70,7 +70,7 @@ Required values to run command:
 	})
 
 	/*
-		Remove Label Command
+		Remove Command
 	*/
 	removeLabel := builder.NewCommand(ctx, datacenterCmd, PreRunDcIdLabelKeyValidate, RunDataCenterRemoveLabel, removeLabelCmd, "Remove a Label from a Data Center",
 		`Use this command to remove/delete a specified Label from a Data Center.
@@ -171,7 +171,7 @@ func labelServer(serverCmd *builder.Command) {
 	ctx := context.TODO()
 
 	/*
-		List Labels Command
+		List Command
 	*/
 	list := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerListLabels, listLabelsCmd, "List Labels from a Server",
 		"Use this command to list all Labels from a specified Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id", listServerLabelsExample, true)
@@ -181,7 +181,7 @@ func labelServer(serverCmd *builder.Command) {
 	})
 
 	/*
-		Get Label Command
+		Get Command
 	*/
 	get := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerLabelKeyValidate, RunServerGetLabel, getLabelCmd, "Get a Label from a Server",
 		"Use this command to get information about a specified Label from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Label Key",
@@ -199,7 +199,7 @@ func labelServer(serverCmd *builder.Command) {
 	})
 
 	/*
-		Add Label Command
+		Add Command
 	*/
 	addLabel := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerLabelKeyValueValidate, RunServerAddLabel, addLabelCmd, "Add a Label on a Server",
 		`Use this command to add/create a Label on Server. You must specify the key and the value for the Label.
@@ -218,7 +218,7 @@ Required values to run command:
 	})
 
 	/*
-		Remove Label Command
+		Remove Command
 	*/
 	removeLabel := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerLabelKeyValidate, RunServerRemoveLabel, removeLabelCmd, "Remove a Label from a Server",
 		`Use this command to remove/delete a specified Label from a Server.
@@ -239,6 +239,7 @@ Required values to run command:
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+
 	return
 }
 
@@ -348,7 +349,7 @@ func labelVolume(volumeCmd *builder.Command) {
 	ctx := context.TODO()
 
 	/*
-		List Labels Command
+		List Command
 	*/
 	list := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeListLabels, listLabelsCmd, "List Labels from a Volume",
 		"Use this command to list all Labels from a specified Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id", listVolumeLabelsExample, true)
@@ -358,7 +359,7 @@ func labelVolume(volumeCmd *builder.Command) {
 	})
 
 	/*
-		Get Label Command
+		Get Command
 	*/
 	get := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeLabelKeyValidate, RunVolumeGetLabel, getLabelCmd, "Get a Label from a Volume",
 		"Use this command to get information about a specified Label from a Volume.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id\n* Label Key",
@@ -376,7 +377,7 @@ func labelVolume(volumeCmd *builder.Command) {
 	})
 
 	/*
-		Add Label Command
+		Add Command
 	*/
 	addLabel := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeLabelKeyValueValidate, RunVolumeAddLabel, addLabelCmd, "Add a Label on a Volume",
 		`Use this command to add/create a Label on Volume. You must specify the key and the value for the Label.
@@ -393,8 +394,9 @@ Required values to run command:
 	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+
 	/*
-		Remove Label Command
+		Remove Command
 	*/
 	removeLabel := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeLabelKeyValidate, RunVolumeRemoveLabel, removeLabelCmd, "Remove a Label from a Volume",
 		`Use this command to remove/delete a specified Label from a Volume.
@@ -415,6 +417,7 @@ Required values to run command:
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+
 	return
 }
 
@@ -523,7 +526,7 @@ func labelIpBlock(ipBlockCmd *builder.Command) {
 	ctx := context.TODO()
 
 	/*
-		List Labels Command
+		List Command
 	*/
 	list := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdValidate, RunIpBlockListLabels, listLabelsCmd, "List Labels from a IpBlock",
 		"Use this command to list all Labels from a specified IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id", listIpBlockLabelsExample, true)
@@ -533,7 +536,7 @@ func labelIpBlock(ipBlockCmd *builder.Command) {
 	})
 
 	/*
-		Get Label Command
+		Get Command
 	*/
 	get := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValidate, RunIpBlockGetLabel, getLabelCmd, "Get a Label from a IpBlock",
 		"Use this command to get information about a specified Label from a IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id\n* Label Key",
@@ -548,7 +551,7 @@ func labelIpBlock(ipBlockCmd *builder.Command) {
 	})
 
 	/*
-		Add Label Command
+		Add Command
 	*/
 	addLabel := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValueValidate, RunIpBlockAddLabel, addLabelCmd, "Add a Label on a IpBlock",
 		`Use this command to add/create a Label on IpBlock. You must specify the key and the value for the Label.
@@ -566,7 +569,7 @@ Required values to run command:
 	})
 
 	/*
-		Remove Label Command
+		Remove Command
 	*/
 	removeLabel := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValidate, RunIpBlockRemoveLabel, removeLabelCmd, "Remove a Label from a IpBlock",
 		`Use this command to remove/delete a specified Label from a IpBlock.
@@ -666,7 +669,7 @@ func labelSnapshot(snapshotCmd *builder.Command) {
 	ctx := context.TODO()
 
 	/*
-		List Labels Command
+		List Command
 	*/
 	list := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotListLabels, listLabelsCmd, "List Labels from a Snapshot",
 		"Use this command to list all Labels from a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id", listSnapshotLabelsExample, true)
@@ -676,7 +679,7 @@ func labelSnapshot(snapshotCmd *builder.Command) {
 	})
 
 	/*
-		Get Label Command
+		Get Command
 	*/
 	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdLabelKeyValidate, RunSnapshotGetLabel, getLabelCmd, "Get a Label from a Snapshot",
 		"Use this command to get information about a specified Label from a Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id\n* Label Key",
@@ -689,8 +692,9 @@ func labelSnapshot(snapshotCmd *builder.Command) {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+
 	/*
-		Add Label Command
+		Add Command
 	*/
 	addLabel := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdLabelKeyValueValidate, RunSnapshotAddLabel, addLabelCmd, "Add a Label on a Snapshot",
 		`Use this command to create a Label on Snapshot. You must specify the key and the value for the Label.
@@ -706,8 +710,9 @@ Required values to run command:
 	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+
 	/*
-		Remove Label Command
+		Remove Command
 	*/
 	removeLabel := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdLabelKeyValidate, RunSnapshotRemoveLabel, removeLabelCmd, "Remove a Label from a Snapshot",
 		`Use this command to remove/delete a specified Label from a Snapshot.
@@ -724,6 +729,7 @@ Required values to run command:
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+
 	return
 }
 

@@ -31,6 +31,9 @@ func image() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	list := builder.NewCommand(ctx, imageCmd, noPreRun, RunImageList, "list", "List Images",
 		"Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
 		listImagesExample, true)
@@ -48,6 +51,9 @@ func image() *builder.Command {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
 		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		getImageExample, true)

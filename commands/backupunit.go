@@ -34,9 +34,15 @@ func backupunit() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultBackupUnitCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, backupUnitCmd, noPreRun, RunBackupUnitList, "list", "List BackupUnits",
 		"Use this command to get a list of existing BackupUnits available on your account.", listBackupUnitsExample, true)
 
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitIdValidate, RunBackupUnitGet, "get", "Get a BackupUnit",
 		"Use this command to retrieve details about a specific BackupUnit.\n\nRequired values to run command:\n\n* BackupUnit Id", getBackupUnitExample, true)
 	get.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
@@ -44,6 +50,9 @@ func backupunit() *builder.Command {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Get Command
+	*/
 	getsso := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitIdValidate, RunBackupUnitGetSsoUrl, "get-sso-url", "Get BackupUnit SSO URL",
 		"Use this command to access the GUI with a Single Sign On (SSO) URL that can be retrieved from the Cloud API using this request. If you copy the entire value returned and paste it into a browser, you will be logged into the BackupUnit GUI.\n\nRequired values to run command:\n\n* BackupUnit Id",
 		getBackupUnitSSOExample, true)
@@ -52,6 +61,9 @@ func backupunit() *builder.Command {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Create Command
+	*/
 	create := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitNameEmailPwdValidate, RunBackupUnitCreate, "create", "Create a BackupUnit",
 		`Use this command to create a BackupUnit under a particular contract. You need to specify the name, email and password for the new BackupUnit.
 
@@ -73,6 +85,9 @@ Required values to run a command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for BackupUnit to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for BackupUnit to be created [seconds]")
 
+	/*
+		Update Command
+	*/
 	update := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitIdValidate, RunBackupUnitUpdate, "update", "Update a BackupUnit",
 		`Use this command to update details about a specific BackupUnit. The password and the email may be updated.
 
@@ -88,6 +103,9 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for BackupUnit to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for BackupUnit to be updated [seconds]")
 
+	/*
+		Delete Command
+	*/
 	deleteCmd := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitIdValidate, RunBackupUnitDelete, "delete", "Delete a BackupUnit",
 		`Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.
 

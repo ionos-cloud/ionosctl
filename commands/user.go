@@ -32,9 +32,15 @@ func user() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultUserCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(userCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, userCmd, noPreRun, RunUserList, "list", "List Users",
 		"Use this command to get a list of existing Users available on your account.", listUserExample, true)
 
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, userCmd, PreRunUserIdValidate, RunUserGet, "get", "Get a User",
 		"Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id", getUserExample, true)
 	get.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
@@ -42,6 +48,9 @@ func user() *builder.Command {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Create Command
+	*/
 	create := builder.NewCommand(ctx, userCmd, PreRunUserNameEmailPwdValidate, RunUserCreate, "create", "Create a User under a particular contract",
 		`Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
@@ -60,6 +69,9 @@ Required values to run a command:
 	create.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
 	create.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 
+	/*
+		Update Command
+	*/
 	update := builder.NewCommand(ctx, userCmd, noPreRun, RunUserUpdate, "update", "Update a User",
 		`Use this command to update details about a specific User including their privileges.
 
@@ -78,6 +90,9 @@ Required values to run command:
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Delete Command
+	*/
 	deleteCmd := builder.NewCommand(ctx, userCmd, PreRunUserIdValidate, RunUserDelete, "delete", "Blacklists the User, disabling them",
 		`This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
 

@@ -32,9 +32,15 @@ func group() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, groupCmd, noPreRun, RunGroupList, "list", "List Groups",
 		"Use this command to get a list of available Groups available on your account.", listGroupExample, true)
 
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, groupCmd, PreRunGroupIdValidate, RunGroupGet, "get", "Get a Group",
 		"Use this command to retrieve details about a specific Group.\n\nRequired values to run command:\n\n* Group Id",
 		getGroupExample, true)
@@ -43,6 +49,9 @@ func group() *builder.Command {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Create Command
+	*/
 	create := builder.NewCommand(ctx, groupCmd, PreRunGroupNameValidate, RunGroupCreate, "create", "Create a Group",
 		`Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
 
@@ -62,6 +71,9 @@ Required values to run a command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Group to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Group to be created [seconds]")
 
+	/*
+		Update Command
+	*/
 	update := builder.NewCommand(ctx, groupCmd, noPreRun, RunGroupUpdate, "update", "Update a Group",
 		`Use this command to update details about a specific Group.
 
@@ -87,6 +99,9 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Group attributes to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Group to be updated [seconds]")
 
+	/*
+		Delete Command
+	*/
 	deleteCmd := builder.NewCommand(ctx, groupCmd, PreRunGroupIdValidate, RunGroupDelete, "delete", "Delete a Group",
 		`Use this operation to delete a single Group. Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
 
@@ -100,6 +115,9 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Group to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Group to be deleted [seconds]")
 
+	/*
+		List Command
+	*/
 	listUsers := builder.NewCommand(ctx, groupCmd, PreRunGroupIdValidate, RunGroupListUsers, "list-users", "List Users from a Group",
 		"Use this command to get a list of Users from a specific Group.\n\nRequired values to run command:\n\n* Group Id", listGroupUsersExample, true)
 	listUsers.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
@@ -107,6 +125,9 @@ Required values to run command:
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Add Command
+	*/
 	addUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIdsValidate, RunGroupAddUser, "add-user", "Add User to a Group",
 		"Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", addGroupUserExample, true)
 	addUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
@@ -118,6 +139,9 @@ Required values to run command:
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Remove Command
+	*/
 	removeUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIdsValidate, RunGroupRemoveUser, "remove-user", "Remove User from a Group",
 		"Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", removeGroupUserExample, true)
 	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)

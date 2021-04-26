@@ -35,21 +35,21 @@ Note: The command can also be used without `+"`"+`--user`+"`"+` and `+"`"+`--pas
 
 func RunLoginUser(c *builder.CommandConfig) error {
 	var err error
-	user := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "user"))
+	username := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "user"))
 	pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "password"))
 	token := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "token"))
 
-	if user == "" {
+	if username == "" {
 		err := c.Printer.Print("Enter your username:")
 		if err != nil {
 			return err
 		}
 		in := bufio.NewReader(c.Stdin)
-		user, err = in.ReadString('\n')
+		username, err = in.ReadString('\n')
 		if err != nil {
 			return err
 		}
-		user = strings.TrimRight(user, "\r\n")
+		username = strings.TrimRight(username, "\r\n")
 	}
 	if pwd == "" {
 		err := c.Printer.Print("Enter your password:")
@@ -62,7 +62,7 @@ func RunLoginUser(c *builder.CommandConfig) error {
 		}
 		pwd = string(bytesPwd)
 	}
-	viper.Set(config.Username, user)
+	viper.Set(config.Username, username)
 	viper.Set(config.Password, pwd)
 	viper.Set(config.Token, token)
 

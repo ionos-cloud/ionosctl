@@ -30,9 +30,15 @@ func resource() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultResourceCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, resourceCmd, noPreRun, RunResourceList, "list", "List Resources",
 		"Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.", listResourcesExample, true)
 
+	/*
+		Get Command
+	*/
 	getRsc := builder.NewCommand(ctx, resourceCmd, PreRunResourceTypeValidate, RunResourceGet, "get", "Get all Resources of a Type or a specific Resource Type",
 		"Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Resource Type",
 		getResourceExample, true)

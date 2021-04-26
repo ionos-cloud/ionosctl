@@ -31,9 +31,15 @@ func snapshot() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultSnapshotCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(snapshotCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, snapshotCmd, noPreRun, RunSnapshotList, "list", "List Snapshots",
 		"Use this command to get a list of Snapshots.", listSnapshotsExample, true)
 
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotGet, "get", "Get a Snapshot",
 		"Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		getSnapshotExample, true)
@@ -42,6 +48,9 @@ func snapshot() *builder.Command {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	/*
+		Create Command
+	*/
 	create := builder.NewCommand(ctx, snapshotCmd, PreRunSnapNameLicenceDcIdVolumeIdValidate, RunSnapshotCreate, "create", "Create a Snapshot of a Volume within the Virtual Data Center.",
 		`Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
@@ -71,6 +80,9 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be created [seconds]")
 
+	/*
+		Update Command
+	*/
 	update := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotUpdate, "update", "Update a Snapshot.",
 		`Use this command to update a specified Snapshot.
 
@@ -103,6 +115,9 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be created")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be created [seconds]")
 
+	/*
+		Restore Command
+	*/
 	restore := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdDcIdVolumeIdValidate, RunSnapshotRestore, "restore", "Restore a Snapshot onto a Volume",
 		"Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
 		restoreSnapshotExample, true)
@@ -121,6 +136,9 @@ Required values to run command:
 	restore.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be restored")
 	restore.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be restored [seconds]")
 
+	/*
+		Delete Command
+	*/
 	deleteCmd := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotDelete, "delete", "Delete a Snapshot",
 		"Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		deleteSnapshotExample, true)
