@@ -1,5 +1,5 @@
 ---
-description: List Labels from a IPBlock
+description: List Labels from a IpBlock
 ---
 
 # ListLabels
@@ -12,11 +12,11 @@ ionosctl ipblock list-labels [flags]
 
 ## Description
 
-Use this command to list all Labels from a specified IPBlock.
+Use this command to list all Labels from a specified IpBlock.
 
 Required values to run command:
 
-* IPBlock Id
+* IpBlock Id
 
 ## Options
 
@@ -26,7 +26,7 @@ Required values to run command:
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force               Force command to execute without user input
   -h, --help                help for list-labels
-      --ipblock-id string   The unique IPBlock Id [Required flag]
+      --ipblock-id string   The unique IpBlock Id [Required flag]
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
 ```

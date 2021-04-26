@@ -143,7 +143,7 @@ const (
 	RequiredFlagVolumeId       = "The unique Volume Id " + RequiredFlag
 	RequiredFlagSnapshotId     = "The unique Snapshot Id " + RequiredFlag
 	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
-	RequiredFlagIpBlockId      = "The unique IPBlock Id " + RequiredFlag
+	RequiredFlagIpBlockId      = "The unique IpBlock Id " + RequiredFlag
 	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
 	RequiredFlagLabelKey       = "The unique Label Key " + RequiredFlag
 	RequiredFlagLabelValue     = "The unique Label Value " + RequiredFlag

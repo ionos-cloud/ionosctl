@@ -36,7 +36,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | [ionosctl firewallrule](firewallrule/) | Firewall Rule Operations |
 | [ionosctl group](group/) | Group Operations |
 | [ionosctl image](image/) | Image Operations |
-| [ionosctl ipblock](ipblock/) | IPBlock Operations |
+| [ionosctl ipblock](ipblock/) | IpBlock Operations |
 | [ionosctl label](label/) | Label Operations |
 | [ionosctl lan](lan/) | LAN Operations |
 | [ionosctl loadbalancer](loadbalancer/) | Load Balancer Operations |

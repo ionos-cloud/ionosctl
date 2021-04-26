@@ -132,7 +132,7 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 	title = customizeTitle(title, "Datacenter", "DataCenter")
 	title = customizeTitle(title, "Loadbalancer", "LoadBalancer")
 	title = customizeTitle(title, "Nic", "NetworkInterface")
-	title = customizeTitle(title, "Ipblock", "IPBlock")
+	title = customizeTitle(title, "Ipblock", "IpBlock")
 	title = customizeTitle(title, "Firewallrule", "FirewallRule")
 	title = customizeTitle(title, "Backupunit", "BackupUnit")
 	title = customizeTitle(title, "Pcc", "PrivateCrossConnect")

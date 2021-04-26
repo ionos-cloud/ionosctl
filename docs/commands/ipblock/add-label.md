@@ -1,5 +1,5 @@
 ---
-description: Add a Label on a IPBlock
+description: Add a Label on a IpBlock
 ---
 
 # AddLabel
@@ -12,11 +12,11 @@ ionosctl ipblock add-label [flags]
 
 ## Description
 
-Use this command to add/create a Label on IPBlock. You must specify the key and the value for the Label.
+Use this command to add/create a Label on IpBlock. You must specify the key and the value for the Label.
 
 Required values to run command: 
 
-* IPBlock Id 
+* IpBlock Id 
 * Label Key
 * Label Value
 
@@ -28,7 +28,7 @@ Required values to run command:
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                Force command to execute without user input
   -h, --help                 help for add-label
-      --ipblock-id string    The unique IPBlock Id [Required flag]
+      --ipblock-id string    The unique IpBlock Id [Required flag]
       --label-key string     The unique Label Key [Required flag]
       --label-value string   The unique Label Value [Required flag]
   -o, --output string        Desired output format [text|json] (default "text")

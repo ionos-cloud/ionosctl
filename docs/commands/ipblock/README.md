@@ -1,8 +1,8 @@
 ---
-description: IPBlock Operations
+description: IpBlock Operations
 ---
 
-# IPBlock
+# IpBlock
 
 ## Usage
 
@@ -12,7 +12,7 @@ ionosctl ipblock [command]
 
 ## Description
 
-The sub-commands of `ionosctl ipblock` allow you to create/reserve, list, get, update, delete IPBlocks.
+The sub-commands of `ionosctl ipblock` allow you to create/reserve, list, get, update, delete IpBlocks.
 
 ## Options
 
@@ -30,13 +30,13 @@ The sub-commands of `ionosctl ipblock` allow you to create/reserve, list, get, u
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl ipblock add-label](add-label.md) | Add a Label on a IPBlock |
-| [ionosctl ipblock create](create.md) | Create/Reserve an IPBlock |
-| [ionosctl ipblock delete](delete.md) | Delete an IPBlock |
-| [ionosctl ipblock get](get.md) | Get an IPBlock |
-| [ionosctl ipblock get-label](get-label.md) | Get a Label from a IPBlock |
-| [ionosctl ipblock list](list.md) | List IPBlocks |
-| [ionosctl ipblock list-labels](list-labels.md) | List Labels from a IPBlock |
-| [ionosctl ipblock remove-label](remove-label.md) | Remove a Label from a IPBlock |
-| [ionosctl ipblock update](update.md) | Update an IPBlock |
+| [ionosctl ipblock add-label](add-label.md) | Add a Label on a IpBlock |
+| [ionosctl ipblock create](create.md) | Create/Reserve an IpBlock |
+| [ionosctl ipblock delete](delete.md) | Delete an IpBlock |
+| [ionosctl ipblock get](get.md) | Get an IpBlock |
+| [ionosctl ipblock get-label](get-label.md) | Get a Label from a IpBlock |
+| [ionosctl ipblock list](list.md) | List IpBlocks |
+| [ionosctl ipblock list-labels](list-labels.md) | List Labels from a IpBlock |
+| [ionosctl ipblock remove-label](remove-label.md) | Remove a Label from a IpBlock |
+| [ionosctl ipblock update](update.md) | Update an IpBlock |
 

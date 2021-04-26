@@ -47,7 +47,7 @@
     * [ListUsers](commands/group/list-users.md)
     * [RemoveUser](commands/group/remove-user.md)
     * [ListResources](commands/group/list-resources.md)
-* [IPBlock](commands/ipblock/README.md)
+* [IpBlock](commands/ipblock/README.md)
     * [Create](commands/ipblock/create.md)
     * [Get](commands/ipblock/get.md)
     * [List](commands/ipblock/list.md)

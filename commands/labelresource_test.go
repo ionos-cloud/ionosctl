@@ -1014,13 +1014,13 @@ func TestGetDatacenterLabelIds(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestGetIPBlockLabelIds(t *testing.T) {
+func TestGetIpBlockLabelIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getIPBlockLabelIds(w, testLabelResourceVar)
+	getIpBlockLabelIds(w, testLabelResourceVar)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)

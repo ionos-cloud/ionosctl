@@ -525,8 +525,8 @@ func labelIpBlock(ipBlockCmd *builder.Command) {
 	/*
 		List Labels Command
 	*/
-	list := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdValidate, RunIpBlockListLabels, listLabelsCmd, "List Labels from a IPBlock",
-		"Use this command to list all Labels from a specified IPBlock.\n\nRequired values to run command:\n\n* IPBlock Id", listIpBlockLabelsExample, true)
+	list := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdValidate, RunIpBlockListLabels, listLabelsCmd, "List Labels from a IpBlock",
+		"Use this command to list all Labels from a specified IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id", listIpBlockLabelsExample, true)
 	list.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -535,12 +535,12 @@ func labelIpBlock(ipBlockCmd *builder.Command) {
 	/*
 		Get Label Command
 	*/
-	get := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValidate, RunIpBlockGetLabel, getLabelCmd, "Get a Label from a IPBlock",
-		"Use this command to get information about a specified Label from a IPBlock.\n\nRequired values to run command:\n\n* IPBlock Id\n* Label Key",
+	get := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValidate, RunIpBlockGetLabel, getLabelCmd, "Get a Label from a IpBlock",
+		"Use this command to get information about a specified Label from a IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id\n* Label Key",
 		getIpBlockLabelExample, true)
 	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIPBlockLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(ipBlockCmd.Name(), get.Name(), config.ArgIpBlockId))), cobra.ShellCompDirectiveNoFileComp
+		return getIpBlockLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(ipBlockCmd.Name(), get.Name(), config.ArgIpBlockId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -550,12 +550,12 @@ func labelIpBlock(ipBlockCmd *builder.Command) {
 	/*
 		Add Label Command
 	*/
-	addLabel := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValueValidate, RunIpBlockAddLabel, addLabelCmd, "Add a Label on a IPBlock",
-		`Use this command to add/create a Label on IPBlock. You must specify the key and the value for the Label.
+	addLabel := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValueValidate, RunIpBlockAddLabel, addLabelCmd, "Add a Label on a IpBlock",
+		`Use this command to add/create a Label on IpBlock. You must specify the key and the value for the Label.
 
 Required values to run command: 
 
-* IPBlock Id 
+* IpBlock Id 
 * Label Key
 * Label Value`, addIpBlockLabelExample, true)
 	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
@@ -568,16 +568,16 @@ Required values to run command:
 	/*
 		Remove Label Command
 	*/
-	removeLabel := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValidate, RunIpBlockRemoveLabel, removeLabelCmd, "Remove a Label from a IPBlock",
-		`Use this command to remove/delete a specified Label from a IPBlock.
+	removeLabel := builder.NewCommand(ctx, ipBlockCmd, PreRunIpBlockIdLabelKeyValidate, RunIpBlockRemoveLabel, removeLabelCmd, "Remove a Label from a IpBlock",
+		`Use this command to remove/delete a specified Label from a IpBlock.
 
 Required values to run command:
 
-* IPBlock Id
+* IpBlock Id
 * Label Key`, removeIpBlockLabelExample, true)
 	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgLabelKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIPBlockLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(ipBlockCmd.Name(), removeLabel.Name(), config.ArgIpBlockId))), cobra.ShellCompDirectiveNoFileComp
+		return getIpBlockLabelIds(os.Stderr, viper.GetString(builder.GetFlagName(ipBlockCmd.Name(), removeLabel.Name(), config.ArgIpBlockId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -636,7 +636,7 @@ func RunIpBlockRemoveLabel(c *builder.CommandConfig) error {
 	return c.Printer.Print(getLabelResourcePrint(c, nil))
 }
 
-func getIPBlockLabelIds(outErr io.Writer, ipblockId string) []string {
+func getIpBlockLabelIds(outErr io.Writer, ipblockId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
 	clientSvc, err := resources.NewClientService(

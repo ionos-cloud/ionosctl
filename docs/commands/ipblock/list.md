@@ -1,5 +1,5 @@
 ---
-description: List IPBlocks
+description: List IpBlocks
 ---
 
 # List
@@ -12,7 +12,7 @@ ionosctl ipblock list [flags]
 
 ## Description
 
-Use this command to list IPBlocks.
+Use this command to list IpBlocks.
 
 ## Options
 

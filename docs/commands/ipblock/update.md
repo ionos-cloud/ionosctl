@@ -1,5 +1,5 @@
 ---
-description: Update an IPBlock
+description: Update an IpBlock
 ---
 
 # Update
@@ -12,13 +12,13 @@ ionosctl ipblock update [flags]
 
 ## Description
 
-Use this command to update a specified IPBlock.
+Use this command to update a specified IpBlock.
 
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
 
-* IPBlock Id
+* IpBlock Id
 
 ## Options
 
@@ -28,12 +28,12 @@ Required values to run command:
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                 Force command to execute without user input
   -h, --help                  help for update
-      --ipblock-id string     The unique IPBlock Id [Required flag]
-      --ipblock-name string   Name of the IPBlock
+      --ipblock-id string     The unique IpBlock Id [Required flag]
+      --ipblock-name string   Name of the IpBlock
   -o, --output string         Desired output format [text|json] (default "text")
   -q, --quiet                 Quiet output
-      --timeout int           Timeout option for the IPBlock to be updated [seconds] (default 60)
-      --wait                  Wait for the IPBlock to be updated
+      --timeout int           Timeout option for the IpBlock to be updated [seconds] (default 60)
+      --wait                  Wait for the IpBlock to be updated
 ```
 
 ## Examples
