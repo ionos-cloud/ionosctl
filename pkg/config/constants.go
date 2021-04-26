@@ -7,7 +7,7 @@ const (
 	ArgQuiet                       = "quiet"
 	ArgWait                        = "wait"
 	ArgTimeout                     = "timeout"
-	ArgIgnoreStdin                 = "ignore-stdin"
+	ArgForce                       = "force"
 	ArgServerUrl                   = "api-url"
 	ArgCols                        = "cols"
 	ArgDataCenterId                = "datacenter-id"

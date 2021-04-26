@@ -27,8 +27,8 @@ Required values to run the command:
       --cols strings             Columns to be printed in the standard output (default [DatacenterId,Name,Location])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id [Required flag]
+      --force                    Force command to execute without user input
   -h, --help                     help for get-nic
-      --ignore-stdin             Force command to execute without user input
       --loadbalancer-id string   The unique Load Balancer Id [Required flag]
       --nic-id string            The unique NIC Id [Required flag]
   -o, --output string            Desired output format [text|json] (default "text")

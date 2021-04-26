@@ -29,8 +29,8 @@ Required values to run command:
       --datacenter-description string   Description of the Data Center
       --datacenter-id string            The unique Data Center Id [Required flag]
       --datacenter-name string          Name of the Data Center
+      --force                           Force command to execute without user input
   -h, --help                            help for update
-      --ignore-stdin                    Force command to execute without user input
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
       --timeout int                     Timeout option for Data Center to be updated [seconds] (default 60)

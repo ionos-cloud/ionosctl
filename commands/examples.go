@@ -58,7 +58,7 @@ Warning: Are you sure you want to delete data center (y/N) ? y
 RequestId: 12547a71-9768-483b-8a8e-e03e58df6dc3
 Status: Command datacenter delete has been successfully executed
 
-ionosctl datacenter delete --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774 --ignore-stdin --wait 
+ionosctl datacenter delete --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774 --force --wait 
 Waiting for request: a2f71ef3-f81c-4b15-8f8f-5dfd1bdb3c26
 RequestId: a2f71ef3-f81c-4b15-8f8f-5dfd1bdb3c26
 Status: Command datacenter delete and request have been successfully executed`
@@ -94,7 +94,7 @@ Warning: Are you sure you want to delete server (y/N) ? Y
 RequestId: 1f00c6d9-072a-4dd0-8c09-c46f2f20a230
 Status: Command server delete has been successfully executed
 
-ionosctl server delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 35201d04-0ea2-43e7-abc4-56f92737bb9d --ignore-stdin 
+ionosctl server delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 35201d04-0ea2-43e7-abc4-56f92737bb9d --force 
 RequestId: f596caba-78b7-4c99-8c9d-56198d3754b6
 Status: Command server delete has been successfully executed`
 	startServerExample = `ionosctl server start --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa
@@ -171,7 +171,7 @@ f16dfcc1-9181-400b-a08d-7fe15ca0e9af   demoLoadbalancer   true
 	getLoadbalancerExample = `ionosctl loadbalancer get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c 
 LoadbalancerId                         Name               Dhcp
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   false`
-	deleteLoadbalancerExample = `ionosctl loadbalancer delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --ignore-stdin --wait 
+	deleteLoadbalancerExample = `ionosctl loadbalancer delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --force --wait 
 Waiting for request: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
 RequestId: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
 Status: Command loadbalancer delete and request have been successfully executed`
@@ -213,7 +213,7 @@ c7903181-daa1-4e16-a65a-e9b495c1b324   demoNIC   true   1       []
 	getNicExample = `ionosctl nic get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 
 NicId                                  Name      Dhcp   LanId   Ips
 2978400e-da90-405f-905e-8200d4f48158   demoNic   true   2       []`
-	deleteNicExample = `ionosctl nic delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 --ignore-stdin 
+	deleteNicExample = `ionosctl nic delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 --force 
 RequestId: 14a4bf17-48aa-4f87-b0dc-9c769a4cbdcb
 Status: Command nic delete has been successfully executed`
 
@@ -458,7 +458,7 @@ UserId                                 Firstname   Lastname   Email             
 2470f439-1d73-42f8-90a9-f78cf2776c74   test1       test1      testrandom12@ionos.com   true            false          false           a74101e7c1948450432d5b6512f2712c   true
 RequestId: 439f79fc-5bfc-43da-92f3-0d804ebb28ac
 Status: Command user update has been successfully executed`
-	deleteUserExample = `ionosctl user delete --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 --ignore-stdin 
+	deleteUserExample = `ionosctl user delete --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 --force 
 RequestId: a2f6e7fa-6030-4267-950e-1e0886316475
 Status: Command user delete has been successfully executed`
 

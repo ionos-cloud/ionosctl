@@ -28,8 +28,8 @@ Required values to run a command:
       --cols strings           Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id [Required flag]
+      --force                  Force command to execute without user input
   -h, --help                   help for create
-      --ignore-stdin           Force command to execute without user input
       --lan-id int             The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created (default 1)
       --nic-dhcp               Set to false if you wish to disable DHCP on the NIC (default true)
       --nic-ips strings        IPs assigned to the NIC. This can be a collection

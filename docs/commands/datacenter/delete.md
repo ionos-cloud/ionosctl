@@ -14,7 +14,7 @@ ionosctl datacenter delete [flags]
 
 Use this command to delete a specified Data Center from your account. This is irreversible.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
+You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -27,8 +27,8 @@ Required values to run command:
       --cols strings           Columns to be printed in the standard output (default [DatacenterId,Name,Location])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id [Required flag]
+      --force                  Force command to execute without user input
   -h, --help                   help for delete
-      --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --timeout int            Timeout option for Data Center to be deleted [seconds] (default 60)
@@ -43,7 +43,7 @@ Warning: Are you sure you want to delete data center (y/N) ? y
 RequestId: 12547a71-9768-483b-8a8e-e03e58df6dc3
 Status: Command datacenter delete has been successfully executed
 
-ionosctl datacenter delete --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774 --ignore-stdin --wait 
+ionosctl datacenter delete --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774 --force --wait 
 Waiting for request: a2f71ef3-f81c-4b15-8f8f-5dfd1bdb3c26
 RequestId: a2f71ef3-f81c-4b15-8f8f-5dfd1bdb3c26
 Status: Command datacenter delete and request have been successfully executed

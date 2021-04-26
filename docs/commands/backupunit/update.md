@@ -27,8 +27,8 @@ Required values to run command:
       --backupunit-password string   Alphanumeric password you want to update for the BackupUnit
       --cols strings                 Columns to be printed in the standard output (default [BackupUnitId,Name,Email])
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                        Force command to execute without user input
   -h, --help                         help for update
-      --ignore-stdin                 Force command to execute without user input
   -o, --output string                Desired output format [text|json] (default "text")
   -q, --quiet                        Quiet output
       --timeout int                  Timeout option for BackupUnit to be updated [seconds] (default 60)

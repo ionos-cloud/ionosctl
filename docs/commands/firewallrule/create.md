@@ -39,8 +39,8 @@ Required values to run command:
       --firewallrule-source-ip string       Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.
       --firewallrule-source-mac string      Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses.
       --firewallrule-target-ip string       In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.
+      --force                               Force command to execute without user input
   -h, --help                                help for create
-      --ignore-stdin                        Force command to execute without user input
       --nic-id string                       The unique NIC Id [Required flag]
   -o, --output string                       Desired output format [text|json] (default "text")
   -q, --quiet                               Quiet output

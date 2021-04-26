@@ -29,8 +29,8 @@ Required values to run command:
       --cols strings           Columns to be printed in the standard output. Example: --cols "ResourceId,Name" (default [LanId,Name,Public,PccId])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id [Required flag]
+      --force                  Force command to execute without user input
   -h, --help                   help for create
-      --ignore-stdin           Force command to execute without user input
       --lan-name string        The name of the LAN
       --lan-public             Indicates if the LAN faces the public Internet (true) or not (false)
   -o, --output string          Desired output format [text|json] (default "text")

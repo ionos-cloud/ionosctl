@@ -21,8 +21,8 @@ The sub-commands of `ionosctl firewallrule` allow you to create, list, get, upda
       --cols strings           Columns to be printed in the standard output. Example: --cols "ResourceId,Name" (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id [Required flag]
+      --force                  Force command to execute without user input
   -h, --help                   help for firewallrule
-      --ignore-stdin           Force command to execute without user input
       --nic-id string          The unique NIC Id [Required flag]
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output

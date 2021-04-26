@@ -21,8 +21,8 @@ The sub-commands of `ionosctl loadbalancer` manage your Load Balancers on your a
       --cols strings           Columns to be printed in the standard output (default [DatacenterId,Name,Location])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id [Required flag]
+      --force                  Force command to execute without user input
   -h, --help                   help for loadbalancer
-      --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
 ```

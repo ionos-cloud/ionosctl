@@ -84,7 +84,7 @@ Required values to run command:
 	deleteCmd := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerIdValidate, RunLoadBalancerDelete, "delete", "Delete a Load Balancer",
 		`Use this command to permanently delete the specified Load Balancer. This action is irreversible.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -149,7 +149,7 @@ Required values to run command:
 	detachNic := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerDetachNic, "detach-nic", "Detach a NIC from a Load Balancer",
 		`Use this command to detach a NIC from a Load Balancer.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 

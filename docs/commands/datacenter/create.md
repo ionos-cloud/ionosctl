@@ -25,8 +25,8 @@ You can wait for the action to be executed using `--wait` option.
       --datacenter-description string   Description of the Data Center
       --datacenter-location string      Location for the Data Center (default "de/txl")
       --datacenter-name string          Name of the Data Center
+      --force                           Force command to execute without user input
   -h, --help                            help for create
-      --ignore-stdin                    Force command to execute without user input
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
       --timeout int                     Timeout option for Data Center to be created [seconds] (default 60)

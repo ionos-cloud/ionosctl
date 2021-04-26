@@ -25,7 +25,7 @@ Required values to run command:
       --cols strings      Columns to be printed in the standard output (default [ImageId,Name,Location,Size,LicenceType,ImageType])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -h, --help              help for delete
-      --ignore-stdin      Force command to execute without user input
+      --force      Force command to execute without user input
       --image-id string   The unique Image Id [Required flag]
   -o, --output string     Desired output format [text|json] (default "text")
   -q, --quiet             Quiet output

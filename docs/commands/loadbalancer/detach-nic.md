@@ -14,7 +14,7 @@ ionosctl loadbalancer detach-nic [flags]
 
 Use this command to detach a NIC from a Load Balancer.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
+You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -29,8 +29,8 @@ Required values to run command:
       --cols strings             Columns to be printed in the standard output (default [DatacenterId,Name,Location])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id [Required flag]
+      --force                    Force command to execute without user input
   -h, --help                     help for detach-nic
-      --ignore-stdin             Force command to execute without user input
       --loadbalancer-id string   The unique Load Balancer Id [Required flag]
       --nic-id string            The unique NIC Id [Required flag]
   -o, --output string            Desired output format [text|json] (default "text")

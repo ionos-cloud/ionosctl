@@ -102,7 +102,7 @@ Required values to run command:
 	deleteCmd := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerDelete, "delete", "Delete a Server",
 		`Use this command to delete a specified Server from a Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -118,7 +118,7 @@ Required values to run command:
 	start := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStart, "start", "Start a Server",
 		`Use this command to start specified Server from a Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -134,7 +134,7 @@ Required values to run command:
 	stop := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerStop, "stop", "Stop a Server",
 		`Use this command to stop specified Server from a Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -150,7 +150,7 @@ Required values to run command:
 	reboot := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerIdValidate, RunServerReboot, "reboot", "Force a hard reboot of a Server",
 		`Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -205,7 +205,7 @@ Required values to run command:
 	detachVolume := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIdsValidate, RunServerDetachVolume, "detach-volume", "Detach a Volume from a Server",
 		`Use this command to detach a Volume from a Server.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 

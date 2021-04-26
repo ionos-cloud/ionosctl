@@ -79,7 +79,7 @@ Required values to run command:
 	deleteCmd := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockDelete, "delete", "Delete an IPBlock",
 		`Use this command to delete a specified IPBlock.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 

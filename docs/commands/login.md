@@ -27,8 +27,8 @@ Note: The command can also be used without `--user` and `--password` flags. For 
 ```text
   -u, --api-url string    Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force             Force command to execute without user input
   -h, --help              help for login
-      --ignore-stdin      Force command to execute without user input
   -o, --output string     Desired output format [text|json] (default "text")
       --password string   Password to authenticate
   -q, --quiet             Quiet output

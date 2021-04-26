@@ -28,8 +28,8 @@ Required values to run command:
       --cols strings               Columns to be printed in the standard output (default [DatacenterId,Name,Location])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string       The unique Data Center Id [Required flag]
+      --force                      Force command to execute without user input
   -h, --help                       help for update
-      --ignore-stdin               Force command to execute without user input
       --loadbalancer-dhcp          Indicates if the Load Balancer will reserve an IP using DHCP (default true)
       --loadbalancer-id string     The unique Load Balancer Id [Required flag]
       --loadbalancer-ip string     The IP of the Load Balancer

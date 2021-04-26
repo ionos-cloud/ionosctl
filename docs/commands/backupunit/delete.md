@@ -25,8 +25,8 @@ Required values to run command:
       --backupunit-id string   The unique BackupUnit Id [Required flag]
       --cols strings           Columns to be printed in the standard output (default [BackupUnitId,Name,Email])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                  Force command to execute without user input
   -h, --help                   help for delete
-      --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --timeout int            Timeout option for BackupUnit to be deleted [seconds] (default 60)

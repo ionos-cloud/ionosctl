@@ -27,8 +27,8 @@ Required values to run command:
       --cols strings           Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id [Required flag]
+      --force                  Force command to execute without user input
   -h, --help                   help for restore
-      --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --snapshot-id string     The unique Snapshot Id [Required flag]

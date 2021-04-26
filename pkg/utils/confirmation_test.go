@@ -30,7 +30,7 @@ func TestAskForConfirmYesReader(t *testing.T) {
 	input := getUserInput
 	defer func() { getUserInput = input }()
 
-	viper.Set(config.ArgIgnoreStdin, false)
+	viper.Set(config.ArgForce, false)
 	reader := bytes.NewReader([]byte("YES\n"))
 	getUserInput = func(io.Reader, printer.PrintService, string) (string, error) {
 		return readUserInput(reader, p, testVar)
@@ -49,7 +49,7 @@ func TestAskForConfirmPrinterErr(t *testing.T) {
 	input := getUserInput
 	defer func() { getUserInput = input }()
 
-	viper.Set(config.ArgIgnoreStdin, false)
+	viper.Set(config.ArgForce, false)
 	reader := bytes.NewReader([]byte("YES\n"))
 	getUserInput = func(io.Reader, printer.PrintService, string) (string, error) {
 		return readUserInput(reader, p, testVar)
@@ -68,7 +68,7 @@ func TestAskForConfirmEOF(t *testing.T) {
 	input := getUserInput
 	defer func() { getUserInput = input }()
 
-	viper.Set(config.ArgIgnoreStdin, false)
+	viper.Set(config.ArgForce, false)
 	getUserInput = func(io.Reader, printer.PrintService, string) (string, error) {
 		return readUserInput(os.Stdin, p, testVar)
 	}
@@ -86,7 +86,7 @@ func TestAskForConfirmYes(t *testing.T) {
 	input := getUserInput
 	defer func() { getUserInput = input }()
 
-	viper.Set(config.ArgIgnoreStdin, false)
+	viper.Set(config.ArgForce, false)
 	getUserInput = func(io.Reader, printer.PrintService, string) (string, error) {
 		return "y", nil
 	}
@@ -103,7 +103,7 @@ func TestAskForConfirmNo(t *testing.T) {
 	input := getUserInput
 	defer func() { getUserInput = input }()
 
-	viper.Set(config.ArgIgnoreStdin, false)
+	viper.Set(config.ArgForce, false)
 	getUserInput = func(io.Reader, printer.PrintService, string) (string, error) {
 		return "no", nil
 	}
@@ -120,7 +120,7 @@ func TestAskForConfirmAny(t *testing.T) {
 	input := getUserInput
 	defer func() { getUserInput = input }()
 
-	viper.Set(config.ArgIgnoreStdin, false)
+	viper.Set(config.ArgForce, false)
 	getUserInput = func(io.Reader, printer.PrintService, string) (string, error) {
 		return "dummy", nil
 	}
@@ -137,7 +137,7 @@ func TestAskForConfirmError(t *testing.T) {
 	input := getUserInput
 	defer func() { getUserInput = input }()
 
-	viper.Set(config.ArgIgnoreStdin, false)
+	viper.Set(config.ArgForce, false)
 	getUserInput = func(io.Reader, printer.PrintService, string) (string, error) {
 		return "", testErr
 	}
@@ -150,7 +150,7 @@ func TestAskForConfirmIgnoreStdin(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	p := mockprinter.NewMockPrintService(ctrl)
-	viper.Set(config.ArgIgnoreStdin, true)
+	viper.Set(config.ArgForce, true)
 	err := AskForConfirm(os.Stdin, p, testVar)
 	assert.NoError(t, err)
 }

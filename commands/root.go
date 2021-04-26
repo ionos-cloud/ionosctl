@@ -78,8 +78,8 @@ func init() {
 	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, "q", false, "Quiet output")
 	_ = viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
 
-	rootPFlagSet.Bool(config.ArgIgnoreStdin, false, "Force command to execute without user input")
-	_ = viper.BindPFlag(config.ArgIgnoreStdin, rootPFlagSet.Lookup(config.ArgIgnoreStdin))
+	rootPFlagSet.Bool(config.ArgForce, false, "Force command to execute without user input")
+	_ = viper.BindPFlag(config.ArgForce, rootPFlagSet.Lookup(config.ArgForce))
 
 	addCommands()
 

@@ -36,8 +36,8 @@ Required values to run a command:
       --backupunit-password string   Alphanumeric password you want to assign to the BackupUnit [Required flag]
       --cols strings                 Columns to be printed in the standard output (default [BackupUnitId,Name,Email])
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                        Force command to execute without user input
   -h, --help                         help for create
-      --ignore-stdin                 Force command to execute without user input
   -o, --output string                Desired output format [text|json] (default "text")
   -q, --quiet                        Quiet output
       --timeout int                  Timeout option for BackupUnit to be created [seconds] (default 60)
