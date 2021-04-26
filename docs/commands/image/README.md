@@ -30,7 +30,6 @@ The sub-commands of `ionosctl image` allow you to see information about the Imag
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl image delete](delete.md) | Delete a private Image |
 | [ionosctl image get](get.md) | Get a specified Image |
 | [ionosctl image list](list.md) | List Images |
 

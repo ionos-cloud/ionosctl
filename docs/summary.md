@@ -65,7 +65,6 @@
 * [Image](commands/image/README.md)
     * [Get](commands/image/get.md)
     * [List](commands/image/list.md)
-    * [Delete](commands/image/delete.md)
 * [Label](commands/label/README.md)
     * [Get](commands/label/get.md)
     * [List](commands/label/list.md)
