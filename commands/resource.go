@@ -26,7 +26,7 @@ func resource() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := resourceCmd.Command.PersistentFlags()
+	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultResourceCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

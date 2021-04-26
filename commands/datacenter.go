@@ -27,7 +27,7 @@ func datacenter() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := datacenterCmd.Command.PersistentFlags()
+	globalFlags := datacenterCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(datacenterCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

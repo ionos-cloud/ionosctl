@@ -27,7 +27,7 @@ func loadBalancer() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := loadbalancerCmd.Command.PersistentFlags()
+	globalFlags := loadbalancerCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(loadbalancerCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = loadbalancerCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

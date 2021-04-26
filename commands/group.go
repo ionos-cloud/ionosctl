@@ -28,7 +28,7 @@ func group() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := groupCmd.Command.PersistentFlags()
+	globalFlags := groupCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

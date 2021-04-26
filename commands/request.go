@@ -28,7 +28,7 @@ func request() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := reqCmd.Command.PersistentFlags()
+	globalFlags := reqCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

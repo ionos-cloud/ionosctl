@@ -27,7 +27,7 @@ func nic() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := nicCmd.Command.PersistentFlags()
+	globalFlags := nicCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(nicCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

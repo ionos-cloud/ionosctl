@@ -28,7 +28,7 @@ func lan() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := lanCmd.Command.PersistentFlags()
+	globalFlags := lanCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -28,7 +28,7 @@ func user() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := userCmd.Command.PersistentFlags()
+	globalFlags := userCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultUserCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(userCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

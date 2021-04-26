@@ -28,7 +28,7 @@ func image() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := imageCmd.Command.PersistentFlags()
+	globalFlags := imageCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

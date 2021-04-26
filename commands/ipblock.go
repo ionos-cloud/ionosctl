@@ -27,7 +27,7 @@ func ipblock() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := ipblockCmd.Command.PersistentFlags()
+	globalFlags := ipblockCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultIpBlockCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(ipblockCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

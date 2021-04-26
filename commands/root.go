@@ -63,7 +63,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootPFlagSet := rootCmd.Command.PersistentFlags()
+	rootPFlagSet := rootCmd.GlobalFlags()
 	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, "c", config.GetConfigFile(), "Configuration file used for authentication")
 	_ = viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
 

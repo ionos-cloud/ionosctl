@@ -30,7 +30,7 @@ func backupunit() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := backupUnitCmd.Command.PersistentFlags()
+	globalFlags := backupUnitCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultBackupUnitCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

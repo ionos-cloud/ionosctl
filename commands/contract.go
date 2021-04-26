@@ -27,7 +27,7 @@ func contract() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := contractCmd.Command.PersistentFlags()
+	globalFlags := contractCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultContractCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(contractCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

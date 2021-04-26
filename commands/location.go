@@ -24,7 +24,7 @@ func location() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := locationCmd.Command.PersistentFlags()
+	globalFlags := locationCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultLocationCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

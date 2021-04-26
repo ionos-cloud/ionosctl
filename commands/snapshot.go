@@ -27,7 +27,7 @@ func snapshot() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := snapshotCmd.Command.PersistentFlags()
+	globalFlags := snapshotCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultSnapshotCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(snapshotCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 

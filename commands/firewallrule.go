@@ -29,7 +29,7 @@ func firewallrule() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := firewallRuleCmd.Command.PersistentFlags()
+	globalFlags := firewallRuleCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

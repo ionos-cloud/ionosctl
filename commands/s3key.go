@@ -29,7 +29,7 @@ func s3key() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := s3keyCmd.Command.PersistentFlags()
+	globalFlags := s3keyCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultS3KeyCols, "Columns to be printed in the standard output. You can also print SecretKey, using `--cols=\"S3KeyId,Active,SecretKey\"`")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(s3keyCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	globalFlags.String(config.ArgUserId, "", config.RequiredFlagUserId)
