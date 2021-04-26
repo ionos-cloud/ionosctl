@@ -168,6 +168,7 @@ func addCommands() {
 	rootCmd.AddCommand(resource())
 	rootCmd.AddCommand(s3key())
 	rootCmd.AddCommand(backupunit())
+	rootCmd.AddCommand(pcc())
 	rootCmd.AddCommand(k8sCluster())
 }
 

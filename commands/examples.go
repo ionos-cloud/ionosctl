@@ -221,23 +221,23 @@ Status: Command nic delete has been successfully executed`
 		Lan Examples
 	*/
 	createLanExample = `ionosctl lan create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-name demoLan
-LanId   Name      Public
+LanId   Name      Public   PccId
 4       demoLan   false
 RequestId: da824a69-a12a-4153-b302-a797b3581c2b
 Status: Command lan create has been successfully executed`
 	updateLanExample = `ionosctl lan update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --lan-name demoLAN --lan-public=true
-LanId   Name      Public
+LanId   Name      Public    PccId
 3       demoLAN   true
 RequestId: 0a174dca-62b1-4360-aef8-89fd31c196f2
 Status: Command lan update has been successfully executed`
 	listLanExample = `ionosctl lan list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d 
-LanId   Name                                                Public
+LanId   Name                                                Public    PccId
 4       demoLan                                             false
 3       demoLAN                                             true
 2       Switch of LB f16dfcc1-9181-400b-a08d-7fe15ca0e9af   false
 1       Switch of LB 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   false`
 	getLanExample = `ionosctl lan get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 4
-LanId   Name      Public
+LanId   Name      Public    PccId
 4       demoLan   false`
 	deleteLanExample = `ionosctl lan delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 4
 Warning: Are you sure you want to delete lan (y/N) ? y
@@ -596,6 +596,36 @@ Warning: Are you sure you want to delete backup unit (y/N) ?
 y
 RequestId: fa00ba7e-426d-4460-9ec4-8b480bf5b17f
 Status: Command backupunit delete has been successfully executed`
+
+	/*
+		Private Cross-Connect Example
+	*/
+	listPccsExample = `ionosctl pcc list 
+PccId                                  Name   Description
+e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test
+4b9c6a43-a338-11eb-b70c-7ade62b52cc0   test   test`
+	getPccExample = `ionosctl pcc get --pcc-id e2337b40-52d9-48d2-bcbc-41c5abc29d11 
+PccId                                  Name   Description
+e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test`
+	getPccPeersExample = `ionosctl pcc get-peers --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 
+LanId   LanName     DatacenterId                           DatacenterName   Location
+1       testlan2    1ef56b51-98be-487e-925a-c9f3dfa4a076   test2            us/las
+1       testlan1    95b7f7f0-a6f3-4fc9-8d06-018d2c1efc89   test1            us/las`
+	createPccExample = `ionosctl pcc create --pcc-name test --pcc-description "test test" --wait 
+PccId                                  Name   Description
+e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test
+RequestId: 64720266-c6e8-4e78-8e31-6754f006dcb1
+Status: Command pcc create and request have been successfully executed`
+	updatePccExample = `ionosctl pcc update --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 --pcc-description test
+PccId                                  Name   Description
+4b9c6a43-a338-11eb-b70c-7ade62b52cc0   test   test
+RequestId: 81525f2d-cc91-4c55-84b8-07fac9a47e35
+Status: Command pcc update has been successfully executed`
+	deletePccExample = `ionosctl pcc delete --pcc-id e2337b40-52d9-48d2-bcbc-41c5abc29d11 --wait 
+Warning: Are you sure you want to delete private cross-connect (y/N) ? 
+y
+RequestId: 7fa56e7f-1d63-4c5f-a7ea-eec6a015282a
+Status: Command pcc delete and request have been successfully executed`
 
 	/*
 		K8s Example

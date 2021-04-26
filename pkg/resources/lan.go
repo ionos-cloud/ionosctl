@@ -26,7 +26,7 @@ type Lans struct {
 type LansService interface {
 	List(datacenterId string) (Lans, *Response, error)
 	Get(datacenterId, lanId string) (*Lan, *Response, error)
-	Create(datacenterId, name string, public bool) (*LanPost, *Response, error)
+	Create(datacenterId string, input LanPost) (*LanPost, *Response, error)
 	Update(datacenterId, lanId string, input LanProperties) (*Lan, *Response, error)
 	Delete(datacenterId, lanId string) (*Response, error)
 }
@@ -57,14 +57,8 @@ func (ls *lansService) Get(datacenterId, lanId string) (*Lan, *Response, error) 
 	return &Lan{lan}, &Response{*resp}, err
 }
 
-func (ls *lansService) Create(datacenterId, name string, public bool) (*LanPost, *Response, error) {
-	input := ionoscloud.LanPost{
-		Properties: &ionoscloud.LanPropertiesPost{
-			Name:   &name,
-			Public: &public,
-		},
-	}
-	req := ls.client.LanApi.DatacentersLansPost(ls.context, datacenterId).Lan(input)
+func (ls *lansService) Create(datacenterId string, input LanPost) (*LanPost, *Response, error) {
+	req := ls.client.LanApi.DatacentersLansPost(ls.context, datacenterId).Lan(input.LanPost)
 	lan, resp, err := ls.client.LanApi.DatacentersLansPostExecute(req)
 	return &LanPost{lan}, &Response{*resp}, err
 }
