@@ -24,7 +24,7 @@ func group() *builder.Command {
 		Command: &cobra.Command{
 			Use:              "group",
 			Short:            "Group Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl group` + "`" + ` allows you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User/Share from the Group.`,
+			Long:             `The sub-command of ` + "`" + `ionosctl group` + "`" + ` allows you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User from the Group.`,
 			TraverseChildren: true,
 		},
 	}
@@ -129,7 +129,6 @@ Required values to run command:
 		return getGroupUsersIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Name(), removeUser.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	shareGroup(groupCmd)
 	resourceGroup(groupCmd)
 
 	return groupCmd

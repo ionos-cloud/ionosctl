@@ -502,31 +502,6 @@ Status: Command group remove-user and request have been successfully executed`
 UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
 53d68de9-931a-4b61-b532-82f7b27afef3   test1       test1      testrandom13@ionos.com   false           false          false           8b9dd6f39e613adb7a837127edb67d38   true`
 	/*
-		Group Shares Example
-	*/
-	listGroupSharesExample = `ionosctl group list-shares --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f 
-ShareId                                EditPrivilege   SharePrivilege
-cefc2175-001f-4b94-8693-6263d731fe8e   false           false`
-	getGroupShareExample = `ionosctl group get-share --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e 
-ShareId                                EditPrivilege   SharePrivilege
-cefc2175-001f-4b94-8693-6263d731fe8e   false           true`
-	addGroupShareExample = `ionosctl group add-share --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e
-ShareId                                EditPrivilege   SharePrivilege
-cefc2175-001f-4b94-8693-6263d731fe8e   false           false
-RequestId: ffb8e7ba-4a49-4ea5-a97e-e3a61e55c277
-Status: Command group add-share has been successfully executed`
-	updateGroupShareExample = `ionosctl group update-share --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --share-privilege 
-ShareId                                EditPrivilege   SharePrivilege
-cefc2175-001f-4b94-8693-6263d731fe8e   false           true
-RequestId: 0dfccab0-c148-40c8-9794-067d23f79f0e
-Status: Command group update-share has been successfully executed`
-	removeGroupShareExample = `ionosctl group remove-share --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --wait 
-Warning: Are you sure you want to remove share from group (y/N) ? 
-y
-Waiting for request: 9ff7e57f-b568-4257-b27f-13a4cf11a7fc
-RequestId: 9ff7e57f-b568-4257-b27f-13a4cf11a7fc
-Status: Command group remove-share and request have been successfully executed`
-	/*
 		Group Resources Example
 	*/
 	listGroupResourcesExample = `ionosctl group list-resources --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f 
@@ -542,6 +517,32 @@ d8922413-05f1-48bb-90ed-c2d407e05b1d   IP_BLOCK_2021-04-20T11:02:52Z   false    
 	getResourceExample = `ionosctl resource get --resource-type ipblock
 ResourceId                             Name                            SecAuthProtection   Type
 d8922413-05f1-48bb-90ed-c2d407e05b1d   IP_BLOCK_2021-04-20T11:02:52Z   false               ipblock`
+
+	/*
+		Share Example
+	*/
+	listSharesExample = `ionosctl share list --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f 
+ShareId                                EditPrivilege   SharePrivilege
+cefc2175-001f-4b94-8693-6263d731fe8e   false           false`
+	getShareExample = `ionosctl share get --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e 
+ShareId                                EditPrivilege   SharePrivilege
+cefc2175-001f-4b94-8693-6263d731fe8e   false           true`
+	createShareExample = `ionosctl share create --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e
+ShareId                                EditPrivilege   SharePrivilege
+cefc2175-001f-4b94-8693-6263d731fe8e   false           false
+RequestId: ffb8e7ba-4a49-4ea5-a97e-e3a61e55c277
+Status: Command group add-share has been successfully executed`
+	updateShareExample = `ionosctl share update --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --share-privilege 
+ShareId                                EditPrivilege   SharePrivilege
+cefc2175-001f-4b94-8693-6263d731fe8e   false           true
+RequestId: 0dfccab0-c148-40c8-9794-067d23f79f0e
+Status: Command group update-share has been successfully executed`
+	deleteShareExample = `ionosctl share delete --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --wait 
+Warning: Are you sure you want to remove share from group (y/N) ? 
+y
+Waiting for request: 9ff7e57f-b568-4257-b27f-13a4cf11a7fc
+RequestId: 9ff7e57f-b568-4257-b27f-13a4cf11a7fc
+Status: Command group remove-share and request have been successfully executed`
 
 	/*
 		S3Keys Example

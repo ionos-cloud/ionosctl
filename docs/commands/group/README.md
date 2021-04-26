@@ -12,7 +12,7 @@ ionosctl group [command]
 
 ## Description
 
-The sub-command of `ionosctl group` allows you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User/Share from the Group.
+The sub-command of `ionosctl group` allows you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User from the Group.
 
 ## Options
 
@@ -30,18 +30,13 @@ The sub-command of `ionosctl group` allows you to list, get, create, update, del
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl group add-share](add-share.md) | Create/Add a Resource Share for a Group |
 | [ionosctl group add-user](add-user.md) | Add User to a Group |
 | [ionosctl group create](create.md) | Create a Group |
 | [ionosctl group delete](delete.md) | Delete a Group |
 | [ionosctl group get](get.md) | Get a Group |
-| [ionosctl group get-share](get-share.md) | Get a Resource Share from a Group |
 | [ionosctl group list](list.md) | List Groups |
 | [ionosctl group list-resources](list-resources.md) | List Resources from a Group |
-| [ionosctl group list-shares](list-shares.md) | List Resources Shares through a Group |
 | [ionosctl group list-users](list-users.md) | List Users from a Group |
-| [ionosctl group remove-share](remove-share.md) | Remove a Resource Share from a Group |
 | [ionosctl group remove-user](remove-user.md) | Remove User from a Group |
 | [ionosctl group update](update.md) | Update a Group |
-| [ionosctl group update-share](update-share.md) | Update a Resource Share from a Group |
 

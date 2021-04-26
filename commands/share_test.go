@@ -87,7 +87,7 @@ func TestPreRunShareIdValidateErr(t *testing.T) {
 	})
 }
 
-func TestRunGroupListShares(t *testing.T) {
+func TestRunShareList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -96,12 +96,12 @@ func TestRunGroupListShares(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		rm.Group.EXPECT().ListShares(testShareVar).Return(shares, nil, nil)
-		err := RunGroupListShares(cfg)
+		err := RunShareList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunGroupListSharesErr(t *testing.T) {
+func TestRunShareListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -110,12 +110,12 @@ func TestRunGroupListSharesErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		rm.Group.EXPECT().ListShares(testShareVar).Return(shares, nil, testShareErr)
-		err := RunGroupListShares(cfg)
+		err := RunShareList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupGetShare(t *testing.T) {
+func TestRunShareGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -125,7 +125,7 @@ func TestRunGroupGetShare(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		rm.Group.EXPECT().GetShare(testShareVar, testShareVar).Return(&shareTestGet, nil, nil)
-		err := RunGroupGetShare(cfg)
+		err := RunShareGet(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -140,12 +140,12 @@ func TestRunShareGetErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		rm.Group.EXPECT().GetShare(testShareVar, testShareVar).Return(&shareTestGet, nil, testShareErr)
-		err := RunGroupGetShare(cfg)
+		err := RunShareGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupAddShare(t *testing.T) {
+func TestRunShareCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -155,12 +155,12 @@ func TestRunGroupAddShare(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		rm.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, nil, nil)
-		err := RunGroupAddShare(cfg)
+		err := RunShareCreate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunGroupAddShareResponseErr(t *testing.T) {
+func TestRunShareCreateResponseErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -170,12 +170,12 @@ func TestRunGroupAddShareResponseErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		rm.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, &testResponse, nil)
-		err := RunGroupAddShare(cfg)
+		err := RunShareCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupAddShareErr(t *testing.T) {
+func TestRunShareCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -185,12 +185,12 @@ func TestRunGroupAddShareErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		rm.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, nil, testShareErr)
-		err := RunGroupAddShare(cfg)
+		err := RunShareCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupAddShareWaitErr(t *testing.T) {
+func TestRunShareCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -201,12 +201,12 @@ func TestRunGroupAddShareWaitErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, nil, nil)
-		err := RunGroupAddShare(cfg)
+		err := RunShareCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupUpdateShare(t *testing.T) {
+func TestRunShareUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -219,12 +219,12 @@ func TestRunGroupUpdateShare(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSharePrivilege), testShareBoolNewVar)
 		rm.Group.EXPECT().GetShare(testShareVar, testShareVar).Return(&shareTest, nil, nil)
 		rm.Group.EXPECT().UpdateShare(testShareVar, testShareVar, shareNew).Return(&shareNew, nil, nil)
-		err := RunGroupUpdateShare(cfg)
+		err := RunShareUpdate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunGroupUpdateShareOldShare(t *testing.T) {
+func TestRunShareUpdateOldShare(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -235,12 +235,12 @@ func TestRunGroupUpdateShareOldShare(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		rm.Group.EXPECT().GetShare(testShareVar, testShareVar).Return(&shareTest, nil, nil)
 		rm.Group.EXPECT().UpdateShare(testShareVar, testShareVar, shareTest).Return(&shareTest, nil, nil)
-		err := RunGroupUpdateShare(cfg)
+		err := RunShareUpdate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunGroupUpdateShareErr(t *testing.T) {
+func TestRunShareUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -253,12 +253,12 @@ func TestRunGroupUpdateShareErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSharePrivilege), testShareBoolNewVar)
 		rm.Group.EXPECT().GetShare(testShareVar, testShareVar).Return(&shareTest, nil, nil)
 		rm.Group.EXPECT().UpdateShare(testShareVar, testShareVar, shareNew).Return(&shareNew, nil, testShareErr)
-		err := RunGroupUpdateShare(cfg)
+		err := RunShareUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupUpdateShareWaitErr(t *testing.T) {
+func TestRunShareUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -272,12 +272,12 @@ func TestRunGroupUpdateShareWaitErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Group.EXPECT().GetShare(testShareVar, testShareVar).Return(&shareTest, nil, nil)
 		rm.Group.EXPECT().UpdateShare(testShareVar, testShareVar, shareNew).Return(&shareNew, nil, nil)
-		err := RunGroupUpdateShare(cfg)
+		err := RunShareUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupUpdateShareGetErr(t *testing.T) {
+func TestRunShareUpdateGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -289,12 +289,12 @@ func TestRunGroupUpdateShareGetErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgEditPrivilege), testShareBoolNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSharePrivilege), testShareBoolNewVar)
 		rm.Group.EXPECT().GetShare(testShareVar, testShareVar).Return(&shareTest, nil, testShareErr)
-		err := RunGroupUpdateShare(cfg)
+		err := RunShareUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupRemoveShare(t *testing.T) {
+func TestRunShareDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -305,12 +305,12 @@ func TestRunGroupRemoveShare(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		rm.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(nil, nil)
-		err := RunGroupRemoveShare(cfg)
+		err := RunShareDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunGroupRemoveShareWaitErr(t *testing.T) {
+func TestRunShareDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -322,12 +322,12 @@ func TestRunGroupRemoveShareWaitErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(nil, nil)
-		err := RunGroupRemoveShare(cfg)
+		err := RunShareDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupRemoveShareErr(t *testing.T) {
+func TestRunShareDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -338,12 +338,12 @@ func TestRunGroupRemoveShareErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		rm.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(nil, testShareErr)
-		err := RunGroupRemoveShare(cfg)
+		err := RunShareDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunGroupRemoveShareAskForConfirm(t *testing.T) {
+func TestRunShareDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -355,12 +355,12 @@ func TestRunGroupRemoveShareAskForConfirm(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(nil, nil)
-		err := RunGroupRemoveShare(cfg)
+		err := RunShareDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunGroupRemoveShareAskForConfirmErr(t *testing.T) {
+func TestRunShareDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -371,7 +371,7 @@ func TestRunGroupRemoveShareAskForConfirmErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
 		cfg.Stdin = os.Stdin
-		err := RunGroupRemoveShare(cfg)
+		err := RunShareDelete(cfg)
 		assert.Error(t, err)
 	})
 }

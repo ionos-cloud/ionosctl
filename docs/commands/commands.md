@@ -48,6 +48,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | [ionosctl resource](resource/) | Resource Operations |
 | [ionosctl s3key](s3key/) | S3Key Operations |
 | [ionosctl server](server/) | Server Operations |
+| [ionosctl share](share/) | Resource Share Operations |
 | [ionosctl snapshot](snapshot/) | Snapshot Operations |
 | [ionosctl user](user/) | User Operations |
 | [ionosctl version](version.md) | Show the current version |
