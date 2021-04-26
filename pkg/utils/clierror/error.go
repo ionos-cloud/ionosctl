@@ -24,7 +24,7 @@ type CliError struct {
 	Detail string `json:"Detail,omitempty"`
 }
 
-// Standard error checking
+// CheckError Standard error checking
 func CheckError(err error, outErr io.Writer) {
 	if err == nil {
 		return

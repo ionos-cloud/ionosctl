@@ -29,11 +29,10 @@ var (
 
 	cfgFile string
 
-	// Version
 	Major string
 	Minor string
 	Patch string
-	// If label is not set, it will append -dev to latest version
+	// Label - If label is not set, it will append -dev to latest version
 	// If label is set as `release`, it will show the version released
 	Label string
 

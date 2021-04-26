@@ -168,7 +168,7 @@ func NewCommand(ctx context.Context, parent *Command, preCR PreCommandRun, cmdru
 // Its purpose is to keep the validate part separate from run part.
 type PreCommandRun func(commandConfig *PreCommandConfig) error
 
-// PreCommand Properties
+// PreCommandConfig Properties
 type PreCommandConfig struct {
 	Name       string
 	ParentName string
@@ -185,7 +185,7 @@ func NewPreCommandCfg(p printer.PrintService, name, parentName string) *PreComma
 
 type CommandRun func(commandConfig *CommandConfig) error
 
-// Command Properties and Services
+// CommandConfig Properties and Services
 type CommandConfig struct {
 	Name       string
 	ParentName string
@@ -216,7 +216,7 @@ type CommandConfig struct {
 	Context context.Context
 }
 
-// Init IONOS Cloud Client for Commands
+// InitClient for Commands
 func (c *CommandConfig) InitClient() (*resources.Client, error) {
 	err := config.Load()
 	if err != nil {
@@ -234,7 +234,7 @@ func (c *CommandConfig) InitClient() (*resources.Client, error) {
 	return clientSvc.Get(), nil
 }
 
-// Init Services for Commands
+// InitServices for Commands
 func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.Locations = func() resources.LocationsService { return resources.NewLocationService(client, c.Context) }
 	c.DataCenters = func() resources.DatacentersService { return resources.NewDataCenterService(client, c.Context) }
