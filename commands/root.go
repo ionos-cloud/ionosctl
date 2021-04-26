@@ -170,6 +170,7 @@ func addCommands() {
 	rootCmd.AddCommand(backupunit())
 	rootCmd.AddCommand(pcc())
 	rootCmd.AddCommand(k8sCluster())
+	rootCmd.AddCommand(k8sNodePool())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

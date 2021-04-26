@@ -650,4 +650,10 @@ Warning: Are you sure you want to delete K8s cluster (y/N) ?
 y
 RequestId: ea736d72-9c49-4c1e-88a5-a15c05329f40
 Status: Command k8s-cluster delete has been successfully executed`
+
+	listK8sNodePoolsExample  = ``
+	getK8sNodePoolExample    = ``
+	createK8sNodePoolExample = ``
+	updateK8sNodePoolExample = ``
+	deleteK8sNodePoolExample = ``
 )

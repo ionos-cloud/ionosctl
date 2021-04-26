@@ -54,7 +54,6 @@ var (
 			Properties: &clusterProperties.KubernetesClusterProperties,
 		},
 	}
-	testClusterBoolVar  = false
 	testClusterVar      = "test-cluster"
 	testClusterSliceVar = []string{"test-cluster"}
 	testClusterNewVar   = "test-new-cluster"
