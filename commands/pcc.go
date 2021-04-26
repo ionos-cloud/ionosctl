@@ -32,15 +32,9 @@ func pcc() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultUserCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(pccCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	/*
-		List Command
-	*/
 	builder.NewCommand(ctx, pccCmd, noPreRun, RunPccList, "list", "List Private Cross-Connects",
 		"Use this command to get a list of existing Private Cross-Connects available on your account.", listPccsExample, true)
 
-	/*
-		Get Command
-	*/
 	get := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccGet, "get", "Get a Private Cross-Connect",
 		"Use this command to retrieve details about a specific Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id", getPccExample, true)
 	get.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
@@ -48,9 +42,6 @@ func pcc() *builder.Command {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Get Peers Command
-	*/
 	getPeers := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccGetPeers, "get-peers", "Get a Private Cross-Connect Peers",
 		"Use this command to get a list of Peers from a Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id", getPccPeersExample, true)
 	getPeers.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
@@ -58,9 +49,6 @@ func pcc() *builder.Command {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Create Command
-	*/
 	create := builder.NewCommand(ctx, pccCmd, noPreRun, RunPccCreate, "create", "Create a Private Cross-Connect",
 		"Use this command to create a Private Cross-Connect. You can specify the name and the description for the Private Cross-Connect.",
 		createPccExample, true)
@@ -69,9 +57,6 @@ func pcc() *builder.Command {
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Private Cross-Connect to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Private Cross-Connect to be created [seconds]")
 
-	/*
-		Update Command
-	*/
 	update := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccUpdate, "update", "Update a Private Cross-Connect",
 		`Use this command to update details about a specific Private Cross-Connect. Name and description can be updated.
 
@@ -87,9 +72,6 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Private Cross-Connect to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Private Cross-Connect to be updated [seconds]")
 
-	/*
-		Delete Command
-	*/
 	deleteCmd := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccDelete, "delete", "Delete a Private Cross-Connect",
 		`Use this command to delete a Private Cross-Connect.
 

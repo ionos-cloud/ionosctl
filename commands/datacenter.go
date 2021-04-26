@@ -31,15 +31,9 @@ func datacenter() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(datacenterCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	/*
-		List Command
-	*/
 	builder.NewCommand(context.TODO(), datacenterCmd, noPreRun, RunDataCenterList, "list", "List Data Centers",
 		"Use this command to list all Data Centers on your account.", listDatacenterExample, true)
 
-	/*
-		Get Command
-	*/
 	get := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterGet, "get", "Get a Data Center",
 		"Use this command to get information about a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", getDatacenterExample, true)
 	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
@@ -47,9 +41,6 @@ func datacenter() *builder.Command {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Create Command
-	*/
 	create := builder.NewCommand(context.TODO(), datacenterCmd, noPreRun, RunDataCenterCreate, "create", "Create a Data Center",
 		`Use this command to create a Data Center. You can specify the name, description or location for the object.
 
@@ -63,9 +54,6 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, 
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be created [seconds]")
 
-	/*
-		Update Command
-	*/
 	update := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterUpdate, "update", "Update a Data Center",
 		`Use this command to change a Data Center's name, description.
 
@@ -83,9 +71,6 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be updated [seconds]")
 
-	/*
-		Delete Command
-	*/
 	deleteCmd := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterDelete, "delete", "Delete a Data Center",
 		`Use this command to delete a specified Data Center from your account. This is irreversible.
 

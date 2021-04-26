@@ -10,12 +10,6 @@ description: Image Operations
 ionosctl image [command]
 ```
 
-## Aliases
-
-```text
-[images img]
-```
-
 ## Description
 
 The sub-commands of `ionosctl image` allow you to see information about the Images available.

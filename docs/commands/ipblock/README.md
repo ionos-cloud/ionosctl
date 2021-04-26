@@ -10,12 +10,6 @@ description: IPBlock Operations
 ionosctl ipblock [command]
 ```
 
-## Aliases
-
-```text
-[ip]
-```
-
 ## Description
 
 The sub-commands of `ionosctl ipblock` allow you to create/reserve, list, get, update, delete IPBlocks.

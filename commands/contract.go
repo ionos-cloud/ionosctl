@@ -31,9 +31,6 @@ func contract() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultContractCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(contractCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	/*
-		Get Command
-	*/
 	get := builder.NewCommand(ctx, contractCmd, noPreRun, RunContractGet, "get", "Get information about the Contract Resources on your account",
 		"Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
 		getContractExample, true)

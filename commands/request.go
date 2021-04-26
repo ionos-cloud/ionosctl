@@ -32,15 +32,9 @@ func request() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	/*
-		List Command
-	*/
 	builder.NewCommand(context.TODO(), reqCmd, noPreRun, RunRequestList, "list", "List Requests",
 		"Use this command to list all Requests on your account", "", true)
 
-	/*
-		Get Command
-	*/
 	get := builder.NewCommand(context.TODO(), reqCmd, PreRunRequestIdValidate, RunRequestGet, "get", "Get a Request",
 		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		getRequestExample, true)
@@ -49,9 +43,6 @@ func request() *builder.Command {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Wait Command
-	*/
 	wait := builder.NewCommand(context.TODO(), reqCmd, PreRunRequestIdValidate, RunRequestWait, "wait", "Wait a Request",
 		`Use this command to wait for a specified Request to execute. Commands used for create, update, delete, attach, detach also support this via `+"`"+`--wait`+"`"+`option.
 

@@ -10,12 +10,6 @@ description: Firewall Rule Operations
 ionosctl firewallrule [command]
 ```
 
-## Aliases
-
-```text
-[rule]
-```
-
 ## Description
 
 The sub-commands of `ionosctl firewallrule` allow you to create, list, get, update, delete Firewall Rules.

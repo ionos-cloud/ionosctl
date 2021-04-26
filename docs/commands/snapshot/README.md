@@ -10,12 +10,6 @@ description: Snapshot Operations
 ionosctl snapshot [command]
 ```
 
-## Aliases
-
-```text
-[sp snap]
-```
-
 ## Description
 
 The sub-commands of `ionosctl snapshot` allow you to see information, to create, update, delete Snapshots.

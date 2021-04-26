@@ -10,12 +10,6 @@ description: Volume Operations
 ionosctl volume [command]
 ```
 
-## Aliases
-
-```text
-[vol]
-```
-
 ## Description
 
 The sub-commands of `ionosctl volume` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command `ionosctl server attach-volume`.

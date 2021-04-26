@@ -23,7 +23,6 @@ func image() *builder.Command {
 	imageCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "image",
-			Aliases:          []string{"images", "img"},
 			Short:            "Image Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl image` + "`" + ` allow you to see information about the Images available.`,
 			TraverseChildren: true,
@@ -33,9 +32,6 @@ func image() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	/*
-		List Command
-	*/
 	list := builder.NewCommand(ctx, imageCmd, noPreRun, RunImageList, "list", "List Images",
 		"Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
 		listImagesExample, true)
@@ -53,9 +49,6 @@ func image() *builder.Command {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Get Command
-	*/
 	get := builder.NewCommand(ctx, imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
 		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		getImageExample, true)
@@ -64,9 +57,6 @@ func image() *builder.Command {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Delete Command
-	*/
 	deleteCmd := builder.NewCommand(ctx, imageCmd, PreRunImageIdValidate, RunImageDelete, "delete", "Delete a private Image",
 		"Use this command to delete the specified private image. This only applies to private images that you have uploaded.\n\nRequired values to run command:\n\n* Image Id",
 		"", true)

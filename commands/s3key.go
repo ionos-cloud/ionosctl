@@ -24,7 +24,6 @@ func s3key() *builder.Command {
 	s3keyCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "s3key",
-			Aliases:          []string{"key"},
 			Short:            "S3Key Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl s3key` + "`" + ` allow you to see information, to list, get, create, update, delete Users S3Keys. To view details about Users, check the ` + "`" + `ionosctl user` + "`" + ` commands.`,
 			TraverseChildren: true,
@@ -39,15 +38,9 @@ func s3key() *builder.Command {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		List Command
-	*/
 	builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdValidate, RunS3KeyList, "list", "List User S3Keys",
 		"Use this command to get a list of S3Keys of a specified User.\n\nRequired values to run command:\n\n* User Id", listS3KeysExample, true)
 
-	/*
-		Get Command
-	*/
 	get := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdValidate, RunS3KeyGet, "get", "Get a User S3Key",
 		"Use this command to get information about a specified S3Key from a specified User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		getS3KeyExample, true)
@@ -56,9 +49,6 @@ func s3key() *builder.Command {
 		return getS3KeyIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(s3keyCmd.Name(), config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Create Command
-	*/
 	create := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdValidate, RunS3KeyCreate, "create", "Create a S3Key for a User",
 		`Use this command to create a S3Key for a particular User. 
 
@@ -71,9 +61,6 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for S3Key to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a S3Key to be created [seconds]")
 
-	/*
-		Update Command
-	*/
 	update := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdActiveValidate, RunS3KeyUpdate, "update", "Update a S3Key",
 		`Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
 
@@ -91,9 +78,6 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for S3Key to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a S3Key to be updated [seconds]")
 
-	/*
-		Delete Command
-	*/
 	deleteCmd := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdValidate, RunS3KeyDelete, "delete", "Delete a S3Key",
 		"Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		deleteS3KeyExample, true)

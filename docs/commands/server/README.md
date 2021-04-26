@@ -10,12 +10,6 @@ description: Server Operations
 ionosctl server [command]
 ```
 
-## Aliases
-
-```text
-[svr]
-```
-
 ## Description
 
 The sub-commands of `ionosctl server` allow you to create, list, get, update, delete, start, stop, reboot Servers.

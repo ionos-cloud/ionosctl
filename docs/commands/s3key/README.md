@@ -10,12 +10,6 @@ description: S3Key Operations
 ionosctl s3key [command]
 ```
 
-## Aliases
-
-```text
-[key]
-```
-
 ## Description
 
 The sub-commands of `ionosctl s3key` allow you to see information, to list, get, create, update, delete Users S3Keys. To view details about Users, check the `ionosctl user` commands.

@@ -41,16 +41,10 @@ func nic() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultNicCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	/*
-		List Command
-	*/
 	builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsValidate, RunNicList, "list", "List NICs",
 		"Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		listNicExample, true)
 
-	/*
-		Get Command
-	*/
 	get := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicGet, "get", "Get a NIC",
 		"Use this command to get information about a specified NIC from specified Data Center and Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* NIC Id",
 		getNicExample, true)
@@ -59,9 +53,6 @@ func nic() *builder.Command {
 		return getNicsIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Create Command
-	*/
 	create := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsValidate, RunNicCreate, "create", "Create a NIC",
 		`Use this command to create a new NIC on your account. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
 
@@ -81,9 +72,6 @@ Required values to run a command:
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be created [seconds]")
 
-	/*
-		Update Command
-	*/
 	update := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicUpdate, "update", "Update a NIC",
 		`Use this command to update the configuration of a specified NIC. Some restrictions are in place: The primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer. You can also add additional reserved, public IPs to the NIC.
 
@@ -110,9 +98,6 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be updated [seconds]")
 
-	/*
-		Delete Command
-	*/
 	deleteCmd := builder.NewCommand(context.TODO(), nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicDelete, "delete", "Delete a NIC",
 		`This command deletes a specified NIC.
 

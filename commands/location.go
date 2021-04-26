@@ -28,9 +28,6 @@ func location() *builder.Command {
 	globalFlags.StringSlice(config.ArgCols, defaultLocationCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
-	/*
-		List Command
-	*/
 	builder.NewCommand(context.TODO(), locationCmd, noPreRun, RunLocationList, "list", "List Locations",
 		"Use this command to get a list of available locations to create objects on.",
 		listLocationExample, true)
