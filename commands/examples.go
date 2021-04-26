@@ -600,9 +600,24 @@ Status: Command backupunit delete has been successfully executed`
 	/*
 		K8s Example
 	*/
-	listK8sClustersExample  = ``
-	getK8sClusterExample    = ``
-	createK8sClusterExample = ``
-	updateK8sClusterExample = ``
-	deleteK8sClusterExample = ``
+	listK8sClustersExample = `ionosctl k8s-cluster list 
+ClusterId                              Name    K8sVersion   AvailableUpgradeVersions   ViableNodePoolVersions                           State
+01d870e6-4118-4396-90bd-917fda3e948d   test    1.19.8       []                         [1.18.16 1.18.15 1.18.12 1.18.5 1.18.9 1.19.8]   ACTIVE
+cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       []                         [1.18.16 1.18.15 1.18.12 1.18.5 1.18.9 1.19.8]   ACTIVE`
+	getK8sClusterExample = `ionosctl k8s-cluster get --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d 
+ClusterId                              Name    K8sVersion   AvailableUpgradeVersions   ViableNodePoolVersions                           State
+cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       []                         [1.18.16 1.18.15 1.18.12 1.18.5 1.18.9 1.19.8]   ACTIVE`
+	createK8sClusterExample = `ionosctl k8s-cluster create --cluster-name demoTest
+ClusterId                              Name       K8sVersion   AvailableUpgradeVersions   ViableNodePoolVersions   State
+29d9b0c4-351d-4c9e-87e1-201cc0d49afb   demoTest   1.19.8       []                         []                       DEPLOYING
+RequestId: 583ba6ae-dd0b-4c68-8fb2-41b3d7bc471b
+Status: Command k8s-cluster create has been successfully executed`
+	updateK8sClusterExample = `ionosctl k8s-cluster update --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d --cluster-name testCluster
+ClusterId                              Name          K8sVersion   AvailableUpgradeVersions   ViableNodePoolVersions                           State
+cb47b98f-b8dd-4108-8ac0-b636e36a161d   testCluster   1.19.8       []                         [1.18.16 1.18.15 1.18.12 1.18.5 1.18.9 1.19.8]   UPDATING`
+	deleteK8sClusterExample = `ionosctl k8s-cluster delete --cluster-id 01d870e6-4118-4396-90bd-917fda3e948d 
+Warning: Are you sure you want to delete K8s cluster (y/N) ? 
+y
+RequestId: ea736d72-9c49-4c1e-88a5-a15c05329f40
+Status: Command k8s-cluster delete has been successfully executed`
 )
