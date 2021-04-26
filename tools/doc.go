@@ -71,7 +71,7 @@ func WriteDocs(cmd *builder.Command, dir string) error {
 func createStructure(cmd *builder.Command, dir string) error {
 	var file string
 	if cmd.Command.HasAvailableSubCommands() && cmd.Command.Name() != rootCmdName {
-		dirParent := fmt.Sprintf("%s/%s", dir, cmd.Command.Use)
+		dirParent := fmt.Sprintf("%s/%s", dir, strings.ReplaceAll(cmd.Command.Name(), "-", ""))
 		err := os.Mkdir(dirParent, os.ModePerm)
 		if err != nil && !os.IsExist(err) {
 			return err
