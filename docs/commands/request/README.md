@@ -10,12 +10,6 @@ description: Request Operations
 ionosctl request [command]
 ```
 
-## Aliases
-
-```text
-[req]
-```
-
 ## Description
 
 The sub-commands of `ionosctl request` allow you to see information about requests on your account. With the `ionosctl request` command, you can list, get or wait for a Request.
