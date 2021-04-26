@@ -106,7 +106,9 @@ const (
 	ArgBackupUnitName              = "backupunit-name"
 	ArgBackupUnitPassword          = "backupunit-password"
 	ArgBackupUnitEmail             = "backupunit-email"
-	ArgK8sId                       = "k8s-id"
+	ArgK8sClusterId                = "cluster-id"
+	ArgK8sClusterName              = "cluster-name"
+	ArgK8sClusterVersion           = "cluster-version"
 )
 
 // Default values
@@ -150,4 +152,5 @@ const (
 	RequiredFlagResourceId     = "The unique Resource Id " + RequiredFlag
 	RequiredFlagS3KeyId        = "The unique User S3Key Id " + RequiredFlag
 	RequiredFlagBackupUnitId   = "The unique BackupUnit Id " + RequiredFlag
+	RequiredFlagK8sClusterId   = "The unique K8s Cluster Id " + RequiredFlag
 )

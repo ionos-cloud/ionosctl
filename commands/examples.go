@@ -596,4 +596,13 @@ Warning: Are you sure you want to delete backup unit (y/N) ?
 y
 RequestId: fa00ba7e-426d-4460-9ec4-8b480bf5b17f
 Status: Command backupunit delete has been successfully executed`
+
+	/*
+		K8s Example
+	*/
+	listK8sClustersExample  = ``
+	getK8sClusterExample    = ``
+	createK8sClusterExample = ``
+	updateK8sClusterExample = ``
+	deleteK8sClusterExample = ``
 )

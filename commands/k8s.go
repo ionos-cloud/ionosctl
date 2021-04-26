@@ -23,8 +23,8 @@ func k8s() *builder.Command {
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "k8s",
-			Short:            "User Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl k8s` + "`" + ` allows you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl s3key` + "`" + ` commands.`,
+			Short:            "K8s Cluster Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl k8s` + "`" + ` allow you to list, get, create, update, delete K8s Clusters.`,
 			TraverseChildren: true,
 		},
 	}
@@ -35,84 +35,76 @@ func k8s() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sClustersList, "list", "List Users",
-		"Use this command to get a list of existing Users available on your account.", listUserExample, true)
+	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sClustersList, "list", "List K8s Clusters",
+		"Use this command to get a list of existing K8s Clusters.", listK8sClustersExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sIdValidate, RunK8sClusterGet, "get", "Get a User",
-		"Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id", getK8sExample, true)
-	get.AddStringFlag(config.ArgK8sId, "", "", config.RequiredFlagUserId)
-	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterGet, "get", "Get a K8s Cluster",
+		"Use this command to retrieve details about a specific K8s Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
+		getK8sClusterExample, true)
+	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sNameEmailPwdValidate, RunK8sClusterCreate, "create", "Create a User under a particular contract",
-		`Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
-
-Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
+	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNameValidate, RunK8sClusterCreate, "create", "Create a K8s Cluster",
+		`Use this command to create a new Managed Kubernetes Cluster.
 
 Required values to run a command:
 
-* User First Name
-* User Last Name
-* User Email
-* User Password`, createUserExample, true)
-	create.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserPassword, "", "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
-	create.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
-	create.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
+* K8s Cluster Name`, createK8sClusterExample, true)
+	create.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgK8sClusterVersion, "", "1.19.8", "The K8s version for the Cluster")
+	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for K8s Cluster to be created")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for K8s Cluster to be created [seconds]")
 
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sClusterUpdate, "update", "Update a User",
-		`Use this command to update details about a specific User including their privileges.
-
-Note: The password attribute is immutable. It is not allowed in update requests. It is recommended that the new User log into the DCD and change their password.
+	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterUpdate, "update", "Update a K8s Cluster",
+		`Use this command to update the name, version and other properties of an existing Kubernetes Cluster.
 
 Required values to run command:
 
-* User Id`, updateUserExample, true)
-	update.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User")
-	update.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User")
-	update.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User")
-	update.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
-	update.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
-	update.AddStringFlag(config.ArgK8sId, "", "", config.RequiredFlagUserId)
-	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+* K8s Cluster Id`, updateK8sClusterExample, true)
+	update.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster")
+	update.AddStringFlag(config.ArgK8sClusterVersion, "", "", "The K8s version for the Cluster")
+	update.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for K8s Cluster to be updated")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for K8s Cluster to be updated [seconds]")
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sIdValidate, RunK8sClusterDelete, "delete", "Blacklists the User, disabling them",
-		`This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
+	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterDelete, "delete", "Delete a K8s Cluster",
+		`This command deletes a Kubernetes cluster. The cluster cannot contain any node pools when deleting.
 
 Required values to run command:
 
-* User Id`, deleteUserExample, true)
-	deleteCmd.AddStringFlag(config.ArgK8sId, "", "", config.RequiredFlagUserId)
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+* K8s Cluster Id`, deleteUserExample, true)
+	deleteCmd.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for K8s Cluster to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for K8s Cluster to be deleted [seconds]")
 	return k8sCmd
 }
 
-func PreRunK8sIdValidate(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sId)
+func PreRunK8sClusterIdValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sClusterId)
 }
 
-func PreRunK8sNameEmailPwdValidate(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgUserFirstName, config.ArgUserLastName, config.ArgUserEmail, config.ArgUserPassword)
+func PreRunK8sClusterNameValidate(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sClusterName)
 }
 
 func RunK8sClustersList(c *builder.CommandConfig) error {
@@ -124,7 +116,7 @@ func RunK8sClustersList(c *builder.CommandConfig) error {
 }
 
 func RunK8sClusterGet(c *builder.CommandConfig) error {
-	u, _, err := c.K8s().GetCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sId)))
+	u, _, err := c.K8s().GetCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
 	}
@@ -132,103 +124,99 @@ func RunK8sClusterGet(c *builder.CommandConfig) error {
 }
 
 func RunK8sClusterCreate(c *builder.CommandConfig) error {
-	firstname := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserFirstName))
-	lastname := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserLastName))
-	email := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserEmail))
-	pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserPassword))
-	secureAuth := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserForceSecAuth))
-	admin := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserAdministrator))
-	newUser := resources.K8sCluster{
-		Cluster: ionoscloud.Cluster{
-			Properties: &ionoscloud.UserProperties{
-				Firstname:     &firstname,
-				Lastname:      &lastname,
-				Email:         &email,
-				Administrator: &admin,
-				ForceSecAuth:  &secureAuth,
-				Password:      &pwd,
+	n := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
+	v := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterVersion))
+	newCluster := resources.K8sCluster{
+		KubernetesCluster: ionoscloud.KubernetesCluster{
+			Properties: &ionoscloud.KubernetesClusterProperties{
+				Name:       &n,
+				K8sVersion: &v,
 			},
 		},
 	}
-	u, resp, err := c.K8s().CreateCluster(newUser)
+	u, resp, err := c.K8s().CreateCluster(newCluster)
 	if err != nil {
+		return err
+	}
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, getK8sCluster(u)))
 }
 
 func RunK8sClusterUpdate(c *builder.CommandConfig) error {
-	oldUser, resp, err := c.K8s().GetCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sId)))
+	oldCluster, resp, err := c.K8s().GetCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
 	}
-	newProperties := getK8sInfo(oldUser, c)
-	newUser := resources.K8sCluster{
-		User: ionoscloud.User{
-			Properties: &newProperties.UserProperties,
+	newProperties := getK8sClusterInfo(oldCluster, c)
+	newCluster := resources.K8sCluster{
+		KubernetesCluster: ionoscloud.KubernetesCluster{
+			Properties: &newProperties.KubernetesClusterProperties,
 		},
 	}
-	k8sUpd, resp, err := c.K8s().UpdateCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sId)), newUser)
+	k8sUpd, resp, err := c.K8s().UpdateCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)), newCluster)
 	if err != nil {
+		return err
+	}
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, getK8sCluster(k8sUpd)))
 }
 
 func RunK8sClusterDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s")
+	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete K8s cluster")
 	if err != nil {
 		return err
 	}
-	resp, err := c.K8s().DeleteCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sId)))
+	resp, err := c.K8s().DeleteCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)))
 	if err != nil {
+		return err
+	}
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
 }
 
-func getK8sInfo(oldUser *resources.K8sCluster, c *builder.CommandConfig) *resources.K8sClusterProperties {
-	var (
-		firstName, lastName, email string
-		forceSecureAuth, admin     bool
-	)
+func getK8sClusterInfo(oldUser *resources.K8sCluster, c *builder.CommandConfig) *resources.K8sClusterProperties {
+	var n, v string
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserFirstName)) {
-			firstName = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserFirstName))
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName)) {
+			n = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
 		} else {
-			if name, ok := properties.GetFirstnameOk(); ok && name != nil {
-				firstName = *name
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				n = *name
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserLastName)) {
-			lastName = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserLastName))
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterVersion)) {
+			v = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterVersion))
 		} else {
-			if name, ok := properties.GetLastnameOk(); ok && name != nil {
-				lastName = *name
+			if vers, ok := properties.GetK8sVersionOk(); ok && vers != nil {
+				v = *vers
 			}
 		}
 	}
 	return &resources.K8sClusterProperties{
-		UserProperties: ionoscloud.UserProperties{
-			Firstname:     &firstName,
-			Lastname:      &lastName,
-			Email:         &email,
-			Administrator: &admin,
-			ForceSecAuth:  &forceSecureAuth,
+		KubernetesClusterProperties: ionoscloud.KubernetesClusterProperties{
+			Name:       &n,
+			K8sVersion: &v,
 		},
 	}
 }
 
 // Output Printing
 
-var defaultK8sClusterCols = []string{"ClusterId", "ClusterName", "K8sVersion", "AvailableUpgradeVersions", "ViableNodePoolVersions"}
+var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "AvailableUpgradeVersions", "ViableNodePoolVersions", "State"}
 
 type K8sClusterPrint struct {
 	ClusterId                string   `json:"ClusterId,omitempty"`
-	Name                     string   `json:"ClusterName,omitempty"`
+	Name                     string   `json:"Name,omitempty"`
 	K8sVersion               string   `json:"K8sVersion,omitempty"`
 	AvailableUpgradeVersions []string `json:"AvailableUpgradeVersions,omitempty"`
 	ViableNodePoolVersions   []string `json:"ViableNodePoolVersions,omitempty"`
+	State                    string   `json:"State,omitempty"`
 }
 
 func getK8sClusterPrint(resp *resources.Response, c *builder.CommandConfig, k8ss []resources.K8sCluster) printer.Result {
@@ -253,15 +241,11 @@ func getK8sClusterCols(flagName string, outErr io.Writer) []string {
 	if viper.IsSet(flagName) {
 		var k8sCols []string
 		columnsMap := map[string]string{
-			"UserId":            "UserId",
-			"Firstname":         "Firstname",
-			"Lastname":          "Lastname",
-			"Email":             "Email",
-			"Administrator":     "Administrator",
-			"ForceSecAuth":      "ForceSecAuth",
-			"SecAuthActive":     "SecAuthActive",
-			"S3CanonicalUserId": "S3CanonicalUserId",
-			"Active":            "Active",
+			"ClusterId":                "ClusterId",
+			"Name":                     "Name",
+			"K8sVersion":               "K8sVersion",
+			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
+			"ViableNodePoolVersions":   "ViableNodePoolVersions",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -314,6 +298,11 @@ func getK8sClustersKVMaps(us []resources.K8sCluster) []map[string]interface{} {
 			}
 			if v, ok := properties.GetViableNodePoolVersionsOk(); ok && v != nil {
 				uPrint.ViableNodePoolVersions = *v
+			}
+		}
+		if meta, ok := u.GetMetadataOk(); ok && meta != nil {
+			if state, ok := meta.GetStateOk(); ok && state != nil {
+				uPrint.State = *state
 			}
 		}
 		o := structs.Map(uPrint)
