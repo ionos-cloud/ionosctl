@@ -32,6 +32,7 @@ Required values to run command:
       --ignore-stdin              Force command to execute without user input
       --label-key string          Label key
       --label-value string        Label value
+      --lan-id int                The unique LAN Id of existing LANs to be attached to worker Nodes
       --maintenance-day string    The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string   The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
       --max-node-count int        The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count (default 1)

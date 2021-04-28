@@ -119,6 +119,7 @@ Required values to run command:
 	update.AddStringFlag(config.ArgK8sAnnotationValue, "", "", "Annotation value")
 	update.AddStringFlag(config.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
 	update.AddStringFlag(config.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
+	update.AddIntFlag(config.ArgLanId, "", 0, "The unique LAN Id of existing LANs to be attached to worker Nodes")
 	update.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -321,6 +322,17 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *builder.Command
 				Key:   &key,
 				Value: &value,
 			})
+		}
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgLanId)) {
+			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
+			lanId := viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgLanId))
+			newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{Id: &lanId})
+			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
+				for _, existingLan := range *existingLans {
+					newLans = append(newLans, existingLan)
+				}
+			}
+			propertiesUpdated.SetLans(newLans)
 		}
 	}
 	return resources.K8sNodePool{

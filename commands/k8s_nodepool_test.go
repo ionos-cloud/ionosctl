@@ -91,6 +91,11 @@ var (
 					DayOfTheWeek: &testNodepoolNewVar,
 					Time:         &testNodepoolNewVar,
 				},
+				Lans: &[]ionoscloud.KubernetesNodePoolLan{
+					{
+						Id: &testNodepoolIntNewVar,
+					},
+				},
 			},
 		},
 	}
@@ -123,6 +128,11 @@ var (
 				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testNodepoolNewVar,
 					Time:         &testNodepoolNewVar,
+				},
+				Lans: &[]ionoscloud.KubernetesNodePoolLan{
+					{
+						Id: &testNodepoolIntNewVar,
+					},
 				},
 			},
 		},
@@ -341,6 +351,7 @@ func TestRunK8sNodePoolUpdate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeCount), testNodepoolIntNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
 		rm.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
@@ -383,6 +394,7 @@ func TestRunK8sNodePoolUpdateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeCount), testNodepoolIntNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
 		rm.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
@@ -409,6 +421,7 @@ func TestRunK8sNodePoolUpdateGetErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeCount), testNodepoolIntNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
 		rm.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, testNodepoolErr)
