@@ -118,9 +118,6 @@ func RunK8sClusterCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, getK8sCluster(u)))
 }
 
@@ -149,9 +146,6 @@ func RunK8sClusterDelete(c *builder.CommandConfig) error {
 	}
 	resp, err := c.K8s().DeleteCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)))
 	if err != nil {
-		return err
-	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))

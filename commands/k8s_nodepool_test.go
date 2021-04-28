@@ -38,6 +38,9 @@ var (
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id:         &testNodepoolVar,
 			Properties: nodepoolTest.Properties,
+			Metadata: &ionoscloud.DatacenterElementMetadata{
+				State: &testNodepoolVar,
+			},
 		},
 	}
 	nodepools = resources.K8sNodePools{
@@ -76,6 +79,31 @@ var (
 					MinNodeCount: &testNodepoolIntNewVar,
 					MaxNodeCount: &testNodepoolIntNewVar,
 				},
+			},
+		},
+	}
+	nodepoolTestOld = resources.K8sNodePool{
+		KubernetesNodePool: ionoscloud.KubernetesNodePool{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{
+				NodeCount:  &testNodepoolIntVar,
+				K8sVersion: &testNodepoolVar,
+			},
+		},
+	}
+	nodepoolTestUpdatedOld = resources.K8sNodePoolUpdated{
+		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+			Id: &testNodepoolVar,
+			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
+				Name:             &testNodepoolVar,
+				NodeCount:        &testNodepoolIntVar,
+				DatacenterId:     &testNodepoolVar,
+				CpuFamily:        &testNodepoolVar,
+				AvailabilityZone: &testNodepoolVar,
+				RamSize:          &testNodepoolIntVar,
+				StorageSize:      &testNodepoolIntVar,
+				StorageType:      &testNodepoolVar,
+				K8sVersion:       &testNodepoolVar,
+				CoresCount:       &testNodepoolIntVar,
 			},
 		},
 	}
@@ -268,21 +296,21 @@ func TestRunK8sNodePoolUpdate(t *testing.T) {
 	})
 }
 
-//func TestRunK8sNodePoolUpdateOldUser(t *testing.T) {
-//	var b bytes.Buffer
-//	w := bufio.NewWriter(&b)
-//	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
-//		viper.Reset()
-//		viper.Set(config.ArgQuiet, false)
-//		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-//		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
-//		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
-//		rm.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
-//		rm.K8s.EXPECT().UpdateNodePool(testNodepoolVar, testNodepoolVar, nodepoolTest).Return(&nodepoolTestUpdatedNew, nil, nil)
-//		err := RunK8sNodePoolUpdate(cfg)
-//		assert.NoError(t, err)
-//	})
-//}
+func TestRunK8sNodePoolUpdateOldUser(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
+		rm.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestGet, nil, nil)
+		rm.K8s.EXPECT().UpdateNodePool(testNodepoolVar, testNodepoolVar, nodepoolTestOld).Return(&nodepoolTestUpdatedOld, nil, nil)
+		err := RunK8sNodePoolUpdate(cfg)
+		assert.NoError(t, err)
+	})
+}
 
 func TestRunK8sNodePoolUpdateErr(t *testing.T) {
 	var b bytes.Buffer

@@ -35,6 +35,9 @@ var (
 				AvailableUpgradeVersions: &testClusterSliceVar,
 				ViableNodePoolVersions:   &testClusterSliceVar,
 			},
+			Metadata: &ionoscloud.DatacenterElementMetadata{
+				State: &testClusterVar,
+			},
 		},
 	}
 	clusters = resources.K8sClusters{
@@ -82,6 +85,32 @@ func TestPreRunK8sClusterIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), "")
 		err := PreRunK8sClusterIdValidate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunK8sClusterNameValidate(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterName), testClusterVar)
+		err := PreRunK8sClusterNameValidate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunK8sClusterNameValidateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterName), "")
+		err := PreRunK8sClusterNameValidate(cfg)
 		assert.Error(t, err)
 	})
 }

@@ -163,8 +163,9 @@ func RunK8sNodePoolUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	newNodePool := getNewK8sNodePoolUpdated(oldNodePool, c)
 	_, _, err = c.K8s().UpdateNodePool(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)), getNewK8sNodePoolUpdated(oldNodePool, c))
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)), newNodePool)
 	if err != nil {
 		return err
 	}
@@ -231,25 +232,28 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *builder.Command
 				propertiesUpdated.SetNodeCount(*n)
 			}
 		}
-		autoScaling := properties.GetAutoScaling()
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMinNodeCount)) {
-			minCount = viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMinNodeCount))
-		} else {
-			if m, ok := autoScaling.GetMinNodeCountOk(); ok && m != nil {
-				minCount = *m
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMinNodeCount)) ||
+			viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaxNodeCount)) {
+			autoScaling := properties.GetAutoScaling()
+			if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMinNodeCount)) {
+				minCount = viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMinNodeCount))
+			} else {
+				if m, ok := autoScaling.GetMinNodeCountOk(); ok && m != nil {
+					minCount = *m
+				}
 			}
-		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaxNodeCount)) {
-			maxCount = viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaxNodeCount))
-		} else {
-			if m, ok := autoScaling.GetMaxNodeCountOk(); ok && m != nil {
-				maxCount = *m
+			if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaxNodeCount)) {
+				maxCount = viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaxNodeCount))
+			} else {
+				if m, ok := autoScaling.GetMaxNodeCountOk(); ok && m != nil {
+					maxCount = *m
+				}
 			}
+			propertiesUpdated.SetAutoScaling(ionoscloud.KubernetesAutoScaling{
+				MinNodeCount: &minCount,
+				MaxNodeCount: &maxCount,
+			})
 		}
-		propertiesUpdated.SetAutoScaling(ionoscloud.KubernetesAutoScaling{
-			MinNodeCount: &minCount,
-			MaxNodeCount: &maxCount,
-		})
 	}
 	return resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
