@@ -191,22 +191,6 @@ func (mr *MockK8sServiceMockRecorder) ListClusters() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockK8sService)(nil).ListClusters))
 }
 
-// ListCompatibleVersions mocks base method.
-func (m *MockK8sService) ListCompatibleVersions(clusterVersion string) ([]string, *resources.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListCompatibleVersions", clusterVersion)
-	ret0, _ := ret[0].([]string)
-	ret1, _ := ret[1].(*resources.Response)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
-}
-
-// ListCompatibleVersions indicates an expected call of ListCompatibleVersions.
-func (mr *MockK8sServiceMockRecorder) ListCompatibleVersions(clusterVersion interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCompatibleVersions", reflect.TypeOf((*MockK8sService)(nil).ListCompatibleVersions), clusterVersion)
-}
-
 // ListNodePools mocks base method.
 func (m *MockK8sService) ListNodePools(clusterId string) (resources.K8sNodePools, *resources.Response, error) {
 	m.ctrl.T.Helper()

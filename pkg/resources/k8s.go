@@ -76,7 +76,6 @@ type K8sService interface {
 	// Versions
 	ListVersions() ([]string, *Response, error)
 	GetVersion() (string, *Response, error)
-	ListCompatibleVersions(clusterVersion string) ([]string, *Response, error)
 }
 
 type k8sService struct {
@@ -193,10 +192,4 @@ func (s *k8sService) GetVersion() (string, *Response, error) {
 	req := s.client.KubernetesApi.K8sVersionsDefaultGet(s.context)
 	v, res, err := s.client.KubernetesApi.K8sVersionsDefaultGetExecute(req)
 	return v, &Response{*res}, err
-}
-
-func (s *k8sService) ListCompatibleVersions(clusterVersion string) ([]string, *Response, error) {
-	req := s.client.KubernetesApi.K8sVersionsCompatibilitiesGet(s.context, clusterVersion)
-	vs, res, err := s.client.KubernetesApi.K8sVersionsCompatibilitiesGetExecute(req)
-	return vs, &Response{*res}, err
 }
