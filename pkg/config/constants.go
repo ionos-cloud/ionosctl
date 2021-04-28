@@ -124,6 +124,7 @@ const (
 	ArgStorageSize                 = "storage-size"
 	ArgK8sMinNodeCount             = "min-node-count"
 	ArgK8sMaxNodeCount             = "max-node-count"
+	ArgK8sNodeId                   = "node-id"
 )
 
 // Default values
@@ -170,4 +171,5 @@ const (
 	RequiredFlagPccId          = "The unique Private Cross-Connect Id " + RequiredFlag
 	RequiredFlagK8sClusterId   = "The unique K8s Cluster Id " + RequiredFlag
 	RequiredFlagK8sNodePoolId  = "The unique K8s Node Pool Id " + RequiredFlag
+	RequiredFlagK8sNodeId      = "The unique K8s Node Id " + RequiredFlag
 )
