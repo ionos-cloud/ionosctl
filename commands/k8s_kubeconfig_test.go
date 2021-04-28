@@ -4,23 +4,17 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"testing"
+
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var (
-	kubeconfigTest = resources.K8sKubeconfig{
-		KubernetesConfig: ionoscloud.KubernetesConfig{
-			Properties: &ionoscloud.KubernetesConfigProperties{
-				Kubeconfig: &testKubeconfigVar,
-			},
-		},
-	}
 	kubeconfigTestGet = resources.K8sKubeconfig{
 		KubernetesConfig: ionoscloud.KubernetesConfig{
 			Id: &testKubeconfigVar,
