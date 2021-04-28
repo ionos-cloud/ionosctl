@@ -34,6 +34,10 @@ var (
 				K8sVersion:               &testClusterVar,
 				AvailableUpgradeVersions: &testClusterSliceVar,
 				ViableNodePoolVersions:   &testClusterSliceVar,
+				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+					DayOfTheWeek: &testClusterVar,
+					Time:         &testClusterVar,
+				},
 			},
 			Metadata: &ionoscloud.DatacenterElementMetadata{
 				State: &testClusterVar,
@@ -50,6 +54,10 @@ var (
 		KubernetesClusterProperties: ionoscloud.KubernetesClusterProperties{
 			Name:       &testClusterNewVar,
 			K8sVersion: &testClusterNewVar,
+			MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+				DayOfTheWeek: &testClusterNewVar,
+				Time:         &testClusterNewVar,
+			},
 		},
 	}
 	clusterNew = resources.K8sCluster{
@@ -224,6 +232,8 @@ func TestRunK8sClusterUpdate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testClusterVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterName), testClusterNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterVersion), testClusterNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceTime), testClusterNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceDay), testClusterNewVar)
 		rm.K8s.EXPECT().GetCluster(testClusterVar).Return(&clusterTest, nil, nil)
 		rm.K8s.EXPECT().UpdateCluster(testClusterVar, clusterNew).Return(&clusterNew, nil, nil)
 		err := RunK8sClusterUpdate(cfg)
@@ -256,6 +266,8 @@ func TestRunK8sClusterUpdateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testClusterVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterName), testClusterNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterVersion), testClusterNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceTime), testClusterNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceDay), testClusterNewVar)
 		rm.K8s.EXPECT().GetCluster(testClusterVar).Return(&clusterTest, nil, nil)
 		rm.K8s.EXPECT().UpdateCluster(testClusterVar, clusterNew).Return(&clusterNew, nil, testClusterErr)
 		err := RunK8sClusterUpdate(cfg)

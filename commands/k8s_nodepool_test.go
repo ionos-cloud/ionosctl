@@ -36,8 +36,29 @@ var (
 	}
 	nodepoolTestGet = resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Id:         &testNodepoolVar,
-			Properties: nodepoolTest.Properties,
+			Id: &testNodepoolVar,
+			Properties: &ionoscloud.KubernetesNodePoolProperties{
+				Name:                     &testNodepoolVar,
+				NodeCount:                &testNodepoolIntVar,
+				DatacenterId:             &testNodepoolVar,
+				CpuFamily:                &testNodepoolVar,
+				AvailabilityZone:         &testNodepoolVar,
+				RamSize:                  &testNodepoolIntVar,
+				StorageSize:              &testNodepoolIntVar,
+				StorageType:              &testNodepoolVar,
+				K8sVersion:               &testNodepoolVar,
+				CoresCount:               &testNodepoolIntVar,
+				PublicIps:                &testNodepoolSliceVar,
+				AvailableUpgradeVersions: &testNodepoolSliceVar,
+				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+					DayOfTheWeek: &testNodepoolVar,
+					Time:         &testNodepoolVar,
+				},
+				AutoScaling: &ionoscloud.KubernetesAutoScaling{
+					MinNodeCount: &testNodepoolIntVar,
+					MaxNodeCount: &testNodepoolIntVar,
+				},
+			},
 			Metadata: &ionoscloud.DatacenterElementMetadata{
 				State: &testNodepoolVar,
 			},
@@ -57,6 +78,18 @@ var (
 				AutoScaling: &ionoscloud.KubernetesAutoScaling{
 					MinNodeCount: &testNodepoolIntNewVar,
 					MaxNodeCount: &testNodepoolIntNewVar,
+				},
+				Annotations: &ionoscloud.KubernetesNodePoolAnnotation{
+					Key:   &testNodepoolNewVar,
+					Value: &testNodepoolNewVar,
+				},
+				Labels: &ionoscloud.KubernetesNodePoolLabel{
+					Key:   &testNodepoolNewVar,
+					Value: &testNodepoolNewVar,
+				},
+				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+					DayOfTheWeek: &testNodepoolNewVar,
+					Time:         &testNodepoolNewVar,
 				},
 			},
 		},
@@ -78,6 +111,18 @@ var (
 				AutoScaling: &ionoscloud.KubernetesAutoScaling{
 					MinNodeCount: &testNodepoolIntNewVar,
 					MaxNodeCount: &testNodepoolIntNewVar,
+				},
+				Annotations: &ionoscloud.KubernetesNodePoolAnnotation{
+					Key:   &testNodepoolNewVar,
+					Value: &testNodepoolNewVar,
+				},
+				Labels: &ionoscloud.KubernetesNodePoolLabel{
+					Key:   &testNodepoolNewVar,
+					Value: &testNodepoolNewVar,
+				},
+				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
+					DayOfTheWeek: &testNodepoolNewVar,
+					Time:         &testNodepoolNewVar,
 				},
 			},
 		},
@@ -110,6 +155,7 @@ var (
 	testNodepoolIntVar    = int32(1)
 	testNodepoolIntNewVar = int32(2)
 	testNodepoolVar       = "test-nodepool"
+	testNodepoolSliceVar  = []string{"test-nodepool"}
 	testNodepoolNewVar    = "test-new-nodepool"
 	testNodepoolErr       = errors.New("nodepool test error")
 )
@@ -142,7 +188,7 @@ func TestPreRunK8sClusterNodePoolIdsValidateErr(t *testing.T) {
 	})
 }
 
-func TestPreRunK8sClusterIdNodePoolNameValidate(t *testing.T) {
+func TestPreRunK8sClusterDcIdsNodePoolNameValidate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -150,13 +196,14 @@ func TestPreRunK8sClusterIdNodePoolNameValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolName), testNodepoolVar)
-		err := PreRunK8sClusterIdNodePoolNameValidate(cfg)
+		err := PreRunK8sClusterDcIdsNodePoolNameValidate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunK8sClusterIdNodePoolNameValidateErr(t *testing.T) {
+func TestPreRunK8sClusterDcIdsNodePoolNameValidateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -164,8 +211,9 @@ func TestPreRunK8sClusterIdNodePoolNameValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), "")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), "")
-		err := PreRunK8sClusterIdNodePoolNameValidate(cfg)
+		err := PreRunK8sClusterDcIdsNodePoolNameValidate(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -284,6 +332,12 @@ func TestRunK8sNodePoolUpdate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolVersion), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceDay), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceTime), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sAnnotationKey), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sAnnotationValue), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testNodepoolNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeCount), testNodepoolIntNewVar)
@@ -320,6 +374,12 @@ func TestRunK8sNodePoolUpdateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolVersion), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceDay), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceTime), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sAnnotationKey), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sAnnotationValue), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testNodepoolNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeCount), testNodepoolIntNewVar)
@@ -340,6 +400,12 @@ func TestRunK8sNodePoolUpdateGetErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolVersion), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceDay), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaintenanceTime), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sAnnotationKey), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sAnnotationValue), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testNodepoolNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testNodepoolNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeCount), testNodepoolIntNewVar)

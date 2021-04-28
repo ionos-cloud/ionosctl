@@ -18,9 +18,15 @@ func k8sVersion() *builder.Command {
 		},
 	}
 
+	/*
+		List Command
+	*/
 	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sVersionList, "list", "List K8s Versions",
 		"Use this command to retrieve all available Kubernetes versions.", listK8sVersionsExample, true)
 
+	/*
+		Get Command
+	*/
 	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sVersionGet, "get", "Get K8s Default Version",
 		"Use this command to retrieve the current default Kubernetes version for Clusters and NodePools.",
 		getK8sVersionExample, true)

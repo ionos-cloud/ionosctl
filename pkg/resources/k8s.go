@@ -50,6 +50,10 @@ type K8sNodes struct {
 	ionoscloud.KubernetesNodes
 }
 
+type K8sMaintenceWindow struct {
+	ionoscloud.KubernetesMaintenanceWindow
+}
+
 // K8sService is a wrapper around ionoscloud.K8s
 type K8sService interface {
 	ListClusters() (K8sClusters, *Response, error)

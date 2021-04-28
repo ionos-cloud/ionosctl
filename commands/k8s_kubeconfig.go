@@ -21,6 +21,10 @@ func k8sKubeconfig() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
+
+	/*
+		Get Command
+	*/
 	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sKubeconfigGet, "get", "Get a K8s Cluster Kubeconfig",
 		"Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		getK8sKubeconfigExample, true)

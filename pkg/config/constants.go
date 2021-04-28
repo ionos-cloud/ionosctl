@@ -125,6 +125,10 @@ const (
 	ArgK8sMinNodeCount             = "min-node-count"
 	ArgK8sMaxNodeCount             = "max-node-count"
 	ArgK8sNodeId                   = "node-id"
+	ArgK8sMaintenanceDay           = "maintenance-day"
+	ArgK8sMaintenanceTime          = "maintenance-time"
+	ArgK8sAnnotationKey            = "annotation-key"
+	ArgK8sAnnotationValue          = "annotation-value"
 )
 
 // Default values
