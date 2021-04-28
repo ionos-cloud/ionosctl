@@ -171,6 +171,7 @@ func addCommands() {
 	rootCmd.AddCommand(pcc())
 	rootCmd.AddCommand(k8sCluster())
 	rootCmd.AddCommand(k8sNodePool())
+	rootCmd.AddCommand(k8sKubeconfig())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

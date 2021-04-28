@@ -656,4 +656,6 @@ Status: Command k8s-cluster delete has been successfully executed`
 	createK8sNodePoolExample = ``
 	updateK8sNodePoolExample = ``
 	deleteK8sNodePoolExample = ``
+
+	getK8sKubeconfigExample = `ionosctl k8s-kubeconfig get --cluster-id CLUSTER_ID`
 )
