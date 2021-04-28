@@ -18,7 +18,7 @@ The sub-commands of `ionosctl k8s-cluster` allow you to list, get, create, updat
 
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings     Columns to be printed in the standard output (default [ClusterId,Name,K8sVersion,AvailableUpgradeVersions,ViableNodePoolVersions,State])
+      --cols strings     Columns to be printed in the standard output (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -h, --help             help for k8s-cluster
       --ignore-stdin     Force command to execute without user input
