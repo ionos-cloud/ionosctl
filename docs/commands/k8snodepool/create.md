@@ -32,7 +32,7 @@ Required values to run a command:
       --datacenter-id string      The unique Data Center Id [Required flag]
   -h, --help                      help for create
       --ignore-stdin              Force command to execute without user input
-      --node-count int            The number of worker Nodes that the Node Pool should contain. Min 2, Max: Determined by the resource availability (default 2)
+      --node-count int            The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
       --node-zone string          The compute Availability Zone in which the Node should exist (default "AUTO")
       --nodepool-name string      The name for the K8s NodePool [Required flag]
       --nodepool-version string   The K8s version for the NodePool (default "1.19.8")

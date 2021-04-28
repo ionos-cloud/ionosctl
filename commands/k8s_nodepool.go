@@ -82,7 +82,7 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(config.ArgK8sNodeCount, "", 2, "The number of worker Nodes that the Node Pool should contain. Min 2, Max: Determined by the resource availability")
+	create.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
 	create.AddIntFlag(config.ArgCoresCount, "", 2, "The total number of cores for the Node")
 	create.AddIntFlag(config.ArgRamSize, "", 2048, "The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB")
 	create.AddStringFlag(config.ArgCpuFamily, "", config.DefaultServerCPUFamily, "CPU Type")
@@ -110,7 +110,7 @@ Required values to run command:
 * K8s Cluster Id
 * K8s NodePool Id`, updateK8sNodePoolExample, true)
 	update.AddStringFlag(config.ArgK8sNodePoolVersion, "", "", "The K8s version for the NodePool. K8s version downgrade is not supported")
-	update.AddStringFlag(config.ArgK8sNodeCount, "", "", "The number of worker Nodes that the NodePool should contain")
+	update.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
 	update.AddIntFlag(config.ArgK8sMinNodeCount, "", 1, "The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count")
 	update.AddIntFlag(config.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count")
 	update.AddStringFlag(config.ArgLabelKey, "", "", "Label key")

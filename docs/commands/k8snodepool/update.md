@@ -36,7 +36,7 @@ Required values to run command:
       --maintenance-time string   The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
       --max-node-count int        The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count (default 1)
       --min-node-count int        The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count (default 1)
-      --node-count string         The number of worker Nodes that the NodePool should contain
+      --node-count int            The number of worker Nodes that the NodePool should contain (default 1)
       --nodepool-id string        The unique K8s Node Pool Id [Required flag]
       --nodepool-version string   The K8s version for the NodePool. K8s version downgrade is not supported
   -o, --output string             Desired output format [text|json] (default "text")
