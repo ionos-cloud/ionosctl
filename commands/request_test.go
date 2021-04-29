@@ -41,7 +41,7 @@ var (
 	testRequestErr     = errors.New("request test: error occurred")
 )
 
-func TestPreRunRequestIdValidate(t *testing.T) {
+func TestPreRunRequestId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -49,12 +49,12 @@ func TestPreRunRequestIdValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgRequestId), testRequestVar)
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunRequestIdValidate(cfg)
+		err := PreRunRequestId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunRequestIdValidateRequiredFlagErr(t *testing.T) {
+func TestPreRunRequestIdRequiredFlagErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -62,7 +62,7 @@ func TestPreRunRequestIdValidateRequiredFlagErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgRequestId), "")
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunRequestIdValidate(cfg)
+		err := PreRunRequestId(cfg)
 		assert.Error(t, err)
 	})
 }

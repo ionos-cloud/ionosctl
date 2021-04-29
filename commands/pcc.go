@@ -41,7 +41,7 @@ func pcc() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccGet, "get", "Get a Private Cross-Connect",
+	get := builder.NewCommand(ctx, pccCmd, PreRunPccId, RunPccGet, "get", "Get a Private Cross-Connect",
 		"Use this command to retrieve details about a specific Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id", getPccExample, true)
 	get.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -51,7 +51,7 @@ func pcc() *builder.Command {
 	/*
 		Get Command
 	*/
-	getPeers := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccGetPeers, "get-peers", "Get a Private Cross-Connect Peers",
+	getPeers := builder.NewCommand(ctx, pccCmd, PreRunPccId, RunPccGetPeers, "get-peers", "Get a Private Cross-Connect Peers",
 		"Use this command to get a list of Peers from a Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id", getPccPeersExample, true)
 	getPeers.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
 	_ = getPeers.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -72,7 +72,7 @@ func pcc() *builder.Command {
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccUpdate, "update", "Update a Private Cross-Connect",
+	update := builder.NewCommand(ctx, pccCmd, PreRunPccId, RunPccUpdate, "update", "Update a Private Cross-Connect",
 		`Use this command to update details about a specific Private Cross-Connect. Name and description can be updated.
 
 Required values to run command:
@@ -90,7 +90,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccDelete, "delete", "Delete a Private Cross-Connect",
+	deleteCmd := builder.NewCommand(ctx, pccCmd, PreRunPccId, RunPccDelete, "delete", "Delete a Private Cross-Connect",
 		`Use this command to delete a Private Cross-Connect.
 
 Required values to run command:
@@ -106,7 +106,7 @@ Required values to run command:
 	return pccCmd
 }
 
-func PreRunPccIdValidate(c *builder.PreCommandConfig) error {
+func PreRunPccId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgPccId)
 }
 

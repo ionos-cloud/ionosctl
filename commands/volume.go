@@ -41,14 +41,14 @@ func volume() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdValidate, RunVolumeList, "list", "List Volumes",
+	builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcId, RunVolumeList, "list", "List Volumes",
 		"Use this command to list all Volumes from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		listVolumeExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeGet, "get", "Get a Volume",
+	get := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeId, RunVolumeGet, "get", "Get a Volume",
 		"Use this command to retrieve information about a Volume using its ID.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id",
 		getVolumeExample, true)
 	get.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
@@ -59,7 +59,7 @@ func volume() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdValidate, RunVolumeCreate, "create", "Create a Volume",
+	create := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcId, RunVolumeCreate, "create", "Create a Volume",
 		`Use this command to create a Volume on your account. You can specify the name, size, type, licence type and availability zone for the object.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -81,7 +81,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeUpdate, "update", "Update a Volume",
+	update := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeId, RunVolumeUpdate, "update", "Update a Volume",
 		`Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards.
 
 Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API. Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
@@ -106,7 +106,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeIdValidate, RunVolumeDelete, "delete", "Delete a Volume",
+	deleteCmd := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeId, RunVolumeDelete, "delete", "Delete a Volume",
 		`Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -126,7 +126,7 @@ Required values to run command:
 	return volumeCmd
 }
 
-func PreRunGlobalDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcIdVolumeId(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
 		result = multierror.Append(result, err)

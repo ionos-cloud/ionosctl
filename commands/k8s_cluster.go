@@ -45,7 +45,7 @@ func k8sCluster() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterGet, "get", "Get a Kubernetes Cluster",
+	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterId, RunK8sClusterGet, "get", "Get a Kubernetes Cluster",
 		"Use this command to retrieve details about a specific Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		getK8sClusterExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
@@ -56,7 +56,7 @@ func k8sCluster() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNameValidate, RunK8sClusterCreate, "create", "Create a Kubernetes Cluster",
+	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterName, RunK8sClusterCreate, "create", "Create a Kubernetes Cluster",
 		`Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. 
 
 Required values to run a command:
@@ -68,7 +68,7 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterUpdate, "update", "Update a Kubernetes Cluster",
+	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterId, RunK8sClusterUpdate, "update", "Update a Kubernetes Cluster",
 		`Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.
 
 Required values to run command:
@@ -86,7 +86,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterDelete, "delete", "Delete a Kubernetes Cluster",
+	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterId, RunK8sClusterDelete, "delete", "Delete a Kubernetes Cluster",
 		`This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
 
 Required values to run command:
@@ -100,11 +100,11 @@ Required values to run command:
 	return k8sCmd
 }
 
-func PreRunK8sClusterIdValidate(c *builder.PreCommandConfig) error {
+func PreRunK8sClusterId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sClusterId)
 }
 
-func PreRunK8sClusterNameValidate(c *builder.PreCommandConfig) error {
+func PreRunK8sClusterName(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sClusterName)
 }
 

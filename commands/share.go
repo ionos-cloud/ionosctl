@@ -35,7 +35,7 @@ func share() *builder.Command {
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(ctx, shareCmd, PreRunGroupIdValidate, RunShareList, "list", "List Resources Shares through a Group",
+	list := builder.NewCommand(ctx, shareCmd, PreRunGroupId, RunShareList, "list", "List Resources Shares through a Group",
 		"Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
 		listSharesExample, true)
 	list.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
@@ -46,7 +46,7 @@ func share() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIdsValidate, RunShareGet, "get", "Get a Resource Share from a Group",
+	get := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIds, RunShareGet, "get", "Get a Resource Share from a Group",
 		"Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
 		getShareExample, true)
 	get.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
@@ -61,7 +61,7 @@ func share() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIdsValidate, RunShareCreate, "create", "Create a Resource Share for a Group",
+	create := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIds, RunShareCreate, "create", "Create a Resource Share for a Group",
 		`Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.
 
 Required values to run a command:
@@ -84,7 +84,7 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIdsValidate, RunShareUpdate, "update", "Update a Resource Share from a Group",
+	update := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIds, RunShareUpdate, "update", "Update a Resource Share from a Group",
 		`Use this command to update the permissions that a Group has for a specific Resource Share.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -109,7 +109,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIdsValidate, RunShareDelete, "delete", "Delete a Resource Share from a Group",
+	deleteCmd := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIds, RunShareDelete, "delete", "Delete a Resource Share from a Group",
 		`This command deletes a Resource Share from a specified Group.
 
 Required values to run command:
@@ -130,7 +130,7 @@ Required values to run command:
 	return shareCmd
 }
 
-func PreRunGroupResourceIdsValidate(c *builder.PreCommandConfig) error {
+func PreRunGroupResourceIds(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgGroupId, config.ArgResourceId)
 }
 

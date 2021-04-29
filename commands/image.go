@@ -54,7 +54,7 @@ func image() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
+	get := builder.NewCommand(ctx, imageCmd, PreRunImageId, RunImageGet, "get", "Get a specified Image",
 		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		getImageExample, true)
 	get.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
@@ -65,7 +65,7 @@ func image() *builder.Command {
 	return imageCmd
 }
 
-func PreRunImageIdValidate(c *builder.PreCommandConfig) error {
+func PreRunImageId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgImageId)
 }
 

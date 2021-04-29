@@ -45,14 +45,14 @@ func nic() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsValidate, RunNicList, "list", "List NICs",
+	builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIds, RunNicList, "list", "List NICs",
 		"Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		listNicExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicGet, "get", "Get a NIC",
+	get := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicId, RunNicGet, "get", "Get a NIC",
 		"Use this command to get information about a specified NIC from specified Data Center and Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* NIC Id",
 		getNicExample, true)
 	get.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
@@ -63,7 +63,7 @@ func nic() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsValidate, RunNicCreate, "create", "Create a NIC",
+	create := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIds, RunNicCreate, "create", "Create a NIC",
 		`Use this command to create a new NIC on your account. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -85,7 +85,7 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicUpdate, "update", "Update a NIC",
+	update := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicId, RunNicUpdate, "update", "Update a NIC",
 		`Use this command to update the configuration of a specified NIC. Some restrictions are in place: The primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer. You can also add additional reserved, public IPs to the NIC.
 
 The user can specify and assign private IPs manually. Valid IP addresses for private networks are 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16.
@@ -114,7 +114,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicIdValidate, RunNicDelete, "delete", "Delete a NIC",
+	deleteCmd := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicId, RunNicDelete, "delete", "Delete a NIC",
 		`This command deletes a specified NIC.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -134,11 +134,11 @@ Required values to run command:
 	return nicCmd
 }
 
-func PreRunGlobalDcServerIdsValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcServerIds(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId)
 }
 
-func PreRunGlobalDcServerIdsNicIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcServerIdsNicId(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId); err != nil {
 		result = multierror.Append(result, err)

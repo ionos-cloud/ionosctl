@@ -70,7 +70,7 @@ var (
 	testNicErr    = errors.New("nic test: error occurred")
 )
 
-func TestPreRunGlobalDcServerIdsValidate(t *testing.T) {
+func TestPreRunGlobalDcServerIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -79,12 +79,12 @@ func TestPreRunGlobalDcServerIdsValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testNicVar)
-		err := PreRunGlobalDcServerIdsValidate(cfg)
+		err := PreRunGlobalDcServerIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGlobalDcServerIdsValidateRequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcServerIdsRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -93,12 +93,12 @@ func TestPreRunGlobalDcServerIdsValidateRequiredFlagsErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
-		err := PreRunGlobalDcServerIdsValidate(cfg)
+		err := PreRunGlobalDcServerIds(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunGlobalDcServerIdsNicIdValidate(t *testing.T) {
+func TestPreRunGlobalDcServerIdsNicId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -108,12 +108,12 @@ func TestPreRunGlobalDcServerIdsNicIdValidate(t *testing.T) {
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testNicVar)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testNicVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), testNicVar)
-		err := PreRunGlobalDcServerIdsNicIdValidate(cfg)
+		err := PreRunGlobalDcServerIdsNicId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGlobalDcServerIdsNicIdValidateRequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcServerIdsNicIdRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -123,7 +123,7 @@ func TestPreRunGlobalDcServerIdsNicIdValidateRequiredFlagsErr(t *testing.T) {
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), "")
-		err := PreRunGlobalDcServerIdsNicIdValidate(cfg)
+		err := PreRunGlobalDcServerIdsNicId(cfg)
 		assert.Error(t, err)
 	})
 }

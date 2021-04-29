@@ -71,7 +71,7 @@ var (
 	testSnapshotErr     = errors.New("snapshot test error")
 )
 
-func TestPreRunSnapshotIdValidate(t *testing.T) {
+func TestPreRunSnapshotId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -79,12 +79,12 @@ func TestPreRunSnapshotIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		err := PreRunSnapshotIdValidate(cfg)
+		err := PreRunSnapshotId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunSnapshotIdValidateErr(t *testing.T) {
+func TestPreRunSnapshotIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -92,12 +92,12 @@ func TestPreRunSnapshotIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), "")
-		err := PreRunSnapshotIdValidate(cfg)
+		err := PreRunSnapshotId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunSnapNameLicenceDcIdVolumeIdValidate(t *testing.T) {
+func TestPreRunSnapNameLicenceDcIdVolumeId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -108,12 +108,12 @@ func TestPreRunSnapNameLicenceDcIdVolumeIdValidate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testSnapshotVar)
-		err := PreRunSnapNameLicenceDcIdVolumeIdValidate(cfg)
+		err := PreRunSnapNameLicenceDcIdVolumeId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunSnapNameLicenceDcIdVolumeIdValidateErr(t *testing.T) {
+func TestPreRunSnapNameLicenceDcIdVolumeIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -124,12 +124,12 @@ func TestPreRunSnapNameLicenceDcIdVolumeIdValidateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), "")
-		err := PreRunSnapNameLicenceDcIdVolumeIdValidate(cfg)
+		err := PreRunSnapNameLicenceDcIdVolumeId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunSnapshotIdDcIdVolumeIdValidate(t *testing.T) {
+func TestPreRunSnapshotIdDcIdVolumeId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -139,7 +139,7 @@ func TestPreRunSnapshotIdDcIdVolumeIdValidate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testSnapshotVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testSnapshotVar)
-		err := PreRunSnapshotIdDcIdVolumeIdValidate(cfg)
+		err := PreRunSnapshotIdDcIdVolumeId(cfg)
 		assert.NoError(t, err)
 	})
 }

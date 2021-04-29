@@ -41,7 +41,7 @@ func datacenter() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterGet, "get", "Get a Data Center",
+	get := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterGet, "get", "Get a Data Center",
 		"Use this command to get information about a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", getDatacenterExample, true)
 	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -67,7 +67,7 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, 
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterUpdate, "update", "Update a Data Center",
+	update := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterUpdate, "update", "Update a Data Center",
 		`Use this command to change a Data Center's name, description.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -87,7 +87,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterDelete, "delete", "Delete a Data Center",
+	deleteCmd := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterDelete, "delete", "Delete a Data Center",
 		`Use this command to delete a specified Data Center from your account. This is irreversible.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -107,7 +107,7 @@ Required values to run command:
 	return datacenterCmd
 }
 
-func PreRunDataCenterIdValidate(c *builder.PreCommandConfig) error {
+func PreRunDataCenterId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId)
 }
 

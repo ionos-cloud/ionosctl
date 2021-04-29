@@ -43,7 +43,7 @@ func backupunit() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitIdValidate, RunBackupUnitGet, "get", "Get a BackupUnit",
+	get := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitId, RunBackupUnitGet, "get", "Get a BackupUnit",
 		"Use this command to retrieve details about a specific BackupUnit.\n\nRequired values to run command:\n\n* BackupUnit Id", getBackupUnitExample, true)
 	get.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -53,7 +53,7 @@ func backupunit() *builder.Command {
 	/*
 		Get Command
 	*/
-	getsso := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitIdValidate, RunBackupUnitGetSsoUrl, "get-sso-url", "Get BackupUnit SSO URL",
+	getsso := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitId, RunBackupUnitGetSsoUrl, "get-sso-url", "Get BackupUnit SSO URL",
 		"Use this command to access the GUI with a Single Sign On (SSO) URL that can be retrieved from the Cloud API using this request. If you copy the entire value returned and paste it into a browser, you will be logged into the BackupUnit GUI.\n\nRequired values to run command:\n\n* BackupUnit Id",
 		getBackupUnitSSOExample, true)
 	getsso.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
@@ -64,7 +64,7 @@ func backupunit() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitNameEmailPwdValidate, RunBackupUnitCreate, "create", "Create a BackupUnit",
+	create := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitNameEmailPwd, RunBackupUnitCreate, "create", "Create a BackupUnit",
 		`Use this command to create a BackupUnit under a particular contract. You need to specify the name, email and password for the new BackupUnit.
 
 Notes:
@@ -88,7 +88,7 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitIdValidate, RunBackupUnitUpdate, "update", "Update a BackupUnit",
+	update := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitId, RunBackupUnitUpdate, "update", "Update a BackupUnit",
 		`Use this command to update details about a specific BackupUnit. The password and the email may be updated.
 
 Required values to run command:
@@ -106,7 +106,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitIdValidate, RunBackupUnitDelete, "delete", "Delete a BackupUnit",
+	deleteCmd := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitId, RunBackupUnitDelete, "delete", "Delete a BackupUnit",
 		`Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.
 
 Required values to run command:
@@ -122,11 +122,11 @@ Required values to run command:
 	return backupUnitCmd
 }
 
-func PreRunBackupUnitIdValidate(c *builder.PreCommandConfig) error {
+func PreRunBackupUnitId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgBackupUnitId)
 }
 
-func PreRunBackupUnitNameEmailPwdValidate(c *builder.PreCommandConfig) error {
+func PreRunBackupUnitNameEmailPwd(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgBackupUnitName, config.ArgBackupUnitEmail, config.ArgBackupUnitPassword)
 }
 

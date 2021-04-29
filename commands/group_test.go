@@ -77,7 +77,7 @@ var (
 	testGroupErr        = errors.New("resource test error")
 )
 
-func TestPreRunGroupIdValidate(t *testing.T) {
+func TestPreRunGroupId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -85,12 +85,12 @@ func TestPreRunGroupIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
-		err := PreRunGroupIdValidate(cfg)
+		err := PreRunGroupId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGroupIdValidateErr(t *testing.T) {
+func TestPreRunGroupIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -98,12 +98,12 @@ func TestPreRunGroupIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), "")
-		err := PreRunGroupIdValidate(cfg)
+		err := PreRunGroupId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunGroupUserIdsValidate(t *testing.T) {
+func TestPreRunGroupUserIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -112,12 +112,12 @@ func TestPreRunGroupUserIdsValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testGroupVar)
-		err := PreRunGroupUserIdsValidate(cfg)
+		err := PreRunGroupUserIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGroupUserIdsValidateErr(t *testing.T) {
+func TestPreRunGroupUserIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -126,12 +126,12 @@ func TestPreRunGroupUserIdsValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), "")
-		err := PreRunGroupUserIdsValidate(cfg)
+		err := PreRunGroupUserIds(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunGroupNameValidate(t *testing.T) {
+func TestPreRunGroupName(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -139,12 +139,12 @@ func TestPreRunGroupNameValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), testGroupVar)
-		err := PreRunGroupNameValidate(cfg)
+		err := PreRunGroupName(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGroupNameValidateErr(t *testing.T) {
+func TestPreRunGroupNameErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -152,7 +152,7 @@ func TestPreRunGroupNameValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), "")
-		err := PreRunGroupNameValidate(cfg)
+		err := PreRunGroupName(cfg)
 		assert.Error(t, err)
 	})
 }

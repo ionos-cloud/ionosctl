@@ -39,7 +39,7 @@ func resource() *builder.Command {
 	/*
 		Get Command
 	*/
-	getRsc := builder.NewCommand(ctx, resourceCmd, PreRunResourceTypeValidate, RunResourceGet, "get", "Get all Resources of a Type or a specific Resource Type",
+	getRsc := builder.NewCommand(ctx, resourceCmd, PreRunResourceType, RunResourceGet, "get", "Get all Resources of a Type or a specific Resource Type",
 		"Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Resource Type",
 		getResourceExample, true)
 	getRsc.AddStringFlag(config.ArgResourceType, "", "", "The specific Type of Resources to retrieve information about")
@@ -54,7 +54,7 @@ func resource() *builder.Command {
 	return resourceCmd
 }
 
-func PreRunResourceTypeValidate(c *builder.PreCommandConfig) error {
+func PreRunResourceType(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgResourceType)
 }
 
@@ -93,7 +93,7 @@ func resourceGroup(groupCmd *builder.Command) {
 	/*
 		List Resources Command
 	*/
-	listResources := builder.NewCommand(ctx, groupCmd, PreRunGroupIdValidate, RunGroupListResources, "list-resources", "List Resources from a Group",
+	listResources := builder.NewCommand(ctx, groupCmd, PreRunGroupId, RunGroupListResources, "list-resources", "List Resources from a Group",
 		"Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resources` commands.\n\nRequired values to run command:\n\n* Group Id",
 		listGroupResourcesExample, true)
 	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)

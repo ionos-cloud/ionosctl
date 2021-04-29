@@ -43,7 +43,7 @@ var (
 	testImageErr    = errors.New("image test error")
 )
 
-func TestPreImageIdValidate(t *testing.T) {
+func TestPreImageId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -51,12 +51,12 @@ func TestPreImageIdValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
-		err := PreRunImageIdValidate(cfg)
+		err := PreRunImageId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreImageIdValidateErr(t *testing.T) {
+func TestPreImageIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -64,7 +64,7 @@ func TestPreImageIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), "")
-		err := PreRunImageIdValidate(cfg)
+		err := PreRunImageId(cfg)
 		assert.Error(t, err)
 	})
 }

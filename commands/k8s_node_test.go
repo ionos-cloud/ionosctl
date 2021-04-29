@@ -46,7 +46,7 @@ var (
 	testNodeErr = errors.New("node test error")
 )
 
-func TestPreRunK8sClusterNodesIdsValidate(t *testing.T) {
+func TestPreRunK8sClusterNodesIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -56,12 +56,12 @@ func TestPreRunK8sClusterNodesIdsValidate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeId), testNodeVar)
-		err := PreRunK8sClusterNodesIdsValidate(cfg)
+		err := PreRunK8sClusterNodesIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunK8sClusterNodesIdsValidateErr(t *testing.T) {
+func TestPreRunK8sClusterNodesIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -71,7 +71,7 @@ func TestPreRunK8sClusterNodesIdsValidateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeId), "")
-		err := PreRunK8sClusterNodesIdsValidate(cfg)
+		err := PreRunK8sClusterNodesIds(cfg)
 		assert.Error(t, err)
 	})
 }

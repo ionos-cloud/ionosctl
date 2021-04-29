@@ -40,14 +40,14 @@ func loadBalancer() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdValidate, RunLoadBalancerList, "list", "List Load Balancers",
+	builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcId, RunLoadBalancerList, "list", "List Load Balancers",
 		"Use this command to list all Load Balancers from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		listLoadbalancerExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerIdValidate, RunLoadBalancerGet, "get", "Get a Load Balancer",
+	get := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerId, RunLoadBalancerGet, "get", "Get a Load Balancer",
 		"Use this command to retrieve information about a Load Balancer instance.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		getLoadbalancerExample, true)
 	get.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
@@ -58,7 +58,7 @@ func loadBalancer() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdValidate, RunLoadBalancerCreate, "create", "Create a Load Balancer",
+	create := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcId, RunLoadBalancerCreate, "create", "Create a Load Balancer",
 		`Use this command to create a new Load Balancer on your account. The name, IP and DHCP for the Load Balancer can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -74,7 +74,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerIdValidate, RunLoadBalancerUpdate, "update", "Update a Load Balancer",
+	update := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerId, RunLoadBalancerUpdate, "update", "Update a Load Balancer",
 		`Use this command to update the configuration of a specified Load Balancer.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -96,7 +96,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerIdValidate, RunLoadBalancerDelete, "delete", "Delete a Load Balancer",
+	deleteCmd := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerId, RunLoadBalancerDelete, "delete", "Delete a Load Balancer",
 		`Use this command to permanently delete the specified Load Balancer. This action is irreversible.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -115,7 +115,7 @@ Required values to run command:
 	/*
 		Attach Command
 	*/
-	attachNic := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerAttachNic, "attach-nic", "Attach a NIC to a Load Balancer",
+	attachNic := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIds, RunLoadBalancerAttachNic, "attach-nic", "Attach a NIC to a Load Balancer",
 		`Use this command to attach a specified NIC to a Load Balancer on your account.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -143,7 +143,7 @@ Required values to run command:
 	/*
 		List Command
 	*/
-	listAttached := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerIdValidate, RunLoadBalancerListNics, "list-nics", "List attached NICs from a Load Balancer",
+	listAttached := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerId, RunLoadBalancerListNics, "list-nics", "List attached NICs from a Load Balancer",
 		"Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		listNicsLoadbalancerExample, true)
 	listAttached.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
@@ -154,7 +154,7 @@ Required values to run command:
 	/*
 		Get Command
 	*/
-	getAttached := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerGetNic, "get-nic", "Get an attached NIC to a Load Balancer",
+	getAttached := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIds, RunLoadBalancerGetNic, "get-nic", "Get an attached NIC to a Load Balancer",
 		"Use this command to retrieve information about an attached NIC to a Load Balancer.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
 		getNicLoadbalancerExample, true)
 	getAttached.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
@@ -173,7 +173,7 @@ Required values to run command:
 	/*
 		Detach Command
 	*/
-	detachNic := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIdsValidate, RunLoadBalancerDetachNic, "detach-nic", "Detach a NIC from a Load Balancer",
+	detachNic := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIds, RunLoadBalancerDetachNic, "detach-nic", "Detach a NIC from a Load Balancer",
 		`Use this command to detach a NIC from a Load Balancer.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -197,7 +197,7 @@ Required values to run command:
 	return loadbalancerCmd
 }
 
-func PreRunGlobalDcIdLoadBalancerIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcIdLoadBalancerId(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
 		result = multierror.Append(result, err)
@@ -321,7 +321,7 @@ func RunLoadBalancerDelete(c *builder.CommandConfig) error {
 	})
 }
 
-func PreRunGlobalDcIdNicLoadBalancerIdsValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcIdNicLoadBalancerIds(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
 		result = multierror.Append(result, err)

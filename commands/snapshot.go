@@ -40,7 +40,7 @@ func snapshot() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotGet, "get", "Get a Snapshot",
+	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotId, RunSnapshotGet, "get", "Get a Snapshot",
 		"Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		getSnapshotExample, true)
 	get.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
@@ -51,7 +51,7 @@ func snapshot() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, snapshotCmd, PreRunSnapNameLicenceDcIdVolumeIdValidate, RunSnapshotCreate, "create", "Create a Snapshot of a Volume within the Virtual Data Center.",
+	create := builder.NewCommand(ctx, snapshotCmd, PreRunSnapNameLicenceDcIdVolumeId, RunSnapshotCreate, "create", "Create a Snapshot of a Volume within the Virtual Data Center.",
 		`Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -83,7 +83,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotUpdate, "update", "Update a Snapshot.",
+	update := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotId, RunSnapshotUpdate, "update", "Update a Snapshot.",
 		`Use this command to update a specified Snapshot.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -118,7 +118,7 @@ Required values to run command:
 	/*
 		Restore Command
 	*/
-	restore := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdDcIdVolumeIdValidate, RunSnapshotRestore, "restore", "Restore a Snapshot onto a Volume",
+	restore := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdDcIdVolumeId, RunSnapshotRestore, "restore", "Restore a Snapshot onto a Volume",
 		"Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
 		restoreSnapshotExample, true)
 	restore.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
@@ -139,7 +139,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotDelete, "delete", "Delete a Snapshot",
+	deleteCmd := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotId, RunSnapshotDelete, "delete", "Delete a Snapshot",
 		"Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		deleteSnapshotExample, true)
 	deleteCmd.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
@@ -154,15 +154,15 @@ Required values to run command:
 	return snapshotCmd
 }
 
-func PreRunSnapshotIdValidate(c *builder.PreCommandConfig) error {
+func PreRunSnapshotId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgSnapshotId)
 }
 
-func PreRunSnapNameLicenceDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
+func PreRunSnapNameLicenceDcIdVolumeId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName, config.ArgSnapshotLicenceType)
 }
 
-func PreRunSnapshotIdDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
+func PreRunSnapshotIdDcIdVolumeId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
 }
 

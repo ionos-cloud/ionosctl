@@ -53,7 +53,7 @@ var (
 	testResourceErr     = errors.New("resource test error")
 )
 
-func TestPreRunResourceTypeValidate(t *testing.T) {
+func TestPreRunResourceType(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -61,12 +61,12 @@ func TestPreRunResourceTypeValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceType), testResourceVar)
-		err := PreRunResourceTypeValidate(cfg)
+		err := PreRunResourceType(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunResourceTypeValidateErr(t *testing.T) {
+func TestPreRunResourceTypeErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -74,7 +74,7 @@ func TestPreRunResourceTypeValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceType), "")
-		err := PreRunResourceTypeValidate(cfg)
+		err := PreRunResourceType(cfg)
 		assert.Error(t, err)
 	})
 }

@@ -39,7 +39,7 @@ func k8sNodePool() *builder.Command {
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sNodePoolList, "list", "List Kubernetes NodePools",
+	list := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterId, RunK8sNodePoolList, "list", "List Kubernetes NodePools",
 		"Use this command to get a list of all contained NodePools in a selected Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id", listK8sNodePoolsExample, true)
 	list.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -49,7 +49,7 @@ func k8sNodePool() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolGet, "get", "Get a Kubernetes NodePool",
+	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIds, RunK8sNodePoolGet, "get", "Get a Kubernetes NodePool",
 		"Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		getK8sNodePoolExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
@@ -64,7 +64,7 @@ func k8sNodePool() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterDcIdsNodePoolNameValidate, RunK8sNodePoolCreate, "create", "Create a Kubernetes NodePool",
+	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterDcIdsNodePoolName, RunK8sNodePoolCreate, "create", "Create a Kubernetes NodePool",
 		`Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.
 
 Required values to run a command:
@@ -102,7 +102,7 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolUpdate, "update", "Update a Kubernetes NodePool",
+	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIds, RunK8sNodePoolUpdate, "update", "Update a Kubernetes NodePool",
 		`Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster.
 
 Required values to run command:
@@ -132,7 +132,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolDelete, "delete", "Delete a Kubernetes NodePool",
+	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIds, RunK8sNodePoolDelete, "delete", "Delete a Kubernetes NodePool",
 		`This command deletes a Kubernetes Node Pool within an existing Kubernetes Cluster.
 
 Required values to run command:
@@ -151,11 +151,11 @@ Required values to run command:
 	return k8sCmd
 }
 
-func PreRunK8sClusterNodePoolIdsValidate(c *builder.PreCommandConfig) error {
+func PreRunK8sClusterNodePoolIds(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sClusterId, config.ArgK8sNodePoolId)
 }
 
-func PreRunK8sClusterDcIdsNodePoolNameValidate(c *builder.PreCommandConfig) error {
+func PreRunK8sClusterDcIdsNodePoolName(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sClusterId, config.ArgDataCenterId, config.ArgK8sNodePoolName)
 }
 

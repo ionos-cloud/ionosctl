@@ -57,7 +57,7 @@ var (
 	testIpBlockErr      = errors.New("ip block test: error occurred")
 )
 
-func TestPreRunIpBlockIdValidate(t *testing.T) {
+func TestPreRunIpBlockId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -65,12 +65,12 @@ func TestPreRunIpBlockIdValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockIdValidate(cfg)
+		err := PreRunIpBlockId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunIpBlockIdValidateErr(t *testing.T) {
+func TestPreRunIpBlockIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -78,12 +78,12 @@ func TestPreRunIpBlockIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), "")
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockIdValidate(cfg)
+		err := PreRunIpBlockId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunIpBlockLocationValidate(t *testing.T) {
+func TestPreRunIpBlockLocation(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -91,12 +91,12 @@ func TestPreRunIpBlockLocationValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockLocation), testIpBlockLocation)
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockLocationValidate(cfg)
+		err := PreRunIpBlockLocation(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunIpBlockLocationValidateErr(t *testing.T) {
+func TestPreRunIpBlockLocationErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -104,7 +104,7 @@ func TestPreRunIpBlockLocationValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockLocation), "")
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockLocationValidate(cfg)
+		err := PreRunIpBlockLocation(cfg)
 		assert.Error(t, err)
 	})
 }

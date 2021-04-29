@@ -59,7 +59,7 @@ var (
 	testShareErr        = errors.New("share test error")
 )
 
-func TestPreRunGroupResourceIdsValidate(t *testing.T) {
+func TestPreRunGroupResourceIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -68,12 +68,12 @@ func TestPreRunGroupResourceIdsValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testShareVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testShareVar)
-		err := PreRunGroupResourceIdsValidate(cfg)
+		err := PreRunGroupResourceIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunShareIdValidateErr(t *testing.T) {
+func TestPreRunShareIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -82,7 +82,7 @@ func TestPreRunShareIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), "")
-		err := PreRunGroupResourceIdsValidate(cfg)
+		err := PreRunGroupResourceIds(cfg)
 		assert.Error(t, err)
 	})
 }

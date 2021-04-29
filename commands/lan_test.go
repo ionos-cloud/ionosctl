@@ -68,7 +68,7 @@ var (
 	testLanErr    = errors.New("lan test: error occurred")
 )
 
-func TestPreRunGlobalDcIdValidate(t *testing.T) {
+func TestPreRunGlobalDcId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -76,12 +76,12 @@ func TestPreRunGlobalDcIdValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
-		err := PreRunGlobalDcIdValidate(cfg)
+		err := PreRunGlobalDcId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGlobalDcIdValidateRequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcIdRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -89,12 +89,12 @@ func TestPreRunGlobalDcIdValidateRequiredFlagsErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		err := PreRunGlobalDcIdValidate(cfg)
+		err := PreRunGlobalDcId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunGlobalDcIdLanIdValidate(t *testing.T) {
+func TestPreRunGlobalDcIdLanId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -103,12 +103,12 @@ func TestPreRunGlobalDcIdLanIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLanVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), testLanVar)
-		err := PreRunGlobalDcIdLanIdValidate(cfg)
+		err := PreRunGlobalDcIdLanId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGlobalDcIdLanIdValidateRequiredFlagsErr(t *testing.T) {
+func TestPreRunGlobalDcIdLanIdRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -117,7 +117,7 @@ func TestPreRunGlobalDcIdLanIdValidateRequiredFlagsErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLanId), "")
-		err := PreRunGlobalDcIdLanIdValidate(cfg)
+		err := PreRunGlobalDcIdLanId(cfg)
 		assert.Error(t, err)
 	})
 }

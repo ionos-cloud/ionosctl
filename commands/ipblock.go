@@ -41,7 +41,7 @@ func ipblock() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockGet, "get", "Get an IpBlock",
+	get := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockId, RunIpBlockGet, "get", "Get an IpBlock",
 		"Use this command to get information about a specified IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
 		getIpBlockExample, true)
 	get.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
@@ -52,7 +52,7 @@ func ipblock() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockLocationValidate, RunIpBlockCreate, "create", "Create/Reserve an IpBlock",
+	create := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockLocation, RunIpBlockCreate, "create", "Create/Reserve an IpBlock",
 		`Use this command to create/reserve an IpBlock in a specified location. The name, size options can be provided.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -72,7 +72,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockUpdate, "update", "Update an IpBlock",
+	update := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockId, RunIpBlockUpdate, "update", "Update an IpBlock",
 		`Use this command to update a specified IpBlock.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -91,7 +91,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockIdValidate, RunIpBlockDelete, "delete", "Delete an IpBlock",
+	deleteCmd := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockId, RunIpBlockDelete, "delete", "Delete an IpBlock",
 		`Use this command to delete a specified IpBlock.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -111,11 +111,11 @@ Required values to run command:
 	return ipblockCmd
 }
 
-func PreRunIpBlockLocationValidate(c *builder.PreCommandConfig) error {
+func PreRunIpBlockLocation(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgIpBlockLocation)
 }
 
-func PreRunIpBlockIdValidate(c *builder.PreCommandConfig) error {
+func PreRunIpBlockId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgIpBlockId)
 }
 

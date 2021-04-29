@@ -64,7 +64,7 @@ var (
 	testBackupUnitErr    = errors.New("backup-unit test error")
 )
 
-func TestPreRunBackupUnitIdValidate(t *testing.T) {
+func TestPreRunBackupUnitId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -72,12 +72,12 @@ func TestPreRunBackupUnitIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
-		err := PreRunBackupUnitIdValidate(cfg)
+		err := PreRunBackupUnitId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunBackupUnitIdValidateErr(t *testing.T) {
+func TestPreRunBackupUnitIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -85,12 +85,12 @@ func TestPreRunBackupUnitIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), "")
-		err := PreRunBackupUnitIdValidate(cfg)
+		err := PreRunBackupUnitId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunBackupUnitNameEmailPwdValidate(t *testing.T) {
+func TestPreRunBackupUnitNameEmailPwd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -100,12 +100,12 @@ func TestPreRunBackupUnitNameEmailPwdValidate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitName), testBackupUnitVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), testBackupUnitVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), testBackupUnitVar)
-		err := PreRunBackupUnitNameEmailPwdValidate(cfg)
+		err := PreRunBackupUnitNameEmailPwd(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunBackupUnitNameEmailPwdValidateErr(t *testing.T) {
+func TestPreRunBackupUnitNameEmailPwdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -115,7 +115,7 @@ func TestPreRunBackupUnitNameEmailPwdValidateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitName), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), "")
-		err := PreRunBackupUnitNameEmailPwdValidate(cfg)
+		err := PreRunBackupUnitNameEmailPwd(cfg)
 		assert.Error(t, err)
 	})
 }

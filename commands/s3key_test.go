@@ -54,7 +54,7 @@ var (
 	testS3keyErr        = errors.New("s3key test error")
 )
 
-func TestPreRunGlobalUserIdValidate(t *testing.T) {
+func TestPreRunGlobalUserId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -62,12 +62,12 @@ func TestPreRunGlobalUserIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
-		err := PreRunGlobalUserIdValidate(cfg)
+		err := PreRunGlobalUserId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGlobalUserIdValidateErr(t *testing.T) {
+func TestPreRunGlobalUserIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -75,12 +75,12 @@ func TestPreRunGlobalUserIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), "")
-		err := PreRunGlobalUserIdValidate(cfg)
+		err := PreRunGlobalUserId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunGlobalUserIdKeyIdValidate(t *testing.T) {
+func TestPreRunGlobalUserIdKeyId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -89,12 +89,12 @@ func TestPreRunGlobalUserIdKeyIdValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
-		err := PreRunGlobalUserIdKeyIdValidate(cfg)
+		err := PreRunGlobalUserIdKeyId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGlobalUserIdKeyIdValidateErr(t *testing.T) {
+func TestPreRunGlobalUserIdKeyIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -103,12 +103,12 @@ func TestPreRunGlobalUserIdKeyIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), "")
-		err := PreRunGlobalUserIdKeyIdValidate(cfg)
+		err := PreRunGlobalUserIdKeyId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunGlobalUserIdKeyIdActiveValidate(t *testing.T) {
+func TestPreRunGlobalUserIdKeyIdActive(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -118,12 +118,12 @@ func TestPreRunGlobalUserIdKeyIdActiveValidate(t *testing.T) {
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyActive), testS3keyBoolVar)
-		err := PreRunGlobalUserIdKeyIdActiveValidate(cfg)
+		err := PreRunGlobalUserIdKeyIdActive(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGlobalUserIdKeyIdActiveValidateErr(t *testing.T) {
+func TestPreRunGlobalUserIdKeyIdActiveErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -132,7 +132,7 @@ func TestPreRunGlobalUserIdKeyIdActiveValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), "")
-		err := PreRunGlobalUserIdKeyIdActiveValidate(cfg)
+		err := PreRunGlobalUserIdKeyIdActive(cfg)
 		assert.Error(t, err)
 	})
 }

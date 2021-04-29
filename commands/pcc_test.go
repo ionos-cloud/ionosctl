@@ -63,7 +63,7 @@ var (
 	testPccErr    = errors.New("pcc test error")
 )
 
-func TestPreRunPccIdValidate(t *testing.T) {
+func TestPreRunPccId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -71,12 +71,12 @@ func TestPreRunPccIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
-		err := PreRunPccIdValidate(cfg)
+		err := PreRunPccId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunPccIdValidateErr(t *testing.T) {
+func TestPreRunPccIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -84,7 +84,7 @@ func TestPreRunPccIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), "")
-		err := PreRunPccIdValidate(cfg)
+		err := PreRunPccId(cfg)
 		assert.Error(t, err)
 	})
 }

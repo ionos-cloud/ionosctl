@@ -54,14 +54,14 @@ func firewallrule() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsValidate, RunFirewallRuleList, "list", "List Firewall Rules",
+	builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIds, RunFirewallRuleList, "list", "List Firewall Rules",
 		"Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id",
 		listFirewallRuleExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleIdValidate, RunFirewallRuleGet, "get", "Get a Firewall Rule",
+	get := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleId, RunFirewallRuleGet, "get", "Get a Firewall Rule",
 		"Use this command to retrieve information of a specified Firewall Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id\n* FirewallRule Id",
 		getFirewallRuleExample, true)
 	get.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
@@ -75,7 +75,7 @@ func firewallrule() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleProtocolValidate, RunFirewallRuleCreate, "create", "Create a Firewall Rule",
+	create := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleProtocol, RunFirewallRuleCreate, "create", "Create a Firewall Rule",
 		`Use this command to create a new Firewall Rule. Please Note: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -101,7 +101,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleIdValidate, RunFirewallRuleUpdate, "update", "Update a FirewallRule",
+	update := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleId, RunFirewallRuleUpdate, "update", "Update a FirewallRule",
 		`Use this command to update a specified Firewall Rule.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -133,7 +133,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleIdValidate, RunFirewallRuleDelete, "delete", "Delete a FirewallRule",
+	deleteCmd := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleId, RunFirewallRuleDelete, "delete", "Delete a FirewallRule",
 		`Use this command to delete a specified Firewall Rule from a Virtual Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -157,11 +157,11 @@ Required values to run command:
 	return firewallRuleCmd
 }
 
-func PreRunGlobalDcServerNicIdsValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcServerNicIds(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId)
 }
 
-func PreRunGlobalDcServerNicIdsFRuleProtocolValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcServerNicIdsFRuleProtocol(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)
@@ -175,7 +175,7 @@ func PreRunGlobalDcServerNicIdsFRuleProtocolValidate(c *builder.PreCommandConfig
 	return nil
 }
 
-func PreRunGlobalDcServerNicIdsFRuleIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcServerNicIdsFRuleId(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)

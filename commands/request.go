@@ -41,7 +41,7 @@ func request() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, reqCmd, PreRunRequestIdValidate, RunRequestGet, "get", "Get a Request",
+	get := builder.NewCommand(ctx, reqCmd, PreRunRequestId, RunRequestGet, "get", "Get a Request",
 		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		getRequestExample, true)
 	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
@@ -52,7 +52,7 @@ func request() *builder.Command {
 	/*
 		Wait Command
 	*/
-	wait := builder.NewCommand(ctx, reqCmd, PreRunRequestIdValidate, RunRequestWait, "wait", "Wait a Request",
+	wait := builder.NewCommand(ctx, reqCmd, PreRunRequestId, RunRequestWait, "wait", "Wait a Request",
 		`Use this command to wait for a specified Request to execute. Commands used for create, update, delete, attach, detach also support this via `+"`"+`--wait`+"`"+`option.
 
 You can specify a timeout for the action to be executed using `+"`"+`--timeout`+"`"+` option.
@@ -69,7 +69,7 @@ Required values to run command:
 	return reqCmd
 }
 
-func PreRunRequestIdValidate(c *builder.PreCommandConfig) error {
+func PreRunRequestId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgRequestId)
 }
 

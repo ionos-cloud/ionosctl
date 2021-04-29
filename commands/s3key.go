@@ -41,13 +41,13 @@ func s3key() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdValidate, RunS3KeyList, "list", "List User S3Keys",
+	builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserId, RunS3KeyList, "list", "List User S3Keys",
 		"Use this command to get a list of S3Keys of a specified User.\n\nRequired values to run command:\n\n* User Id", listS3KeysExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdValidate, RunS3KeyGet, "get", "Get a User S3Key",
+	get := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyId, RunS3KeyGet, "get", "Get a User S3Key",
 		"Use this command to get information about a specified S3Key from a specified User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		getS3KeyExample, true)
 	get.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
@@ -58,7 +58,7 @@ func s3key() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdValidate, RunS3KeyCreate, "create", "Create a S3Key for a User",
+	create := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserId, RunS3KeyCreate, "create", "Create a S3Key for a User",
 		`Use this command to create a S3Key for a particular User. 
 
 Note: A maximum of five S3 keys may be created for any given user.
@@ -73,7 +73,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdActiveValidate, RunS3KeyUpdate, "update", "Update a S3Key",
+	update := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdActive, RunS3KeyUpdate, "update", "Update a S3Key",
 		`Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -93,7 +93,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyIdValidate, RunS3KeyDelete, "delete", "Delete a S3Key",
+	deleteCmd := builder.NewCommand(ctx, s3keyCmd, PreRunGlobalUserIdKeyId, RunS3KeyDelete, "delete", "Delete a S3Key",
 		"Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		deleteS3KeyExample, true)
 	deleteCmd.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
@@ -106,11 +106,11 @@ Required values to run command:
 	return s3keyCmd
 }
 
-func PreRunGlobalUserIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalUserId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgUserId)
 }
 
-func PreRunGlobalUserIdKeyIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalUserIdKeyId(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgUserId); err != nil {
 		result = multierror.Append(result, err)
@@ -124,7 +124,7 @@ func PreRunGlobalUserIdKeyIdValidate(c *builder.PreCommandConfig) error {
 	return nil
 }
 
-func PreRunGlobalUserIdKeyIdActiveValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalUserIdKeyIdActive(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgUserId); err != nil {
 		result = multierror.Append(result, err)
