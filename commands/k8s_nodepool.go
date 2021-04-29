@@ -284,26 +284,12 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *builder.Command
 		}
 		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceDay)) ||
 			viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceTime)) {
-			var day, time string
-			maintenance := properties.GetMaintenanceWindow()
-			if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceDay)) {
-				day = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceDay))
-			} else {
-				if d, ok := maintenance.GetDayOfTheWeekOk(); ok && d != nil {
-					day = *d
-				}
+			if maintenance, ok := properties.GetMaintenanceWindowOk(); ok && maintenance != nil {
+				newMaintenanceWindow := getMaintenanceInfo(c, &resources.K8sMaintenanceWindow{
+					KubernetesMaintenanceWindow: *maintenance,
+				})
+				propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow.KubernetesMaintenanceWindow)
 			}
-			if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceTime)) {
-				time = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceTime))
-			} else {
-				if t, ok := maintenance.GetTimeOk(); ok && t != nil {
-					time = *t
-				}
-			}
-			propertiesUpdated.SetMaintenanceWindow(ionoscloud.KubernetesMaintenanceWindow{
-				DayOfTheWeek: &day,
-				Time:         &time,
-			})
 		}
 		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sAnnotationKey)) &&
 			viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sAnnotationValue)) {

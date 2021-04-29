@@ -50,7 +50,7 @@ type K8sNodes struct {
 	ionoscloud.KubernetesNodes
 }
 
-type K8sMaintenceWindow struct {
+type K8sMaintenanceWindow struct {
 	ionoscloud.KubernetesMaintenanceWindow
 }
 
