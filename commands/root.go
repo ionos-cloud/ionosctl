@@ -169,11 +169,6 @@ func addCommands() {
 	rootCmd.AddCommand(backupunit())
 	rootCmd.AddCommand(pcc())
 	rootCmd.AddCommand(share())
-	rootCmd.AddCommand(k8sCluster())
-	rootCmd.AddCommand(k8sNodePool())
-	rootCmd.AddCommand(k8sKubeconfig())
-	rootCmd.AddCommand(k8sVersion())
-	rootCmd.AddCommand(k8sNode())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}
@@ -182,6 +177,9 @@ const usageTemplate = `USAGE: {{if .Runnable}}
 
 ALIASES:
   {{.NameAndAliases}}{{end}}{{if .HasExample}}
+
+EXAMPLES:
+{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
 
 AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
   {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
