@@ -12,7 +12,7 @@ ionosctl k8s-nodepool get [flags]
 
 ## Description
 
-Use this command to retrieve details about a specific K8s NodePool.
+Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster.
 
 Required values to run command:
 

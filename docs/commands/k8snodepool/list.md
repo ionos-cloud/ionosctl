@@ -12,7 +12,7 @@ ionosctl k8s-nodepool list [flags]
 
 ## Description
 
-Use this command to get a list of existing K8s NodePools.
+Use this command to get a list of all contained NodePools in a selected Kubernetes Cluster.
 
 Required values to run command:
 

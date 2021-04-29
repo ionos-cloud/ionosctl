@@ -25,7 +25,7 @@ func k8sKubeconfig() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sKubeconfigGet, "get", "Get a K8s Cluster Kubeconfig",
+	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sKubeconfigGet, "get", "Get the kubeconfig file for a K8s Cluster",
 		"Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		getK8sKubeconfigExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)

@@ -40,7 +40,7 @@ func k8sNodePool() *builder.Command {
 		List Command
 	*/
 	list := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sNodePoolList, "list", "List K8s NodePools",
-		"Use this command to get a list of existing K8s NodePools.\n\nRequired values to run command:\n\n* K8s Cluster Id", listK8sNodePoolsExample, true)
+		"Use this command to get a list of all contained NodePools in a selected Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id", listK8sNodePoolsExample, true)
 	list.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -50,7 +50,7 @@ func k8sNodePool() *builder.Command {
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolGet, "get", "Get a K8s NodePool",
-		"Use this command to retrieve details about a specific K8s NodePool.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
+		"Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		getK8sNodePoolExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -103,7 +103,7 @@ Required values to run a command:
 		Update Command
 	*/
 	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolUpdate, "update", "Update a K8s NodePool",
-		`Use this command to update the number of worker Nodes or other properties for a Node Pool within an existing Kubernetes Cluster.
+		`Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster.
 
 Required values to run command:
 

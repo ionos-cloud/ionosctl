@@ -69,7 +69,7 @@ Required values to run a command:
 		Update Command
 	*/
 	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterUpdate, "update", "Update a K8s Cluster",
-		`Use this command to update the name, version and other properties of an existing Kubernetes Cluster.
+		`Use this command to update the name, K8s version, maintenance day and maintenance time of an existing Kubernetes Cluster.
 
 Required values to run command:
 

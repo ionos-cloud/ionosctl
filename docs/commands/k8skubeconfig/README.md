@@ -29,5 +29,5 @@ The sub-command of `ionosctl k8s-kubeconfig` allows you to get the Kubeconfig fi
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl k8s-kubeconfig get](get.md) | Get a K8s Cluster Kubeconfig |
+| [ionosctl k8s-kubeconfig get](get.md) | Get the kubeconfig file for a K8s Cluster |
 

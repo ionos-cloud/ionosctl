@@ -12,7 +12,7 @@ ionosctl k8s-nodepool update [flags]
 
 ## Description
 
-Use this command to update the number of worker Nodes or other properties for a Node Pool within an existing Kubernetes Cluster.
+Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster.
 
 Required values to run command:
 

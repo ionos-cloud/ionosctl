@@ -1,5 +1,5 @@
 ---
-description: Get a K8s Cluster Kubeconfig
+description: Get the kubeconfig file for a K8s Cluster
 ---
 
 # Get
