@@ -109,6 +109,26 @@ const (
 	ArgPccId                       = "pcc-id"
 	ArgPccName                     = "pcc-name"
 	ArgPccDescription              = "pcc-description"
+	ArgK8sClusterId                = "cluster-id"
+	ArgK8sClusterName              = "cluster-name"
+	ArgK8sClusterVersion           = "cluster-version"
+	ArgK8sNodePoolId               = "nodepool-id"
+	ArgK8sNodePoolName             = "nodepool-name"
+	ArgK8sNodePoolVersion          = "nodepool-version"
+	ArgK8sNodeCount                = "node-count"
+	ArgCoresCount                  = "cores-count"
+	ArgCpuFamily                   = "cpu-family"
+	ArgRamSize                     = "ram-size"
+	ArgK8sNodeZone                 = "node-zone"
+	ArgStorageType                 = "storage-type"
+	ArgStorageSize                 = "storage-size"
+	ArgK8sMinNodeCount             = "min-node-count"
+	ArgK8sMaxNodeCount             = "max-node-count"
+	ArgK8sNodeId                   = "node-id"
+	ArgK8sMaintenanceDay           = "maintenance-day"
+	ArgK8sMaintenanceTime          = "maintenance-time"
+	ArgK8sAnnotationKey            = "annotation-key"
+	ArgK8sAnnotationValue          = "annotation-value"
 )
 
 // Default values
@@ -153,4 +173,7 @@ const (
 	RequiredFlagS3KeyId        = "The unique User S3Key Id " + RequiredFlag
 	RequiredFlagBackupUnitId   = "The unique BackupUnit Id " + RequiredFlag
 	RequiredFlagPccId          = "The unique Private Cross-Connect Id " + RequiredFlag
+	RequiredFlagK8sClusterId   = "The unique K8s Cluster Id " + RequiredFlag
+	RequiredFlagK8sNodePoolId  = "The unique K8s Node Pool Id " + RequiredFlag
+	RequiredFlagK8sNodeId      = "The unique K8s Node Id " + RequiredFlag
 )

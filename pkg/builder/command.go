@@ -183,6 +183,7 @@ type CommandConfig struct {
 	S3Keys        func() resources.S3KeysService
 	BackupUnit    func() resources.BackupUnitsService
 	Pccs          func() resources.PccsService
+	K8s           func() resources.K8sService
 	// Context
 	Context context.Context
 }
@@ -226,6 +227,7 @@ func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.S3Keys = func() resources.S3KeysService { return resources.NewS3KeyService(client, c.Context) }
 	c.BackupUnit = func() resources.BackupUnitsService { return resources.NewBackupUnitService(client, c.Context) }
 	c.Pccs = func() resources.PccsService { return resources.NewPrivateCrossConnectService(client, c.Context) }
+	c.K8s = func() resources.K8sService { return resources.NewK8sService(client, c.Context) }
 	return nil
 }
 
