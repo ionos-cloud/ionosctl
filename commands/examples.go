@@ -627,4 +627,67 @@ Warning: Are you sure you want to delete private cross-connect (y/N) ?
 y
 RequestId: 7fa56e7f-1d63-4c5f-a7ea-eec6a015282a
 Status: Command pcc delete and request have been successfully executed`
+
+	/*
+		K8s Example
+	*/
+	listK8sClustersExample = `ionosctl k8s-cluster list 
+ClusterId                              Name    K8sVersion   State
+01d870e6-4118-4396-90bd-917fda3e948d   test    1.19.8       ACTIVE
+cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       ACTIVE`
+	getK8sClusterExample = `ionosctl k8s-cluster get --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d 
+ClusterId                              Name    K8sVersion   State
+cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       ACTIVE`
+	createK8sClusterExample = `ionosctl k8s-cluster create --cluster-name demoTest
+ClusterId                              Name       K8sVersion  State
+29d9b0c4-351d-4c9e-87e1-201cc0d49afb   demoTest   1.19.8      DEPLOYING
+RequestId: 583ba6ae-dd0b-4c68-8fb2-41b3d7bc471b
+Status: Command k8s-cluster create has been successfully executed`
+	updateK8sClusterExample = `ionosctl k8s-cluster update --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d --cluster-name testCluster
+ClusterId                              Name          K8sVersion   State
+cb47b98f-b8dd-4108-8ac0-b636e36a161d   testCluster   1.19.8       UPDATING`
+	deleteK8sClusterExample = `ionosctl k8s-cluster delete --cluster-id 01d870e6-4118-4396-90bd-917fda3e948d 
+Warning: Are you sure you want to delete K8s cluster (y/N) ? 
+y
+RequestId: ea736d72-9c49-4c1e-88a5-a15c05329f40
+Status: Command k8s-cluster delete has been successfully executed`
+
+	listK8sNodePoolsExample = `ionosctl k8s-nodepool list --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 
+NodePoolId                             Name        K8sVersion  NodeCount   DatacenterId                           State
+939811fe-cc13-41e2-8a49-87db58c7a812   test12345   1.19.8      2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   UPDATING`
+	getK8sNodePoolExample = `ionosctl k8s-nodepool get --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
+NodePoolId                             Name        K8sVersion  NodeCount   DatacenterId                           State
+939811fe-cc13-41e2-8a49-87db58c7a812   test12345   1.19.8      2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   UPDATING`
+	createK8sNodePoolExample = `ionosctl k8s-nodepool create --datacenter-id 3af92af6-c2eb-41e0-b946-6e7ba321abf2 --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-name test1234
+NodePoolId                             Name       K8sVersion   NodeCount   DatacenterId                           State
+a274bc0e-efa5-41c0-828d-39e38f4ad361   test1234   1.19.8       2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   DEPLOYING`
+	updateK8sNodePoolExample = `ionosctl k8s-nodepool update --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id f01f4d6c-41a9-47c3-a5a5-f3667cc25265 --node-count=1
+Status: Command k8s-nodepool update has been successfully executed`
+	deleteK8sNodePoolExample = `ionosctl k8s-nodepool delete --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
+Warning: Are you sure you want to delete k8s node pool (y/N) ? 
+y
+Status: Command node pool delete has been successfully executed`
+
+	deleteK8sNodeExample = `ionosctl k8s-node delete --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id a274bc0e-efa5-41c0-828d-39e38f4ad361 --node-id dd520e26-e347-492f-8121-c9dae0495897 
+Warning: Are you sure you want to delete k8s node (y/N) ? 
+y
+Status: Command node delete has been successfully executed`
+	recreateK8sNodeExample = `ionosctl k8s-node recreate --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id a274bc0e-efa5-41c0-828d-39e38f4ad361 --node-id 60ef2bd6-0f63-4006-b448-e8e060edba7d 
+Warning: Are you sure you want to recreate k8s node (y/N) ? 
+y
+Status: Command node recreate has been successfully executed`
+	getK8sNodeExample = `ionosctl k8s-node get --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 --node-id a0e5d4c4-6b09-4965-8e98-59a749301d20 
+NodeId                                 Name                   K8sVersion   PublicIP        State
+a0e5d4c4-6b09-4965-8e98-59a749301d20   test12345-n3q55ggmap   1.19.8       x.x.x.x         UNKNOWN`
+	listK8sNodesExample = `ionosctl k8s-node list --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
+NodeId                                 Name                   K8sVersion   PublicIP         State
+a0e5d4c4-6b09-4965-8e98-59a749301d20   test12345-n3q55ggmap   1.19.8       x.x.x.x          REBUILDING
+41955320-014f-432b-8546-e724a1e3f8b6   test12345-da7swdibki   1.19.8       x.x.x.x          PROVISIONED`
+
+	getK8sKubeconfigExample = `ionosctl k8s-kubeconfig get --cluster-id CLUSTER_ID`
+
+	listK8sVersionsExample = `ionosctl k8s-version list 
+[1.18.16 1.18.15 1.18.12 1.18.5 1.18.9 1.19.8]`
+	getK8sVersionExample = `ionosctl k8s-version get 
+"1.19.8"`
 )

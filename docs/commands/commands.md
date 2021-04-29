@@ -37,6 +37,11 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | [ionosctl group](group/) | Group Operations |
 | [ionosctl image](image/) | Image Operations |
 | [ionosctl ipblock](ipblock/) | IpBlock Operations |
+| [ionosctl k8s-cluster](k8s-cluster/) | Kubernetes Cluster Operations |
+| [ionosctl k8s-kubeconfig](k8s-kubeconfig/) | Kubernetes Kubeconfig Operations |
+| [ionosctl k8s-node](k8s-node/) | Kubernetes Node Operations |
+| [ionosctl k8s-nodepool](k8s-nodepool/) | Kubernetes NodePool Operations |
+| [ionosctl k8s-version](k8s-version/) | Kubernetes Version Operations |
 | [ionosctl label](label/) | Label Operations |
 | [ionosctl lan](lan/) | LAN Operations |
 | [ionosctl loadbalancer](loadbalancer/) | Load Balancer Operations |
