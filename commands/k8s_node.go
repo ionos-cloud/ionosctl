@@ -22,8 +22,8 @@ func k8sNode() *builder.Command {
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "k8s-node",
-			Short:            "K8s Node Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-node` + "`" + ` allow you to list, get, recreate, delete K8s Nodes.`,
+			Short:            "Kubernetes Node Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-node` + "`" + ` allow you to list, get, recreate, delete Kubernetes Nodes.`,
 			TraverseChildren: true,
 		},
 	}
@@ -37,8 +37,8 @@ func k8sNode() *builder.Command {
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodeList, "list", "List K8s Nodes",
-		"Use this command to get a list of existing K8s Nodes.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id", listK8sNodesExample, true)
+	list := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodeList, "list", "List Kubernetes Nodes",
+		"Use this command to get a list of existing Kubernetes Nodes.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id", listK8sNodesExample, true)
 	list.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -51,8 +51,8 @@ func k8sNode() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIdsValidate, RunK8sNodeGet, "get", "Get a K8s Node",
-		"Use this command to retrieve details about a specific K8s Node.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
+	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIdsValidate, RunK8sNodeGet, "get", "Get a Kubernetes Node",
+		"Use this command to retrieve details about a specific Kubernetes Node.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
 		getK8sNodeExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -73,7 +73,7 @@ func k8sNode() *builder.Command {
 	/*
 		Recreate Command
 	*/
-	recreate := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIdsValidate, RunK8sNodeRecreate, "recreate", "Recreate a K8s Node",
+	recreate := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIdsValidate, RunK8sNodeRecreate, "recreate", "Recreate a Kubernetes Node",
 		`You can recreate a single Kubernetes Node.
 
 Managed Kubernetes starts a process which based on the NodePool's template creates & configures a new Node, waits for status "ACTIVE", and migrates all the Pods from the faulty Node, deleting it once empty. While this operation occurs, the NodePool will have an extra billable "ACTIVE" Node.
@@ -102,7 +102,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIdsValidate, RunK8sNodeDelete, "delete", "Delete a K8s Node",
+	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIdsValidate, RunK8sNodeDelete, "delete", "Delete a Kubernetes Node",
 		`This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.
 
 Required values to run command:

@@ -1,5 +1,5 @@
 ---
-description: Delete a K8s NodePool
+description: Delete a Kubernetes NodePool
 ---
 
 # Delete

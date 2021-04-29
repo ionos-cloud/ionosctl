@@ -1,5 +1,5 @@
 ---
-description: List K8s Clusters
+description: List Kubernetes Clusters
 ---
 
 # List
@@ -12,7 +12,7 @@ ionosctl k8s-cluster list [flags]
 
 ## Description
 
-Use this command to get a list of existing K8s Clusters.
+Use this command to get a list of existing Kubernetes Clusters.
 
 ## Options
 

@@ -1,5 +1,5 @@
 ---
-description: K8s Cluster Operations
+description: Kubernetes Cluster Operations
 ---
 
 # K8sCluster
@@ -12,7 +12,7 @@ ionosctl k8s-cluster [command]
 
 ## Description
 
-The sub-commands of `ionosctl k8s-cluster` allow you to list, get, create, update, delete K8s Clusters.
+The sub-commands of `ionosctl k8s-cluster` allow you to list, get, create, update, delete Kubernetes Clusters.
 
 ## Options
 
@@ -30,9 +30,9 @@ The sub-commands of `ionosctl k8s-cluster` allow you to list, get, create, updat
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl k8s-cluster create](create.md) | Create a K8s Cluster |
-| [ionosctl k8s-cluster delete](delete.md) | Delete a K8s Cluster |
-| [ionosctl k8s-cluster get](get.md) | Get a K8s Cluster |
-| [ionosctl k8s-cluster list](list.md) | List K8s Clusters |
-| [ionosctl k8s-cluster update](update.md) | Update a K8s Cluster |
+| [ionosctl k8s-cluster create](create.md) | Create a Kubernetes Cluster |
+| [ionosctl k8s-cluster delete](delete.md) | Delete a Kubernetes Cluster |
+| [ionosctl k8s-cluster get](get.md) | Get a Kubernetes Cluster |
+| [ionosctl k8s-cluster list](list.md) | List Kubernetes Clusters |
+| [ionosctl k8s-cluster update](update.md) | Update a Kubernetes Cluster |
 

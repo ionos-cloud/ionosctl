@@ -1,5 +1,5 @@
 ---
-description: List K8s Nodes
+description: List Kubernetes Nodes
 ---
 
 # List
@@ -12,7 +12,7 @@ ionosctl k8s-node list [flags]
 
 ## Description
 
-Use this command to get a list of existing K8s Nodes.
+Use this command to get a list of existing Kubernetes Nodes.
 
 Required values to run command:
 

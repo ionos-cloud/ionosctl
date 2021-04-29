@@ -1,5 +1,5 @@
 ---
-description: Delete a K8s Node
+description: Delete a Kubernetes Node
 ---
 
 # Delete

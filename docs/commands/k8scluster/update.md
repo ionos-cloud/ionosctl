@@ -1,5 +1,5 @@
 ---
-description: Update a K8s Cluster
+description: Update a Kubernetes Cluster
 ---
 
 # Update
@@ -12,7 +12,7 @@ ionosctl k8s-cluster update [flags]
 
 ## Description
 
-Use this command to update the name, K8s version, maintenance day and maintenance time of an existing Kubernetes Cluster.
+Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.
 
 Required values to run command:
 

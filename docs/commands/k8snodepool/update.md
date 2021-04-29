@@ -1,5 +1,5 @@
 ---
-description: Update a K8s NodePool
+description: Update a Kubernetes NodePool
 ---
 
 # Update
@@ -22,16 +22,16 @@ Required values to run command:
 ## Options
 
 ```text
-      --annotation-key string     Annotation key
-      --annotation-value string   Annotation value
+      --annotation-key string     Annotation key. Must be set together with --annotation-value
+      --annotation-value string   Annotation value. Must be set together with --annotation-key
   -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cluster-id string         The unique K8s Cluster Id [Required flag]
       --cols strings              Columns to be printed in the standard output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -h, --help                      help for update
       --ignore-stdin              Force command to execute without user input
-      --label-key string          Label key
-      --label-value string        Label value
+      --label-key string          Label key. Must be set together with --label-value
+      --label-value string        Label value. Must be set together with --label-key
       --lan-id int                The unique LAN Id of existing LANs to be attached to worker Nodes
       --maintenance-day string    The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string   The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00

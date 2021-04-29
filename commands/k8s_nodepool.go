@@ -24,8 +24,8 @@ func k8sNodePool() *builder.Command {
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "k8s-nodepool",
-			Short:            "K8s NodePool Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-nodepool` + "`" + ` allow you to list, get, create, update, delete K8s NodePools.`,
+			Short:            "Kubernetes NodePool Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-nodepool` + "`" + ` allow you to list, get, create, update, delete Kubernetes NodePools.`,
 			TraverseChildren: true,
 		},
 	}
@@ -39,7 +39,7 @@ func k8sNodePool() *builder.Command {
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sNodePoolList, "list", "List K8s NodePools",
+	list := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sNodePoolList, "list", "List Kubernetes NodePools",
 		"Use this command to get a list of all contained NodePools in a selected Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id", listK8sNodePoolsExample, true)
 	list.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -49,7 +49,7 @@ func k8sNodePool() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolGet, "get", "Get a K8s NodePool",
+	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolGet, "get", "Get a Kubernetes NodePool",
 		"Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		getK8sNodePoolExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
@@ -64,7 +64,7 @@ func k8sNodePool() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterDcIdsNodePoolNameValidate, RunK8sNodePoolCreate, "create", "Create a K8s NodePool",
+	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterDcIdsNodePoolNameValidate, RunK8sNodePoolCreate, "create", "Create a Kubernetes NodePool",
 		`Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center.
 
 Required values to run a command:
@@ -102,7 +102,7 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolUpdate, "update", "Update a K8s NodePool",
+	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolUpdate, "update", "Update a Kubernetes NodePool",
 		`Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster.
 
 Required values to run command:
@@ -113,10 +113,10 @@ Required values to run command:
 	update.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
 	update.AddIntFlag(config.ArgK8sMinNodeCount, "", 1, "The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count")
 	update.AddIntFlag(config.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count")
-	update.AddStringFlag(config.ArgLabelKey, "", "", "Label key")
-	update.AddStringFlag(config.ArgLabelValue, "", "", "Label value")
-	update.AddStringFlag(config.ArgK8sAnnotationKey, "", "", "Annotation key")
-	update.AddStringFlag(config.ArgK8sAnnotationValue, "", "", "Annotation value")
+	update.AddStringFlag(config.ArgLabelKey, "", "", "Label key. Must be set together with --label-value")
+	update.AddStringFlag(config.ArgLabelValue, "", "", "Label value. Must be set together with --label-key")
+	update.AddStringFlag(config.ArgK8sAnnotationKey, "", "", "Annotation key. Must be set together with --annotation-value")
+	update.AddStringFlag(config.ArgK8sAnnotationValue, "", "", "Annotation value. Must be set together with --annotation-key")
 	update.AddStringFlag(config.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
 	update.AddStringFlag(config.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
 	update.AddIntFlag(config.ArgLanId, "", 0, "The unique LAN Id of existing LANs to be attached to worker Nodes")
@@ -132,7 +132,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolDelete, "delete", "Delete a K8s NodePool",
+	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIdsValidate, RunK8sNodePoolDelete, "delete", "Delete a Kubernetes NodePool",
 		`This command deletes a Kubernetes Node Pool within an existing Kubernetes Cluster.
 
 Required values to run command:

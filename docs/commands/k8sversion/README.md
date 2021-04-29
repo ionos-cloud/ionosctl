@@ -1,5 +1,5 @@
 ---
-description: K8s Version Operations
+description: Kubernetes Version Operations
 ---
 
 # K8sVersion
@@ -12,7 +12,7 @@ ionosctl k8s-version [command]
 
 ## Description
 
-The sub-commands of `ionosctl k8s-version` allows you to get the Kubeconfig file of a Cluster.
+The sub-commands of `ionosctl k8s-version` allow you to get information about available Kubernetes versions.
 
 ## Options
 
@@ -29,6 +29,6 @@ The sub-commands of `ionosctl k8s-version` allows you to get the Kubeconfig file
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl k8s-version get](get.md) | Get K8s Default Version |
-| [ionosctl k8s-version list](list.md) | List K8s Versions |
+| [ionosctl k8s-version get](get.md) | Get Kubernetes Default Version |
+| [ionosctl k8s-version list](list.md) | List Kubernetes Versions |
 

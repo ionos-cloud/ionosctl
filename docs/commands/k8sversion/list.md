@@ -1,5 +1,5 @@
 ---
-description: List K8s Versions
+description: List Kubernetes Versions
 ---
 
 # List

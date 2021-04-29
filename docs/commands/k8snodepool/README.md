@@ -1,5 +1,5 @@
 ---
-description: K8s NodePool Operations
+description: Kubernetes NodePool Operations
 ---
 
 # K8sNodepool
@@ -12,7 +12,7 @@ ionosctl k8s-nodepool [command]
 
 ## Description
 
-The sub-commands of `ionosctl k8s-nodepool` allow you to list, get, create, update, delete K8s NodePools.
+The sub-commands of `ionosctl k8s-nodepool` allow you to list, get, create, update, delete Kubernetes NodePools.
 
 ## Options
 
@@ -30,9 +30,9 @@ The sub-commands of `ionosctl k8s-nodepool` allow you to list, get, create, upda
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl k8s-nodepool create](create.md) | Create a K8s NodePool |
-| [ionosctl k8s-nodepool delete](delete.md) | Delete a K8s NodePool |
-| [ionosctl k8s-nodepool get](get.md) | Get a K8s NodePool |
-| [ionosctl k8s-nodepool list](list.md) | List K8s NodePools |
-| [ionosctl k8s-nodepool update](update.md) | Update a K8s NodePool |
+| [ionosctl k8s-nodepool create](create.md) | Create a Kubernetes NodePool |
+| [ionosctl k8s-nodepool delete](delete.md) | Delete a Kubernetes NodePool |
+| [ionosctl k8s-nodepool get](get.md) | Get a Kubernetes NodePool |
+| [ionosctl k8s-nodepool list](list.md) | List Kubernetes NodePools |
+| [ionosctl k8s-nodepool update](update.md) | Update a Kubernetes NodePool |
 

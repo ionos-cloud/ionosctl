@@ -24,8 +24,8 @@ func k8sCluster() *builder.Command {
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "k8s-cluster",
-			Short:            "K8s Cluster Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-cluster` + "`" + ` allow you to list, get, create, update, delete K8s Clusters.`,
+			Short:            "Kubernetes Cluster Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-cluster` + "`" + ` allow you to list, get, create, update, delete Kubernetes Clusters.`,
 			TraverseChildren: true,
 		},
 	}
@@ -39,14 +39,14 @@ func k8sCluster() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sClusterList, "list", "List K8s Clusters",
-		"Use this command to get a list of existing K8s Clusters.", listK8sClustersExample, true)
+	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sClusterList, "list", "List Kubernetes Clusters",
+		"Use this command to get a list of existing Kubernetes Clusters.", listK8sClustersExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterGet, "get", "Get a K8s Cluster",
-		"Use this command to retrieve details about a specific K8s Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
+	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterGet, "get", "Get a Kubernetes Cluster",
+		"Use this command to retrieve details about a specific Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		getK8sClusterExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -56,7 +56,7 @@ func k8sCluster() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNameValidate, RunK8sClusterCreate, "create", "Create a K8s Cluster",
+	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNameValidate, RunK8sClusterCreate, "create", "Create a Kubernetes Cluster",
 		`Use this command to create a new Managed Kubernetes Cluster.
 
 Required values to run a command:
@@ -68,8 +68,8 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterUpdate, "update", "Update a K8s Cluster",
-		`Use this command to update the name, K8s version, maintenance day and maintenance time of an existing Kubernetes Cluster.
+	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterUpdate, "update", "Update a Kubernetes Cluster",
+		`Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.
 
 Required values to run command:
 
@@ -86,8 +86,8 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterDelete, "delete", "Delete a K8s Cluster",
-		`This command deletes a Kubernetes cluster. The cluster cannot contain any node pools when deleting.
+	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sClusterDelete, "delete", "Delete a Kubernetes Cluster",
+		`This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
 
 Required values to run command:
 

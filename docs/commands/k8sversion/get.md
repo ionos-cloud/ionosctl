@@ -1,5 +1,5 @@
 ---
-description: Get K8s Default Version
+description: Get Kubernetes Default Version
 ---
 
 # Get

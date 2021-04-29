@@ -16,8 +16,8 @@ func k8sKubeconfig() *builder.Command {
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "k8s-kubeconfig",
-			Short:            "K8s Kubeconfig Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl k8s-kubeconfig` + "`" + ` allows you to get the Kubeconfig file of a Cluster.`,
+			Short:            "Kubernetes Kubeconfig Operations",
+			Long:             `The sub-command of ` + "`" + `ionosctl k8s-kubeconfig` + "`" + ` allows you to get the configuration file of a Kubernetes Cluster.`,
 			TraverseChildren: true,
 		},
 	}
@@ -25,7 +25,7 @@ func k8sKubeconfig() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sKubeconfigGet, "get", "Get the kubeconfig file for a K8s Cluster",
+	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterIdValidate, RunK8sKubeconfigGet, "get", "Get the kubeconfig file for a Kubernetes Cluster",
 		"Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		getK8sKubeconfigExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)

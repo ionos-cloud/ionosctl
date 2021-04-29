@@ -1,5 +1,5 @@
 ---
-description: Get a K8s Node
+description: Get a Kubernetes Node
 ---
 
 # Get
@@ -12,7 +12,7 @@ ionosctl k8s-node get [flags]
 
 ## Description
 
-Use this command to retrieve details about a specific K8s Node.
+Use this command to retrieve details about a specific Kubernetes Node.
 
 Required values to run command:
 

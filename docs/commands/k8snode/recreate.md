@@ -1,5 +1,5 @@
 ---
-description: Recreate a K8s Node
+description: Recreate a Kubernetes Node
 ---
 
 # Recreate

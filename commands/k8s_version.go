@@ -12,8 +12,8 @@ func k8sVersion() *builder.Command {
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "k8s-version",
-			Short:            "K8s Version Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-version` + "`" + ` allows you to get the Kubeconfig file of a Cluster.`,
+			Short:            "Kubernetes Version Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-version` + "`" + ` allow you to get information about available Kubernetes versions.`,
 			TraverseChildren: true,
 		},
 	}
@@ -21,13 +21,13 @@ func k8sVersion() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sVersionList, "list", "List K8s Versions",
+	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sVersionList, "list", "List Kubernetes Versions",
 		"Use this command to retrieve all available Kubernetes versions.", listK8sVersionsExample, true)
 
 	/*
 		Get Command
 	*/
-	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sVersionGet, "get", "Get K8s Default Version",
+	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sVersionGet, "get", "Get Kubernetes Default Version",
 		"Use this command to retrieve the current default Kubernetes version for Clusters and NodePools.",
 		getK8sVersionExample, true)
 

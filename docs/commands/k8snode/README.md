@@ -1,5 +1,5 @@
 ---
-description: K8s Node Operations
+description: Kubernetes Node Operations
 ---
 
 # K8sNode
@@ -12,7 +12,7 @@ ionosctl k8s-node [command]
 
 ## Description
 
-The sub-commands of `ionosctl k8s-node` allow you to list, get, recreate, delete K8s Nodes.
+The sub-commands of `ionosctl k8s-node` allow you to list, get, recreate, delete Kubernetes Nodes.
 
 ## Options
 
@@ -30,8 +30,8 @@ The sub-commands of `ionosctl k8s-node` allow you to list, get, recreate, delete
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl k8s-node delete](delete.md) | Delete a K8s Node |
-| [ionosctl k8s-node get](get.md) | Get a K8s Node |
-| [ionosctl k8s-node list](list.md) | List K8s Nodes |
-| [ionosctl k8s-node recreate](recreate.md) | Recreate a K8s Node |
+| [ionosctl k8s-node delete](delete.md) | Delete a Kubernetes Node |
+| [ionosctl k8s-node get](get.md) | Get a Kubernetes Node |
+| [ionosctl k8s-node list](list.md) | List Kubernetes Nodes |
+| [ionosctl k8s-node recreate](recreate.md) | Recreate a Kubernetes Node |
 

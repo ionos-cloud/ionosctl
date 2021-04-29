@@ -1,5 +1,5 @@
 ---
-description: List K8s NodePools
+description: List Kubernetes NodePools
 ---
 
 # List

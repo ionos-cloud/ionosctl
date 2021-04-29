@@ -1,5 +1,5 @@
 ---
-description: K8s Kubeconfig Operations
+description: Kubernetes Kubeconfig Operations
 ---
 
 # K8sKubeconfig
@@ -12,7 +12,7 @@ ionosctl k8s-kubeconfig [command]
 
 ## Description
 
-The sub-command of `ionosctl k8s-kubeconfig` allows you to get the Kubeconfig file of a Cluster.
+The sub-command of `ionosctl k8s-kubeconfig` allows you to get the configuration file of a Kubernetes Cluster.
 
 ## Options
 
@@ -29,5 +29,5 @@ The sub-command of `ionosctl k8s-kubeconfig` allows you to get the Kubeconfig fi
 
 | Command | Description |
 | :--- | :--- |
-| [ionosctl k8s-kubeconfig get](get.md) | Get the kubeconfig file for a K8s Cluster |
+| [ionosctl k8s-kubeconfig get](get.md) | Get the kubeconfig file for a Kubernetes Cluster |
 

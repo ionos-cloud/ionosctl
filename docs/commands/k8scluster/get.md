@@ -1,5 +1,5 @@
 ---
-description: Get a K8s Cluster
+description: Get a Kubernetes Cluster
 ---
 
 # Get
@@ -12,7 +12,7 @@ ionosctl k8s-cluster get [flags]
 
 ## Description
 
-Use this command to retrieve details about a specific K8s Cluster.
+Use this command to retrieve details about a specific Kubernetes Cluster.
 
 Required values to run command:
 
