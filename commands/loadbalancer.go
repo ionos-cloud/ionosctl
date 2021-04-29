@@ -248,8 +248,8 @@ func RunLoadBalancerCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -282,8 +282,8 @@ func RunLoadBalancerUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -298,8 +298,7 @@ func RunLoadBalancerUpdate(c *builder.CommandConfig) error {
 }
 
 func RunLoadBalancerDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
 		return err
 	}
 	resp, err := c.Loadbalancers().Delete(
@@ -309,8 +308,8 @@ func RunLoadBalancerDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -344,8 +343,8 @@ func RunLoadBalancerAttachNic(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getNicPrint(resp, c, getNic(attachedNic)))
@@ -375,8 +374,7 @@ func RunLoadBalancerGetNic(c *builder.CommandConfig) error {
 }
 
 func RunLoadBalancerDetachNic(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
 		return err
 	}
 	resp, err := c.Loadbalancers().DetachNic(
@@ -388,8 +386,7 @@ func RunLoadBalancerDetachNic(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getNicPrint(resp, c, nil))

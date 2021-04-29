@@ -230,8 +230,8 @@ func RunFirewallRuleCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, getFirewallRule(firewallRule)))
@@ -248,16 +248,15 @@ func RunFirewallRuleUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, getFirewallRule(firewallRule)))
 }
 
 func RunFirewallRuleDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
 		return err
 	}
 	resp, err := c.FirewallRules().Delete(
@@ -269,8 +268,8 @@ func RunFirewallRuleDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, nil))

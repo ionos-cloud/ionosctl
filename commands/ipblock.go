@@ -144,8 +144,8 @@ func RunIpBlockCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getIpBlockPrint(resp, c, getIpBlock(i)))
@@ -163,24 +163,23 @@ func RunIpBlockUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getIpBlockPrint(resp, c, getIpBlock(i)))
 }
 
 func RunIpBlockDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
 		return err
 	}
 	resp, err := c.IpBlocks().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgIpBlockId)))
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getIpBlockPrint(resp, c, nil))

@@ -123,6 +123,8 @@ func RunRequestWait(c *builder.CommandConfig) error {
 	})
 }
 
+// Output Printing
+
 var defaultRequestCols = []string{"RequestId", "Status", "Message"}
 
 type RequestPrint struct {

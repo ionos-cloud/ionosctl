@@ -161,6 +161,7 @@ func RunS3KeyCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
@@ -183,6 +184,7 @@ func RunS3KeyUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
@@ -190,8 +192,7 @@ func RunS3KeyUpdate(c *builder.CommandConfig) error {
 }
 
 func RunS3KeyDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete S3Key")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
 		return err
 	}
 	resp, err := c.S3Keys().Delete(viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgUserId)),
@@ -200,6 +201,7 @@ func RunS3KeyDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}

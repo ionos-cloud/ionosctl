@@ -176,8 +176,7 @@ func RunUserUpdate(c *builder.CommandConfig) error {
 }
 
 func RunUserDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
 		return err
 	}
 	resp, err := c.Users().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)))

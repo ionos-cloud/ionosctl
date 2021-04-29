@@ -333,8 +333,7 @@ func RunServerCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -374,8 +373,7 @@ func RunServerUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -390,8 +388,7 @@ func RunServerUpdate(c *builder.CommandConfig) error {
 }
 
 func RunServerDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().Delete(
@@ -402,8 +399,7 @@ func RunServerDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -415,8 +411,7 @@ func RunServerDelete(c *builder.CommandConfig) error {
 }
 
 func RunServerStart(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "start server")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "start server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().Start(
@@ -427,8 +422,7 @@ func RunServerStart(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -440,8 +434,7 @@ func RunServerStart(c *builder.CommandConfig) error {
 }
 
 func RunServerStop(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().Stop(
@@ -452,8 +445,7 @@ func RunServerStop(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -465,8 +457,7 @@ func RunServerStop(c *builder.CommandConfig) error {
 }
 
 func RunServerReboot(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().Reboot(
@@ -477,8 +468,7 @@ func RunServerReboot(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -529,8 +519,7 @@ func RunServerGetVolume(c *builder.CommandConfig) error {
 }
 
 func RunServerDetachVolume(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().DetachVolume(
@@ -542,8 +531,7 @@ func RunServerDetachVolume(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getVolumePrint(resp, c, nil))

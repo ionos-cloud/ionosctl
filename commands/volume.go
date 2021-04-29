@@ -181,8 +181,8 @@ func RunVolumeCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -215,8 +215,8 @@ func RunVolumeUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -231,8 +231,7 @@ func RunVolumeUpdate(c *builder.CommandConfig) error {
 }
 
 func RunVolumeDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
 		return err
 	}
 	resp, err := c.Volumes().Delete(
@@ -242,8 +241,8 @@ func RunVolumeDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -253,6 +252,8 @@ func RunVolumeDelete(c *builder.CommandConfig) error {
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
 }
+
+// Output Printing
 
 var defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
 

@@ -204,7 +204,7 @@ func RunShareUpdate(c *builder.CommandConfig) error {
 }
 
 func RunShareDelete(c *builder.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "deleteCmd share from group"); err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
 		return err
 	}
 	resp, err := c.Groups().RemoveShare(

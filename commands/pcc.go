@@ -149,6 +149,7 @@ func RunPccCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
@@ -165,6 +166,7 @@ func RunPccUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
@@ -172,14 +174,14 @@ func RunPccUpdate(c *builder.CommandConfig) error {
 }
 
 func RunPccDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
 		return err
 	}
 	resp, err := c.Pccs().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgPccId)))
 	if err != nil {
 		return err
 	}
+
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}

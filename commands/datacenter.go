@@ -145,8 +145,7 @@ func RunDataCenterCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -176,8 +175,7 @@ func RunDataCenterUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -192,8 +190,7 @@ func RunDataCenterUpdate(c *builder.CommandConfig) error {
 }
 
 func RunDataCenterDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
 		return err
 	}
 	resp, err := c.DataCenters().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)))
@@ -201,8 +198,7 @@ func RunDataCenterDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{

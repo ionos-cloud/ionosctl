@@ -194,8 +194,8 @@ func RunSnapshotCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
@@ -206,16 +206,15 @@ func RunSnapshotUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
 }
 
 func RunSnapshotRestore(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot"); err != nil {
 		return err
 	}
 	resp, err := c.Snapshots().Restore(
@@ -230,8 +229,7 @@ func RunSnapshotRestore(c *builder.CommandConfig) error {
 }
 
 func RunSnapshotDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
 		return err
 	}
 	resp, err := c.Snapshots().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)))

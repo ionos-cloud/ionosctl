@@ -191,8 +191,7 @@ func RunBackupUnitUpdate(c *builder.CommandConfig) error {
 }
 
 func RunBackupUnitDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
 		return err
 	}
 	resp, err := c.BackupUnit().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitId)))
