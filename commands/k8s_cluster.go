@@ -57,7 +57,7 @@ func k8sCluster() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNameValidate, RunK8sClusterCreate, "create", "Create a Kubernetes Cluster",
-		`Use this command to create a new Managed Kubernetes Cluster.
+		`Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. 
 
 Required values to run a command:
 
