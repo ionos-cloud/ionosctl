@@ -29,9 +29,9 @@ func k8sCluster() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := k8sCmd.Command.PersistentFlags()
+	globalFlags := k8sCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultK8sClusterCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(k8sCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(k8sCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})

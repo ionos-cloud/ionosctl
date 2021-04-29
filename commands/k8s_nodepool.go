@@ -29,9 +29,9 @@ func k8sNodePool() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := k8sCmd.Command.PersistentFlags()
+	globalFlags := k8sCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultK8sNodePoolCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(k8sCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(k8sCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sNodePoolCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -58,7 +58,7 @@ func k8sNodePool() *builder.Command {
 	})
 	get.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Command.Name(), get.Command.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Name(), get.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -126,7 +126,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Command.Name(), update.Command.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Name(), update.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -145,7 +145,7 @@ Required values to run command:
 	})
 	deleteCmd.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Command.Name(), deleteCmd.Command.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Name(), deleteCmd.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return k8sCmd
