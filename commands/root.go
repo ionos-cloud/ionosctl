@@ -183,9 +183,6 @@ const usageTemplate = `USAGE: {{if .Runnable}}
 ALIASES:
   {{.NameAndAliases}}{{end}}{{if .HasExample}}
 
-EXAMPLES:
-{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
-
 AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
   {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
 
