@@ -12,7 +12,7 @@ ionosctl datacenter get [flags]
 
 ## Description
 
-Use this command to get information about a specified Data Center.
+Use this command to retrieve details about a Virtual Data Center by using its ID.
 
 Required values to run command:
 

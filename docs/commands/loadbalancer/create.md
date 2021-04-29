@@ -12,7 +12,7 @@ ionosctl loadbalancer create [flags]
 
 ## Description
 
-Use this command to create a new Load Balancer on your account. The name, IP and DHCP for the Load Balancer can be set.
+Use this command to create a new Load Balancer within the Virtual Data Center. Load balancers can be used for public or private IP traffic. The name, IP and DHCP for the Load Balancer can be set.
 
 You can wait for the action to be executed using `--wait` option.
 

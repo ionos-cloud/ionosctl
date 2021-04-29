@@ -12,7 +12,7 @@ ionosctl loadbalancer delete [flags]
 
 ## Description
 
-Use this command to permanently delete the specified Load Balancer. This action is irreversible.
+Use this command to delete the specified Load Balancer.
 
 You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
 

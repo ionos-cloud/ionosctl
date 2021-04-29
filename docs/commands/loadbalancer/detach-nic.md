@@ -12,7 +12,7 @@ ionosctl loadbalancer detach-nic [flags]
 
 ## Description
 
-Use this command to detach a NIC from a Load Balancer.
+Use this command to remove the association of a NIC with a Load Balancer.
 
 You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
 

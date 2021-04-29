@@ -12,7 +12,7 @@ ionosctl lan list [flags]
 
 ## Description
 
-Use this command to get a list of LANs on your account.
+Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.
 
 Required values to run command:
 

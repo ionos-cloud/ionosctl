@@ -64,7 +64,7 @@ func nic() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIds, RunNicCreate, "create", "Create a NIC",
-		`Use this command to create a new NIC on your account. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
+		`Use this command to create/add a new NIC to the target Server. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 

@@ -12,7 +12,7 @@ ionosctl ipblock update [flags]
 
 ## Description
 
-Use this command to update a specified IpBlock.
+Use this command to update the properties of an existing IpBlock.
 
 You can wait for the action to be executed using `--wait` option.
 

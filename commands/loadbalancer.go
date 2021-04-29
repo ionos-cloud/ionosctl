@@ -41,7 +41,7 @@ func loadBalancer() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcId, RunLoadBalancerList, "list", "List Load Balancers",
-		"Use this command to list all Load Balancers from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
+		"Use this command to retrieve a list of Load Balancers within a Virtual Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		listLoadbalancerExample, true)
 
 	/*
@@ -59,7 +59,7 @@ func loadBalancer() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcId, RunLoadBalancerCreate, "create", "Create a Load Balancer",
-		`Use this command to create a new Load Balancer on your account. The name, IP and DHCP for the Load Balancer can be set.
+		`Use this command to create a new Load Balancer within the Virtual Data Center. Load balancers can be used for public or private IP traffic. The name, IP and DHCP for the Load Balancer can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -97,7 +97,7 @@ Required values to run command:
 		Delete Command
 	*/
 	deleteCmd := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerId, RunLoadBalancerDelete, "delete", "Delete a Load Balancer",
-		`Use this command to permanently delete the specified Load Balancer. This action is irreversible.
+		`Use this command to delete the specified Load Balancer.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
@@ -116,7 +116,7 @@ Required values to run command:
 		Attach Command
 	*/
 	attachNic := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIds, RunLoadBalancerAttachNic, "attach-nic", "Attach a NIC to a Load Balancer",
-		`Use this command to attach a specified NIC to a Load Balancer on your account.
+		`Use this command to associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -144,7 +144,7 @@ Required values to run command:
 		List Command
 	*/
 	listAttached := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdLoadBalancerId, RunLoadBalancerListNics, "list-nics", "List attached NICs from a Load Balancer",
-		"Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
+		"Use this command to retrieve a list of NICs associated with the Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		listNicsLoadbalancerExample, true)
 	listAttached.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
 	_ = listAttached.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -155,7 +155,7 @@ Required values to run command:
 		Get Command
 	*/
 	getAttached := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIds, RunLoadBalancerGetNic, "get-nic", "Get an attached NIC to a Load Balancer",
-		"Use this command to retrieve information about an attached NIC to a Load Balancer.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
+		"Use this command to retrieve the attributes of a given load balanced NIC.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
 		getNicLoadbalancerExample, true)
 	getAttached.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
 	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -174,7 +174,7 @@ Required values to run command:
 		Detach Command
 	*/
 	detachNic := builder.NewCommand(ctx, loadbalancerCmd, PreRunGlobalDcIdNicLoadBalancerIds, RunLoadBalancerDetachNic, "detach-nic", "Detach a NIC from a Load Balancer",
-		`Use this command to detach a NIC from a Load Balancer.
+		`Use this command to remove the association of a NIC with a Load Balancer.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 

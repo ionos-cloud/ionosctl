@@ -12,7 +12,7 @@ ionosctl server list-volumes [flags]
 
 ## Description
 
-Use this command to get a list of attached Volumes to a Server from a Data Center.
+Use this command to retrieve a list of Volumes attached to the Server.
 
 Required values to run command:
 

@@ -12,7 +12,7 @@ ionosctl ipblock get [flags]
 
 ## Description
 
-Use this command to get information about a specified IpBlock.
+Use this command to retrieve the attributes of a specific IpBlock.
 
 Required values to run command:
 

@@ -12,7 +12,7 @@ ionosctl server attach-volume [flags]
 
 ## Description
 
-Use this command to attach a Volume to a Server from a Data Center.
+Use this command to attach a pre-existing Volume to a Server.
 
 You can wait for the action to be executed using `--wait` option.
 

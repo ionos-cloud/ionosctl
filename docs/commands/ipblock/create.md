@@ -12,7 +12,7 @@ ionosctl ipblock create [flags]
 
 ## Description
 
-Use this command to create/reserve an IpBlock in a specified location. The name, size options can be provided.
+Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
 
 You can wait for the action to be executed using `--wait` option.
 

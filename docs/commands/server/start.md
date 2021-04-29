@@ -12,7 +12,7 @@ ionosctl server start [flags]
 
 ## Description
 
-Use this command to start specified Server from a Data Center.
+Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
 
 You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
 

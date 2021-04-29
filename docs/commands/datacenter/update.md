@@ -12,7 +12,7 @@ ionosctl datacenter update [flags]
 
 ## Description
 
-Use this command to change a Data Center's name, description.
+Use this command to change a Virtual Data Center's name, description.
 
 You can wait for the action to be executed using `--wait` option.
 

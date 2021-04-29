@@ -12,7 +12,9 @@ ionosctl server delete [flags]
 
 ## Description
 
-Use this command to delete a specified Server from a Data Center.
+Use this command to delete a specified Server from a Virtual Data Center.
+
+NOTE: This will not automatically remove the storage Volume(s) attached to a Server.
 
 You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
 

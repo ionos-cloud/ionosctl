@@ -12,7 +12,7 @@ ionosctl server update [flags]
 
 ## Description
 
-Use this command to update a specified Server from a Data Center.
+Use this command to update a specified Server from a Virtual Data Center.
 
 You can wait for the action to be executed using `--wait` option.
 

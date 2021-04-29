@@ -12,7 +12,9 @@ ionosctl firewallrule create [flags]
 
 ## Description
 
-Use this command to create a new Firewall Rule. Please Note: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
+Use this command to create/add a new Firewall Rule to the specified NIC. All Firewall Rules must be associated with a NIC.
+
+NOTE: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
 
 You can wait for the action to be executed using `--wait` option.
 

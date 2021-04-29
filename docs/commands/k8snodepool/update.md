@@ -25,11 +25,11 @@ Required values to run command:
       --annotation-key string     Annotation key. Must be set together with --annotation-value
       --annotation-value string   Annotation value. Must be set together with --annotation-key
   -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cluster-id string         The unique K8s Cluster Id [Required flag]
+      --cluster-id string         The unique K8s Cluster Id (required)
       --cols strings              Columns to be printed in the standard output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                     Force command to execute without user input
   -h, --help                      help for update
-      --ignore-stdin              Force command to execute without user input
       --label-key string          Label key. Must be set together with --label-value
       --label-value string        Label value. Must be set together with --label-key
       --lan-id int                The unique LAN Id of existing LANs to be attached to worker Nodes
@@ -38,7 +38,7 @@ Required values to run command:
       --max-node-count int        The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count (default 1)
       --min-node-count int        The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count (default 1)
       --node-count int            The number of worker Nodes that the NodePool should contain (default 1)
-      --nodepool-id string        The unique K8s Node Pool Id [Required flag]
+      --nodepool-id string        The unique K8s Node Pool Id (required)
       --nodepool-version string   The K8s version for the NodePool. K8s version downgrade is not supported
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output

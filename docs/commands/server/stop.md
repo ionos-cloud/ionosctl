@@ -12,7 +12,7 @@ ionosctl server stop [flags]
 
 ## Description
 
-Use this command to stop specified Server from a Data Center.
+Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
 You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
 

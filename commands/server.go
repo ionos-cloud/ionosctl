@@ -42,14 +42,14 @@ func server() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(ctx, serverCmd, PreRunGlobalDcId, RunServerList, "list", "List Servers",
-		"Use this command to list Servers from a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
+		"Use this command to list Servers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		listServerExample, true)
 
 	/*
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerGet, "get", "Get a Server",
-		"Use this command to get information about a specified Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		"Use this command to get information about a specified Server from a Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
 	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -60,7 +60,7 @@ func server() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcId, RunServerCreate, "create", "Create a Server",
-		`Use this command to create a Server in a specified Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
+		`Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -85,7 +85,7 @@ Required values to run command:
 		Update Command
 	*/
 	update := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerUpdate, "update", "Update a Server",
-		`Use this command to update a specified Server from a Data Center.
+		`Use this command to update a specified Server from a Virtual Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -115,7 +115,9 @@ Required values to run command:
 		Delete Command
 	*/
 	deleteCmd := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerDelete, "delete", "Delete a Server",
-		`Use this command to delete a specified Server from a Data Center.
+		`Use this command to delete a specified Server from a Virtual Data Center.
+
+NOTE: This will not automatically remove the storage Volume(s) attached to a Server.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
@@ -134,7 +136,7 @@ Required values to run command:
 		Start Command
 	*/
 	start := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerStart, "start", "Start a Server",
-		`Use this command to start specified Server from a Data Center.
+		`Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
@@ -153,7 +155,7 @@ Required values to run command:
 		Stop Command
 	*/
 	stop := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerStop, "stop", "Stop a Server",
-		`Use this command to stop specified Server from a Data Center.
+		`Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
@@ -189,7 +191,7 @@ Required values to run command:
 		Attach Command
 	*/
 	attachVolume := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIds, RunServerAttachVolume, "attach-volume", "Attach a Volume to a Server",
-		`Use this command to attach a Volume to a Server from a Data Center.
+		`Use this command to attach a pre-existing Volume to a Server.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -213,7 +215,7 @@ Required values to run command:
 		List Command
 	*/
 	listAttached := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerListVolumes, "list-volumes", "List attached Volumes from a Server",
-		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		"Use this command to retrieve a list of Volumes attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		listVolumesServerExample, true)
 	listAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = listAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -239,7 +241,7 @@ Required values to run command:
 		Detach Command
 	*/
 	detachVolume := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIds, RunServerDetachVolume, "detach-volume", "Detach a Volume from a Server",
-		`Use this command to detach a Volume from a Server.
+		`This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 

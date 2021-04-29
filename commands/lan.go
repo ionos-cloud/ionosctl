@@ -42,14 +42,14 @@ func lan() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(ctx, lanCmd, PreRunGlobalDcId, RunLanList, "list", "List LANs",
-		"Use this command to get a list of LANs on your account.\n\nRequired values to run command:\n\n* Data Center Id",
+		"Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		listLanExample, true)
 
 	/*
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcIdLanId, RunLanGet, "get", "Get a LAN",
-		"Use this command to retrieve information of a specified LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
+		"Use this command to retrieve information of a given LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		getLanExample, true)
 	get.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -62,7 +62,7 @@ func lan() *builder.Command {
 	create := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcId, RunLanCreate, "create", "Create a LAN",
 		`Use this command to create a new LAN within a Virtual Data Center on your account. The name, the public option and the Private Cross-Connect Id can be set.
 
-Note: IP Failover is configured after LAN creation using an update command.
+NOTE: IP Failover is configured after LAN creation using an update command.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 

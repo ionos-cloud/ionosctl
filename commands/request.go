@@ -53,7 +53,7 @@ func request() *builder.Command {
 		Wait Command
 	*/
 	wait := builder.NewCommand(ctx, reqCmd, PreRunRequestId, RunRequestWait, "wait", "Wait a Request",
-		`Use this command to wait for a specified Request to execute. Commands used for create, update, delete, attach, detach also support this via `+"`"+`--wait`+"`"+`option.
+		`Use this command to wait for a specified Request to execute.
 
 You can specify a timeout for the action to be executed using `+"`"+`--timeout`+"`"+` option.
 

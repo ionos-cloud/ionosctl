@@ -12,7 +12,7 @@ ionosctl loadbalancer list-nics [flags]
 
 ## Description
 
-Use this command to get a list of attached NICs to a Load Balancer from a Data Center.
+Use this command to retrieve a list of NICs associated with the Load Balancer.
 
 Required values to run command:
 

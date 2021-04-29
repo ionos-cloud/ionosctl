@@ -12,9 +12,9 @@ ionosctl datacenter delete [flags]
 
 ## Description
 
-Use this command to delete a specified Data Center from your account. This is irreversible.
+Use this command to delete a specified Virtual Data Center (VDC) from your account. This will remove all objects within the VDC and remove the VDC object itself. 
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
+NOTE: This is a highly destructive operation which should be used with extreme caution!
 
 Required values to run command:
 

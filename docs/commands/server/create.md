@@ -12,7 +12,7 @@ ionosctl server create [flags]
 
 ## Description
 
-Use this command to create a Server in a specified Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
+Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
 You can wait for the action to be executed using `--wait` option.
 

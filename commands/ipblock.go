@@ -42,7 +42,7 @@ func ipblock() *builder.Command {
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockId, RunIpBlockGet, "get", "Get an IpBlock",
-		"Use this command to get information about a specified IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
+		"Use this command to retrieve the attributes of a specific IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
 		getIpBlockExample, true)
 	get.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -53,7 +53,7 @@ func ipblock() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockLocation, RunIpBlockCreate, "create", "Create/Reserve an IpBlock",
-		`Use this command to create/reserve an IpBlock in a specified location. The name, size options can be provided.
+		`Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -73,7 +73,7 @@ Required values to run command:
 		Update Command
 	*/
 	update := builder.NewCommand(ctx, ipblockCmd, PreRunIpBlockId, RunIpBlockUpdate, "update", "Update an IpBlock",
-		`Use this command to update a specified IpBlock.
+		`Use this command to update the properties of an existing IpBlock.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 

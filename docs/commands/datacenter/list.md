@@ -12,7 +12,7 @@ ionosctl datacenter list [flags]
 
 ## Description
 
-Use this command to list all Data Centers on your account.
+Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.
 
 ## Options
 

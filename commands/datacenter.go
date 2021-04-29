@@ -36,13 +36,13 @@ func datacenter() *builder.Command {
 		List Command
 	*/
 	builder.NewCommand(ctx, datacenterCmd, noPreRun, RunDataCenterList, "list", "List Data Centers",
-		"Use this command to list all Data Centers on your account.", listDatacenterExample, true)
+		"Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.", listDatacenterExample, true)
 
 	/*
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterGet, "get", "Get a Data Center",
-		"Use this command to get information about a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", getDatacenterExample, true)
+		"Use this command to retrieve details about a Virtual Data Center by using its ID.\n\nRequired values to run command:\n\n* Data Center Id", getDatacenterExample, true)
 	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -52,7 +52,9 @@ func datacenter() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, datacenterCmd, noPreRun, RunDataCenterCreate, "create", "Create a Data Center",
-		`Use this command to create a Data Center. You can specify the name, description or location for the object.
+		`Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
+
+Virtual Data Centers (VDCs) are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, createDatacenterExample, true)
 	create.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
@@ -68,7 +70,7 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, 
 		Update Command
 	*/
 	update := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterUpdate, "update", "Update a Data Center",
-		`Use this command to change a Data Center's name, description.
+		`Use this command to change a Virtual Data Center's name, description.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -88,9 +90,9 @@ Required values to run command:
 		Delete Command
 	*/
 	deleteCmd := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterDelete, "delete", "Delete a Data Center",
-		`Use this command to delete a specified Data Center from your account. This is irreversible.
+		`Use this command to delete a specified Virtual Data Center (VDC) from your account. This will remove all objects within the VDC and remove the VDC object itself. 
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
+NOTE: This is a highly destructive operation which should be used with extreme caution!
 
 Required values to run command:
 

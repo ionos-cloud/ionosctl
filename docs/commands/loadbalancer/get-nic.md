@@ -12,7 +12,7 @@ ionosctl loadbalancer get-nic [flags]
 
 ## Description
 
-Use this command to retrieve information about an attached NIC to a Load Balancer.
+Use this command to retrieve the attributes of a given load balanced NIC.
 
 Required values to run the command:
 

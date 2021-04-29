@@ -12,7 +12,7 @@ ionosctl lan get [flags]
 
 ## Description
 
-Use this command to retrieve information of a specified LAN.
+Use this command to retrieve information of a given LAN.
 
 Required values to run command:
 

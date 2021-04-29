@@ -12,7 +12,9 @@ ionosctl datacenter create [flags]
 
 ## Description
 
-Use this command to create a Data Center. You can specify the name, description or location for the object.
+Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
+
+Virtual Data Centers (VDCs) are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
 You can wait for the action to be executed using `--wait` option.
 

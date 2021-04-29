@@ -14,7 +14,7 @@ ionosctl lan create [flags]
 
 Use this command to create a new LAN within a Virtual Data Center on your account. The name, the public option and the Private Cross-Connect Id can be set.
 
-Note: IP Failover is configured after LAN creation using an update command.
+NOTE: IP Failover is configured after LAN creation using an update command.
 
 You can wait for the action to be executed using `--wait` option.
 
