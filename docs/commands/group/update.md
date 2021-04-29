@@ -34,8 +34,8 @@ Required values to run command:
       --group-create-nic        The group will be allowed to create NICs
       --group-create-pcc        The group will be allowed to create PCCs
       --group-create-snapshot   The group will be allowed to create Snapshots
-      --group-id string         The unique Group Id [Required flag]
-      --group-name string       Name for the Group [Required flag]
+      --group-id string         The unique Group Id (required)
+      --group-name string       Name for the Group (required)
       --group-reserve-ip        The group will be allowed to reserve IP addresses
       --group-s3privilege       The group will be allowed to manage S3
   -h, --help                    help for update

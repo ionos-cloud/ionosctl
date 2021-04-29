@@ -26,7 +26,7 @@ Required values to run command:
   -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings               Columns to be printed in the standard output (default [LoadBalancerId,Name,Dhcp])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string       The unique Data Center Id [Required flag]
+      --datacenter-id string       The unique Data Center Id (required)
       --force                      Force command to execute without user input
   -h, --help                       help for create
       --loadbalancer-dhcp          Indicates if the Load Balancer will reserve an IP using DHCP (default true)

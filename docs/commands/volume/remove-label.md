@@ -26,13 +26,13 @@ Required values to run command:
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings           Columns to be printed in the standard output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string   The unique Data Center Id [Required flag]
+      --datacenter-id string   The unique Data Center Id (required)
       --force                  Force command to execute without user input
   -h, --help                   help for remove-label
-      --label-key string       The unique Label Key [Required flag]
+      --label-key string       The unique Label Key (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --volume-id string       The unique Volume Id [Required flag]
+      --volume-id string       The unique Volume Id (required)
 ```
 
 ## Examples

@@ -27,12 +27,12 @@ Required values to run command:
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings           Columns to be printed in the standard output (default [ServerId,Name,AvailabilityZone,State,Cores,Ram,CpuFamily])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string   The unique Data Center Id [Required flag]
+      --datacenter-id string   The unique Data Center Id (required)
       --force                  Force command to execute without user input
   -h, --help                   help for delete
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --server-id string       The unique Server Id [Required flag]
+      --server-id string       The unique Server Id (required)
       --timeout int            Timeout option for Server to be deleted [seconds] (default 60)
       --wait                   Wait for Server to be deleted
 ```

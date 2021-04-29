@@ -28,7 +28,7 @@ Required values to run command:
   -h, --help                     help for update
   -o, --output string            Desired output format [text|json] (default "text")
       --pcc-description string   The description for the Private Cross-Connect
-      --pcc-id string            The unique Private Cross-Connect Id [Required flag]
+      --pcc-id string            The unique Private Cross-Connect Id (required)
       --pcc-name string          The name for the Private Cross-Connect
   -q, --quiet                    Quiet output
       --timeout int              Timeout option for Private Cross-Connect to be updated [seconds] (default 60)

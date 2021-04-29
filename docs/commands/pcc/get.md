@@ -27,7 +27,7 @@ Required values to run command:
       --force            Force command to execute without user input
   -h, --help             help for get
   -o, --output string    Desired output format [text|json] (default "text")
-      --pcc-id string    The unique Private Cross-Connect Id [Required flag]
+      --pcc-id string    The unique Private Cross-Connect Id (required)
   -q, --quiet            Quiet output
 ```
 

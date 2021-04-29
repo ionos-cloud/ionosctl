@@ -26,11 +26,11 @@ Required values to run command:
       --cols strings         Columns to be printed in the standard output (default [ShareId,EditPrivilege,SharePrivilege,Type])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                Force command to execute without user input
-      --group-id string      The unique Group Id [Required flag]
+      --group-id string      The unique Group Id (required)
   -h, --help                 help for delete
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --resource-id string   The unique Resource Id [Required flag]
+      --resource-id string   The unique Resource Id (required)
       --timeout int          Timeout option for a Resource Share to be deleted from a Group [seconds] (default 60)
       --wait                 Wait for a Resource Share to be deleted from a Group
 ```

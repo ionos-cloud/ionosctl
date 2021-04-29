@@ -28,7 +28,7 @@ Required values to run command:
   -h, --help                 help for list-labels
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --snapshot-id string   The unique Snapshot Id [Required flag]
+      --snapshot-id string   The unique Snapshot Id (required)
 ```
 
 ## Examples

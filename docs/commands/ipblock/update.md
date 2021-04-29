@@ -28,7 +28,7 @@ Required values to run command:
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                 Force command to execute without user input
   -h, --help                  help for update
-      --ipblock-id string     The unique IpBlock Id [Required flag]
+      --ipblock-id string     The unique IpBlock Id (required)
       --ipblock-name string   Name of the IpBlock
   -o, --output string         Desired output format [text|json] (default "text")
   -q, --quiet                 Quiet output

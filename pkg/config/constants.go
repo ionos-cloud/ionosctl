@@ -153,7 +153,7 @@ const (
 
 // Required Flags
 const (
-	RequiredFlag               = "[Required flag]"
+	RequiredFlag               = "(required)"
 	RequiredFlagDatacenterId   = "The unique Data Center Id " + RequiredFlag
 	RequiredFlagLanId          = "The unique LAN Id " + RequiredFlag
 	RequiredFlagLoadBalancerId = "The unique Load Balancer Id " + RequiredFlag

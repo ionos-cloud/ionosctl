@@ -28,7 +28,7 @@ Required values to run command:
   -h, --help                help for get
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-      --request-id string   The unique Request Id [Required flag]
+      --request-id string   The unique Request Id (required)
 ```
 
 ## Examples

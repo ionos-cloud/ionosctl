@@ -34,7 +34,7 @@ Required values to run command:
       --user-email string        The email for the User
       --user-first-name string   The firstname for the User
       --user-force-secure        Indicates if secure (two-factor) authentication should be forced for the User
-      --user-id string           The unique User Id [Required flag]
+      --user-id string           The unique User Id (required)
       --user-last-name string    The lastname for the User
 ```
 

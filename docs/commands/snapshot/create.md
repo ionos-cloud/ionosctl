@@ -29,17 +29,17 @@ Required values to run command:
   -u, --api-url string                 Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings                   Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size,State])
   -c, --config string                  Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string           The unique Data Center Id [Required flag]
+      --datacenter-id string           The unique Data Center Id (required)
       --force                          Force command to execute without user input
   -h, --help                           help for create
   -o, --output string                  Desired output format [text|json] (default "text")
   -q, --quiet                          Quiet output
       --snapshot-description string    Description of the Snapshot
-      --snapshot-licence-type string   Licence Type of the Snapshot[Required flag]
-      --snapshot-name string           Name of the Snapshot[Required flag]
+      --snapshot-licence-type string   Licence Type of the Snapshot(required)
+      --snapshot-name string           Name of the Snapshot(required)
       --snapshot-sec-auth-protection   Enable secure authentication protection
       --timeout int                    Timeout option for a Snapshot to be created [seconds] (default 60)
-      --volume-id string               The unique Volume Id [Required flag]
+      --volume-id string               The unique Volume Id (required)
       --wait                           Wait for Snapshot to be created
 ```
 

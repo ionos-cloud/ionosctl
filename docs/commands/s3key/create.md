@@ -32,7 +32,7 @@ Required values to run command:
   -o, --output string                            Desired output format [text|json] (default "text")
   -q, --quiet                                    Quiet output
       --timeout int                              Timeout option for a S3Key to be created [seconds] (default 60)
-      --user-id string                           The unique User Id [Required flag]
+      --user-id string                           The unique User Id (required)
       --wait                                     Wait for S3Key to be created
 ```
 

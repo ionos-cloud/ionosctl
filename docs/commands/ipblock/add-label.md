@@ -28,9 +28,9 @@ Required values to run command:
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                Force command to execute without user input
   -h, --help                 help for add-label
-      --ipblock-id string    The unique IpBlock Id [Required flag]
-      --label-key string     The unique Label Key [Required flag]
-      --label-value string   The unique Label Value [Required flag]
+      --ipblock-id string    The unique IpBlock Id (required)
+      --label-key string     The unique Label Key (required)
+      --label-value string   The unique Label Value (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
 ```

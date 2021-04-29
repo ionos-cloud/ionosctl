@@ -24,7 +24,7 @@ The sub-commands of `ionosctl s3key` allow you to see information, to list, get,
   -h, --help                                     help for s3key
   -o, --output string                            Desired output format [text|json] (default "text")
   -q, --quiet                                    Quiet output
-      --user-id string                           The unique User Id [Required flag]
+      --user-id string                           The unique User Id (required)
 ```
 
 ## Related commands

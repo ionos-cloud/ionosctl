@@ -37,7 +37,7 @@ Required values to run command:
       --snapshot-disc-scsi-hot-unplug     This volume is capable of SCSI drive hot unplug (no reboot required)
       --snapshot-disc-virtio-hot-plug     This volume is capable of VirtIO drive hot plug (no reboot required)
       --snapshot-disc-virtio-hot-unplug   This volume is capable of VirtIO drive hot unplug (no reboot required)
-      --snapshot-id string                The unique Snapshot Id [Required flag]
+      --snapshot-id string                The unique Snapshot Id (required)
       --snapshot-licence-type string      Licence Type of the Snapshot
       --snapshot-name string              Name of the Snapshot
       --snapshot-nic-hot-plug             This volume is capable of NIC hot plug (no reboot required)

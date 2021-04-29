@@ -23,7 +23,7 @@ Required values to run command:
 ```text
   -u, --api-url string               Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --backupunit-email string      The e-mail address you want to update for the BackupUnit
-      --backupunit-id string         The unique BackupUnit Id [Required flag]
+      --backupunit-id string         The unique BackupUnit Id (required)
       --backupunit-password string   Alphanumeric password you want to update for the BackupUnit
       --cols strings                 Columns to be printed in the standard output (default [BackupUnitId,Name,Email])
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

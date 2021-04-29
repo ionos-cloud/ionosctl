@@ -20,7 +20,7 @@ The sub-commands of `ionosctl volume` manage your block storage volumes by creat
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings           Columns to be printed in the standard output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string   The unique Data Center Id [Required flag]
+      --datacenter-id string   The unique Data Center Id (required)
       --force                  Force command to execute without user input
   -h, --help                   help for volume
   -o, --output string          Desired output format [text|json] (default "text")

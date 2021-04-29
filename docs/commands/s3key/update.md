@@ -32,9 +32,9 @@ Required values to run command:
   -o, --output string                            Desired output format [text|json] (default "text")
   -q, --quiet                                    Quiet output
       --s3key-active                             Enable or disable a S3Key
-      --s3key-id string                          The unique User S3Key Id [Required flag]
+      --s3key-id string                          The unique User S3Key Id (required)
       --timeout int                              Timeout option for a S3Key to be updated [seconds] (default 60)
-      --user-id string                           The unique User Id [Required flag]
+      --user-id string                           The unique User Id (required)
       --wait                                     Wait for S3Key to be updated
 ```
 

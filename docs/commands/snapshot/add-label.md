@@ -28,11 +28,11 @@ Required values to run command:
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                Force command to execute without user input
   -h, --help                 help for add-label
-      --label-key string     The unique Label Key [Required flag]
-      --label-value string   The unique Label Value [Required flag]
+      --label-key string     The unique Label Key (required)
+      --label-value string   The unique Label Value (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --snapshot-id string   The unique Snapshot Id [Required flag]
+      --snapshot-id string   The unique Snapshot Id (required)
 ```
 
 ## Examples

@@ -34,11 +34,11 @@ Required values to run a command:
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --user-administrator       Assigns the User to have administrative rights
-      --user-email string        The email for the User [Required flag]
-      --user-first-name string   The firstname for the User [Required flag]
+      --user-email string        The email for the User (required)
+      --user-first-name string   The firstname for the User (required)
       --user-force-secure        Indicates if secure (two-factor) authentication should be forced for the User
-      --user-last-name string    The lastname for the User [Required flag]
-      --user-password string     The password for the User (must be at least 5 characters long) [Required flag]
+      --user-last-name string    The lastname for the User (required)
+      --user-password string     The password for the User (must be at least 5 characters long) (required)
 ```
 
 ## Examples

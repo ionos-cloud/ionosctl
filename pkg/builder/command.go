@@ -46,14 +46,6 @@ func (c *Command) CommandPath() string {
 	return c.Command.CommandPath()
 }
 
-func (c *Command) MarkFlagRequired(name string) error {
-	if c.Command.Flag(name) != nil {
-		u := c.Command.Flag(name).Usage
-		c.Command.Flag(name).Usage = fmt.Sprintf("%s %s", u, "(required)")
-	}
-	return c.Command.MarkFlagRequired(name)
-}
-
 func (c *Command) GlobalFlags() *flag.FlagSet {
 	return c.Command.PersistentFlags()
 }
