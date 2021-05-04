@@ -27,16 +27,16 @@ Required values to run command:
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings             Columns to be printed in the standard output (default [DatacenterId,Name,Location])
+      --cols strings             Columns to be printed in the standard output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string     The unique Data Center Id [Required flag]
+      --datacenter-id string     The unique Data Center Id (required)
+      --force                    Force command to execute without user input
   -h, --help                     help for update
-      --ignore-stdin             Force command to execute without user input
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --timeout int              Timeout option for Volume to be updated [seconds] (default 60)
       --volume-bus string        Bus of the Volume (default "VIRTIO")
-      --volume-id string         The unique Volume Id [Required flag]
+      --volume-id string         The unique Volume Id (required)
       --volume-name string       Name of the Volume
       --volume-size float32      Size in GB of the Volume (default 10)
       --volume-ssh-keys string   Ssh Key of the Volume

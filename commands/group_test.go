@@ -77,7 +77,7 @@ var (
 	testGroupErr        = errors.New("resource test error")
 )
 
-func TestPreRunGroupIdValidate(t *testing.T) {
+func TestPreRunGroupId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -85,12 +85,12 @@ func TestPreRunGroupIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
-		err := PreRunGroupIdValidate(cfg)
+		err := PreRunGroupId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGroupIdValidateErr(t *testing.T) {
+func TestPreRunGroupIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -98,12 +98,12 @@ func TestPreRunGroupIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), "")
-		err := PreRunGroupIdValidate(cfg)
+		err := PreRunGroupId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunGroupUserIdsValidate(t *testing.T) {
+func TestPreRunGroupUserIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -112,12 +112,12 @@ func TestPreRunGroupUserIdsValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testGroupVar)
-		err := PreRunGroupUserIdsValidate(cfg)
+		err := PreRunGroupUserIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGroupUserIdsValidateErr(t *testing.T) {
+func TestPreRunGroupUserIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -126,12 +126,12 @@ func TestPreRunGroupUserIdsValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), "")
-		err := PreRunGroupUserIdsValidate(cfg)
+		err := PreRunGroupUserIds(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunGroupNameValidate(t *testing.T) {
+func TestPreRunGroupName(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -139,12 +139,12 @@ func TestPreRunGroupNameValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), testGroupVar)
-		err := PreRunGroupNameValidate(cfg)
+		err := PreRunGroupName(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGroupNameValidateErr(t *testing.T) {
+func TestPreRunGroupNameErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -152,7 +152,7 @@ func TestPreRunGroupNameValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), "")
-		err := PreRunGroupNameValidate(cfg)
+		err := PreRunGroupName(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -410,7 +410,7 @@ func TestRunGroupDelete(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, nil)
 		err := RunGroupDelete(cfg)
@@ -425,7 +425,7 @@ func TestRunGroupDeleteResponseErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		err := RunGroupDelete(cfg)
@@ -440,7 +440,7 @@ func TestRunGroupDeleteWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, nil)
@@ -456,7 +456,7 @@ func TestRunGroupDeleteErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, testGroupErr)
 		err := RunGroupDelete(cfg)
@@ -471,7 +471,7 @@ func TestRunGroupDeleteAskForConfirm(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, nil)
@@ -487,7 +487,7 @@ func TestRunGroupRemoveGroupAskForConfirmErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		cfg.Stdin = os.Stdin
 		err := RunGroupDelete(cfg)
@@ -590,7 +590,7 @@ func TestRunGroupRemoveUser(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
 		rm.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(nil, nil)
@@ -606,7 +606,7 @@ func TestRunGroupRemoveUserErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
 		rm.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(nil, testUserErr)
@@ -622,7 +622,7 @@ func TestRunGroupRemoveUserAskForConfirm(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
@@ -639,7 +639,7 @@ func TestRunGroupRemoveUserAskForConfirmErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
 		cfg.Stdin = os.Stdin

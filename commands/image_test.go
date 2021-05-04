@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"os"
 	"regexp"
 	"testing"
 
@@ -44,7 +43,7 @@ var (
 	testImageErr    = errors.New("image test error")
 )
 
-func TestPreImageIdValidate(t *testing.T) {
+func TestPreImageId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -52,12 +51,12 @@ func TestPreImageIdValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
-		err := PreRunImageIdValidate(cfg)
+		err := PreRunImageId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreImageIdValidateErr(t *testing.T) {
+func TestPreImageIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -65,7 +64,7 @@ func TestPreImageIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), "")
-		err := PreRunImageIdValidate(cfg)
+		err := PreRunImageId(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -154,71 +153,6 @@ func TestRunImageGetErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
 		rm.Image.EXPECT().Get(testImageVar).Return(&img, nil, testImageErr)
 		err := RunImageGet(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunImageDelete(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		rm.Image.EXPECT().Delete(testImageVar).Return(nil, nil)
-		err := RunImageDelete(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunImageDeleteErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		rm.Image.EXPECT().Delete(testImageVar).Return(&testResponse, nil)
-		err := RunImageDelete(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunImageDeleteAskForConfirm(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
-		rm.Image.EXPECT().Delete(testImageVar).Return(nil, nil)
-		err := RunImageDelete(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunImageDeleteAskForConfirmErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
-		cfg.Stdin = os.Stdin
-		err := RunImageDelete(cfg)
 		assert.Error(t, err)
 	})
 }

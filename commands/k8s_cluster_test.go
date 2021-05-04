@@ -71,7 +71,7 @@ var (
 	testClusterErr      = errors.New("cluster test error")
 )
 
-func TestPreRunK8sClusterIdValidate(t *testing.T) {
+func TestPreRunK8sClusterId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -79,12 +79,12 @@ func TestPreRunK8sClusterIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testClusterVar)
-		err := PreRunK8sClusterIdValidate(cfg)
+		err := PreRunK8sClusterId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunK8sClusterIdValidateErr(t *testing.T) {
+func TestPreRunK8sClusterIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -92,12 +92,12 @@ func TestPreRunK8sClusterIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), "")
-		err := PreRunK8sClusterIdValidate(cfg)
+		err := PreRunK8sClusterId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunK8sClusterNameValidate(t *testing.T) {
+func TestPreRunK8sClusterName(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -105,12 +105,12 @@ func TestPreRunK8sClusterNameValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterName), testClusterVar)
-		err := PreRunK8sClusterNameValidate(cfg)
+		err := PreRunK8sClusterName(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunK8sClusterNameValidateErr(t *testing.T) {
+func TestPreRunK8sClusterNameErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -118,7 +118,7 @@ func TestPreRunK8sClusterNameValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterName), "")
-		err := PreRunK8sClusterNameValidate(cfg)
+		err := PreRunK8sClusterName(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -299,7 +299,7 @@ func TestRunK8sClusterDelete(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testClusterVar)
 		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(nil, nil)
 		err := RunK8sClusterDelete(cfg)
@@ -314,7 +314,7 @@ func TestRunK8sClusterDeleteErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testClusterVar)
 		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(nil, testClusterErr)
 		err := RunK8sClusterDelete(cfg)
@@ -329,7 +329,7 @@ func TestRunK8sClusterDeleteAskForConfirm(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testClusterVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(nil, nil)
@@ -345,7 +345,7 @@ func TestRunK8sClusterDeleteAskForConfirmErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testClusterVar)
 		cfg.Stdin = os.Stdin
 		err := RunK8sClusterDelete(cfg)

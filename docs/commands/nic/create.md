@@ -12,7 +12,7 @@ ionosctl nic create [flags]
 
 ## Description
 
-Use this command to create a new NIC on your account. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
+Use this command to create/add a new NIC to the target Server. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
 
 You can wait for the action to be executed using `--wait` option.
 
@@ -27,9 +27,9 @@ Required values to run a command:
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings           Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string   The unique Data Center Id [Required flag]
+      --datacenter-id string   The unique Data Center Id (required)
+      --force                  Force command to execute without user input
   -h, --help                   help for create
-      --ignore-stdin           Force command to execute without user input
       --lan-id int             The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created (default 1)
       --nic-dhcp               Set to false if you wish to disable DHCP on the NIC (default true)
       --nic-ips strings        IPs assigned to the NIC. This can be a collection

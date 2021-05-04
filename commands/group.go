@@ -24,13 +24,13 @@ func group() *builder.Command {
 		Command: &cobra.Command{
 			Use:              "group",
 			Short:            "Group Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl group` + "`" + ` allows you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User/Share from the Group.`,
+			Long:             `The sub-command of ` + "`" + `ionosctl group` + "`" + ` allows you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User from the Group.`,
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := groupCmd.Command.PersistentFlags()
+	globalFlags := groupCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(groupCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -41,7 +41,7 @@ func group() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, groupCmd, PreRunGroupIdValidate, RunGroupGet, "get", "Get a Group",
+	get := builder.NewCommand(ctx, groupCmd, PreRunGroupId, RunGroupGet, "get", "Get a Group",
 		"Use this command to retrieve details about a specific Group.\n\nRequired values to run command:\n\n* Group Id",
 		getGroupExample, true)
 	get.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
@@ -52,7 +52,7 @@ func group() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, groupCmd, PreRunGroupNameValidate, RunGroupCreate, "create", "Create a Group",
+	create := builder.NewCommand(ctx, groupCmd, PreRunGroupName, RunGroupCreate, "create", "Create a Group",
 		`Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
 
 Required values to run a command:
@@ -102,7 +102,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, groupCmd, PreRunGroupIdValidate, RunGroupDelete, "delete", "Delete a Group",
+	deleteCmd := builder.NewCommand(ctx, groupCmd, PreRunGroupId, RunGroupDelete, "delete", "Delete a Group",
 		`Use this operation to delete a single Group. Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
 
 Required values to run command:
@@ -116,9 +116,9 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Group to be deleted [seconds]")
 
 	/*
-		List Users Command
+		List Command
 	*/
-	listUsers := builder.NewCommand(ctx, groupCmd, PreRunGroupIdValidate, RunGroupListUsers, "list-users", "List Users from a Group",
+	listUsers := builder.NewCommand(ctx, groupCmd, PreRunGroupId, RunGroupListUsers, "list-users", "List Users from a Group",
 		"Use this command to get a list of Users from a specific Group.\n\nRequired values to run command:\n\n* Group Id", listGroupUsersExample, true)
 	listUsers.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = listUsers.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -126,9 +126,9 @@ Required values to run command:
 	})
 
 	/*
-		Add User Command
+		Add Command
 	*/
-	addUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIdsValidate, RunGroupAddUser, "add-user", "Add User to a Group",
+	addUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIds, RunGroupAddUser, "add-user", "Add User to a Group",
 		"Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", addGroupUserExample, true)
 	addUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -140,9 +140,9 @@ Required values to run command:
 	})
 
 	/*
-		Remove User Command
+		Remove Command
 	*/
-	removeUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIdsValidate, RunGroupRemoveUser, "remove-user", "Remove User from a Group",
+	removeUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIds, RunGroupRemoveUser, "remove-user", "Remove User from a Group",
 		"Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", removeGroupUserExample, true)
 	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -150,24 +150,23 @@ Required values to run command:
 	})
 	removeUser.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupUsersIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Command.Name(), removeUser.Command.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return getGroupUsersIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Name(), removeUser.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	shareGroup(groupCmd)
 	resourceGroup(groupCmd)
 
 	return groupCmd
 }
 
-func PreRunGroupIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGroupId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgGroupId)
 }
 
-func PreRunGroupUserIdsValidate(c *builder.PreCommandConfig) error {
+func PreRunGroupUserIds(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgGroupId, config.ArgUserId)
 }
 
-func PreRunGroupNameValidate(c *builder.PreCommandConfig) error {
+func PreRunGroupName(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgGroupName)
 }
 

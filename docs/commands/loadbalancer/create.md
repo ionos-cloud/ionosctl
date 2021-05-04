@@ -12,7 +12,7 @@ ionosctl loadbalancer create [flags]
 
 ## Description
 
-Use this command to create a new Load Balancer on your account. The name, IP and DHCP for the Load Balancer can be set.
+Use this command to create a new Load Balancer within the Virtual Data Center. Load balancers can be used for public or private IP traffic. The name, IP and DHCP for the Load Balancer can be set.
 
 You can wait for the action to be executed using `--wait` option.
 
@@ -24,11 +24,11 @@ Required values to run command:
 
 ```text
   -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings               Columns to be printed in the standard output (default [DatacenterId,Name,Location])
+      --cols strings               Columns to be printed in the standard output (default [LoadBalancerId,Name,Dhcp])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string       The unique Data Center Id [Required flag]
+      --datacenter-id string       The unique Data Center Id (required)
+      --force                      Force command to execute without user input
   -h, --help                       help for create
-      --ignore-stdin               Force command to execute without user input
       --loadbalancer-dhcp          Indicates if the Load Balancer will reserve an IP using DHCP (default true)
       --loadbalancer-name string   Name of the Load Balancer
   -o, --output string              Desired output format [text|json] (default "text")

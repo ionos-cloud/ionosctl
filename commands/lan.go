@@ -20,6 +20,7 @@ import (
 )
 
 func lan() *builder.Command {
+	ctx := context.TODO()
 	lanCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "lan",
@@ -28,40 +29,40 @@ func lan() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := lanCmd.Command.PersistentFlags()
+	globalFlags := lanCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Command.Use, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultLanCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(lanCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdValidate, RunLanList, "list", "List LANs",
-		"Use this command to get a list of LANs on your account.\n\nRequired values to run command:\n\n* Data Center Id",
+	builder.NewCommand(ctx, lanCmd, PreRunGlobalDcId, RunLanList, "list", "List LANs",
+		"Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		listLanExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanGet, "get", "Get a LAN",
-		"Use this command to retrieve information of a specified LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
+	get := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcIdLanId, RunLanGet, "get", "Get a LAN",
+		"Use this command to retrieve information of a given LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		getLanExample, true)
 	get.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdValidate, RunLanCreate, "create", "Create a LAN",
+	create := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcId, RunLanCreate, "create", "Create a LAN",
 		`Use this command to create a new LAN within a Virtual Data Center on your account. The name, the public option and the Private Cross-Connect Id can be set.
 
-Note: IP Failover is configured after LAN creation using an update command.
+NOTE: IP Failover is configured after LAN creation using an update command.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -80,7 +81,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanUpdate, "update", "Update a LAN",
+	update := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcIdLanId, RunLanUpdate, "update", "Update a LAN",
 		`Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Private Cross-Connect.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -91,7 +92,7 @@ Required values to run command:
 * LAN Id`, updateLanExample, true)
 	update.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
 	update.AddStringFlag(config.ArgPccId, "", "", "The unique Id of the Private Cross-Connect the LAN will connect to")
@@ -105,10 +106,10 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(context.TODO(), lanCmd, PreRunGlobalDcIdLanIdValidate, RunLanDelete, "delete", "Delete a LAN",
+	deleteCmd := builder.NewCommand(ctx, lanCmd, PreRunGlobalDcIdLanId, RunLanDelete, "delete", "Delete a LAN",
 		`Use this command to delete a specified LAN from a Virtual Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -116,7 +117,7 @@ Required values to run command:
 * LAN Id`, deleteLanExample, true)
 	deleteCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be deleted [seconds]")
@@ -124,11 +125,11 @@ Required values to run command:
 	return lanCmd
 }
 
-func PreRunGlobalDcIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId)
 }
 
-func PreRunGlobalDcIdLanIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcIdLanId(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
 		result = multierror.Append(result, err)
@@ -189,8 +190,8 @@ func RunLanCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -223,8 +224,8 @@ func RunLanUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -239,8 +240,7 @@ func RunLanUpdate(c *builder.CommandConfig) error {
 }
 
 func RunLanDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
 		return err
 	}
 	resp, err := c.Lans().Delete(
@@ -250,8 +250,8 @@ func RunLanDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -261,6 +261,8 @@ func RunLanDelete(c *builder.CommandConfig) error {
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
 }
+
+// Output Printing
 
 var defaultLanCols = []string{"LanId", "Name", "Public", "PccId"}
 

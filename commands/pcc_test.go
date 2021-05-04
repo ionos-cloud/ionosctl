@@ -63,7 +63,7 @@ var (
 	testPccErr    = errors.New("pcc test error")
 )
 
-func TestPreRunPccIdValidate(t *testing.T) {
+func TestPreRunPccId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -71,12 +71,12 @@ func TestPreRunPccIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
-		err := PreRunPccIdValidate(cfg)
+		err := PreRunPccId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunPccIdValidateErr(t *testing.T) {
+func TestPreRunPccIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -84,7 +84,7 @@ func TestPreRunPccIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), "")
-		err := PreRunPccIdValidate(cfg)
+		err := PreRunPccId(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -322,7 +322,7 @@ func TestRunPccDelete(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Delete(testPccVar).Return(nil, nil)
 		err := RunPccDelete(cfg)
@@ -337,7 +337,7 @@ func TestRunPccDeleteErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Delete(testPccVar).Return(nil, testPccErr)
 		err := RunPccDelete(cfg)
@@ -352,7 +352,7 @@ func TestRunPccDeleteWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Pcc.EXPECT().Delete(testPccVar).Return(nil, nil)
@@ -368,7 +368,7 @@ func TestRunPccDeleteAskForConfirm(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.Pcc.EXPECT().Delete(testPccVar).Return(nil, nil)
@@ -384,7 +384,7 @@ func TestRunPccDeleteAskForConfirmErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
 		cfg.Stdin = os.Stdin
 		err := RunPccDelete(cfg)

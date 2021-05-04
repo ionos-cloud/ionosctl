@@ -12,7 +12,7 @@ ionosctl loadbalancer list-nics [flags]
 
 ## Description
 
-Use this command to get a list of attached NICs to a Load Balancer from a Data Center.
+Use this command to retrieve a list of NICs associated with the Load Balancer.
 
 Required values to run command:
 
@@ -23,12 +23,12 @@ Required values to run command:
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings             Columns to be printed in the standard output (default [DatacenterId,Name,Location])
+      --cols strings             Columns to be printed in the standard output (default [LoadBalancerId,Name,Dhcp])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string     The unique Data Center Id [Required flag]
+      --datacenter-id string     The unique Data Center Id (required)
+      --force                    Force command to execute without user input
   -h, --help                     help for list-nics
-      --ignore-stdin             Force command to execute without user input
-      --loadbalancer-id string   The unique Load Balancer Id [Required flag]
+      --loadbalancer-id string   The unique Load Balancer Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
 ```

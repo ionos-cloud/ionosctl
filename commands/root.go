@@ -29,11 +29,10 @@ var (
 
 	cfgFile string
 
-	// Version
 	Major string
 	Minor string
 	Patch string
-	// If label is not set, it will append -dev to latest version
+	// Label - If label is not set, it will append -dev to latest version
 	// If label is set as `release`, it will show the version released
 	Label string
 
@@ -63,7 +62,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootPFlagSet := rootCmd.Command.PersistentFlags()
+	rootPFlagSet := rootCmd.GlobalFlags()
 	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, "c", config.GetConfigFile(), "Configuration file used for authentication")
 	_ = viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
 
@@ -79,8 +78,8 @@ func init() {
 	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, "q", false, "Quiet output")
 	_ = viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
 
-	rootPFlagSet.Bool(config.ArgIgnoreStdin, false, "Force command to execute without user input")
-	_ = viper.BindPFlag(config.ArgIgnoreStdin, rootPFlagSet.Lookup(config.ArgIgnoreStdin))
+	rootPFlagSet.Bool(config.ArgForce, false, "Force command to execute without user input")
+	_ = viper.BindPFlag(config.ArgForce, rootPFlagSet.Lookup(config.ArgForce))
 
 	addCommands()
 
@@ -169,11 +168,12 @@ func addCommands() {
 	rootCmd.AddCommand(s3key())
 	rootCmd.AddCommand(backupunit())
 	rootCmd.AddCommand(pcc())
+	rootCmd.AddCommand(share())
 	rootCmd.AddCommand(k8sCluster())
-	rootCmd.AddCommand(k8sNodePool())
 	rootCmd.AddCommand(k8sKubeconfig())
-	rootCmd.AddCommand(k8sVersion())
 	rootCmd.AddCommand(k8sNode())
+	rootCmd.AddCommand(k8sNodePool())
+	rootCmd.AddCommand(k8sVersion())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

@@ -25,7 +25,7 @@ const (
 	// TypeJSON defines a JSON formatter.
 	TypeJSON = Type("json")
 
-	// PrinterTypeText defines a human readable formatted formatter.
+	// TypeText defines a human readable formatted formatter.
 	TypeText = Type("text")
 )
 

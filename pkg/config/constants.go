@@ -7,7 +7,7 @@ const (
 	ArgQuiet                       = "quiet"
 	ArgWait                        = "wait"
 	ArgTimeout                     = "timeout"
-	ArgIgnoreStdin                 = "ignore-stdin"
+	ArgForce                       = "force"
 	ArgServerUrl                   = "api-url"
 	ArgCols                        = "cols"
 	ArgDataCenterId                = "datacenter-id"
@@ -153,7 +153,7 @@ const (
 
 // Required Flags
 const (
-	RequiredFlag               = "[Required flag]"
+	RequiredFlag               = "(required)"
 	RequiredFlagDatacenterId   = "The unique Data Center Id " + RequiredFlag
 	RequiredFlagLanId          = "The unique LAN Id " + RequiredFlag
 	RequiredFlagLoadBalancerId = "The unique Load Balancer Id " + RequiredFlag
@@ -163,7 +163,7 @@ const (
 	RequiredFlagVolumeId       = "The unique Volume Id " + RequiredFlag
 	RequiredFlagSnapshotId     = "The unique Snapshot Id " + RequiredFlag
 	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
-	RequiredFlagIpBlockId      = "The unique IPBlock Id " + RequiredFlag
+	RequiredFlagIpBlockId      = "The unique IpBlock Id " + RequiredFlag
 	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
 	RequiredFlagLabelKey       = "The unique Label Key " + RequiredFlag
 	RequiredFlagLabelValue     = "The unique Label Value " + RequiredFlag

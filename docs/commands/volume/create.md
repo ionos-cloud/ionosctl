@@ -12,7 +12,7 @@ ionosctl volume create [flags]
 
 ## Description
 
-Use this command to create a Volume on your account. You can specify the name, size, type, licence type and availability zone for the object.
+Use this command to create a Volume on your account. Creates a volume within the data center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type and availability zone for the object.
 
 You can wait for the action to be executed using `--wait` option.
 
@@ -24,11 +24,11 @@ Required values to run command:
 
 ```text
   -u, --api-url string               Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings                 Columns to be printed in the standard output (default [DatacenterId,Name,Location])
+      --cols strings                 Columns to be printed in the standard output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string         The unique Data Center Id [Required flag]
+      --datacenter-id string         The unique Data Center Id (required)
+      --force                        Force command to execute without user input
   -h, --help                         help for create
-      --ignore-stdin                 Force command to execute without user input
   -o, --output string                Desired output format [text|json] (default "text")
   -q, --quiet                        Quiet output
       --timeout int                  Timeout option for Volume to be created [seconds] (default 60)

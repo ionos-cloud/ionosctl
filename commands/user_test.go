@@ -71,7 +71,7 @@ var (
 	testUserErr     = errors.New("user test error")
 )
 
-func TestPreRunUserIdValidate(t *testing.T) {
+func TestPreRunUserId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -79,12 +79,12 @@ func TestPreRunUserIdValidate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
-		err := PreRunUserIdValidate(cfg)
+		err := PreRunUserId(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunUserIdValidateErr(t *testing.T) {
+func TestPreRunUserIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -92,12 +92,12 @@ func TestPreRunUserIdValidateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), "")
-		err := PreRunUserIdValidate(cfg)
+		err := PreRunUserId(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunUserNameEmailPwdValidate(t *testing.T) {
+func TestPreRunUserNameEmailPwd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -108,12 +108,12 @@ func TestPreRunUserNameEmailPwdValidate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserLastName), testUserVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserEmail), testUserVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserPassword), testUserVar)
-		err := PreRunUserNameEmailPwdValidate(cfg)
+		err := PreRunUserNameEmailPwd(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunUserNameEmailPwdValidateErr(t *testing.T) {
+func TestPreRunUserNameEmailPwdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -124,7 +124,7 @@ func TestPreRunUserNameEmailPwdValidateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserLastName), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserEmail), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserPassword), "")
-		err := PreRunUserNameEmailPwdValidate(cfg)
+		err := PreRunUserNameEmailPwd(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -311,7 +311,7 @@ func TestRunUserDelete(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
 		rm.User.EXPECT().Delete(testUserVar).Return(nil, nil)
 		err := RunUserDelete(cfg)
@@ -326,7 +326,7 @@ func TestRunUserDeleteErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
 		rm.User.EXPECT().Delete(testUserVar).Return(nil, testUserErr)
 		err := RunUserDelete(cfg)
@@ -341,7 +341,7 @@ func TestRunUserDeleteAskForConfirm(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.User.EXPECT().Delete(testUserVar).Return(nil, nil)
@@ -357,7 +357,7 @@ func TestRunUserDeleteAskForConfirmErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
 		cfg.Stdin = os.Stdin
 		err := RunUserDelete(cfg)

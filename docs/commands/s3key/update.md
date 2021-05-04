@@ -27,14 +27,14 @@ Required values to run command:
   -u, --api-url string                           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols --cols="S3KeyId,Active,SecretKey"   Columns to be printed in the standard output. You can also print SecretKey, using --cols="S3KeyId,Active,SecretKey" (default [S3KeyId,Active])
   -c, --config string                            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                                    Force command to execute without user input
   -h, --help                                     help for update
-      --ignore-stdin                             Force command to execute without user input
   -o, --output string                            Desired output format [text|json] (default "text")
   -q, --quiet                                    Quiet output
       --s3key-active                             Enable or disable a S3Key
-      --s3key-id string                          The unique User S3Key Id [Required flag]
+      --s3key-id string                          The unique User S3Key Id (required)
       --timeout int                              Timeout option for a S3Key to be updated [seconds] (default 60)
-      --user-id string                           The unique User Id [Required flag]
+      --user-id string                           The unique User Id (required)
       --wait                                     Wait for S3Key to be updated
 ```
 

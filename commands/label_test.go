@@ -34,7 +34,7 @@ var (
 	testLabelErr = errors.New("label test error")
 )
 
-func TestPreRunLabelUrnValidate(t *testing.T) {
+func TestPreRunLabelUrn(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -42,12 +42,12 @@ func TestPreRunLabelUrnValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelUrn), testLabelVar)
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunLabelUrnValidate(cfg)
+		err := PreRunLabelUrn(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunLabelUrnValidateErr(t *testing.T) {
+func TestPreRunLabelUrnErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -55,7 +55,7 @@ func TestPreRunLabelUrnValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelUrn), "")
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunLabelUrnValidate(cfg)
+		err := PreRunLabelUrn(cfg)
 		assert.Error(t, err)
 	})
 }

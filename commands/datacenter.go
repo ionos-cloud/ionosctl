@@ -18,6 +18,7 @@ import (
 )
 
 func datacenter() *builder.Command {
+	ctx := context.TODO()
 	datacenterCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "datacenter",
@@ -27,21 +28,21 @@ func datacenter() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := datacenterCmd.Command.PersistentFlags()
+	globalFlags := datacenterCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(datacenterCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(datacenterCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(context.TODO(), datacenterCmd, noPreRun, RunDataCenterList, "list", "List Data Centers",
-		"Use this command to list all Data Centers on your account.", listDatacenterExample, true)
+	builder.NewCommand(ctx, datacenterCmd, noPreRun, RunDataCenterList, "list", "List Data Centers",
+		"Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.", listDatacenterExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterGet, "get", "Get a Data Center",
-		"Use this command to get information about a specified Data Center.\n\nRequired values to run command:\n\n* Data Center Id", getDatacenterExample, true)
+	get := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterGet, "get", "Get a Data Center",
+		"Use this command to retrieve details about a Virtual Data Center by using its ID.\n\nRequired values to run command:\n\n* Data Center Id", getDatacenterExample, true)
 	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -50,8 +51,10 @@ func datacenter() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(context.TODO(), datacenterCmd, noPreRun, RunDataCenterCreate, "create", "Create a Data Center",
-		`Use this command to create a Data Center. You can specify the name, description or location for the object.
+	create := builder.NewCommand(ctx, datacenterCmd, noPreRun, RunDataCenterCreate, "create", "Create a Data Center",
+		`Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
+
+Virtual Data Centers (VDCs) are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, createDatacenterExample, true)
 	create.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
@@ -66,8 +69,8 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, 
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterUpdate, "update", "Update a Data Center",
-		`Use this command to change a Data Center's name, description.
+	update := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterUpdate, "update", "Update a Data Center",
+		`Use this command to change a Virtual Data Center's name, description.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -86,10 +89,10 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(context.TODO(), datacenterCmd, PreRunDataCenterIdValidate, RunDataCenterDelete, "delete", "Delete a Data Center",
-		`Use this command to delete a specified Data Center from your account. This is irreversible.
+	deleteCmd := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterDelete, "delete", "Delete a Data Center",
+		`Use this command to delete a specified Virtual Data Center (VDC) from your account. This will remove all objects within the VDC and remove the VDC object itself. 
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+NOTE: This is a highly destructive operation which should be used with extreme caution!
 
 Required values to run command:
 
@@ -106,7 +109,7 @@ Required values to run command:
 	return datacenterCmd
 }
 
-func PreRunDataCenterIdValidate(c *builder.PreCommandConfig) error {
+func PreRunDataCenterId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId)
 }
 
@@ -144,8 +147,7 @@ func RunDataCenterCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -175,8 +177,7 @@ func RunDataCenterUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -191,8 +192,7 @@ func RunDataCenterUpdate(c *builder.CommandConfig) error {
 }
 
 func RunDataCenterDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
 		return err
 	}
 	resp, err := c.DataCenters().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)))
@@ -200,8 +200,7 @@ func RunDataCenterDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{

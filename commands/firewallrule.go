@@ -24,60 +24,61 @@ func firewallrule() *builder.Command {
 	firewallRuleCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "firewallrule",
-			Aliases:          []string{"rule"},
 			Short:            "Firewall Rule Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl firewallrule` + "`" + ` allow you to create, list, get, update, delete Firewall Rules.`,
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := firewallRuleCmd.Command.PersistentFlags()
+	globalFlags := firewallRuleCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringP(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringP(config.ArgNicId, "", "", config.RequiredFlagNicId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgNicId), globalFlags.Lookup(config.ArgNicId))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId), globalFlags.Lookup(config.ArgNicId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultFirewallRuleCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsValidate, RunFirewallRuleList, "list", "List Firewall Rules",
+	builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIds, RunFirewallRuleList, "list", "List Firewall Rules",
 		"Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id",
 		listFirewallRuleExample, true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleIdValidate, RunFirewallRuleGet, "get", "Get a Firewall Rule",
+	get := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleId, RunFirewallRuleGet, "get", "Get a Firewall Rule",
 		"Use this command to retrieve information of a specified Firewall Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id\n* FirewallRule Id",
 		getFirewallRuleExample, true)
 	get.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleProtocolValidate, RunFirewallRuleCreate, "create", "Create a Firewall Rule",
-		`Use this command to create a new Firewall Rule. Please Note: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
+	create := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleProtocol, RunFirewallRuleCreate, "create", "Create a Firewall Rule",
+		`Use this command to create/add a new Firewall Rule to the specified NIC. All Firewall Rules must be associated with a NIC.
+
+NOTE: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -102,7 +103,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleIdValidate, RunFirewallRuleUpdate, "update", "Update a FirewallRule",
+	update := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleId, RunFirewallRuleUpdate, "update", "Update a FirewallRule",
 		`Use this command to update a specified Firewall Rule.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -124,9 +125,9 @@ Required values to run command:
 	update.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Firewall Rule to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Firewall Rule to be updated [seconds]")
@@ -134,10 +135,10 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleIdValidate, RunFirewallRuleDelete, "delete", "Delete a FirewallRule",
+	deleteCmd := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleId, RunFirewallRuleDelete, "delete", "Delete a FirewallRule",
 		`Use this command to delete a specified Firewall Rule from a Virtual Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -148,9 +149,9 @@ Required values to run command:
 	deleteCmd.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgServerId)),
-			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Command.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
+			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Firewall Rule to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Firewall Rule to be deleted [seconds]")
@@ -158,11 +159,11 @@ Required values to run command:
 	return firewallRuleCmd
 }
 
-func PreRunGlobalDcServerNicIdsValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcServerNicIds(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId)
 }
 
-func PreRunGlobalDcServerNicIdsFRuleProtocolValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcServerNicIdsFRuleProtocol(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)
@@ -176,7 +177,7 @@ func PreRunGlobalDcServerNicIdsFRuleProtocolValidate(c *builder.PreCommandConfig
 	return nil
 }
 
-func PreRunGlobalDcServerNicIdsFRuleIdValidate(c *builder.PreCommandConfig) error {
+func PreRunGlobalDcServerNicIdsFRuleId(c *builder.PreCommandConfig) error {
 	var result *multierror.Error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)
@@ -231,8 +232,8 @@ func RunFirewallRuleCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, getFirewallRule(firewallRule)))
@@ -249,16 +250,15 @@ func RunFirewallRuleUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, getFirewallRule(firewallRule)))
 }
 
 func RunFirewallRuleDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
 		return err
 	}
 	resp, err := c.FirewallRules().Delete(
@@ -270,8 +270,8 @@ func RunFirewallRuleDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, nil))

@@ -13,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -27,6 +28,26 @@ func (c *Command) AddCommand(commands ...*Command) {
 	for _, cmd := range commands {
 		c.Command.AddCommand(cmd.Command)
 	}
+}
+
+func (c *Command) Name() string {
+	return c.Command.Name()
+}
+
+func (c *Command) ParentName() string {
+	if c.Command.Parent() != nil {
+		return c.Command.Parent().Name()
+	} else {
+		return ""
+	}
+}
+
+func (c *Command) CommandPath() string {
+	return c.Command.CommandPath()
+}
+
+func (c *Command) GlobalFlags() *flag.FlagSet {
+	return c.Command.PersistentFlags()
 }
 
 func (c *Command) SubCommands() []*Command {
@@ -139,7 +160,7 @@ func NewCommand(ctx context.Context, parent *Command, preCR PreCommandRun, cmdru
 // Its purpose is to keep the validate part separate from run part.
 type PreCommandRun func(commandConfig *PreCommandConfig) error
 
-// PreCommand Properties
+// PreCommandConfig Properties
 type PreCommandConfig struct {
 	Name       string
 	ParentName string
@@ -156,7 +177,7 @@ func NewPreCommandCfg(p printer.PrintService, name, parentName string) *PreComma
 
 type CommandRun func(commandConfig *CommandConfig) error
 
-// Command Properties and Services
+// CommandConfig Properties and Services
 type CommandConfig struct {
 	Name       string
 	ParentName string
@@ -188,7 +209,7 @@ type CommandConfig struct {
 	Context context.Context
 }
 
-// Init IONOS Cloud Client for Commands
+// InitClient for Commands
 func (c *CommandConfig) InitClient() (*resources.Client, error) {
 	err := config.Load()
 	if err != nil {
@@ -206,7 +227,7 @@ func (c *CommandConfig) InitClient() (*resources.Client, error) {
 	return clientSvc.Get(), nil
 }
 
-// Init Services for Commands
+// InitServices for Commands
 func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.Locations = func() resources.LocationsService { return resources.NewLocationService(client, c.Context) }
 	c.DataCenters = func() resources.DatacentersService { return resources.NewDataCenterService(client, c.Context) }

@@ -12,7 +12,7 @@ ionosctl datacenter get [flags]
 
 ## Description
 
-Use this command to get information about a specified Data Center.
+Use this command to retrieve details about a Virtual Data Center by using its ID.
 
 Required values to run command:
 
@@ -24,9 +24,9 @@ Required values to run command:
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings           Columns to be printed in the standard output (default [DatacenterId,Name,Location])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string   The unique Data Center Id [Required flag]
+      --datacenter-id string   The unique Data Center Id (required)
+      --force                  Force command to execute without user input
   -h, --help                   help for get
-      --ignore-stdin           Force command to execute without user input
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
 ```

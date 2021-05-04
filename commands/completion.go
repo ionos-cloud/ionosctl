@@ -88,16 +88,17 @@ In order to make the completions permanent execute once:
     ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish`
 	)
 
+	ctx := context.TODO()
 	completionCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:   "completion",
 			Short: "Generate code to enable auto-completion with `TAB` key",
 			Long:  "Use this command to generate completion code for specific shell for `ionosctl` commands and flags.",
 		}}
-	builder.NewCommand(context.TODO(), completionCmd, noPreRun, RunCompletionBash, "bash", "Generate code to enable auto-completion with `TAB` key for BASH terminal", completionBashLong, "", false)
-	builder.NewCommand(context.TODO(), completionCmd, noPreRun, RunCompletionZsh, "zsh", "Generate code to enable auto-completion with `TAB` key for ZSH terminal", completionZshLong, "", false)
-	builder.NewCommand(context.TODO(), completionCmd, noPreRun, RunCompletionPowerShell, "powershell", "Generate code to enable auto-completion with `TAB` key for PowerShell terminal", completionPowerShellLong, "", false)
-	builder.NewCommand(context.TODO(), completionCmd, noPreRun, RunCompletionFish, "fish", "Generate code to enable auto-completion with `TAB` key for Fish terminal", completionFishLong, "", false)
+	builder.NewCommand(ctx, completionCmd, noPreRun, RunCompletionBash, "bash", "Generate code to enable auto-completion with `TAB` key for BASH terminal", completionBashLong, "", false)
+	builder.NewCommand(ctx, completionCmd, noPreRun, RunCompletionZsh, "zsh", "Generate code to enable auto-completion with `TAB` key for ZSH terminal", completionZshLong, "", false)
+	builder.NewCommand(ctx, completionCmd, noPreRun, RunCompletionPowerShell, "powershell", "Generate code to enable auto-completion with `TAB` key for PowerShell terminal", completionPowerShellLong, "", false)
+	builder.NewCommand(ctx, completionCmd, noPreRun, RunCompletionFish, "fish", "Generate code to enable auto-completion with `TAB` key for Fish terminal", completionFishLong, "", false)
 
 	return completionCmd
 }

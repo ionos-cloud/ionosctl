@@ -19,29 +19,29 @@ import (
 )
 
 func request() *builder.Command {
+	ctx := context.TODO()
 	reqCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "request",
-			Aliases:          []string{"req"},
 			Short:            "Request Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl request` + "`" + ` allow you to see information about requests on your account. With the ` + "`" + `ionosctl request` + "`" + ` command, you can list, get or wait for a Request.`,
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := reqCmd.Command.PersistentFlags()
+	globalFlags := reqCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(context.TODO(), reqCmd, noPreRun, RunRequestList, "list", "List Requests",
+	builder.NewCommand(ctx, reqCmd, noPreRun, RunRequestList, "list", "List Requests",
 		"Use this command to list all Requests on your account", "", true)
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(context.TODO(), reqCmd, PreRunRequestIdValidate, RunRequestGet, "get", "Get a Request",
+	get := builder.NewCommand(ctx, reqCmd, PreRunRequestId, RunRequestGet, "get", "Get a Request",
 		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		getRequestExample, true)
 	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
@@ -52,8 +52,8 @@ func request() *builder.Command {
 	/*
 		Wait Command
 	*/
-	wait := builder.NewCommand(context.TODO(), reqCmd, PreRunRequestIdValidate, RunRequestWait, "wait", "Wait a Request",
-		`Use this command to wait for a specified Request to execute. Commands used for create, update, delete, attach, detach also support this via `+"`"+`--wait`+"`"+`option.
+	wait := builder.NewCommand(ctx, reqCmd, PreRunRequestId, RunRequestWait, "wait", "Wait a Request",
+		`Use this command to wait for a specified Request to execute.
 
 You can specify a timeout for the action to be executed using `+"`"+`--timeout`+"`"+` option.
 
@@ -69,7 +69,7 @@ Required values to run command:
 	return reqCmd
 }
 
-func PreRunRequestIdValidate(c *builder.PreCommandConfig) error {
+func PreRunRequestId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgRequestId)
 }
 
@@ -122,6 +122,8 @@ func RunRequestWait(c *builder.CommandConfig) error {
 		Columns:    getRequestsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
+
+// Output Printing
 
 var defaultRequestCols = []string{"RequestId", "Status", "Message"}
 

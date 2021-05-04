@@ -19,8 +19,8 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force            Force command to execute without user input
   -h, --help             help for ionosctl
-      --ignore-stdin     Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
 ```
@@ -36,7 +36,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | [ionosctl firewallrule](firewallrule/) | Firewall Rule Operations |
 | [ionosctl group](group/) | Group Operations |
 | [ionosctl image](image/) | Image Operations |
-| [ionosctl ipblock](ipblock/) | IPBlock Operations |
+| [ionosctl ipblock](ipblock/) | IpBlock Operations |
 | [ionosctl k8s-cluster](k8s-cluster/) | Kubernetes Cluster Operations |
 | [ionosctl k8s-kubeconfig](k8s-kubeconfig/) | Kubernetes Kubeconfig Operations |
 | [ionosctl k8s-node](k8s-node/) | Kubernetes Node Operations |
@@ -53,6 +53,7 @@ IonosCTL is a command-line interface for the Ionos Cloud API.
 | [ionosctl resource](resource/) | Resource Operations |
 | [ionosctl s3key](s3key/) | S3Key Operations |
 | [ionosctl server](server/) | Server Operations |
+| [ionosctl share](share/) | Resource Share Operations |
 | [ionosctl snapshot](snapshot/) | Snapshot Operations |
 | [ionosctl user](user/) | User Operations |
 | [ionosctl version](version.md) | Show the current version |

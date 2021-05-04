@@ -28,9 +28,9 @@ Required values to run command:
       --cols strings         Columns to be printed in the standard output (default [GroupId,Name,CreateDataCenter,CreateSnapshot,ReserveIp,AccessActivityLog,CreatePcc,S3Privilege,CreateBackupUnit,CreateInternetAccess,CreateK8s])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --edit-privilege       Update the group's permission to edit privileges on resource
+      --force                Force command to execute without user input
       --group-id string      The unique Group Id [Required flag]
   -h, --help                 help for update-share
-      --ignore-stdin         Force command to execute without user input
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
       --resource-id string   The unique Resource Id [Required flag]

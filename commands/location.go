@@ -16,6 +16,7 @@ import (
 )
 
 func location() *builder.Command {
+	ctx := context.TODO()
 	locationCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "location",
@@ -24,14 +25,14 @@ func location() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := locationCmd.Command.PersistentFlags()
+	globalFlags := locationCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultLocationCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(locationCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(context.TODO(), locationCmd, noPreRun, RunLocationList, "list", "List Locations",
+	builder.NewCommand(ctx, locationCmd, noPreRun, RunLocationList, "list", "List Locations",
 		"Use this command to get a list of available locations to create objects on.",
 		listLocationExample, true)
 

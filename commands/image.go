@@ -10,7 +10,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -23,15 +22,14 @@ func image() *builder.Command {
 	imageCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "image",
-			Aliases:          []string{"images", "img"},
 			Short:            "Image Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl image` + "`" + ` allow you to see information about the Images available.`,
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := imageCmd.Command.PersistentFlags()
+	globalFlags := imageCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(imageCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -56,7 +54,7 @@ func image() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, imageCmd, PreRunImageIdValidate, RunImageGet, "get", "Get a specified Image",
+	get := builder.NewCommand(ctx, imageCmd, PreRunImageId, RunImageGet, "get", "Get a specified Image",
 		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		getImageExample, true)
 	get.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
@@ -64,21 +62,10 @@ func image() *builder.Command {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Delete Command
-	*/
-	deleteCmd := builder.NewCommand(ctx, imageCmd, PreRunImageIdValidate, RunImageDelete, "delete", "Delete a private Image",
-		"Use this command to delete the specified private image. This only applies to private images that you have uploaded.\n\nRequired values to run command:\n\n* Image Id",
-		"", true)
-	deleteCmd.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-
 	return imageCmd
 }
 
-func PreRunImageIdValidate(c *builder.PreCommandConfig) error {
+func PreRunImageId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgImageId)
 }
 
@@ -99,7 +86,7 @@ func RunImageList(c *builder.CommandConfig) error {
 	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageSize)) {
 		images = sortImagesBySize(images, float32(viper.GetFloat64(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageSize))))
 	}
-	return c.Printer.Print(getImagePrint(nil, c, getImages(images)))
+	return c.Printer.Print(getImagePrint(c, getImages(images)))
 }
 
 func RunImageGet(c *builder.CommandConfig) error {
@@ -107,23 +94,7 @@ func RunImageGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getImagePrint(nil, c, getImage(img)))
-}
-
-func RunImageDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private image")
-	if err != nil {
-		return err
-	}
-	resp, err := c.Images().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageId)))
-	if err != nil {
-		return err
-	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(getImagePrint(resp, c, nil))
+	return c.Printer.Print(getImagePrint(c, getImage(img)))
 }
 
 // Output Printing
@@ -141,15 +112,9 @@ type ImagePrint struct {
 	Public      bool    `json:"Public,omitempty"`
 }
 
-func getImagePrint(resp *resources.Response, c *builder.CommandConfig, imgs []resources.Image) printer.Result {
+func getImagePrint(c *builder.CommandConfig, imgs []resources.Image) printer.Result {
 	r := printer.Result{}
 	if c != nil {
-		if resp != nil {
-			r.ApiResponse = resp
-			r.Resource = c.ParentName
-			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
-		}
 		if imgs != nil {
 			r.OutputJSON = imgs
 			r.KeyValue = getImagesKVMaps(imgs)

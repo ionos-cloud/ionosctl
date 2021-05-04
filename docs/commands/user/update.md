@@ -26,15 +26,15 @@ Required values to run command:
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings             Columns to be printed in the standard output (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                    Force command to execute without user input
   -h, --help                     help for update
-      --ignore-stdin             Force command to execute without user input
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --user-administrator       Assigns the User to have administrative rights
       --user-email string        The email for the User
       --user-first-name string   The firstname for the User
       --user-force-secure        Indicates if secure (two-factor) authentication should be forced for the User
-      --user-id string           The unique User Id [Required flag]
+      --user-id string           The unique User Id (required)
       --user-last-name string    The lastname for the User
 ```
 

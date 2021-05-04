@@ -12,7 +12,7 @@ ionosctl server update [flags]
 
 ## Description
 
-Use this command to update a specified Server from a Data Center.
+Use this command to update a specified Server from a Virtual Data Center.
 
 You can wait for the action to be executed using `--wait` option.
 
@@ -25,16 +25,16 @@ Required values to run command:
 
 ```text
   -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings               Columns to be printed in the standard output (default [DatacenterId,Name,Location])
+      --cols strings               Columns to be printed in the standard output (default [ServerId,Name,AvailabilityZone,State,Cores,Ram,CpuFamily])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string       The unique Data Center Id [Required flag]
+      --datacenter-id string       The unique Data Center Id (required)
+      --force                      Force command to execute without user input
   -h, --help                       help for update
-      --ignore-stdin               Force command to execute without user input
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
       --server-cores int           Cores option of the Server (default 2)
       --server-cpu-family string   CPU Family of the Server (default "AMD_OPTERON")
-      --server-id string           The unique Server Id [Required flag]
+      --server-id string           The unique Server Id (required)
       --server-name string         Name of the Server
       --server-ram int             RAM[GB] option for the Server (default 256)
       --server-zone string         Availability zone of the Server

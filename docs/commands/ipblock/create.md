@@ -1,5 +1,5 @@
 ---
-description: Create/Reserve an IPBlock
+description: Create/Reserve an IpBlock
 ---
 
 # Create
@@ -12,13 +12,13 @@ ionosctl ipblock create [flags]
 
 ## Description
 
-Use this command to create/reserve an IPBlock in a specified location. The name, size options can be provided.
+Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
 
 You can wait for the action to be executed using `--wait` option.
 
 Required values to run command:
 
-* IPBlock Location
+* IpBlock Location
 
 ## Options
 
@@ -26,15 +26,15 @@ Required values to run command:
   -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings              Columns to be printed in the standard output (default [IpBlockId,Name,Location,Size,Ips,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                     Force command to execute without user input
   -h, --help                      help for create
-      --ignore-stdin              Force command to execute without user input
-      --ipblock-location string   Location of the IPBlock [Required flag]
-      --ipblock-name string       Name of the IPBlock
-      --ipblock-size int          Size of the IPBlock (default 2)
+      --ipblock-location string   Location of the IpBlock (required)
+      --ipblock-name string       Name of the IpBlock
+      --ipblock-size int          Size of the IpBlock (default 2)
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
-      --timeout int               Timeout option for the IPBlock to be created [seconds] (default 60)
-      --wait                      Wait for the IPBlock to be created
+      --timeout int               Timeout option for the IpBlock to be created [seconds] (default 60)
+      --wait                      Wait for the IpBlock to be created
 ```
 
 ## Examples

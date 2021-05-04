@@ -18,7 +18,7 @@ func label() *builder.Command {
 		Command: &cobra.Command{
 			Use:              "label",
 			Short:            "Label Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl label` + "`" + ` allow you to get, list, create, delete Labels from a resource. For each resource that supports labelling: Data Center, Server, Volume, IPBlock, Snapshot - commands to manage Labels are available. Example: ` + "`" + `ionosctl <resource> add-label` + "`" + `.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl label` + "`" + ` allow you to get, list, create, delete Labels from a resource. For each resource that supports labelling: Data Center, Server, Volume, IpBlock, Snapshot - commands to manage Labels are available. Example: ` + "`" + `ionosctl <resource> add-label` + "`" + `.`,
 			TraverseChildren: true,
 		},
 	}
@@ -32,14 +32,15 @@ func label() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, labelCmd, PreRunLabelUrnValidate, RunLabelGet, "get", "Get a Label",
+	get := builder.NewCommand(ctx, labelCmd, PreRunLabelUrn, RunLabelGet, "get", "Get a Label",
 		"Use this command to get information about a specified Label using its URN. A URN is used for uniqueness of a Label and composed using `urn:label:<resource_type>:<resource_uuid>:<key>`.\n\nRequired values to run command:\n\n* Label URN",
 		getLabelExample, true)
 	get.AddStringFlag(config.ArgLabelUrn, "", "", "URN for the Label [urn:label:<resource_type>:<resource_uuid>:<key>]")
+
 	return labelCmd
 }
 
-func PreRunLabelUrnValidate(c *builder.PreCommandConfig) error {
+func PreRunLabelUrn(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgLabelUrn)
 }
 

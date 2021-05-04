@@ -22,13 +22,13 @@ Required values to run command:
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings             Columns to be printed in the standard output (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
+      --cols strings             Columns to be printed in the standard output (default [PccId,Name,Description])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                    Force command to execute without user input
   -h, --help                     help for update
-      --ignore-stdin             Force command to execute without user input
   -o, --output string            Desired output format [text|json] (default "text")
       --pcc-description string   The description for the Private Cross-Connect
-      --pcc-id string            The unique Private Cross-Connect Id [Required flag]
+      --pcc-id string            The unique Private Cross-Connect Id (required)
       --pcc-name string          The name for the Private Cross-Connect
   -q, --quiet                    Quiet output
       --timeout int              Timeout option for Private Cross-Connect to be updated [seconds] (default 60)

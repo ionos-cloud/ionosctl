@@ -28,9 +28,9 @@ func user() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := userCmd.Command.PersistentFlags()
+	globalFlags := userCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultUserCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(userCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(userCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -41,7 +41,7 @@ func user() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, userCmd, PreRunUserIdValidate, RunUserGet, "get", "Get a User",
+	get := builder.NewCommand(ctx, userCmd, PreRunUserId, RunUserGet, "get", "Get a User",
 		"Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id", getUserExample, true)
 	get.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -51,7 +51,7 @@ func user() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, userCmd, PreRunUserNameEmailPwdValidate, RunUserCreate, "create", "Create a User under a particular contract",
+	create := builder.NewCommand(ctx, userCmd, PreRunUserNameEmailPwd, RunUserCreate, "create", "Create a User under a particular contract",
 		`Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
 Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
@@ -93,7 +93,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, userCmd, PreRunUserIdValidate, RunUserDelete, "delete", "Blacklists the User, disabling them",
+	deleteCmd := builder.NewCommand(ctx, userCmd, PreRunUserId, RunUserDelete, "delete", "Blacklists the User, disabling them",
 		`This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
 
 Required values to run command:
@@ -107,11 +107,11 @@ Required values to run command:
 	return userCmd
 }
 
-func PreRunUserIdValidate(c *builder.PreCommandConfig) error {
+func PreRunUserId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgUserId)
 }
 
-func PreRunUserNameEmailPwdValidate(c *builder.PreCommandConfig) error {
+func PreRunUserNameEmailPwd(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgUserFirstName, config.ArgUserLastName, config.ArgUserEmail, config.ArgUserPassword)
 }
 
@@ -176,8 +176,7 @@ func RunUserUpdate(c *builder.CommandConfig) error {
 }
 
 func RunUserDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
 		return err
 	}
 	resp, err := c.Users().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)))

@@ -14,7 +14,7 @@ ionosctl firewallrule delete [flags]
 
 Use this command to delete a specified Firewall Rule from a Virtual Data Center.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
+You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -29,14 +29,14 @@ Required values to run command:
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings             Columns to be printed in the standard output. Example: --cols "ResourceId,Name" (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string     The unique Data Center Id [Required flag]
-      --firewallrule-id string   The unique FirewallRule Id [Required flag]
+      --datacenter-id string     The unique Data Center Id (required)
+      --firewallrule-id string   The unique FirewallRule Id (required)
+      --force                    Force command to execute without user input
   -h, --help                     help for delete
-      --ignore-stdin             Force command to execute without user input
-      --nic-id string            The unique NIC Id [Required flag]
+      --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --server-id string         The unique Server Id [Required flag]
+      --server-id string         The unique Server Id (required)
       --timeout int              Timeout option for Firewall Rule to be deleted [seconds] (default 60)
       --wait                     Wait for Firewall Rule to be deleted
 ```

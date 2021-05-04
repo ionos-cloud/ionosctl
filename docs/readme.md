@@ -214,7 +214,7 @@ To redirect all the output to `dev/null`, except for error messages, you can use
 
 For `list` and `get` commands, you can also specify which information should be printed using `--cols` option.
 
-For `delete`,`stop`,`detach` commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--ignore-stdin` flag.
+For `delete`,`stop`,`detach` commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` flag.
 
 ### Testing
 

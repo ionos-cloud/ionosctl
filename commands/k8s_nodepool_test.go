@@ -170,7 +170,7 @@ var (
 	testNodepoolErr       = errors.New("nodepool test error")
 )
 
-func TestPreRunK8sClusterNodePoolIdsValidate(t *testing.T) {
+func TestPreRunK8sClusterNodePoolIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -179,12 +179,12 @@ func TestPreRunK8sClusterNodePoolIdsValidate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
-		err := PreRunK8sClusterNodePoolIdsValidate(cfg)
+		err := PreRunK8sClusterNodePoolIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunK8sClusterNodePoolIdsValidateErr(t *testing.T) {
+func TestPreRunK8sClusterNodePoolIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -193,12 +193,12 @@ func TestPreRunK8sClusterNodePoolIdsValidateErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), "")
-		err := PreRunK8sClusterNodePoolIdsValidate(cfg)
+		err := PreRunK8sClusterNodePoolIds(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunK8sClusterDcIdsNodePoolNameValidate(t *testing.T) {
+func TestPreRunK8sClusterDcIdsNodePoolName(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -208,12 +208,12 @@ func TestPreRunK8sClusterDcIdsNodePoolNameValidate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolName), testNodepoolVar)
-		err := PreRunK8sClusterDcIdsNodePoolNameValidate(cfg)
+		err := PreRunK8sClusterDcIdsNodePoolName(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunK8sClusterDcIdsNodePoolNameValidateErr(t *testing.T) {
+func TestPreRunK8sClusterDcIdsNodePoolNameErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -223,7 +223,7 @@ func TestPreRunK8sClusterDcIdsNodePoolNameValidateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), "")
-		err := PreRunK8sClusterDcIdsNodePoolNameValidate(cfg)
+		err := PreRunK8sClusterDcIdsNodePoolName(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -437,7 +437,7 @@ func TestRunK8sNodePoolDelete(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
 		rm.K8s.EXPECT().DeleteNodePool(testNodepoolVar, testNodepoolVar).Return(nil, nil)
@@ -453,7 +453,7 @@ func TestRunK8sNodePoolDeleteErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, true)
+		viper.Set(config.ArgForce, true)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
 		rm.K8s.EXPECT().DeleteNodePool(testNodepoolVar, testNodepoolVar).Return(nil, testNodepoolErr)
@@ -469,7 +469,7 @@ func TestRunK8sNodePoolDeleteAskForConfirm(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
@@ -486,7 +486,7 @@ func TestRunK8sNodePoolDeleteAskForConfirmErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgIgnoreStdin, false)
+		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodepoolVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodepoolVar)
 		cfg.Stdin = os.Stdin

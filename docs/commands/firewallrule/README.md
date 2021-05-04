@@ -10,12 +10,6 @@ description: Firewall Rule Operations
 ionosctl firewallrule [command]
 ```
 
-## Aliases
-
-```text
-[rule]
-```
-
 ## Description
 
 The sub-commands of `ionosctl firewallrule` allow you to create, list, get, update, delete Firewall Rules.
@@ -26,13 +20,13 @@ The sub-commands of `ionosctl firewallrule` allow you to create, list, get, upda
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings           Columns to be printed in the standard output. Example: --cols "ResourceId,Name" (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string   The unique Data Center Id [Required flag]
+      --datacenter-id string   The unique Data Center Id (required)
+      --force                  Force command to execute without user input
   -h, --help                   help for firewallrule
-      --ignore-stdin           Force command to execute without user input
-      --nic-id string          The unique NIC Id [Required flag]
+      --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --server-id string       The unique Server Id [Required flag]
+      --server-id string       The unique Server Id (required)
 ```
 
 ## Related commands

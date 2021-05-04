@@ -28,9 +28,9 @@ func pcc() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := pccCmd.Command.PersistentFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultUserCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(pccCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	globalFlags := pccCmd.GlobalFlags()
+	globalFlags.StringSlice(config.ArgCols, defaultPccCols, "Columns to be printed in the standard output")
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(pccCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -41,7 +41,7 @@ func pcc() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccGet, "get", "Get a Private Cross-Connect",
+	get := builder.NewCommand(ctx, pccCmd, PreRunPccId, RunPccGet, "get", "Get a Private Cross-Connect",
 		"Use this command to retrieve details about a specific Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id", getPccExample, true)
 	get.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -49,9 +49,9 @@ func pcc() *builder.Command {
 	})
 
 	/*
-		Get Peers Command
+		Get Command
 	*/
-	getPeers := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccGetPeers, "get-peers", "Get a Private Cross-Connect Peers",
+	getPeers := builder.NewCommand(ctx, pccCmd, PreRunPccId, RunPccGetPeers, "get-peers", "Get a Private Cross-Connect Peers",
 		"Use this command to get a list of Peers from a Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id", getPccPeersExample, true)
 	getPeers.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
 	_ = getPeers.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -72,7 +72,7 @@ func pcc() *builder.Command {
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccUpdate, "update", "Update a Private Cross-Connect",
+	update := builder.NewCommand(ctx, pccCmd, PreRunPccId, RunPccUpdate, "update", "Update a Private Cross-Connect",
 		`Use this command to update details about a specific Private Cross-Connect. Name and description can be updated.
 
 Required values to run command:
@@ -90,7 +90,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, pccCmd, PreRunPccIdValidate, RunPccDelete, "delete", "Delete a Private Cross-Connect",
+	deleteCmd := builder.NewCommand(ctx, pccCmd, PreRunPccId, RunPccDelete, "delete", "Delete a Private Cross-Connect",
 		`Use this command to delete a Private Cross-Connect.
 
 Required values to run command:
@@ -106,7 +106,7 @@ Required values to run command:
 	return pccCmd
 }
 
-func PreRunPccIdValidate(c *builder.PreCommandConfig) error {
+func PreRunPccId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgPccId)
 }
 
@@ -149,6 +149,7 @@ func RunPccCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
@@ -165,6 +166,7 @@ func RunPccUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
@@ -172,14 +174,14 @@ func RunPccUpdate(c *builder.CommandConfig) error {
 }
 
 func RunPccDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
 		return err
 	}
 	resp, err := c.Pccs().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgPccId)))
 	if err != nil {
 		return err
 	}
+
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}

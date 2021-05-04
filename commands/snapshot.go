@@ -22,15 +22,14 @@ func snapshot() *builder.Command {
 	snapshotCmd := &builder.Command{
 		Command: &cobra.Command{
 			Use:              "snapshot",
-			Aliases:          []string{"sp", "snap"},
 			Short:            "Snapshot Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl snapshot` + "`" + ` allow you to see information, to create, update, delete Snapshots.`,
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := snapshotCmd.Command.PersistentFlags()
+	globalFlags := snapshotCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultSnapshotCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(snapshotCmd.Command.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(snapshotCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -41,7 +40,7 @@ func snapshot() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotGet, "get", "Get a Snapshot",
+	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotId, RunSnapshotGet, "get", "Get a Snapshot",
 		"Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		getSnapshotExample, true)
 	get.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
@@ -52,7 +51,7 @@ func snapshot() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, snapshotCmd, PreRunSnapNameLicenceDcIdVolumeIdValidate, RunSnapshotCreate, "create", "Create a Snapshot of a Volume within the Virtual Data Center.",
+	create := builder.NewCommand(ctx, snapshotCmd, PreRunSnapNameLicenceDcIdVolumeId, RunSnapshotCreate, "create", "Create a Snapshot of a Volume within the Virtual Data Center.",
 		`Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -75,7 +74,7 @@ Required values to run command:
 	})
 	create.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Command.Name(), create.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Name(), create.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgSnapshotSecAuthProtection, "", false, "Enable secure authentication protection")
 	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be created")
@@ -84,7 +83,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotUpdate, "update", "Update a Snapshot.",
+	update := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotId, RunSnapshotUpdate, "update", "Update a Snapshot.",
 		`Use this command to update a specified Snapshot.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -119,7 +118,7 @@ Required values to run command:
 	/*
 		Restore Command
 	*/
-	restore := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdDcIdVolumeIdValidate, RunSnapshotRestore, "restore", "Restore a Snapshot onto a Volume",
+	restore := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdDcIdVolumeId, RunSnapshotRestore, "restore", "Restore a Snapshot onto a Volume",
 		"Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
 		restoreSnapshotExample, true)
 	restore.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
@@ -132,7 +131,7 @@ Required values to run command:
 	})
 	restore.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Command.Name(), restore.Command.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Name(), restore.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	restore.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Snapshot to be restored")
 	restore.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be restored [seconds]")
@@ -140,7 +139,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdValidate, RunSnapshotDelete, "delete", "Delete a Snapshot",
+	deleteCmd := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotId, RunSnapshotDelete, "delete", "Delete a Snapshot",
 		"Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		deleteSnapshotExample, true)
 	deleteCmd.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
@@ -151,18 +150,19 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Snapshot to be deleted [seconds]")
 
 	labelSnapshot(snapshotCmd)
+
 	return snapshotCmd
 }
 
-func PreRunSnapshotIdValidate(c *builder.PreCommandConfig) error {
+func PreRunSnapshotId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgSnapshotId)
 }
 
-func PreRunSnapNameLicenceDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
+func PreRunSnapNameLicenceDcIdVolumeId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName, config.ArgSnapshotLicenceType)
 }
 
-func PreRunSnapshotIdDcIdVolumeIdValidate(c *builder.PreCommandConfig) error {
+func PreRunSnapshotIdDcIdVolumeId(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
 }
 
@@ -194,8 +194,8 @@ func RunSnapshotCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
@@ -206,16 +206,15 @@ func RunSnapshotUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
+
+	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
 }
 
 func RunSnapshotRestore(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot"); err != nil {
 		return err
 	}
 	resp, err := c.Snapshots().Restore(
@@ -230,8 +229,7 @@ func RunSnapshotRestore(c *builder.CommandConfig) error {
 }
 
 func RunSnapshotDelete(c *builder.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot")
-	if err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
 		return err
 	}
 	resp, err := c.Snapshots().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)))
