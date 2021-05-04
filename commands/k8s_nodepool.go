@@ -23,9 +23,9 @@ func k8sNodePool() *builder.Command {
 	ctx := context.TODO()
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
-			Use:              "k8s-nodepool",
+			Use:              "nodepool",
 			Short:            "Kubernetes NodePool Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-nodepool` + "`" + ` allow you to list, get, create, update, delete Kubernetes NodePools.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl k8s nodepool` + "`" + ` allow you to list, get, create, update, delete Kubernetes NodePools.`,
 			TraverseChildren: true,
 		},
 	}

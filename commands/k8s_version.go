@@ -11,9 +11,9 @@ func k8sVersion() *builder.Command {
 	ctx := context.TODO()
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
-			Use:              "k8s-version",
+			Use:              "version",
 			Short:            "Kubernetes Version Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-version` + "`" + ` allow you to get information about available Kubernetes versions.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl k8s version` + "`" + ` allow you to get information about available Kubernetes versions.`,
 			TraverseChildren: true,
 		},
 	}
