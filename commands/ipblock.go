@@ -106,7 +106,7 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for the IpBlock to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for the IpBlock to be deleted [seconds]")
 
-	labelIpBlock(ipblockCmd)
+	ipblockCmd.AddCommand(ipblockLabel())
 
 	return ipblockCmd
 }

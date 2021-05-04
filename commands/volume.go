@@ -122,7 +122,8 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be deleted [seconds]")
 
-	labelVolume(volumeCmd)
+	volumeCmd.AddCommand(volumeLabel())
+
 	return volumeCmd
 }
 

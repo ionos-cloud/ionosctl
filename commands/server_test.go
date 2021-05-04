@@ -82,7 +82,7 @@ var (
 	testServerErr    = errors.New("server test: error occurred")
 )
 
-func TestPreRunDcIdServerId(t *testing.T) {
+func TestPreRunDcServerIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -91,12 +91,12 @@ func TestPreRunDcIdServerId(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testServerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
-		err := PreRunDcIdServerId(cfg)
+		err := PreRunDcServerIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunDcIdServerIdRequiredFlagErr(t *testing.T) {
+func TestPreRunDcServerIdsRequiredFlagErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -105,7 +105,7 @@ func TestPreRunDcIdServerIdRequiredFlagErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), "")
-		err := PreRunDcIdServerId(cfg)
+		err := PreRunDcServerIds(cfg)
 		assert.Error(t, err)
 	})
 }

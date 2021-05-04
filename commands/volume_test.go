@@ -417,7 +417,7 @@ func TestGetAttachedVolumesIds(t *testing.T) {
 
 // Server Volume
 
-func TestPreRunDcIdServerIdRequiredFlagsErr(t *testing.T) {
+func TestPreRunDcServerIdsRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
@@ -426,7 +426,7 @@ func TestPreRunDcIdServerIdRequiredFlagsErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), "")
-		err := PreRunDcIdServerId(cfg)
+		err := PreRunDcServerIds(cfg)
 		assert.Error(t, err)
 	})
 }

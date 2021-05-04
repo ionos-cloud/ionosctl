@@ -46,7 +46,7 @@ func server() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, serverCmd, PreRunDcIdServerId, RunServerGet, "get", "Get a Server",
+	get := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerGet, "get", "Get a Server",
 		"Use this command to get information about a specified Server from a Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
 	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
@@ -90,7 +90,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, serverCmd, PreRunDcIdServerId, RunServerUpdate, "update", "Update a Server",
+	update := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerUpdate, "update", "Update a Server",
 		`Use this command to update a specified Server from a Virtual Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -124,7 +124,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, serverCmd, PreRunDcIdServerId, RunServerDelete, "delete", "Delete a Server",
+	deleteCmd := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerDelete, "delete", "Delete a Server",
 		`Use this command to delete a specified Server from a Virtual Data Center.
 
 NOTE: This will not automatically remove the storage Volume(s) attached to a Server.
@@ -149,7 +149,7 @@ Required values to run command:
 	/*
 		Start Command
 	*/
-	start := builder.NewCommand(ctx, serverCmd, PreRunDcIdServerId, RunServerStart, "start", "Start a Server",
+	start := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerStart, "start", "Start a Server",
 		`Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -172,7 +172,7 @@ Required values to run command:
 	/*
 		Stop Command
 	*/
-	stop := builder.NewCommand(ctx, serverCmd, PreRunDcIdServerId, RunServerStop, "stop", "Stop a Server",
+	stop := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerStop, "stop", "Stop a Server",
 		`Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -195,7 +195,7 @@ Required values to run command:
 	/*
 		Reboot Command
 	*/
-	reboot := builder.NewCommand(ctx, serverCmd, PreRunDcIdServerId, RunServerReboot, "reboot", "Force a hard reboot of a Server",
+	reboot := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerReboot, "reboot", "Force a hard reboot of a Server",
 		`Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -214,12 +214,12 @@ Required values to run command:
 	})
 
 	serverCmd.AddCommand(serverVolume())
-	labelServer(serverCmd)
+	serverCmd.AddCommand(serverLabel())
 
 	return serverCmd
 }
 
-func PreRunDcIdServerId(c *builder.PreCommandConfig) error {
+func PreRunDcServerIds(c *builder.PreCommandConfig) error {
 	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgServerId)
 }
 
