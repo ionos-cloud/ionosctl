@@ -63,6 +63,34 @@ func TestPreRunDcIdLabelKeyErr(t *testing.T) {
 	})
 }
 
+func TestPreRunInheritedDcIdVolume(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetGlobalFlagName(cfg.GrandParentName, config.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunInheritedDcIdVolume(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunInheritedDcIdVolumeErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetGlobalFlagName(cfg.GrandParentName, config.ArgDataCenterId), "")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), "")
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunInheritedDcIdVolume(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunDcIdLabelKeyValue(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

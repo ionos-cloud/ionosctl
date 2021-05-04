@@ -31,6 +31,8 @@ var (
 			Bus:              &testVolumeVar,
 			AvailabilityZone: &zoneVolume,
 			Image:            &testVolumeVar,
+			BackupunitId:     &testVolumeVar,
+			SshKeys:          &testVolumeSliceVar,
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &testVolumeVar,
@@ -68,9 +70,10 @@ var (
 			Items: &[]ionoscloud.Volume{v},
 		},
 	}
-	testVolumeVar    = "test-volume"
-	testVolumeNewVar = "test-new-volume"
-	testVolumeErr    = errors.New("volume test: error occurred")
+	testVolumeVar      = "test-volume"
+	testVolumeSliceVar = []string{"test-volume"}
+	testVolumeNewVar   = "test-new-volume"
+	testVolumeErr      = errors.New("volume test: error occurred")
 )
 
 func TestPreRunGlobalDcIdVolumeId(t *testing.T) {

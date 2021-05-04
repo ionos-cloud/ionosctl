@@ -38,15 +38,13 @@ var (
 		LoadbalancerProperties: ionoscloud.LoadbalancerProperties{
 			Name: &testLoadbalancerNewVar,
 			Dhcp: &dhcpLoadbalancerNew,
+			Ip:   &testLoadbalancerNewVar,
 		},
 	}
 	loadbalancerNew = resources.Loadbalancer{
 		Loadbalancer: ionoscloud.Loadbalancer{
-			Id: &testLoadbalancerVar,
-			Properties: &ionoscloud.LoadbalancerProperties{
-				Name: loadbalancerProperties.LoadbalancerProperties.Name,
-				Dhcp: &dhcpLoadbalancerNew,
-			},
+			Id:         &testLoadbalancerVar,
+			Properties: &loadbalancerProperties.LoadbalancerProperties,
 		},
 	}
 	testLoadbalancerVar    = "test-loadbalancer"
@@ -204,6 +202,7 @@ func TestRunLoadBalancerUpdate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerDhcp), dhcpLoadbalancerNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerIp), testLoadbalancerNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Loadbalancer.EXPECT().Update(testLoadbalancerVar, testLoadbalancerVar, loadbalancerProperties).Return(&loadbalancerNew, nil, nil)
 		err := RunLoadBalancerUpdate(cfg)
@@ -222,6 +221,7 @@ func TestRunLoadBalancerUpdateErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerDhcp), dhcpLoadbalancerNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerIp), testLoadbalancerNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
 		rm.Loadbalancer.EXPECT().Update(testLoadbalancerVar, testLoadbalancerVar, loadbalancerProperties).Return(&loadbalancerNew, nil, testLoadbalancerErr)
 		err := RunLoadBalancerUpdate(cfg)
@@ -240,6 +240,7 @@ func TestRunLoadBalancerUpdateWaitErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerName), testLoadbalancerNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerDhcp), dhcpLoadbalancerNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerIp), testLoadbalancerNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.Loadbalancer.EXPECT().Update(testLoadbalancerVar, testLoadbalancerVar, loadbalancerProperties).Return(&loadbalancerNew, nil, nil)
 		err := RunLoadBalancerUpdate(cfg)
