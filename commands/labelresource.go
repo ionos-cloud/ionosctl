@@ -173,7 +173,7 @@ func labelServer(serverCmd *builder.Command) {
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerListLabels, listLabelsCmd, "List Labels from a Server",
+	list := builder.NewCommand(ctx, serverCmd, PreRunDcIdServerId, RunServerListLabels, listLabelsCmd, "List Labels from a Server",
 		"Use this command to list all Labels from a specified Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id", listServerLabelsExample, true)
 	list.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
