@@ -165,7 +165,6 @@ func addCommands() {
 	rootCmd.AddCommand(user())
 	rootCmd.AddCommand(group())
 	rootCmd.AddCommand(resource())
-	rootCmd.AddCommand(s3key())
 	rootCmd.AddCommand(backupunit())
 	rootCmd.AddCommand(pcc())
 	rootCmd.AddCommand(share())

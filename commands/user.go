@@ -104,6 +104,8 @@ Required values to run command:
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	userCmd.AddCommand(userS3key())
+
 	return userCmd
 }
 
