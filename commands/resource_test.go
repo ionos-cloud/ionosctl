@@ -165,7 +165,7 @@ func TestRunResourceGetByTypeErr(t *testing.T) {
 
 // Group Resources
 
-func TestRunGroupListResources(t *testing.T) {
+func TestRunGroupResourceList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -174,12 +174,12 @@ func TestRunGroupListResources(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testResourceVar)
 		rm.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, nil, nil)
-		err := RunGroupListResources(cfg)
+		err := RunGroupResourceList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunGroupListResourcesErr(t *testing.T) {
+func TestRunGroupResourceListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -188,7 +188,7 @@ func TestRunGroupListResourcesErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testResourceVar)
 		rm.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, nil, testResourceErr)
-		err := RunGroupListResources(cfg)
+		err := RunGroupResourceList(cfg)
 		assert.Error(t, err)
 	})
 }

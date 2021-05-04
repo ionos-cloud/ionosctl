@@ -87,23 +87,35 @@ func RunResourceGet(c *builder.CommandConfig) error {
 
 // Group Resources Commands
 
-func resourceGroup(groupCmd *builder.Command) {
+func groupResource() *builder.Command {
 	ctx := context.TODO()
+	resourceCmd := &builder.Command{
+		Command: &cobra.Command{
+			Use:              "resource",
+			Short:            "Group Resource Operations",
+			Long:             `The sub-command of ` + "`" + `ionosctl group resource` + "`" + ` allows you to list Resources from a Group.`,
+			TraverseChildren: true,
+		},
+	}
+	globalFlags := resourceCmd.GlobalFlags()
+	globalFlags.StringSlice(config.ArgCols, defaultResourceCols, "Columns to be printed in the standard output")
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Resources Command
 	*/
-	listResources := builder.NewCommand(ctx, groupCmd, PreRunGroupId, RunGroupListResources, "list-resources", "List Resources from a Group",
+	listResources := builder.NewCommand(ctx, resourceCmd, PreRunGroupId, RunGroupResourceList, "list", "List Resources from a Group",
 		"Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resources` commands.\n\nRequired values to run command:\n\n* Group Id",
 		listGroupResourcesExample, true)
 	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	return
+
+	return resourceCmd
 }
 
-func RunGroupListResources(c *builder.CommandConfig) error {
+func RunGroupResourceList(c *builder.CommandConfig) error {
 	resourcesListed, _, err := c.Groups().ListResources(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)))
 	if err != nil {
 		return err
