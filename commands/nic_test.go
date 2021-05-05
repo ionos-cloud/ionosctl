@@ -596,7 +596,7 @@ func TestRunLoadBalancerNicListErr(t *testing.T) {
 	})
 }
 
-func TestRunLoadBalancerNicGet(t *testing.T) {
+func TestRunLoadBalancerNicDescribe(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -607,12 +607,12 @@ func TestRunLoadBalancerNicGet(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), testLoadbalancerVar)
 		rm.Loadbalancer.EXPECT().GetNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Nic{Nic: n}, nil, nil)
-		err := RunLoadBalancerNicGet(cfg)
+		err := RunLoadBalancerNicDescribe(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunLoadBalancerNicGetErr(t *testing.T) {
+func TestRunLoadBalancerNicDescribeErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -623,7 +623,7 @@ func TestRunLoadBalancerNicGetErr(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgNicId), testLoadbalancerVar)
 		rm.Loadbalancer.EXPECT().GetNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Nic{Nic: n}, nil, testLoadbalancerErr)
-		err := RunLoadBalancerNicGet(cfg)
+		err := RunLoadBalancerNicDescribe(cfg)
 		assert.Error(t, err)
 	})
 }

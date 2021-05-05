@@ -333,24 +333,24 @@ Required values to run command:
 	})
 
 	/*
-		Get Nic Command
+		Describe Nic Command
 	*/
-	getNicCmd := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcNicLoadBalancerIds, RunLoadBalancerNicGet, "get", "Get an attached NIC to a Load Balancer",
+	describeNicCmd := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcNicLoadBalancerIds, RunLoadBalancerNicDescribe, "describe", "Describe an attached NIC to a Load Balancer",
 		"Use this command to retrieve information about an attached NIC to a Load Balancer.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
-		getNicLoadbalancerExample, true)
-	getNicCmd.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion")
-	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		describeNicLoadbalancerExample, true)
+	describeNicCmd.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion")
+	_ = describeNicCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	getNicCmd.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
-	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), getNicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	describeNicCmd.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
+	_ = describeNicCmd.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), describeNicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	getNicCmd.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
-	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	describeNicCmd.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
+	_ = describeNicCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedNicsIds(os.Stderr,
-			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), getNicCmd.Name(), config.ArgDataCenterId)),
-			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), getNicCmd.Name(), config.ArgLoadBalancerId)),
+			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), describeNicCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), describeNicCmd.Name(), config.ArgLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -413,7 +413,7 @@ func RunLoadBalancerNicList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getNicPrint(nil, c, getAttachedNics(attachedNics)))
 }
 
-func RunLoadBalancerNicGet(c *builder.CommandConfig) error {
+func RunLoadBalancerNicDescribe(c *builder.CommandConfig) error {
 	n, _, err := c.Loadbalancers().GetNic(
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgLoadBalancerId)),

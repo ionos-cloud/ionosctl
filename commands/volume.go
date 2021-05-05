@@ -314,22 +314,22 @@ Required values to run command:
 	})
 
 	/*
-		Get Volume Command
+		Describe Volume Command
 	*/
-	getVolumeCmd := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerIds, RunServerVolumeGet, "get", "Get an attached Volume from a Server",
+	describeVolumeCmd := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerVolumeIds, RunServerVolumeDescribe, "describe", "Retrieve an attached Volume from a Server",
 		"Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
-		getVolumeServerExample, true)
-	getVolumeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		describeVolumeServerExample, true)
+	describeVolumeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = describeVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	getVolumeCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), getVolumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	describeVolumeCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	_ = describeVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), describeVolumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	getVolumeCmd.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), getVolumeCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), getVolumeCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	describeVolumeCmd.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	_ = describeVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), describeVolumeCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), describeVolumeCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -391,8 +391,8 @@ func RunServerVolumesList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getVolumePrint(nil, c, getAttachedVolumes(attachedVols)))
 }
 
-func RunServerVolumeGet(c *builder.CommandConfig) error {
-	attachedVolume, _, err := c.Servers().GetVolume(
+func RunServerVolumeDescribe(c *builder.CommandConfig) error {
+	attachedVol, _, err := c.Servers().GetVolume(
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
@@ -400,7 +400,7 @@ func RunServerVolumeGet(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getVolumePrint(nil, c, getVolume(attachedVolume)))
+	return c.Printer.Print(getVolumePrint(nil, c, getVolume(attachedVol)))
 }
 
 func RunServerVolumeDetach(c *builder.CommandConfig) error {
