@@ -214,7 +214,6 @@ Required values to run command:
 	})
 
 	serverCmd.AddCommand(serverVolume())
-	serverCmd.AddCommand(serverLabel())
 
 	return serverCmd
 }

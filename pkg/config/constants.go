@@ -1,5 +1,14 @@
 package config
 
+// Resources
+const (
+	DatacenterResource = "datacenter"
+	ServerResource     = "server"
+	VolumeResource     = "volume"
+	IpBlockResource    = "ipblock"
+	SnapshotResource   = "snapshot"
+)
+
 // Flags
 const (
 	ArgConfig                      = "config"

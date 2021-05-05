@@ -371,67 +371,26 @@ Status: Command firewallrule delete has been successfully executed`
 		Label Examples
 	*/
 	listLabelsExample = `ionosctl label list 
-Key       Value            ResourceType   ResourceId
-test      testserver       server         27dde318-f0d4-4f97-a04d-9dafe4a89637
-test      testdatacenter   datacenter     ed612a0a-9506-4b56-8d1b-ce2b04090f19
-test      testsnapshot     snapshot       df7f4ad9-b942-4e79-939d-d1c10fb6fbff`
-	getLabelExample = `ionosctl label get --label-urn "urn:label:server:27dde318-f0d4-4f97-a04d-9dafe4a89637:test"
+Key    Value     ResourceType   ResourceId
+test   testing   datacenter     aa8e07a2-287a-4b45-b5e9-94761750a53c
+
+ionosctl label list --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c 
+Key    Value
+test   testing`
+	getLabelByUrnExample = `ionosctl label get-by-urn --label-urn "urn:label:server:27dde318-f0d4-4f97-a04d-9dafe4a89637:test"
 Key    Value        ResourceType   ResourceId
 test   testserver   server         27dde318-f0d4-4f97-a04d-9dafe4a89637`
+	getLabelExample = `ionosctl label get --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --label-key secondtest
+Key          Value
+secondtest   testdatacenter`
+	addLabelExample = `ionosctl label add --resource-type server --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa  --label-key test --label-value testserver
+Key    Value
+test   testserver
 
-	/*
-		Label Resources Examples
-	*/
-	listDataCenterLabelsExample = `ionosctl datacenter list-labels --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 
-Key    Value
-test   testdatacenter`
-	getDataCenterLabelExample = `ionosctl datacenter get-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --label-key test
-Key    Value
-test   testdatacenter`
-	addDataCenterLabelExample = `ionosctl datacenter add-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --label-key test --label-value testdatacenter
-Key    Value
-test   testdatacenter`
-	removeDataCenterLabelExample = `ionosctl datacenter remove-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --label-key test`
-	listServerLabelsExample      = `ionosctl server list-labels --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 
-Key    Value
-test   test`
-	getServerLabelExample = `ionosctl server get-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 --label-key test
-Key    Value
-test   test`
-	addServerLabelExample = `ionosctl server add-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 --label-key test --label-value test
-Key    Value
-test   test`
-	removeServerLabelExample = `ionosctl server remove-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 --label-key test`
-	listVolumeLabelsExample  = `ionosctl volume list-labels --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 
-Key    Value
-test   testvolume`
-	getVolumeLabelExample = `ionosctl volume get-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 --label-key test
-Key    Value
-test   testvolume`
-	addVolumeLabelExample = `ionosctl volume add-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 --label-key test --label-value testvolume
-Key    Value
-test   testvolume`
-	removeVolumeLabelExample = `ionosctl volume remove-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 --label-key test`
-	listIpBlockLabelsExample = `ionosctl ipblock list-labels --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 
-Key    Value
-test   testipblock`
-	getIpBlockLabelExample = `ionosctl ipblock get-label --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 --label-key test
-Key    Value
-test   testipblock`
-	addIpBlockLabelExample = `ionosctl ipblock add-label --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 --label-key test --label-value testipblock
-Key    Value
-test   testipblock`
-	removeIpBlockLabelExample = `ionosctl ipblock remove-label --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 --label-key test`
-	listSnapshotLabelsExample = `ionosctl snapshot list-labels --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff
-Key    Value
-test   testsnapshot`
-	getSnapshotLabelExample = ` ionosctl snapshot get-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test
-Key    Value
-test   testsnapshot`
-	addSnapshotLabelExample = `ionosctl snapshot add-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test --label-value testsnapshot
-Key    Value
-test   testsnapshot`
-	removeSnapshotLabelExample = `ionosctl snapshot remove-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test`
+ionosctl label add --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --label-key secondtest --label-value testdatacenter
+Key          Value
+secondtest   testdatacenter`
+	removeLabelExample = `ionosctl label remove --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --label-key secondtest`
 
 	/*
 		Contract Resources Examples
