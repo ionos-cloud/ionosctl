@@ -2,7 +2,7 @@
 description: Generate code to enable auto-completion with `TAB` key for Fish terminal
 ---
 
-# CompletionFish
+# Fish
 
 ## Usage
 
@@ -16,19 +16,23 @@ Use this command to generate completion code for Fish terminal. IonosCTL support
 
 To load completions into the current shell execute:
 
-    ionosctl completion fish | source
+```text
+ionosctl completion fish | source
+```
 
 In order to make the completions permanent execute once:
 
-    ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
+```text
+ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
+```
 
 ## Options
 
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force            Force command to execute without user input
   -h, --help             help for fish
+      --force            Force command to execute without user input
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
 ```
