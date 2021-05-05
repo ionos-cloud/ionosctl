@@ -40,7 +40,7 @@ func main() {
 
 // Generate Markdown documentation based on information described in commands.
 // Using WriteDocs function, it will be created one structure in the path specified.
-// For each command, an Markdown file is generated with the following fields:
+// For each runnable command, an Markdown file is generated with the following fields:
 // # Usage
 // # Description
 // # Options

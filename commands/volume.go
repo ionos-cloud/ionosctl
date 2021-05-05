@@ -293,7 +293,7 @@ Required values to run command:
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), attachVolume.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to attach to Server")
+	attachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be attached to Server")
 	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
 
 	/*
@@ -331,12 +331,15 @@ Required values to run command:
 	})
 
 	/*
-		Remove Volume Command
+		Detach Volume Command
 	*/
 	detachVolume := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerVolumeIds, RunServerVolumeDetach, "detach", "Detach a Volume from a Server",
 		`Use this command to detach a Volume from a Server.
+
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+
 Required values to run command:
+
 * Data Center Id
 * Server Id
 * Volume Id`, detachVolumeServerExample, true)
@@ -352,8 +355,8 @@ Required values to run command:
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), detachVolume.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be removed from Server")
-	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be removed from a Server [seconds]")
+	detachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be detached from Server")
+	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be detached from a Server [seconds]")
 
 	return serverVolumeCmd
 }

@@ -12,7 +12,7 @@ ionosctl group resource list [flags]
 
 ## Description
 
-Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resources` commands.
+Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.
 
 Required values to run command:
 

@@ -27,13 +27,13 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id
       --force                  Force command to execute without user input
   -h, --help                   help for get-by-urn
-      --ipblock-id string      The unique IpBlock Id 
+      --ipblock-id string      The unique IpBlock Id
       --label-urn string       URN for the Label [urn:label:<resource_type>:<resource_uuid>:<key>] (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --resource-type string   Resource Type
       --server-id string       The unique Server Id
-      --snapshot-id string     The unique Snapshot Id 
+      --snapshot-id string     The unique Snapshot Id
       --volume-id string       The unique Volume Id
 ```
 

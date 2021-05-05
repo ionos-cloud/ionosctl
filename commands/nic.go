@@ -291,8 +291,11 @@ func loadBalancerNic() *builder.Command {
 	*/
 	attachNic := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcNicLoadBalancerIds, RunLoadBalancerNicAttach, "attach", "Attach a NIC to a Load Balancer",
 		`Use this command to add/attach a specified NIC to a Load Balancer on your account.
+
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+
 Required values to run command:
+
 * Data Center Id
 * Load Balancer Id
 * NIC Id`, attachNicLoadbalancerExample, true)
@@ -359,8 +362,11 @@ Required values to run command:
 	*/
 	detachNic := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcNicLoadBalancerIds, RunLoadBalancerNicDetach, "detach", "Detach a NIC from a Load Balancer",
 		`Use this command to detach a NIC from a Load Balancer.
+
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+
 Required values to run command:
+
 * Data Center Id
 * Load Balancer Id
 * NIC Id`, detachNicLoadbalancerExample, true)

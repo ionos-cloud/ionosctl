@@ -42,12 +42,12 @@ func label() *builder.Command {
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(labelCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringP(config.ArgIpBlockId, "", "", "The unique IpBlock Id ")
+	globalFlags.StringP(config.ArgIpBlockId, "", "", "The unique IpBlock Id")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelCmd.Name(), config.ArgIpBlockId), globalFlags.Lookup(config.ArgIpBlockId))
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringP(config.ArgSnapshotId, "", "", "The unique Snapshot Id ")
+	globalFlags.StringP(config.ArgSnapshotId, "", "", "The unique Snapshot Id")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelCmd.Name(), config.ArgSnapshotId), globalFlags.Lookup(config.ArgSnapshotId))
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp

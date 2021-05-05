@@ -36,7 +36,7 @@ Required values to run command:
       --server-id string       The unique Server Id (required)
       --timeout int            Timeout option for Volume to be attached to a Server [seconds] (default 60)
       --volume-id string       The unique Volume Id (required)
-      --wait                   Wait for Volume to attach to Server
+      --wait                   Wait for Volume to be attached to Server
 ```
 
 ## Examples

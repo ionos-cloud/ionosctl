@@ -13,8 +13,11 @@ ionosctl loadbalancer nic attach [flags]
 ## Description
 
 Use this command to add/attach a specified NIC to a Load Balancer on your account.
+
 You can wait for the action to be executed using `--wait` option.
+
 Required values to run command:
+
 * Data Center Id
 * Load Balancer Id
 * NIC Id

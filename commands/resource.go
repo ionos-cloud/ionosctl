@@ -105,7 +105,7 @@ func groupResource() *builder.Command {
 		List Resources Command
 	*/
 	listResources := builder.NewCommand(ctx, resourceCmd, PreRunGroupId, RunGroupResourceList, "list", "List Resources from a Group",
-		"Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resources` commands.\n\nRequired values to run command:\n\n* Group Id",
+		"Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.\n\nRequired values to run command:\n\n* Group Id",
 		listGroupResourcesExample, true)
 	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

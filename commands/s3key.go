@@ -61,25 +61,32 @@ func userS3key() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, s3keyCmd, PreRunUserId, RunUserS3KeyCreate, "create", "Create a S3Key for a User",
-		`Use this command to create a S3Key for a particular User. 
+		`Use this command to create a S3Key for a particular User.
+
 Note: A maximum of five S3 keys may be created for any given user.
+
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+
 Required values to run command:
+
 * User Id`, createS3KeyExample, true)
 	create.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for S3Key to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a S3Key to be created [seconds]")
+	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User S3Key to be created")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for an User S3Key to be created [seconds]")
 
 	/*
 		Update Command
 	*/
 	update := builder.NewCommand(ctx, s3keyCmd, PreRunUserKeyIds, RunUserS3KeyUpdate, "update", "Update a S3Key",
 		`Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
+
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+
 Required values to run command:
+
 * User Id
 * S3Key Id
 * S3Key Active`, updateS3KeyExample, true)
@@ -87,13 +94,13 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgS3KeyActive, "", false, "Enable or disable a S3Key")
+	update.AddBoolFlag(config.ArgS3KeyActive, "", false, "Enable or disable an User S3Key")
 	update.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(builder.GetFlagName(s3keyCmd.Name(), update.Name(), config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for S3Key to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a S3Key to be updated [seconds]")
+	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User S3Key to be updated")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a User S3Key to be updated [seconds]")
 
 	/*
 		Delete Command
@@ -109,8 +116,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(builder.GetFlagName(s3keyCmd.Name(), deleteCmd.Name(), config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for S3Key to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a S3Key to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User S3Key to be deleted")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a User S3Key to be deleted [seconds]")
 
 	return s3keyCmd
 }
