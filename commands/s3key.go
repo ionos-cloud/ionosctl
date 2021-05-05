@@ -60,7 +60,7 @@ func userS3key() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, s3keyCmd, PreRunUserKeyIds, RunUserS3KeyCreate, "create", "Create a S3Key for a User",
+	create := builder.NewCommand(ctx, s3keyCmd, PreRunUserId, RunUserS3KeyCreate, "create", "Create a S3Key for a User",
 		`Use this command to create a S3Key for a particular User. 
 Note: A maximum of five S3 keys may be created for any given user.
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.

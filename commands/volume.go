@@ -282,7 +282,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-* Volume Id`, "", true)
+* Volume Id`, attachVolumeServerExample, true)
 	attachVolume.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -301,7 +301,7 @@ Required values to run command:
 	/*
 		List Volumes Command
 	*/
-	listVolumes := builder.NewCommand(ctx, serverVolumeCmd, noPreRun, RunServerVolumesList, "list", "List attached Volumes from a Server",
+	listVolumes := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerIds, RunServerVolumesList, "list", "List attached Volumes from a Server",
 		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		listVolumesServerExample, true)
 	listVolumes.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
@@ -316,7 +316,7 @@ Required values to run command:
 	/*
 		Get Volume Command
 	*/
-	getVolumeCmd := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerVolumeIds, RunServerVolumeGet, "get", "Get an attached Volume from a Server",
+	getVolumeCmd := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerIds, RunServerVolumeGet, "get", "Get an attached Volume from a Server",
 		"Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
 		getVolumeServerExample, true)
 	getVolumeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
@@ -341,7 +341,7 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. Yo
 Required values to run command:
 * Data Center Id
 * Server Id
-* Volume Id`, "", true)
+* Volume Id`, detachVolumeServerExample, true)
 	detachVolume.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -548,8 +548,8 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 		if backUpUnitId, ok := properties.GetBackupunitIdOk(); ok && backUpUnitId != nil {
 			volumePrint.BackUpUnitId = *backUpUnitId
 		}
-		if image, ok := properties.GetImageOk(); ok && image != nil {
-			volumePrint.Image = *image
+		if img, ok := properties.GetImageOk(); ok && img != nil {
+			volumePrint.Image = *img
 		}
 		if sshKeys, ok := properties.GetSshKeysOk(); ok && sshKeys != nil {
 			volumePrint.SshKeys = *sshKeys

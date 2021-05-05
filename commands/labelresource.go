@@ -26,6 +26,9 @@ func datacenterLabel() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
+	globalFlags := datacenterLabelCmd.GlobalFlags()
+	globalFlags.StringSlice(config.ArgCols, defaultLabelResourceCols, "Columns to be printed in the standard output")
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(datacenterLabelCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Labels Command
@@ -174,7 +177,7 @@ func serverLabel() *builder.Command {
 		},
 	}
 	globalFlags := serverLabelCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultLabelCols, "Columns to be printed in the standard output")
+	globalFlags.StringSlice(config.ArgCols, defaultLabelResourceCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(serverLabelCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*

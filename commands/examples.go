@@ -109,22 +109,22 @@ Status: Command server stop has been successfully executed`
 Warning: Are you sure you want to reboot server (y/N) ? y
 RequestId: e6720605-2fa4-46d9-be74-42b733eb1128
 Status: Command server reset has been successfully executed`
-	attachVolumeServerExample = `ionosctl server attach-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
+	attachVolumeServerExample = `ionosctl server volume attach --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa --volume-id 101291d1-2227-432a-9773-97b5ace7b8d3 
 VolumeId                               Name   Size   Type   LicenceType   State   Image
-1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         BUSY    
-RequestId: b1d06478-b3d5-4069-bb75-86b56422698d
-Status: Command server attach-volume has been successfully executed`
-	listVolumesServerExample = `ionosctl server list-volumes --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 
+101291d1-2227-432a-9773-97b5ace7b8d3   test   10GB   HDD    LINUX         BUSY    
+RequestId: e8ad392c-006a-487a-8852-c38b6e7f7ad7
+Status: Command volume attach has been successfully executed`
+	listVolumesServerExample = `ionosctl server volume list --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa 
+VolumeId                               Name   Size   Type   LicenceType   State       Image
+101291d1-2227-432a-9773-97b5ace7b8d3   test   10GB   HDD    LINUX         AVAILABLE`
+	getVolumeServerExample = `ionosctl server volume get --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
 VolumeId                               Name   Size   Type   LicenceType   State       Image
 1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         AVAILABLE`
-	getVolumeServerExample = `ionosctl server get-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
-VolumeId                               Name   Size   Type   LicenceType   State       Image
-1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         AVAILABLE`
-	detachVolumeServerExample = `ionosctl server detach-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
+	detachVolumeServerExample = `ionosctl server volume detach --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
 Warning: Are you sure you want to detach volume from server (y/N) ? 
 y
 RequestId: 0fd9d6eb-25a1-496c-b0c9-bbe18a989f18
-Status: Command server detach-volume has been successfully executed`
+Status: Command volume detach has been successfully executed`
 
 	/*
 		Volume Examples
@@ -175,22 +175,22 @@ LoadbalancerId                         Name               Dhcp
 Waiting for request: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
 RequestId: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
 Status: Command loadbalancer delete and request have been successfully executed`
-	attachNicLoadbalancerExample = `ionosctl loadbalancer attach-nic --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
+	attachNicLoadbalancerExample = `ionosctl loadbalancer nic attach --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
 NicId                                  Name   Dhcp   LanId   Ips
 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   1       []
 RequestId: 01b8468f-b489-40af-a4fd-3606d06da8d7
-Status: Command loadbalancer attach-nic has been successfully executed`
-	listNicsLoadbalancerExample = `ionosctl loadbalancer list-nics --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
+Status: Command nic attach has been successfully executed`
+	listNicsLoadbalancerExample = `ionosctl loadbalancer nic list --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
 NicId                                  Name   Dhcp   LanId   Ips
 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   2       []`
-	getNicLoadbalancerExample = `ionosctl loadbalancer get-nic --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
+	getNicLoadbalancerExample = `ionosctl loadbalancer nic get --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
 NicId                                  Name   Dhcp   LanId   Ips
 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   2       []`
-	detachNicLoadbalancerExample = `ionosctl loadbalancer detach-nic --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
+	detachNicLoadbalancerExample = `ionosctl loadbalancer nic detach --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --loadbalancer-id de044efe-cfe1-41b8-9a21-966a9c03d240 --nic-id ba36c888-e966-480d-800c-77c93ec31083 
 Warning: Are you sure you want to detach nic from loadbalancer (y/N) ? 
 y
-RequestId: a2a136cd-7bce-40fe-ae53-ad0d7b322387
-Status: Command loadbalancer detach-nic has been successfully executed`
+RequestId: 91065943-d4af-4427-aff6-ddf6a0f4ec80
+Status: Command nic detach has been successfully executed`
 
 	/*
 		NIC Examples
@@ -488,25 +488,26 @@ Status: Command group delete has been successfully executed`
 	/*
 		Group Users Examples
 	*/
-	listGroupUsersExample = `ionosctl group list-users --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 
-UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
-53d68de9-931a-4b61-b532-82f7b27afef3   test1       test1      testrandom13@ionos.com   false           false          false           8b9dd6f39e613adb7a837127edb67d38   true
-e3b5fefb-27b0-4eea-a7c4-c57934ad23cb   test1       test1      testrandom14@ionos.com   false           false          false           25e754c1f9f0169213ec4ad5e5e02dcd   true`
-	removeGroupUserExample = `ionosctl group remove-user --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --user-id e3b5fefb-27b0-4eea-a7c4-c57934ad23cb --wait 
+	listGroupUsersExample = `ionosctl group user list --group-id 45ba215b-6897-40b6-879c-cbadb527cefd 
+UserId                                 Firstname   Lastname   Email                    S3CanonicalUserId                  Administrator   ForceSecAuth   SecAuthActive   Active
+62599641-aa2d-4ecc-bdc4-118f5f39f23d   test        test       testrandom53@gmail.com   f670112b3e74038b51db78d5836d7854   false           false          false           true`
+	removeGroupUserExample = `ionosctl group user remove --group-id 45ba215b-6897-40b6-879c-cbadb527cefd --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d 
 Warning: Are you sure you want to remove user from group (y/N) ? 
 y
-Waiting for request: 353eff98-120f-4d91-82f5-a8aff1ddb277
-RequestId: 353eff98-120f-4d91-82f5-a8aff1ddb277
-Status: Command group remove-user and request have been successfully executed`
-	addGroupUserExample = `ionosctl group add-user --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --user-id 53d68de9-931a-4b61-b532-82f7b27afef3
-UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
-53d68de9-931a-4b61-b532-82f7b27afef3   test1       test1      testrandom13@ionos.com   false           false          false           8b9dd6f39e613adb7a837127edb67d38   true`
+RequestId: 07e1eb6a-2618-42dd-b614-6b34359a79b3
+Status: Command user remove has been successfully executed`
+	addGroupUserExample = ` ionosctl group user add --group-id 45ba215b-6897-40b6-879c-cbadb527cefd --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d 
+UserId                                 Firstname   Lastname   Email                    S3CanonicalUserId                  Administrator   ForceSecAuth   SecAuthActive   Active
+62599641-aa2d-4ecc-bdc4-118f5f39f23d   test        test       testrandom53@gmail.com   f670112b3e74038b51db78d5836d7854   false           false          false           true
+RequestId: 296f4d86-629c-44f4-bacc-0fefb2356029
+Status: Command user add has been successfully executed`
+
 	/*
 		Group Resources Example
 	*/
-	listGroupResourcesExample = `ionosctl group list-resources --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f 
+	listGroupResourcesExample = `ionosctl group resource list --group-id 45ba215b-6897-40b6-879c-cbadb527cefd 
 ResourceId                             Name   SecAuthProtection   Type
-cefc2175-001f-4b94-8693-6263d731fe8e          false               datacenter`
+aa8e07a2-287a-4b45-b5e9-94761750a53c   test   false               datacenter`
 	/*
 		Resources Example
 	*/
@@ -547,27 +548,25 @@ Status: Command group remove-share and request have been successfully executed`
 	/*
 		S3Keys Example
 	*/
-	listS3KeysExample = `ionosctl s3key list --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
+	listS3KeysExample = `ionosctl user s3key list --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
 S3KeyId                Active
 00a29d110b48daa3a18b   false`
-	getS3KeyExample = `ionosctl s3key get --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 00a29d110b48daa3a18b 
+	getS3KeyExample = `ionosctl user s3key get --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 00a29d110b48daa3a18b 
 S3KeyId                Active
 00a29d110b48daa3a18b   false`
-	createS3KeyExample = `ionosctl s3key create --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
+	createS3KeyExample = `ionosctl user s3key create --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
 S3KeyId                Active
 75f4319cbf3f6d538da7   true
 RequestId: 869fc059-165d-480b-a913-a410d38d20e0
 Status: Command s3key create has been successfully executed`
-	updateS3KeyExample = `ionosctl s3key update --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 75f4319cbf3f6d538da7 --s3key-active=false
+	updateS3KeyExample = `ionosctl user s3key update --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 75f4319cbf3f6d538da7 --s3key-active=false
 S3KeyId                Active
 75f4319cbf3f6d538da7   false
 RequestId: 4cda4b65-f58b-492a-bf45-6f1d8fb42928
 Status: Command s3key update has been successfully executed`
-	deleteS3KeyExample = `ionosctl s3key delete --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 75f4319cbf3f6d538da7 --wait 
-Warning: Are you sure you want to delete S3Key (y/N) ? 
-y
-RequestId: 1529f8b7-08bb-4321-a996-08865660dee8
-Status: Command s3key delete and request have been successfully executed`
+	deleteS3KeyExample = `ionosctl user s3key delete --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d --s3key-id 00a577ce65c708e87368 --force 
+RequestId: d41a6973-e9b1-4b6f-a153-9b30718eafe2
+Status: Command s3key delete has been successfully executed`
 
 	/*
 		BackupUnit Example

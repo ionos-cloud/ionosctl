@@ -22,6 +22,9 @@ func label() *builder.Command {
 			TraverseChildren: true,
 		},
 	}
+	globalFlags := labelCmd.GlobalFlags()
+	globalFlags.StringSlice(config.ArgCols, defaultLabelCols, "Columns to be printed in the standard output")
+	_ = viper.BindPFlag(builder.GetGlobalFlagName(labelCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
