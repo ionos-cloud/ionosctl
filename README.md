@@ -218,7 +218,7 @@ make test
 
 ### Examples
 
-For more information about each available command, including examples, use `ionosctl [command] --help` or `ionosctl help [command]` or see the [full reference documentation](./docs/commands/commands.md). 
+For more information about each available command, including examples, use `ionosctl [command] --help` or `ionosctl help [command]` or see the [full reference documentation](./docs/subcommands). 
 
 ### Uninstalling `ionosctl` 
 
