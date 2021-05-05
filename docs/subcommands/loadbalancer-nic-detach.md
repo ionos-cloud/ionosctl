@@ -12,7 +12,7 @@ ionosctl loadbalancer nic detach [flags]
 
 ## Description
 
-Use this command to detach a NIC from a Load Balancer.
+Use this command to remove the association of a NIC with a Load Balancer.
 
 You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
 
@@ -28,15 +28,15 @@ Required values to run command:
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings             Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string     The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion
+      --datacenter-id string     The unique Data Center Id (required)
       --force                    Force command to execute without user input
   -h, --help                     help for detach
       --loadbalancer-id string   The unique Load Balancer Id (required)
       --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --timeout int              Timeout option for NIC to be removed from a Load Balancer [seconds] (default 60)
-      --wait                     Wait for NIC to be removed from a Load Balancer
+      --timeout int              Timeout option for NIC to be detached from a Load Balancer [seconds] (default 60)
+      --wait                     Wait for NIC to be detached from a Load Balancer
 ```
 
 ## Examples

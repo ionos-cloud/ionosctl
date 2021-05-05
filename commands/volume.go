@@ -272,7 +272,7 @@ func serverVolume() *builder.Command {
 		Attach Volume Command
 	*/
 	attachVolume := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerVolumeIds, RunServerVolumeAttach, "attach", "Attach a Volume to a Server",
-		`Use this command to attach a Volume to a Server from a Data Center.
+		`Use this command to attach a pre-existing Volume to a Server.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -300,7 +300,7 @@ Required values to run command:
 		List Volumes Command
 	*/
 	listVolumes := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerIds, RunServerVolumesList, "list", "List attached Volumes from a Server",
-		"Use this command to get a list of attached Volumes to a Server from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		"Use this command to retrieve a list of Volumes attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		listVolumesServerExample, true)
 	listVolumes.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = listVolumes.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -334,7 +334,7 @@ Required values to run command:
 		Detach Volume Command
 	*/
 	detachVolume := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerVolumeIds, RunServerVolumeDetach, "detach", "Detach a Volume from a Server",
-		`Use this command to detach a Volume from a Server.
+		`This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 

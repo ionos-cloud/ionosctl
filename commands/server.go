@@ -49,13 +49,13 @@ func server() *builder.Command {
 	get := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerGet, "get", "Get a Server",
 		"Use this command to get information about a specified Server from a Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
-	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
 	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), get.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -105,7 +105,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), create.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), update.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
 	update.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")

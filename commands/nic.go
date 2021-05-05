@@ -290,7 +290,7 @@ func loadBalancerNic() *builder.Command {
 		Attach Nic Command
 	*/
 	attachNic := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcNicLoadBalancerIds, RunLoadBalancerNicAttach, "attach", "Attach a NIC to a Load Balancer",
-		`Use this command to add/attach a specified NIC to a Load Balancer on your account.
+		`Use this command to associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 
@@ -299,7 +299,7 @@ Required values to run command:
 * Data Center Id
 * Load Balancer Id
 * NIC Id`, attachNicLoadbalancerExample, true)
-	attachNic.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion")
+	attachNic.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -317,8 +317,8 @@ Required values to run command:
 			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), attachNic.Name(), config.ArgDataCenterId)),
 			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), attachNic.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be added to a Load Balancer")
-	attachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be added to a Load Balancer [seconds]")
+	attachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be attached to a Load Balancer")
+	attachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be attached to a Load Balancer [seconds]")
 
 	/*
 		List Nics Command
@@ -326,7 +326,7 @@ Required values to run command:
 	listNics := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcLoadBalancerIds, RunLoadBalancerNicList, "list", "List attached NICs from a Load Balancer",
 		"Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		listNicsLoadbalancerExample, true)
-	listNics.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion")
+	listNics.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = listNics.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -339,9 +339,9 @@ Required values to run command:
 		Describe Nic Command
 	*/
 	describeNicCmd := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcNicLoadBalancerIds, RunLoadBalancerNicDescribe, "describe", "Describe an attached NIC to a Load Balancer",
-		"Use this command to retrieve information about an attached NIC to a Load Balancer.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
+		"Use this command to retrieve the attributes of a given load balanced NIC.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
 		describeNicLoadbalancerExample, true)
-	describeNicCmd.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion")
+	describeNicCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = describeNicCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -361,7 +361,7 @@ Required values to run command:
 		Detach Nic Command
 	*/
 	detachNic := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcNicLoadBalancerIds, RunLoadBalancerNicDetach, "detach", "Detach a NIC from a Load Balancer",
-		`Use this command to detach a NIC from a Load Balancer.
+		`Use this command to remove the association of a NIC with a Load Balancer.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
@@ -370,7 +370,7 @@ Required values to run command:
 * Data Center Id
 * Load Balancer Id
 * NIC Id`, detachNicLoadbalancerExample, true)
-	detachNic.AddStringFlag(config.ArgDataCenterId, "", "", "The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion")
+	detachNic.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -382,8 +382,8 @@ Required values to run command:
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), detachNic.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be removed from a Load Balancer")
-	detachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be removed from a Load Balancer [seconds]")
+	detachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be detached from a Load Balancer")
+	detachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be detached from a Load Balancer [seconds]")
 
 	return loadbalancerNicCmd
 }

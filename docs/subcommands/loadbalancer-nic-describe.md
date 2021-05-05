@@ -12,7 +12,7 @@ ionosctl loadbalancer nic describe [flags]
 
 ## Description
 
-Use this command to retrieve information about an attached NIC to a Load Balancer.
+Use this command to retrieve the attributes of a given load balanced NIC.
 
 Required values to run the command:
 
@@ -26,7 +26,7 @@ Required values to run the command:
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings             Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string     The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion
+      --datacenter-id string     The unique Data Center Id (required)
       --force                    Force command to execute without user input
   -h, --help                     help for describe
       --loadbalancer-id string   The unique Load Balancer Id (required)

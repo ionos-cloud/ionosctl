@@ -58,6 +58,10 @@ func (c *Command) SubCommands() []*Command {
 	return c.subCommands
 }
 
+func (c *Command) MarkFlagRequired(flagName string) error {
+	return c.Command.MarkFlagRequired(flagName)
+}
+
 func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
@@ -136,7 +140,7 @@ func NewCommand(ctx context.Context, parent *Command, preCR PreCommandRun, cmdru
 		Example: example,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			p := getPrinter()
-			preCmdConfig := NewPreCommandCfg(p, name, parent.Name(), parent.ParentName())
+			preCmdConfig := NewPreCommandCfg(p, name, parent.Name())
 			err := preCR(preCmdConfig)
 			clierror.CheckError(err, p.GetStderr())
 		},
@@ -146,7 +150,7 @@ func NewCommand(ctx context.Context, parent *Command, preCR PreCommandRun, cmdru
 			cmd.SetIn(os.Stdin)
 			cmd.SetOut(p.GetStdout())
 			cmd.SetErr(p.GetStderr())
-			cmdConfig, err := NewCommandCfg(ctx, os.Stdin, p, name, parent.Name(), parent.ParentName(), init)
+			cmdConfig, err := NewCommandCfg(ctx, os.Stdin, p, name, parent.Name(), init)
 			clierror.CheckError(err, p.GetStderr())
 			err = cmdrunner(cmdConfig)
 			clierror.CheckError(err, p.GetStderr())
@@ -168,18 +172,14 @@ type PreCommandRun func(commandConfig *PreCommandConfig) error
 type PreCommandConfig struct {
 	Name       string
 	ParentName string
-	// GrandParentName is used especially for inherited global flags
-	// E.g. ionosctl volume label add
-	GrandParentName string
-	Printer         printer.PrintService
+	Printer    printer.PrintService
 }
 
-func NewPreCommandCfg(p printer.PrintService, name, parentName, grandParentName string) *PreCommandConfig {
+func NewPreCommandCfg(p printer.PrintService, name, parentName string) *PreCommandConfig {
 	return &PreCommandConfig{
-		Name:            name,
-		ParentName:      parentName,
-		GrandParentName: grandParentName,
-		Printer:         p,
+		Name:       name,
+		ParentName: parentName,
+		Printer:    p,
 	}
 }
 
@@ -187,12 +187,11 @@ type CommandRun func(commandConfig *CommandConfig) error
 
 // CommandConfig Properties and Services
 type CommandConfig struct {
-	Name            string
-	ParentName      string
-	GrandParentName string
-	Stdin           io.Reader
-	Printer         printer.PrintService
-	initCfg         func(commandConfig *CommandConfig) error
+	Name       string
+	ParentName string
+	Stdin      io.Reader
+	Printer    printer.PrintService
+	initCfg    func(commandConfig *CommandConfig) error
 	// Resources Services
 	Locations     func() resources.LocationsService
 	DataCenters   func() resources.DatacentersService
@@ -261,14 +260,13 @@ func (c *CommandConfig) InitServices(client *resources.Client) error {
 	return nil
 }
 
-func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName, grandParentName string, init bool) (*CommandConfig, error) {
+func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, init bool) (*CommandConfig, error) {
 	cmdConfig := &CommandConfig{
-		Name:            name,
-		ParentName:      parentName,
-		GrandParentName: grandParentName,
-		Stdin:           in,
-		Printer:         p,
-		Context:         ctx,
+		Name:       name,
+		ParentName: parentName,
+		Stdin:      in,
+		Printer:    p,
+		Context:    ctx,
 		// Define init Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
 			client, err := c.InitClient()

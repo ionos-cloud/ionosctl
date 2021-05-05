@@ -12,7 +12,7 @@ ionosctl loadbalancer nic attach [flags]
 
 ## Description
 
-Use this command to add/attach a specified NIC to a Load Balancer on your account.
+Use this command to associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.
 
 You can wait for the action to be executed using `--wait` option.
 
@@ -28,7 +28,7 @@ Required values to run command:
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings             Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string     The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion
+      --datacenter-id string     The unique Data Center Id (required)
       --force                    Force command to execute without user input
   -h, --help                     help for attach
       --loadbalancer-id string   The unique Load Balancer Id (required)
@@ -36,8 +36,8 @@ Required values to run command:
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion
-      --timeout int              Timeout option for NIC to be added to a Load Balancer [seconds] (default 60)
-      --wait                     Wait for NIC to be added to a Load Balancer
+      --timeout int              Timeout option for NIC to be attached to a Load Balancer [seconds] (default 60)
+      --wait                     Wait for NIC to be attached to a Load Balancer
 ```
 
 ## Examples
