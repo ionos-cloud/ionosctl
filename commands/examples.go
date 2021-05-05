@@ -109,22 +109,22 @@ Status: Command server stop has been successfully executed`
 Warning: Are you sure you want to reboot server (y/N) ? y
 RequestId: e6720605-2fa4-46d9-be74-42b733eb1128
 Status: Command server reset has been successfully executed`
-	attachVolumeServerExample = `ionosctl server attach-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
+	attachVolumeServerExample = `ionosctl server volume attach --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa --volume-id 101291d1-2227-432a-9773-97b5ace7b8d3 
 VolumeId                               Name   Size   Type   LicenceType   State   Image
-1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         BUSY    
-RequestId: b1d06478-b3d5-4069-bb75-86b56422698d
-Status: Command server attach-volume has been successfully executed`
-	listVolumesServerExample = `ionosctl server list-volumes --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 
+101291d1-2227-432a-9773-97b5ace7b8d3   test   10GB   HDD    LINUX         BUSY    
+RequestId: e8ad392c-006a-487a-8852-c38b6e7f7ad7
+Status: Command volume attach has been successfully executed`
+	listVolumesServerExample = `ionosctl server volume list --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa 
+VolumeId                               Name   Size   Type   LicenceType   State       Image
+101291d1-2227-432a-9773-97b5ace7b8d3   test   10GB   HDD    LINUX         AVAILABLE`
+	describeVolumeServerExample = `ionosctl server volume describe --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
 VolumeId                               Name   Size   Type   LicenceType   State       Image
 1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         AVAILABLE`
-	getVolumeServerExample = `ionosctl server get-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
-VolumeId                               Name   Size   Type   LicenceType   State       Image
-1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         AVAILABLE`
-	detachVolumeServerExample = `ionosctl server detach-volume --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
+	detachVolumeServerExample = `ionosctl server volume detach --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
 Warning: Are you sure you want to detach volume from server (y/N) ? 
 y
 RequestId: 0fd9d6eb-25a1-496c-b0c9-bbe18a989f18
-Status: Command server detach-volume has been successfully executed`
+Status: Command volume detach has been successfully executed`
 
 	/*
 		Volume Examples
@@ -175,22 +175,22 @@ LoadbalancerId                         Name               Dhcp
 Waiting for request: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
 RequestId: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
 Status: Command loadbalancer delete and request have been successfully executed`
-	attachNicLoadbalancerExample = `ionosctl loadbalancer attach-nic --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
+	attachNicLoadbalancerExample = `ionosctl loadbalancer nic attach --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
 NicId                                  Name   Dhcp   LanId   Ips
 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   1       []
 RequestId: 01b8468f-b489-40af-a4fd-3606d06da8d7
-Status: Command loadbalancer attach-nic has been successfully executed`
-	listNicsLoadbalancerExample = `ionosctl loadbalancer list-nics --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
+Status: Command nic attach has been successfully executed`
+	listNicsLoadbalancerExample = `ionosctl loadbalancer nic list --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
 NicId                                  Name   Dhcp   LanId   Ips
 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   2       []`
-	getNicLoadbalancerExample = `ionosctl loadbalancer get-nic --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
+	describeNicLoadbalancerExample = `ionosctl loadbalancer nic describe --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
 NicId                                  Name   Dhcp   LanId   Ips
 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   2       []`
-	detachNicLoadbalancerExample = `ionosctl loadbalancer detach-nic --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
+	detachNicLoadbalancerExample = `ionosctl loadbalancer nic detach --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --loadbalancer-id de044efe-cfe1-41b8-9a21-966a9c03d240 --nic-id ba36c888-e966-480d-800c-77c93ec31083 
 Warning: Are you sure you want to detach nic from loadbalancer (y/N) ? 
 y
-RequestId: a2a136cd-7bce-40fe-ae53-ad0d7b322387
-Status: Command loadbalancer detach-nic has been successfully executed`
+RequestId: 91065943-d4af-4427-aff6-ddf6a0f4ec80
+Status: Command nic detach has been successfully executed`
 
 	/*
 		NIC Examples
@@ -371,67 +371,26 @@ Status: Command firewallrule delete has been successfully executed`
 		Label Examples
 	*/
 	listLabelsExample = `ionosctl label list 
-Key       Value            ResourceType   ResourceId
-test      testserver       server         27dde318-f0d4-4f97-a04d-9dafe4a89637
-test      testdatacenter   datacenter     ed612a0a-9506-4b56-8d1b-ce2b04090f19
-test      testsnapshot     snapshot       df7f4ad9-b942-4e79-939d-d1c10fb6fbff`
-	getLabelExample = `ionosctl label get --label-urn "urn:label:server:27dde318-f0d4-4f97-a04d-9dafe4a89637:test"
+Key    Value     ResourceType   ResourceId
+test   testing   datacenter     aa8e07a2-287a-4b45-b5e9-94761750a53c
+
+ionosctl label list --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c 
+Key    Value
+test   testing`
+	getLabelByUrnExample = `ionosctl label get-by-urn --label-urn "urn:label:server:27dde318-f0d4-4f97-a04d-9dafe4a89637:test"
 Key    Value        ResourceType   ResourceId
 test   testserver   server         27dde318-f0d4-4f97-a04d-9dafe4a89637`
+	getLabelExample = `ionosctl label get --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --label-key secondtest
+Key          Value
+secondtest   testdatacenter`
+	addLabelExample = `ionosctl label add --resource-type server --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa  --label-key test --label-value testserver
+Key    Value
+test   testserver
 
-	/*
-		Label Resources Examples
-	*/
-	listDataCenterLabelsExample = `ionosctl datacenter list-labels --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 
-Key    Value
-test   testdatacenter`
-	getDataCenterLabelExample = `ionosctl datacenter get-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --label-key test
-Key    Value
-test   testdatacenter`
-	addDataCenterLabelExample = `ionosctl datacenter add-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --label-key test --label-value testdatacenter
-Key    Value
-test   testdatacenter`
-	removeDataCenterLabelExample = `ionosctl datacenter remove-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --label-key test`
-	listServerLabelsExample      = `ionosctl server list-labels --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 
-Key    Value
-test   test`
-	getServerLabelExample = `ionosctl server get-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 --label-key test
-Key    Value
-test   test`
-	addServerLabelExample = `ionosctl server add-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 --label-key test --label-value test
-Key    Value
-test   test`
-	removeServerLabelExample = `ionosctl server remove-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --server-id 27dde318-f0d4-4f97-a04d-9dafe4a89637 --label-key test`
-	listVolumeLabelsExample  = `ionosctl volume list-labels --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 
-Key    Value
-test   testvolume`
-	getVolumeLabelExample = `ionosctl volume get-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 --label-key test
-Key    Value
-test   testvolume`
-	addVolumeLabelExample = `ionosctl volume add-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 --label-key test --label-value testvolume
-Key    Value
-test   testvolume`
-	removeVolumeLabelExample = `ionosctl volume remove-label --datacenter-id ed612a0a-9506-4b56-8d1b-ce2b04090f19 --volume-id 5d23eee2-45e5-44fe-96fe-e15aba2c48f5 --label-key test`
-	listIpBlockLabelsExample = `ionosctl ipblock list-labels --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 
-Key    Value
-test   testipblock`
-	getIpBlockLabelExample = `ionosctl ipblock get-label --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 --label-key test
-Key    Value
-test   testipblock`
-	addIpBlockLabelExample = `ionosctl ipblock add-label --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 --label-key test --label-value testipblock
-Key    Value
-test   testipblock`
-	removeIpBlockLabelExample = `ionosctl ipblock remove-label --ipblock-id 379a995b-f285-493e-a56a-f32e1cb6dd06 --label-key test`
-	listSnapshotLabelsExample = `ionosctl snapshot list-labels --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff
-Key    Value
-test   testsnapshot`
-	getSnapshotLabelExample = ` ionosctl snapshot get-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test
-Key    Value
-test   testsnapshot`
-	addSnapshotLabelExample = `ionosctl snapshot add-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test --label-value testsnapshot
-Key    Value
-test   testsnapshot`
-	removeSnapshotLabelExample = `ionosctl snapshot remove-label --snapshot-id df7f4ad9-b942-4e79-939d-d1c10fb6fbff --label-key test`
+ionosctl label add --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --label-key secondtest --label-value testdatacenter
+Key          Value
+secondtest   testdatacenter`
+	removeLabelExample = `ionosctl label remove --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --label-key secondtest`
 
 	/*
 		Contract Resources Examples
@@ -488,25 +447,26 @@ Status: Command group delete has been successfully executed`
 	/*
 		Group Users Examples
 	*/
-	listGroupUsersExample = `ionosctl group list-users --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 
-UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
-53d68de9-931a-4b61-b532-82f7b27afef3   test1       test1      testrandom13@ionos.com   false           false          false           8b9dd6f39e613adb7a837127edb67d38   true
-e3b5fefb-27b0-4eea-a7c4-c57934ad23cb   test1       test1      testrandom14@ionos.com   false           false          false           25e754c1f9f0169213ec4ad5e5e02dcd   true`
-	removeGroupUserExample = `ionosctl group remove-user --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --user-id e3b5fefb-27b0-4eea-a7c4-c57934ad23cb --wait 
+	listGroupUsersExample = `ionosctl group user list --group-id 45ba215b-6897-40b6-879c-cbadb527cefd 
+UserId                                 Firstname   Lastname   Email                    S3CanonicalUserId                  Administrator   ForceSecAuth   SecAuthActive   Active
+62599641-aa2d-4ecc-bdc4-118f5f39f23d   test        test       testrandom53@gmail.com   f670112b3e74038b51db78d5836d7854   false           false          false           true`
+	removeGroupUserExample = `ionosctl group user remove --group-id 45ba215b-6897-40b6-879c-cbadb527cefd --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d 
 Warning: Are you sure you want to remove user from group (y/N) ? 
 y
-Waiting for request: 353eff98-120f-4d91-82f5-a8aff1ddb277
-RequestId: 353eff98-120f-4d91-82f5-a8aff1ddb277
-Status: Command group remove-user and request have been successfully executed`
-	addGroupUserExample = `ionosctl group add-user --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --user-id 53d68de9-931a-4b61-b532-82f7b27afef3
-UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
-53d68de9-931a-4b61-b532-82f7b27afef3   test1       test1      testrandom13@ionos.com   false           false          false           8b9dd6f39e613adb7a837127edb67d38   true`
+RequestId: 07e1eb6a-2618-42dd-b614-6b34359a79b3
+Status: Command user remove has been successfully executed`
+	addGroupUserExample = ` ionosctl group user add --group-id 45ba215b-6897-40b6-879c-cbadb527cefd --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d 
+UserId                                 Firstname   Lastname   Email                    S3CanonicalUserId                  Administrator   ForceSecAuth   SecAuthActive   Active
+62599641-aa2d-4ecc-bdc4-118f5f39f23d   test        test       testrandom53@gmail.com   f670112b3e74038b51db78d5836d7854   false           false          false           true
+RequestId: 296f4d86-629c-44f4-bacc-0fefb2356029
+Status: Command user add has been successfully executed`
+
 	/*
 		Group Resources Example
 	*/
-	listGroupResourcesExample = `ionosctl group list-resources --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f 
+	listGroupResourcesExample = `ionosctl group resource list --group-id 45ba215b-6897-40b6-879c-cbadb527cefd 
 ResourceId                             Name   SecAuthProtection   Type
-cefc2175-001f-4b94-8693-6263d731fe8e          false               datacenter`
+aa8e07a2-287a-4b45-b5e9-94761750a53c   test   false               datacenter`
 	/*
 		Resources Example
 	*/
@@ -547,27 +507,25 @@ Status: Command group remove-share and request have been successfully executed`
 	/*
 		S3Keys Example
 	*/
-	listS3KeysExample = `ionosctl s3key list --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
+	listS3KeysExample = `ionosctl user s3key list --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
 S3KeyId                Active
 00a29d110b48daa3a18b   false`
-	getS3KeyExample = `ionosctl s3key get --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 00a29d110b48daa3a18b 
+	getS3KeyExample = `ionosctl user s3key get --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 00a29d110b48daa3a18b 
 S3KeyId                Active
 00a29d110b48daa3a18b   false`
-	createS3KeyExample = `ionosctl s3key create --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
+	createS3KeyExample = `ionosctl user s3key create --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
 S3KeyId                Active
 75f4319cbf3f6d538da7   true
 RequestId: 869fc059-165d-480b-a913-a410d38d20e0
 Status: Command s3key create has been successfully executed`
-	updateS3KeyExample = `ionosctl s3key update --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 75f4319cbf3f6d538da7 --s3key-active=false
+	updateS3KeyExample = `ionosctl user s3key update --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 75f4319cbf3f6d538da7 --s3key-active=false
 S3KeyId                Active
 75f4319cbf3f6d538da7   false
 RequestId: 4cda4b65-f58b-492a-bf45-6f1d8fb42928
 Status: Command s3key update has been successfully executed`
-	deleteS3KeyExample = `ionosctl s3key delete --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 75f4319cbf3f6d538da7 --wait 
-Warning: Are you sure you want to delete S3Key (y/N) ? 
-y
-RequestId: 1529f8b7-08bb-4321-a996-08865660dee8
-Status: Command s3key delete and request have been successfully executed`
+	deleteS3KeyExample = `ionosctl user s3key delete --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d --s3key-id 00a577ce65c708e87368 --force 
+RequestId: d41a6973-e9b1-4b6f-a153-9b30718eafe2
+Status: Command s3key delete has been successfully executed`
 
 	/*
 		BackupUnit Example
@@ -631,63 +589,63 @@ Status: Command pcc delete and request have been successfully executed`
 	/*
 		K8s Example
 	*/
-	listK8sClustersExample = `ionosctl k8s-cluster list 
+	listK8sClustersExample = `ionosctl k8s cluster list 
 ClusterId                              Name    K8sVersion   State
 01d870e6-4118-4396-90bd-917fda3e948d   test    1.19.8       ACTIVE
 cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       ACTIVE`
-	getK8sClusterExample = `ionosctl k8s-cluster get --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d 
+	getK8sClusterExample = `ionosctl k8s cluster get --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d 
 ClusterId                              Name    K8sVersion   State
 cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       ACTIVE`
-	createK8sClusterExample = `ionosctl k8s-cluster create --cluster-name demoTest
+	createK8sClusterExample = `ionosctl k8s cluster create --cluster-name demoTest
 ClusterId                              Name       K8sVersion  State
 29d9b0c4-351d-4c9e-87e1-201cc0d49afb   demoTest   1.19.8      DEPLOYING
 RequestId: 583ba6ae-dd0b-4c68-8fb2-41b3d7bc471b
-Status: Command k8s-cluster create has been successfully executed`
-	updateK8sClusterExample = `ionosctl k8s-cluster update --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d --cluster-name testCluster
+Status: Command k8s cluster create has been successfully executed`
+	updateK8sClusterExample = `ionosctl k8s cluster update --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d --cluster-name testCluster
 ClusterId                              Name          K8sVersion   State
 cb47b98f-b8dd-4108-8ac0-b636e36a161d   testCluster   1.19.8       UPDATING`
-	deleteK8sClusterExample = `ionosctl k8s-cluster delete --cluster-id 01d870e6-4118-4396-90bd-917fda3e948d 
+	deleteK8sClusterExample = `ionosctl k8s cluster delete --cluster-id 01d870e6-4118-4396-90bd-917fda3e948d 
 Warning: Are you sure you want to delete K8s cluster (y/N) ? 
 y
 RequestId: ea736d72-9c49-4c1e-88a5-a15c05329f40
-Status: Command k8s-cluster delete has been successfully executed`
+Status: Command k8s cluster delete has been successfully executed`
 
-	listK8sNodePoolsExample = `ionosctl k8s-nodepool list --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 
+	listK8sNodePoolsExample = `ionosctl k8s nodepool list --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 
 NodePoolId                             Name        K8sVersion  NodeCount   DatacenterId                           State
 939811fe-cc13-41e2-8a49-87db58c7a812   test12345   1.19.8      2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   UPDATING`
-	getK8sNodePoolExample = `ionosctl k8s-nodepool get --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
+	getK8sNodePoolExample = `ionosctl k8s nodepool get --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
 NodePoolId                             Name        K8sVersion  NodeCount   DatacenterId                           State
 939811fe-cc13-41e2-8a49-87db58c7a812   test12345   1.19.8      2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   UPDATING`
-	createK8sNodePoolExample = `ionosctl k8s-nodepool create --datacenter-id 3af92af6-c2eb-41e0-b946-6e7ba321abf2 --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-name test1234
+	createK8sNodePoolExample = `ionosctl k8s nodepool create --datacenter-id 3af92af6-c2eb-41e0-b946-6e7ba321abf2 --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-name test1234
 NodePoolId                             Name       K8sVersion   NodeCount   DatacenterId                           State
 a274bc0e-efa5-41c0-828d-39e38f4ad361   test1234   1.19.8       2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   DEPLOYING`
-	updateK8sNodePoolExample = `ionosctl k8s-nodepool update --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id f01f4d6c-41a9-47c3-a5a5-f3667cc25265 --node-count=1
-Status: Command k8s-nodepool update has been successfully executed`
-	deleteK8sNodePoolExample = `ionosctl k8s-nodepool delete --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
+	updateK8sNodePoolExample = `ionosctl k8s nodepool update --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id f01f4d6c-41a9-47c3-a5a5-f3667cc25265 --node-count=1
+Status: Command k8s nodepool update has been successfully executed`
+	deleteK8sNodePoolExample = `ionosctl k8s nodepool delete --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
 Warning: Are you sure you want to delete k8s node pool (y/N) ? 
 y
 Status: Command node pool delete has been successfully executed`
 
-	deleteK8sNodeExample = `ionosctl k8s-node delete --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id a274bc0e-efa5-41c0-828d-39e38f4ad361 --node-id dd520e26-e347-492f-8121-c9dae0495897 
+	deleteK8sNodeExample = `ionosctl k8s node delete --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id a274bc0e-efa5-41c0-828d-39e38f4ad361 --node-id dd520e26-e347-492f-8121-c9dae0495897 
 Warning: Are you sure you want to delete k8s node (y/N) ? 
 y
 Status: Command node delete has been successfully executed`
-	recreateK8sNodeExample = `ionosctl k8s-node recreate --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id a274bc0e-efa5-41c0-828d-39e38f4ad361 --node-id 60ef2bd6-0f63-4006-b448-e8e060edba7d 
+	recreateK8sNodeExample = `ionosctl k8s node recreate --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id a274bc0e-efa5-41c0-828d-39e38f4ad361 --node-id 60ef2bd6-0f63-4006-b448-e8e060edba7d 
 Warning: Are you sure you want to recreate k8s node (y/N) ? 
 y
 Status: Command node recreate has been successfully executed`
-	getK8sNodeExample = `ionosctl k8s-node get --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 --node-id a0e5d4c4-6b09-4965-8e98-59a749301d20 
+	getK8sNodeExample = `ionosctl k8s node get --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 --node-id a0e5d4c4-6b09-4965-8e98-59a749301d20 
 NodeId                                 Name                   K8sVersion   PublicIP        State
 a0e5d4c4-6b09-4965-8e98-59a749301d20   test12345-n3q55ggmap   1.19.8       x.x.x.x         UNKNOWN`
-	listK8sNodesExample = `ionosctl k8s-node list --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
+	listK8sNodesExample = `ionosctl k8s node list --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
 NodeId                                 Name                   K8sVersion   PublicIP         State
 a0e5d4c4-6b09-4965-8e98-59a749301d20   test12345-n3q55ggmap   1.19.8       x.x.x.x          REBUILDING
 41955320-014f-432b-8546-e724a1e3f8b6   test12345-da7swdibki   1.19.8       x.x.x.x          PROVISIONED`
 
-	getK8sKubeconfigExample = `ionosctl k8s-kubeconfig get --cluster-id CLUSTER_ID`
+	getK8sKubeconfigExample = `ionosctl k8s kubeconfig get --cluster-id CLUSTER_ID`
 
-	listK8sVersionsExample = `ionosctl k8s-version list 
+	listK8sVersionsExample = `ionosctl k8s version list 
 [1.18.16 1.18.15 1.18.12 1.18.5 1.18.9 1.19.8]`
-	getK8sVersionExample = `ionosctl k8s-version get 
+	getK8sVersionExample = `ionosctl k8s version get 
 "1.19.8"`
 )

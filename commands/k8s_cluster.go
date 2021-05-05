@@ -19,13 +19,31 @@ import (
 	"github.com/spf13/viper"
 )
 
+func k8s() *builder.Command {
+	k8sCmd := &builder.Command{
+		Command: &cobra.Command{
+			Use:              "k8s",
+			Short:            "Kubernetes Operations",
+			Long:             `The sub-commands of ` + "`" + `ionosctl k8s` + "`" + ` allow you to list, get, create, update, delete Kubernetes Clusters.`,
+			TraverseChildren: true,
+		},
+	}
+	k8sCmd.AddCommand(k8sVersion())
+	k8sCmd.AddCommand(k8sCluster())
+	k8sCmd.AddCommand(k8sKubeconfig())
+	k8sCmd.AddCommand(k8sNodePool())
+	k8sCmd.AddCommand(k8sNode())
+
+	return k8sCmd
+}
+
 func k8sCluster() *builder.Command {
 	ctx := context.TODO()
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
-			Use:              "k8s-cluster",
+			Use:              "cluster",
 			Short:            "Kubernetes Cluster Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s-cluster` + "`" + ` allow you to list, get, create, update, delete Kubernetes Clusters.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl k8s cluster` + "`" + ` allow you to list, get, create, update, delete Kubernetes Clusters.`,
 			TraverseChildren: true,
 		},
 	}

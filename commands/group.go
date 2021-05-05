@@ -24,7 +24,7 @@ func group() *builder.Command {
 		Command: &cobra.Command{
 			Use:              "group",
 			Short:            "Group Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl group` + "`" + ` allows you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User from the Group.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl group` + "`" + ` allow you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User from the Group.`,
 			TraverseChildren: true,
 		},
 	}
@@ -115,46 +115,8 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Group to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Group to be deleted [seconds]")
 
-	/*
-		List Command
-	*/
-	listUsers := builder.NewCommand(ctx, groupCmd, PreRunGroupId, RunGroupListUsers, "list-users", "List Users from a Group",
-		"Use this command to get a list of Users from a specific Group.\n\nRequired values to run command:\n\n* Group Id", listGroupUsersExample, true)
-	listUsers.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
-	_ = listUsers.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	/*
-		Add Command
-	*/
-	addUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIds, RunGroupAddUser, "add-user", "Add User to a Group",
-		"Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", addGroupUserExample, true)
-	addUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
-	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	addUser.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
-	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	/*
-		Remove Command
-	*/
-	removeUser := builder.NewCommand(ctx, groupCmd, PreRunGroupUserIds, RunGroupRemoveUser, "remove-user", "Remove User from a Group",
-		"Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", removeGroupUserExample, true)
-	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
-	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	removeUser.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
-	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupUsersIds(os.Stderr, viper.GetString(builder.GetFlagName(groupCmd.Name(), removeUser.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	resourceGroup(groupCmd)
-
+	groupCmd.AddCommand(groupResource())
+	groupCmd.AddCommand(groupUser())
 	return groupCmd
 }
 
@@ -233,44 +195,6 @@ func RunGroupDelete(c *builder.CommandConfig) error {
 		return err
 	}
 	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
-	return c.Printer.Print(getGroupPrint(resp, c, nil))
-}
-
-// Group User Commands
-
-func RunGroupListUsers(c *builder.CommandConfig) error {
-	users, _, err := c.Groups().ListUsers(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)))
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(getUserPrint(nil, c, getGroupUsers(users)))
-}
-
-func RunGroupAddUser(c *builder.CommandConfig) error {
-	id := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId))
-	u := resources.User{
-		User: ionoscloud.User{
-			Id: &id,
-		},
-	}
-	userAdded, resp, err := c.Groups().AddUser(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)), u)
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(getUserPrint(resp, c, getUser(userAdded)))
-}
-
-func RunGroupRemoveUser(c *builder.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove user from group"); err != nil {
-		return err
-	}
-	resp, err := c.Groups().RemoveUser(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)),
-	)
-	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupPrint(resp, c, nil))

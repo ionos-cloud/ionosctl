@@ -104,8 +104,6 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be deleted [seconds]")
 
-	labelDatacenter(datacenterCmd)
-
 	return datacenterCmd
 }
 

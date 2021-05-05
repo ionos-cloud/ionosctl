@@ -15,9 +15,9 @@ func k8sKubeconfig() *builder.Command {
 	ctx := context.TODO()
 	k8sCmd := &builder.Command{
 		Command: &cobra.Command{
-			Use:              "k8s-kubeconfig",
+			Use:              "kubeconfig",
 			Short:            "Kubernetes Kubeconfig Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl k8s-kubeconfig` + "`" + ` allows you to get the configuration file of a Kubernetes Cluster.`,
+			Long:             `The sub-command of ` + "`" + `ionosctl k8s kubeconfig` + "`" + ` allows you to get the configuration file of a Kubernetes Cluster.`,
 			TraverseChildren: true,
 		},
 	}

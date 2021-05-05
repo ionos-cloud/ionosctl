@@ -40,7 +40,7 @@ func main() {
 
 // Generate Markdown documentation based on information described in commands.
 // Using WriteDocs function, it will be created one structure in the path specified.
-// For each command, an Markdown file is generated with the following fields:
+// For each runnable command, an Markdown file is generated with the following fields:
 // # Usage
 // # Description
 // # Options
@@ -54,7 +54,7 @@ func WriteDocs(cmd *builder.Command, dir string) error {
 	// Exit if there's an error
 	for _, c := range cmd.SubCommands() {
 		if c.Command.HasParent() {
-			if !c.Command.IsAvailableCommand() || c.Command.Parent().Name() != rootCmdName {
+			if !c.Command.IsAvailableCommand() {
 				continue
 			}
 		}
@@ -69,45 +69,21 @@ func WriteDocs(cmd *builder.Command, dir string) error {
 }
 
 func createStructure(cmd *builder.Command, dir string) error {
-	var file string
-	if cmd.Command.HasAvailableSubCommands() && cmd.Command.Name() != rootCmdName {
-		dirParent := fmt.Sprintf("%s/%s", dir, strings.ReplaceAll(cmd.Command.Name(), "-", ""))
-		err := os.Mkdir(dirParent, os.ModePerm)
-		if err != nil && !os.IsExist(err) {
-			return err
-		}
-		// Add a README.md file about the parent cmd
-		file = filepath.Join(dirParent, "README.md")
-		f, err := os.Create(file)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-
-		err = writeDoc(cmd, f)
-		if err != nil {
-			return err
-		}
-		for _, child := range cmd.SubCommands() {
-			if !child.Command.IsAvailableCommand() || child.Command.IsAdditionalHelpTopicCommand() {
-				continue
-			}
-			if err := createStructure(child, dirParent); err != nil {
-				return err
-			}
-		}
-	} else {
-		if cmd.Command.Name() == rootCmdName {
-			file = filepath.Join(dir, "commands.md")
+	var file, filename string
+	if cmd != nil {
+		if cmd.Command.HasParent() && cmd.Command.Runnable() {
+			name := strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", "")
+			name = strings.ReplaceAll(name, " ", "-")
+			filename = fmt.Sprintf("%s.md", name)
 		} else {
-			file = filepath.Join(dir, fmt.Sprintf("%s.md", cmd.Command.Name()))
+			return nil
 		}
+		file = filepath.Join(dir, filename)
 		f, err := os.Create(file)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
-
 		err = writeDoc(cmd, f)
 		if err != nil {
 			return err
@@ -128,15 +104,9 @@ func writeDoc(cmd *builder.Command, w io.Writer) error {
 	buf.WriteString("---\n\n")
 
 	// Customize title
-	title := strings.Title(cmd.Command.Name())
-	title = customizeTitle(title, "Datacenter", "DataCenter")
-	title = customizeTitle(title, "Loadbalancer", "LoadBalancer")
-	title = customizeTitle(title, "Nic", "NetworkInterface")
-	title = customizeTitle(title, "Ipblock", "IpBlock")
-	title = customizeTitle(title, "Firewallrule", "FirewallRule")
-	title = customizeTitle(title, "Backupunit", "BackupUnit")
-	title = customizeTitle(title, "Pcc", "PrivateCrossConnect")
+	title := strings.Title(strings.ReplaceAll(cmd.Command.CommandPath(), rootCmdName+" ", ""))
 	title = customizeTitle(title, "-", "")
+	title = customizeTitle(title, " ", "")
 
 	buf.WriteString(fmt.Sprintf("# %s\n\n", title))
 

@@ -4,13 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"regexp"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -35,717 +33,367 @@ var (
 	testLabelResourceErr = errors.New("label resource test error")
 )
 
-func TestPreRunDcIdLabelKey(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunDcIdLabelKey(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunDcIdLabelKeyErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunDcIdLabelKey(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunDcIdLabelKeyValue(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunDcIdLabelKeyValue(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunDcIdLabelKeyValueErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunDcIdLabelKeyValue(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunIpBlockIdLabelKey(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockIdLabelKey(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunIpBlockIdLabelKeyErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockIdLabelKey(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunIpBlockIdLabelKeyValue(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockIdLabelKeyValue(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunIpBlockIdLabelKeyValueErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockIdLabelKeyValue(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunSnapshotIdLabelKey(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunSnapshotIdLabelKey(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunSnapshotIdLabelKeyErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunSnapshotIdLabelKey(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunSnapshotIdLabelKeyValue(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunSnapshotIdLabelKeyValue(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunSnapshotIdLabelKeyValueErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunSnapshotIdLabelKeyValue(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdServerLabelKey(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdServerLabelKey(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdServerLabelKeyErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), "")
-		err := PreRunGlobalDcIdServerLabelKey(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdServerLabelKeyGlobalErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		err := PreRunGlobalDcIdServerLabelKey(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdServerLabelKeyValueGlobalErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		err := PreRunGlobalDcIdServerLabelKeyValue(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdServerLabelKeyValue(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdServerLabelKeyValue(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdServerLabelKeyValueErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdServerLabelKeyValue(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumeLabelKey(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdVolumeLabelKey(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumeLabelKeyErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdVolumeLabelKey(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumeLabelKeyGlobalErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdVolumeLabelKey(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumeLabelKeyValue(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdVolumeLabelKeyValue(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumeLabelKeyValueErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdVolumeLabelKeyValue(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumeLabelKeyValueGlobalErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdVolumeLabelKeyValue(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunDatacenterListLabels(t *testing.T) {
+func TestRunDataCenterLabelsList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
 		rm.Label.EXPECT().DatacenterList(testLabelResourceVar).Return(testLabelResources, nil, nil)
-		err := RunDataCenterListLabels(cfg)
+		err := RunDataCenterLabelsList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunDatacenterListLabelsErr(t *testing.T) {
+func TestRunDataCenterLabelsListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
 		rm.Label.EXPECT().DatacenterList(testLabelResourceVar).Return(testLabelResources, nil, testLabelResourceErr)
-		err := RunDataCenterListLabels(cfg)
+		err := RunDataCenterLabelsList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunDatacenterGetLabel(t *testing.T) {
+func TestRunDataCenterLabelGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().DatacenterGet(testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunDataCenterGetLabel(cfg)
+		err := RunDataCenterLabelGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunDatacenterGetLabelErr(t *testing.T) {
+func TestRunDataCenterLabelGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().DatacenterGet(testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunDataCenterGetLabel(cfg)
+		err := RunDataCenterLabelGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunDatacenterAddLabel(t *testing.T) {
+func TestRunDatacenterLabelAdd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().DatacenterCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunDataCenterAddLabel(cfg)
+		err := RunDataCenterLabelAdd(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunDatacenterAddLabelErr(t *testing.T) {
+func TestRunDatacenterLabelAddErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().DatacenterCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunDataCenterAddLabel(cfg)
+		err := RunDataCenterLabelAdd(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunDatacenterRemoveLabel(t *testing.T) {
+func TestRunDatacenterLabelRemove(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().DatacenterDelete(testLabelResourceVar, testLabelResourceVar).Return(nil, nil)
-		err := RunDataCenterRemoveLabel(cfg)
+		err := RunDataCenterLabelRemove(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunDatacenterRemoveLabelErr(t *testing.T) {
+func TestRunDatacenterLabelRemoveErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().DatacenterDelete(testLabelResourceVar, testLabelResourceVar).Return(nil, testLabelResourceErr)
-		err := RunDataCenterRemoveLabel(cfg)
+		err := RunDataCenterLabelRemove(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunIpBlockListLabels(t *testing.T) {
+func TestRunIpBlockLabelsList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgIpBlockId), testLabelResourceVar)
 		rm.Label.EXPECT().IpBlockList(testLabelResourceVar).Return(testLabelResources, nil, nil)
-		err := RunIpBlockListLabels(cfg)
+		err := RunIpBlockLabelsList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunIpBlockListLabelsErr(t *testing.T) {
+func TestRunIpBlockLabelsListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgIpBlockId), testLabelResourceVar)
 		rm.Label.EXPECT().IpBlockList(testLabelResourceVar).Return(testLabelResources, nil, testLabelResourceErr)
-		err := RunIpBlockListLabels(cfg)
+		err := RunIpBlockLabelsList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunIpBlockGetLabel(t *testing.T) {
+func TestRunIpBlockLabelGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().IpBlockGet(testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunIpBlockGetLabel(cfg)
+		err := RunIpBlockLabelGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunIpBlockGetLabelErr(t *testing.T) {
+func TestRunIpBlockLabelGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().IpBlockGet(testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunIpBlockGetLabel(cfg)
+		err := RunIpBlockLabelGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunIpBlockAddLabel(t *testing.T) {
+func TestRunIpBlockLabelAdd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().IpBlockCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunIpBlockAddLabel(cfg)
+		err := RunIpBlockLabelAdd(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunIpBlockAddLabelErr(t *testing.T) {
+func TestRunIpBlockLabelAddErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().IpBlockCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunIpBlockAddLabel(cfg)
+		err := RunIpBlockLabelAdd(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunIpBlockRemoveLabel(t *testing.T) {
+func TestRunIpBlockLabelRemove(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().IpBlockDelete(testLabelResourceVar, testLabelResourceVar).Return(nil, nil)
-		err := RunIpBlockRemoveLabel(cfg)
+		err := RunIpBlockLabelRemove(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunIpBlockRemoveLabelErr(t *testing.T) {
+func TestRunIpBlockLabelRemoveErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgIpBlockId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().IpBlockDelete(testLabelResourceVar, testLabelResourceVar).Return(nil, testLabelResourceErr)
-		err := RunIpBlockRemoveLabel(cfg)
+		err := RunIpBlockLabelRemove(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunSnapshotListLabels(t *testing.T) {
+func TestRunSnapshotLabelsList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgSnapshotId), testLabelResourceVar)
 		rm.Label.EXPECT().SnapshotList(testLabelResourceVar).Return(testLabelResources, nil, nil)
-		err := RunSnapshotListLabels(cfg)
+		err := RunSnapshotLabelsList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunSnapshotListLabelsErr(t *testing.T) {
+func TestRunSnapshotLabelsListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgSnapshotId), testLabelResourceVar)
 		rm.Label.EXPECT().SnapshotList(testLabelResourceVar).Return(testLabelResources, nil, testLabelResourceErr)
-		err := RunSnapshotListLabels(cfg)
+		err := RunSnapshotLabelsList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunSnapshotGetLabel(t *testing.T) {
+func TestRunSnapshotLabelGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().SnapshotGet(testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunSnapshotGetLabel(cfg)
+		err := RunSnapshotLabelGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunSnapshotGetLabelErr(t *testing.T) {
+func TestRunSnapshotLabelGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().SnapshotGet(testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunSnapshotGetLabel(cfg)
+		err := RunSnapshotLabelGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunSnapshotAddLabel(t *testing.T) {
+func TestRunSnapshotLabelAdd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().SnapshotCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunSnapshotAddLabel(cfg)
+		err := RunSnapshotLabelAdd(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunSnapshotAddLabelErr(t *testing.T) {
+func TestRunSnapshotLabelAddErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().SnapshotCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunSnapshotAddLabel(cfg)
+		err := RunSnapshotLabelAdd(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunSnapshotRemoveLabel(t *testing.T) {
+func TestRunSnapshotLabelRemove(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().SnapshotDelete(testLabelResourceVar, testLabelResourceVar).Return(nil, nil)
-		err := RunSnapshotRemoveLabel(cfg)
+		err := RunSnapshotLabelRemove(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunSnapshotRemoveLabelErr(t *testing.T) {
+func TestRunSnapshotLabelRemoveErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgSnapshotId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().SnapshotDelete(testLabelResourceVar, testLabelResourceVar).Return(nil, testLabelResourceErr)
-		err := RunSnapshotRemoveLabel(cfg)
+		err := RunSnapshotLabelRemove(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunServerListLabels(t *testing.T) {
+func TestRunServerLabelsList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -753,14 +401,14 @@ func TestRunServerListLabels(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testLabelResourceVar)
 		rm.Label.EXPECT().ServerList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResources, nil, nil)
-		err := RunServerListLabels(cfg)
+		err := RunServerLabelsList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunServerListLabelsErr(t *testing.T) {
+func TestRunServerLabelsListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -768,14 +416,14 @@ func TestRunServerListLabelsErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testLabelResourceVar)
 		rm.Label.EXPECT().ServerList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResources, nil, testLabelResourceErr)
-		err := RunServerListLabels(cfg)
+		err := RunServerLabelsList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunServerGetLabel(t *testing.T) {
+func TestRunServerLabelGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -783,15 +431,15 @@ func TestRunServerGetLabel(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().ServerGet(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunServerGetLabel(cfg)
+		err := RunServerLabelGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunServerGetLabelErr(t *testing.T) {
+func TestRunServerLabelGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -799,15 +447,15 @@ func TestRunServerGetLabelErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().ServerGet(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunServerGetLabel(cfg)
+		err := RunServerLabelGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunServerAddLabel(t *testing.T) {
+func TestRunServerLabelAdd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -815,16 +463,16 @@ func TestRunServerAddLabel(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().ServerCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunServerAddLabel(cfg)
+		err := RunServerLabelAdd(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunServerAddLabelErr(t *testing.T) {
+func TestRunServerLabelAddErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -832,16 +480,16 @@ func TestRunServerAddLabelErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().ServerCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunServerAddLabel(cfg)
+		err := RunServerLabelAdd(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunServerRemoveLabel(t *testing.T) {
+func TestRunServerLabelRemove(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -849,15 +497,15 @@ func TestRunServerRemoveLabel(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().ServerDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(nil, nil)
-		err := RunServerRemoveLabel(cfg)
+		err := RunServerLabelRemove(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunServerRemoveLabelErr(t *testing.T) {
+func TestRunServerLabelRemoveErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -865,15 +513,15 @@ func TestRunServerRemoveLabelErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().ServerDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(nil, testLabelResourceErr)
-		err := RunServerRemoveLabel(cfg)
+		err := RunServerLabelRemove(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunVolumeListLabels(t *testing.T) {
+func TestRunVolumeLabelsList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -881,14 +529,14 @@ func TestRunVolumeListLabels(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgVolumeId), testLabelResourceVar)
 		rm.Label.EXPECT().VolumeList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResources, nil, nil)
-		err := RunVolumeListLabels(cfg)
+		err := RunVolumeLabelsList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunVolumeListLabelsErr(t *testing.T) {
+func TestRunVolumeLabelsListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -896,14 +544,14 @@ func TestRunVolumeListLabelsErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgVolumeId), testLabelResourceVar)
 		rm.Label.EXPECT().VolumeList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResources, nil, testLabelResourceErr)
-		err := RunVolumeListLabels(cfg)
+		err := RunVolumeLabelsList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunVolumeGetLabel(t *testing.T) {
+func TestRunVolumeLabelGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -911,15 +559,15 @@ func TestRunVolumeGetLabel(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgVolumeId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().VolumeGet(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunVolumeGetLabel(cfg)
+		err := RunVolumeLabelGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunVolumeGetLabelErr(t *testing.T) {
+func TestRunVolumeLabelGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -927,15 +575,15 @@ func TestRunVolumeGetLabelErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgVolumeId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().VolumeGet(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunVolumeGetLabel(cfg)
+		err := RunVolumeLabelGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunVolumeAddLabel(t *testing.T) {
+func TestRunVolumeLabelAdd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -943,16 +591,16 @@ func TestRunVolumeAddLabel(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgVolumeId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().VolumeCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, nil)
-		err := RunVolumeAddLabel(cfg)
+		err := RunVolumeLabelAdd(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunVolumeAddLabelErr(t *testing.T) {
+func TestRunVolumeLabelAddErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -960,16 +608,16 @@ func TestRunVolumeAddLabelErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgVolumeId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelValue), testLabelResourceVar)
 		rm.Label.EXPECT().VolumeCreate(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testLabelResourceRes, nil, testLabelResourceErr)
-		err := RunVolumeAddLabel(cfg)
+		err := RunVolumeLabelAdd(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunVolumeRemoveLabel(t *testing.T) {
+func TestRunVolumeLabelRemove(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -977,15 +625,15 @@ func TestRunVolumeRemoveLabel(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgVolumeId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().VolumeDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(nil, nil)
-		err := RunVolumeRemoveLabel(cfg)
+		err := RunVolumeLabelRemove(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunVolumeRemoveLabelErr(t *testing.T) {
+func TestRunVolumeLabelRemoveErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -993,75 +641,10 @@ func TestRunVolumeRemoveLabelErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testLabelResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testLabelResourceVar)
+		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgVolumeId), testLabelResourceVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgLabelKey), testLabelResourceVar)
 		rm.Label.EXPECT().VolumeDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(nil, testLabelResourceErr)
-		err := RunVolumeRemoveLabel(cfg)
+		err := RunVolumeLabelRemove(cfg)
 		assert.Error(t, err)
 	})
-}
-
-func TestGetDatacenterLabelIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getDatacenterLabelIds(w, testLabelResourceVar)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestGetIpBlockLabelIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getIpBlockLabelIds(w, testLabelResourceVar)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestGetSnapshotLabelIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getSnapshotLabelIds(w, testLabelResourceVar)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestGetServerLabelIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getServerLabelIds(w, testLabelResourceVar, testLabelResourceVar)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestGetVolumeLabelIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getVolumeLabelIds(w, testLabelResourceVar, testLabelResourceVar)
-	err := w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
-	assert.True(t, re.Match(b.Bytes()))
 }

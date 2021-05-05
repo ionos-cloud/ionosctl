@@ -8,7 +8,7 @@ GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
 
 OUT_D=$${OUT_D:-$(shell pwd)/builds}
-DOCS_OUT=$${DOCS_OUT:-$(shell pwd)/docs/commands/}
+DOCS_OUT=$${DOCS_OUT:-$(shell pwd)/docs/subcommands/}
 
 .PHONY: test_unit
 test_unit:

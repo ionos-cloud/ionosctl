@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/hashicorp/go-multierror"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
@@ -30,36 +29,39 @@ func server() *builder.Command {
 		},
 	}
 	globalFlags := serverCmd.GlobalFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
-	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
 	globalFlags.StringSlice(config.ArgCols, defaultServerCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, serverCmd, PreRunGlobalDcId, RunServerList, "list", "List Servers",
+	list := builder.NewCommand(ctx, serverCmd, PreRunDataCenterId, RunServerList, "list", "List Servers",
 		"Use this command to list Servers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		listServerExample, true)
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerGet, "get", "Get a Server",
+	get := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerGet, "get", "Get a Server",
 		"Use this command to get information about a specified Server from a Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), get.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcId, RunServerCreate, "create", "Create a Server",
+	create := builder.NewCommand(ctx, serverCmd, PreRunDataCenterId, RunServerCreate, "create", "Create a Server",
 		`Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -67,6 +69,10 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
 Required values to run command:
 
 * Data Center Id`, createServerExample, true)
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
 	create.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
 	create.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
@@ -84,7 +90,7 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerUpdate, "update", "Update a Server",
+	update := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerUpdate, "update", "Update a Server",
 		`Use this command to update a specified Server from a Virtual Data Center.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
@@ -93,9 +99,13 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, updateServerExample, true)
+	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	update.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), update.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
 	update.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
@@ -114,7 +124,7 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerDelete, "delete", "Delete a Server",
+	deleteCmd := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerDelete, "delete", "Delete a Server",
 		`Use this command to delete a specified Server from a Virtual Data Center.
 
 NOTE: This will not automatically remove the storage Volume(s) attached to a Server.
@@ -125,9 +135,13 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, deleteServerExample, true)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	deleteCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), deleteCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be deleted [seconds]")
@@ -135,7 +149,7 @@ Required values to run command:
 	/*
 		Start Command
 	*/
-	start := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerStart, "start", "Start a Server",
+	start := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerStart, "start", "Start a Server",
 		`Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -144,9 +158,13 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, startServerExample, true)
+	start.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = start.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	start.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = start.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), start.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	start.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to start")
 	start.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be started [seconds]")
@@ -154,7 +172,7 @@ Required values to run command:
 	/*
 		Stop Command
 	*/
-	stop := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerStop, "stop", "Stop a Server",
+	stop := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerStop, "stop", "Stop a Server",
 		`Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -163,9 +181,13 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, stopServerExample, true)
+	stop.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	stop.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), stop.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	stop.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Server to stop")
 	stop.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be stopped [seconds]")
@@ -173,7 +195,7 @@ Required values to run command:
 	/*
 		Reboot Command
 	*/
-	reboot := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerReboot, "reboot", "Force a hard reboot of a Server",
+	reboot := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerReboot, "reboot", "Force a hard reboot of a Server",
 		`Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
 You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
@@ -182,120 +204,26 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`, resetServerExample, true)
+	reboot.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	reboot.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), reboot.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	/*
-		Attach Command
-	*/
-	attachVolume := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIds, RunServerAttachVolume, "attach-volume", "Attach a Volume to a Server",
-		`Use this command to attach a pre-existing Volume to a Server.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
-
-Required values to run command:
-
-* Data Center Id
-* Server Id
-* Volume Id`, attachVolumeServerExample, true)
-	attachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	attachVolume.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	attachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to attach to Server")
-	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
-
-	/*
-		List Command
-	*/
-	listAttached := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerId, RunServerListVolumes, "list-volumes", "List attached Volumes from a Server",
-		"Use this command to retrieve a list of Volumes attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		listVolumesServerExample, true)
-	listAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = listAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	/*
-		Get Command
-	*/
-	getAttached := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIds, RunServerGetVolume, "get-volume", "Get an attached Volume from a Server",
-		"Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
-		getVolumeServerExample, true)
-	getAttached.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	getAttached.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = getAttached.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(serverCmd.Name(), getAttached.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	/*
-		Detach Command
-	*/
-	detachVolume := builder.NewCommand(ctx, serverCmd, PreRunGlobalDcIdServerVolumeIds, RunServerDetachVolume, "detach-volume", "Detach a Volume from a Server",
-		`This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.
-
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
-
-Required values to run command:
-
-* Data Center Id
-* Server Id
-* Volume Id`, detachVolumeServerExample, true)
-	detachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetFlagName(serverCmd.Name(), detachVolume.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	detachVolume.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	detachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to detach from Server")
-	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Server to be detached from a Server [seconds]")
-
-	labelServer(serverCmd)
+	serverCmd.AddCommand(serverVolume())
 
 	return serverCmd
 }
 
-func PreRunGlobalDcIdServerId(c *builder.PreCommandConfig) error {
-	var result *multierror.Error
-	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgServerId); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if result != nil {
-		return result
-	}
-	return nil
-}
-
-func PreRunGlobalDcIdServerVolumeIds(c *builder.PreCommandConfig) error {
-	var result *multierror.Error
-	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if err := builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgServerId, config.ArgVolumeId); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if result != nil {
-		return result
-	}
-	return nil
+func PreRunDcServerIds(c *builder.PreCommandConfig) error {
+	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgServerId)
 }
 
 func RunServerList(c *builder.CommandConfig) error {
-	servers, _, err := c.Servers().List(viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)))
+	servers, _, err := c.Servers().List(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
@@ -309,7 +237,7 @@ func RunServerList(c *builder.CommandConfig) error {
 
 func RunServerGet(c *builder.CommandConfig) error {
 	server, _, err := c.Servers().Get(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 	)
 	if err != nil {
@@ -326,7 +254,7 @@ func RunServerCreate(c *builder.CommandConfig) error {
 	server, resp, err := c.Servers().Create(
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerName)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCPUFamily)),
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerZone)),
 		viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCores)),
 		viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)),
@@ -367,7 +295,7 @@ func RunServerUpdate(c *builder.CommandConfig) error {
 		input.SetRam(viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)))
 	}
 	server, resp, err := c.Servers().Update(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 		input,
 	)
@@ -394,7 +322,7 @@ func RunServerDelete(c *builder.CommandConfig) error {
 		return err
 	}
 	resp, err := c.Servers().Delete(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 	)
 	if err != nil {
@@ -417,7 +345,7 @@ func RunServerStart(c *builder.CommandConfig) error {
 		return err
 	}
 	resp, err := c.Servers().Start(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 	)
 	if err != nil {
@@ -440,7 +368,7 @@ func RunServerStop(c *builder.CommandConfig) error {
 		return err
 	}
 	resp, err := c.Servers().Stop(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 	)
 	if err != nil {
@@ -463,7 +391,7 @@ func RunServerReboot(c *builder.CommandConfig) error {
 		return err
 	}
 	resp, err := c.Servers().Reboot(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 	)
 	if err != nil {
@@ -479,64 +407,6 @@ func RunServerReboot(c *builder.CommandConfig) error {
 		Verb:        "reboot",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
-}
-
-func RunServerAttachVolume(c *builder.CommandConfig) error {
-	attachedVol, resp, err := c.Servers().AttachVolume(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
-	)
-	if err != nil {
-		return err
-	}
-	err = waitForAction(c, printer.GetRequestPath(resp))
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(getVolumePrint(resp, c, getVolume(attachedVol)))
-}
-
-func RunServerListVolumes(c *builder.CommandConfig) error {
-	attachedVols, _, err := c.Servers().ListVolumes(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-	)
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(getVolumePrint(nil, c, getAttachedVolumes(attachedVols)))
-}
-
-func RunServerGetVolume(c *builder.CommandConfig) error {
-	attachedVolume, _, err := c.Servers().GetVolume(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
-	)
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(getVolumePrint(nil, c, getVolume(attachedVolume)))
-}
-
-func RunServerDetachVolume(c *builder.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server"); err != nil {
-		return err
-	}
-	resp, err := c.Servers().DetachVolume(
-		viper.GetString(builder.GetGlobalFlagName(c.ParentName, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
-	)
-	if err != nil {
-		return err
-	}
-
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
-	return c.Printer.Print(getVolumePrint(resp, c, nil))
 }
 
 // Output Printing

@@ -31,11 +31,15 @@ func (c *Command) AddCommand(commands ...*Command) {
 }
 
 func (c *Command) Name() string {
-	return c.Command.Name()
+	if c != nil && c.Command != nil {
+		return c.Command.Name()
+	} else {
+		return ""
+	}
 }
 
 func (c *Command) ParentName() string {
-	if c.Command.Parent() != nil {
+	if c != nil && c.Command != nil && c.Command.Parent() != nil {
 		return c.Command.Parent().Name()
 	} else {
 		return ""
@@ -52,6 +56,10 @@ func (c *Command) GlobalFlags() *flag.FlagSet {
 
 func (c *Command) SubCommands() []*Command {
 	return c.subCommands
+}
+
+func (c *Command) MarkFlagRequired(flagName string) error {
+	return c.Command.MarkFlagRequired(flagName)
 }
 
 func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string) {
@@ -132,7 +140,7 @@ func NewCommand(ctx context.Context, parent *Command, preCR PreCommandRun, cmdru
 		Example: example,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			p := getPrinter()
-			preCmdConfig := NewPreCommandCfg(p, name, getParentName(parent))
+			preCmdConfig := NewPreCommandCfg(p, name, parent.Name())
 			err := preCR(preCmdConfig)
 			clierror.CheckError(err, p.GetStderr())
 		},
@@ -142,7 +150,7 @@ func NewCommand(ctx context.Context, parent *Command, preCR PreCommandRun, cmdru
 			cmd.SetIn(os.Stdin)
 			cmd.SetOut(p.GetStdout())
 			cmd.SetErr(p.GetStderr())
-			cmdConfig, err := NewCommandCfg(ctx, os.Stdin, p, name, getParentName(parent), init)
+			cmdConfig, err := NewCommandCfg(ctx, os.Stdin, p, name, parent.Name(), init)
 			clierror.CheckError(err, p.GetStderr())
 			err = cmdrunner(cmdConfig)
 			clierror.CheckError(err, p.GetStderr())
@@ -316,14 +324,6 @@ func GetFlagName(prtName, cmdName, flagName string) string {
 
 func GetGlobalFlagName(cmdName, flagName string) string {
 	return fmt.Sprintf("%s.%s", cmdName, flagName)
-}
-
-func getParentName(parent *Command) string {
-	if parent != nil {
-		return parent.Command.Name()
-	} else {
-		return ""
-	}
 }
 
 func getPrinter() printer.PrintService {

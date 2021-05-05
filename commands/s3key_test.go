@@ -54,176 +54,121 @@ var (
 	testS3keyErr        = errors.New("s3key test error")
 )
 
-func TestPreRunGlobalUserId(t *testing.T) {
+func TestPreRunUserKeyIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
-		err := PreRunGlobalUserId(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGlobalUserIdErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), "")
-		err := PreRunGlobalUserId(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalUserIdKeyId(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
-		err := PreRunGlobalUserIdKeyId(cfg)
+		err := PreRunUserKeyIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunGlobalUserIdKeyIdErr(t *testing.T) {
+func TestPreRunUserKeyIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), "")
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), "")
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), "")
-		err := PreRunGlobalUserIdKeyId(cfg)
+		err := PreRunUserKeyIds(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunGlobalUserIdKeyIdActive(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyActive), testS3keyBoolVar)
-		err := PreRunGlobalUserIdKeyIdActive(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGlobalUserIdKeyIdActiveErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), "")
-		err := PreRunGlobalUserIdKeyIdActive(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestRunS3KeyList(t *testing.T) {
+func TestRunUserS3KeyList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		rm.S3Key.EXPECT().List(testS3keyVar).Return(s3keys, nil, nil)
-		err := RunS3KeyList(cfg)
+		err := RunUserS3KeyList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunS3KeyListErr(t *testing.T) {
+func TestRunUserS3KeyListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		rm.S3Key.EXPECT().List(testS3keyVar).Return(s3keys, nil, testS3keyErr)
-		err := RunS3KeyList(cfg)
+		err := RunUserS3KeyList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunS3KeyGet(t *testing.T) {
+func TestRunUserS3KeyGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		rm.S3Key.EXPECT().Get(testS3keyVar, testS3keyVar).Return(&s3keyTestGet, nil, nil)
-		err := RunS3KeyGet(cfg)
+		err := RunUserS3KeyGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunS3KeyGetErr(t *testing.T) {
+func TestRunUserS3KeyGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		rm.S3Key.EXPECT().Get(testS3keyVar, testS3keyVar).Return(&s3keyTestGet, nil, testS3keyErr)
-		err := RunS3KeyGet(cfg)
+		err := RunUserS3KeyGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunS3KeyCreate(t *testing.T) {
+func TestRunUserS3KeyCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		rm.S3Key.EXPECT().Create(testS3keyVar).Return(&s3keyTest, nil, nil)
-		err := RunS3KeyCreate(cfg)
+		err := RunUserS3KeyCreate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunS3KeyCreateResponseErr(t *testing.T) {
+func TestRunUserS3KeyCreateResponseErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		rm.S3Key.EXPECT().Create(testS3keyVar).Return(&s3keyTest, &testResponse, nil)
-		err := RunS3KeyCreate(cfg)
+		err := RunUserS3KeyCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunS3KeyCreateWaitErr(t *testing.T) {
+func TestRunUserS3KeyCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -231,60 +176,60 @@ func TestRunS3KeyCreateWaitErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		rm.S3Key.EXPECT().Create(testS3keyVar).Return(&s3keyTest, nil, nil)
-		err := RunS3KeyCreate(cfg)
+		err := RunUserS3KeyCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunS3KeyCreateErr(t *testing.T) {
+func TestRunUserS3KeyCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		rm.S3Key.EXPECT().Create(testS3keyVar).Return(&s3keyTest, nil, testS3keyErr)
-		err := RunS3KeyCreate(cfg)
+		err := RunUserS3KeyCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunS3KeyUpdate(t *testing.T) {
+func TestRunUserS3KeyUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyActive), testS3keyBoolNewVar)
 		rm.S3Key.EXPECT().Update(testS3keyVar, testS3keyVar, s3keyNew).Return(&s3keyNew, nil, nil)
-		err := RunS3KeyUpdate(cfg)
+		err := RunUserS3KeyUpdate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunS3KeyUpdateOld(t *testing.T) {
+func TestRunUserS3KeyUpdateOld(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyActive), testS3keyBoolNewVar)
 		rm.S3Key.EXPECT().Update(testS3keyVar, testS3keyVar, s3keyNew).Return(&s3keyNew, nil, nil)
-		err := RunS3KeyUpdate(cfg)
+		err := RunUserS3KeyUpdate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunS3KeyUpdateWaitErr(t *testing.T) {
+func TestRunUserS3KeyUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -292,32 +237,32 @@ func TestRunS3KeyUpdateWaitErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyActive), testS3keyBoolNewVar)
 		rm.S3Key.EXPECT().Update(testS3keyVar, testS3keyVar, s3keyNew).Return(&s3keyNew, nil, nil)
-		err := RunS3KeyUpdate(cfg)
+		err := RunUserS3KeyUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunS3KeyUpdateErr(t *testing.T) {
+func TestRunUserS3KeyUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyActive), testS3keyBoolNewVar)
 		rm.S3Key.EXPECT().Update(testS3keyVar, testS3keyVar, s3keyNew).Return(&s3keyNew, nil, testS3keyErr)
-		err := RunS3KeyUpdate(cfg)
+		err := RunUserS3KeyUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunS3KeyDelete(t *testing.T) {
+func TestRunUserS3KeyDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -325,15 +270,15 @@ func TestRunS3KeyDelete(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		rm.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(nil, nil)
-		err := RunS3KeyDelete(cfg)
+		err := RunUserS3KeyDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunS3KeyDeleteErr(t *testing.T) {
+func TestRunUserS3KeyDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -341,15 +286,15 @@ func TestRunS3KeyDeleteErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		rm.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(nil, testS3keyErr)
-		err := RunS3KeyDelete(cfg)
+		err := RunUserS3KeyDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunS3KeyDeleteWaitErr(t *testing.T) {
+func TestRunUserS3KeyDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -357,16 +302,16 @@ func TestRunS3KeyDeleteWaitErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
 		rm.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(nil, nil)
-		err := RunS3KeyDelete(cfg)
+		err := RunUserS3KeyDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunS3KeyDeleteAskForConfirm(t *testing.T) {
+func TestRunUserS3KeyDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -374,16 +319,16 @@ func TestRunS3KeyDeleteAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgUserId), testS3keyVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgS3KeyId), testS3keyVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(nil, nil)
-		err := RunS3KeyDelete(cfg)
+		err := RunUserS3KeyDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunS3KeyDeleteAskForConfirmErr(t *testing.T) {
+func TestRunUserS3KeyDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
@@ -393,7 +338,7 @@ func TestRunS3KeyDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(config.ArgForce, false)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testS3keyVar)
 		cfg.Stdin = os.Stdin
-		err := RunS3KeyDelete(cfg)
+		err := RunUserS3KeyDelete(cfg)
 		assert.Error(t, err)
 	})
 }

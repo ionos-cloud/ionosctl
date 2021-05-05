@@ -365,6 +365,159 @@ func TestRunUserDeleteAskForConfirmErr(t *testing.T) {
 	})
 }
 
+// Group Users Test
+
+var (
+	groupUsersTest = resources.GroupMembers{
+		GroupMembers: ionoscloud.GroupMembers{
+			Items: &[]ionoscloud.User{userTest.User},
+		},
+	}
+	groupUserTest = resources.User{
+		User: ionoscloud.User{
+			Id: &testUserVar,
+		},
+	}
+)
+
+func TestRunGroupUserList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		rm.Group.EXPECT().ListUsers(testGroupVar).Return(groupUsersTest, nil, nil)
+		err := RunGroupUserList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupUserListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		rm.Group.EXPECT().ListUsers(testGroupVar).Return(groupUsersTest, nil, testGroupErr)
+		err := RunGroupUserList(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupUserAdd(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
+		rm.Group.EXPECT().AddUser(testGroupVar, groupUserTest).Return(&userTestGet, nil, nil)
+		err := RunGroupUserAdd(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupUserAddErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
+		rm.Group.EXPECT().AddUser(testGroupVar, groupUserTest).Return(&userTestGet, nil, testUserErr)
+		err := RunGroupUserAdd(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupUserAddResponse(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
+		rm.Group.EXPECT().AddUser(testGroupVar, groupUserTest).Return(&userTestGet, &testResponse, nil)
+		err := RunGroupUserAdd(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupUserRemove(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
+		rm.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(nil, nil)
+		err := RunGroupUserRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupUserRemoveErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
+		rm.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(nil, testUserErr)
+		err := RunGroupUserRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupUserRemoveAskForConfirm(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
+		rm.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(nil, nil)
+		err := RunGroupUserRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupUserRemoveAskForConfirmErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testUserVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		cfg.Stdin = os.Stdin
+		err := RunGroupUserRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestGetUsersCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
