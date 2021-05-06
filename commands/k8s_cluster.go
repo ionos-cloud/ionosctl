@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
@@ -75,13 +76,13 @@ func k8sCluster() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterName, RunK8sClusterCreate, "create", "Create a Kubernetes Cluster",
-		`Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. 
+		`Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: `+"`"+`ionosctl k8s version get`+"`"+`.
 
 Required values to run a command:
 
 * K8s Cluster Name`, createK8sClusterExample, true)
 	create.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgK8sClusterVersion, "", "1.19.8", "The K8s version for the Cluster")
+	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, it will be used the default one")
 
 	/*
 		Update Command
@@ -93,7 +94,7 @@ Required values to run command:
 
 * K8s Cluster Id`, updateK8sClusterExample, true)
 	update.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster")
-	update.AddStringFlag(config.ArgK8sClusterVersion, "", "", "The K8s version for the Cluster")
+	update.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster")
 	update.AddStringFlag(config.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
 	update.AddStringFlag(config.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
 	update.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
@@ -143,13 +144,26 @@ func RunK8sClusterGet(c *builder.CommandConfig) error {
 }
 
 func RunK8sClusterCreate(c *builder.CommandConfig) error {
-	n := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
-	v := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterVersion))
+	var (
+		name       string
+		k8sversion string
+		err        error
+	)
+	name = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)) {
+		k8sversion = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion))
+	} else {
+		if k8sversion, _, err = c.K8s().GetVersion(); err != nil {
+			return err
+		}
+		k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
+		k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
+	}
 	newCluster := resources.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Properties: &ionoscloud.KubernetesClusterProperties{
-				Name:       &n,
-				K8sVersion: &v,
+				Name:       &name,
+				K8sVersion: &k8sversion,
 			},
 		},
 	}
@@ -195,8 +209,8 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *builder.CommandConfig) 
 				propertiesUpdated.SetName(*name)
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterVersion)) {
-			v := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterVersion))
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)) {
+			v := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion))
 			propertiesUpdated.SetK8sVersion(v)
 		} else {
 			if vers, ok := properties.GetK8sVersionOk(); ok && vers != nil {

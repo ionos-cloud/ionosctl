@@ -120,7 +120,7 @@ const (
 	ArgPccDescription              = "pcc-description"
 	ArgK8sClusterId                = "cluster-id"
 	ArgK8sClusterName              = "cluster-name"
-	ArgK8sClusterVersion           = "cluster-version"
+	ArgK8sVersion                  = "k8s-version"
 	ArgK8sNodePoolId               = "nodepool-id"
 	ArgK8sNodePoolName             = "nodepool-name"
 	ArgK8sNodePoolVersion          = "nodepool-version"
