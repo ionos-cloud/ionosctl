@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -14,8 +17,6 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io"
-	"os"
 )
 
 func k8s() *builder.Command {
@@ -142,28 +143,11 @@ func RunK8sClusterGet(c *builder.CommandConfig) error {
 }
 
 func RunK8sClusterCreate(c *builder.CommandConfig) error {
-	var (
-		name       string
-		k8sversion string
-		err        error
-	)
-	name = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)) {
-		k8sversion = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion))
-	} else {
-		if k8sversion, err = getK8sVersion(c); err != nil {
-			return err
-		}
+	newCluster, err := getNewK8sCluster(c)
+	if err != nil {
+		return err
 	}
-	newCluster := resources.K8sCluster{
-		KubernetesCluster: ionoscloud.KubernetesCluster{
-			Properties: &ionoscloud.KubernetesClusterProperties{
-				Name:       &name,
-				K8sVersion: &k8sversion,
-			},
-		},
-	}
-	u, resp, err := c.K8s().CreateCluster(newCluster)
+	u, resp, err := c.K8s().CreateCluster(*newCluster)
 	if err != nil {
 		return err
 	}
@@ -192,6 +176,30 @@ func RunK8sClusterDelete(c *builder.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
+}
+
+func getNewK8sCluster(c *builder.CommandConfig) (*resources.K8sCluster, error) {
+	var (
+		name       string
+		k8sversion string
+		err        error
+	)
+	name = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)) {
+		k8sversion = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion))
+	} else {
+		if k8sversion, err = getK8sVersion(c); err != nil {
+			return nil, err
+		}
+	}
+	return &resources.K8sCluster{
+		KubernetesCluster: ionoscloud.KubernetesCluster{
+			Properties: &ionoscloud.KubernetesClusterProperties{
+				Name:       &name,
+				K8sVersion: &k8sversion,
+			},
+		},
+	}, nil
 }
 
 func getK8sClusterInfo(oldUser *resources.K8sCluster, c *builder.CommandConfig) resources.K8sCluster {

@@ -123,7 +123,6 @@ const (
 	ArgK8sVersion                  = "k8s-version"
 	ArgK8sNodePoolId               = "nodepool-id"
 	ArgK8sNodePoolName             = "nodepool-name"
-	ArgK8sNodePoolVersion          = "nodepool-version"
 	ArgK8sNodeCount                = "node-count"
 	ArgCoresCount                  = "cores-count"
 	ArgCpuFamily                   = "cpu-family"
