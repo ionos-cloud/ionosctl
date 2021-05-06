@@ -4,10 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"os"
-	"strings"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -18,6 +14,8 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"io"
+	"os"
 )
 
 func k8s() *builder.Command {
@@ -153,11 +151,9 @@ func RunK8sClusterCreate(c *builder.CommandConfig) error {
 	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion))
 	} else {
-		if k8sversion, _, err = c.K8s().GetVersion(); err != nil {
+		if k8sversion, err = getK8sVersion(c); err != nil {
 			return err
 		}
-		k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
-		k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
 	}
 	newCluster := resources.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
