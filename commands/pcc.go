@@ -66,7 +66,7 @@ func pcc() *builder.Command {
 		createPccExample, true)
 	create.AddStringFlag(config.ArgPccName, "", "", "The name for the Private Cross-Connect")
 	create.AddStringFlag(config.ArgPccDescription, "", "", "The description for the Private Cross-Connect")
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Private Cross-Connect to be created")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Private Cross-Connect to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Private Cross-Connect to be created [seconds]")
 
 	/*
@@ -84,7 +84,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Private Cross-Connect to be updated")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Private Cross-Connect to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Private Cross-Connect to be updated [seconds]")
 
 	/*
@@ -100,7 +100,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Private Cross-Connect to be deleted")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Private Cross-Connect to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Private Cross-Connect to be deleted [seconds]")
 
 	return pccCmd
@@ -231,7 +231,7 @@ func getPccPrint(resp *resources.Response, c *builder.CommandConfig, pccs []reso
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if pccs != nil {
 			r.OutputJSON = pccs

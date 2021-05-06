@@ -75,7 +75,7 @@ Required values to run command:
 	create.AddStringFlag(config.ArgVolumeType, "", "HDD", "Type of the Volume")
 	create.AddStringFlag(config.ArgVolumeZone, "", "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
 	create.AddStringFlag(config.ArgVolumeSshKey, "", "", "Ssh Key of the Volume")
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be created")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be created [seconds]")
 
 	/*
@@ -100,7 +100,7 @@ Required values to run command:
 	update.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
 	update.AddStringFlag(config.ArgVolumeBus, "", "VIRTIO", "Bus of the Volume")
 	update.AddStringFlag(config.ArgVolumeSshKey, "", "", "Ssh Key of the Volume")
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be updated")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be updated [seconds]")
 
 	/*
@@ -119,7 +119,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be deleted")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be deleted [seconds]")
 
 	return volumeCmd
@@ -191,7 +191,7 @@ func RunVolumeCreate(c *builder.CommandConfig) error {
 		ApiResponse: resp,
 		Resource:    "volume",
 		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -225,7 +225,7 @@ func RunVolumeUpdate(c *builder.CommandConfig) error {
 		ApiResponse: resp,
 		Resource:    "volume",
 		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -248,7 +248,7 @@ func RunVolumeDelete(c *builder.CommandConfig) error {
 		ApiResponse: resp,
 		Resource:    "volume",
 		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -293,7 +293,7 @@ Required values to run command:
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), attachVolume.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be attached to Server")
+	attachVolume.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be attached to Server")
 	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
 
 	/*
@@ -355,7 +355,7 @@ Required values to run command:
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), detachVolume.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachVolume.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Volume to be detached from Server")
+	detachVolume.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be detached from Server")
 	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be detached from a Server [seconds]")
 
 	return serverVolumeCmd
@@ -448,7 +448,7 @@ func getVolumePrint(resp *resources.Response, c *builder.CommandConfig, vols []r
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if vols != nil {
 			r.OutputJSON = vols

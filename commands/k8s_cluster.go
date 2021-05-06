@@ -83,7 +83,7 @@ Required values to run a command:
 * K8s Cluster Name`, createK8sClusterExample, true)
 	create.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgK8sClusterVersion, "", "", "The K8s version for the Cluster")
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be created")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Data Center to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be created [seconds]")
 
 	/*
@@ -279,7 +279,7 @@ func getK8sClusterPrint(resp *resources.Response, c *builder.CommandConfig, k8ss
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if k8ss != nil {
 			r.OutputJSON = k8ss

@@ -75,7 +75,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be created")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for LAN to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be created [seconds]")
 
 	/*
@@ -100,7 +100,7 @@ Required values to run command:
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Public option for LAN")
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be updated")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for LAN to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be updated [seconds]")
 
 	/*
@@ -119,7 +119,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for LAN to be deleted")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for LAN to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for LAN to be deleted [seconds]")
 
 	return lanCmd
@@ -201,7 +201,7 @@ func RunLanCreate(c *builder.CommandConfig) error {
 		ApiResponse: resp,
 		Resource:    "lan",
 		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -235,7 +235,7 @@ func RunLanUpdate(c *builder.CommandConfig) error {
 		ApiResponse: resp,
 		Resource:    "lan",
 		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -258,7 +258,7 @@ func RunLanDelete(c *builder.CommandConfig) error {
 		ApiResponse: resp,
 		Resource:    "lan",
 		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 

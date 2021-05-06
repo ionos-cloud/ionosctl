@@ -23,7 +23,7 @@ func TestWaitForAction(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
 		rm.Request.EXPECT().Wait(pathRequest).Return(nil, nil)
 		err := waitForAction(cfg, pathRequest)
 		assert.NoError(t, err)
@@ -35,7 +35,7 @@ func TestWaitForActionErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), true)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
 		rm.Request.EXPECT().Wait(pathRequest).Return(nil, testWaitForActionErr)
 		err := waitForAction(cfg, pathRequest)
 		assert.Error(t, err)
@@ -47,7 +47,7 @@ func TestWaitForActionPathErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWait), false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
 		err := waitForAction(cfg, pathRequest)
 		assert.NoError(t, err)
 	})

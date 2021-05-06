@@ -74,7 +74,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User S3Key to be created")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for User S3Key to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for an User S3Key to be created [seconds]")
 
 	/*
@@ -99,7 +99,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(builder.GetFlagName(s3keyCmd.Name(), update.Name(), config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User S3Key to be updated")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for User S3Key to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a User S3Key to be updated [seconds]")
 
 	/*
@@ -116,7 +116,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(builder.GetFlagName(s3keyCmd.Name(), deleteCmd.Name(), config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for User S3Key to be deleted")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for User S3Key to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for an User S3Key to be deleted [seconds]")
 
 	return s3keyCmd
@@ -213,7 +213,7 @@ func getS3KeyPrint(resp *resources.Response, c *builder.CommandConfig, s []resou
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if s != nil {
 			r.OutputJSON = s

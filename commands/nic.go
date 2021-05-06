@@ -79,7 +79,7 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be created")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be created [seconds]")
 
 	/*
@@ -108,7 +108,7 @@ Required values to run command:
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgNicDhcp, "", config.DefaultNicDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be updated")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be updated")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be updated [seconds]")
 
 	/*
@@ -128,7 +128,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be deleted")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be deleted")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be deleted [seconds]")
 
 	return nicCmd
@@ -207,7 +207,7 @@ func RunNicCreate(c *builder.CommandConfig) error {
 		ApiResponse: resp,
 		Resource:    "nic",
 		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -242,7 +242,7 @@ func RunNicUpdate(c *builder.CommandConfig) error {
 		ApiResponse: resp,
 		Resource:    "nic",
 		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -266,7 +266,7 @@ func RunNicDelete(c *builder.CommandConfig) error {
 		ApiResponse: resp,
 		Resource:    "nic",
 		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -317,7 +317,7 @@ Required values to run command:
 			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), attachNic.Name(), config.ArgDataCenterId)),
 			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), attachNic.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be attached to a Load Balancer")
+	attachNic.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be attached to a Load Balancer")
 	attachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be attached to a Load Balancer [seconds]")
 
 	/*
@@ -382,7 +382,7 @@ Required values to run command:
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), detachNic.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for NIC to be detached from a Load Balancer")
+	detachNic.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be detached from a Load Balancer")
 	detachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be detached from a Load Balancer [seconds]")
 
 	return loadbalancerNicCmd
@@ -471,7 +471,7 @@ func getNicPrint(resp *resources.Response, c *builder.CommandConfig, nics []reso
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if nics != nil {
 			r.OutputJSON = nics

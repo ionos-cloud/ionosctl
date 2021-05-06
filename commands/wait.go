@@ -17,7 +17,7 @@ var (
 )
 
 func waitForAction(c *builder.CommandConfig, path string) error {
-	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)) {
+	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)) {
 		return nil
 	} else {
 		reqId, err := printer.GetRequestId(path)
@@ -56,7 +56,7 @@ func IsActive(state string) bool {
 }
 
 func waitForState(c *builder.CommandConfig, interrog InterrogateStateFunc, resourceId string) error {
-	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)) {
+	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
 		return nil
 	} else {
 		timeout := viper.GetInt(builder.GetFlagName(c.ParentName, c.Name, config.ArgTimeout))
