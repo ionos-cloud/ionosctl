@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -145,7 +146,10 @@ func RunDataCenterCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	//if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	//	return err
+	//}
+	if err = waitForState(c, StateDatacenter, *dc.Id); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
@@ -157,6 +161,20 @@ func RunDataCenterCreate(c *builder.CommandConfig) error {
 		Verb:        "create",
 		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
 	})
+}
+
+func StateDatacenter(c *builder.CommandConfig, datacenterId string) (string, error) {
+	dc, _, err := c.DataCenters().Get(datacenterId)
+	if err != nil {
+		return "", err
+	}
+	if metadata, ok := dc.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			fmt.Println("AICI, STATE:" + *state)
+			return *state, nil
+		}
+	}
+	return "", nil
 }
 
 func RunDataCenterUpdate(c *builder.CommandConfig) error {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
@@ -81,7 +82,9 @@ Required values to run a command:
 
 * K8s Cluster Name`, createK8sClusterExample, true)
 	create.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgK8sClusterVersion, "", "1.19.8", "The K8s version for the Cluster")
+	create.AddStringFlag(config.ArgK8sClusterVersion, "", "", "The K8s version for the Cluster")
+	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be created")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be created [seconds]")
 
 	/*
 		Update Command
@@ -143,13 +146,25 @@ func RunK8sClusterGet(c *builder.CommandConfig) error {
 }
 
 func RunK8sClusterCreate(c *builder.CommandConfig) error {
-	n := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
-	v := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterVersion))
+	var (
+		name, k8sversion string
+		err              error
+	)
+	name = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterVersion)) {
+		k8sversion = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterVersion))
+	} else {
+		if k8sversion, _, err = c.K8s().GetVersion(); err != nil {
+			return err
+		}
+		k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
+		k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
+	}
 	newCluster := resources.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Properties: &ionoscloud.KubernetesClusterProperties{
-				Name:       &n,
-				K8sVersion: &v,
+				Name:       &name,
+				K8sVersion: &k8sversion,
 			},
 		},
 	}
@@ -157,7 +172,28 @@ func RunK8sClusterCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	if id, ok := u.GetIdOk(); ok && id != nil {
+		if err = waitForState(c, StateK8sCluster, *id); err != nil {
+			return err
+		}
+	} else {
+		fmt.Println("sorry not sorry")
+	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, getK8sCluster(u)))
+}
+
+func StateK8sCluster(c *builder.CommandConfig, clusterId string) (string, error) {
+	dc, _, err := c.K8s().GetCluster(clusterId)
+	if err != nil {
+		return "", err
+	}
+	if metadata, ok := dc.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			fmt.Println("AICI, STATE:" + *state)
+			return *state, nil
+		}
+	}
+	return "", nil
 }
 
 func RunK8sClusterUpdate(c *builder.CommandConfig) error {
