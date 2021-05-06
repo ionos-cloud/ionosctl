@@ -25,7 +25,7 @@ var waitingForRequestMsg = "Waiting for request: %s"
 var waitingForStateMsg = "Waiting for state: %s"
 var contextTimeoutErr = errors.New("context hit timeout")
 
-// WaitForRequest waits for request to be executed
+// WaitForRequest waits for Request to be executed
 func WaitForRequest(c *builder.CommandConfig, path string) error {
 	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)) {
 		return nil
@@ -38,21 +38,23 @@ func WaitForRequest(c *builder.CommandConfig, path string) error {
 		defer cancel()
 		c.Context = ctxTimeout
 
-		reqId, err := printer.GetRequestId(path)
-		if err != nil {
+		if reqId, err := printer.GetRequestId(path); err == nil && reqId != nil {
+			if err = c.Printer.Print(fmt.Sprintf(waitingForRequestMsg, *reqId)); err != nil {
+				return err
+			}
+		} else {
 			return err
 		}
-		if err = c.Printer.Print(fmt.Sprintf(waitingForRequestMsg, *reqId)); err != nil {
+
+		// Wait for Request
+		if _, err := c.Requests().Wait(path); err != nil {
 			return err
 		}
-		if _, err = c.Requests().Wait(path); err != nil {
-			return err
-		}
+		return nil
 	}
-	return nil
 }
 
-type InterrogateStateFunc func(c *builder.CommandConfig, resourceId string) (string, error)
+type InterrogateStateFunc func(c *builder.CommandConfig, resourceId string) (*string, error)
 
 // WaitForState waits for the State of a Resource to be Active or Available
 func WaitForState(c *builder.CommandConfig, interrog InterrogateStateFunc, resourceId string) error {
@@ -75,18 +77,20 @@ func WaitForState(c *builder.CommandConfig, interrog InterrogateStateFunc, resou
 					clierror.CheckError(contextTimeoutErr, cmdCfg.Printer.GetStderr())
 					return
 				default:
-					if state, err := interrogator(cmdCfg, resId); err == nil {
-						cmdCfg.Printer.Print(fmt.Sprintf(waitingForStateMsg, state))
-						if IsActive(state) {
-							cmdCfg.Printer.Print(state)
+					if state, err := interrogator(cmdCfg, resId); err == nil && state != nil {
+						cmdCfg.Printer.Print(fmt.Sprintf(waitingForStateMsg, *state))
+						if IsActive(*state) {
 							wg.Done()
 							return
 						}
-						if HasFailed(state) {
-							cmdCfg.Printer.Print(state)
+						if HasFailed(*state) {
 							wg.Done()
 							return
 						}
+					} else {
+						wg.Done()
+						clierror.CheckError(errors.New("error getting state"), cmdCfg.Printer.GetStderr())
+						return
 					}
 
 					time.Sleep(pollTime * time.Second)
@@ -95,8 +99,8 @@ func WaitForState(c *builder.CommandConfig, interrog InterrogateStateFunc, resou
 		}(c, interrog, resourceId)
 		wg.Wait()
 		cancel()
+		return nil
 	}
-	return nil
 }
 
 func IsActive(state string) bool {

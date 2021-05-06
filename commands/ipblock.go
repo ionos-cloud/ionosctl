@@ -143,7 +143,7 @@ func RunIpBlockCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getIpBlockPrint(resp, c, getIpBlock(i)))
@@ -162,7 +162,7 @@ func RunIpBlockUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getIpBlockPrint(resp, c, getIpBlock(i)))
@@ -177,7 +177,7 @@ func RunIpBlockDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getIpBlockPrint(resp, c, nil))
@@ -203,7 +203,7 @@ func getIpBlockPrint(resp *resources.Response, c *builder.CommandConfig, ipBlock
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if ipBlocks != nil {
 			r.OutputJSON = ipBlocks

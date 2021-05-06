@@ -193,7 +193,7 @@ func RunSnapshotCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
@@ -205,7 +205,7 @@ func RunSnapshotUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
@@ -303,7 +303,7 @@ func getSnapshotPrint(resp *resources.Response, c *builder.CommandConfig, s []re
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if s != nil {
 			r.OutputJSON = s

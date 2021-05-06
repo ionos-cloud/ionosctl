@@ -172,7 +172,7 @@ func RunShareCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareAdded)))
@@ -197,7 +197,7 @@ func RunShareUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareUpdated)))
@@ -214,7 +214,7 @@ func RunShareDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, nil))
@@ -264,7 +264,7 @@ func getGroupSharePrint(resp *resources.Response, c *builder.CommandConfig, grou
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if groups != nil {
 			r.OutputJSON = groups

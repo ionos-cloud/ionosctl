@@ -150,7 +150,7 @@ func RunUserS3KeyCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, getS3Key(s)))
@@ -173,7 +173,7 @@ func RunUserS3KeyUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, getS3Key(s)))
@@ -190,7 +190,7 @@ func RunUserS3KeyDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, nil))
@@ -213,7 +213,7 @@ func getS3KeyPrint(resp *resources.Response, c *builder.CommandConfig, s []resou
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if s != nil {
 			r.OutputJSON = s

@@ -173,17 +173,17 @@ func RunLoadBalancerCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:  loadbalancer,
-		KeyValue:    getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
-		Columns:     getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    "loadbalancer",
-		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		OutputJSON:     loadbalancer,
+		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
+		Columns:        getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		ApiResponse:    resp,
+		Resource:       "loadbalancer",
+		Verb:           "create",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -207,17 +207,17 @@ func RunLoadBalancerUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:  loadbalancer,
-		KeyValue:    getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
-		Columns:     getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    "loadbalancer",
-		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		OutputJSON:     loadbalancer,
+		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
+		Columns:        getLoadbalancersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		ApiResponse:    resp,
+		Resource:       "loadbalancer",
+		Verb:           "update",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -233,14 +233,14 @@ func RunLoadBalancerDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "loadbalancer",
-		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		ApiResponse:    resp,
+		Resource:       "loadbalancer",
+		Verb:           "delete",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 

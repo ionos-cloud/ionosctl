@@ -171,7 +171,7 @@ func RunBackupUnitCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	c.Printer.Print(backupUnitNote)
@@ -184,7 +184,7 @@ func RunBackupUnitUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getBackupUnitPrint(resp, c, getBackupUnit(backupUnitUpd)))
@@ -198,7 +198,7 @@ func RunBackupUnitDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getBackupUnitPrint(resp, c, nil))
@@ -235,7 +235,7 @@ func getBackupUnitPrint(resp *resources.Response, c *builder.CommandConfig, back
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if backupUnits != nil {
 			r.OutputJSON = backupUnits

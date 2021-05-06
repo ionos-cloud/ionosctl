@@ -181,17 +181,17 @@ func RunVolumeCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:  volume,
-		KeyValue:    getVolumesKVMaps([]resources.Volume{*volume}),
-		Columns:     getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    "volume",
-		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		OutputJSON:     volume,
+		KeyValue:       getVolumesKVMaps([]resources.Volume{*volume}),
+		Columns:        getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		ApiResponse:    resp,
+		Resource:       "volume",
+		Verb:           "create",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -215,17 +215,17 @@ func RunVolumeUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:  volume,
-		KeyValue:    getVolumesKVMaps([]resources.Volume{*volume}),
-		Columns:     getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    "volume",
-		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		OutputJSON:     volume,
+		KeyValue:       getVolumesKVMaps([]resources.Volume{*volume}),
+		Columns:        getVolumesCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		ApiResponse:    resp,
+		Resource:       "volume",
+		Verb:           "update",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -241,14 +241,14 @@ func RunVolumeDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "volume",
-		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		ApiResponse:    resp,
+		Resource:       "volume",
+		Verb:           "delete",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -375,7 +375,7 @@ func RunServerVolumeAttach(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getVolumePrint(resp, c, getVolume(attachedVol)))
@@ -417,7 +417,7 @@ func RunServerVolumeDetach(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getVolumePrint(resp, c, nil))
@@ -448,7 +448,7 @@ func getVolumePrint(resp *resources.Response, c *builder.CommandConfig, vols []r
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if vols != nil {
 			r.OutputJSON = vols

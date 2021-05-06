@@ -146,20 +146,17 @@ func RunDataCenterCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	//if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
-	//	return err
-	//}
-	if err = waitForState(c, StateDatacenter, *dc.Id); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
-		Columns:     getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON:  dc,
-		ApiResponse: resp,
-		Resource:    "datacenter",
-		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		KeyValue:       getDataCentersKVMaps([]resources.Datacenter{*dc}),
+		Columns:        getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		OutputJSON:     dc,
+		ApiResponse:    resp,
+		Resource:       "datacenter",
+		Verb:           "create",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -193,17 +190,17 @@ func RunDataCenterUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
-		Columns:     getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON:  dc,
-		ApiResponse: resp,
-		Resource:    "datacenter",
-		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		KeyValue:       getDataCentersKVMaps([]resources.Datacenter{*dc}),
+		Columns:        getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		OutputJSON:     dc,
+		ApiResponse:    resp,
+		Resource:       "datacenter",
+		Verb:           "update",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -216,14 +213,14 @@ func RunDataCenterDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "datacenter",
-		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		ApiResponse:    resp,
+		Resource:       "datacenter",
+		Verb:           "delete",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 

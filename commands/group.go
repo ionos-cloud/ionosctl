@@ -159,7 +159,7 @@ func RunGroupCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupPrint(nil, c, getGroup(u)))
@@ -180,7 +180,7 @@ func RunGroupUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupPrint(resp, c, getGroup(groupUpd)))
@@ -194,7 +194,7 @@ func RunGroupDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupPrint(resp, c, nil))
@@ -346,7 +346,7 @@ func getGroupPrint(resp *resources.Response, c *builder.CommandConfig, groups []
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if groups != nil {
 			r.OutputJSON = groups

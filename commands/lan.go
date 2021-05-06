@@ -191,17 +191,17 @@ func RunLanCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:  l,
-		KeyValue:    getLanPostsKVMaps([]resources.LanPost{*l}),
-		Columns:     getLansCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    "lan",
-		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		OutputJSON:     l,
+		KeyValue:       getLanPostsKVMaps([]resources.LanPost{*l}),
+		Columns:        getLansCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		ApiResponse:    resp,
+		Resource:       "lan",
+		Verb:           "create",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -225,17 +225,17 @@ func RunLanUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:  lan,
-		KeyValue:    getLansKVMaps([]resources.Lan{*lan}),
-		Columns:     getLansCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    "lan",
-		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		OutputJSON:     lan,
+		KeyValue:       getLansKVMaps([]resources.Lan{*lan}),
+		Columns:        getLansCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		ApiResponse:    resp,
+		Resource:       "lan",
+		Verb:           "update",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -251,14 +251,14 @@ func RunLanDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "lan",
-		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		ApiResponse:    resp,
+		Resource:       "lan",
+		Verb:           "delete",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 

@@ -197,17 +197,17 @@ func RunNicCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:  nic,
-		KeyValue:    getNicsKVMaps([]resources.Nic{*nic}),
-		Columns:     getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    "nic",
-		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		OutputJSON:     nic,
+		KeyValue:       getNicsKVMaps([]resources.Nic{*nic}),
+		Columns:        getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		ApiResponse:    resp,
+		Resource:       "nic",
+		Verb:           "create",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -232,17 +232,17 @@ func RunNicUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:  nicUpd,
-		KeyValue:    getNicsKVMaps([]resources.Nic{*nicUpd}),
-		Columns:     getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse: resp,
-		Resource:    "nic",
-		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		OutputJSON:     nicUpd,
+		KeyValue:       getNicsKVMaps([]resources.Nic{*nicUpd}),
+		Columns:        getNicsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		ApiResponse:    resp,
+		Resource:       "nic",
+		Verb:           "update",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -259,14 +259,14 @@ func RunNicDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "nic",
-		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		ApiResponse:    resp,
+		Resource:       "nic",
+		Verb:           "delete",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -402,7 +402,7 @@ func RunLoadBalancerNicAttach(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getNicPrint(resp, c, getNic(attachedNic)))
@@ -444,7 +444,7 @@ func RunLoadBalancerNicDetach(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getNicPrint(resp, c, nil))
@@ -471,7 +471,7 @@ func getNicPrint(resp *resources.Response, c *builder.CommandConfig, nics []reso
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if nics != nil {
 			r.OutputJSON = nics
