@@ -84,6 +84,7 @@ Required values to run a command:
 	create.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgK8sClusterVersion, "", "", "The K8s version for the Cluster")
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Data Center to be created")
+	create.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for Data Center to be created")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be created [seconds]")
 
 	/*
@@ -172,12 +173,13 @@ func RunK8sClusterCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+		return err
+	}
 	if id, ok := u.GetIdOk(); ok && id != nil {
-		if err = waitForState(c, StateK8sCluster, *id); err != nil {
+		if err = utils.WaitForState(c, StateK8sCluster, *id); err != nil {
 			return err
 		}
-	} else {
-		fmt.Println("sorry not sorry")
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, getK8sCluster(u)))
 }
@@ -189,7 +191,6 @@ func StateK8sCluster(c *builder.CommandConfig, clusterId string) (string, error)
 	}
 	if metadata, ok := dc.GetMetadataOk(); ok && metadata != nil {
 		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			fmt.Println("AICI, STATE:" + *state)
 			return *state, nil
 		}
 	}
