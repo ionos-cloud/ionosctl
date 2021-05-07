@@ -147,9 +147,9 @@ func RunK8sNodeList(c *builder.CommandConfig) error {
 }
 
 func RunK8sNodeGet(c *builder.CommandConfig) error {
-		if err := utils.WaitForState(c, GetStateK8sNode, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodeId))); err != nil {
-			return err
-		}
+	if err := utils.WaitForState(c, GetStateK8sNode, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodeId))); err != nil {
+		return err
+	}
 	u, _, err := c.K8s().GetNode(
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)),
