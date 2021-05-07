@@ -67,7 +67,7 @@ func k8sNodePool() *builder.Command {
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterDcIdsNodePoolName, RunK8sNodePoolCreate, "create", "Create a Kubernetes NodePool",
-		`Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.
+		`Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. Regarding the Kubernetes Version for the NodePool, if not set via flag, it will be used the default one: `+"`"+`ionosctl k8s version get`+"`"+`.
 
 You can wait for the Node Pool to be in "ACTIVE" state using `+"`"+`--wait-for-state`+"`"+` flag together with `+"`"+`--timeout`+"`"+` option.
 
@@ -77,7 +77,7 @@ Required values to run a command:
 * Datacenter Id
 * K8s NodePool Name`, createK8sNodePoolExample, true)
 	create.AddStringFlag(config.ArgK8sNodePoolName, "", "", "The name for the K8s NodePool "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgK8sNodePoolVersion, "", "", "The K8s version for the NodePool")
+	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, it will be used the default one")
 	create.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -117,7 +117,7 @@ Required values to run command:
 
 * K8s Cluster Id
 * K8s NodePool Id`, updateK8sNodePoolExample, true)
-	update.AddStringFlag(config.ArgK8sNodePoolVersion, "", "", "The K8s version for the NodePool. K8s version downgrade is not supported")
+	update.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. K8s version downgrade is not supported")
 	update.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
 	update.AddIntFlag(config.ArgK8sMinNodeCount, "", 1, "The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count")
 	update.AddIntFlag(config.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count")
@@ -190,8 +190,11 @@ func RunK8sNodePoolGet(c *builder.CommandConfig) error {
 }
 
 func RunK8sNodePoolCreate(c *builder.CommandConfig) error {
-	newNodePool := getNewK8sNodePool(c)
-	u, _, err := c.K8s().CreateNodePool(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)), newNodePool)
+	newNodePool, err := getNewK8sNodePool(c)
+	if err != nil {
+		return err
+	}
+	u, _, err := c.K8s().CreateNodePool(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)), *newNodePool)
 	if err != nil {
 		return err
 	}
@@ -254,9 +257,19 @@ func GetStateK8sNodePool(c *builder.CommandConfig, objId string) (*string, error
 	return nil, nil
 }
 
-func getNewK8sNodePool(c *builder.CommandConfig) resources.K8sNodePool {
+func getNewK8sNodePool(c *builder.CommandConfig) (*resources.K8sNodePool, error) {
+	var (
+		k8sversion string
+		err        error
+	)
 	n := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolName))
-	v := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolVersion))
+	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)) {
+		k8sversion = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion))
+	} else {
+		if k8sversion, err = getK8sVersion(c); err != nil {
+			return nil, err
+		}
+	}
 	dcId := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId))
 	nodeCount := viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodeCount))
 	cpuFamily := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgCpuFamily))
@@ -265,11 +278,11 @@ func getNewK8sNodePool(c *builder.CommandConfig) resources.K8sNodePool {
 	nodeZone := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodeZone))
 	storageSize := viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgStorageSize))
 	storageType := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgStorageType))
-	return resources.K8sNodePool{
+	return &resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				Name:             &n,
-				K8sVersion:       &v,
+				K8sVersion:       &k8sversion,
 				DatacenterId:     &dcId,
 				NodeCount:        &nodeCount,
 				CpuFamily:        &cpuFamily,
@@ -280,14 +293,14 @@ func getNewK8sNodePool(c *builder.CommandConfig) resources.K8sNodePool {
 				StorageSize:      &storageSize,
 			},
 		},
-	}
+	}, nil
 }
 
 func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *builder.CommandConfig) resources.K8sNodePool {
 	propertiesUpdated := resources.K8sNodePoolProperties{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolVersion)) {
-			propertiesUpdated.SetK8sVersion(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolVersion)))
+		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)) {
+			propertiesUpdated.SetK8sVersion(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)))
 		} else {
 			if vers, ok := properties.GetK8sVersionOk(); ok && vers != nil {
 				propertiesUpdated.SetK8sVersion(*vers)

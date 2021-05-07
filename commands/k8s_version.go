@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/spf13/cobra"
@@ -43,9 +44,19 @@ func RunK8sVersionList(c *builder.CommandConfig) error {
 }
 
 func RunK8sVersionGet(c *builder.CommandConfig) error {
-	u, _, err := c.K8s().GetVersion()
+	u, err := getK8sVersion(c)
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(u)
+}
+
+func getK8sVersion(c *builder.CommandConfig) (string, error) {
+	if k8sversion, _, err := c.K8s().GetVersion(); err == nil {
+		k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
+		k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
+		return k8sversion, nil
+	} else {
+		return "", err
+	}
 }

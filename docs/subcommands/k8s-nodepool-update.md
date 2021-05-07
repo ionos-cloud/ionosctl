@@ -32,6 +32,7 @@ Required values to run command:
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                     Force command to execute without user input
   -h, --help                      help for update
+      --k8s-version string        The K8s version for the NodePool. K8s version downgrade is not supported
       --label-key string          Label key. Must be set together with --label-value
       --label-value string        Label value. Must be set together with --label-key
       --lan-id int                The unique LAN Id of existing LANs to be attached to worker Nodes
@@ -41,7 +42,6 @@ Required values to run command:
       --min-node-count int        The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count (default 1)
       --node-count int            The number of worker Nodes that the NodePool should contain (default 1)
       --nodepool-id string        The unique K8s Node Pool Id (required)
-      --nodepool-version string   The K8s version for the NodePool. K8s version downgrade is not supported
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
       --timeout int               Timeout option for waiting for NodePool/Request [seconds] (default 600)

@@ -12,7 +12,7 @@ ionosctl k8s cluster create [flags]
 
 ## Description
 
-Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. 
+Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: `ionosctl k8s version get`.
 
 You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
 
@@ -23,18 +23,18 @@ Required values to run a command:
 ## Options
 
 ```text
-  -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cluster-name string      The name for the K8s Cluster (required)
-      --cluster-version string   The K8s version for the Cluster
-      --cols strings             Columns to be printed in the standard output (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow])
-  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                    Force command to execute without user input
-  -h, --help                     help for create
-  -o, --output string            Desired output format [text|json] (default "text")
-  -q, --quiet                    Quiet output
-      --timeout int              Timeout option for waiting for Cluster/Request [seconds] (default 600)
-      --wait-for-request         Wait for the Request for Cluster creation to be executed
-      --wait-for-state           Wait for the new Cluster to be in ACTIVE state
+  -u, --api-url string        Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cluster-name string   The name for the K8s Cluster (required)
+      --cols strings          Columns to be printed in the standard output (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow])
+  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                 Force command to execute without user input
+  -h, --help                  help for create
+      --k8s-version string    The K8s version for the Cluster. If not set, it will be used the default one
+  -o, --output string         Desired output format [text|json] (default "text")
+  -q, --quiet                 Quiet output
+      --timeout int           Timeout option for waiting for Cluster/Request [seconds] (default 600)
+      --wait-for-request      Wait for the Request for Cluster creation to be executed
+      --wait-for-state        Wait for the new Cluster to be in ACTIVE state
 ```
 
 ## Examples
