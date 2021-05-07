@@ -2,53 +2,71 @@ package utils
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"sync"
 	"time"
 
+	"github.com/cheggaaa/pb/v3"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
 
 const (
-	failed    = "FAILED"
-	active    = "ACTIVE"
-	available = "AVAILABLE"
-	pollTime  = 10
+	failed   = "FAILED"
+	done     = "DONE"
+	pollTime = 10
 )
 
-var waitingForRequestMsg = "Waiting for request: %s"
-var waitingForStateMsg = "Waiting for state: %s"
-var contextTimeoutErr = errors.New("context hit timeout")
+const (
+	stateProgressCircleTpl   = `{{ etime . }} {{ "Waiting for state" }}{{ cycle . "." ".. " "..." "...." }}`
+	requestProgressCircleTpl = `{{ etime . }} {{ "Waiting for request" }}{{ cycle . "." ".. " "..." "...." }}`
+)
+
+var waitingForRequestMsg = "Waiting for request..."
+var waitingForStateMsg = "Waiting for state..."
 
 // WaitForRequest waits for Request to be executed
-func WaitForRequest(c *builder.CommandConfig, path string) error {
+func WaitForRequest(c *builder.CommandConfig, requestPath string) error {
 	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)) {
+		// Double Check: return if flag not set
 		return nil
 	} else {
+		// Set context timeout
 		timeout := viper.GetInt(builder.GetFlagName(c.ParentName, c.Name, config.ArgTimeout))
 		if timeout == 0 {
 			timeout = config.DefaultTimeoutSeconds
 		}
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
-		c.Context = ctxTimeout
 
-		if reqId, err := printer.GetRequestId(path); err == nil && reqId != nil {
-			if err = c.Printer.Print(fmt.Sprintf(waitingForRequestMsg, *reqId)); err != nil {
-				return err
-			}
-		} else {
+		// Get Request Id
+		requestId, err := printer.GetRequestId(requestPath)
+		if err != nil {
 			return err
 		}
 
-		// Wait for Request
-		if _, err := c.Requests().Wait(path); err != nil {
-			return err
+		// Check if CLI is running in a terminal or not
+		// Check if the output format
+		if c.Terminal() && viper.GetString(config.ArgOutput) == printer.TypeText.String() {
+			progress := pb.New(1)
+			progress.SetWriter(c.Printer.GetStdout())
+			progress.SetTemplateString(requestProgressCircleTpl)
+			progress.Start()
+			defer progress.Finish()
+
+			_, errCh := WatchRequestProgress(ctxTimeout, c, *requestId)
+			if err := <-errCh; err != nil {
+				progress.SetTemplateString(failed)
+				return err
+			}
+			progress.SetTemplateString(requestProgressCircleTpl + " " + done)
+		} else {
+			c.Printer.Print(waitingForRequestMsg)
+			_, errCh := WatchRequestProgress(ctxTimeout, c, *requestId)
+			if err := <-errCh; err != nil {
+				return err
+			}
+			c.Printer.Print(done)
 		}
 		return nil
 	}
@@ -56,65 +74,43 @@ func WaitForRequest(c *builder.CommandConfig, path string) error {
 
 type InterrogateStateFunc func(c *builder.CommandConfig, resourceId string) (*string, error)
 
-// WaitForState waits for the State of a Resource to be Active or Available
-func WaitForState(c *builder.CommandConfig, interrog InterrogateStateFunc, resourceId string) error {
+func WaitForState(c *builder.CommandConfig, interrogator InterrogateStateFunc, resourceId string) error {
 	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
+		// Double Check: return if flag not set
 		return nil
 	} else {
+		// Set context timeout
 		timeout := viper.GetInt(builder.GetFlagName(c.ParentName, c.Name, config.ArgTimeout))
 		if timeout == 0 {
 			timeout = config.DefaultTimeoutSeconds
 		}
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
+		defer cancel()
 
-		var wg sync.WaitGroup
-		wg.Add(1)
-		go func(cmdCfg *builder.CommandConfig, interrogator InterrogateStateFunc, resId string) {
-			for {
-				select {
-				case <-ctxTimeout.Done():
-					wg.Done()
-					clierror.CheckError(contextTimeoutErr, cmdCfg.Printer.GetStderr())
-					return
-				default:
-					if state, err := interrogator(cmdCfg, resId); err == nil && state != nil {
-						cmdCfg.Printer.Print(fmt.Sprintf(waitingForStateMsg, *state))
-						if IsActive(*state) {
-							wg.Done()
-							return
-						}
-						if HasFailed(*state) {
-							wg.Done()
-							return
-						}
-					} else {
-						wg.Done()
-						clierror.CheckError(errors.New("error getting state"), cmdCfg.Printer.GetStderr())
-						return
-					}
+		// Check if CLI is running in a terminal or not
+		// Check if the output format
+		if c.Terminal() && viper.GetString(config.ArgOutput) == printer.TypeText.String() {
+			progress := pb.New(1)
+			progress.SetWriter(c.Printer.GetStdout())
+			progress.SetTemplateString(stateProgressCircleTpl)
+			progress.Start()
+			defer progress.Finish()
 
-					time.Sleep(pollTime * time.Second)
-				}
+			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+			if err := <-errCh; err != nil {
+				progress.SetTemplateString(failed)
+				return err
 			}
-		}(c, interrog, resourceId)
-		wg.Wait()
-		cancel()
+			progress.SetTemplateString(stateProgressCircleTpl + " " + done)
+		} else {
+			c.Printer.Print(waitingForStateMsg)
+			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+			if err := <-errCh; err != nil {
+				c.Printer.Print(failed)
+				return err
+			}
+			c.Printer.Print(done)
+		}
 		return nil
-	}
-}
-
-func IsActive(state string) bool {
-	if state == active || state == available {
-		return true
-	} else {
-		return false
-	}
-}
-
-func HasFailed(state string) bool {
-	if state == failed {
-		return true
-	} else {
-		return false
 	}
 }

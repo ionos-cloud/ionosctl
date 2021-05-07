@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"golang.org/x/term"
 	"io"
 	"os"
 
@@ -258,6 +259,10 @@ func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.Pccs = func() resources.PccsService { return resources.NewPrivateCrossConnectService(client, c.Context) }
 	c.K8s = func() resources.K8sService { return resources.NewK8sService(client, c.Context) }
 	return nil
+}
+
+func (c *CommandConfig) Terminal() bool {
+	return term.IsTerminal(int(os.Stdout.Fd()))
 }
 
 func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, name, parentName string, init bool) (*CommandConfig, error) {
