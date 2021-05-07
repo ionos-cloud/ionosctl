@@ -45,9 +45,8 @@ func WaitForRequest(c *builder.CommandConfig, requestPath string) error {
 			return err
 		}
 
-		// Check if CLI is running in a terminal or not
-		// Check if the output format
-		if c.Terminal() && viper.GetString(config.ArgOutput) == printer.TypeText.String() {
+		// Check the output format
+		if viper.GetString(config.ArgOutput) == printer.TypeText.String() {
 			progress := pb.New(1)
 			progress.SetWriter(c.Printer.GetStdout())
 			progress.SetTemplateString(requestProgressCircleTpl)
@@ -56,7 +55,7 @@ func WaitForRequest(c *builder.CommandConfig, requestPath string) error {
 
 			_, errCh := WatchRequestProgress(ctxTimeout, c, *requestId)
 			if err := <-errCh; err != nil {
-				progress.SetTemplateString(failed)
+				progress.SetTemplateString(requestProgressCircleTpl + " " + failed)
 				return err
 			}
 			progress.SetTemplateString(requestProgressCircleTpl + " " + done)
@@ -64,6 +63,7 @@ func WaitForRequest(c *builder.CommandConfig, requestPath string) error {
 			c.Printer.Print(waitingForRequestMsg)
 			_, errCh := WatchRequestProgress(ctxTimeout, c, *requestId)
 			if err := <-errCh; err != nil {
+				c.Printer.Print(failed)
 				return err
 			}
 			c.Printer.Print(done)
@@ -87,9 +87,8 @@ func WaitForState(c *builder.CommandConfig, interrogator InterrogateStateFunc, r
 		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
 		defer cancel()
 
-		// Check if CLI is running in a terminal or not
-		// Check if the output format
-		if c.Terminal() && viper.GetString(config.ArgOutput) == printer.TypeText.String() {
+		// Check the output format
+		if viper.GetString(config.ArgOutput) == printer.TypeText.String() {
 			progress := pb.New(1)
 			progress.SetWriter(c.Printer.GetStdout())
 			progress.SetTemplateString(stateProgressCircleTpl)
@@ -98,7 +97,7 @@ func WaitForState(c *builder.CommandConfig, interrogator InterrogateStateFunc, r
 
 			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
-				progress.SetTemplateString(failed)
+				progress.SetTemplateString(stateProgressCircleTpl + " " + failed)
 				return err
 			}
 			progress.SetTemplateString(stateProgressCircleTpl + " " + done)

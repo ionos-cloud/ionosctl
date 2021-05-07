@@ -49,6 +49,10 @@ func WatchStateProgress(ctx context.Context, c *builder.CommandConfig, interroga
 				errChan <- err
 				return
 			}
+			if state == nil {
+				errChan <- errors.New("error getting state")
+				return
+			}
 
 			// Check Resource State
 			// Send Progress, Send Error if any
@@ -135,9 +139,11 @@ func WatchRequestProgress(ctx context.Context, c *builder.CommandConfig, request
 }
 
 func getRequestStatus(reqStatus *resources.RequestStatus) (*string, error) {
-	if metadata, ok := reqStatus.GetMetadataOk(); ok && metadata != nil {
-		if status, ok := metadata.GetStatusOk(); ok && status != nil {
-			return status, nil
+	if reqStatus != nil {
+		if metadata, ok := reqStatus.GetMetadataOk(); ok && metadata != nil {
+			if status, ok := metadata.GetStatusOk(); ok && status != nil {
+				return status, nil
+			}
 		}
 	}
 	return nil, errors.New("error getting request status")
