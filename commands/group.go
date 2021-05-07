@@ -68,8 +68,8 @@ Required values to run a command:
 	create.AddBoolFlag(config.ArgGroupCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
 	create.AddBoolFlag(config.ArgGroupCreateNic, "", false, "The group will be allowed to create NICs")
 	create.AddBoolFlag(config.ArgGroupCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Group to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Group to be created [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Group creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
 
 	/*
 		Update Command
@@ -77,7 +77,7 @@ Required values to run a command:
 	update := builder.NewCommand(ctx, groupCmd, noPreRun, RunGroupUpdate, "update", "Update a Group",
 		`Use this command to update details about a specific Group.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -96,8 +96,8 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgGroupCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
 	update.AddBoolFlag(config.ArgGroupCreateNic, "", false, "The group will be allowed to create NICs")
 	update.AddBoolFlag(config.ArgGroupCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Group attributes to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Group to be updated [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Group update to be executed")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Group update [seconds]")
 
 	/*
 		Delete Command
@@ -112,8 +112,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Group to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Group to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Group deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Group deletion [seconds]")
 
 	groupCmd.AddCommand(groupResource())
 	groupCmd.AddCommand(groupUser())

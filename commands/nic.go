@@ -66,7 +66,7 @@ func nic() *builder.Command {
 	create := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIds, RunNicCreate, "create", "Create a NIC",
 		`Use this command to create/add a new NIC to the target Server. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run a command:
 
@@ -79,8 +79,8 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be created [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for NIC creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for NIC creation [seconds]")
 
 	/*
 		Update Command
@@ -92,7 +92,7 @@ The user can specify and assign private IPs manually. Valid IP addresses for pri
 
 The value for firewallActive can be toggled between true and false to enable or disable the firewall. When the firewall is enabled, incoming traffic is filtered by all the firewall rules configured on the NIC. When the firewall is disabled, then all incoming traffic is routed directly to the NIC and any configured firewall rules are ignored.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -108,8 +108,8 @@ Required values to run command:
 		return getLansIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgNicDhcp, "", config.DefaultNicDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be updated [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for NIC update to be executed")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
 
 	/*
 		Delete Command
@@ -117,7 +117,7 @@ Required values to run command:
 	deleteCmd := builder.NewCommand(ctx, nicCmd, PreRunGlobalDcServerIdsNicId, RunNicDelete, "delete", "Delete a NIC",
 		`This command deletes a specified NIC.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -128,8 +128,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId)), viper.GetString(builder.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for NIC deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for NIC deletion [seconds]")
 
 	return nicCmd
 }
@@ -292,7 +292,7 @@ func loadBalancerNic() *builder.Command {
 	attachNic := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcNicLoadBalancerIds, RunLoadBalancerNicAttach, "attach", "Attach a NIC to a Load Balancer",
 		`Use this command to associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -317,8 +317,8 @@ Required values to run command:
 			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), attachNic.Name(), config.ArgDataCenterId)),
 			viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), attachNic.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be attached to a Load Balancer")
-	attachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be attached to a Load Balancer [seconds]")
+	attachNic.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for NIC attachment to be executed")
+	attachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for NIC attachment [seconds]")
 
 	/*
 		List Nics Command
@@ -363,7 +363,7 @@ Required values to run command:
 	detachNic := builder.NewCommand(ctx, loadbalancerNicCmd, PreRunDcNicLoadBalancerIds, RunLoadBalancerNicDetach, "detach", "Detach a NIC from a Load Balancer",
 		`Use this command to remove the association of a NIC with a Load Balancer.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
 
@@ -382,8 +382,8 @@ Required values to run command:
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetFlagName(loadbalancerNicCmd.Name(), detachNic.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for NIC to be detached from a Load Balancer")
-	detachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for NIC to be detached from a Load Balancer [seconds]")
+	detachNic.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for NIC detachment to be executed")
+	detachNic.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for NIC detachment [seconds]")
 
 	return loadbalancerNicCmd
 }

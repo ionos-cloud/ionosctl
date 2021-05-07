@@ -57,15 +57,15 @@ func datacenter() *builder.Command {
 
 Virtual Data Centers (VDCs) are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, createDatacenterExample, true)
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.`, createDatacenterExample, true)
 	create.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
 	create.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
 	create.AddStringFlag(config.ArgDataCenterRegion, "", "de/txl", "Location for the Data Center")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterRegion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Data Center to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be created [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
 
 	/*
 		Update Command
@@ -73,7 +73,7 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, 
 	update := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterUpdate, "update", "Update a Data Center",
 		`Use this command to change a Virtual Data Center's name, description.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -84,8 +84,8 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
 	update.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Data Center to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be updated [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center update to be executed")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center update [seconds]")
 
 	/*
 		Delete Command
@@ -102,8 +102,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Data Center to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center deletion")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
 
 	return datacenterCmd
 }

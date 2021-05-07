@@ -42,12 +42,12 @@ f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d   demoDatacenter   us/las
 RequestId: 98ab8148-96c4-4091-90e8-9ee2b8a172f4
 Status: Command datacenter create has been successfully executed
 
-ionosctl datacenter create --datacenter-name demoDatacenter --datacenter-location gb/lhr --wait 
+ionosctl datacenter create --datacenter-name demoDatacenter --datacenter-location gb/lhr --wait-for-state 
 Waiting for request: 2401b498-8afb-4728-a22a-d2b26f5e31c3
 DatacenterId                           Name             Location
 8e543958-04f5-4872-bbf3-b28d46393ac7   demoDatacenter   gb/lhr
 RequestId: 2401b498-8afb-4728-a22a-d2b26f5e31c3
-Status: Command datacenter create and request have been successfully executed`
+Status: Command datacenter create & wait have been successfully executed`
 	updateDatacenterExample = `ionosctl datacenter update --datacenter-id 8e543958-04f5-4872-bbf3-b28d46393ac7 --datacenter-description demoDescription --cols "DatacenterId,Description"
 DatacenterId                           Description
 8e543958-04f5-4872-bbf3-b28d46393ac7   demoDescription

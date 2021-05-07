@@ -82,8 +82,8 @@ Required values to run a command:
 	create.AddStringFlag(config.ArgBackupUnitName, "", "", "Alphanumeric name you want to assign to the BackupUnit "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgBackupUnitEmail, "", "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgBackupUnitPassword, "", "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for BackupUnit to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for BackupUnit to be created [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for BackupUnit creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit creation [seconds]")
 
 	/*
 		Update Command
@@ -100,8 +100,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for BackupUnit to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for BackupUnit to be updated [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for BackupUnit update to be executed")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit update [seconds]")
 
 	/*
 		Delete Command
@@ -116,8 +116,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for BackupUnit to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for BackupUnit to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for BackupUnit deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit deletion [seconds]")
 
 	return backupUnitCmd
 }

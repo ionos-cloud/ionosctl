@@ -63,7 +63,7 @@ func loadBalancer() *builder.Command {
 	create := builder.NewCommand(ctx, loadbalancerCmd, PreRunDataCenterId, RunLoadBalancerCreate, "create", "Create a Load Balancer",
 		`Use this command to create a new Load Balancer within the Virtual Data Center. Load balancers can be used for public or private IP traffic. The name, IP and DHCP for the Load Balancer can be set.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -74,8 +74,8 @@ Required values to run command:
 	})
 	create.AddStringFlag(config.ArgLoadBalancerName, "", "", "Name of the Load Balancer")
 	create.AddBoolFlag(config.ArgLoadBalancerDhcp, "", config.DefaultLoadBalancerDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Load Balancer to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be created [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Load Balancer creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer creation [seconds]")
 
 	/*
 		Update Command
@@ -83,7 +83,7 @@ Required values to run command:
 	update := builder.NewCommand(ctx, loadbalancerCmd, PreRunDcLoadBalancerIds, RunLoadBalancerUpdate, "update", "Update a Load Balancer",
 		`Use this command to update the configuration of a specified Load Balancer.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -100,8 +100,8 @@ Required values to run command:
 	update.AddStringFlag(config.ArgLoadBalancerName, "", "", "Name of the Load Balancer")
 	update.AddStringFlag(config.ArgLoadBalancerIp, "", "", "The IP of the Load Balancer")
 	update.AddBoolFlag(config.ArgLoadBalancerDhcp, "", config.DefaultLoadBalancerDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Load Balancer to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be updated [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Load Balancer update to be executed")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer update [seconds]")
 
 	/*
 		Delete Command
@@ -109,7 +109,7 @@ Required values to run command:
 	deleteCmd := builder.NewCommand(ctx, loadbalancerCmd, PreRunDcLoadBalancerIds, RunLoadBalancerDelete, "delete", "Delete a Load Balancer",
 		`Use this command to delete the specified Load Balancer.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -123,8 +123,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(builder.GetFlagName(loadbalancerCmd.Name(), deleteCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Load Balancer to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Load Balancer to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Load Balancer deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer deletion [seconds]")
 
 	loadbalancerCmd.AddCommand(loadBalancerNic())
 

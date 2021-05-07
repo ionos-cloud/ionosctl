@@ -151,10 +151,8 @@ func RunK8sClusterList(c *builder.CommandConfig) error {
 }
 
 func RunK8sClusterGet(c *builder.CommandConfig) error {
-	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
-		if err := utils.WaitForState(c, GetStateK8sCluster, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId))); err != nil {
-			return err
-		}
+	if err := utils.WaitForState(c, GetStateK8sCluster, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId))); err != nil {
+		return err
 	}
 	u, _, err := c.K8s().GetCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)))
 	if err != nil {
@@ -190,10 +188,8 @@ func RunK8sClusterCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)) {
-		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-			return err
-		}
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+		return err
 	}
 	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
 		if id, ok := u.GetIdOk(); ok && id != nil {
@@ -237,10 +233,8 @@ func RunK8sClusterDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)) {
-		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-			return err
-		}
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+		return err
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
 }

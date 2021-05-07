@@ -178,10 +178,8 @@ func RunK8sNodePoolList(c *builder.CommandConfig) error {
 }
 
 func RunK8sNodePoolGet(c *builder.CommandConfig) error {
-	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
-		if err := utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId))); err != nil {
-			return err
-		}
+	if err := utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId))); err != nil {
+		return err
 	}
 	u, _, err := c.K8s().GetNodePool(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)))
@@ -222,10 +220,8 @@ func RunK8sNodePoolUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
-		if err = utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId))); err != nil {
-			return err
-		}
+	if err = utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId))); err != nil {
+		return err
 	}
 	return c.Printer.Print(getK8sNodePoolUpdatedPrint(c, newNodePoolUpdated))
 }

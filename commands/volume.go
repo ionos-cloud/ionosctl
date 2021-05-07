@@ -62,7 +62,7 @@ func volume() *builder.Command {
 	create := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcId, RunVolumeCreate, "create", "Create a Volume",
 		`Use this command to create a Volume on your account. Creates a volume within the data center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type and availability zone for the object.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -75,8 +75,8 @@ Required values to run command:
 	create.AddStringFlag(config.ArgVolumeType, "", "HDD", "Type of the Volume")
 	create.AddStringFlag(config.ArgVolumeZone, "", "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
 	create.AddStringFlag(config.ArgVolumeSshKey, "", "", "Ssh Key of the Volume")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be created [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume creation [seconds]")
 
 	/*
 		Update Command
@@ -86,7 +86,7 @@ Required values to run command:
 
 Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API. Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -100,8 +100,8 @@ Required values to run command:
 	update.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
 	update.AddStringFlag(config.ArgVolumeBus, "", "VIRTIO", "Bus of the Volume")
 	update.AddStringFlag(config.ArgVolumeSshKey, "", "", "Ssh Key of the Volume")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be updated [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume update to be executed")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume update [seconds]")
 
 	/*
 		Delete Command
@@ -109,7 +109,7 @@ Required values to run command:
 	deleteCmd := builder.NewCommand(ctx, volumeCmd, PreRunGlobalDcIdVolumeId, RunVolumeDelete, "delete", "Delete a Volume",
 		`Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -119,8 +119,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(builder.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume deletion [seconds]")
 
 	return volumeCmd
 }
@@ -274,7 +274,7 @@ func serverVolume() *builder.Command {
 	attachVolume := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerVolumeIds, RunServerVolumeAttach, "attach", "Attach a Volume to a Server",
 		`Use this command to attach a pre-existing Volume to a Server.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -293,8 +293,8 @@ Required values to run command:
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), attachVolume.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachVolume.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be attached to Server")
-	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be attached to a Server [seconds]")
+	attachVolume.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume attachment to be executed")
+	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume attachment [seconds]")
 
 	/*
 		List Volumes Command
@@ -336,7 +336,7 @@ Required values to run command:
 	detachVolume := builder.NewCommand(ctx, serverVolumeCmd, PreRunDcServerVolumeIds, RunServerVolumeDetach, "detach", "Detach a Volume from a Server",
 		`This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--ignore-stdin`+"`"+` option.
 
 Required values to run command:
 
@@ -355,8 +355,8 @@ Required values to run command:
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverVolumeCmd.Name(), detachVolume.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachVolume.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Volume to be detached from Server")
-	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Volume to be detached from a Server [seconds]")
+	detachVolume.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume detachment to be executed")
+	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume detachment [seconds]")
 
 	return serverVolumeCmd
 }

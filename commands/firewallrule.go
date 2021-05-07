@@ -80,7 +80,7 @@ func firewallrule() *builder.Command {
 
 NOTE: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -97,8 +97,8 @@ Required values to run command:
 	create.AddIntFlag(config.ArgFirewallRuleIcmpCode, "", 0, "Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.")
 	create.AddIntFlag(config.ArgFirewallRulePortRangeStart, "", 1, "Define the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
 	create.AddIntFlag(config.ArgFirewallRulePortRangeStop, "", 1, "Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Firewall Rule to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Firewall Rule to be created [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Firewall Rule creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule creation [seconds]")
 
 	/*
 		Update Command
@@ -106,7 +106,7 @@ Required values to run command:
 	update := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleId, RunFirewallRuleUpdate, "update", "Update a FirewallRule",
 		`Use this command to update a specified Firewall Rule.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -129,8 +129,8 @@ Required values to run command:
 			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Firewall Rule to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Firewall Rule to be updated [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Firewall Rule update to be executed")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule update [seconds]")
 
 	/*
 		Delete Command
@@ -138,7 +138,7 @@ Required values to run command:
 	deleteCmd := builder.NewCommand(ctx, firewallRuleCmd, PreRunGlobalDcServerNicIdsFRuleId, RunFirewallRuleDelete, "delete", "Delete a FirewallRule",
 		`Use this command to delete a specified Firewall Rule from a Virtual Data Center.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
 
 Required values to run command:
 
@@ -153,8 +153,8 @@ Required values to run command:
 			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 			viper.GetString(builder.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Firewall Rule to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Firewall Rule to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Firewall Rule deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
 
 	return firewallRuleCmd
 }
