@@ -16,7 +16,7 @@ Use this command to delete a specified Server from a Virtual Data Center.
 
 NOTE: This will not automatically remove the storage Volume(s) attached to a Server.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
+You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -35,8 +35,8 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-      --timeout int            Timeout option for Server to be deleted [seconds] (default 60)
-      --wait                   Wait for Server to be deleted
+      --timeout int            Timeout option for Request for Server deletion [seconds] (default 60)
+      --wait-for-request       Wait for the Request for Server deletion to be executed
 ```
 
 ## Examples

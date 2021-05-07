@@ -14,6 +14,8 @@ ionosctl k8s cluster update [flags]
 
 Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.
 
+You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
+
 Required values to run command:
 
 * K8s Cluster Id
@@ -33,6 +35,8 @@ Required values to run command:
       --maintenance-time string   The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
+      --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)
+      --wait-for-state            Wait for specified Cluster to be in ACTIVE state after updating
 ```
 
 ## Examples

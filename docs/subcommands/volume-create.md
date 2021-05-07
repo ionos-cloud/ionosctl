@@ -14,7 +14,7 @@ ionosctl volume create [flags]
 
 Use this command to create a Volume on your account. Creates a volume within the data center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type and availability zone for the object.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -31,7 +31,7 @@ Required values to run command:
   -h, --help                         help for create
   -o, --output string                Desired output format [text|json] (default "text")
   -q, --quiet                        Quiet output
-      --timeout int                  Timeout option for Volume to be created [seconds] (default 60)
+      --timeout int                  Timeout option for Request for Volume creation [seconds] (default 60)
       --volume-bus string            Bus for the Volume (default "VIRTIO")
       --volume-licence-type string   Licence Type of the Volume (default "LINUX")
       --volume-name string           Name of the Volume
@@ -39,7 +39,7 @@ Required values to run command:
       --volume-ssh-keys string       Ssh Key of the Volume
       --volume-type string           Type of the Volume (default "HDD")
       --volume-zone string           Availability zone of the Volume. Storage zone can only be selected prior provisioning (default "AUTO")
-      --wait                         Wait for Volume to be created
+      --wait-for-request             Wait for the Request for Volume creation to be executed
 ```
 
 ## Examples

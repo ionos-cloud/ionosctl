@@ -14,6 +14,8 @@ ionosctl k8s nodepool create [flags]
 
 Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.
 
+You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
+
 Required values to run a command:
 
 * K8s Cluster Id
@@ -35,12 +37,14 @@ Required values to run a command:
       --node-count int            The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
       --node-zone string          The compute Availability Zone in which the Node should exist (default "AUTO")
       --nodepool-name string      The name for the K8s NodePool (required)
-      --nodepool-version string   The K8s version for the NodePool (default "1.19.8")
+      --nodepool-version string   The K8s version for the NodePool
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
       --ram-size int              The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB (default 2048)
       --storage-size int          The total allocated storage capacity of a Node (default 10)
       --storage-type string       Storage Type (default "HDD")
+      --timeout int               Timeout option for waiting for NodePool/Request [seconds] (default 600)
+      --wait-for-state            Wait for the new NodePool to be in ACTIVE state
 ```
 
 ## Examples

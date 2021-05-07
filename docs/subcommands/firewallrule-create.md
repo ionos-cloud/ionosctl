@@ -16,7 +16,7 @@ Use this command to create/add a new Firewall Rule to the specified NIC. All Fir
 
 NOTE: the Firewall Rule Protocol can only be set when creating a new Firewall Rule.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -47,8 +47,8 @@ Required values to run command:
   -o, --output string                       Desired output format [text|json] (default "text")
   -q, --quiet                               Quiet output
       --server-id string                    The unique Server Id (required)
-      --timeout int                         Timeout option for Firewall Rule to be created [seconds] (default 60)
-      --wait                                Wait for Firewall Rule to be created
+      --timeout int                         Timeout option for Request for Firewall Rule creation [seconds] (default 60)
+      --wait-for-request                    Wait for Request for Firewall Rule creation to be executed
 ```
 
 ## Examples

@@ -14,7 +14,7 @@ ionosctl loadbalancer delete [flags]
 
 Use this command to delete the specified Load Balancer.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
+You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -33,16 +33,16 @@ Required values to run command:
       --loadbalancer-id string   The unique Load Balancer Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --timeout int              Timeout option for Load Balancer to be deleted [seconds] (default 60)
-      --wait                     Wait for Load Balancer to be deleted
+      --timeout int              Timeout option for Request for Load Balancer deletion [seconds] (default 60)
+      --wait-for-request         Wait for Request for Load Balancer deletion to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl loadbalancer delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --force --wait 
+ionosctl loadbalancer delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --force --wait-for-request
 Waiting for request: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
 RequestId: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
-Status: Command loadbalancer delete and request have been successfully executed
+Status: Command loadbalancer delete & wait have been successfully executed
 ```
 

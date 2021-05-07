@@ -58,10 +58,10 @@ Warning: Are you sure you want to delete data center (y/N) ? y
 RequestId: 12547a71-9768-483b-8a8e-e03e58df6dc3
 Status: Command datacenter delete has been successfully executed
 
-ionosctl datacenter delete --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774 --force --wait 
+ionosctl datacenter delete --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774 --force --wait-for-request
 Waiting for request: a2f71ef3-f81c-4b15-8f8f-5dfd1bdb3c26
 RequestId: a2f71ef3-f81c-4b15-8f8f-5dfd1bdb3c26
-Status: Command datacenter delete and request have been successfully executed`
+Status: Command datacenter delete & wait have been successfully executed`
 
 	/*
 		Server Examples
@@ -78,12 +78,12 @@ f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    2
 RequestId: 07fd3682-8642-4a5e-a57a-056e909a2af8
 Status: Command server create has been successfully executed
 
-ionosctl server create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-name demoServer --wait 
+ionosctl server create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-name demoServer --wait-for-request 
 Waiting for request: e9d12f57-3513-4ae3-ab39-179aacb8c072
 ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily
 35201d04-0ea2-43e7-abc4-56f92737bb9d   demoServer                      BUSY    2       256MB   AMD_OPTERON
 RequestId: e9d12f57-3513-4ae3-ab39-179aacb8c072
-Status: Command server create and request have been successfully executed`
+Status: Command server create & wait have been successfully executed`
 	updateServerExample = `ionosctl server update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff --server-cores 4
 ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily
 f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    4       256MB   AMD_OPTERON
@@ -158,12 +158,12 @@ LoadbalancerId                         Name               Dhcp
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   true
 RequestId: 74441964-1134-4009-8b81-d7189170885e
 Status: Command loadbalancer create has been successfully executed`
-	updateLoadbalancerExample = `ionosctl loadbalancer update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --loadbalancer-dhcp=false --wait
+	updateLoadbalancerExample = `ionosctl loadbalancer update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --loadbalancer-dhcp=false --wait-for-request
 Waiting for request: 0a9279d8-9757-41e0-b64f-b4cd2baf4717
 LoadbalancerId                         Name               Dhcp
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   false
 RequestId: 0a9279d8-9757-41e0-b64f-b4cd2baf4717
-Status: Command loadbalancer update and request have been successfully executed`
+Status: Command loadbalancer update & wait have been successfully executed`
 	listLoadbalancerExample = `ionosctl loadbalancer list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d 
 LoadbalancerId                         Name               Dhcp
 f16dfcc1-9181-400b-a08d-7fe15ca0e9af   demoLoadbalancer   true
@@ -171,10 +171,10 @@ f16dfcc1-9181-400b-a08d-7fe15ca0e9af   demoLoadbalancer   true
 	getLoadbalancerExample = `ionosctl loadbalancer get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c 
 LoadbalancerId                         Name               Dhcp
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   false`
-	deleteLoadbalancerExample = `ionosctl loadbalancer delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --force --wait 
+	deleteLoadbalancerExample = `ionosctl loadbalancer delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --force --wait-for-request
 Waiting for request: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
 RequestId: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
-Status: Command loadbalancer delete and request have been successfully executed`
+Status: Command loadbalancer delete & wait have been successfully executed`
 	attachNicLoadbalancerExample = `ionosctl loadbalancer nic attach --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
 NicId                                  Name   Dhcp   LanId   Ips
 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   1       []
@@ -200,12 +200,12 @@ NicId                                  Name      Dhcp   LanId   Ips
 2978400e-da90-405f-905e-8200d4f48158   demoNic   true   1       []
 RequestId: 67bdb2fb-b1ee-419a-9bcf-f8ea4b800653
 Status: Command nic create has been successfully executed`
-	updateNicExample = `ionosctl nic update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 --lan-id 2 --wait 
+	updateNicExample = `ionosctl nic update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 --lan-id 2 --wait-for-request
 Waiting for request: b0361cf3-06b2-4cca-ae13-4035ace9f265
 NicId                                  Name      Dhcp   LanId   Ips
 2978400e-da90-405f-905e-8200d4f48158   demoNic   true   2       []
 RequestId: b0361cf3-06b2-4cca-ae13-4035ace9f265
-Status: Command nic update and request have been successfully executed`
+Status: Command nic update & wait have been successfully executed`
 	listNicExample = `ionosctl nic list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa 
 NicId                                  Name      Dhcp   LanId   Ips
 c7903181-daa1-4e16-a65a-e9b495c1b324   demoNIC   true   1       []
@@ -244,11 +244,11 @@ Warning: Are you sure you want to delete lan (y/N) ? y
 RequestId: bd5ffcf4-1b05-4cb2-917b-a0140d5f7a2b
 Status: Command lan delete has been successfully executed
 
-ionosctl lan delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --wait 
+ionosctl lan delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --wait-for-request 
 Warning: Are you sure you want to delete lan (y/N) ? y
 Waiting for request: e65fc2fe-8005-48a5-9d06-f1a4f8bc9ef1
 RequestId: e65fc2fe-8005-48a5-9d06-f1a4f8bc9ef1
-Status: Command lan delete and request have been successfully executed`
+Status: Command lan delete & wait have been successfully executed`
 
 	/*
 		Request Examples
@@ -303,16 +303,16 @@ SnapshotId                             Name   LicenceType   Size
 dc688daf-8e54-4db8-ac4a-487ad5a34e9c   test   LINUX         10
 RequestId: 3540e9be-ed35-41c0-83d9-923882bfa9bd
 Status: Command snapshot update has been successfully executed`
-	restoreSnapshotExample = `ionosctl snapshot restore --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --wait 
+	restoreSnapshotExample = `ionosctl snapshot restore --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --wait-for-request 
 Warning: Are you sure you want to restore snapshot (y/N) ? 
 y
 RequestId: 21ca5546-9314-4cd5-8832-6029638b1237
-Status: Command snapshot restore and request have been successfully executed`
-	deleteSnapshotExample = `ionosctl snapshot delete --snapshot-id 8e0bc509-87ee-47f4-a382-302e4f7e103d --wait 
+Status: Command snapshot restore & wait have been successfully executed`
+	deleteSnapshotExample = `ionosctl snapshot delete --snapshot-id 8e0bc509-87ee-47f4-a382-302e4f7e103d --wait-for-request 
 Warning: Are you sure you want to delete snapshot (y/N) ? 
 y
 RequestId: 6e029eb6-47e6-4dcd-a333-d620b49c01e5
-Status: Command snapshot delete and request have been successfully executed`
+Status: Command snapshot delete & wait have been successfully executed`
 
 	/*
 		IpBlock Examples
@@ -334,12 +334,12 @@ IpBlockId                              Name   Location   Size   Ips         Stat
 bf932826-d71b-4759-a7d0-0028261c1e8d   demo   us/las     1      [x.x.x.x]   BUSY
 RequestId: 5864afe5-4df5-4843-b548-4489857dc3c5
 Status: Command ipblock update has been successfully executed`
-	deleteIpBlockExample = `ionosctl ipblock delete --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --wait 
+	deleteIpBlockExample = `ionosctl ipblock delete --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --wait-for-request 
 Warning: Are you sure you want to delete ipblock (y/N) ? 
 y
 Waiting for request: 6b1aa258-799f-4712-9f90-ba4494d84026
 RequestId: 6b1aa258-799f-4712-9f90-ba4494d84026
-Status: Command ipblock delete and request have been successfully executed`
+Status: Command ipblock delete & wait have been successfully executed`
 
 	/*
 		Firewall Rule Examples
@@ -355,12 +355,12 @@ FirewallRuleId                         Name   Protocol   PortRangeStart   PortRa
 4221e2c8-0316-447c-aeed-69ac92e585be   demo   TCP        2476             2476           BUSY
 RequestId: 09a47137-e377-4a79-b2b9-16744e298ad5
 Status: Command firewallrule create has been successfully executed`
-	updateFirewallRuleExample = `ionosctl firewallrule update --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id 4221e2c8-0316-447c-aeed-69ac92e585be --firewallrule-name new-test --wait 
+	updateFirewallRuleExample = `ionosctl firewallrule update --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id 4221e2c8-0316-447c-aeed-69ac92e585be --firewallrule-name new-test --wait-for-request 
 Waiting for request: 2e3d6e81-2830-4d68-82ff-daee6f115864
 FirewallRuleId                         Name       Protocol   PortRangeStart   PortRangeEnd   State
 4221e2c8-0316-447c-aeed-69ac92e585be   new-test   TCP        2476             2476           BUSY
 RequestId: 2e3d6e81-2830-4d68-82ff-daee6f115864
-Status: Command firewallrule update and request have been successfully executed`
+Status: Command firewallrule update & wait have been successfully executed`
 	deleteFirewallRuleExample = `ionosctl firewallrule delete --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id e7c4e91a-d3e3-42db-bfb1-2d5e9ebc952b 
 Warning: Are you sure you want to delete firewall rule (y/N) ? 
 y
@@ -424,7 +424,7 @@ Status: Command user delete has been successfully executed`
 	/*
 		Group Examples
 	*/
-	createGroupExample = `ionosctl group create --group-name test --wait 
+	createGroupExample = `ionosctl group create --group-name test --wait-for-request
 Waiting for request: eae6bb8b-3736-4cf0-bc71-72a95d1b2a63
 GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
 1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false`
@@ -497,12 +497,12 @@ ShareId                                EditPrivilege   SharePrivilege
 cefc2175-001f-4b94-8693-6263d731fe8e   false           true
 RequestId: 0dfccab0-c148-40c8-9794-067d23f79f0e
 Status: Command group update-share has been successfully executed`
-	deleteShareExample = `ionosctl share delete --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --wait 
+	deleteShareExample = `ionosctl share delete --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --wait-for-request 
 Warning: Are you sure you want to remove share from group (y/N) ? 
 y
 Waiting for request: 9ff7e57f-b568-4257-b27f-13a4cf11a7fc
 RequestId: 9ff7e57f-b568-4257-b27f-13a4cf11a7fc
-Status: Command group remove-share and request have been successfully executed`
+Status: Command group remove-share & wait have been successfully executed`
 
 	/*
 		S3Keys Example
@@ -570,21 +570,21 @@ e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test`
 LanId   LanName     DatacenterId                           DatacenterName   Location
 1       testlan2    1ef56b51-98be-487e-925a-c9f3dfa4a076   test2            us/las
 1       testlan1    95b7f7f0-a6f3-4fc9-8d06-018d2c1efc89   test1            us/las`
-	createPccExample = `ionosctl pcc create --pcc-name test --pcc-description "test test" --wait 
+	createPccExample = `ionosctl pcc create --pcc-name test --pcc-description "test test" --wait-for-request 
 PccId                                  Name   Description
 e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test
 RequestId: 64720266-c6e8-4e78-8e31-6754f006dcb1
-Status: Command pcc create and request have been successfully executed`
+Status: Command pcc create & wait have been successfully executed`
 	updatePccExample = `ionosctl pcc update --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 --pcc-description test
 PccId                                  Name   Description
 4b9c6a43-a338-11eb-b70c-7ade62b52cc0   test   test
 RequestId: 81525f2d-cc91-4c55-84b8-07fac9a47e35
 Status: Command pcc update has been successfully executed`
-	deletePccExample = `ionosctl pcc delete --pcc-id e2337b40-52d9-48d2-bcbc-41c5abc29d11 --wait 
+	deletePccExample = `ionosctl pcc delete --pcc-id e2337b40-52d9-48d2-bcbc-41c5abc29d11 --wait-for-request
 Warning: Are you sure you want to delete private cross-connect (y/N) ? 
 y
 RequestId: 7fa56e7f-1d63-4c5f-a7ea-eec6a015282a
-Status: Command pcc delete and request have been successfully executed`
+Status: Command pcc delete & wait have been successfully executed`
 
 	/*
 		K8s Example

@@ -32,18 +32,18 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --snapshot-id string     The unique Snapshot Id (required)
-      --timeout int            Timeout option for a Snapshot to be restored [seconds] (default 60)
+      --timeout int            Timeout option for Request for Snapshot restore [seconds] (default 60)
       --volume-id string       The unique Volume Id (required)
-      --wait                   Wait for Snapshot to be restored
+      --wait-for-request       Wait for the Request for Snapshot restore to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl snapshot restore --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --wait 
+ionosctl snapshot restore --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --wait-for-request 
 Warning: Are you sure you want to restore snapshot (y/N) ? 
 y
 RequestId: 21ca5546-9314-4cd5-8832-6029638b1237
-Status: Command snapshot restore and request have been successfully executed
+Status: Command snapshot restore & wait have been successfully executed
 ```
 

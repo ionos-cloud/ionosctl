@@ -14,7 +14,7 @@ ionosctl lan update [flags]
 
 Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Private Cross-Connect.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -36,8 +36,8 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
       --pcc-id string          The unique Id of the Private Cross-Connect the LAN will connect to
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option for LAN to be updated [seconds] (default 60)
-      --wait                   Wait for LAN to be updated
+      --timeout int            Timeout option for Request for LAN update [seconds] (default 60)
+      --wait-for-request       Wait for the Request for LAN update to be executed
 ```
 
 ## Examples

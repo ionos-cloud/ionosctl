@@ -14,7 +14,7 @@ ionosctl server start [flags]
 
 Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
+You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -33,8 +33,8 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-      --timeout int            Timeout option for Server to be started [seconds] (default 60)
-      --wait                   Wait for Server to start
+      --timeout int            Timeout option for Request for Server start [seconds] (default 60)
+      --wait-for-request       Wait for the Request for Server start to be executed
 ```
 
 ## Examples

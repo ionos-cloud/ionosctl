@@ -12,7 +12,7 @@ ionosctl k8s node get [flags]
 
 ## Description
 
-Use this command to retrieve details about a specific Kubernetes Node.
+Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in "ACTIVE" state using `+"`"+`--wait-for-state`+"`"+` flag together with `+"`"+`--timeout`+"`"+` option.
 
 Required values to run command:
 
@@ -33,6 +33,8 @@ Required values to run command:
       --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
+      --timeout int          Timeout option for waiting for Node to be in ACTIVE state [seconds] (default 600)
+      --wait-for-state       Wait for specified Node to be in ACTIVE state
 ```
 
 ## Examples

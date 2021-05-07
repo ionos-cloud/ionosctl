@@ -16,7 +16,7 @@ Use this command to update a Volume. You may increase the size of an existing st
 
 Once you have increased the Volume size you cannot decrease the Volume size using the Cloud API. Certain attributes can only be set when a Volume is created and are considered immutable once the Volume has been provisioned.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -34,13 +34,13 @@ Required values to run command:
   -h, --help                     help for update
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --timeout int              Timeout option for Volume to be updated [seconds] (default 60)
+      --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
       --volume-bus string        Bus of the Volume (default "VIRTIO")
       --volume-id string         The unique Volume Id (required)
       --volume-name string       Name of the Volume
       --volume-size float32      Size in GB of the Volume (default 10)
       --volume-ssh-keys string   Ssh Key of the Volume
-      --wait                     Wait for Volume to be updated
+      --wait-for-request         Wait for the Request for Volume update to be executed
 ```
 
 ## Examples

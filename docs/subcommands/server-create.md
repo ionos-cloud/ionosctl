@@ -14,7 +14,7 @@ ionosctl server create [flags]
 
 Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -36,8 +36,8 @@ Required values to run command:
       --server-name string         Name of the Server
       --server-ram int             RAM[GB] option for the Server (default 256)
       --server-zone string         Availability zone of the Server (default "AUTO")
-      --timeout int                Timeout option for Server to be created [seconds] (default 60)
-      --wait                       Wait for Server to be created
+      --timeout int                Timeout option for Request for Server creation [seconds] (default 60)
+      --wait-for-request           Wait for the Request for Server creation to be executed
 ```
 
 ## Examples
@@ -49,11 +49,11 @@ f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    2
 RequestId: 07fd3682-8642-4a5e-a57a-056e909a2af8
 Status: Command server create has been successfully executed
 
-ionosctl server create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-name demoServer --wait 
+ionosctl server create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-name demoServer --wait-for-request 
 Waiting for request: e9d12f57-3513-4ae3-ab39-179aacb8c072
 ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily
 35201d04-0ea2-43e7-abc4-56f92737bb9d   demoServer                      BUSY    2       256MB   AMD_OPTERON
 RequestId: e9d12f57-3513-4ae3-ab39-179aacb8c072
-Status: Command server create and request have been successfully executed
+Status: Command server create & wait have been successfully executed
 ```
 

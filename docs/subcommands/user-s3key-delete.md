@@ -30,9 +30,9 @@ Required values to run command:
   -o, --output string                            Desired output format [text|json] (default "text")
   -q, --quiet                                    Quiet output
       --s3key-id string                          The unique User S3Key Id (required)
-      --timeout int                              Timeout option for an User S3Key to be deleted [seconds] (default 60)
+      --timeout int                              Timeout option for Request for User S3Key deletion [seconds] (default 60)
       --user-id string                           The unique User Id (required)
-      --wait                                     Wait for User S3Key to be deleted
+      --wait-for-request                         Wait for Request for User S3Key deletion to be executed
 ```
 
 ## Examples

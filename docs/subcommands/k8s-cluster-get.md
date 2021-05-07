@@ -12,7 +12,7 @@ ionosctl k8s cluster get [flags]
 
 ## Description
 
-Use this command to retrieve details about a specific Kubernetes Cluster.
+Use this command to retrieve details about a specific Kubernetes Cluster.You can wait for the Cluster to be in "ACTIVE" state using `+"`"+`--wait-for-state`+"`"+` flag together with `+"`"+`--timeout`+"`"+` option.
 
 Required values to run command:
 
@@ -29,6 +29,8 @@ Required values to run command:
   -h, --help                help for get
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
+      --timeout int         Timeout option for waiting for Cluster to be in ACTIVE state [seconds] (default 600)
+      --wait-for-state      Wait for specified Cluster to be in ACTIVE state
 ```
 
 ## Examples

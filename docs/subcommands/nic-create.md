@@ -14,7 +14,7 @@ ionosctl nic create [flags]
 
 Use this command to create/add a new NIC to the target Server. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run a command:
 
@@ -37,8 +37,8 @@ Required values to run a command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
-      --timeout int            Timeout option for NIC to be created [seconds] (default 60)
-      --wait                   Wait for NIC to be created
+      --timeout int            Timeout option for Request for NIC creation [seconds] (default 60)
+      --wait-for-request       Wait for the Request for NIC creation to be executed
 ```
 
 ## Examples

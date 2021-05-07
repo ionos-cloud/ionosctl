@@ -26,17 +26,17 @@ Use this command to create a Private Cross-Connect. You can specify the name and
       --pcc-description string   The description for the Private Cross-Connect
       --pcc-name string          The name for the Private Cross-Connect
   -q, --quiet                    Quiet output
-      --timeout int              Timeout option for Private Cross-Connect to be created [seconds] (default 60)
-      --wait                     Wait for Private Cross-Connect to be created
+      --timeout int              Timeout option for Request for Private Cross-Connect creation [seconds] (default 60)
+      --wait-for-request         Wait for the Request for Private Cross-Connect creation to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl pcc create --pcc-name test --pcc-description "test test" --wait 
+ionosctl pcc create --pcc-name test --pcc-description "test test" --wait-for-request 
 PccId                                  Name   Description
 e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test
 RequestId: 64720266-c6e8-4e78-8e31-6754f006dcb1
-Status: Command pcc create and request have been successfully executed
+Status: Command pcc create & wait have been successfully executed
 ```
 

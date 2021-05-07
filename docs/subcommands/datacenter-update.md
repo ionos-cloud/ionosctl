@@ -14,7 +14,7 @@ ionosctl datacenter update [flags]
 
 Use this command to change a Virtual Data Center's name, description.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -33,8 +33,8 @@ Required values to run command:
   -h, --help                            help for update
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
-      --timeout int                     Timeout option for Data Center to be updated [seconds] (default 60)
-      --wait                            Wait for Data Center to be updated
+      --timeout int                     Timeout option for Request for Data Center update [seconds] (default 60)
+      --wait-for-request                Wait for the Request for Data Center update to be executed
 ```
 
 ## Examples
