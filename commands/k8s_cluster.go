@@ -183,6 +183,8 @@ func RunK8sClusterCreate(c *builder.CommandConfig) error {
 			if u, _, err = c.K8s().GetCluster(*id); err != nil {
 				return err
 			}
+		} else {
+			return errors.New("error getting new cluster id")
 		}
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, getK8sCluster(u)))

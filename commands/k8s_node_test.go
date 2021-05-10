@@ -32,7 +32,7 @@ var (
 			Id:         &testNodeVar,
 			Properties: nodeTest.Properties,
 			Metadata: &ionoscloud.KubernetesNodeMetadata{
-				State: &testNodeVar,
+				State: &testStateVar,
 			},
 		},
 	}
@@ -42,8 +42,9 @@ var (
 			Items: &[]ionoscloud.KubernetesNode{nodeTest.KubernetesNode},
 		},
 	}
-	testNodeVar = "test-node"
-	testNodeErr = errors.New("node test error")
+	testNodeVar  = "test-node"
+	testStateVar = "ACTIVE"
+	testNodeErr  = errors.New("node test error")
 )
 
 func TestPreRunK8sClusterNodesIds(t *testing.T) {
@@ -117,6 +118,41 @@ func TestRunK8sNodeGet(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeId), testNodeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodeVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodeVar)
+		rm.K8s.EXPECT().GetNode(testNodeVar, testNodeVar, testNodeVar).Return(&nodeTestGet, nil, nil)
+		err := RunK8sNodeGet(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunK8sNodeGetWaitErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForState), true)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeId), testNodeVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodeVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodeVar)
+		rm.K8s.EXPECT().GetNode(testNodeVar, testNodeVar, testNodeVar).Return(&nodeTestGet, nil, testNodeErr)
+		err := RunK8sNodeGet(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunK8sNodeGetWait(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForState), true)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodeId), testNodeVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sNodePoolId), testNodeVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgK8sClusterId), testNodeVar)
+		rm.K8s.EXPECT().GetNode(testNodeVar, testNodeVar, testNodeVar).Return(&nodeTestGet, nil, nil)
 		rm.K8s.EXPECT().GetNode(testNodeVar, testNodeVar, testNodeVar).Return(&nodeTestGet, nil, nil)
 		err := RunK8sNodeGet(cfg)
 		assert.NoError(t, err)
