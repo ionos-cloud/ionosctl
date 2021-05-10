@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/hashicorp/go-multierror"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -15,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	multierror "go.uber.org/multierr"
 )
 
 type Command struct {
@@ -289,7 +289,7 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, na
 }
 
 func CheckRequiredGlobalFlags(parentCmdName string, globalFlagsName ...string) error {
-	var multiErr *multierror.Error
+	var multiErr error
 	for _, flagName := range globalFlagsName {
 		if viper.GetString(GetGlobalFlagName(parentCmdName, flagName)) == "" {
 			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
@@ -302,7 +302,7 @@ func CheckRequiredGlobalFlags(parentCmdName string, globalFlagsName ...string) e
 }
 
 func CheckRequiredFlags(parentCmdName, cmdName string, localFlagsName ...string) error {
-	var multiErr *multierror.Error
+	var multiErr error
 	for _, flagName := range localFlagsName {
 		if viper.GetString(GetFlagName(parentCmdName, cmdName, flagName)) == "" {
 			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))

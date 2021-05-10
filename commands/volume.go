@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/hashicorp/go-multierror"
 	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
@@ -17,6 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	multierror "go.uber.org/multierr"
 )
 
 func volume() *builder.Command {
@@ -126,7 +126,7 @@ Required values to run command:
 }
 
 func PreRunGlobalDcIdVolumeId(c *builder.PreCommandConfig) error {
-	var result *multierror.Error
+	var result error
 	if err := builder.CheckRequiredGlobalFlags(c.ParentName, config.ArgDataCenterId); err != nil {
 		result = multierror.Append(result, err)
 	}
