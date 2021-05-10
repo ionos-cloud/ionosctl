@@ -14,7 +14,7 @@ ionosctl nic delete [flags]
 
 This command deletes a specified NIC.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
+You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -35,8 +35,8 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
-      --timeout int            Timeout option for NIC to be deleted [seconds] (default 60)
-      --wait                   Wait for NIC to be deleted
+      --timeout int            Timeout option for Request for NIC deletion [seconds] (default 60)
+      --wait-for-request       Wait for the Request for NIC deletion to be executed
 ```
 
 ## Examples

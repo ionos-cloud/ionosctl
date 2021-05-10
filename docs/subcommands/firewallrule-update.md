@@ -14,7 +14,7 @@ ionosctl firewallrule update [flags]
 
 Use this command to update a specified Firewall Rule.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -45,18 +45,18 @@ Required values to run command:
   -o, --output string                       Desired output format [text|json] (default "text")
   -q, --quiet                               Quiet output
       --server-id string                    The unique Server Id (required)
-      --timeout int                         Timeout option for Firewall Rule to be updated [seconds] (default 60)
-      --wait                                Wait for Firewall Rule to be updated
+      --timeout int                         Timeout option for Request for Firewall Rule update [seconds] (default 60)
+      --wait-for-request                    Wait for Request for Firewall Rule update to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl firewallrule update --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id 4221e2c8-0316-447c-aeed-69ac92e585be --firewallrule-name new-test --wait 
-Waiting for request: 2e3d6e81-2830-4d68-82ff-daee6f115864
+ionosctl firewallrule update --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id 4221e2c8-0316-447c-aeed-69ac92e585be --firewallrule-name new-test --wait-for-request 
+1.2s Waiting for request... DONE
 FirewallRuleId                         Name       Protocol   PortRangeStart   PortRangeEnd   State
 4221e2c8-0316-447c-aeed-69ac92e585be   new-test   TCP        2476             2476           BUSY
 RequestId: 2e3d6e81-2830-4d68-82ff-daee6f115864
-Status: Command firewallrule update and request have been successfully executed
+Status: Command firewallrule update & wait have been successfully executed
 ```
 

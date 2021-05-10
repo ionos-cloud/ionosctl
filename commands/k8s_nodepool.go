@@ -50,7 +50,7 @@ func k8sNodePool() *builder.Command {
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIds, RunK8sNodePoolGet, "get", "Get a Kubernetes NodePool",
-		"Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
+		"Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster. You can wait for the Node Pool to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		getK8sNodePoolExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -60,12 +60,16 @@ func k8sNodePool() *builder.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Name(), get.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified NodePool to be in ACTIVE state")
+	get.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
 
 	/*
 		Create Command
 	*/
 	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterDcIdsNodePoolName, RunK8sNodePoolCreate, "create", "Create a Kubernetes NodePool",
 		`Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. Regarding the Kubernetes Version for the NodePool, if not set via flag, it will be used the default one: `+"`"+`ionosctl k8s version get`+"`"+`.
+
+You can wait for the Node Pool to be in "ACTIVE" state using `+"`"+`--wait-for-state`+"`"+` flag together with `+"`"+`--timeout`+"`"+` option.
 
 Required values to run a command:
 
@@ -98,12 +102,16 @@ Required values to run a command:
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddIntFlag(config.ArgStorageSize, "", 10, "The total allocated storage capacity of a Node")
+	create.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
+	create.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
 
 	/*
 		Update Command
 	*/
 	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIds, RunK8sNodePoolUpdate, "update", "Update a Kubernetes NodePool",
 		`Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster.
+
+You can wait for the Node Pool to be in "ACTIVE" state using `+"`"+`--wait-for-state`+"`"+` flag together with `+"`"+`--timeout`+"`"+` option.
 
 Required values to run command:
 
@@ -118,6 +126,9 @@ Required values to run command:
 	update.AddStringFlag(config.ArgK8sAnnotationKey, "", "", "Annotation key. Must be set together with --annotation-value")
 	update.AddStringFlag(config.ArgK8sAnnotationValue, "", "", "Annotation value. Must be set together with --annotation-key")
 	update.AddStringFlag(config.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	update.AddStringFlag(config.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
 	update.AddIntFlag(config.ArgLanId, "", 0, "The unique LAN Id of existing LANs to be attached to worker Nodes")
 	update.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
@@ -128,6 +139,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Name(), update.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	update.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
+	update.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
 
 	/*
 		Delete Command
@@ -168,6 +181,9 @@ func RunK8sNodePoolList(c *builder.CommandConfig) error {
 }
 
 func RunK8sNodePoolGet(c *builder.CommandConfig) error {
+	if err := utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId))); err != nil {
+		return err
+	}
 	u, _, err := c.K8s().GetNodePool(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)))
 	if err != nil {
@@ -185,6 +201,18 @@ func RunK8sNodePoolCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
+		if id, ok := u.GetIdOk(); ok && id != nil {
+			if err = utils.WaitForState(c, GetStateK8sNodePool, *id); err != nil {
+				return err
+			}
+			if u, _, err = c.K8s().GetNodePool(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)), *id); err != nil {
+				return err
+			}
+		} else {
+			return errors.New("error getting new K8s Node Pool id")
+		}
+	}
 	return c.Printer.Print(getK8sNodePoolPrint(c, getK8sNodePool(u)))
 }
 
@@ -198,6 +226,9 @@ func RunK8sNodePoolUpdate(c *builder.CommandConfig) error {
 	newNodePoolUpdated, _, err := c.K8s().UpdateNodePool(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)), newNodePool)
 	if err != nil {
+		return err
+	}
+	if err = utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId))); err != nil {
 		return err
 	}
 	return c.Printer.Print(getK8sNodePoolUpdatedPrint(c, newNodePoolUpdated))
@@ -214,6 +245,21 @@ func RunK8sNodePoolDelete(c *builder.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print("Status: Command node pool delete has been successfully executed")
+}
+
+// Wait for State
+
+func GetStateK8sNodePool(c *builder.CommandConfig, objId string) (*string, error) {
+	obj, _, err := c.K8s().GetNodePool(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)), objId)
+	if err != nil {
+		return nil, err
+	}
+	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			return state, nil
+		}
+	}
+	return nil, nil
 }
 
 func getNewK8sNodePool(c *builder.CommandConfig) (*resources.K8sNodePool, error) {

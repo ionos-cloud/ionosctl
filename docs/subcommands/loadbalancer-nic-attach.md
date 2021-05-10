@@ -14,7 +14,7 @@ ionosctl loadbalancer nic attach [flags]
 
 Use this command to associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -36,8 +36,8 @@ Required values to run command:
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion
-      --timeout int              Timeout option for NIC to be attached to a Load Balancer [seconds] (default 60)
-      --wait                     Wait for NIC to be attached to a Load Balancer
+      --timeout int              Timeout option for Request for NIC attachment [seconds] (default 60)
+      --wait-for-request         Wait for the Request for NIC attachment to be executed
 ```
 
 ## Examples

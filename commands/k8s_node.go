@@ -52,7 +52,7 @@ func k8sNode() *builder.Command {
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIds, RunK8sNodeGet, "get", "Get a Kubernetes Node",
-		"Use this command to retrieve details about a specific Kubernetes Node.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
+		"Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
 		getK8sNodeExample, true)
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -69,6 +69,8 @@ func k8sNode() *builder.Command {
 			viper.GetString(builder.GetFlagName(k8sCmd.Name(), get.Name(), config.ArgK8sNodePoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified Node to be in ACTIVE state")
+	get.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for Node to be in ACTIVE state [seconds]")
 
 	/*
 		Recreate Command
@@ -145,6 +147,9 @@ func RunK8sNodeList(c *builder.CommandConfig) error {
 }
 
 func RunK8sNodeGet(c *builder.CommandConfig) error {
+	if err := utils.WaitForState(c, GetStateK8sNode, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodeId))); err != nil {
+		return err
+	}
 	u, _, err := c.K8s().GetNode(
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)),
@@ -181,6 +186,22 @@ func RunK8sNodeDelete(c *builder.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print("Status: Command node delete has been successfully executed")
+}
+
+// Wait for State
+
+func GetStateK8sNode(c *builder.CommandConfig, objId string) (*string, error) {
+	obj, _, err := c.K8s().GetNode(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
+		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)), objId)
+	if err != nil {
+		return nil, err
+	}
+	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			return state, nil
+		}
+	}
+	return nil, nil
 }
 
 // Output Printing

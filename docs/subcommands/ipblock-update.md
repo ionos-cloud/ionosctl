@@ -14,7 +14,7 @@ ionosctl ipblock update [flags]
 
 Use this command to update the properties of an existing IpBlock.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -32,8 +32,8 @@ Required values to run command:
       --ipblock-name string   Name of the IpBlock
   -o, --output string         Desired output format [text|json] (default "text")
   -q, --quiet                 Quiet output
-      --timeout int           Timeout option for the IpBlock to be updated [seconds] (default 60)
-      --wait                  Wait for the IpBlock to be updated
+      --timeout int           Timeout option for Request for IpBlock update [seconds] (default 60)
+      --wait-for-request      Wait for the Request for IpBlock update to be executed
 ```
 
 ## Examples

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -56,15 +57,15 @@ func datacenter() *builder.Command {
 
 Virtual Data Centers (VDCs) are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, createDatacenterExample, true)
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.`, createDatacenterExample, true)
 	create.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
 	create.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
 	create.AddStringFlag(config.ArgDataCenterRegion, "", "de/txl", "Location for the Data Center")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterRegion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be created")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be created [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
 
 	/*
 		Update Command
@@ -72,7 +73,7 @@ You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.`, 
 	update := builder.NewCommand(ctx, datacenterCmd, PreRunDataCenterId, RunDataCenterUpdate, "update", "Update a Data Center",
 		`Use this command to change a Virtual Data Center's name, description.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -83,8 +84,8 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
 	update.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be updated")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be updated [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center update to be executed")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center update [seconds]")
 
 	/*
 		Delete Command
@@ -101,8 +102,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for Data Center to be deleted")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Data Center to be deleted [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center deletion")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
 
 	return datacenterCmd
 }
@@ -145,18 +146,32 @@ func RunDataCenterCreate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
-		Columns:     getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON:  dc,
-		ApiResponse: resp,
-		Resource:    "datacenter",
-		Verb:        "create",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		KeyValue:       getDataCentersKVMaps([]resources.Datacenter{*dc}),
+		Columns:        getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		OutputJSON:     dc,
+		ApiResponse:    resp,
+		Resource:       "datacenter",
+		Verb:           "create",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
+}
+
+func StateDatacenter(c *builder.CommandConfig, datacenterId string) (string, error) {
+	dc, _, err := c.DataCenters().Get(datacenterId)
+	if err != nil {
+		return "", err
+	}
+	if metadata, ok := dc.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			fmt.Println("AICI, STATE:" + *state)
+			return *state, nil
+		}
+	}
+	return "", nil
 }
 
 func RunDataCenterUpdate(c *builder.CommandConfig) error {
@@ -175,17 +190,17 @@ func RunDataCenterUpdate(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		KeyValue:    getDataCentersKVMaps([]resources.Datacenter{*dc}),
-		Columns:     getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON:  dc,
-		ApiResponse: resp,
-		Resource:    "datacenter",
-		Verb:        "update",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		KeyValue:       getDataCentersKVMaps([]resources.Datacenter{*dc}),
+		Columns:        getDataCenterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		OutputJSON:     dc,
+		ApiResponse:    resp,
+		Resource:       "datacenter",
+		Verb:           "update",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
@@ -198,18 +213,18 @@ func RunDataCenterDelete(c *builder.CommandConfig) error {
 		return err
 	}
 
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		ApiResponse: resp,
-		Resource:    "datacenter",
-		Verb:        "delete",
-		WaitFlag:    viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait)),
+		ApiResponse:    resp,
+		Resource:       "datacenter",
+		Verb:           "delete",
+		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
 }
 
-var defaultDatacenterCols = []string{"DatacenterId", "Name", "Location"}
+var defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "State"}
 
 type DatacenterPrint struct {
 	DatacenterId string `json:"DatacenterId,omitempty"`
@@ -217,6 +232,7 @@ type DatacenterPrint struct {
 	Location     string `json:"Location,omitempty"`
 	Description  string `json:"Description,omitempty"`
 	Version      int32  `json:"Version,omitempty"`
+	State        string `json:"State,omitempty"`
 }
 
 func getDataCenterCols(flagName string, outErr io.Writer) []string {
@@ -233,6 +249,7 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 		"Location":     "Location",
 		"Version":      "Version",
 		"Description":  "Description",
+		"State":        "State",
 	}
 	var datacenterCols []string
 	for _, k := range cols {
@@ -273,6 +290,11 @@ func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
 		}
 		if version, ok := properties.GetVersionOk(); ok && version != nil {
 			dcPrint.Version = *version
+		}
+		if metadata, ok := dc.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				dcPrint.State = *state
+			}
 		}
 		o := structs.Map(dcPrint)
 		out = append(out, o)

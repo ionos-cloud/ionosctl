@@ -12,7 +12,7 @@ ionosctl server get [flags]
 
 ## Description
 
-Use this command to get information about a specified Server from a Virtual Data Center.
+Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.
 
 Required values to run command:
 
@@ -31,6 +31,8 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
+      --timeout int            Timeout option for waiting for Server to be in AVAILABLE state [seconds] (default 60)
+      --wait-for-state         Wait for specified Server to be in AVAILABLE state
 ```
 
 ## Examples

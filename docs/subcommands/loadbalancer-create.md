@@ -14,7 +14,7 @@ ionosctl loadbalancer create [flags]
 
 Use this command to create a new Load Balancer within the Virtual Data Center. Load balancers can be used for public or private IP traffic. The name, IP and DHCP for the Load Balancer can be set.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -33,8 +33,8 @@ Required values to run command:
       --loadbalancer-name string   Name of the Load Balancer
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
-      --timeout int                Timeout option for Load Balancer to be created [seconds] (default 60)
-      --wait                       Wait for Load Balancer to be created
+      --timeout int                Timeout option for Request for Load Balancer creation [seconds] (default 60)
+      --wait-for-request           Wait for Request for Load Balancer creation to be executed
 ```
 
 ## Examples

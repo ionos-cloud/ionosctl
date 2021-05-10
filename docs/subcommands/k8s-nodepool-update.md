@@ -14,6 +14,8 @@ ionosctl k8s nodepool update [flags]
 
 Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster.
 
+You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
+
 Required values to run command:
 
 * K8s Cluster Id
@@ -42,6 +44,8 @@ Required values to run command:
       --nodepool-id string        The unique K8s Node Pool Id (required)
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
+      --timeout int               Timeout option for waiting for NodePool/Request [seconds] (default 600)
+      --wait-for-state            Wait for the new NodePool to be in ACTIVE state
 ```
 
 ## Examples

@@ -29,8 +29,8 @@ Required values to run command:
   -h, --help                   help for delete
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option for BackupUnit to be deleted [seconds] (default 60)
-      --wait                   Wait for BackupUnit to be deleted
+      --timeout int            Timeout option for Request for BackupUnit deletion [seconds] (default 60)
+      --wait-for-request       Wait for the Request for BackupUnit deletion to be executed
 ```
 
 ## Examples

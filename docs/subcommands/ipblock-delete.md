@@ -14,7 +14,7 @@ ionosctl ipblock delete [flags]
 
 Use this command to delete a specified IpBlock.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
+You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -31,18 +31,18 @@ Required values to run command:
       --ipblock-id string   The unique IpBlock Id (required)
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-      --timeout int         Timeout option for the IpBlock to be deleted [seconds] (default 60)
-      --wait                Wait for the IpBlock to be deleted
+      --timeout int         Timeout option for Request for IpBlock deletion [seconds] (default 60)
+      --wait-for-request    Wait for the Request for IpBlock deletion to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl ipblock delete --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --wait 
+ionosctl ipblock delete --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --wait-for-request 
 Warning: Are you sure you want to delete ipblock (y/N) ? 
 y
-Waiting for request: 6b1aa258-799f-4712-9f90-ba4494d84026
+1.2s Waiting for request... DONE
 RequestId: 6b1aa258-799f-4712-9f90-ba4494d84026
-Status: Command ipblock delete and request have been successfully executed
+Status: Command ipblock delete & wait have been successfully executed
 ```
 

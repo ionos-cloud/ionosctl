@@ -40,8 +40,8 @@ Required values to run a command:
   -h, --help                         help for create
   -o, --output string                Desired output format [text|json] (default "text")
   -q, --quiet                        Quiet output
-      --timeout int                  Timeout option for BackupUnit to be created [seconds] (default 60)
-      --wait                         Wait for BackupUnit to be created
+      --timeout int                  Timeout option for Request for BackupUnit creation [seconds] (default 60)
+      --wait-for-request             Wait for the Request for BackupUnit creation to be executed
 ```
 
 ## Examples

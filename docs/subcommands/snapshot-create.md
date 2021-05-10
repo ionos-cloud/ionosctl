@@ -14,7 +14,7 @@ ionosctl snapshot create [flags]
 
 Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -38,9 +38,9 @@ Required values to run command:
       --snapshot-licence-type string   Licence Type of the Snapshot(required)
       --snapshot-name string           Name of the Snapshot(required)
       --snapshot-sec-auth-protection   Enable secure authentication protection
-      --timeout int                    Timeout option for a Snapshot to be created [seconds] (default 60)
+      --timeout int                    Timeout option for Request for Snapshot creation [seconds] (default 60)
       --volume-id string               The unique Volume Id (required)
-      --wait                           Wait for Snapshot to be created
+      --wait-for-request               Wait for the Request for Snapshot creation to be executed
 ```
 
 ## Examples

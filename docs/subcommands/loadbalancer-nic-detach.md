@@ -14,7 +14,7 @@ ionosctl loadbalancer nic detach [flags]
 
 Use this command to remove the association of a NIC with a Load Balancer.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--ignore-stdin` option.
+You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--ignore-stdin` option.
 
 Required values to run command:
 
@@ -35,8 +35,8 @@ Required values to run command:
       --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --timeout int              Timeout option for NIC to be detached from a Load Balancer [seconds] (default 60)
-      --wait                     Wait for NIC to be detached from a Load Balancer
+      --timeout int              Timeout option for Request for NIC detachment [seconds] (default 60)
+      --wait-for-request         Wait for the Request for NIC detachment to be executed
 ```
 
 ## Examples

@@ -14,7 +14,7 @@ ionosctl snapshot update [flags]
 
 Use this command to update a specified Snapshot.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -45,8 +45,8 @@ Required values to run command:
       --snapshot-ram-hot-plug             This volume is capable of memory hot plug (no reboot required)
       --snapshot-ram-hot-unplug           This volume is capable of memory hot unplug (no reboot required)
       --snapshot-sec-auth-protection      Enable secure authentication protection
-      --timeout int                       Timeout option for a Snapshot to be created [seconds] (default 60)
-      --wait                              Wait for Snapshot to be created
+      --timeout int                       Timeout option for Request for Snapshot creation [seconds] (default 60)
+      --wait-for-request                  Wait for the Request for Snapshot creation to be executed
 ```
 
 ## Examples

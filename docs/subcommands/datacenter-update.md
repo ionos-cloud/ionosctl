@@ -14,7 +14,7 @@ ionosctl datacenter update [flags]
 
 Use this command to change a Virtual Data Center's name, description.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -24,7 +24,7 @@ Required values to run command:
 
 ```text
   -u, --api-url string                  Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings                    Columns to be printed in the standard output (default [DatacenterId,Name,Location])
+      --cols strings                    Columns to be printed in the standard output (default [DatacenterId,Name,Location,State])
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-description string   Description of the Data Center
       --datacenter-id string            The unique Data Center Id (required)
@@ -33,8 +33,8 @@ Required values to run command:
   -h, --help                            help for update
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
-      --timeout int                     Timeout option for Data Center to be updated [seconds] (default 60)
-      --wait                            Wait for Data Center to be updated
+      --timeout int                     Timeout option for Request for Data Center update [seconds] (default 60)
+      --wait-for-request                Wait for the Request for Data Center update to be executed
 ```
 
 ## Examples

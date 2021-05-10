@@ -55,7 +55,7 @@ func request() *builder.Command {
 	wait := builder.NewCommand(ctx, reqCmd, PreRunRequestId, RunRequestWait, "wait", "Wait a Request",
 		`Use this command to wait for a specified Request to execute.
 
-You can specify a timeout for the action to be executed using `+"`"+`--timeout`+"`"+` option.
+You can specify a timeout for the Request to be executed using `+"`"+`--timeout`+"`"+` option.
 
 Required values to run command:
 
@@ -64,7 +64,7 @@ Required values to run command:
 	_ = wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option waiting for request [seconds]")
+	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
 
 	return reqCmd
 }

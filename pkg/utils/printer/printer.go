@@ -69,7 +69,7 @@ func (p *JSONPrinter) Print(v interface{}) error {
 	switch v.(type) {
 	case Result:
 		if v.(Result).Resource != "" && v.(Result).Verb != "" {
-			resultPrint.Message = standardSuccessMsg(v.(Result).Resource, v.(Result).Verb, v.(Result).WaitFlag)
+			resultPrint.Message = standardSuccessMsg(v.(Result).Resource, v.(Result).Verb, v.(Result).WaitForRequest, v.(Result).WaitForState)
 		} else if v.(Result).Message != "" {
 			resultPrint.Message = v.(Result).Message
 		}
@@ -127,7 +127,7 @@ func (p *TextPrinter) Print(v interface{}) error {
 	switch v.(type) {
 	case Result:
 		if v.(Result).Resource != "" && v.(Result).Verb != "" {
-			resultPrint.Message = standardSuccessMsg(v.(Result).Resource, v.(Result).Verb, v.(Result).WaitFlag)
+			resultPrint.Message = standardSuccessMsg(v.(Result).Resource, v.(Result).Verb, v.(Result).WaitForRequest, v.(Result).WaitForState)
 		} else if v.(Result).Message != "" {
 			resultPrint.Message = v.(Result).Message
 		}
@@ -189,10 +189,11 @@ func (p *TextPrinter) SetStderr(writer io.Writer) {
 }
 
 type Result struct {
-	Message  string
-	Resource string
-	Verb     string
-	WaitFlag bool
+	Message        string
+	Resource       string
+	Verb           string
+	WaitForRequest bool
+	WaitForState   bool
 
 	Columns    []string
 	KeyValue   []map[string]interface{}
@@ -213,12 +214,12 @@ type DefaultMsgPrint struct {
 
 var (
 	standardSuccessMessages     = "Command %s %s has been successfully executed"
-	waitStandardSuccessMessages = "Command %s %s and request have been successfully executed"
+	waitStandardSuccessMessages = "Command %s %s & wait have been successfully executed"
 	unknownTypeFormatErr        = "unknown type format %s. Hint: use --output json|text"
 )
 
-func standardSuccessMsg(resource, verb string, wait bool) string {
-	if wait {
+func standardSuccessMsg(resource, verb string, waitRequest, waitState bool) string {
+	if waitRequest || waitState {
 		return fmt.Sprintf(waitStandardSuccessMessages, resource, verb)
 	}
 	return fmt.Sprintf(standardSuccessMessages, resource, verb)

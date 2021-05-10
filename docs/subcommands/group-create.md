@@ -38,15 +38,15 @@ Required values to run a command:
   -h, --help                    help for create
   -o, --output string           Desired output format [text|json] (default "text")
   -q, --quiet                   Quiet output
-      --timeout int             Timeout option for Group to be created [seconds] (default 60)
-      --wait                    Wait for Group to be created
+      --timeout int             Timeout option for Request for Group creation [seconds] (default 60)
+      --wait-for-request        Wait for Request for Group creation to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl group create --group-name test --wait 
-Waiting for request: eae6bb8b-3736-4cf0-bc71-72a95d1b2a63
+ionosctl group create --group-name test --wait-for-request
+1.2s Waiting for request... DONE
 GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
 1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false
 ```

@@ -78,8 +78,8 @@ Required values to run a command:
 	})
 	create.AddBoolFlag(config.ArgEditPrivilege, "", false, "Set the group's permission to edit privileges on resource")
 	create.AddBoolFlag(config.ArgSharePrivilege, "", false, "Set the group's permission to share resource")
-	create.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for a Resource to be shared through a Group")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Resource to be shared through a Group [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Resource share to executed")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Resource to be shared through a Group [seconds]")
 
 	/*
 		Update Command
@@ -87,7 +87,7 @@ Required values to run a command:
 	update := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIds, RunShareUpdate, "update", "Update a Resource Share from a Group",
 		`Use this command to update the permissions that a Group has for a specific Resource Share.
 
-You can wait for the action to be executed using `+"`"+`--wait`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
 
 Required values to run command:
 
@@ -103,8 +103,8 @@ Required values to run command:
 	})
 	update.AddBoolFlag(config.ArgEditPrivilege, "", false, "Update the group's permission to edit privileges on resource")
 	update.AddBoolFlag(config.ArgSharePrivilege, "", false, "Update the group's permission to share resource")
-	update.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for a Resource Share to be updated for a Group")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Resource Share to be updated for a Group [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Resource Share update to be executed")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share update [seconds]")
 
 	/*
 		Delete Command
@@ -124,8 +124,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(shareCmd.Name(), deleteCmd.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWait, "", config.DefaultWait, "Wait for a Resource Share to be deleted from a Group")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for a Resource Share to be deleted from a Group [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Resource Share deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share deletion [seconds]")
 
 	return shareCmd
 }
@@ -172,7 +172,7 @@ func RunShareCreate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareAdded)))
@@ -197,7 +197,7 @@ func RunShareUpdate(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareUpdated)))
@@ -214,7 +214,7 @@ func RunShareDelete(c *builder.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = waitForAction(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, nil))
@@ -264,7 +264,7 @@ func getGroupSharePrint(resp *resources.Response, c *builder.CommandConfig, grou
 			r.ApiResponse = resp
 			r.Resource = c.ParentName
 			r.Verb = c.Name
-			r.WaitFlag = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWait))
+			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
 		}
 		if groups != nil {
 			r.OutputJSON = groups

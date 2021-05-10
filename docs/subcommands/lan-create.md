@@ -16,7 +16,7 @@ Use this command to create a new LAN within a Virtual Data Center on your accoun
 
 NOTE: IP Failover is configured after LAN creation using an update command.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -36,8 +36,8 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
       --pcc-id string          The unique Id of the Private Cross-Connect the LAN will connect to
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option for LAN to be created [seconds] (default 60)
-      --wait                   Wait for LAN to be created
+      --timeout int            Timeout option for Request for LAN creation [seconds] (default 60)
+      --wait-for-request       Wait for the Request for LAN creation to be executed
 ```
 
 ## Examples

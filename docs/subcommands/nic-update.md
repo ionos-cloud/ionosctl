@@ -18,7 +18,7 @@ The user can specify and assign private IPs manually. Valid IP addresses for pri
 
 The value for firewallActive can be toggled between true and false to enable or disable the firewall. When the firewall is enabled, incoming traffic is filtered by all the firewall rules configured on the NIC. When the firewall is disabled, then all incoming traffic is routed directly to the NIC and any configured firewall rules are ignored.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -41,18 +41,18 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
-      --timeout int            Timeout option for NIC to be updated [seconds] (default 60)
-      --wait                   Wait for NIC to be updated
+      --timeout int            Timeout option for Request for NIC update [seconds] (default 60)
+      --wait-for-request       Wait for the Request for NIC update to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl nic update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 --lan-id 2 --wait 
-Waiting for request: b0361cf3-06b2-4cca-ae13-4035ace9f265
+ionosctl nic update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 --lan-id 2 --wait-for-request
+1.2s Waiting for request... DONE
 NicId                                  Name      Dhcp   LanId   Ips
 2978400e-da90-405f-905e-8200d4f48158   demoNic   true   2       []
 RequestId: b0361cf3-06b2-4cca-ae13-4035ace9f265
-Status: Command nic update and request have been successfully executed
+Status: Command nic update & wait have been successfully executed
 ```
 

@@ -14,7 +14,7 @@ ionosctl server volume attach [flags]
 
 Use this command to attach a pre-existing Volume to a Server.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -34,9 +34,9 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-      --timeout int            Timeout option for Volume to be attached to a Server [seconds] (default 60)
+      --timeout int            Timeout option for Request for Volume attachment [seconds] (default 60)
       --volume-id string       The unique Volume Id (required)
-      --wait                   Wait for Volume to be attached to Server
+      --wait-for-request       Wait for the Request for Volume attachment to be executed
 ```
 
 ## Examples
