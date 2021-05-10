@@ -296,6 +296,7 @@ func RunServerCreate(c *builder.CommandConfig) error {
 		Resource:       "server",
 		Verb:           "create",
 		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		WaitForState:   viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)),
 	})
 }
 
@@ -345,6 +346,7 @@ func RunServerUpdate(c *builder.CommandConfig) error {
 		Resource:       "server",
 		Verb:           "update",
 		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		WaitForState:   viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)),
 	})
 }
 

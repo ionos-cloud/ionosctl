@@ -24,7 +24,7 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [DatacenterId,Name,Location])
+      --cols strings           Columns to be printed in the standard output (default [DatacenterId,Name,Location,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
       --force                  Force command to execute without user input
@@ -44,7 +44,7 @@ RequestId: 12547a71-9768-483b-8a8e-e03e58df6dc3
 Status: Command datacenter delete has been successfully executed
 
 ionosctl datacenter delete --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774 --force --wait-for-request
-Waiting for request: a2f71ef3-f81c-4b15-8f8f-5dfd1bdb3c26
+1.2s Waiting for request... DONE
 RequestId: a2f71ef3-f81c-4b15-8f8f-5dfd1bdb3c26
 Status: Command datacenter delete & wait have been successfully executed
 ```

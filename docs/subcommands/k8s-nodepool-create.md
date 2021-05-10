@@ -43,8 +43,8 @@ Required values to run a command:
       --ram-size int           The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB (default 2048)
       --storage-size int       The total allocated storage capacity of a Node (default 10)
       --storage-type string    Storage Type (default "HDD")
-      --timeout int               Timeout option for waiting for NodePool/Request [seconds] (default 600)
-      --wait-for-state            Wait for the new NodePool to be in ACTIVE state
+      --timeout int            Timeout option for waiting for NodePool/Request [seconds] (default 600)
+      --wait-for-state         Wait for the new NodePool to be in ACTIVE state
 ```
 
 ## Examples

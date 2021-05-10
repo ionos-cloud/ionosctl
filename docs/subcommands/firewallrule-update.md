@@ -53,7 +53,7 @@ Required values to run command:
 
 ```text
 ionosctl firewallrule update --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id 4221e2c8-0316-447c-aeed-69ac92e585be --firewallrule-name new-test --wait-for-request 
-Waiting for request: 2e3d6e81-2830-4d68-82ff-daee6f115864
+1.2s Waiting for request... DONE
 FirewallRuleId                         Name       Protocol   PortRangeStart   PortRangeEnd   State
 4221e2c8-0316-447c-aeed-69ac92e585be   new-test   TCP        2476             2476           BUSY
 RequestId: 2e3d6e81-2830-4d68-82ff-daee6f115864

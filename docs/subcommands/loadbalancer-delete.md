@@ -41,7 +41,7 @@ Required values to run command:
 
 ```text
 ionosctl loadbalancer delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --force --wait-for-request
-Waiting for request: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
+1.2s Waiting for request... DONE
 RequestId: 29c4e7bb-8ce8-4153-8b42-3734d8ede034
 Status: Command loadbalancer delete & wait have been successfully executed
 ```

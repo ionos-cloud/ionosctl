@@ -46,7 +46,7 @@ Required values to run a command:
 
 ```text
 ionosctl group create --group-name test --wait-for-request
-Waiting for request: eae6bb8b-3736-4cf0-bc71-72a95d1b2a63
+1.2s Waiting for request... DONE
 GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
 1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false
 ```
