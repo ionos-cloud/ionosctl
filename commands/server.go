@@ -47,7 +47,7 @@ func server() *builder.Command {
 		Get Command
 	*/
 	get := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerGet, "get", "Get a Server",
-		"Use this command to get information about a specified Server from a Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		"Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		getServerExample, true)
 	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -57,6 +57,8 @@ func server() *builder.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), get.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified Server to be in AVAILABLE state")
+	get.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for waiting for Server to be in AVAILABLE state [seconds]")
 
 	/*
 		Create Command
@@ -64,7 +66,7 @@ func server() *builder.Command {
 	create := builder.NewCommand(ctx, serverCmd, PreRunDataCenterId, RunServerCreate, "create", "Create a Server",
 		`Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can also wait for Server to be in AVAILABLE state using `+"`"+`--wait-for-state`+"`"+` option. It is recommended to use both options together for this command.
 
 Required values to run command:
 
@@ -85,7 +87,8 @@ Required values to run command:
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server creation [seconds]")
+	create.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for new Server to be in AVAILABLE state")
+	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]")
 
 	/*
 		Update Command
@@ -93,7 +96,7 @@ Required values to run command:
 	update := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerUpdate, "update", "Update a Server",
 		`Use this command to update a specified Server from a Virtual Data Center.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
+You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can also wait for Server to be in AVAILABLE state using `+"`"+`--wait-for-state`+"`"+` option.
 
 Required values to run command:
 
@@ -119,7 +122,8 @@ Required values to run command:
 	update.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
 	update.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server update [seconds]")
+	update.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the updated Server to be in AVAILABLE state")
+	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds]")
 
 	/*
 		Delete Command
@@ -238,7 +242,10 @@ func RunServerList(c *builder.CommandConfig) error {
 }
 
 func RunServerGet(c *builder.CommandConfig) error {
-	server, _, err := c.Servers().Get(
+	if err := utils.WaitForState(c, GetStateServer, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId))); err != nil {
+		return err
+	}
+	svr, _, err := c.Servers().Get(
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 	)
@@ -246,14 +253,14 @@ func RunServerGet(c *builder.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON: server,
-		KeyValue:   getServersKVMaps([]resources.Server{*server}),
+		OutputJSON: svr,
+		KeyValue:   getServersKVMaps([]resources.Server{*svr}),
 		Columns:    getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
 func RunServerCreate(c *builder.CommandConfig) error {
-	server, resp, err := c.Servers().Create(
+	svr, resp, err := c.Servers().Create(
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerName)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCPUFamily)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
@@ -268,9 +275,22 @@ func RunServerCreate(c *builder.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
+	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
+		if id, ok := svr.GetIdOk(); ok && id != nil {
+			if err = utils.WaitForState(c, GetStateServer, *id); err != nil {
+				return err
+			}
+			if svr, _, err = c.Servers().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
+				*id); err != nil {
+				return err
+			}
+		} else {
+			return errors.New("error getting new Server id")
+		}
+	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:     server,
-		KeyValue:       getServersKVMaps([]resources.Server{*server}),
+		OutputJSON:     svr,
+		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
 		Columns:        getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "server",
@@ -296,7 +316,7 @@ func RunServerUpdate(c *builder.CommandConfig) error {
 	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)) {
 		input.SetRam(viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)))
 	}
-	server, resp, err := c.Servers().Update(
+	svr, resp, err := c.Servers().Update(
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
 		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
 		input,
@@ -308,10 +328,19 @@ func RunServerUpdate(c *builder.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
+	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
+		if err = utils.WaitForState(c, GetStateServer, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId))); err != nil {
+			return err
+		}
+		if svr, _, err = c.Servers().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
+			viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId))); err != nil {
+			return err
+		}
+	}
 	return c.Printer.Print(printer.Result{
-		KeyValue:       getServersKVMaps([]resources.Server{*server}),
+		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
 		Columns:        getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON:     server,
+		OutputJSON:     svr,
 		ApiResponse:    resp,
 		Resource:       "server",
 		Verb:           "update",
@@ -409,6 +438,21 @@ func RunServerReboot(c *builder.CommandConfig) error {
 		Verb:           "reboot",
 		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
 	})
+}
+
+// Wait for State
+
+func GetStateServer(c *builder.CommandConfig, objId string) (*string, error) {
+	obj, _, err := c.Servers().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)), objId)
+	if err != nil {
+		return nil, err
+	}
+	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			return state, nil
+		}
+	}
+	return nil, nil
 }
 
 // Output Printing

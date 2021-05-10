@@ -224,7 +224,7 @@ func RunDataCenterDelete(c *builder.CommandConfig) error {
 	})
 }
 
-var defaultDatacenterCols = []string{"DatacenterId", "Name", "Location"}
+var defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "State"}
 
 type DatacenterPrint struct {
 	DatacenterId string `json:"DatacenterId,omitempty"`
@@ -232,6 +232,7 @@ type DatacenterPrint struct {
 	Location     string `json:"Location,omitempty"`
 	Description  string `json:"Description,omitempty"`
 	Version      int32  `json:"Version,omitempty"`
+	State        string `json:"State,omitempty"`
 }
 
 func getDataCenterCols(flagName string, outErr io.Writer) []string {
@@ -248,6 +249,7 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 		"Location":     "Location",
 		"Version":      "Version",
 		"Description":  "Description",
+		"State":        "State",
 	}
 	var datacenterCols []string
 	for _, k := range cols {
@@ -288,6 +290,11 @@ func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
 		}
 		if version, ok := properties.GetVersionOk(); ok && version != nil {
 			dcPrint.Version = *version
+		}
+		if metadata, ok := dc.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				dcPrint.State = *state
+			}
 		}
 		o := structs.Map(dcPrint)
 		out = append(out, o)

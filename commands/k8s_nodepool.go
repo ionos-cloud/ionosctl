@@ -209,6 +209,8 @@ func RunK8sNodePoolCreate(c *builder.CommandConfig) error {
 			if u, _, err = c.K8s().GetNodePool(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)), *id); err != nil {
 				return err
 			}
+		} else {
+			return errors.New("error getting new K8s Node Pool id")
 		}
 	}
 	return c.Printer.Print(getK8sNodePoolPrint(c, getK8sNodePool(u)))

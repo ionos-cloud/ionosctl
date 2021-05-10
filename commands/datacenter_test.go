@@ -27,6 +27,9 @@ var (
 			Location:    &testDatacenterVar,
 			Version:     &dcVersion,
 		},
+		Metadata: &ionoscloud.DatacenterElementMetadata{
+			State: &testStateVar,
+		},
 	}
 	dcProperties = resources.DatacenterProperties{
 		DatacenterProperties: ionoscloud.DatacenterProperties{

@@ -153,6 +153,39 @@ func TestRunServerGet(t *testing.T) {
 	})
 }
 
+func TestRunServerGetWait(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForState), true)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
+		err := RunServerGet(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerGetWaitErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForState), true)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, testServerErr)
+		err := RunServerGet(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunServerGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -185,6 +218,27 @@ func TestRunServerCreate(t *testing.T) {
 		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerCreateWaitStateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerName), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerCPUFamily), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerZone), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerCores), cores)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerRAM), ram)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForState), true)
+		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, testServerErr)
+		err := RunServerCreate(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -244,6 +298,53 @@ func TestRunServerUpdate(t *testing.T) {
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerCPUFamily), testServerNewVar)
 		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
 		rm.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, nil)
+		err := RunServerUpdate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerUpdateWaitStateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerName), testServerNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerCores), coresNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerRAM), ramNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerZone), testServerNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerCPUFamily), testServerNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForState), true)
+		rm.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&serverNew, nil, testServerErr)
+		err := RunServerUpdate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerUpdateWaitState(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerId), testServerVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerName), testServerNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerCores), coresNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerRAM), ramNew)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerZone), testServerNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgServerCPUFamily), testServerNewVar)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForState), true)
+		rm.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&serverNew, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&serverNew, nil, nil)
 		err := RunServerUpdate(cfg)
 		assert.NoError(t, err)
 	})
