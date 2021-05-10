@@ -14,7 +14,7 @@ ionosctl request wait [flags]
 
 Use this command to wait for a specified Request to execute.
 
-You can specify a timeout for the action to be executed using `--timeout` option.
+You can specify a timeout for the Request to be executed using `--timeout` option.
 
 Required values to run command:
 
@@ -31,7 +31,7 @@ Required values to run command:
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
       --request-id string   The unique Request Id (required)
-      --timeout int         Timeout option waiting for request [seconds] (default 60)
+      --timeout int         Timeout option waiting for Request [seconds] (default 60)
 ```
 
 ## Examples

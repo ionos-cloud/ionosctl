@@ -14,7 +14,7 @@ ionosctl group update [flags]
 
 Use this command to update details about a specific Group.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -41,8 +41,8 @@ Required values to run command:
   -h, --help                    help for update
   -o, --output string           Desired output format [text|json] (default "text")
   -q, --quiet                   Quiet output
-      --timeout int             Timeout option for Group to be updated [seconds] (default 60)
-      --wait                    Wait for Group attributes to be updated
+      --timeout int             Timeout option for Request for Group update [seconds] (default 60)
+      --wait-for-request        Wait for Request for Group update to be executed
 ```
 
 ## Examples

@@ -14,7 +14,7 @@ ionosctl server stop [flags]
 
 Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
-You can wait for the action to be executed using `--wait` option. You can force the command to execute without user input using `--force` option.
+You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
@@ -33,8 +33,8 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-      --timeout int            Timeout option for Server to be stopped [seconds] (default 60)
-      --wait                   Wait for Server to stop
+      --timeout int            Timeout option for Request for Server stop [seconds] (default 60)
+      --wait-for-request       Wait for the Request for Server stop to be executed
 ```
 
 ## Examples

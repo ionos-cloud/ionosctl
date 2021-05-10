@@ -14,7 +14,7 @@ ionosctl user s3key update [flags]
 
 Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -34,9 +34,9 @@ Required values to run command:
   -q, --quiet                                    Quiet output
       --s3key-active                             Enable or disable an User S3Key
       --s3key-id string                          The unique User S3Key Id (required)
-      --timeout int                              Timeout option for a User S3Key to be updated [seconds] (default 60)
+      --timeout int                              Timeout option for Request for User S3Key update [seconds] (default 60)
       --user-id string                           The unique User Id (required)
-      --wait                                     Wait for User S3Key to be updated
+      --wait-for-request                         Wait for the Request for User S3Key update to be executed
 ```
 
 ## Examples

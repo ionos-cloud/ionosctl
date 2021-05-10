@@ -14,7 +14,8 @@ const (
 	ArgConfig                      = "config"
 	ArgOutput                      = "output"
 	ArgQuiet                       = "quiet"
-	ArgWait                        = "wait"
+	ArgWaitForRequest              = "wait-for-request"
+	ArgWaitForState                = "wait-for-state"
 	ArgTimeout                     = "timeout"
 	ArgForce                       = "force"
 	ArgServerUrl                   = "api-url"
@@ -146,6 +147,7 @@ const (
 	DefaultOutputFormat     = "text"
 	DefaultWait             = false
 	DefaultTimeoutSeconds   = int(60)
+	K8sTimeoutSeconds       = int(600)
 	DefaultServerCores      = 2
 	DefaultServerRAM        = 256
 	DefaultServerCPUFamily  = "AMD_OPTERON"

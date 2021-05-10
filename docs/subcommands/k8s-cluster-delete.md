@@ -14,6 +14,8 @@ ionosctl k8s cluster delete [flags]
 
 This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
 
+You can wait for Request for the Cluster deletion to be executed using `--wait-for-request` flag together with `--timeout` option.
+
 Required values to run command:
 
 * K8s Cluster Id
@@ -29,6 +31,8 @@ Required values to run command:
   -h, --help                help for delete
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
+      --timeout int         Timeout option for waiting for Request [seconds] (default 600)
+      --wait-for-request    Wait for the Request for Cluster deletion to be executed
 ```
 
 ## Examples

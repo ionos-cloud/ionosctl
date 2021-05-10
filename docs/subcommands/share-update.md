@@ -14,7 +14,7 @@ ionosctl share update [flags]
 
 Use this command to update the permissions that a Group has for a specific Resource Share.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -35,8 +35,8 @@ Required values to run command:
   -q, --quiet                Quiet output
       --resource-id string   The unique Resource Id (required)
       --share-privilege      Update the group's permission to share resource
-      --timeout int          Timeout option for a Resource Share to be updated for a Group [seconds] (default 60)
-      --wait                 Wait for a Resource Share to be updated for a Group
+      --timeout int          Timeout option for Request for Resource Share update [seconds] (default 60)
+      --wait-for-request     Wait for the Request for Resource Share update to be executed
 ```
 
 ## Examples

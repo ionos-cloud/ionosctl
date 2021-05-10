@@ -31,8 +31,8 @@ Required values to run command:
   -h, --help                         help for update
   -o, --output string                Desired output format [text|json] (default "text")
   -q, --quiet                        Quiet output
-      --timeout int                  Timeout option for BackupUnit to be updated [seconds] (default 60)
-      --wait                         Wait for BackupUnit to be updated
+      --timeout int                  Timeout option for Request for BackupUnit update [seconds] (default 60)
+      --wait-for-request             Wait for the Request for BackupUnit update to be executed
 ```
 
 ## Examples

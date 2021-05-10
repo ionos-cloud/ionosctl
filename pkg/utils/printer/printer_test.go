@@ -303,9 +303,9 @@ func TestPrinterPrintResultTextResource(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		Resource: "datacenter",
-		Verb:     "create",
-		WaitFlag: false,
+		Resource:       "datacenter",
+		Verb:           "create",
+		WaitForRequest: false,
 	}
 	p.Print(res)
 	err = w.Flush()
@@ -327,15 +327,40 @@ func TestPrinterPrintResultTextWaitResource(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		Resource: "datacenter",
-		Verb:     "create",
-		WaitFlag: true,
+		Resource:       "datacenter",
+		Verb:           "create",
+		WaitForRequest: true,
 	}
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
 
-	re := regexp.MustCompile(`Command datacenter create and request have been successfully executed`)
+	re := regexp.MustCompile(`Command datacenter create & wait have been successfully executed`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestPrinterPrintResultTextWaitStateResource(t *testing.T) {
+	var b bytes.Buffer
+
+	viper.Set(config.ArgOutput, "text")
+	viper.Set(config.ArgQuiet, false)
+	w := bufio.NewWriter(&b)
+	reg, err := NewPrinterRegistry(w, w)
+	assert.NoError(t, err)
+	p := reg["text"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	res := Result{
+		Resource:       "datacenter",
+		Verb:           "create",
+		WaitForRequest: false,
+		WaitForState:   true,
+	}
+	p.Print(res)
+	err = w.Flush()
+	assert.NoError(t, err)
+
+	re := regexp.MustCompile(`Command datacenter create & wait have been successfully executed`)
 	assert.True(t, re.Match(b.Bytes()))
 }
 

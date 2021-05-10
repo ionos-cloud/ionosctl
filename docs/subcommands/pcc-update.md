@@ -31,8 +31,8 @@ Required values to run command:
       --pcc-id string            The unique Private Cross-Connect Id (required)
       --pcc-name string          The name for the Private Cross-Connect
   -q, --quiet                    Quiet output
-      --timeout int              Timeout option for Private Cross-Connect to be updated [seconds] (default 60)
-      --wait                     Wait for Private Cross-Connect to be updated
+      --timeout int              Timeout option for Request for Private Cross-Connect update [seconds] (default 60)
+      --wait-for-request         Wait for the Request for Private Cross-Connect update to be executed
 ```
 
 ## Examples

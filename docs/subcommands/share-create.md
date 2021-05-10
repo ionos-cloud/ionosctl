@@ -33,8 +33,8 @@ Required values to run a command:
   -q, --quiet                Quiet output
       --resource-id string   The unique Resource Id (required)
       --share-privilege      Set the group's permission to share resource
-      --timeout int          Timeout option for a Resource to be shared through a Group [seconds] (default 60)
-      --wait                 Wait for a Resource to be shared through a Group
+      --timeout int          Timeout option for Request for Resource to be shared through a Group [seconds] (default 60)
+      --wait-for-request     Wait for the Request for Resource share to executed
 ```
 
 ## Examples

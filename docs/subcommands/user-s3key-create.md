@@ -16,7 +16,7 @@ Use this command to create a S3Key for a particular User.
 
 Note: A maximum of five S3 keys may be created for any given user.
 
-You can wait for the action to be executed using `--wait` option.
+You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
@@ -32,9 +32,9 @@ Required values to run command:
   -h, --help                                     help for create
   -o, --output string                            Desired output format [text|json] (default "text")
   -q, --quiet                                    Quiet output
-      --timeout int                              Timeout option for an User S3Key to be created [seconds] (default 60)
+      --timeout int                              Timeout option for Request for User S3Key creation [seconds] (default 60)
       --user-id string                           The unique User Id (required)
-      --wait                                     Wait for User S3Key to be created
+      --wait-for-request                         Wait for the Request for User S3Key creation to be executed
 ```
 
 ## Examples
