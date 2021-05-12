@@ -22,7 +22,7 @@ func resource() *core.Command {
 		Command: &cobra.Command{
 			Use:              "resource",
 			Short:            "Resource Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl resource` + "`" + ` allows you to list, get Resources.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl resource` + "`" + ` allow you to list, get Resources.`,
 			TraverseChildren: true,
 		},
 	}

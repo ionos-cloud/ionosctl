@@ -24,7 +24,7 @@ func pcc() *core.Command {
 		Command: &cobra.Command{
 			Use:              "pcc",
 			Short:            "Private Cross-Connect Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl pcc` + "`" + ` allows you to list, get, create, update, delete Private Cross-Connect. To add Private Cross-Connect to a Lan, check the ` + "`" + `ionosctl lan update` + "`" + ` command.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl pcc` + "`" + ` allow you to list, get, create, update, delete Private Cross-Connect. To add Private Cross-Connect to a Lan, check the ` + "`" + `ionosctl lan update` + "`" + ` command.`,
 			TraverseChildren: true,
 		},
 	}
@@ -66,25 +66,6 @@ func pcc() *core.Command {
 	})
 	get.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-
-	/*
-		Get Command
-	*/
-	getPeers := core.NewCommand(ctx, pccCmd, core.CommandBuilder{
-		Namespace:  "pcc",
-		Resource:   "pcc",
-		Verb:       "get-peers",
-		ShortDesc:  "Get a Private Cross-Connect Peers",
-		LongDesc:   "Use this command to get a list of Peers from a Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
-		Example:    getPccPeersExample,
-		PreCmdRun:  PreRunPccId,
-		CmdRun:     RunPccGetPeers,
-		InitClient: true,
-	})
-	getPeers.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
-	_ = getPeers.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -159,6 +140,8 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect deletion [seconds]")
 
+	pccCmd.AddCommand(peers())
+
 	return pccCmd
 }
 
@@ -182,7 +165,7 @@ func RunPccGet(c *core.CommandConfig) error {
 	return c.Printer.Print(getPccPrint(nil, c, getPcc(u)))
 }
 
-func RunPccGetPeers(c *core.CommandConfig) error {
+func RunPccPeersGet(c *core.CommandConfig) error {
 	u, _, err := c.Pccs().GetPeers(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	if err != nil {
 		return err
@@ -270,6 +253,45 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 	}
 }
 
+func peers() *core.Command {
+	ctx := context.TODO()
+	peerCmd := &core.Command{
+		Command: &cobra.Command{
+			Use:              "peers",
+			Short:            "Private Cross-Connect Peers Operations",
+			Long:             `The sub-command of ` + "`" + `ionosctl pcc peers` + "`" + ` allows you to get a list of Peers from a Private Cross-Connect.`,
+			TraverseChildren: true,
+		},
+	}
+	globalFlags := peerCmd.GlobalFlags()
+	globalFlags.StringSlice(config.ArgCols, defaultPccPeersCols, "Columns to be printed in the standard output")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(peerCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = peerCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultPccPeersCols, cobra.ShellCompDirectiveNoFileComp
+	})
+
+	/*
+		Get Command
+	*/
+	getPeers := core.NewCommand(ctx, peerCmd, core.CommandBuilder{
+		Namespace:  "pcc",
+		Resource:   "peers",
+		Verb:       "get",
+		ShortDesc:  "Get a Private Cross-Connect Peers",
+		LongDesc:   "Use this command to get a list of Peers from a Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
+		Example:    getPccPeersExample,
+		PreCmdRun:  PreRunPccId,
+		CmdRun:     RunPccPeersGet,
+		InitClient: true,
+	})
+	getPeers.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
+	_ = getPeers.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	return peerCmd
+}
+
 // Output Printing
 
 var defaultPccCols = []string{"PccId", "Name", "Description"}
@@ -314,10 +336,34 @@ func getPccPeerPrint(c *core.CommandConfig, pccs []resources.Peer) printer.Resul
 		if pccs != nil {
 			r.OutputJSON = pccs
 			r.KeyValue = getPccPeersKVMaps(pccs)
-			r.Columns = defaultPccPeersCols
+			r.Columns = getPccPeersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), os.Stderr)
 		}
 	}
 	return r
+}
+
+func getPccPeersCols(flagName string, outErr io.Writer) []string {
+	if viper.IsSet(flagName) {
+		var pccCols []string
+		columnsMap := map[string]string{
+			"LanId":          "LanId",
+			"LanName":        "LanName",
+			"DatacenterId":   "DatacenterId",
+			"DatacenterName": "DatacenterName",
+			"Location":       "Location",
+		}
+		for _, k := range viper.GetStringSlice(flagName) {
+			col := columnsMap[k]
+			if col != "" {
+				pccCols = append(pccCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return pccCols
+	} else {
+		return defaultPccCols
+	}
 }
 
 func getPccCols(flagName string, outErr io.Writer) []string {
