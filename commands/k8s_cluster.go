@@ -21,7 +21,6 @@ import (
 
 func k8s() *core.Command {
 	k8sCmd := &core.Command{
-		NS: "k8s",
 		Command: &cobra.Command{
 			Use:              "k8s",
 			Short:            "Kubernetes Operations",
@@ -41,7 +40,6 @@ func k8s() *core.Command {
 func k8sCluster() *core.Command {
 	ctx := context.TODO()
 	k8sCmd := &core.Command{
-		NS: "k8s.cluster",
 		Command: &cobra.Command{
 			Use:              "cluster",
 			Short:            "Kubernetes Cluster Operations",
@@ -51,7 +49,7 @@ func k8sCluster() *core.Command {
 	}
 	globalFlags := k8sCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultK8sClusterCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -375,7 +373,7 @@ func getK8sClusterPrint(resp *resources.Response, c *core.CommandConfig, k8ss []
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sClustersKVMaps(k8ss)
-			r.Columns = getK8sClusterCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getK8sClusterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

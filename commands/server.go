@@ -21,7 +21,6 @@ import (
 func server() *core.Command {
 	ctx := context.TODO()
 	serverCmd := &core.Command{
-		NS: "server",
 		Command: &cobra.Command{
 			Use:              "server",
 			Short:            "Server Operations",
@@ -31,7 +30,7 @@ func server() *core.Command {
 	}
 	globalFlags := serverCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultServerCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -308,7 +307,7 @@ func RunServerList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: servers,
 		KeyValue:   getServersKVMaps(ss),
-		Columns:    getServersCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
@@ -326,7 +325,7 @@ func RunServerGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: svr,
 		KeyValue:   getServersKVMaps([]resources.Server{*svr}),
-		Columns:    getServersCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
@@ -362,7 +361,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     svr,
 		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
-		Columns:        getServersCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "server",
 		Verb:           "create",
@@ -411,7 +410,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	}
 	return c.Printer.Print(printer.Result{
 		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
-		Columns:        getServersCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		OutputJSON:     svr,
 		ApiResponse:    resp,
 		Resource:       "server",

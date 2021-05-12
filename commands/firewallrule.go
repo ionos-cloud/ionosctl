@@ -22,7 +22,6 @@ import (
 func firewallrule() *core.Command {
 	ctx := context.TODO()
 	firewallRuleCmd := &core.Command{
-		NS: "firewallrule",
 		Command: &cobra.Command{
 			Use:              "firewallrule",
 			Short:            "Firewall Rule Operations",
@@ -32,25 +31,25 @@ func firewallrule() *core.Command {
 	}
 	globalFlags := firewallRuleCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.NS, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringP(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.NS, config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringP(config.ArgNicId, "", "", config.RequiredFlagNicId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.NS, config.ArgNicId), globalFlags.Lookup(config.ArgNicId))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId), globalFlags.Lookup(config.ArgNicId))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr,
-			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.NS, config.ArgDataCenterId)),
-			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.NS, config.ArgServerId)),
+			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
+			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultFirewallRuleCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -237,9 +236,9 @@ func PreRunGlobalDcServerNicIdsFRuleId(c *core.PreCommandConfig) error {
 
 func RunFirewallRuleList(c *core.CommandConfig) error {
 	firewallRules, _, err := c.FirewallRules().List(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgNicId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 	)
 	if err != nil {
 		return err
@@ -249,9 +248,9 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 
 func RunFirewallRuleGet(c *core.CommandConfig) error {
 	firewallRule, _, err := c.FirewallRules().Get(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgNicId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)),
 	)
 	if err != nil {
@@ -268,9 +267,9 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 		},
 	}
 	firewallRule, resp, err := c.FirewallRules().Create(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgNicId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 		input,
 	)
 	if err != nil {
@@ -285,9 +284,9 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 
 func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 	firewallRule, resp, err := c.FirewallRules().Update(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgNicId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)),
 		getFirewallRulePropertiesSet(c),
 	)
@@ -306,9 +305,9 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 		return err
 	}
 	resp, err := c.FirewallRules().Delete(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgNicId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)),
 	)
 	if err != nil {
@@ -382,7 +381,7 @@ func getFirewallRulePrint(resp *resources.Response, c *core.CommandConfig, rule 
 		if rule != nil {
 			r.OutputJSON = rule
 			r.KeyValue = getFirewallRulesKVMaps(rule)
-			r.Columns = getFirewallRulesCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getFirewallRulesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

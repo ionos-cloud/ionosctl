@@ -21,7 +21,6 @@ import (
 func request() *core.Command {
 	ctx := context.TODO()
 	reqCmd := &core.Command{
-		NS: "request",
 		Command: &cobra.Command{
 			Use:              "request",
 			Short:            "Request Operations",
@@ -31,7 +30,7 @@ func request() *core.Command {
 	}
 	globalFlags := reqCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -108,7 +107,7 @@ func RunRequestList(c *core.CommandConfig) error {
 	rqs := getRequests(requests)
 	return c.Printer.Print(printer.Result{
 		OutputJSON: requests,
-		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		KeyValue:   getRequestsKVMaps(rqs),
 	})
 }
@@ -121,7 +120,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: request,
 		KeyValue:   getRequestsKVMaps([]resources.Request{*request}),
-		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
@@ -146,7 +145,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: request,
 		KeyValue:   getRequestsKVMaps([]resources.Request{*request}),
-		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 

@@ -20,7 +20,6 @@ import (
 func loadBalancer() *core.Command {
 	ctx := context.TODO()
 	loadbalancerCmd := &core.Command{
-		NS: "loadbalancer",
 		Command: &cobra.Command{
 			Use:              "loadbalancer",
 			Short:            "Load Balancer Operations",
@@ -30,7 +29,7 @@ func loadBalancer() *core.Command {
 	}
 	globalFlags := loadbalancerCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultLoadbalancerCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -188,7 +187,7 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: loadbalancers,
 		KeyValue:   getLoadbalancersKVMaps(ss),
-		Columns:    getLoadbalancersCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
@@ -203,7 +202,7 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: loadbalancer,
 		KeyValue:   getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
-		Columns:    getLoadbalancersCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
@@ -223,7 +222,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     loadbalancer,
 		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
-		Columns:        getLoadbalancersCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "loadbalancer",
 		Verb:           "create",
@@ -257,7 +256,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     loadbalancer,
 		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
-		Columns:        getLoadbalancersCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "loadbalancer",
 		Verb:           "update",

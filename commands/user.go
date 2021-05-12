@@ -21,7 +21,6 @@ import (
 func user() *core.Command {
 	ctx := context.TODO()
 	userCmd := &core.Command{
-		NS: "user",
 		Command: &cobra.Command{
 			Use:              "user",
 			Short:            "User Operations",
@@ -434,7 +433,7 @@ func getUserPrint(resp *resources.Response, c *core.CommandConfig, users []resou
 		if users != nil {
 			r.OutputJSON = users
 			r.KeyValue = getUsersKVMaps(users)
-			r.Columns = getUserCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getUserCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

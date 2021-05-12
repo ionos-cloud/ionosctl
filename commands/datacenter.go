@@ -20,7 +20,6 @@ import (
 func datacenter() *core.Command {
 	ctx := context.TODO()
 	datacenterCmd := &core.Command{
-		NS: "datacenter",
 		Command: &cobra.Command{
 			Use:              "datacenter",
 			Aliases:          []string{"dc"},
@@ -31,7 +30,7 @@ func datacenter() *core.Command {
 	}
 	globalFlags := datacenterCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(datacenterCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(datacenterCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -166,7 +165,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: datacenters,
 		KeyValue:   getDataCentersKVMaps(dcs),
-		Columns:    getDataCenterCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
@@ -177,7 +176,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 	}
 	return c.Printer.Print(printer.Result{
 		KeyValue:   getDataCentersKVMaps([]resources.Datacenter{*datacenter}),
-		Columns:    getDataCenterCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		OutputJSON: datacenter,
 	})
 }
@@ -196,7 +195,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	}
 	return c.Printer.Print(printer.Result{
 		KeyValue:       getDataCentersKVMaps([]resources.Datacenter{*dc}),
-		Columns:        getDataCenterCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		OutputJSON:     dc,
 		ApiResponse:    resp,
 		Resource:       "datacenter",
@@ -226,7 +225,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	}
 	return c.Printer.Print(printer.Result{
 		KeyValue:       getDataCentersKVMaps([]resources.Datacenter{*dc}),
-		Columns:        getDataCenterCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		OutputJSON:     dc,
 		ApiResponse:    resp,
 		Resource:       "datacenter",

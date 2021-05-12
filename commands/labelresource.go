@@ -10,7 +10,7 @@ import (
 )
 
 func RunDataCenterLabelsList(c *core.CommandConfig) error {
-	labelDcs, _, err := c.Labels().DatacenterList(viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)))
+	labelDcs, _, err := c.Labels().DatacenterList(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
@@ -19,7 +19,7 @@ func RunDataCenterLabelsList(c *core.CommandConfig) error {
 
 func RunDataCenterLabelGet(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().DatacenterGet(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)))
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 
 func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().DatacenterCreate(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue)),
 	)
@@ -41,7 +41,7 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 
 func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 	_, err := c.Labels().DatacenterDelete(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 	)
 	if err != nil {
@@ -52,8 +52,8 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 
 func RunServerLabelsList(c *core.CommandConfig) error {
 	labelDcs, _, err := c.Labels().ServerList(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 	)
 	if err != nil {
 		return err
@@ -63,8 +63,8 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 
 func RunServerLabelGet(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().ServerGet(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)))
 	if err != nil {
 		return err
@@ -74,8 +74,8 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 
 func RunServerLabelAdd(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().ServerCreate(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue)),
 	)
@@ -87,8 +87,8 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 
 func RunServerLabelRemove(c *core.CommandConfig) error {
 	_, err := c.Labels().ServerDelete(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 	)
 	if err != nil {
@@ -99,8 +99,8 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 
 func RunVolumeLabelsList(c *core.CommandConfig) error {
 	labelDcs, _, err := c.Labels().VolumeList(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgVolumeId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgVolumeId)),
 	)
 	if err != nil {
 		return err
@@ -110,8 +110,8 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 
 func RunVolumeLabelGet(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().VolumeGet(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgVolumeId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgVolumeId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)))
 	if err != nil {
 		return err
@@ -121,8 +121,8 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 
 func RunVolumeLabelAdd(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().VolumeCreate(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgVolumeId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgVolumeId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue)),
 	)
@@ -134,8 +134,8 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 
 func RunVolumeLabelRemove(c *core.CommandConfig) error {
 	_, err := c.Labels().VolumeDelete(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgVolumeId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgVolumeId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 	)
 	if err != nil {
@@ -145,7 +145,7 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelsList(c *core.CommandConfig) error {
-	labelDcs, _, err := c.Labels().IpBlockList(viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgIpBlockId)))
+	labelDcs, _, err := c.Labels().IpBlockList(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgIpBlockId)))
 	if err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func RunIpBlockLabelsList(c *core.CommandConfig) error {
 
 func RunIpBlockLabelGet(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().IpBlockGet(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgIpBlockId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgIpBlockId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)))
 	if err != nil {
 		return err
@@ -164,7 +164,7 @@ func RunIpBlockLabelGet(c *core.CommandConfig) error {
 
 func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().IpBlockCreate(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgIpBlockId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgIpBlockId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue)),
 	)
@@ -176,7 +176,7 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 
 func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 	_, err := c.Labels().IpBlockDelete(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgIpBlockId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgIpBlockId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 	)
 	if err != nil {
@@ -186,7 +186,7 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelsList(c *core.CommandConfig) error {
-	labelDcs, _, err := c.Labels().SnapshotList(viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgSnapshotId)))
+	labelDcs, _, err := c.Labels().SnapshotList(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgSnapshotId)))
 	if err != nil {
 		return err
 	}
@@ -195,7 +195,7 @@ func RunSnapshotLabelsList(c *core.CommandConfig) error {
 
 func RunSnapshotLabelGet(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().SnapshotGet(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgSnapshotId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgSnapshotId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)))
 	if err != nil {
 		return err
@@ -205,7 +205,7 @@ func RunSnapshotLabelGet(c *core.CommandConfig) error {
 
 func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 	labelDc, _, err := c.Labels().SnapshotCreate(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgSnapshotId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgSnapshotId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue)),
 	)
@@ -217,7 +217,7 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 
 func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 	_, err := c.Labels().SnapshotDelete(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgSnapshotId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgSnapshotId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey)),
 	)
 	if err != nil {

@@ -21,7 +21,6 @@ import (
 func group() *core.Command {
 	ctx := context.TODO()
 	groupCmd := &core.Command{
-		NS: "group",
 		Command: &cobra.Command{
 			Use:              "group",
 			Short:            "Group Operations",
@@ -31,7 +30,7 @@ func group() *core.Command {
 	}
 	globalFlags := groupCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(groupCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -396,7 +395,7 @@ func getGroupPrint(resp *resources.Response, c *core.CommandConfig, groups []res
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getGroupsKVMaps(groups)
-			r.Columns = getGroupCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getGroupCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

@@ -11,7 +11,7 @@ import (
 )
 
 type Command struct {
-	// NS is the Global Namespace of the Command.
+	// NS is the Global Namespace of the Command
 	NS      string
 	Command *cobra.Command
 
@@ -99,10 +99,10 @@ func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc st
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 }
 
-func CheckRequiredGlobalFlags(cmdNs string, globalFlagsName ...string) error {
+func CheckRequiredGlobalFlags(cmdName string, globalFlagsName ...string) error {
 	var multiErr error
 	for _, flagName := range globalFlagsName {
-		if viper.GetString(GetGlobalFlagName(cmdNs, flagName)) == "" {
+		if viper.GetString(GetGlobalFlagName(cmdName, flagName)) == "" {
 			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
 		}
 	}
@@ -129,6 +129,15 @@ func GetFlagName(ns, flagName string) string {
 	return fmt.Sprintf("%s.%s", ns, flagName)
 }
 
-func GetGlobalFlagName(cmdNs, flagName string) string {
-	return fmt.Sprintf("%s.%s", cmdNs, flagName)
+// GetGlobalFlagName returns a string of cmdName on which the
+// Flag is defined as a Global Flag concatenated with the name
+// of the Flag.
+//
+// For example: in a `ionosctl namespace resource verb` command
+// structure, if the flag is inherited from the namespace level
+// at the verb level, the cmdName will be c.Namespace,
+// If the Global Flag is defined at resource level, the cmdName
+// will be c.Resource.
+func GetGlobalFlagName(cmdName, flagName string) string {
+	return fmt.Sprintf("%s.%s", cmdName, flagName)
 }

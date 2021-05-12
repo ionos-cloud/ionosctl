@@ -23,7 +23,6 @@ const backupUnitNote = "NOTE: To login with backup agent use: https://backup.ion
 func backupunit() *core.Command {
 	ctx := context.TODO()
 	backupUnitCmd := &core.Command{
-		NS: "backupunit",
 		Command: &cobra.Command{
 			Use:              "backupunit",
 			Short:            "BackupUnit Operations",
@@ -33,7 +32,7 @@ func backupunit() *core.Command {
 	}
 	globalFlags := backupUnitCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultBackupUnitCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -294,7 +293,7 @@ func getBackupUnitPrint(resp *resources.Response, c *core.CommandConfig, backupU
 		if backupUnits != nil {
 			r.OutputJSON = backupUnits
 			r.KeyValue = getBackupUnitsKVMaps(backupUnits)
-			r.Columns = getBackupUnitCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getBackupUnitCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

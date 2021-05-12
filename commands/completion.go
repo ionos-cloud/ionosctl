@@ -14,7 +14,6 @@ import (
 func completion() *core.Command {
 	ctx := context.TODO()
 	completionCmd := &core.Command{
-		NS: "completion",
 		Command: &cobra.Command{
 			Use:   "completion",
 			Short: "Generate code to enable auto-completion with `TAB` key",

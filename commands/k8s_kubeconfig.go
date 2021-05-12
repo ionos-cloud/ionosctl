@@ -14,7 +14,6 @@ import (
 func k8sKubeconfig() *core.Command {
 	ctx := context.TODO()
 	k8sCmd := &core.Command{
-		NS: "k8s.kubeconfig",
 		Command: &cobra.Command{
 			Use:              "kubeconfig",
 			Short:            "Kubernetes Kubeconfig Operations",

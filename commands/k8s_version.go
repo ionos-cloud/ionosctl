@@ -11,7 +11,6 @@ import (
 func k8sVersion() *core.Command {
 	ctx := context.TODO()
 	k8sCmd := &core.Command{
-		NS: "k8s.version",
 		Command: &cobra.Command{
 			Use:              "version",
 			Short:            "Kubernetes Version Operations",

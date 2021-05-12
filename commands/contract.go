@@ -20,7 +20,6 @@ import (
 func contract() *core.Command {
 	ctx := context.TODO()
 	contractCmd := &core.Command{
-		NS: "contract",
 		Command: &cobra.Command{
 			Use:              "contract",
 			Short:            "Contract Resources Operations",
@@ -30,7 +29,7 @@ func contract() *core.Command {
 	}
 	globalFlags := contractCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultContractCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		Get Command
@@ -75,7 +74,7 @@ func RunContractGet(c *core.CommandConfig) error {
 			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractK8sCols))
 		}
 	}
-	return c.Printer.Print(getContractPrint(c, getContract(&contractResource), getContractCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())))
+	return c.Printer.Print(getContractPrint(c, getContract(&contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())))
 }
 
 // Output Printing

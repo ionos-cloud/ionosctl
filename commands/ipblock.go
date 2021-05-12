@@ -20,7 +20,6 @@ import (
 func ipblock() *core.Command {
 	ctx := context.TODO()
 	ipblockCmd := &core.Command{
-		NS: "ipblock",
 		Command: &cobra.Command{
 			Use:              "ipblock",
 			Short:            "IpBlock Operations",
@@ -30,7 +29,7 @@ func ipblock() *core.Command {
 	}
 	globalFlags := ipblockCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultIpBlockCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(ipblockCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(ipblockCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -252,7 +251,7 @@ func getIpBlockPrint(resp *resources.Response, c *core.CommandConfig, ipBlocks [
 		if ipBlocks != nil {
 			r.OutputJSON = ipBlocks
 			r.KeyValue = getIpBlocksKVMaps(ipBlocks)
-			r.Columns = getIpBlocksCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getIpBlocksCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

@@ -21,7 +21,6 @@ import (
 func userS3key() *core.Command {
 	ctx := context.TODO()
 	s3keyCmd := &core.Command{
-		NS: "user",
 		Command: &cobra.Command{
 			Use:              "s3key",
 			Short:            "User S3Key Operations",
@@ -31,7 +30,7 @@ func userS3key() *core.Command {
 	}
 	globalFlags := s3keyCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultS3KeyCols, "Columns to be printed in the standard output. You can also print SecretKey, using `--cols=\"S3KeyId,Active,SecretKey\"`")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(s3keyCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(s3keyCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -262,7 +261,7 @@ func getS3KeyPrint(resp *resources.Response, c *core.CommandConfig, s []resource
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getS3KeysKVMaps(s)
-			r.Columns = getS3KeyCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getS3KeyCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

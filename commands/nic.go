@@ -21,7 +21,6 @@ import (
 func nic() *core.Command {
 	ctx := context.TODO()
 	nicCmd := &core.Command{
-		NS: "nic",
 		Command: &cobra.Command{
 			Use:              "nic",
 			Short:            "Network Interfaces Operations",
@@ -31,17 +30,17 @@ func nic() *core.Command {
 	}
 	globalFlags := nicCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.NS, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringP(config.ArgServerId, "", "", "The unique Server Id")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.NS, config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultNicCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -198,8 +197,8 @@ func PreRunGlobalDcServerIdsNicId(c *core.PreCommandConfig) error {
 
 func RunNicList(c *core.CommandConfig) error {
 	nics, _, err := c.Nics().List(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)))
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)))
 	if err != nil {
 		return err
 	}
@@ -207,14 +206,14 @@ func RunNicList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: nics,
 		KeyValue:   getNicsKVMaps(ss),
-		Columns:    getNicsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
 func RunNicGet(c *core.CommandConfig) error {
 	nic, _, err := c.Nics().Get(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
 	if err != nil {
@@ -223,15 +222,15 @@ func RunNicGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: nic,
 		KeyValue:   getNicsKVMaps([]resources.Nic{*nic}),
-		Columns:    getNicsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
 	nic, resp, err := c.Nics().Create(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicName)),
 		viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgNicIps)),
 		viper.GetBool(core.GetFlagName(c.NS, config.ArgNicDhcp)),
@@ -247,7 +246,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     nic,
 		KeyValue:       getNicsKVMaps([]resources.Nic{*nic}),
-		Columns:        getNicsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "nic",
 		Verb:           "create",
@@ -267,8 +266,8 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		input.NicProperties.SetLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)))
 	}
 	nicUpd, resp, err := c.Nics().Update(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 		input,
 	)
@@ -282,7 +281,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     nicUpd,
 		KeyValue:       getNicsKVMaps([]resources.Nic{*nicUpd}),
-		Columns:        getNicsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "nic",
 		Verb:           "update",
@@ -295,8 +294,8 @@ func RunNicDelete(c *core.CommandConfig) error {
 		return err
 	}
 	resp, err := c.Nics().Delete(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgServerId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
 	if err != nil {
@@ -319,7 +318,6 @@ func RunNicDelete(c *core.CommandConfig) error {
 func loadBalancerNic() *core.Command {
 	ctx := context.TODO()
 	loadbalancerNicCmd := &core.Command{
-		NS: "loadbalancer.nic",
 		Command: &cobra.Command{
 			Use:              "nic",
 			Short:            "Load Balancer Nic Operations",
@@ -329,7 +327,7 @@ func loadBalancerNic() *core.Command {
 	}
 	globalFlags := loadbalancerNicCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultNicCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerNicCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerNicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		Attach Nic Command
@@ -556,7 +554,7 @@ func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resourc
 		if nics != nil {
 			r.OutputJSON = nics
 			r.KeyValue = getNicsKVMaps(nics)
-			r.Columns = getNicsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

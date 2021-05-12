@@ -22,7 +22,6 @@ import (
 func lan() *core.Command {
 	ctx := context.TODO()
 	lanCmd := &core.Command{
-		NS: "lan",
 		Command: &cobra.Command{
 			Use:              "lan",
 			Short:            "LAN Operations",
@@ -32,12 +31,12 @@ func lan() *core.Command {
 	}
 	globalFlags := lanCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.NS, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultLanCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -188,7 +187,7 @@ func PreRunGlobalDcIdLanId(c *core.PreCommandConfig) error {
 }
 
 func RunLanList(c *core.CommandConfig) error {
-	lans, _, err := c.Lans().List(viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)))
+	lans, _, err := c.Lans().List(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
@@ -196,13 +195,13 @@ func RunLanList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: lans,
 		KeyValue:   getLansKVMaps(ss),
-		Columns:    getLansCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
 func RunLanGet(c *core.CommandConfig) error {
 	lan, _, err := c.Lans().Get(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
 	if err != nil {
@@ -211,7 +210,7 @@ func RunLanGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: lan,
 		KeyValue:   getLansKVMaps([]resources.Lan{*lan}),
-		Columns:    getLansCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
@@ -230,7 +229,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 			Properties: &properties,
 		},
 	}
-	l, resp, err := c.Lans().Create(viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)), input)
+	l, resp, err := c.Lans().Create(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)), input)
 	if err != nil {
 		return err
 	}
@@ -241,7 +240,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     l,
 		KeyValue:       getLanPostsKVMaps([]resources.LanPost{*l}),
-		Columns:        getLansCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "lan",
 		Verb:           "create",
@@ -261,7 +260,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		input.SetPcc(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	}
 	lan, resp, err := c.Lans().Update(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 		input,
 	)
@@ -275,7 +274,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     lan,
 		KeyValue:       getLansKVMaps([]resources.Lan{*lan}),
-		Columns:        getLansCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "lan",
 		Verb:           "update",
@@ -288,7 +287,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 		return err
 	}
 	resp, err := c.Lans().Delete(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
 	if err != nil {

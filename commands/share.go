@@ -21,7 +21,6 @@ import (
 func share() *core.Command {
 	ctx := context.TODO()
 	shareCmd := &core.Command{
-		NS: "share",
 		Command: &cobra.Command{
 			Use:              "share",
 			Short:            "Resource Share Operations",
@@ -31,7 +30,7 @@ func share() *core.Command {
 	}
 	globalFlags := shareCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupShareCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(shareCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(shareCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -313,7 +312,7 @@ func getGroupSharePrint(resp *resources.Response, c *core.CommandConfig, groups 
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getGroupSharesKVMaps(groups)
-			r.Columns = getGroupShareCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getGroupShareCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

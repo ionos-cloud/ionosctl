@@ -20,7 +20,6 @@ import (
 func snapshot() *core.Command {
 	ctx := context.TODO()
 	snapshotCmd := &core.Command{
-		NS: "snapshot",
 		Command: &cobra.Command{
 			Use:              "snapshot",
 			Short:            "Snapshot Operations",
@@ -360,7 +359,7 @@ func getSnapshotPrint(resp *resources.Response, c *core.CommandConfig, s []resou
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getSnapshotsKVMaps(s)
-			r.Columns = getSnapshotCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getSnapshotCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

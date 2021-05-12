@@ -22,7 +22,6 @@ import (
 func volume() *core.Command {
 	ctx := context.TODO()
 	volumeCmd := &core.Command{
-		NS: "volume",
 		Command: &cobra.Command{
 			Use:              "volume",
 			Short:            "Volume Operations",
@@ -32,12 +31,12 @@ func volume() *core.Command {
 	}
 	globalFlags := volumeCmd.GlobalFlags()
 	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(volumeCmd.NS, config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
 	_ = volumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultVolumeCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(volumeCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -183,7 +182,7 @@ func PreRunGlobalDcIdVolumeId(c *core.PreCommandConfig) error {
 }
 
 func RunVolumeList(c *core.CommandConfig) error {
-	volumes, _, err := c.Volumes().List(viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)))
+	volumes, _, err := c.Volumes().List(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
@@ -191,13 +190,13 @@ func RunVolumeList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: volumes,
 		KeyValue:   getVolumesKVMaps(ss),
-		Columns:    getVolumesCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
 func RunVolumeGet(c *core.CommandConfig) error {
 	volume, _, err := c.Volumes().Get(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 	)
 	if err != nil {
@@ -206,13 +205,13 @@ func RunVolumeGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: volume,
 		KeyValue:   getVolumesKVMaps([]resources.Volume{*volume}),
-		Columns:    getVolumesCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
 func RunVolumeCreate(c *core.CommandConfig) error {
 	volume, resp, err := c.Volumes().Create(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeBus)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeType)),
@@ -230,7 +229,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     volume,
 		KeyValue:       getVolumesKVMaps([]resources.Volume{*volume}),
-		Columns:        getVolumesCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "volume",
 		Verb:           "create",
@@ -250,7 +249,7 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 		input.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgVolumeSize))))
 	}
 	volume, resp, err := c.Volumes().Update(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 		input,
 	)
@@ -264,7 +263,7 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     volume,
 		KeyValue:       getVolumesKVMaps([]resources.Volume{*volume}),
-		Columns:        getVolumesCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "volume",
 		Verb:           "update",
@@ -277,7 +276,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		return err
 	}
 	resp, err := c.Volumes().Delete(
-		viper.GetString(core.GetGlobalFlagName(c.Namespace, config.ArgDataCenterId)),
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 	)
 	if err != nil {
@@ -300,7 +299,6 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 func serverVolume() *core.Command {
 	ctx := context.TODO()
 	serverVolumeCmd := &core.Command{
-		NS: "server",
 		Command: &cobra.Command{
 			Use:              "volume",
 			Short:            "Server Volume Operations",
@@ -310,7 +308,7 @@ func serverVolume() *core.Command {
 	}
 	globalFlags := serverVolumeCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultVolumeCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(serverVolumeCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(serverVolumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		Attach Volume Command
@@ -532,7 +530,7 @@ func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []reso
 		if vols != nil {
 			r.OutputJSON = vols
 			r.KeyValue = getVolumesKVMaps(vols)
-			r.Columns = getVolumesCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

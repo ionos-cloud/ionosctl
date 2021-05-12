@@ -21,7 +21,6 @@ import (
 func pcc() *core.Command {
 	ctx := context.TODO()
 	pccCmd := &core.Command{
-		NS: "pcc",
 		Command: &cobra.Command{
 			Use:              "pcc",
 			Short:            "Private Cross-Connect Operations",
@@ -31,7 +30,7 @@ func pcc() *core.Command {
 	}
 	globalFlags := pccCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultPccCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(pccCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(pccCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -289,7 +288,7 @@ func getPccPrint(resp *resources.Response, c *core.CommandConfig, pccs []resourc
 		if pccs != nil {
 			r.OutputJSON = pccs
 			r.KeyValue = getPccsKVMaps(pccs)
-			r.Columns = getPccCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), os.Stderr)
+			r.Columns = getPccCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), os.Stderr)
 		}
 	}
 	return r

@@ -20,7 +20,6 @@ import (
 func image() *core.Command {
 	ctx := context.TODO()
 	imageCmd := &core.Command{
-		NS: "image",
 		Command: &cobra.Command{
 			Use:              "image",
 			Short:            "Image Operations",
@@ -30,7 +29,7 @@ func image() *core.Command {
 	}
 	globalFlags := imageCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
@@ -135,7 +134,7 @@ func getImagePrint(c *core.CommandConfig, imgs []resources.Image) printer.Result
 		if imgs != nil {
 			r.OutputJSON = imgs
 			r.KeyValue = getImagesKVMaps(imgs)
-			r.Columns = getImageCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getImageCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r
