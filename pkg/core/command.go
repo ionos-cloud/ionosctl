@@ -56,11 +56,7 @@ func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string) {
 	} else {
 		flags.String(name, defaultValue, desc)
 	}
-	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	} else {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 }
 
 func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []string, desc string) {
@@ -70,11 +66,7 @@ func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []stri
 	} else {
 		flags.StringSlice(name, defaultValue, desc)
 	}
-	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	} else {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 }
 
 func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc string) {
@@ -84,11 +76,7 @@ func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc stri
 	} else {
 		flags.Int(name, defaultValue, desc)
 	}
-	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	} else {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 }
 
 func (c *Command) AddFloat32Flag(name, shorthand string, defaultValue float32, desc string) {
@@ -98,11 +86,7 @@ func (c *Command) AddFloat32Flag(name, shorthand string, defaultValue float32, d
 	} else {
 		flags.Float32(name, defaultValue, desc)
 	}
-	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	} else {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 }
 
 func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc string) {
@@ -112,11 +96,7 @@ func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc st
 	} else {
 		flags.Bool(name, defaultValue, desc)
 	}
-	if c.Command.Parent() != nil {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	} else {
-		viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 }
 
 func CheckRequiredGlobalFlags(cmdNs string, globalFlagsName ...string) error {
