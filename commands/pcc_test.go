@@ -143,7 +143,7 @@ func TestRunPccGetErr(t *testing.T) {
 	})
 }
 
-func TestRunPccGetPeers(t *testing.T) {
+func TestRunPccPeersGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -152,12 +152,12 @@ func TestRunPccGetPeers(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, nil)
-		err := RunPccGetPeers(cfg)
+		err := RunPccPeersGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunPccGetPeersErr(t *testing.T) {
+func TestRunPccPeersGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -166,7 +166,7 @@ func TestRunPccGetPeersErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, testPccErr)
-		err := RunPccGetPeers(cfg)
+		err := RunPccPeersGet(cfg)
 		assert.Error(t, err)
 	})
 }
