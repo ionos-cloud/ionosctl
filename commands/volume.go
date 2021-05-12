@@ -373,30 +373,30 @@ Required values to run command:
 	})
 
 	/*
-		Describe Volume Command
+		Get Volume Command
 	*/
-	describeVolumeCmd := core.NewCommand(ctx, serverVolumeCmd, core.CommandBuilder{
+	getVolumeCmd := core.NewCommand(ctx, serverVolumeCmd, core.CommandBuilder{
 		Namespace:  "server",
 		Resource:   "volume",
 		Verb:       "get",
-		ShortDesc:  "",
-		LongDesc:   "",
-		Example:    "",
+		ShortDesc:  "Get an attached Volume from a Server",
+		LongDesc:   "Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
+		Example:    getVolumeServerExample,
 		InitClient: true,
 		PreCmdRun:  PreRunDcServerVolumeIds,
-		CmdRun:     RunServerVolumeDescribe,
+		CmdRun:     RunServerVolumeGet,
 	})
-	describeVolumeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = describeVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getVolumeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	describeVolumeCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = describeVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(describeVolumeCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	getVolumeCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(getVolumeCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	describeVolumeCmd.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
-	_ = describeVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getAttachedVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(describeVolumeCmd.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(describeVolumeCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	getVolumeCmd.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getAttachedVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(getVolumeCmd.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(getVolumeCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -471,7 +471,7 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 	return c.Printer.Print(getVolumePrint(nil, c, getAttachedVolumes(attachedVols)))
 }
 
-func RunServerVolumeDescribe(c *core.CommandConfig) error {
+func RunServerVolumeGet(c *core.CommandConfig) error {
 	attachedVol, _, err := c.Servers().GetVolume(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),

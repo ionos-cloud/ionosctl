@@ -236,12 +236,12 @@ Required values to run command:
 		ShortDesc: "Stop a Server",
 		LongDesc: `Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
-		You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
-		Required values to run command:
+Required values to run command:
 
-		* Data Center Id
-		* Server Id`,
+* Data Center Id
+* Server Id`,
 		Example:    stopServerExample,
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerStop,

@@ -545,7 +545,7 @@ func TestRunServerVolumesListErr(t *testing.T) {
 	})
 }
 
-func TestRunServerVolumeDescribe(t *testing.T) {
+func TestRunServerVolumeGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -556,12 +556,12 @@ func TestRunServerVolumeDescribe(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testServerVar)
 		rm.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, nil)
-		err := RunServerVolumeDescribe(cfg)
+		err := RunServerVolumeGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunServerVolumeDescribeErr(t *testing.T) {
+func TestRunServerVolumeGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -572,7 +572,7 @@ func TestRunServerVolumeDescribeErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testServerVar)
 		rm.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
-		err := RunServerVolumeDescribe(cfg)
+		err := RunServerVolumeGet(cfg)
 		assert.Error(t, err)
 	})
 }
