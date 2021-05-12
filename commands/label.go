@@ -146,7 +146,7 @@ func label() *core.Command {
 
 func PreRunGlobalResourceTypeLabelKey(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Namespace, config.ArgResourceType); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgResourceType); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := checkResourceIds(c); err != nil {
@@ -163,7 +163,7 @@ func PreRunGlobalResourceTypeLabelKey(c *core.PreCommandConfig) error {
 
 func PreRunGlobalResourceTypeLabelKeyValue(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Namespace, config.ArgResourceType); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgResourceType); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := checkResourceIds(c); err != nil {
@@ -267,15 +267,15 @@ func RunLabelRemove(c *core.CommandConfig) error {
 func checkResourceIds(c *core.PreCommandConfig) error {
 	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
 	case config.DatacenterResource:
-		return core.CheckRequiredGlobalFlags(c.Namespace, config.ArgDataCenterId)
+		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId)
 	case config.ServerResource:
-		return core.CheckRequiredGlobalFlags(c.Namespace, config.ArgDataCenterId, config.ArgServerId)
+		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId)
 	case config.VolumeResource:
-		return core.CheckRequiredGlobalFlags(c.Namespace, config.ArgDataCenterId, config.ArgVolumeId)
+		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgVolumeId)
 	case config.IpBlockResource:
-		return core.CheckRequiredGlobalFlags(c.Namespace, config.ArgIpBlockId)
+		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgIpBlockId)
 	case config.SnapshotResource:
-		return core.CheckRequiredGlobalFlags(c.Namespace, config.ArgSnapshotId)
+		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgSnapshotId)
 	default:
 		return c.Printer.Print(labelResourceWarning)
 	}

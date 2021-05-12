@@ -181,12 +181,12 @@ Required values to run command:
 }
 
 func PreRunGlobalDcServerIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredGlobalFlags(c.Namespace, config.ArgDataCenterId, config.ArgServerId)
+	return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId)
 }
 
 func PreRunGlobalDcServerIdsNicId(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Namespace, config.ArgDataCenterId, config.ArgServerId); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := core.CheckRequiredFlags(c.NS, config.ArgNicId); err != nil {

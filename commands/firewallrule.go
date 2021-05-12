@@ -206,12 +206,12 @@ Required values to run command:
 }
 
 func PreRunGlobalDcServerNicIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredGlobalFlags(c.Namespace, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId)
+	return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId)
 }
 
 func PreRunGlobalDcServerNicIdsFRuleProtocol(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Namespace, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := core.CheckRequiredFlags(c.NS, config.ArgFirewallRuleProtocol); err != nil {
@@ -225,7 +225,7 @@ func PreRunGlobalDcServerNicIdsFRuleProtocol(c *core.PreCommandConfig) error {
 
 func PreRunGlobalDcServerNicIdsFRuleId(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Namespace, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := core.CheckRequiredFlags(c.NS, config.ArgFirewallRuleId); err != nil {

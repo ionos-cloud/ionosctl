@@ -172,7 +172,7 @@ Required values to run command:
 
 func PreRunGlobalDcIdVolumeId(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Namespace, config.ArgDataCenterId); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := core.CheckRequiredFlags(c.NS, config.ArgVolumeId); err != nil {
