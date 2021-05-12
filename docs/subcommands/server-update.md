@@ -14,7 +14,7 @@ ionosctl server update [flags]
 
 Use this command to update a specified Server from a Virtual Data Center.
 
-You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option.
+You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
 
 Required values to run command:
 
