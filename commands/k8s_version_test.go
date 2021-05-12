@@ -6,8 +6,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +21,7 @@ var (
 func TestRunK8sVersionList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -34,7 +34,7 @@ func TestRunK8sVersionList(t *testing.T) {
 func TestRunK8sVersionListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -47,7 +47,7 @@ func TestRunK8sVersionListErr(t *testing.T) {
 func TestRunK8sVersionGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -60,7 +60,7 @@ func TestRunK8sVersionGet(t *testing.T) {
 func TestRunK8sVersionGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)

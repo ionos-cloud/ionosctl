@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -39,7 +39,7 @@ var (
 func TestRunLocationList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -52,7 +52,7 @@ func TestRunLocationList(t *testing.T) {
 func TestRunLocationListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -67,8 +67,8 @@ func TestGetLocationsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("location", config.ArgCols), []string{"Name"})
-	getLocationCols(builder.GetGlobalFlagName("location", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("location", config.ArgCols), []string{"Name"})
+	getLocationCols(core.GetGlobalFlagName("location", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -78,8 +78,8 @@ func TestGetLocationsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("location", config.ArgCols), []string{"Unknown"})
-	getLocationCols(builder.GetGlobalFlagName("location", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("location", config.ArgCols), []string{"Unknown"})
+	getLocationCols(core.GetGlobalFlagName("location", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -17,9 +17,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-func k8sNode() *builder.Command {
+func k8sNode() *core.Command {
 	ctx := context.TODO()
-	k8sCmd := &builder.Command{
+	k8sCmd := &core.Command{
+		NS: "k8s.node",
 		Command: &cobra.Command{
 			Use:              "node",
 			Short:            "Kubernetes Node Operations",
@@ -29,7 +30,7 @@ func k8sNode() *builder.Command {
 	}
 	globalFlags := k8sCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultK8sNodeCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(k8sCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodeCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -37,36 +38,53 @@ func k8sNode() *builder.Command {
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodePoolIds, RunK8sNodeList, "list", "List Kubernetes Nodes",
-		"Use this command to get a list of existing Kubernetes Nodes.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id", listK8sNodesExample, true)
+	list := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace:  "k8s",
+		Resource:   "node",
+		Verb:       "list",
+		ShortDesc:  "List Kubernetes Nodes",
+		LongDesc:   "Use this command to get a list of existing Kubernetes Nodes.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
+		Example:    listK8sNodesExample,
+		PreCmdRun:  PreRunK8sClusterNodePoolIds,
+		CmdRun:     RunK8sNodeList,
+		InitClient: true,
+	})
 	list.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Name(), list.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIds, RunK8sNodeGet, "get", "Get a Kubernetes Node",
-		"Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
-		getK8sNodeExample, true)
+	get := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace:  "k8s",
+		Resource:   "node",
+		Verb:       "get",
+		ShortDesc:  "Get a Kubernetes Node",
+		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
+		Example:    getK8sNodeExample,
+		PreCmdRun:  PreRunK8sClusterNodesIds,
+		CmdRun:     RunK8sNodeGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Name(), get.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgK8sNodeId, "", "", config.RequiredFlagK8sNodeId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodesIds(os.Stderr,
-			viper.GetString(builder.GetFlagName(k8sCmd.Name(), get.Name(), config.ArgK8sClusterId)),
-			viper.GetString(builder.GetFlagName(k8sCmd.Name(), get.Name(), config.ArgK8sNodePoolId)),
+			viper.GetString(core.GetFlagName(get.NS, config.ArgK8sClusterId)),
+			viper.GetString(core.GetFlagName(get.NS, config.ArgK8sNodePoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified Node to be in ACTIVE state")
@@ -75,8 +93,12 @@ func k8sNode() *builder.Command {
 	/*
 		Recreate Command
 	*/
-	recreate := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIds, RunK8sNodeRecreate, "recreate", "Recreate a Kubernetes Node",
-		`You can recreate a single Kubernetes Node.
+	recreate := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace: "k8s",
+		Resource:  "node",
+		Verb:      "recreate",
+		ShortDesc: "Recreate a Kubernetes Node",
+		LongDesc: `You can recreate a single Kubernetes Node.
 
 Managed Kubernetes starts a process which based on the NodePool's template creates & configures a new Node, waits for status "ACTIVE", and migrates all the Pods from the faulty Node, deleting it once empty. While this operation occurs, the NodePool will have an extra billable "ACTIVE" Node.
 
@@ -84,61 +106,75 @@ Required values to run command:
 
 * K8s Cluster Id
 * K8s NodePool Id
-* K8s Node Id`, recreateK8sNodeExample, true)
+* K8s Node Id`,
+		Example:    recreateK8sNodeExample,
+		PreCmdRun:  PreRunK8sClusterNodesIds,
+		CmdRun:     RunK8sNodeRecreate,
+		InitClient: true,
+	})
 	recreate.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = recreate.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	recreate.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
 	_ = recreate.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Name(), recreate.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(recreate.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	recreate.AddStringFlag(config.ArgK8sNodeId, "", "", config.RequiredFlagK8sNodeId)
 	_ = recreate.Command.RegisterFlagCompletionFunc(config.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodesIds(os.Stderr,
-			viper.GetString(builder.GetFlagName(k8sCmd.Name(), recreate.Name(), config.ArgK8sClusterId)),
-			viper.GetString(builder.GetFlagName(k8sCmd.Name(), recreate.Name(), config.ArgK8sNodePoolId)),
+			viper.GetString(core.GetFlagName(recreate.NS, config.ArgK8sClusterId)),
+			viper.GetString(core.GetFlagName(recreate.NS, config.ArgK8sNodePoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterNodesIds, RunK8sNodeDelete, "delete", "Delete a Kubernetes Node",
-		`This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.
+	deleteCmd := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace: "k8s",
+		Resource:  "node",
+		Verb:      "delete",
+		ShortDesc: "Delete a Kubernetes Node",
+		LongDesc: `This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.
 
 Required values to run command:
 
 * K8s Cluster Id
 * K8s NodePool Id
-* K8s Node Id`, deleteK8sNodeExample, true)
+* K8s Node Id`,
+		Example:    deleteK8sNodeExample,
+		PreCmdRun:  PreRunK8sClusterNodesIds,
+		CmdRun:     RunK8sNodeDelete,
+		InitClient: true,
+	})
 	deleteCmd.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getK8sNodePoolsIds(os.Stderr, viper.GetString(builder.GetFlagName(k8sCmd.Name(), deleteCmd.Name(), config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
+		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddStringFlag(config.ArgK8sNodeId, "", "", config.RequiredFlagK8sNodeId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodesIds(os.Stderr,
-			viper.GetString(builder.GetFlagName(k8sCmd.Name(), deleteCmd.Name(), config.ArgK8sClusterId)),
-			viper.GetString(builder.GetFlagName(k8sCmd.Name(), deleteCmd.Name(), config.ArgK8sNodePoolId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgK8sClusterId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgK8sNodePoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return k8sCmd
 }
 
-func PreRunK8sClusterNodesIds(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sClusterId, config.ArgK8sNodePoolId, config.ArgK8sNodeId)
+func PreRunK8sClusterNodesIds(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgK8sNodePoolId, config.ArgK8sNodeId)
 }
 
-func RunK8sNodeList(c *builder.CommandConfig) error {
+func RunK8sNodeList(c *core.CommandConfig) error {
 	k8ss, _, err := c.K8s().ListNodes(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
 	)
 	if err != nil {
 		return err
@@ -146,42 +182,42 @@ func RunK8sNodeList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getK8sNodePrint(c, getK8sNodes(k8ss)))
 }
 
-func RunK8sNodeGet(c *builder.CommandConfig) error {
-	if err := utils.WaitForState(c, GetStateK8sNode, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodeId))); err != nil {
+func RunK8sNodeGet(c *core.CommandConfig) error {
+	if err := utils.WaitForState(c, GetStateK8sNode, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId))); err != nil {
 		return err
 	}
 	u, _, err := c.K8s().GetNode(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodeId)))
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getK8sNodePrint(c, getK8sNode(u)))
 }
 
-func RunK8sNodeRecreate(c *builder.CommandConfig) error {
+func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "recreate k8s node"); err != nil {
 		return err
 	}
 	_, err := c.K8s().RecreateNode(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodeId)))
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print("Status: Command node recreate has been successfully executed")
 }
 
-func RunK8sNodeDelete(c *builder.CommandConfig) error {
+func RunK8sNodeDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s node"); err != nil {
 		return err
 	}
 	_, err := c.K8s().DeleteNode(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodeId)))
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)))
 	if err != nil {
 		return err
 	}
@@ -190,9 +226,9 @@ func RunK8sNodeDelete(c *builder.CommandConfig) error {
 
 // Wait for State
 
-func GetStateK8sNode(c *builder.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.K8s().GetNode(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sNodePoolId)), objId)
+func GetStateK8sNode(c *core.CommandConfig, objId string) (*string, error) {
+	obj, _, err := c.K8s().GetNode(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)), objId)
 	if err != nil {
 		return nil, err
 	}
@@ -216,13 +252,13 @@ type K8sNodePrint struct {
 	State      string `json:"State,omitempty"`
 }
 
-func getK8sNodePrint(c *builder.CommandConfig, k8ss []resources.K8sNode) printer.Result {
+func getK8sNodePrint(c *core.CommandConfig, k8ss []resources.K8sNode) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sNodesKVMaps(k8ss)
-			r.Columns = getK8sNodeCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getK8sNodeCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -44,10 +44,10 @@ var (
 func TestPreRunRequestId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunRequestId(cfg)
 		assert.NoError(t, err)
@@ -57,10 +57,10 @@ func TestPreRunRequestId(t *testing.T) {
 func TestPreRunRequestIdRequiredFlagErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgRequestId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), "")
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunRequestId(cfg)
 		assert.Error(t, err)
@@ -70,7 +70,7 @@ func TestPreRunRequestIdRequiredFlagErr(t *testing.T) {
 func TestRunRequestList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -83,7 +83,7 @@ func TestRunRequestList(t *testing.T) {
 func TestRunRequestListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -97,11 +97,11 @@ func TestRunRequestListErr(t *testing.T) {
 func TestRunRequestGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
 		req := resources.Request{rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		err := RunRequestGet(cfg)
@@ -112,11 +112,11 @@ func TestRunRequestGet(t *testing.T) {
 func TestRunRequestGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
 		req := resources.Request{rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, testRequestErr)
 		err := RunRequestGet(cfg)
@@ -128,11 +128,11 @@ func TestRunRequestGetErr(t *testing.T) {
 func TestRunRequestWait(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
 		req := resources.Request{rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, nil)
@@ -144,11 +144,11 @@ func TestRunRequestWait(t *testing.T) {
 func TestRunRequestWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
 		req := resources.Request{rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, testRequestErr)
@@ -163,8 +163,8 @@ func TestGetRequestsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("request", config.ArgCols), []string{"RequestId"})
-	getRequestsCols(builder.GetGlobalFlagName("request", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("request", config.ArgCols), []string{"RequestId"})
+	getRequestsCols(core.GetGlobalFlagName("request", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -174,8 +174,8 @@ func TestGetRequestsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("request", config.ArgCols), []string{"Unknown"})
-	getRequestsCols(builder.GetGlobalFlagName("request", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("request", config.ArgCols), []string{"Unknown"})
+	getRequestsCols(core.GetGlobalFlagName("request", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

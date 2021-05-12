@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -66,11 +66,11 @@ var (
 func TestPreRunPccId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		err := PreRunPccId(cfg)
 		assert.NoError(t, err)
 	})
@@ -79,11 +79,11 @@ func TestPreRunPccId(t *testing.T) {
 func TestPreRunPccIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), "")
 		err := PreRunPccId(cfg)
 		assert.Error(t, err)
 	})
@@ -92,7 +92,7 @@ func TestPreRunPccIdErr(t *testing.T) {
 func TestRunPccList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -105,7 +105,7 @@ func TestRunPccList(t *testing.T) {
 func TestRunPccListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -118,11 +118,11 @@ func TestRunPccListErr(t *testing.T) {
 func TestRunPccGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccTestGet, nil, nil)
 		err := RunPccGet(cfg)
 		assert.NoError(t, err)
@@ -132,11 +132,11 @@ func TestRunPccGet(t *testing.T) {
 func TestRunPccGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccTestGet, nil, testPccErr)
 		err := RunPccGet(cfg)
 		assert.Error(t, err)
@@ -146,11 +146,11 @@ func TestRunPccGetErr(t *testing.T) {
 func TestRunPccGetPeers(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, nil)
 		err := RunPccGetPeers(cfg)
 		assert.NoError(t, err)
@@ -160,11 +160,11 @@ func TestRunPccGetPeers(t *testing.T) {
 func TestRunPccGetPeersErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, testPccErr)
 		err := RunPccGetPeers(cfg)
 		assert.Error(t, err)
@@ -174,12 +174,12 @@ func TestRunPccGetPeersErr(t *testing.T) {
 func TestRunPccCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccName), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccDescription), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccName), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccDescription), testPccVar)
 		rm.Pcc.EXPECT().Create(pccTest).Return(&pccTest, nil, nil)
 		err := RunPccCreate(cfg)
 		assert.NoError(t, err)
@@ -189,12 +189,12 @@ func TestRunPccCreate(t *testing.T) {
 func TestRunPccCreateResponseErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccName), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccDescription), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccName), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccDescription), testPccVar)
 		rm.Pcc.EXPECT().Create(pccTest).Return(&pccTest, &testResponse, nil)
 		err := RunPccCreate(cfg)
 		assert.Error(t, err)
@@ -204,12 +204,12 @@ func TestRunPccCreateResponseErr(t *testing.T) {
 func TestRunPccCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccName), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccDescription), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccName), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccDescription), testPccVar)
 		rm.Pcc.EXPECT().Create(pccTest).Return(&pccTest, nil, testPccErr)
 		err := RunPccCreate(cfg)
 		assert.Error(t, err)
@@ -219,13 +219,13 @@ func TestRunPccCreateErr(t *testing.T) {
 func TestRunPccCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccName), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccDescription), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccName), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccDescription), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Pcc.EXPECT().Create(pccTest).Return(&pccTest, nil, nil)
 		err := RunPccCreate(cfg)
 		assert.Error(t, err)
@@ -235,13 +235,13 @@ func TestRunPccCreateWaitErr(t *testing.T) {
 func TestRunPccUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccName), testPccNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccDescription), testPccNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccName), testPccNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccDescription), testPccNewVar)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccTest, nil, nil)
 		rm.Pcc.EXPECT().Update(testPccVar, pccProperties).Return(&pccNew, nil, nil)
 		err := RunPccUpdate(cfg)
@@ -252,11 +252,11 @@ func TestRunPccUpdate(t *testing.T) {
 func TestRunPccUpdateOldUser(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccNew, nil, nil)
 		rm.Pcc.EXPECT().Update(testPccVar, pccProperties).Return(&pccNew, nil, nil)
 		err := RunPccUpdate(cfg)
@@ -267,13 +267,13 @@ func TestRunPccUpdateOldUser(t *testing.T) {
 func TestRunPccUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccName), testPccNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccDescription), testPccNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccName), testPccNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccDescription), testPccNewVar)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccTest, nil, nil)
 		rm.Pcc.EXPECT().Update(testPccVar, pccProperties).Return(&pccNew, nil, testPccErr)
 		err := RunPccUpdate(cfg)
@@ -284,14 +284,14 @@ func TestRunPccUpdateErr(t *testing.T) {
 func TestRunPccUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccName), testPccNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccDescription), testPccNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccName), testPccNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccDescription), testPccNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccTest, nil, nil)
 		rm.Pcc.EXPECT().Update(testPccVar, pccProperties).Return(&pccNew, nil, nil)
 		err := RunPccUpdate(cfg)
@@ -302,13 +302,13 @@ func TestRunPccUpdateWaitErr(t *testing.T) {
 func TestRunPccUpdateGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccName), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccDescription), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccName), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccDescription), testPccVar)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccTest, nil, testPccErr)
 		err := RunPccUpdate(cfg)
 		assert.Error(t, err)
@@ -318,12 +318,12 @@ func TestRunPccUpdateGetErr(t *testing.T) {
 func TestRunPccDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Delete(testPccVar).Return(nil, nil)
 		err := RunPccDelete(cfg)
 		assert.NoError(t, err)
@@ -333,12 +333,12 @@ func TestRunPccDelete(t *testing.T) {
 func TestRunPccDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Delete(testPccVar).Return(nil, testPccErr)
 		err := RunPccDelete(cfg)
 		assert.Error(t, err)
@@ -348,13 +348,13 @@ func TestRunPccDeleteErr(t *testing.T) {
 func TestRunPccDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Pcc.EXPECT().Delete(testPccVar).Return(nil, nil)
 		err := RunPccDelete(cfg)
 		assert.Error(t, err)
@@ -364,12 +364,12 @@ func TestRunPccDeleteWaitErr(t *testing.T) {
 func TestRunPccDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.Pcc.EXPECT().Delete(testPccVar).Return(nil, nil)
 		err := RunPccDelete(cfg)
@@ -380,12 +380,12 @@ func TestRunPccDeleteAskForConfirm(t *testing.T) {
 func TestRunPccDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgPccId), testPccVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		cfg.Stdin = os.Stdin
 		err := RunPccDelete(cfg)
 		assert.Error(t, err)
@@ -397,8 +397,8 @@ func TestGetPccsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("pcc", config.ArgCols), []string{"Name"})
-	getPccCols(builder.GetGlobalFlagName("pcc", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("pcc", config.ArgCols), []string{"Name"})
+	getPccCols(core.GetGlobalFlagName("pcc", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -408,8 +408,8 @@ func TestGetPccsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("pcc", config.ArgCols), []string{"Unknown"})
-	getPccCols(builder.GetGlobalFlagName("pcc", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("pcc", config.ArgCols), []string{"Unknown"})
+	getPccCols(core.GetGlobalFlagName("pcc", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

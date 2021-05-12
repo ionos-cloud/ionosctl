@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -74,11 +74,11 @@ var (
 func TestPreRunSnapshotId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
 		err := PreRunSnapshotId(cfg)
 		assert.NoError(t, err)
 	})
@@ -87,11 +87,11 @@ func TestPreRunSnapshotId(t *testing.T) {
 func TestPreRunSnapshotIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), "")
 		err := PreRunSnapshotId(cfg)
 		assert.Error(t, err)
 	})
@@ -100,14 +100,14 @@ func TestPreRunSnapshotIdErr(t *testing.T) {
 func TestPreRunSnapNameLicenceDcIdVolumeId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotName), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotLicenceType), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
 		err := PreRunSnapNameLicenceDcIdVolumeId(cfg)
 		assert.NoError(t, err)
 	})
@@ -116,14 +116,14 @@ func TestPreRunSnapNameLicenceDcIdVolumeId(t *testing.T) {
 func TestPreRunSnapNameLicenceDcIdVolumeIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotName), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotLicenceType), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), "")
 		err := PreRunSnapNameLicenceDcIdVolumeId(cfg)
 		assert.Error(t, err)
 	})
@@ -132,13 +132,13 @@ func TestPreRunSnapNameLicenceDcIdVolumeIdErr(t *testing.T) {
 func TestPreRunSnapshotIdDcIdVolumeId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
 		err := PreRunSnapshotIdDcIdVolumeId(cfg)
 		assert.NoError(t, err)
 	})
@@ -147,7 +147,7 @@ func TestPreRunSnapshotIdDcIdVolumeId(t *testing.T) {
 func TestRunSnapshotList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -160,7 +160,7 @@ func TestRunSnapshotList(t *testing.T) {
 func TestRunSnapshotListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -173,11 +173,11 @@ func TestRunSnapshotListErr(t *testing.T) {
 func TestRunSnapshotListSort(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotLicenceType), testSnapshotVar)
 		rm.Snapshot.EXPECT().List().Return(snapshots, nil, nil)
 		err := RunSnapshotList(cfg)
 		assert.NoError(t, err)
@@ -187,11 +187,11 @@ func TestRunSnapshotListSort(t *testing.T) {
 func TestRunSnapshotGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
 		rm.Snapshot.EXPECT().Get(testSnapshotVar).Return(&snapshotTest, nil, nil)
 		err := RunSnapshotGet(cfg)
 		assert.NoError(t, err)
@@ -201,11 +201,11 @@ func TestRunSnapshotGet(t *testing.T) {
 func TestRunSnapshotGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
 		rm.Snapshot.EXPECT().Get(testSnapshotVar).Return(&snapshotTest, nil, testSnapshotErr)
 		err := RunSnapshotGet(cfg)
 		assert.Error(t, err)
@@ -215,18 +215,18 @@ func TestRunSnapshotGetErr(t *testing.T) {
 func TestRunSnapshotCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDescription), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotSecAuthProtection), false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotName), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDescription), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotLicenceType), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotName), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotSecAuthProtection), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).Return(&snapshotTest, nil, nil)
 		err := RunSnapshotCreate(cfg)
 		assert.NoError(t, err)
@@ -236,18 +236,18 @@ func TestRunSnapshotCreate(t *testing.T) {
 func TestRunSnapshotCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDescription), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotSecAuthProtection), false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotName), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDescription), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotLicenceType), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotName), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotSecAuthProtection), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).Return(&snapshotTest, &testResponse, nil)
 		err := RunSnapshotCreate(cfg)
 		assert.Error(t, err)
@@ -257,26 +257,26 @@ func TestRunSnapshotCreateErr(t *testing.T) {
 func TestRunSnapshotUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDescription), testSnapshotNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotCpuHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotCpuHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotRamHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotRamHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotNicHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotNicHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscVirtioHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscVirtioHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscScsiHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscScsiHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotSecAuthProtection), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDescription), testSnapshotNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotName), testSnapshotNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotCpuHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotCpuHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotRamHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotRamHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotNicHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotNicHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDiscVirtioHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDiscVirtioHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDiscScsiHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDiscScsiHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotSecAuthProtection), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotLicenceType), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Snapshot.EXPECT().Update(testSnapshotVar, snapshotProperties).Return(&snapshotNew, nil, nil)
 		err := RunSnapshotUpdate(cfg)
 		assert.NoError(t, err)
@@ -286,26 +286,26 @@ func TestRunSnapshotUpdate(t *testing.T) {
 func TestRunSnapshotUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDescription), testSnapshotNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotName), testSnapshotNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotCpuHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotCpuHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotRamHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotRamHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotNicHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotNicHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscVirtioHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscVirtioHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscScsiHotPlug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotDiscScsiHotUnplug), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotSecAuthProtection), testSnapshotBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotLicenceType), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDescription), testSnapshotNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotName), testSnapshotNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotCpuHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotCpuHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotRamHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotRamHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotNicHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotNicHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDiscVirtioHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDiscVirtioHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDiscScsiHotPlug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotDiscScsiHotUnplug), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotSecAuthProtection), testSnapshotBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotLicenceType), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Snapshot.EXPECT().Update(testSnapshotVar, snapshotProperties).Return(&snapshotNew, nil, testSnapshotErr)
 		err := RunSnapshotUpdate(cfg)
 		assert.Error(t, err)
@@ -315,15 +315,15 @@ func TestRunSnapshotUpdateErr(t *testing.T) {
 func TestRunSnapshotRestore(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Snapshot.EXPECT().Restore(testSnapshotVar, testSnapshotVar, testSnapshotVar).Return(nil, nil)
 		err := RunSnapshotRestore(cfg)
 		assert.NoError(t, err)
@@ -333,15 +333,15 @@ func TestRunSnapshotRestore(t *testing.T) {
 func TestRunSnapshotRestoreErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Snapshot.EXPECT().Restore(testSnapshotVar, testSnapshotVar, testSnapshotVar).Return(nil, testSnapshotErr)
 		err := RunSnapshotRestore(cfg)
 		assert.Error(t, err)
@@ -351,15 +351,15 @@ func TestRunSnapshotRestoreErr(t *testing.T) {
 func TestRunSnapshotRestoreAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgVolumeId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Snapshot.EXPECT().Restore(testSnapshotVar, testSnapshotVar, testSnapshotVar).Return(nil, nil)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		err := RunSnapshotRestore(cfg)
@@ -370,13 +370,13 @@ func TestRunSnapshotRestoreAskForConfirm(t *testing.T) {
 func TestRunSnapshotDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(nil, nil)
 		err := RunSnapshotDelete(cfg)
 		assert.NoError(t, err)
@@ -386,13 +386,13 @@ func TestRunSnapshotDelete(t *testing.T) {
 func TestRunSnapshotDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(nil, testSnapshotErr)
 		err := RunSnapshotDelete(cfg)
 		assert.Error(t, err)
@@ -402,13 +402,13 @@ func TestRunSnapshotDeleteErr(t *testing.T) {
 func TestRunSnapshotDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(nil, nil)
 		err := RunSnapshotDelete(cfg)
@@ -419,13 +419,13 @@ func TestRunSnapshotDeleteAskForConfirm(t *testing.T) {
 func TestRunSnapshotDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgSnapshotId), testSnapshotVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		cfg.Stdin = os.Stdin
 		err := RunSnapshotDelete(cfg)
 		assert.Error(t, err)
@@ -437,8 +437,8 @@ func TestGetSnapshotsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("snapshot", config.ArgCols), []string{"Name"})
-	getSnapshotCols(builder.GetGlobalFlagName("snapshot", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("snapshot", config.ArgCols), []string{"Name"})
+	getSnapshotCols(core.GetGlobalFlagName("snapshot", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -448,8 +448,8 @@ func TestGetSnapshotsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("snapshot", config.ArgCols), []string{"Unknown"})
-	getSnapshotCols(builder.GetGlobalFlagName("snapshot", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("snapshot", config.ArgCols), []string{"Unknown"})
+	getSnapshotCols(core.GetGlobalFlagName("snapshot", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

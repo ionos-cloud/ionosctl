@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -18,9 +18,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-func request() *builder.Command {
+func request() *core.Command {
 	ctx := context.TODO()
-	reqCmd := &builder.Command{
+	reqCmd := &core.Command{
+		NS: "request",
 		Command: &cobra.Command{
 			Use:              "request",
 			Short:            "Request Operations",
@@ -30,20 +31,37 @@ func request() *builder.Command {
 	}
 	globalFlags := reqCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, reqCmd, noPreRun, RunRequestList, "list", "List Requests",
-		"Use this command to list all Requests on your account", "", true)
+	core.NewCommand(ctx, reqCmd, core.CommandBuilder{
+		Namespace:  "request",
+		Resource:   "request",
+		Verb:       "list",
+		ShortDesc:  "List Requests",
+		LongDesc:   "Use this command to list all Requests on your account",
+		Example:    "",
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunRequestList,
+		InitClient: true,
+	})
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, reqCmd, PreRunRequestId, RunRequestGet, "get", "Get a Request",
-		"Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
-		getRequestExample, true)
+	get := core.NewCommand(ctx, reqCmd, core.CommandBuilder{
+		Namespace:  "request",
+		Resource:   "request",
+		Verb:       "get",
+		ShortDesc:  "Get a Request",
+		LongDesc:   "Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
+		Example:    getRequestExample,
+		PreCmdRun:  PreRunRequestId,
+		CmdRun:     RunRequestGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -52,14 +70,23 @@ func request() *builder.Command {
 	/*
 		Wait Command
 	*/
-	wait := builder.NewCommand(ctx, reqCmd, PreRunRequestId, RunRequestWait, "wait", "Wait a Request",
-		`Use this command to wait for a specified Request to execute.
+	wait := core.NewCommand(ctx, reqCmd, core.CommandBuilder{
+		Namespace: "request",
+		Resource:  "request",
+		Verb:      "wait",
+		ShortDesc: "Wait a Request",
+		LongDesc: `Use this command to wait for a specified Request to execute.
 
-You can specify a timeout for the Request to be executed using `+"`"+`--timeout`+"`"+` option.
+You can specify a timeout for the Request to be executed using ` + "`" + `--timeout` + "`" + ` option.
 
 Required values to run command:
 
-* Request Id`, waitRequestExample, true)
+* Request Id`,
+		Example:    waitRequestExample,
+		PreCmdRun:  PreRunRequestId,
+		CmdRun:     RunRequestWait,
+		InitClient: true,
+	})
 	wait.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
 	_ = wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -69,11 +96,11 @@ Required values to run command:
 	return reqCmd
 }
 
-func PreRunRequestId(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgRequestId)
+func PreRunRequestId(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgRequestId)
 }
 
-func RunRequestList(c *builder.CommandConfig) error {
+func RunRequestList(c *core.CommandConfig) error {
 	requests, _, err := c.Requests().List()
 	if err != nil {
 		return err
@@ -81,31 +108,31 @@ func RunRequestList(c *builder.CommandConfig) error {
 	rqs := getRequests(requests)
 	return c.Printer.Print(printer.Result{
 		OutputJSON: requests,
-		Columns:    getRequestsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
 		KeyValue:   getRequestsKVMaps(rqs),
 	})
 }
 
-func RunRequestGet(c *builder.CommandConfig) error {
-	request, _, err := c.Requests().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgRequestId)))
+func RunRequestGet(c *core.CommandConfig) error {
+	request, _, err := c.Requests().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgRequestId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
 		OutputJSON: request,
 		KeyValue:   getRequestsKVMaps([]resources.Request{*request}),
-		Columns:    getRequestsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
-func RunRequestWait(c *builder.CommandConfig) error {
-	request, _, err := c.Requests().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgRequestId)))
+func RunRequestWait(c *core.CommandConfig) error {
+	request, _, err := c.Requests().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgRequestId)))
 	if err != nil {
 		return err
 	}
 
 	// Default timeout: 60s
-	timeout := viper.GetInt(builder.GetFlagName(c.ParentName, c.Name, config.ArgTimeout))
+	timeout := viper.GetInt(core.GetFlagName(c.NS, config.ArgTimeout))
 	ctxTimeout, cancel := context.WithTimeout(
 		c.Context,
 		time.Duration(timeout)*time.Second,
@@ -119,7 +146,7 @@ func RunRequestWait(c *builder.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: request,
 		KeyValue:   getRequestsKVMaps([]resources.Request{*request}),
-		Columns:    getRequestsCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 

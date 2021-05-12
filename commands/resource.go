@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -16,9 +16,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-func resource() *builder.Command {
+func resource() *core.Command {
 	ctx := context.TODO()
-	resourceCmd := &builder.Command{
+	resourceCmd := &core.Command{
+		NS: "resource",
 		Command: &cobra.Command{
 			Use:              "resource",
 			Short:            "Resource Operations",
@@ -28,20 +29,37 @@ func resource() *builder.Command {
 	}
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultResourceCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, resourceCmd, noPreRun, RunResourceList, "list", "List Resources",
-		"Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.", listResourcesExample, true)
+	core.NewCommand(ctx, resourceCmd, core.CommandBuilder{
+		Namespace:  "resource",
+		Resource:   "resource",
+		Verb:       "list",
+		ShortDesc:  "List Resources",
+		LongDesc:   "Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.",
+		Example:    listResourcesExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunResourceList,
+		InitClient: true,
+	})
 
 	/*
 		Get Command
 	*/
-	getRsc := builder.NewCommand(ctx, resourceCmd, PreRunResourceType, RunResourceGet, "get", "Get all Resources of a Type or a specific Resource Type",
-		"Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Resource Type",
-		getResourceExample, true)
+	getRsc := core.NewCommand(ctx, resourceCmd, core.CommandBuilder{
+		Namespace:  "resource",
+		Resource:   "resource",
+		Verb:       "get",
+		ShortDesc:  "Get all Resources of a Type or a specific Resource Type",
+		LongDesc:   "Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Resource Type",
+		Example:    getResourceExample,
+		PreCmdRun:  PreRunResourceType,
+		CmdRun:     RunResourceGet,
+		InitClient: true,
+	})
 	getRsc.AddStringFlag(config.ArgResourceType, "", "", "The specific Type of Resources to retrieve information about")
 	_ = getRsc.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"datacenter", "snapshot", "image", "ipblock", "pcc", "backupunit", "k8s"}, cobra.ShellCompDirectiveNoFileComp
@@ -54,11 +72,11 @@ func resource() *builder.Command {
 	return resourceCmd
 }
 
-func PreRunResourceType(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgResourceType)
+func PreRunResourceType(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgResourceType)
 }
 
-func RunResourceList(c *builder.CommandConfig) error {
+func RunResourceList(c *core.CommandConfig) error {
 	resourcesListed, _, err := c.Users().ListResources()
 	if err != nil {
 		return err
@@ -66,18 +84,18 @@ func RunResourceList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getResourcePrint(c, getResources(resourcesListed)))
 }
 
-func RunResourceGet(c *builder.CommandConfig) error {
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceId)) {
+func RunResourceGet(c *core.CommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgResourceId)) {
 		resourceListed, _, err := c.Users().GetResourceByTypeAndId(
-			viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceType)),
-			viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceId)),
+			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType)),
+			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		)
 		if err != nil {
 			return err
 		}
 		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
-		resourcesListed, _, err := c.Users().GetResourcesByType(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceType)))
+		resourcesListed, _, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType)))
 		if err != nil {
 			return err
 		}
@@ -87,9 +105,10 @@ func RunResourceGet(c *builder.CommandConfig) error {
 
 // Group Resources Commands
 
-func groupResource() *builder.Command {
+func groupResource() *core.Command {
 	ctx := context.TODO()
-	resourceCmd := &builder.Command{
+	resourceCmd := &core.Command{
+		NS: "group",
 		Command: &cobra.Command{
 			Use:              "resource",
 			Short:            "Group Resource Operations",
@@ -99,14 +118,22 @@ func groupResource() *builder.Command {
 	}
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultResourceCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Resources Command
 	*/
-	listResources := builder.NewCommand(ctx, resourceCmd, PreRunGroupId, RunGroupResourceList, "list", "List Resources from a Group",
-		"Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.\n\nRequired values to run command:\n\n* Group Id",
-		listGroupResourcesExample, true)
+	listResources := core.NewCommand(ctx, resourceCmd, core.CommandBuilder{
+		Namespace:  "group",
+		Resource:   "resource",
+		Verb:       "list",
+		ShortDesc:  "List Resources from a Group",
+		LongDesc:   "Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.\n\nRequired values to run command:\n\n* Group Id",
+		Example:    listGroupResourcesExample,
+		PreCmdRun:  PreRunGroupId,
+		CmdRun:     RunGroupResourceList,
+		InitClient: true,
+	})
 	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -115,8 +142,8 @@ func groupResource() *builder.Command {
 	return resourceCmd
 }
 
-func RunGroupResourceList(c *builder.CommandConfig) error {
-	resourcesListed, _, err := c.Groups().ListResources(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)))
+func RunGroupResourceList(c *core.CommandConfig) error {
+	resourcesListed, _, err := c.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if err != nil {
 		return err
 	}
@@ -134,13 +161,13 @@ type ResourcePrint struct {
 	Type              string `json:"Type,omitempty"`
 }
 
-func getResourcePrint(c *builder.CommandConfig, groups []resources.Resource) printer.Result {
+func getResourcePrint(c *core.CommandConfig, groups []resources.Resource) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getResourcesKVMaps(groups)
-			r.Columns = getResourceCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getResourceCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

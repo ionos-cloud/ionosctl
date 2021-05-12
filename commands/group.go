@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -18,9 +18,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-func group() *builder.Command {
+func group() *core.Command {
 	ctx := context.TODO()
-	groupCmd := &builder.Command{
+	groupCmd := &core.Command{
+		NS: "group",
 		Command: &cobra.Command{
 			Use:              "group",
 			Short:            "Group Operations",
@@ -30,20 +31,37 @@ func group() *builder.Command {
 	}
 	globalFlags := groupCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(groupCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, groupCmd, noPreRun, RunGroupList, "list", "List Groups",
-		"Use this command to get a list of available Groups available on your account.", listGroupExample, true)
+	core.NewCommand(ctx, groupCmd, core.CommandBuilder{
+		Namespace:  "group",
+		Resource:   "group",
+		Verb:       "list",
+		ShortDesc:  "List Groups",
+		LongDesc:   "Use this command to get a list of available Groups available on your account.",
+		Example:    listGroupExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunGroupList,
+		InitClient: true,
+	})
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, groupCmd, PreRunGroupId, RunGroupGet, "get", "Get a Group",
-		"Use this command to retrieve details about a specific Group.\n\nRequired values to run command:\n\n* Group Id",
-		getGroupExample, true)
+	get := core.NewCommand(ctx, groupCmd, core.CommandBuilder{
+		Namespace:  "group",
+		Resource:   "group",
+		Verb:       "get",
+		ShortDesc:  "Get a Group",
+		LongDesc:   "Use this command to retrieve details about a specific Group.\n\nRequired values to run command:\n\n* Group Id",
+		Example:    getGroupExample,
+		PreCmdRun:  PreRunGroupId,
+		CmdRun:     RunGroupGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -52,12 +70,21 @@ func group() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, groupCmd, PreRunGroupName, RunGroupCreate, "create", "Create a Group",
-		`Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
+	create := core.NewCommand(ctx, groupCmd, core.CommandBuilder{
+		Namespace: "group",
+		Resource:  "group",
+		Verb:      "create",
+		ShortDesc: "Create a Group",
+		LongDesc: `Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
 
 Required values to run a command:
 
-* Group Name`, createGroupExample, true)
+* Group Name`,
+		Example:    createGroupExample,
+		PreCmdRun:  PreRunGroupName,
+		CmdRun:     RunGroupCreate,
+		InitClient: true,
+	})
 	create.AddStringFlag(config.ArgGroupName, "", "", "Name for the Group "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgGroupCreateDc, "", false, "The group will be allowed to create Data Centers")
 	create.AddBoolFlag(config.ArgGroupCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
@@ -74,14 +101,23 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, groupCmd, noPreRun, RunGroupUpdate, "update", "Update a Group",
-		`Use this command to update details about a specific Group.
+	update := core.NewCommand(ctx, groupCmd, core.CommandBuilder{
+		Namespace: "group",
+		Resource:  "group",
+		Verb:      "update",
+		ShortDesc: "Update a Group",
+		LongDesc: `Use this command to update details about a specific Group.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
 
-* Group Id`, updateGroupExample, true)
+* Group Id`,
+		Example:    updateGroupExample,
+		PreCmdRun:  PreRunGroupId,
+		CmdRun:     RunGroupUpdate,
+		InitClient: true,
+	})
 	update.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -102,12 +138,21 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, groupCmd, PreRunGroupId, RunGroupDelete, "delete", "Delete a Group",
-		`Use this operation to delete a single Group. Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
+	deleteCmd := core.NewCommand(ctx, groupCmd, core.CommandBuilder{
+		Namespace: "group",
+		Resource:  "group",
+		Verb:      "delete",
+		ShortDesc: "Delete a Group",
+		LongDesc: `Use this operation to delete a single Group. Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
 
 Required values to run command:
 
-* Group Id`, deleteGroupExample, true)
+* Group Id`,
+		Example:    deleteGroupExample,
+		PreCmdRun:  PreRunGroupId,
+		CmdRun:     RunGroupDelete,
+		InitClient: true,
+	})
 	deleteCmd.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -120,19 +165,19 @@ Required values to run command:
 	return groupCmd
 }
 
-func PreRunGroupId(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgGroupId)
+func PreRunGroupId(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgGroupId)
 }
 
-func PreRunGroupUserIds(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgGroupId, config.ArgUserId)
+func PreRunGroupUserIds(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgUserId)
 }
 
-func PreRunGroupName(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgGroupName)
+func PreRunGroupName(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgGroupName)
 }
 
-func RunGroupList(c *builder.CommandConfig) error {
+func RunGroupList(c *core.CommandConfig) error {
 	groups, _, err := c.Groups().List()
 	if err != nil {
 		return err
@@ -140,15 +185,15 @@ func RunGroupList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getGroupPrint(nil, c, getGroups(groups)))
 }
 
-func RunGroupGet(c *builder.CommandConfig) error {
-	u, _, err := c.Groups().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)))
+func RunGroupGet(c *core.CommandConfig) error {
+	u, _, err := c.Groups().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupPrint(nil, c, getGroup(u)))
 }
 
-func RunGroupCreate(c *builder.CommandConfig) error {
+func RunGroupCreate(c *core.CommandConfig) error {
 	properties := getGroupCreateInfo(c)
 	newGroup := resources.Group{
 		Group: ionoscloud.Group{
@@ -165,8 +210,8 @@ func RunGroupCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getGroupPrint(nil, c, getGroup(u)))
 }
 
-func RunGroupUpdate(c *builder.CommandConfig) error {
-	u, resp, err := c.Groups().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)))
+func RunGroupUpdate(c *core.CommandConfig) error {
+	u, resp, err := c.Groups().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if err != nil {
 		return err
 	}
@@ -176,7 +221,7 @@ func RunGroupUpdate(c *builder.CommandConfig) error {
 			Properties: &properties.GroupProperties,
 		},
 	}
-	groupUpd, resp, err := c.Groups().Update(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)), newGroup)
+	groupUpd, resp, err := c.Groups().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)), newGroup)
 	if err != nil {
 		return err
 	}
@@ -186,11 +231,11 @@ func RunGroupUpdate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getGroupPrint(resp, c, getGroup(groupUpd)))
 }
 
-func RunGroupDelete(c *builder.CommandConfig) error {
+func RunGroupDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
 		return err
 	}
-	resp, err := c.Groups().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)))
+	resp, err := c.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if err != nil {
 		return err
 	}
@@ -200,17 +245,17 @@ func RunGroupDelete(c *builder.CommandConfig) error {
 	return c.Printer.Print(getGroupPrint(resp, c, nil))
 }
 
-func getGroupCreateInfo(c *builder.CommandConfig) *resources.GroupProperties {
-	name := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupName))
-	createDc := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateDc))
-	createSnap := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateSnapshot))
-	reserveIp := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupReserveIp))
-	accessLog := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupAccessLog))
-	createBackUp := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateBackUpUnit))
-	createPcc := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreatePcc))
-	createNic := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateNic))
-	createK8s := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateK8s))
-	s3 := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupS3Privilege))
+func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgGroupName))
+	createDc := viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateDc))
+	createSnap := viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateSnapshot))
+	reserveIp := viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupReserveIp))
+	accessLog := viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupAccessLog))
+	createBackUp := viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateBackUpUnit))
+	createPcc := viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreatePcc))
+	createNic := viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateNic))
+	createK8s := viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateK8s))
+	s3 := viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupS3Privilege))
 	return &resources.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
 			Name:                 &name,
@@ -227,78 +272,78 @@ func getGroupCreateInfo(c *builder.CommandConfig) *resources.GroupProperties {
 	}
 }
 
-func getGroupUpdateInfo(oldGroup *resources.Group, c *builder.CommandConfig) *resources.GroupProperties {
+func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resources.GroupProperties {
 	var (
 		groupName                                                           string
 		createDc, createSnap, createPcc, createBackUp, createNic, createK8s bool
 		reserveIp, accessLog, s3                                            bool
 	)
 	if properties, ok := oldGroup.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupName)) {
-			groupName = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupName)) {
+			groupName = viper.GetString(core.GetFlagName(c.NS, config.ArgGroupName))
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				groupName = *name
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateDc)) {
-			createDc = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateDc))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupCreateDc)) {
+			createDc = viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateDc))
 		} else {
 			if dc, ok := properties.GetCreateDataCenterOk(); ok && dc != nil {
 				createDc = *dc
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateSnapshot)) {
-			createSnap = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateSnapshot))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupCreateSnapshot)) {
+			createSnap = viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateSnapshot))
 		} else {
 			if s, ok := properties.GetCreateSnapshotOk(); ok && s != nil {
 				createSnap = *s
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreatePcc)) {
-			createPcc = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreatePcc))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupCreatePcc)) {
+			createPcc = viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreatePcc))
 		} else {
 			if s, ok := properties.GetCreatePccOk(); ok && s != nil {
 				createPcc = *s
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateK8s)) {
-			createK8s = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateK8s))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupCreateK8s)) {
+			createK8s = viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateK8s))
 		} else {
 			if s, ok := properties.GetCreateK8sClusterOk(); ok && s != nil {
 				createK8s = *s
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateNic)) {
-			createNic = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateNic))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupCreateNic)) {
+			createNic = viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateNic))
 		} else {
 			if s, ok := properties.GetCreateInternetAccessOk(); ok && s != nil {
 				createNic = *s
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateBackUpUnit)) {
-			createBackUp = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupCreateBackUpUnit))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupCreateBackUpUnit)) {
+			createBackUp = viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupCreateBackUpUnit))
 		} else {
 			if s, ok := properties.GetCreateBackupUnitOk(); ok && s != nil {
 				createBackUp = *s
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupReserveIp)) {
-			reserveIp = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupReserveIp))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupReserveIp)) {
+			reserveIp = viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupReserveIp))
 		} else {
 			if ip, ok := properties.GetReserveIpOk(); ok && ip != nil {
 				reserveIp = *ip
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupAccessLog)) {
-			accessLog = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupAccessLog))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupAccessLog)) {
+			accessLog = viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupAccessLog))
 		} else {
 			if log, ok := properties.GetAccessActivityLogOk(); ok && log != nil {
 				accessLog = *log
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupS3Privilege)) {
-			s3 = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupS3Privilege))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgGroupS3Privilege)) {
+			s3 = viper.GetBool(core.GetFlagName(c.NS, config.ArgGroupS3Privilege))
 		} else {
 			if s, ok := properties.GetS3PrivilegeOk(); ok && s != nil {
 				s3 = *s
@@ -339,19 +384,19 @@ type groupPrint struct {
 	CreateK8s            bool   `json:"CreateK8s,omitempty"`
 }
 
-func getGroupPrint(resp *resources.Response, c *builder.CommandConfig, groups []resources.Group) printer.Result {
+func getGroupPrint(resp *resources.Response, c *core.CommandConfig, groups []resources.Group) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
-			r.Resource = c.ParentName
-			r.Verb = c.Name
-			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
 		}
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getGroupsKVMaps(groups)
-			r.Columns = getGroupCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getGroupCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

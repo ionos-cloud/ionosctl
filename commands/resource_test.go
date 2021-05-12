@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -56,11 +56,11 @@ var (
 func TestPreRunResourceType(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceType), testResourceVar)
 		err := PreRunResourceType(cfg)
 		assert.NoError(t, err)
 	})
@@ -69,11 +69,11 @@ func TestPreRunResourceType(t *testing.T) {
 func TestPreRunResourceTypeErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceType), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceType), "")
 		err := PreRunResourceType(cfg)
 		assert.Error(t, err)
 	})
@@ -82,7 +82,7 @@ func TestPreRunResourceTypeErr(t *testing.T) {
 func TestRunResourceList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -95,7 +95,7 @@ func TestRunResourceList(t *testing.T) {
 func TestRunResourceListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -108,11 +108,11 @@ func TestRunResourceListErr(t *testing.T) {
 func TestRunResourceGetByType(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceType), testResourceVar)
 		rm.User.EXPECT().GetResourcesByType(testResourceVar).Return(rs, nil, nil)
 		err := RunResourceGet(cfg)
 		assert.NoError(t, err)
@@ -122,12 +122,12 @@ func TestRunResourceGetByType(t *testing.T) {
 func TestRunResourceGetByTypeAndId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceType), testResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testResourceVar)
 		rm.User.EXPECT().GetResourceByTypeAndId(testResourceVar, testResourceVar).Return(&resourceTestGet, nil, nil)
 		err := RunResourceGet(cfg)
 		assert.NoError(t, err)
@@ -137,12 +137,12 @@ func TestRunResourceGetByTypeAndId(t *testing.T) {
 func TestRunResourceGetByTypeAndIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceType), testResourceVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceId), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testResourceVar)
 		rm.User.EXPECT().GetResourceByTypeAndId(testResourceVar, testResourceVar).Return(&resourceTestGet, nil, testResourceErr)
 		err := RunResourceGet(cfg)
 		assert.Error(t, err)
@@ -152,11 +152,11 @@ func TestRunResourceGetByTypeAndIdErr(t *testing.T) {
 func TestRunResourceGetByTypeErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgResourceType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceType), testResourceVar)
 		rm.User.EXPECT().GetResourcesByType(testResourceVar).Return(rs, nil, testResourceErr)
 		err := RunResourceGet(cfg)
 		assert.Error(t, err)
@@ -168,11 +168,11 @@ func TestRunResourceGetByTypeErr(t *testing.T) {
 func TestRunGroupResourceList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testResourceVar)
 		rm.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, nil, nil)
 		err := RunGroupResourceList(cfg)
 		assert.NoError(t, err)
@@ -182,11 +182,11 @@ func TestRunGroupResourceList(t *testing.T) {
 func TestRunGroupResourceListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testResourceVar)
 		rm.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, nil, testResourceErr)
 		err := RunGroupResourceList(cfg)
 		assert.Error(t, err)
@@ -198,8 +198,8 @@ func TestGetResourcesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("resource", config.ArgCols), []string{"Type"})
-	getResourceCols(builder.GetGlobalFlagName("resource", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Type"})
+	getResourceCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -209,8 +209,8 @@ func TestGetResourcesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("resource", config.ArgCols), []string{"Unknown"})
-	getResourceCols(builder.GetGlobalFlagName("resource", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Unknown"})
+	getResourceCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

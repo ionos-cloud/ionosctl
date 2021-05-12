@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -80,11 +80,11 @@ var (
 func TestPreRunGroupId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		err := PreRunGroupId(cfg)
 		assert.NoError(t, err)
 	})
@@ -93,11 +93,11 @@ func TestPreRunGroupId(t *testing.T) {
 func TestPreRunGroupIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), "")
 		err := PreRunGroupId(cfg)
 		assert.Error(t, err)
 	})
@@ -106,12 +106,12 @@ func TestPreRunGroupIdErr(t *testing.T) {
 func TestPreRunGroupUserIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserId), testGroupVar)
 		err := PreRunGroupUserIds(cfg)
 		assert.NoError(t, err)
 	})
@@ -120,12 +120,12 @@ func TestPreRunGroupUserIds(t *testing.T) {
 func TestPreRunGroupUserIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgUserId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserId), "")
 		err := PreRunGroupUserIds(cfg)
 		assert.Error(t, err)
 	})
@@ -134,11 +134,11 @@ func TestPreRunGroupUserIdsErr(t *testing.T) {
 func TestPreRunGroupName(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupName), testGroupVar)
 		err := PreRunGroupName(cfg)
 		assert.NoError(t, err)
 	})
@@ -147,11 +147,11 @@ func TestPreRunGroupName(t *testing.T) {
 func TestPreRunGroupNameErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupName), "")
 		err := PreRunGroupName(cfg)
 		assert.Error(t, err)
 	})
@@ -160,7 +160,7 @@ func TestPreRunGroupNameErr(t *testing.T) {
 func TestRunGroupList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -173,7 +173,7 @@ func TestRunGroupList(t *testing.T) {
 func TestRunGroupListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -186,11 +186,11 @@ func TestRunGroupListErr(t *testing.T) {
 func TestRunGroupGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestGet, nil, nil)
 		err := RunGroupGet(cfg)
 		assert.NoError(t, err)
@@ -200,11 +200,11 @@ func TestRunGroupGet(t *testing.T) {
 func TestRunGroupGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestGet, nil, testGroupErr)
 		err := RunGroupGet(cfg)
 		assert.Error(t, err)
@@ -214,11 +214,11 @@ func TestRunGroupGetErr(t *testing.T) {
 func TestRunGroupGetResponse(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestGet, &testResponse, nil)
 		err := RunGroupGet(cfg)
 		assert.NoError(t, err)
@@ -228,20 +228,20 @@ func TestRunGroupGetResponse(t *testing.T) {
 func TestRunGroupCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), testGroupVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateNic), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateK8s), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateDc), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreatePcc), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateSnapshot), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateBackUpUnit), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupReserveIp), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupAccessLog), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupS3Privilege), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupName), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateNic), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateK8s), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateDc), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreatePcc), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateSnapshot), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateBackUpUnit), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupReserveIp), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupAccessLog), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupS3Privilege), testGroupBoolVar)
 		rm.Group.EXPECT().Create(groupTest).Return(&groupTest, nil, nil)
 		err := RunGroupCreate(cfg)
 		assert.NoError(t, err)
@@ -251,20 +251,20 @@ func TestRunGroupCreate(t *testing.T) {
 func TestRunGroupCreateResponseErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), testGroupVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateNic), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateK8s), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateDc), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreatePcc), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateSnapshot), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateBackUpUnit), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupReserveIp), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupAccessLog), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupS3Privilege), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupName), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateNic), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateK8s), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateDc), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreatePcc), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateSnapshot), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateBackUpUnit), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupReserveIp), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupAccessLog), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupS3Privilege), testGroupBoolVar)
 		rm.Group.EXPECT().Create(groupTest).Return(&groupTestGet, &testResponse, nil)
 		err := RunGroupCreate(cfg)
 		assert.NoError(t, err)
@@ -274,20 +274,20 @@ func TestRunGroupCreateResponseErr(t *testing.T) {
 func TestRunGroupCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), testGroupVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateNic), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateK8s), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateDc), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreatePcc), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateSnapshot), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateBackUpUnit), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupReserveIp), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupAccessLog), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupS3Privilege), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupName), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateNic), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateK8s), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateDc), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreatePcc), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateSnapshot), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateBackUpUnit), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupReserveIp), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupAccessLog), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupS3Privilege), testGroupBoolVar)
 		rm.Group.EXPECT().Create(groupTest).Return(&groupTestGet, nil, testGroupErr)
 		err := RunGroupCreate(cfg)
 		assert.Error(t, err)
@@ -297,21 +297,21 @@ func TestRunGroupCreateErr(t *testing.T) {
 func TestRunGroupCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), testGroupVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateNic), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateK8s), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateDc), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreatePcc), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateSnapshot), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateBackUpUnit), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupReserveIp), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupAccessLog), testGroupBoolVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupS3Privilege), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupName), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateNic), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateK8s), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateDc), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreatePcc), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateSnapshot), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateBackUpUnit), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupReserveIp), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupAccessLog), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupS3Privilege), testGroupBoolVar)
 		rm.Group.EXPECT().Create(groupTest).Return(&groupTestGet, nil, nil)
 		err := RunGroupCreate(cfg)
 		assert.Error(t, err)
@@ -321,21 +321,21 @@ func TestRunGroupCreateWaitErr(t *testing.T) {
 func TestRunGroupUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupName), testGroupNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateNic), testGroupBoolNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateK8s), testGroupBoolNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateDc), testGroupBoolNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreatePcc), testGroupBoolNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateSnapshot), testGroupBoolNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupCreateBackUpUnit), testGroupBoolNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupReserveIp), testGroupBoolNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupAccessLog), testGroupBoolNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupS3Privilege), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupName), testGroupNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateNic), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateK8s), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateDc), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreatePcc), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateSnapshot), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupCreateBackUpUnit), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupReserveIp), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupAccessLog), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupS3Privilege), testGroupBoolNewVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestNew, nil, nil)
 		rm.Group.EXPECT().Update(testGroupVar, groupTestNew).Return(&groupNew, nil, nil)
 		err := RunGroupUpdate(cfg)
@@ -346,11 +346,11 @@ func TestRunGroupUpdate(t *testing.T) {
 func TestRunGroupUpdateOld(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTest, nil, nil)
 		rm.Group.EXPECT().Update(testGroupVar, groupTest).Return(&groupTest, nil, nil)
 		err := RunGroupUpdate(cfg)
@@ -361,11 +361,11 @@ func TestRunGroupUpdateOld(t *testing.T) {
 func TestRunGroupUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTest, nil, nil)
 		rm.Group.EXPECT().Update(testGroupVar, groupTest).Return(&groupTest, nil, testGroupErr)
 		err := RunGroupUpdate(cfg)
@@ -376,12 +376,12 @@ func TestRunGroupUpdateErr(t *testing.T) {
 func TestRunGroupUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTest, nil, nil)
 		rm.Group.EXPECT().Update(testGroupVar, groupTest).Return(&groupTest, nil, nil)
 		err := RunGroupUpdate(cfg)
@@ -392,11 +392,11 @@ func TestRunGroupUpdateWaitErr(t *testing.T) {
 func TestRunGroupUpdateGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTest, nil, testGroupErr)
 		err := RunGroupUpdate(cfg)
 		assert.Error(t, err)
@@ -406,12 +406,12 @@ func TestRunGroupUpdateGetErr(t *testing.T) {
 func TestRunGroupDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, nil)
 		err := RunGroupDelete(cfg)
 		assert.NoError(t, err)
@@ -421,12 +421,12 @@ func TestRunGroupDelete(t *testing.T) {
 func TestRunGroupDeleteResponseErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
@@ -436,13 +436,13 @@ func TestRunGroupDeleteResponseErr(t *testing.T) {
 func TestRunGroupDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, nil)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
@@ -452,12 +452,12 @@ func TestRunGroupDeleteWaitErr(t *testing.T) {
 func TestRunGroupDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, testGroupErr)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
@@ -467,12 +467,12 @@ func TestRunGroupDeleteErr(t *testing.T) {
 func TestRunGroupDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, nil)
 		err := RunGroupDelete(cfg)
@@ -483,12 +483,12 @@ func TestRunGroupDeleteAskForConfirm(t *testing.T) {
 func TestRunGroupRemoveGroupAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		cfg.Stdin = os.Stdin
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
@@ -500,8 +500,8 @@ func TestGetGroupsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("resource", config.ArgCols), []string{"Name"})
-	getGroupCols(builder.GetGlobalFlagName("resource", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Name"})
+	getGroupCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -511,8 +511,8 @@ func TestGetGroupsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("resource", config.ArgCols), []string{"Unknown"})
-	getGroupCols(builder.GetGlobalFlagName("resource", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Unknown"})
+	getGroupCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

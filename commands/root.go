@@ -5,8 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -14,7 +14,7 @@ import (
 
 var (
 	// RootCmd is the root level command that all other commands attach to
-	rootCmd = &builder.Command{
+	rootCmd = &core.Command{
 		Command: &cobra.Command{
 			Use:              "ionosctl",
 			Short:            "IONOS Cloud CLI",
@@ -22,7 +22,7 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	noPreRun  = func(c *builder.PreCommandConfig) error { return nil }
+	noPreRun  = func(c *core.PreCommandConfig) error { return nil }
 	ServerURL string
 	Output    string
 	Quiet     bool
@@ -47,7 +47,7 @@ func Execute() {
 	}
 }
 
-func GetRootCmd() *builder.Command {
+func GetRootCmd() *core.Command {
 	return rootCmd
 }
 

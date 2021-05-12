@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -19,8 +19,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-func k8s() *builder.Command {
-	k8sCmd := &builder.Command{
+func k8s() *core.Command {
+	k8sCmd := &core.Command{
+		NS: "k8s",
 		Command: &cobra.Command{
 			Use:              "k8s",
 			Short:            "Kubernetes Operations",
@@ -37,9 +38,10 @@ func k8s() *builder.Command {
 	return k8sCmd
 }
 
-func k8sCluster() *builder.Command {
+func k8sCluster() *core.Command {
 	ctx := context.TODO()
-	k8sCmd := &builder.Command{
+	k8sCmd := &core.Command{
+		NS: "k8s.cluster",
 		Command: &cobra.Command{
 			Use:              "cluster",
 			Short:            "Kubernetes Cluster Operations",
@@ -49,7 +51,7 @@ func k8sCluster() *builder.Command {
 	}
 	globalFlags := k8sCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultK8sClusterCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(k8sCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sClusterCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -57,15 +59,32 @@ func k8sCluster() *builder.Command {
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, k8sCmd, noPreRun, RunK8sClusterList, "list", "List Kubernetes Clusters",
-		"Use this command to get a list of existing Kubernetes Clusters.", listK8sClustersExample, true)
+	core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace:  "k8s",
+		Resource:   "cluster",
+		Verb:       "list",
+		ShortDesc:  "List Kubernetes Clusters",
+		LongDesc:   "Use this command to get a list of existing Kubernetes Clusters.",
+		Example:    listK8sClustersExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunK8sClusterList,
+		InitClient: true,
+	})
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterId, RunK8sClusterGet, "get", "Get a Kubernetes Cluster",
-		"Use this command to retrieve details about a specific Kubernetes Cluster.You can wait for the Cluster to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id",
-		getK8sClusterExample, true)
+	get := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace:  "k8s",
+		Resource:   "cluster",
+		Verb:       "get",
+		ShortDesc:  "Get a Kubernetes Cluster",
+		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Cluster.You can wait for the Cluster to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id",
+		Example:    getK8sClusterExample,
+		PreCmdRun:  PreRunK8sClusterId,
+		CmdRun:     RunK8sClusterGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -76,14 +95,23 @@ func k8sCluster() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterName, RunK8sClusterCreate, "create", "Create a Kubernetes Cluster",
-		`Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: `+"`"+`ionosctl k8s version get`+"`"+`.
+	create := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace: "k8s",
+		Resource:  "cluster",
+		Verb:      "create",
+		ShortDesc: "Create a Kubernetes Cluster",
+		LongDesc: `Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: ` + "`" + `ionosctl k8s version get` + "`" + `.
 
-You can wait for the Cluster to be in "ACTIVE" state using `+"`"+`--wait-for-state`+"`"+` flag together with `+"`"+`--timeout`+"`"+` option.
+You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
 
 Required values to run a command:
 
-* K8s Cluster Name`, createK8sClusterExample, true)
+* K8s Cluster Name`,
+		Example:    createK8sClusterExample,
+		PreCmdRun:  PreRunK8sClusterName,
+		CmdRun:     RunK8sClusterCreate,
+		InitClient: true,
+	})
 	create.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Cluster creation to be executed")
 	create.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the new Cluster to be in ACTIVE state")
@@ -93,14 +121,23 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterId, RunK8sClusterUpdate, "update", "Update a Kubernetes Cluster",
-		`Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.
+	update := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace: "k8s",
+		Resource:  "cluster",
+		Verb:      "update",
+		ShortDesc: "Update a Kubernetes Cluster",
+		LongDesc: `Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.
 
-You can wait for the Cluster to be in "ACTIVE" state using `+"`"+`--wait-for-state`+"`"+` flag together with `+"`"+`--timeout`+"`"+` option.
+You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
 
 Required values to run command:
 
-* K8s Cluster Id`, updateK8sClusterExample, true)
+* K8s Cluster Id`,
+		Example:    updateK8sClusterExample,
+		PreCmdRun:  PreRunK8sClusterId,
+		CmdRun:     RunK8sClusterUpdate,
+		InitClient: true,
+	})
 	update.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster")
 	update.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster")
 	update.AddStringFlag(config.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
@@ -118,14 +155,23 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterId, RunK8sClusterDelete, "delete", "Delete a Kubernetes Cluster",
-		`This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
+	deleteCmd := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace: "k8s",
+		Resource:  "cluster",
+		Verb:      "delete",
+		ShortDesc: "Delete a Kubernetes Cluster",
+		LongDesc: `This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
 
-You can wait for Request for the Cluster deletion to be executed using `+"`"+`--wait-for-request`+"`"+` flag together with `+"`"+`--timeout`+"`"+` option.
+You can wait for Request for the Cluster deletion to be executed using ` + "`" + `--wait-for-request` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
 
 Required values to run command:
 
-* K8s Cluster Id`, deleteK8sClusterExample, true)
+* K8s Cluster Id`,
+		Example:    deleteK8sClusterExample,
+		PreCmdRun:  PreRunK8sClusterId,
+		CmdRun:     RunK8sClusterDelete,
+		InitClient: true,
+	})
 	deleteCmd.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -136,15 +182,15 @@ Required values to run command:
 	return k8sCmd
 }
 
-func PreRunK8sClusterId(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sClusterId)
+func PreRunK8sClusterId(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId)
 }
 
-func PreRunK8sClusterName(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgK8sClusterName)
+func PreRunK8sClusterName(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterName)
 }
 
-func RunK8sClusterList(c *builder.CommandConfig) error {
+func RunK8sClusterList(c *core.CommandConfig) error {
 	k8ss, _, err := c.K8s().ListClusters()
 	if err != nil {
 		return err
@@ -152,18 +198,18 @@ func RunK8sClusterList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getK8sClusterPrint(nil, c, getK8sClusters(k8ss)))
 }
 
-func RunK8sClusterGet(c *builder.CommandConfig) error {
-	if err := utils.WaitForState(c, GetStateK8sCluster, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId))); err != nil {
+func RunK8sClusterGet(c *core.CommandConfig) error {
+	if err := utils.WaitForState(c, GetStateK8sCluster, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))); err != nil {
 		return err
 	}
-	u, _, err := c.K8s().GetCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)))
+	u, _, err := c.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getK8sClusterPrint(nil, c, getK8sCluster(u)))
 }
 
-func RunK8sClusterCreate(c *builder.CommandConfig) error {
+func RunK8sClusterCreate(c *core.CommandConfig) error {
 	newCluster, err := getNewK8sCluster(c)
 	if err != nil {
 		return err
@@ -175,7 +221,7 @@ func RunK8sClusterCreate(c *builder.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
+	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
 		if id, ok := u.GetIdOk(); ok && id != nil {
 			if err = utils.WaitForState(c, GetStateK8sCluster, *id); err != nil {
 				return err
@@ -190,32 +236,32 @@ func RunK8sClusterCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getK8sClusterPrint(resp, c, getK8sCluster(u)))
 }
 
-func RunK8sClusterUpdate(c *builder.CommandConfig) error {
-	oldCluster, _, err := c.K8s().GetCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)))
+func RunK8sClusterUpdate(c *core.CommandConfig) error {
+	oldCluster, _, err := c.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
 	}
 	newCluster := getK8sClusterInfo(oldCluster, c)
-	k8sUpd, _, err := c.K8s().UpdateCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)), newCluster)
+	k8sUpd, _, err := c.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)), newCluster)
 	if err != nil {
 		return err
 	}
-	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
-		if err = utils.WaitForState(c, GetStateK8sCluster, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId))); err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
+		if err = utils.WaitForState(c, GetStateK8sCluster, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))); err != nil {
 			return err
 		}
-		if k8sUpd, _, err = c.K8s().GetCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId))); err != nil {
+		if k8sUpd, _, err = c.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))); err != nil {
 			return err
 		}
 	}
 	return c.Printer.Print(getK8sClusterPrint(nil, c, getK8sCluster(k8sUpd)))
 }
 
-func RunK8sClusterDelete(c *builder.CommandConfig) error {
+func RunK8sClusterDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
 		return err
 	}
-	resp, err := c.K8s().DeleteCluster(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)))
+	resp, err := c.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
 	}
@@ -227,7 +273,7 @@ func RunK8sClusterDelete(c *builder.CommandConfig) error {
 
 // Wait for State
 
-func GetStateK8sCluster(c *builder.CommandConfig, objId string) (*string, error) {
+func GetStateK8sCluster(c *core.CommandConfig, objId string) (*string, error) {
 	obj, _, err := c.K8s().GetCluster(objId)
 	if err != nil {
 		return nil, err
@@ -240,15 +286,15 @@ func GetStateK8sCluster(c *builder.CommandConfig, objId string) (*string, error)
 	return nil, nil
 }
 
-func getNewK8sCluster(c *builder.CommandConfig) (*resources.K8sCluster, error) {
+func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sCluster, error) {
 	var (
 		name       string
 		k8sversion string
 		err        error
 	)
-	name = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)) {
-		k8sversion = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion))
+	name = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterName))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
+		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 	} else {
 		if k8sversion, err = getK8sVersion(c); err != nil {
 			return nil, err
@@ -264,27 +310,27 @@ func getNewK8sCluster(c *builder.CommandConfig) (*resources.K8sCluster, error) {
 	}, nil
 }
 
-func getK8sClusterInfo(oldUser *resources.K8sCluster, c *builder.CommandConfig) resources.K8sCluster {
+func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) resources.K8sCluster {
 	propertiesUpdated := resources.K8sClusterProperties{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName)) {
-			n := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sClusterName)) {
+			n := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterName))
 			propertiesUpdated.SetName(n)
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				propertiesUpdated.SetName(*name)
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion)) {
-			v := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sVersion))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
+			v := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 			propertiesUpdated.SetK8sVersion(v)
 		} else {
 			if vers, ok := properties.GetK8sVersionOk(); ok && vers != nil {
 				propertiesUpdated.SetK8sVersion(*vers)
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceDay)) ||
-			viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceTime)) {
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay)) ||
+			viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime)) {
 			if maintenance, ok := properties.GetMaintenanceWindowOk(); ok && maintenance != nil {
 				newMaintenanceWindow := getMaintenanceInfo(c, &resources.K8sMaintenanceWindow{
 					KubernetesMaintenanceWindow: *maintenance,
@@ -316,20 +362,20 @@ type K8sClusterPrint struct {
 	State                    string   `json:"State,omitempty"`
 }
 
-func getK8sClusterPrint(resp *resources.Response, c *builder.CommandConfig, k8ss []resources.K8sCluster) printer.Result {
+func getK8sClusterPrint(resp *resources.Response, c *core.CommandConfig, k8ss []resources.K8sCluster) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
-			r.Resource = c.ParentName
-			r.Verb = c.Name
-			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
-			r.WaitForState = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState))
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState))
 		}
 		if k8ss != nil {
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sClustersKVMaps(k8ss)
-			r.Columns = getK8sClusterCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getK8sClusterCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r
@@ -444,17 +490,17 @@ func getK8sClustersIds(outErr io.Writer) []string {
 	return k8ssIds
 }
 
-func getMaintenanceInfo(c *builder.CommandConfig, maintenance *resources.K8sMaintenanceWindow) resources.K8sMaintenanceWindow {
+func getMaintenanceInfo(c *core.CommandConfig, maintenance *resources.K8sMaintenanceWindow) resources.K8sMaintenanceWindow {
 	var day, time string
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceDay)) {
-		day = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceDay))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay)) {
+		day = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay))
 	} else {
 		if d, ok := maintenance.GetDayOfTheWeekOk(); ok && d != nil {
 			day = *d
 		}
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceTime)) {
-		time = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sMaintenanceTime))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime)) {
+		time = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime))
 	} else {
 		if t, ok := maintenance.GetTimeOk(); ok && t != nil {
 			time = *t

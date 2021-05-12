@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/commands"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 )
 
 func main() {
@@ -50,7 +50,7 @@ func main() {
 
 const rootCmdName = "ionosctl"
 
-func WriteDocs(cmd *builder.Command, dir string) error {
+func WriteDocs(cmd *core.Command, dir string) error {
 	// Exit if there's an error
 	for _, c := range cmd.SubCommands() {
 		if c.Command.HasParent() {
@@ -68,7 +68,7 @@ func WriteDocs(cmd *builder.Command, dir string) error {
 	return nil
 }
 
-func createStructure(cmd *builder.Command, dir string) error {
+func createStructure(cmd *core.Command, dir string) error {
 	var file, filename string
 	if cmd != nil {
 		if cmd.Command.HasParent() && cmd.Command.Runnable() {
@@ -92,7 +92,7 @@ func createStructure(cmd *builder.Command, dir string) error {
 	return nil
 }
 
-func writeDoc(cmd *builder.Command, w io.Writer) error {
+func writeDoc(cmd *core.Command, w io.Writer) error {
 	cmd.Command.InitDefaultHelpCmd()
 	cmd.Command.InitDefaultHelpFlag()
 
@@ -182,7 +182,7 @@ func customizeTitle(title, old, new string) string {
 	return title
 }
 
-func hasSeeAlso(cmd *builder.Command) bool {
+func hasSeeAlso(cmd *core.Command) bool {
 	if cmd.Command.HasParent() && cmd.Command.HasAvailableSubCommands() {
 		return true
 	}

@@ -1,4 +1,4 @@
-package builder
+package core
 
 import (
 	"context"
@@ -23,9 +23,8 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 	p, _ := printer.NewPrinterRegistry(writer, writer)
 	prt := p[viper.GetString(config.ArgOutput)]
 	preCmdCfg := &PreCommandConfig{
-		Name:       testConst,
-		ParentName: testConst,
-		Printer:    prt,
+		NS:      testConst,
+		Printer: prt,
 	}
 	preRunner(preCmdCfg)
 }
@@ -64,7 +63,7 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	// Init Test Mock Resources and Services
 	testMocks := initMockResources(ctrl)
 	cmdConfig := &CommandConfig{
-		Name:    testConst,
+		NS:      testConst,
 		Printer: prt,
 		Context: context.TODO(),
 		initCfg: func(c *CommandConfig) error { return nil },

@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -18,9 +18,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-func share() *builder.Command {
+func share() *core.Command {
 	ctx := context.TODO()
-	shareCmd := &builder.Command{
+	shareCmd := &core.Command{
+		NS: "share",
 		Command: &cobra.Command{
 			Use:              "share",
 			Short:            "Resource Share Operations",
@@ -30,14 +31,22 @@ func share() *builder.Command {
 	}
 	globalFlags := shareCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupShareCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(shareCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(shareCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(ctx, shareCmd, PreRunGroupId, RunShareList, "list", "List Resources Shares through a Group",
-		"Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
-		listSharesExample, true)
+	list := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
+		Namespace:  "share",
+		Resource:   "share",
+		Verb:       "list",
+		ShortDesc:  "List Resources Shares through a Group",
+		LongDesc:   "Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
+		Example:    listSharesExample,
+		PreCmdRun:  PreRunGroupId,
+		CmdRun:     RunShareList,
+		InitClient: true,
+	})
 	list.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -46,28 +55,45 @@ func share() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIds, RunShareGet, "get", "Get a Resource Share from a Group",
-		"Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
-		getShareExample, true)
+	get := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
+		Namespace:  "share",
+		Resource:   "share",
+		Verb:       "get",
+		ShortDesc:  "Get a Resource Share from a Group",
+		LongDesc:   "Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
+		Example:    getShareExample,
+		PreCmdRun:  PreRunGroupResourceIds,
+		CmdRun:     RunShareGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(shareCmd.Name(), get.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIds, RunShareCreate, "create", "Create a Resource Share for a Group",
-		`Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.
+	create := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
+		Namespace: "share",
+		Resource:  "share",
+		Verb:      "create",
+		ShortDesc: "Create a Resource Share for a Group",
+		LongDesc: `Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.
 
 Required values to run a command:
 
 * Group Id
-* Resource Id`, createShareExample, true)
+* Resource Id`,
+		Example:    createShareExample,
+		PreCmdRun:  PreRunGroupResourceIds,
+		CmdRun:     RunShareCreate,
+		InitClient: true,
+	})
 	create.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -84,22 +110,31 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIds, RunShareUpdate, "update", "Update a Resource Share from a Group",
-		`Use this command to update the permissions that a Group has for a specific Resource Share.
+	update := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
+		Namespace: "share",
+		Resource:  "share",
+		Verb:      "update",
+		ShortDesc: "Update a Resource Share from a Group",
+		LongDesc: `Use this command to update the permissions that a Group has for a specific Resource Share.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
 
 * Group Id
-* Resource Id`, updateShareExample, true)
+* Resource Id`,
+		Example:    updateShareExample,
+		PreCmdRun:  PreRunGroupResourceIds,
+		CmdRun:     RunShareUpdate,
+		InitClient: true,
+	})
 	update.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(shareCmd.Name(), update.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgEditPrivilege, "", false, "Update the group's permission to edit privileges on resource")
 	update.AddBoolFlag(config.ArgSharePrivilege, "", false, "Update the group's permission to share resource")
@@ -109,20 +144,29 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, shareCmd, PreRunGroupResourceIds, RunShareDelete, "delete", "Delete a Resource Share from a Group",
-		`This command deletes a Resource Share from a specified Group.
+	deleteCmd := core.NewCommand(ctx, shareCmd, core.CommandBuilder{
+		Namespace: "share",
+		Resource:  "share",
+		Verb:      "delete",
+		ShortDesc: "Delete a Resource Share from a Group",
+		LongDesc: `This command deletes a Resource Share from a specified Group.
 
 Required values to run command:
 
 * Resource Id
-* Group Id`, deleteShareExample, true)
+* Group Id`,
+		Example:    deleteShareExample,
+		PreCmdRun:  PreRunGroupResourceIds,
+		CmdRun:     RunShareDelete,
+		InitClient: true,
+	})
 	deleteCmd.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupResourcesIds(os.Stderr, viper.GetString(builder.GetFlagName(shareCmd.Name(), deleteCmd.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Resource Share deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share deletion [seconds]")
@@ -130,22 +174,22 @@ Required values to run command:
 	return shareCmd
 }
 
-func PreRunGroupResourceIds(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgGroupId, config.ArgResourceId)
+func PreRunGroupResourceIds(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgResourceId)
 }
 
-func RunShareList(c *builder.CommandConfig) error {
-	shares, _, err := c.Groups().ListShares(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)))
+func RunShareList(c *core.CommandConfig) error {
+	shares, _, err := c.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(nil, c, getGroupShares(shares)))
 }
 
-func RunShareGet(c *builder.CommandConfig) error {
+func RunShareGet(c *core.CommandConfig) error {
 	s, _, err := c.Groups().GetShare(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 	)
 	if err != nil {
 		return err
@@ -153,9 +197,9 @@ func RunShareGet(c *builder.CommandConfig) error {
 	return c.Printer.Print(getGroupSharePrint(nil, c, getGroupShare(s)))
 }
 
-func RunShareCreate(c *builder.CommandConfig) error {
-	editPrivilege := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgEditPrivilege))
-	sharePrivilege := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSharePrivilege))
+func RunShareCreate(c *core.CommandConfig) error {
+	editPrivilege := viper.GetBool(core.GetFlagName(c.NS, config.ArgEditPrivilege))
+	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, config.ArgSharePrivilege))
 	input := resources.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Properties: &ionoscloud.GroupShareProperties{
@@ -165,8 +209,8 @@ func RunShareCreate(c *builder.CommandConfig) error {
 		},
 	}
 	shareAdded, resp, err := c.Groups().AddShare(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		input,
 	)
 	if err != nil {
@@ -178,8 +222,8 @@ func RunShareCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareAdded)))
 }
 
-func RunShareUpdate(c *builder.CommandConfig) error {
-	s, _, err := c.Groups().GetShare(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)), viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceId)))
+func RunShareUpdate(c *core.CommandConfig) error {
+	s, _, err := c.Groups().GetShare(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)), viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
 	if err != nil {
 		return err
 	}
@@ -190,8 +234,8 @@ func RunShareUpdate(c *builder.CommandConfig) error {
 		},
 	}
 	shareUpdated, resp, err := c.Groups().UpdateShare(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		newShare,
 	)
 	if err != nil {
@@ -203,13 +247,13 @@ func RunShareUpdate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareUpdated)))
 }
 
-func RunShareDelete(c *builder.CommandConfig) error {
+func RunShareDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
 		return err
 	}
 	resp, err := c.Groups().RemoveShare(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 	)
 	if err != nil {
 		return err
@@ -220,18 +264,18 @@ func RunShareDelete(c *builder.CommandConfig) error {
 	return c.Printer.Print(getGroupSharePrint(resp, c, nil))
 }
 
-func getShareUpdateInfo(oldShare *resources.GroupShare, c *builder.CommandConfig) *resources.GroupShareProperties {
+func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *resources.GroupShareProperties {
 	var sharePrivilege, editPrivilege bool
 	if properties, ok := oldShare.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgEditPrivilege)) {
-			editPrivilege = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgEditPrivilege))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgEditPrivilege)) {
+			editPrivilege = viper.GetBool(core.GetFlagName(c.NS, config.ArgEditPrivilege))
 		} else {
 			if e, ok := properties.GetEditPrivilegeOk(); ok && e != nil {
 				editPrivilege = *e
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSharePrivilege)) {
-			sharePrivilege = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSharePrivilege))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgSharePrivilege)) {
+			sharePrivilege = viper.GetBool(core.GetFlagName(c.NS, config.ArgSharePrivilege))
 		} else {
 			if e, ok := properties.GetSharePrivilegeOk(); ok && e != nil {
 				sharePrivilege = *e
@@ -257,19 +301,19 @@ type groupSharePrint struct {
 	Type           string `json:"Type,omitempty"`
 }
 
-func getGroupSharePrint(resp *resources.Response, c *builder.CommandConfig, groups []resources.GroupShare) printer.Result {
+func getGroupSharePrint(resp *resources.Response, c *core.CommandConfig, groups []resources.GroupShare) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
-			r.Resource = c.ParentName
-			r.Verb = c.Name
-			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
 		}
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getGroupSharesKVMaps(groups)
-			r.Columns = getGroupShareCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getGroupShareCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

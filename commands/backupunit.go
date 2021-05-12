@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -20,9 +20,10 @@ import (
 
 const backupUnitNote = "NOTE: To login with backup agent use: https://backup.ionos.com, with CONTRACT_NUMBER-BACKUP_UNIT_NAME and BACKUP_UNIT_PASSWORD!"
 
-func backupunit() *builder.Command {
+func backupunit() *core.Command {
 	ctx := context.TODO()
-	backupUnitCmd := &builder.Command{
+	backupUnitCmd := &core.Command{
+		NS: "backupunit",
 		Command: &cobra.Command{
 			Use:              "backupunit",
 			Short:            "BackupUnit Operations",
@@ -32,30 +33,56 @@ func backupunit() *builder.Command {
 	}
 	globalFlags := backupUnitCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultBackupUnitCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, backupUnitCmd, noPreRun, RunBackupUnitList, "list", "List BackupUnits",
-		"Use this command to get a list of existing BackupUnits available on your account.", listBackupUnitsExample, true)
+	core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
+		Namespace:  "backupunit",
+		Resource:   "backupunit",
+		Verb:       "list",
+		ShortDesc:  "List BackupUnits",
+		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.",
+		Example:    listBackupUnitsExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunBackupUnitList,
+		InitClient: true,
+	})
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitId, RunBackupUnitGet, "get", "Get a BackupUnit",
-		"Use this command to retrieve details about a specific BackupUnit.\n\nRequired values to run command:\n\n* BackupUnit Id", getBackupUnitExample, true)
+	get := core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
+		Namespace:  "backupunit",
+		Resource:   "backupunit",
+		Verb:       "get",
+		ShortDesc:  "Get a BackupUnit",
+		LongDesc:   "Use this command to retrieve details about a specific BackupUnit.\n\nRequired values to run command:\n\n* BackupUnit Id",
+		Example:    getBackupUnitExample,
+		PreCmdRun:  PreRunBackupUnitId,
+		CmdRun:     RunBackupUnitGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
-		Get Command
+		Get SSO URL Command
 	*/
-	getsso := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitId, RunBackupUnitGetSsoUrl, "get-sso-url", "Get BackupUnit SSO URL",
-		"Use this command to access the GUI with a Single Sign On (SSO) URL that can be retrieved from the Cloud API using this request. If you copy the entire value returned and paste it into a browser, you will be logged into the BackupUnit GUI.\n\nRequired values to run command:\n\n* BackupUnit Id",
-		getBackupUnitSSOExample, true)
+	getsso := core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
+		Namespace:  "backupunit",
+		Resource:   "backupunit",
+		Verb:       "get-sso-url",
+		ShortDesc:  "Get BackupUnit SSO URL",
+		LongDesc:   "Use this command to access the GUI with a Single Sign On (SSO) URL that can be retrieved from the Cloud API using this request. If you copy the entire value returned and paste it into a browser, you will be logged into the BackupUnit GUI.\n\nRequired values to run command:\n\n* BackupUnit Id",
+		Example:    getBackupUnitSSOExample,
+		PreCmdRun:  PreRunBackupUnitId,
+		CmdRun:     RunBackupUnitGetSsoUrl,
+		InitClient: true,
+	})
 	getsso.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
 	_ = getsso.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -64,8 +91,12 @@ func backupunit() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitNameEmailPwd, RunBackupUnitCreate, "create", "Create a BackupUnit",
-		`Use this command to create a BackupUnit under a particular contract. You need to specify the name, email and password for the new BackupUnit.
+	create := core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
+		Namespace: "backupunit",
+		Resource:  "backupunit",
+		Verb:      "create",
+		ShortDesc: "Create a BackupUnit",
+		LongDesc: `Use this command to create a BackupUnit under a particular contract. You need to specify the name, email and password for the new BackupUnit.
 
 Notes:
 
@@ -78,7 +109,12 @@ Required values to run a command:
 
 * BackupUnit Name
 * BackupUnit Email
-* BackupUnit Password`, createBackupUnitExample, true)
+* BackupUnit Password`,
+		Example:    createBackupUnitExample,
+		PreCmdRun:  PreRunBackupUnitNameEmailPwd,
+		CmdRun:     RunBackupUnitCreate,
+		InitClient: true,
+	})
 	create.AddStringFlag(config.ArgBackupUnitName, "", "", "Alphanumeric name you want to assign to the BackupUnit "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgBackupUnitEmail, "", "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgBackupUnitPassword, "", "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag)
@@ -88,12 +124,21 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitId, RunBackupUnitUpdate, "update", "Update a BackupUnit",
-		`Use this command to update details about a specific BackupUnit. The password and the email may be updated.
+	update := core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
+		Namespace: "backupunit",
+		Resource:  "backupunit",
+		Verb:      "update",
+		ShortDesc: "Update a BackupUnit",
+		LongDesc: `Use this command to update details about a specific BackupUnit. The password and the email may be updated.
 
 Required values to run command:
 
-* BackupUnit Id`, updateBackupUnitExample, true)
+* BackupUnit Id`,
+		Example:    updateBackupUnitExample,
+		PreCmdRun:  PreRunBackupUnitId,
+		CmdRun:     RunBackupUnitUpdate,
+		InitClient: true,
+	})
 	update.AddStringFlag(config.ArgBackupUnitPassword, "", "", "Alphanumeric password you want to update for the BackupUnit")
 	update.AddStringFlag(config.ArgBackupUnitEmail, "", "", "The e-mail address you want to update for the BackupUnit")
 	update.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
@@ -106,12 +151,21 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, backupUnitCmd, PreRunBackupUnitId, RunBackupUnitDelete, "delete", "Delete a BackupUnit",
-		`Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.
+	deleteCmd := core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
+		Namespace: "backupunit",
+		Resource:  "backupunit",
+		Verb:      "delete",
+		ShortDesc: "Delete a BackupUnit",
+		LongDesc: `Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.
 
 Required values to run command:
 
-* BackupUnit Id`, deleteBackupUnitExample, true)
+* BackupUnit Id`,
+		Example:    deleteBackupUnitExample,
+		PreCmdRun:  PreRunBackupUnitId,
+		CmdRun:     RunBackupUnitDelete,
+		InitClient: true,
+	})
 	deleteCmd.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -122,15 +176,15 @@ Required values to run command:
 	return backupUnitCmd
 }
 
-func PreRunBackupUnitId(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgBackupUnitId)
+func PreRunBackupUnitId(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgBackupUnitId)
 }
 
-func PreRunBackupUnitNameEmailPwd(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgBackupUnitName, config.ArgBackupUnitEmail, config.ArgBackupUnitPassword)
+func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgBackupUnitName, config.ArgBackupUnitEmail, config.ArgBackupUnitPassword)
 }
 
-func RunBackupUnitList(c *builder.CommandConfig) error {
+func RunBackupUnitList(c *core.CommandConfig) error {
 	backupUnits, _, err := c.BackupUnit().List()
 	if err != nil {
 		return err
@@ -138,26 +192,26 @@ func RunBackupUnitList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getBackupUnitPrint(nil, c, getBackupUnits(backupUnits)))
 }
 
-func RunBackupUnitGet(c *builder.CommandConfig) error {
-	u, _, err := c.BackupUnit().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitId)))
+func RunBackupUnitGet(c *core.CommandConfig) error {
+	u, _, err := c.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getBackupUnitPrint(nil, c, getBackupUnit(u)))
 }
 
-func RunBackupUnitGetSsoUrl(c *builder.CommandConfig) error {
-	u, _, err := c.BackupUnit().GetSsoUrl(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitId)))
+func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
+	u, _, err := c.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getBackupUnitSSOPrint(c, u))
 }
 
-func RunBackupUnitCreate(c *builder.CommandConfig) error {
-	name := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitName))
-	email := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitEmail))
-	pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitPassword))
+func RunBackupUnitCreate(c *core.CommandConfig) error {
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitName))
+	email := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitEmail))
+	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitPassword))
 	newBackupUnit := resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Properties: &ionoscloud.BackupUnitProperties{
@@ -178,9 +232,9 @@ func RunBackupUnitCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getBackupUnitPrint(resp, c, getBackupUnit(u)))
 }
 
-func RunBackupUnitUpdate(c *builder.CommandConfig) error {
+func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	newProperties := getBackupUnitInfo(c)
-	backupUnitUpd, resp, err := c.BackupUnit().Update(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitId)), *newProperties)
+	backupUnitUpd, resp, err := c.BackupUnit().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)), *newProperties)
 	if err != nil {
 		return err
 	}
@@ -190,11 +244,11 @@ func RunBackupUnitUpdate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getBackupUnitPrint(resp, c, getBackupUnit(backupUnitUpd)))
 }
 
-func RunBackupUnitDelete(c *builder.CommandConfig) error {
+func RunBackupUnitDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
 		return err
 	}
-	resp, err := c.BackupUnit().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitId)))
+	resp, err := c.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	if err != nil {
 		return err
 	}
@@ -204,14 +258,14 @@ func RunBackupUnitDelete(c *builder.CommandConfig) error {
 	return c.Printer.Print(getBackupUnitPrint(resp, c, nil))
 }
 
-func getBackupUnitInfo(c *builder.CommandConfig) *resources.BackupUnitProperties {
+func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 	var properties resources.BackupUnitProperties
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitPassword)) {
-		pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitPassword))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitPassword)) {
+		pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitPassword))
 		properties.SetPassword(pwd)
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitEmail)) {
-		email := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgBackupUnitEmail))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitEmail)) {
+		email := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitEmail))
 		properties.SetEmail(email)
 	}
 	return &properties
@@ -228,25 +282,25 @@ type BackupUnitPrint struct {
 	BackupUnitSsoUrl string `json:"BackupUnitSsoUrl,omitempty"`
 }
 
-func getBackupUnitPrint(resp *resources.Response, c *builder.CommandConfig, backupUnits []resources.BackupUnit) printer.Result {
+func getBackupUnitPrint(resp *resources.Response, c *core.CommandConfig, backupUnits []resources.BackupUnit) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
-			r.Resource = c.ParentName
-			r.Verb = c.Name
-			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
 		}
 		if backupUnits != nil {
 			r.OutputJSON = backupUnits
 			r.KeyValue = getBackupUnitsKVMaps(backupUnits)
-			r.Columns = getBackupUnitCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getBackupUnitCols(core.GetGlobalFlagName(c.Namespace, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r
 }
 
-func getBackupUnitSSOPrint(c *builder.CommandConfig, backupUnit *resources.BackupUnitSSO) printer.Result {
+func getBackupUnitSSOPrint(c *core.CommandConfig, backupUnit *resources.BackupUnitSSO) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if backupUnit != nil {
