@@ -31,6 +31,9 @@ func request() *core.Command {
 	globalFlags := reqCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = reqCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultRequestCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command

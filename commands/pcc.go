@@ -31,6 +31,9 @@ func pcc() *core.Command {
 	globalFlags := pccCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultPccCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(pccCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = pccCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultPccCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -46,6 +49,7 @@ func pcc() *core.Command {
 		CmdRun:     RunPccList,
 		InitClient: true,
 	})
+
 	/*
 		Get Command
 	*/

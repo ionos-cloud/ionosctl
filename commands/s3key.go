@@ -31,6 +31,9 @@ func userS3key() *core.Command {
 	globalFlags := s3keyCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultS3KeyCols, "Columns to be printed in the standard output. You can also print SecretKey, using `--cols=\"S3KeyId,Active,SecretKey\"`")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(s3keyCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = s3keyCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultS3KeyCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command

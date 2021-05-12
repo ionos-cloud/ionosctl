@@ -41,6 +41,9 @@ func nic() *core.Command {
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultNicCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNicCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -328,6 +331,9 @@ func loadBalancerNic() *core.Command {
 	globalFlags := loadbalancerNicCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultNicCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerNicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = loadbalancerNicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNicCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Attach Nic Command
@@ -530,7 +536,10 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips"}
+var (
+	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips"}
+	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "FirewallActive", "Mac"}
+)
 
 type NicPrint struct {
 	NicId          string   `json:"NicId,omitempty"`

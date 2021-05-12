@@ -37,6 +37,9 @@ func volume() *core.Command {
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultVolumeCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = volumeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -309,6 +312,9 @@ func serverVolume() *core.Command {
 	globalFlags := serverVolumeCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultVolumeCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverVolumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = serverVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Attach Volume Command
@@ -502,7 +508,10 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
+var (
+	defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
+	allVolumeCols     = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image", "Bus", "AvailabilityZone", "BackUpUnitId", "SshKeys"}
+)
 
 type VolumePrint struct {
 	VolumeId         string   `json:"VolumeId,omitempty"`

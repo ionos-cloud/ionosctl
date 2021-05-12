@@ -31,6 +31,9 @@ func datacenter() *core.Command {
 	globalFlags := datacenterCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(datacenterCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allDatacenterCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -254,7 +257,10 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	})
 }
 
-var defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "State"}
+var (
+	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "State"}
+	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version"}
+)
 
 type DatacenterPrint struct {
 	DatacenterId string `json:"DatacenterId,omitempty"`

@@ -31,6 +31,9 @@ func server() *core.Command {
 	globalFlags := serverCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultServerCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultServerCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -125,7 +128,7 @@ Required values to run command:
 		ShortDesc: "Update a Server",
 		LongDesc: `Use this command to update a specified Server from a Virtual Data Center.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.
 
 Required values to run command:
 

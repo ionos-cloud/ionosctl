@@ -30,6 +30,9 @@ func loadBalancer() *core.Command {
 	globalFlags := loadbalancerCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultLoadbalancerCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = loadbalancerCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allLoadbalancerCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -289,7 +292,10 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp"}
+var (
+	defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp"}
+	allLoadbalancerCols     = []string{"LoadBalancerId", "Name", "Dhcp", "Ip"}
+)
 
 type LoadbalancerPrint struct {
 	LoadBalancerId string `json:"LoadBalancerId,omitempty"`

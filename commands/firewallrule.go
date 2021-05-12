@@ -50,6 +50,9 @@ func firewallrule() *core.Command {
 	})
 	globalFlags.StringSlice(config.ArgCols, defaultFirewallRuleCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allFirewallRuleCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -355,7 +358,10 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 
 // Output Printing
 
-var defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "State"}
+var (
+	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "State"}
+	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "TargetIP", "PortRangeStart", "PortRangeEnd", "State"}
+)
 
 type FirewallRulePrint struct {
 	FirewallRuleId string `json:"FirewallRuleId,omitempty"`

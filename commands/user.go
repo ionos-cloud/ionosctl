@@ -31,6 +31,9 @@ func user() *core.Command {
 	globalFlags := userCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultUserCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(userCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = userCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -289,7 +292,6 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 func groupUser() *core.Command {
 	ctx := context.TODO()
 	groupUserCmd := &core.Command{
-		NS: "group",
 		Command: &cobra.Command{
 			Use:              "user",
 			Short:            "Group User Operations",
@@ -299,7 +301,10 @@ func groupUser() *core.Command {
 	}
 	globalFlags := groupUserCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(groupUserCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(groupUserCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = groupUserCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Users Command

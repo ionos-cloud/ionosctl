@@ -31,6 +31,9 @@ func group() *core.Command {
 	globalFlags := groupCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = groupCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command

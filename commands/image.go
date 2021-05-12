@@ -30,6 +30,9 @@ func image() *core.Command {
 	globalFlags := imageCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = imageCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allImageCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -115,7 +118,10 @@ func RunImageGet(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultImageCols = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType"}
+var (
+	defaultImageCols = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType"}
+	allImageCols     = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType", "Description", "Public"}
+)
 
 type ImagePrint struct {
 	ImageId     string  `json:"ImageId,omitempty"`

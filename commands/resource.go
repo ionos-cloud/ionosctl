@@ -29,6 +29,9 @@ func resource() *core.Command {
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultResourceCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
@@ -107,7 +110,6 @@ func RunResourceGet(c *core.CommandConfig) error {
 func groupResource() *core.Command {
 	ctx := context.TODO()
 	resourceCmd := &core.Command{
-		NS: "group",
 		Command: &cobra.Command{
 			Use:              "resource",
 			Short:            "Group Resource Operations",
@@ -118,6 +120,9 @@ func groupResource() *core.Command {
 	globalFlags := resourceCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultResourceCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Resources Command

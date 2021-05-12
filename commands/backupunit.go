@@ -33,6 +33,9 @@ func backupunit() *core.Command {
 	globalFlags := backupUnitCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultBackupUnitCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = backupUnitCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultBackupUnitCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command

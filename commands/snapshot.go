@@ -30,6 +30,9 @@ func snapshot() *core.Command {
 	globalFlags := snapshotCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultSnapshotCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(snapshotCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command

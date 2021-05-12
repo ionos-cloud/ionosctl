@@ -28,6 +28,9 @@ func location() *core.Command {
 	globalFlags := locationCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultLocationCols, "Columns to be printed in the standard output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = locationCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultLocationCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
