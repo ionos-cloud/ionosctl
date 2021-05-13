@@ -14,8 +14,8 @@ import (
 	"encoding/json"
 )
 
-// UserProperties struct for UserProperties
-type UserProperties struct {
+// UserPropertiesPut struct for UserPropertiesPut
+type UserPropertiesPut struct {
 	// first name of the user
 	Firstname *string `json:"firstname,omitempty"`
 	// last name of the user
@@ -28,8 +28,6 @@ type UserProperties struct {
 	ForceSecAuth *bool `json:"forceSecAuth,omitempty"`
 	// indicates if secure authentication is active for the user or not
 	SecAuthActive *bool `json:"secAuthActive,omitempty"`
-	// Canonical (S3) id of the user for a given identity
-	S3CanonicalUserId *string `json:"s3CanonicalUserId,omitempty"`
 	// indicates if the user is active
 	Active *bool `json:"active,omitempty"`
 }
@@ -38,7 +36,7 @@ type UserProperties struct {
 
 // GetFirstname returns the Firstname field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *UserProperties) GetFirstname() *string {
+func (o *UserPropertiesPut) GetFirstname() *string {
 	if o == nil {
 		return nil
 	}
@@ -51,7 +49,7 @@ func (o *UserProperties) GetFirstname() *string {
 // GetFirstnameOk returns a tuple with the Firstname field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *UserProperties) GetFirstnameOk() (*string, bool) {
+func (o *UserPropertiesPut) GetFirstnameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -61,7 +59,7 @@ func (o *UserProperties) GetFirstnameOk() (*string, bool) {
 }
 
 // SetFirstname sets field value
-func (o *UserProperties) SetFirstname(v string) {
+func (o *UserPropertiesPut) SetFirstname(v string) {
 
 
 	o.Firstname = &v
@@ -69,7 +67,7 @@ func (o *UserProperties) SetFirstname(v string) {
 }
 
 // HasFirstname returns a boolean if a field has been set.
-func (o *UserProperties) HasFirstname() bool {
+func (o *UserPropertiesPut) HasFirstname() bool {
 	if o != nil && o.Firstname != nil {
 		return true
 	}
@@ -81,7 +79,7 @@ func (o *UserProperties) HasFirstname() bool {
 
 // GetLastname returns the Lastname field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *UserProperties) GetLastname() *string {
+func (o *UserPropertiesPut) GetLastname() *string {
 	if o == nil {
 		return nil
 	}
@@ -94,7 +92,7 @@ func (o *UserProperties) GetLastname() *string {
 // GetLastnameOk returns a tuple with the Lastname field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *UserProperties) GetLastnameOk() (*string, bool) {
+func (o *UserPropertiesPut) GetLastnameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -104,7 +102,7 @@ func (o *UserProperties) GetLastnameOk() (*string, bool) {
 }
 
 // SetLastname sets field value
-func (o *UserProperties) SetLastname(v string) {
+func (o *UserPropertiesPut) SetLastname(v string) {
 
 
 	o.Lastname = &v
@@ -112,7 +110,7 @@ func (o *UserProperties) SetLastname(v string) {
 }
 
 // HasLastname returns a boolean if a field has been set.
-func (o *UserProperties) HasLastname() bool {
+func (o *UserPropertiesPut) HasLastname() bool {
 	if o != nil && o.Lastname != nil {
 		return true
 	}
@@ -124,7 +122,7 @@ func (o *UserProperties) HasLastname() bool {
 
 // GetEmail returns the Email field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *UserProperties) GetEmail() *string {
+func (o *UserPropertiesPut) GetEmail() *string {
 	if o == nil {
 		return nil
 	}
@@ -137,7 +135,7 @@ func (o *UserProperties) GetEmail() *string {
 // GetEmailOk returns a tuple with the Email field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *UserProperties) GetEmailOk() (*string, bool) {
+func (o *UserPropertiesPut) GetEmailOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -147,7 +145,7 @@ func (o *UserProperties) GetEmailOk() (*string, bool) {
 }
 
 // SetEmail sets field value
-func (o *UserProperties) SetEmail(v string) {
+func (o *UserPropertiesPut) SetEmail(v string) {
 
 
 	o.Email = &v
@@ -155,7 +153,7 @@ func (o *UserProperties) SetEmail(v string) {
 }
 
 // HasEmail returns a boolean if a field has been set.
-func (o *UserProperties) HasEmail() bool {
+func (o *UserPropertiesPut) HasEmail() bool {
 	if o != nil && o.Email != nil {
 		return true
 	}
@@ -167,7 +165,7 @@ func (o *UserProperties) HasEmail() bool {
 
 // GetAdministrator returns the Administrator field value
 // If the value is explicit nil, the zero value for bool will be returned
-func (o *UserProperties) GetAdministrator() *bool {
+func (o *UserPropertiesPut) GetAdministrator() *bool {
 	if o == nil {
 		return nil
 	}
@@ -180,7 +178,7 @@ func (o *UserProperties) GetAdministrator() *bool {
 // GetAdministratorOk returns a tuple with the Administrator field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *UserProperties) GetAdministratorOk() (*bool, bool) {
+func (o *UserPropertiesPut) GetAdministratorOk() (*bool, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -190,7 +188,7 @@ func (o *UserProperties) GetAdministratorOk() (*bool, bool) {
 }
 
 // SetAdministrator sets field value
-func (o *UserProperties) SetAdministrator(v bool) {
+func (o *UserPropertiesPut) SetAdministrator(v bool) {
 
 
 	o.Administrator = &v
@@ -198,7 +196,7 @@ func (o *UserProperties) SetAdministrator(v bool) {
 }
 
 // HasAdministrator returns a boolean if a field has been set.
-func (o *UserProperties) HasAdministrator() bool {
+func (o *UserPropertiesPut) HasAdministrator() bool {
 	if o != nil && o.Administrator != nil {
 		return true
 	}
@@ -210,7 +208,7 @@ func (o *UserProperties) HasAdministrator() bool {
 
 // GetForceSecAuth returns the ForceSecAuth field value
 // If the value is explicit nil, the zero value for bool will be returned
-func (o *UserProperties) GetForceSecAuth() *bool {
+func (o *UserPropertiesPut) GetForceSecAuth() *bool {
 	if o == nil {
 		return nil
 	}
@@ -223,7 +221,7 @@ func (o *UserProperties) GetForceSecAuth() *bool {
 // GetForceSecAuthOk returns a tuple with the ForceSecAuth field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *UserProperties) GetForceSecAuthOk() (*bool, bool) {
+func (o *UserPropertiesPut) GetForceSecAuthOk() (*bool, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -233,7 +231,7 @@ func (o *UserProperties) GetForceSecAuthOk() (*bool, bool) {
 }
 
 // SetForceSecAuth sets field value
-func (o *UserProperties) SetForceSecAuth(v bool) {
+func (o *UserPropertiesPut) SetForceSecAuth(v bool) {
 
 
 	o.ForceSecAuth = &v
@@ -241,7 +239,7 @@ func (o *UserProperties) SetForceSecAuth(v bool) {
 }
 
 // HasForceSecAuth returns a boolean if a field has been set.
-func (o *UserProperties) HasForceSecAuth() bool {
+func (o *UserPropertiesPut) HasForceSecAuth() bool {
 	if o != nil && o.ForceSecAuth != nil {
 		return true
 	}
@@ -253,7 +251,7 @@ func (o *UserProperties) HasForceSecAuth() bool {
 
 // GetSecAuthActive returns the SecAuthActive field value
 // If the value is explicit nil, the zero value for bool will be returned
-func (o *UserProperties) GetSecAuthActive() *bool {
+func (o *UserPropertiesPut) GetSecAuthActive() *bool {
 	if o == nil {
 		return nil
 	}
@@ -266,7 +264,7 @@ func (o *UserProperties) GetSecAuthActive() *bool {
 // GetSecAuthActiveOk returns a tuple with the SecAuthActive field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *UserProperties) GetSecAuthActiveOk() (*bool, bool) {
+func (o *UserPropertiesPut) GetSecAuthActiveOk() (*bool, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -276,7 +274,7 @@ func (o *UserProperties) GetSecAuthActiveOk() (*bool, bool) {
 }
 
 // SetSecAuthActive sets field value
-func (o *UserProperties) SetSecAuthActive(v bool) {
+func (o *UserPropertiesPut) SetSecAuthActive(v bool) {
 
 
 	o.SecAuthActive = &v
@@ -284,51 +282,8 @@ func (o *UserProperties) SetSecAuthActive(v bool) {
 }
 
 // HasSecAuthActive returns a boolean if a field has been set.
-func (o *UserProperties) HasSecAuthActive() bool {
+func (o *UserPropertiesPut) HasSecAuthActive() bool {
 	if o != nil && o.SecAuthActive != nil {
-		return true
-	}
-
-	return false
-}
-
-
-
-// GetS3CanonicalUserId returns the S3CanonicalUserId field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *UserProperties) GetS3CanonicalUserId() *string {
-	if o == nil {
-		return nil
-	}
-
-
-	return o.S3CanonicalUserId
-
-}
-
-// GetS3CanonicalUserIdOk returns a tuple with the S3CanonicalUserId field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *UserProperties) GetS3CanonicalUserIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-
-	return o.S3CanonicalUserId, true
-}
-
-// SetS3CanonicalUserId sets field value
-func (o *UserProperties) SetS3CanonicalUserId(v string) {
-
-
-	o.S3CanonicalUserId = &v
-
-}
-
-// HasS3CanonicalUserId returns a boolean if a field has been set.
-func (o *UserProperties) HasS3CanonicalUserId() bool {
-	if o != nil && o.S3CanonicalUserId != nil {
 		return true
 	}
 
@@ -339,7 +294,7 @@ func (o *UserProperties) HasS3CanonicalUserId() bool {
 
 // GetActive returns the Active field value
 // If the value is explicit nil, the zero value for bool will be returned
-func (o *UserProperties) GetActive() *bool {
+func (o *UserPropertiesPut) GetActive() *bool {
 	if o == nil {
 		return nil
 	}
@@ -352,7 +307,7 @@ func (o *UserProperties) GetActive() *bool {
 // GetActiveOk returns a tuple with the Active field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *UserProperties) GetActiveOk() (*bool, bool) {
+func (o *UserPropertiesPut) GetActiveOk() (*bool, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -362,7 +317,7 @@ func (o *UserProperties) GetActiveOk() (*bool, bool) {
 }
 
 // SetActive sets field value
-func (o *UserProperties) SetActive(v bool) {
+func (o *UserPropertiesPut) SetActive(v bool) {
 
 
 	o.Active = &v
@@ -370,7 +325,7 @@ func (o *UserProperties) SetActive(v bool) {
 }
 
 // HasActive returns a boolean if a field has been set.
-func (o *UserProperties) HasActive() bool {
+func (o *UserPropertiesPut) HasActive() bool {
 	if o != nil && o.Active != nil {
 		return true
 	}
@@ -379,7 +334,7 @@ func (o *UserProperties) HasActive() bool {
 }
 
 
-func (o UserProperties) MarshalJSON() ([]byte, error) {
+func (o UserPropertiesPut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Firstname != nil {
@@ -412,11 +367,6 @@ func (o UserProperties) MarshalJSON() ([]byte, error) {
 	}
 	
 
-	if o.S3CanonicalUserId != nil {
-		toSerialize["s3CanonicalUserId"] = o.S3CanonicalUserId
-	}
-	
-
 	if o.Active != nil {
 		toSerialize["active"] = o.Active
 	}
@@ -424,38 +374,38 @@ func (o UserProperties) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableUserProperties struct {
-	value *UserProperties
+type NullableUserPropertiesPut struct {
+	value *UserPropertiesPut
 	isSet bool
 }
 
-func (v NullableUserProperties) Get() *UserProperties {
+func (v NullableUserPropertiesPut) Get() *UserPropertiesPut {
 	return v.value
 }
 
-func (v *NullableUserProperties) Set(val *UserProperties) {
+func (v *NullableUserPropertiesPut) Set(val *UserPropertiesPut) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableUserProperties) IsSet() bool {
+func (v NullableUserPropertiesPut) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableUserProperties) Unset() {
+func (v *NullableUserPropertiesPut) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableUserProperties(val *UserProperties) *NullableUserProperties {
-	return &NullableUserProperties{value: val, isSet: true}
+func NewNullableUserPropertiesPut(val *UserPropertiesPut) *NullableUserPropertiesPut {
+	return &NullableUserPropertiesPut{value: val, isSet: true}
 }
 
-func (v NullableUserProperties) MarshalJSON() ([]byte, error) {
+func (v NullableUserPropertiesPut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableUserProperties) UnmarshalJSON(src []byte) error {
+func (v *NullableUserPropertiesPut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

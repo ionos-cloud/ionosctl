@@ -14,17 +14,13 @@ import (
 	"encoding/json"
 )
 
-// KubernetesClusterProperties struct for KubernetesClusterProperties
-type KubernetesClusterProperties struct {
+// KubernetesClusterPropertiesForPost struct for KubernetesClusterPropertiesForPost
+type KubernetesClusterPropertiesForPost struct {
 	// A Kubernetes Cluster Name. Valid Kubernetes Cluster name must be 63 characters or less and must be empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.
 	Name *string `json:"name"`
 	// The kubernetes version in which a cluster is running. This imposes restrictions on what kubernetes versions can be run in a cluster's nodepools. Additionally, not all kubernetes versions are viable upgrade targets for all prior versions.
 	K8sVersion *string `json:"k8sVersion,omitempty"`
 	MaintenanceWindow *KubernetesMaintenanceWindow `json:"maintenanceWindow,omitempty"`
-	// List of available versions for upgrading the cluster
-	AvailableUpgradeVersions *[]string `json:"availableUpgradeVersions,omitempty"`
-	// List of versions that may be used for node pools under this cluster
-	ViableNodePoolVersions *[]string `json:"viableNodePoolVersions,omitempty"`
 	// The indicator if the cluster is public or private. Be aware that setting it to false is currently in beta phase.
 	Public *bool `json:"public,omitempty"`
 	// The IP address of the gateway used by the cluster. This is mandatory when `public` is set to `false` and should not be provided otherwise.
@@ -35,7 +31,7 @@ type KubernetesClusterProperties struct {
 
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *KubernetesClusterProperties) GetName() *string {
+func (o *KubernetesClusterPropertiesForPost) GetName() *string {
 	if o == nil {
 		return nil
 	}
@@ -48,7 +44,7 @@ func (o *KubernetesClusterProperties) GetName() *string {
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterProperties) GetNameOk() (*string, bool) {
+func (o *KubernetesClusterPropertiesForPost) GetNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -58,7 +54,7 @@ func (o *KubernetesClusterProperties) GetNameOk() (*string, bool) {
 }
 
 // SetName sets field value
-func (o *KubernetesClusterProperties) SetName(v string) {
+func (o *KubernetesClusterPropertiesForPost) SetName(v string) {
 
 
 	o.Name = &v
@@ -66,7 +62,7 @@ func (o *KubernetesClusterProperties) SetName(v string) {
 }
 
 // HasName returns a boolean if a field has been set.
-func (o *KubernetesClusterProperties) HasName() bool {
+func (o *KubernetesClusterPropertiesForPost) HasName() bool {
 	if o != nil && o.Name != nil {
 		return true
 	}
@@ -78,7 +74,7 @@ func (o *KubernetesClusterProperties) HasName() bool {
 
 // GetK8sVersion returns the K8sVersion field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *KubernetesClusterProperties) GetK8sVersion() *string {
+func (o *KubernetesClusterPropertiesForPost) GetK8sVersion() *string {
 	if o == nil {
 		return nil
 	}
@@ -91,7 +87,7 @@ func (o *KubernetesClusterProperties) GetK8sVersion() *string {
 // GetK8sVersionOk returns a tuple with the K8sVersion field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterProperties) GetK8sVersionOk() (*string, bool) {
+func (o *KubernetesClusterPropertiesForPost) GetK8sVersionOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -101,7 +97,7 @@ func (o *KubernetesClusterProperties) GetK8sVersionOk() (*string, bool) {
 }
 
 // SetK8sVersion sets field value
-func (o *KubernetesClusterProperties) SetK8sVersion(v string) {
+func (o *KubernetesClusterPropertiesForPost) SetK8sVersion(v string) {
 
 
 	o.K8sVersion = &v
@@ -109,7 +105,7 @@ func (o *KubernetesClusterProperties) SetK8sVersion(v string) {
 }
 
 // HasK8sVersion returns a boolean if a field has been set.
-func (o *KubernetesClusterProperties) HasK8sVersion() bool {
+func (o *KubernetesClusterPropertiesForPost) HasK8sVersion() bool {
 	if o != nil && o.K8sVersion != nil {
 		return true
 	}
@@ -121,7 +117,7 @@ func (o *KubernetesClusterProperties) HasK8sVersion() bool {
 
 // GetMaintenanceWindow returns the MaintenanceWindow field value
 // If the value is explicit nil, the zero value for KubernetesMaintenanceWindow will be returned
-func (o *KubernetesClusterProperties) GetMaintenanceWindow() *KubernetesMaintenanceWindow {
+func (o *KubernetesClusterPropertiesForPost) GetMaintenanceWindow() *KubernetesMaintenanceWindow {
 	if o == nil {
 		return nil
 	}
@@ -134,7 +130,7 @@ func (o *KubernetesClusterProperties) GetMaintenanceWindow() *KubernetesMaintena
 // GetMaintenanceWindowOk returns a tuple with the MaintenanceWindow field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterProperties) GetMaintenanceWindowOk() (*KubernetesMaintenanceWindow, bool) {
+func (o *KubernetesClusterPropertiesForPost) GetMaintenanceWindowOk() (*KubernetesMaintenanceWindow, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -144,7 +140,7 @@ func (o *KubernetesClusterProperties) GetMaintenanceWindowOk() (*KubernetesMaint
 }
 
 // SetMaintenanceWindow sets field value
-func (o *KubernetesClusterProperties) SetMaintenanceWindow(v KubernetesMaintenanceWindow) {
+func (o *KubernetesClusterPropertiesForPost) SetMaintenanceWindow(v KubernetesMaintenanceWindow) {
 
 
 	o.MaintenanceWindow = &v
@@ -152,94 +148,8 @@ func (o *KubernetesClusterProperties) SetMaintenanceWindow(v KubernetesMaintenan
 }
 
 // HasMaintenanceWindow returns a boolean if a field has been set.
-func (o *KubernetesClusterProperties) HasMaintenanceWindow() bool {
+func (o *KubernetesClusterPropertiesForPost) HasMaintenanceWindow() bool {
 	if o != nil && o.MaintenanceWindow != nil {
-		return true
-	}
-
-	return false
-}
-
-
-
-// GetAvailableUpgradeVersions returns the AvailableUpgradeVersions field value
-// If the value is explicit nil, the zero value for []string will be returned
-func (o *KubernetesClusterProperties) GetAvailableUpgradeVersions() *[]string {
-	if o == nil {
-		return nil
-	}
-
-
-	return o.AvailableUpgradeVersions
-
-}
-
-// GetAvailableUpgradeVersionsOk returns a tuple with the AvailableUpgradeVersions field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterProperties) GetAvailableUpgradeVersionsOk() (*[]string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-
-	return o.AvailableUpgradeVersions, true
-}
-
-// SetAvailableUpgradeVersions sets field value
-func (o *KubernetesClusterProperties) SetAvailableUpgradeVersions(v []string) {
-
-
-	o.AvailableUpgradeVersions = &v
-
-}
-
-// HasAvailableUpgradeVersions returns a boolean if a field has been set.
-func (o *KubernetesClusterProperties) HasAvailableUpgradeVersions() bool {
-	if o != nil && o.AvailableUpgradeVersions != nil {
-		return true
-	}
-
-	return false
-}
-
-
-
-// GetViableNodePoolVersions returns the ViableNodePoolVersions field value
-// If the value is explicit nil, the zero value for []string will be returned
-func (o *KubernetesClusterProperties) GetViableNodePoolVersions() *[]string {
-	if o == nil {
-		return nil
-	}
-
-
-	return o.ViableNodePoolVersions
-
-}
-
-// GetViableNodePoolVersionsOk returns a tuple with the ViableNodePoolVersions field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterProperties) GetViableNodePoolVersionsOk() (*[]string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-
-	return o.ViableNodePoolVersions, true
-}
-
-// SetViableNodePoolVersions sets field value
-func (o *KubernetesClusterProperties) SetViableNodePoolVersions(v []string) {
-
-
-	o.ViableNodePoolVersions = &v
-
-}
-
-// HasViableNodePoolVersions returns a boolean if a field has been set.
-func (o *KubernetesClusterProperties) HasViableNodePoolVersions() bool {
-	if o != nil && o.ViableNodePoolVersions != nil {
 		return true
 	}
 
@@ -250,7 +160,7 @@ func (o *KubernetesClusterProperties) HasViableNodePoolVersions() bool {
 
 // GetPublic returns the Public field value
 // If the value is explicit nil, the zero value for bool will be returned
-func (o *KubernetesClusterProperties) GetPublic() *bool {
+func (o *KubernetesClusterPropertiesForPost) GetPublic() *bool {
 	if o == nil {
 		return nil
 	}
@@ -263,7 +173,7 @@ func (o *KubernetesClusterProperties) GetPublic() *bool {
 // GetPublicOk returns a tuple with the Public field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterProperties) GetPublicOk() (*bool, bool) {
+func (o *KubernetesClusterPropertiesForPost) GetPublicOk() (*bool, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -273,7 +183,7 @@ func (o *KubernetesClusterProperties) GetPublicOk() (*bool, bool) {
 }
 
 // SetPublic sets field value
-func (o *KubernetesClusterProperties) SetPublic(v bool) {
+func (o *KubernetesClusterPropertiesForPost) SetPublic(v bool) {
 
 
 	o.Public = &v
@@ -281,7 +191,7 @@ func (o *KubernetesClusterProperties) SetPublic(v bool) {
 }
 
 // HasPublic returns a boolean if a field has been set.
-func (o *KubernetesClusterProperties) HasPublic() bool {
+func (o *KubernetesClusterPropertiesForPost) HasPublic() bool {
 	if o != nil && o.Public != nil {
 		return true
 	}
@@ -293,7 +203,7 @@ func (o *KubernetesClusterProperties) HasPublic() bool {
 
 // GetGatewayIp returns the GatewayIp field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *KubernetesClusterProperties) GetGatewayIp() *string {
+func (o *KubernetesClusterPropertiesForPost) GetGatewayIp() *string {
 	if o == nil {
 		return nil
 	}
@@ -306,7 +216,7 @@ func (o *KubernetesClusterProperties) GetGatewayIp() *string {
 // GetGatewayIpOk returns a tuple with the GatewayIp field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterProperties) GetGatewayIpOk() (*string, bool) {
+func (o *KubernetesClusterPropertiesForPost) GetGatewayIpOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -316,7 +226,7 @@ func (o *KubernetesClusterProperties) GetGatewayIpOk() (*string, bool) {
 }
 
 // SetGatewayIp sets field value
-func (o *KubernetesClusterProperties) SetGatewayIp(v string) {
+func (o *KubernetesClusterPropertiesForPost) SetGatewayIp(v string) {
 
 
 	o.GatewayIp = &v
@@ -324,7 +234,7 @@ func (o *KubernetesClusterProperties) SetGatewayIp(v string) {
 }
 
 // HasGatewayIp returns a boolean if a field has been set.
-func (o *KubernetesClusterProperties) HasGatewayIp() bool {
+func (o *KubernetesClusterPropertiesForPost) HasGatewayIp() bool {
 	if o != nil && o.GatewayIp != nil {
 		return true
 	}
@@ -333,7 +243,7 @@ func (o *KubernetesClusterProperties) HasGatewayIp() bool {
 }
 
 
-func (o KubernetesClusterProperties) MarshalJSON() ([]byte, error) {
+func (o KubernetesClusterPropertiesForPost) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Name != nil {
@@ -351,16 +261,6 @@ func (o KubernetesClusterProperties) MarshalJSON() ([]byte, error) {
 	}
 	
 
-	if o.AvailableUpgradeVersions != nil {
-		toSerialize["availableUpgradeVersions"] = o.AvailableUpgradeVersions
-	}
-	
-
-	if o.ViableNodePoolVersions != nil {
-		toSerialize["viableNodePoolVersions"] = o.ViableNodePoolVersions
-	}
-	
-
 	if o.Public != nil {
 		toSerialize["public"] = o.Public
 	}
@@ -373,38 +273,38 @@ func (o KubernetesClusterProperties) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableKubernetesClusterProperties struct {
-	value *KubernetesClusterProperties
+type NullableKubernetesClusterPropertiesForPost struct {
+	value *KubernetesClusterPropertiesForPost
 	isSet bool
 }
 
-func (v NullableKubernetesClusterProperties) Get() *KubernetesClusterProperties {
+func (v NullableKubernetesClusterPropertiesForPost) Get() *KubernetesClusterPropertiesForPost {
 	return v.value
 }
 
-func (v *NullableKubernetesClusterProperties) Set(val *KubernetesClusterProperties) {
+func (v *NullableKubernetesClusterPropertiesForPost) Set(val *KubernetesClusterPropertiesForPost) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableKubernetesClusterProperties) IsSet() bool {
+func (v NullableKubernetesClusterPropertiesForPost) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableKubernetesClusterProperties) Unset() {
+func (v *NullableKubernetesClusterPropertiesForPost) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableKubernetesClusterProperties(val *KubernetesClusterProperties) *NullableKubernetesClusterProperties {
-	return &NullableKubernetesClusterProperties{value: val, isSet: true}
+func NewNullableKubernetesClusterPropertiesForPost(val *KubernetesClusterPropertiesForPost) *NullableKubernetesClusterPropertiesForPost {
+	return &NullableKubernetesClusterPropertiesForPost{value: val, isSet: true}
 }
 
-func (v NullableKubernetesClusterProperties) MarshalJSON() ([]byte, error) {
+func (v NullableKubernetesClusterPropertiesForPost) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableKubernetesClusterProperties) UnmarshalJSON(src []byte) error {
+func (v *NullableKubernetesClusterPropertiesForPost) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

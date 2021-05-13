@@ -6,6 +6,14 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 
+type UserPost struct {
+	ionoscloud.UserPost
+}
+
+type UserPut struct {
+	ionoscloud.UserPut
+}
+
 type User struct {
 	ionoscloud.User
 }
@@ -30,8 +38,8 @@ type Resources struct {
 type UsersService interface {
 	List() (Users, *Response, error)
 	Get(userId string) (*User, *Response, error)
-	Create(u User) (*User, *Response, error)
-	Update(userId string, input User) (*User, *Response, error)
+	Create(u UserPost) (*User, *Response, error)
+	Update(userId string, input UserPut) (*User, *Response, error)
 	Delete(userId string) (*Response, error)
 	ListResources() (Resources, *Response, error)
 	GetResourcesByType(resourceType string) (Resources, *Response, error)
@@ -64,14 +72,14 @@ func (s *usersService) Get(userId string) (*User, *Response, error) {
 	return &User{user}, &Response{*res}, err
 }
 
-func (s *usersService) Create(u User) (*User, *Response, error) {
-	req := s.client.UserManagementApi.UmUsersPost(s.context).User(u.User)
+func (s *usersService) Create(u UserPost) (*User, *Response, error) {
+	req := s.client.UserManagementApi.UmUsersPost(s.context).User(u.UserPost)
 	user, res, err := s.client.UserManagementApi.UmUsersPostExecute(req)
 	return &User{user}, &Response{*res}, err
 }
 
-func (s *usersService) Update(userId string, input User) (*User, *Response, error) {
-	req := s.client.UserManagementApi.UmUsersPut(s.context, userId).User(input.User)
+func (s *usersService) Update(userId string, input UserPut) (*User, *Response, error) {
+	req := s.client.UserManagementApi.UmUsersPut(s.context, userId).User(input.UserPut)
 	user, res, err := s.client.UserManagementApi.UmUsersPutExecute(req)
 	return &User{user}, &Response{*res}, err
 }

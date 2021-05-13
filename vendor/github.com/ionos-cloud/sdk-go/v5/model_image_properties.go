@@ -50,6 +50,10 @@ type ImageProperties struct {
 	ImageType *string `json:"imageType,omitempty"`
 	// Indicates if the image is part of the public repository or not
 	Public *bool `json:"public,omitempty"`
+	// List of image aliases mapped for this Image
+	ImageAliases *[]string `json:"imageAliases,omitempty"`
+	// Cloud init compatibility
+	CloudInit *string `json:"cloudInit,omitempty"`
 }
 
 
@@ -784,6 +788,92 @@ func (o *ImageProperties) HasPublic() bool {
 }
 
 
+
+// GetImageAliases returns the ImageAliases field value
+// If the value is explicit nil, the zero value for []string will be returned
+func (o *ImageProperties) GetImageAliases() *[]string {
+	if o == nil {
+		return nil
+	}
+
+
+	return o.ImageAliases
+
+}
+
+// GetImageAliasesOk returns a tuple with the ImageAliases field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ImageProperties) GetImageAliasesOk() (*[]string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+
+	return o.ImageAliases, true
+}
+
+// SetImageAliases sets field value
+func (o *ImageProperties) SetImageAliases(v []string) {
+
+
+	o.ImageAliases = &v
+
+}
+
+// HasImageAliases returns a boolean if a field has been set.
+func (o *ImageProperties) HasImageAliases() bool {
+	if o != nil && o.ImageAliases != nil {
+		return true
+	}
+
+	return false
+}
+
+
+
+// GetCloudInit returns the CloudInit field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *ImageProperties) GetCloudInit() *string {
+	if o == nil {
+		return nil
+	}
+
+
+	return o.CloudInit
+
+}
+
+// GetCloudInitOk returns a tuple with the CloudInit field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ImageProperties) GetCloudInitOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+
+	return o.CloudInit, true
+}
+
+// SetCloudInit sets field value
+func (o *ImageProperties) SetCloudInit(v string) {
+
+
+	o.CloudInit = &v
+
+}
+
+// HasCloudInit returns a boolean if a field has been set.
+func (o *ImageProperties) HasCloudInit() bool {
+	if o != nil && o.CloudInit != nil {
+		return true
+	}
+
+	return false
+}
+
+
 func (o ImageProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
@@ -869,6 +959,16 @@ func (o ImageProperties) MarshalJSON() ([]byte, error) {
 
 	if o.Public != nil {
 		toSerialize["public"] = o.Public
+	}
+	
+
+	if o.ImageAliases != nil {
+		toSerialize["imageAliases"] = o.ImageAliases
+	}
+	
+
+	if o.CloudInit != nil {
+		toSerialize["cloudInit"] = o.CloudInit
 	}
 	
 	return json.Marshal(toSerialize)

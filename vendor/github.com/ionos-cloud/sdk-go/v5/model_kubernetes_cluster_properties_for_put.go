@@ -14,9 +14,9 @@ import (
 	"encoding/json"
 )
 
-// KubernetesClusterPropertiesForPostAndPut struct for KubernetesClusterPropertiesForPostAndPut
-type KubernetesClusterPropertiesForPostAndPut struct {
-	// A Kubernetes Cluster Name
+// KubernetesClusterPropertiesForPut struct for KubernetesClusterPropertiesForPut
+type KubernetesClusterPropertiesForPut struct {
+	// A Kubernetes Cluster Name. Valid Kubernetes Cluster name must be 63 characters or less and must be empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.
 	Name *string `json:"name"`
 	// The kubernetes version in which a cluster is running. This imposes restrictions on what kubernetes versions can be run in a cluster's nodepools. Additionally, not all kubernetes versions are viable upgrade targets for all prior versions.
 	K8sVersion *string `json:"k8sVersion,omitempty"`
@@ -27,7 +27,7 @@ type KubernetesClusterPropertiesForPostAndPut struct {
 
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *KubernetesClusterPropertiesForPostAndPut) GetName() *string {
+func (o *KubernetesClusterPropertiesForPut) GetName() *string {
 	if o == nil {
 		return nil
 	}
@@ -40,7 +40,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) GetName() *string {
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterPropertiesForPostAndPut) GetNameOk() (*string, bool) {
+func (o *KubernetesClusterPropertiesForPut) GetNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -50,7 +50,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) GetNameOk() (*string, bool) {
 }
 
 // SetName sets field value
-func (o *KubernetesClusterPropertiesForPostAndPut) SetName(v string) {
+func (o *KubernetesClusterPropertiesForPut) SetName(v string) {
 
 
 	o.Name = &v
@@ -58,7 +58,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) SetName(v string) {
 }
 
 // HasName returns a boolean if a field has been set.
-func (o *KubernetesClusterPropertiesForPostAndPut) HasName() bool {
+func (o *KubernetesClusterPropertiesForPut) HasName() bool {
 	if o != nil && o.Name != nil {
 		return true
 	}
@@ -70,7 +70,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) HasName() bool {
 
 // GetK8sVersion returns the K8sVersion field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *KubernetesClusterPropertiesForPostAndPut) GetK8sVersion() *string {
+func (o *KubernetesClusterPropertiesForPut) GetK8sVersion() *string {
 	if o == nil {
 		return nil
 	}
@@ -83,7 +83,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) GetK8sVersion() *string {
 // GetK8sVersionOk returns a tuple with the K8sVersion field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterPropertiesForPostAndPut) GetK8sVersionOk() (*string, bool) {
+func (o *KubernetesClusterPropertiesForPut) GetK8sVersionOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -93,7 +93,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) GetK8sVersionOk() (*string, b
 }
 
 // SetK8sVersion sets field value
-func (o *KubernetesClusterPropertiesForPostAndPut) SetK8sVersion(v string) {
+func (o *KubernetesClusterPropertiesForPut) SetK8sVersion(v string) {
 
 
 	o.K8sVersion = &v
@@ -101,7 +101,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) SetK8sVersion(v string) {
 }
 
 // HasK8sVersion returns a boolean if a field has been set.
-func (o *KubernetesClusterPropertiesForPostAndPut) HasK8sVersion() bool {
+func (o *KubernetesClusterPropertiesForPut) HasK8sVersion() bool {
 	if o != nil && o.K8sVersion != nil {
 		return true
 	}
@@ -113,7 +113,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) HasK8sVersion() bool {
 
 // GetMaintenanceWindow returns the MaintenanceWindow field value
 // If the value is explicit nil, the zero value for KubernetesMaintenanceWindow will be returned
-func (o *KubernetesClusterPropertiesForPostAndPut) GetMaintenanceWindow() *KubernetesMaintenanceWindow {
+func (o *KubernetesClusterPropertiesForPut) GetMaintenanceWindow() *KubernetesMaintenanceWindow {
 	if o == nil {
 		return nil
 	}
@@ -126,7 +126,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) GetMaintenanceWindow() *Kuber
 // GetMaintenanceWindowOk returns a tuple with the MaintenanceWindow field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesClusterPropertiesForPostAndPut) GetMaintenanceWindowOk() (*KubernetesMaintenanceWindow, bool) {
+func (o *KubernetesClusterPropertiesForPut) GetMaintenanceWindowOk() (*KubernetesMaintenanceWindow, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -136,7 +136,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) GetMaintenanceWindowOk() (*Ku
 }
 
 // SetMaintenanceWindow sets field value
-func (o *KubernetesClusterPropertiesForPostAndPut) SetMaintenanceWindow(v KubernetesMaintenanceWindow) {
+func (o *KubernetesClusterPropertiesForPut) SetMaintenanceWindow(v KubernetesMaintenanceWindow) {
 
 
 	o.MaintenanceWindow = &v
@@ -144,7 +144,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) SetMaintenanceWindow(v Kubern
 }
 
 // HasMaintenanceWindow returns a boolean if a field has been set.
-func (o *KubernetesClusterPropertiesForPostAndPut) HasMaintenanceWindow() bool {
+func (o *KubernetesClusterPropertiesForPut) HasMaintenanceWindow() bool {
 	if o != nil && o.MaintenanceWindow != nil {
 		return true
 	}
@@ -153,7 +153,7 @@ func (o *KubernetesClusterPropertiesForPostAndPut) HasMaintenanceWindow() bool {
 }
 
 
-func (o KubernetesClusterPropertiesForPostAndPut) MarshalJSON() ([]byte, error) {
+func (o KubernetesClusterPropertiesForPut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Name != nil {
@@ -173,38 +173,38 @@ func (o KubernetesClusterPropertiesForPostAndPut) MarshalJSON() ([]byte, error) 
 	return json.Marshal(toSerialize)
 }
 
-type NullableKubernetesClusterPropertiesForPostAndPut struct {
-	value *KubernetesClusterPropertiesForPostAndPut
+type NullableKubernetesClusterPropertiesForPut struct {
+	value *KubernetesClusterPropertiesForPut
 	isSet bool
 }
 
-func (v NullableKubernetesClusterPropertiesForPostAndPut) Get() *KubernetesClusterPropertiesForPostAndPut {
+func (v NullableKubernetesClusterPropertiesForPut) Get() *KubernetesClusterPropertiesForPut {
 	return v.value
 }
 
-func (v *NullableKubernetesClusterPropertiesForPostAndPut) Set(val *KubernetesClusterPropertiesForPostAndPut) {
+func (v *NullableKubernetesClusterPropertiesForPut) Set(val *KubernetesClusterPropertiesForPut) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableKubernetesClusterPropertiesForPostAndPut) IsSet() bool {
+func (v NullableKubernetesClusterPropertiesForPut) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableKubernetesClusterPropertiesForPostAndPut) Unset() {
+func (v *NullableKubernetesClusterPropertiesForPut) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableKubernetesClusterPropertiesForPostAndPut(val *KubernetesClusterPropertiesForPostAndPut) *NullableKubernetesClusterPropertiesForPostAndPut {
-	return &NullableKubernetesClusterPropertiesForPostAndPut{value: val, isSet: true}
+func NewNullableKubernetesClusterPropertiesForPut(val *KubernetesClusterPropertiesForPut) *NullableKubernetesClusterPropertiesForPut {
+	return &NullableKubernetesClusterPropertiesForPut{value: val, isSet: true}
 }
 
-func (v NullableKubernetesClusterPropertiesForPostAndPut) MarshalJSON() ([]byte, error) {
+func (v NullableKubernetesClusterPropertiesForPut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableKubernetesClusterPropertiesForPostAndPut) UnmarshalJSON(src []byte) error {
+func (v *NullableKubernetesClusterPropertiesForPut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

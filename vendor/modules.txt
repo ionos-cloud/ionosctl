@@ -19,8 +19,6 @@ github.com/fsnotify/fsnotify
 github.com/golang/mock/gomock
 # github.com/golang/protobuf v1.3.2
 github.com/golang/protobuf/proto
-# github.com/hashicorp/go-multierror v1.0.0
-## explicit
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
 github.com/hashicorp/hcl/hcl/ast
@@ -34,7 +32,7 @@ github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
-# github.com/ionos-cloud/sdk-go/v5 v5.0.2
+# github.com/ionos-cloud/sdk-go/v5 v5.1.0-beta.1
 ## explicit
 github.com/ionos-cloud/sdk-go/v5
 # github.com/magiconair/properties v1.8.1
