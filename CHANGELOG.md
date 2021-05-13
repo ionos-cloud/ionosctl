@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.0.2]
+
+- Added commands for Kubernetes, BackupUnit, Private Cross-Connect, Contract Resources, User Management
+- Updated commands structure to: `ionosctl server volume attach`, `ionosctl loadbalancer nic attach`
+- Updated documentation structure
+- Added `--wait-for-request` and `--wait-for-state` options
+- Renamed `--ignore-stdin` flag to `--force`
+
 ## [5.0.1]
 
 - Added commands for image, snapshot, ip block, firewall rule, label
