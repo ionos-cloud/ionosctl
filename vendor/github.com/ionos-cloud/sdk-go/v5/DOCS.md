@@ -82,7 +82,7 @@ All URIs are relative to *https://api.ionos.com/cloudapi/v5*
 #### KubernetesApi
 
 - [Delete Kubernetes Cluster](#k8sdelete)
-- [Retrieve Kubernetes Cluster](#k8sfindbysclusterid)
+- [Retrieve Kubernetes Cluster](#k8sfindbyclusterid)
 - [List Kubernetes Clusters](#k8sget)
 - [Retrieve Kubernetes Configuration File](#k8skubeconfigget)
 - [Delete Kubernetes Node Pool](#k8snodepoolsdelete)
@@ -1443,7 +1443,7 @@ All URIs are relative to *https://api.ionos.com/cloudapi/v5*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**K8sDelete**](#K8sDelete) | **Delete** /k8s/{k8sClusterId} | Delete Kubernetes Cluster
-[**K8sFindBySClusterId**](#K8sFindBySClusterId) | **Get** /k8s/{k8sClusterId} | Retrieve Kubernetes Cluster
+[**K8sFindByClusterId**](#K8sFindByClusterId) | **Get** /k8s/{k8sClusterId} | Retrieve Kubernetes Cluster
 [**K8sGet**](#K8sGet) | **Get** /k8s | List Kubernetes Clusters
 [**K8sKubeconfigGet**](#K8sKubeconfigGet) | **Get** /k8s/{k8sClusterId}/kubeconfig | Retrieve Kubernetes Configuration File
 [**K8sNodepoolsDelete**](#K8sNodepoolsDelete) | **Delete** /k8s/{k8sClusterId}/nodepools/{nodepoolId} | Delete Kubernetes Node Pool
@@ -1504,9 +1504,9 @@ Name | Type | Description  | Notes
 [[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
 
 
-## K8sFindBySClusterId
+## K8sFindByClusterId
 
-> KubernetesCluster K8sFindBySClusterId(ctx, k8sClusterIdoptional)
+> KubernetesCluster K8sFindByClusterId(ctx, k8sClusterIdoptional)
 
 Retrieve Kubernetes Cluster
 
@@ -1519,11 +1519,11 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
 **k8sClusterId** | **string**| The unique ID of the Kubernetes Cluster | 
- **optional** | ***K8sFindBySClusterIdOpts** | optional parameters | nil if no parameters
+ **optional** | ***K8sFindByClusterIdOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
 
-Optional parameters are passed through a pointer to a K8sFindBySClusterIdOpts struct
+Optional parameters are passed through a pointer to a K8sFindByClusterIdOpts struct
 
 
 Name | Type | Description  | Notes
