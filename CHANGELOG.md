@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.0.3]
+
+- Updated sdk-go to v5.0.3
+- Fixed typo `K8sFindBySClusterId`
+
 ## [5.0.2]
 
 - Added commands for Kubernetes, BackupUnit, Private Cross-Connect, Contract Resources, User Management
