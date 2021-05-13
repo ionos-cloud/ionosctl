@@ -6,26 +6,35 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
 )
 
-func login() *builder.Command {
-	loginCmd := builder.NewCommand(context.TODO(), nil, noPreRun, RunLoginUser, "login", "Authentication command for SDK",
-		`Use this command to authenticate. By default, user data will be saved in:
+func login() *core.Command {
+	ctx := context.TODO()
+	loginCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
+		Namespace: "login",
+		Resource:  "login",
+		Verb:      "login",
+		ShortDesc: "Authentication command for SDK",
+		LongDesc: `Use this command to authenticate. By default, user data will be saved in:
 
-* macOS: `+"`"+`${HOME}/Library/Application Support/ionosctl/config.json`+"`"+`
-* Linux: `+"`"+`${XDG_CONFIG_HOME}/ionosctl/config.json`+"`"+`
-* Windows: `+"`"+`%APPDATA%\ionosctl\config.json`+"`"+`.
+* macOS: ` + "`" + `${HOME}/Library/Application Support/ionosctl/config.json` + "`" + `
+* Linux: ` + "`" + `${XDG_CONFIG_HOME}/ionosctl/config.json` + "`" + `
+* Windows: ` + "`" + `%APPDATA%\ionosctl\config.json` + "`" + `.
 
-You can use another configuration file for authentication with `+"`"+`--config`+"`"+` global option.
+You can use another configuration file for authentication with ` + "`" + `--config` + "`" + ` global option.
 
-Note: The command can also be used without `+"`"+`--user`+"`"+` and `+"`"+`--password`+"`"+` flags. For more details, see Examples.`,
-		loginExamples, false)
+Note: The command can also be used without ` + "`" + `--user` + "`" + ` and ` + "`" + `--password` + "`" + ` flags. For more details, see Examples.`,
+		Example:    loginExamples,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunLoginUser,
+		InitClient: false,
+	})
 	loginCmd.AddStringFlag("user", "", "", "Username to authenticate")
 	loginCmd.AddStringFlag("password", "", "", "Password to authenticate")
 	loginCmd.AddStringFlag("token", "", "", "Token to authenticate")
@@ -33,11 +42,11 @@ Note: The command can also be used without `+"`"+`--user`+"`"+` and `+"`"+`--pas
 	return loginCmd
 }
 
-func RunLoginUser(c *builder.CommandConfig) error {
+func RunLoginUser(c *core.CommandConfig) error {
 	var err error
-	username := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "user"))
-	pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "password"))
-	token := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, "token"))
+	username := viper.GetString(core.GetFlagName(c.NS, "user"))
+	pwd := viper.GetString(core.GetFlagName(c.NS, "password"))
+	token := viper.GetString(core.GetFlagName(c.NS, "token"))
 
 	if username == "" {
 		err := c.Printer.Print("Enter your username:")

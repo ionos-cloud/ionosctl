@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -60,10 +60,10 @@ var (
 func TestPreRunIpBlockId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunIpBlockId(cfg)
 		assert.NoError(t, err)
@@ -73,10 +73,10 @@ func TestPreRunIpBlockId(t *testing.T) {
 func TestPreRunIpBlockIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), "")
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunIpBlockId(cfg)
 		assert.Error(t, err)
@@ -86,10 +86,10 @@ func TestPreRunIpBlockIdErr(t *testing.T) {
 func TestPreRunIpBlockLocation(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockLocation), testIpBlockLocation)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockLocation), testIpBlockLocation)
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunIpBlockLocation(cfg)
 		assert.NoError(t, err)
@@ -99,10 +99,10 @@ func TestPreRunIpBlockLocation(t *testing.T) {
 func TestPreRunIpBlockLocationErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockLocation), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockLocation), "")
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunIpBlockLocation(cfg)
 		assert.Error(t, err)
@@ -112,7 +112,7 @@ func TestPreRunIpBlockLocationErr(t *testing.T) {
 func TestRunIpBlockList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -125,7 +125,7 @@ func TestRunIpBlockList(t *testing.T) {
 func TestRunIpBlockListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -139,11 +139,11 @@ func TestRunIpBlockListErr(t *testing.T) {
 func TestRunIpBlockGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
 		rm.IpBlocks.EXPECT().Get(testIpBlockVar).Return(&resTestIpBlock, nil, nil)
 		err := RunIpBlockGet(cfg)
 		assert.NoError(t, err)
@@ -153,11 +153,11 @@ func TestRunIpBlockGet(t *testing.T) {
 func TestRunIpBlockGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
 		rm.IpBlocks.EXPECT().Get(testIpBlockVar).Return(&resTestIpBlock, nil, testIpBlockErr)
 		err := RunIpBlockGet(cfg)
 		assert.Error(t, err)
@@ -168,13 +168,13 @@ func TestRunIpBlockGetErr(t *testing.T) {
 func TestRunIpBlockCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockName), testIpBlockVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockLocation), testIpBlockLocation)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockSize), testIpBlockSize)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockName), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockLocation), testIpBlockLocation)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockSize), testIpBlockSize)
 		rm.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, nil, nil)
 		err := RunIpBlockCreate(cfg)
 		assert.NoError(t, err)
@@ -184,13 +184,13 @@ func TestRunIpBlockCreate(t *testing.T) {
 func TestRunIpBlockCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockName), testIpBlockVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockLocation), testIpBlockLocation)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockSize), testIpBlockSize)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockName), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockLocation), testIpBlockLocation)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockSize), testIpBlockSize)
 		rm.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponse, nil)
 		err := RunIpBlockCreate(cfg)
 		assert.Error(t, err)
@@ -200,12 +200,12 @@ func TestRunIpBlockCreateErr(t *testing.T) {
 func TestRunIpBlockUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockName), newTestIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockName), newTestIpBlockVar)
 		rm.IpBlocks.EXPECT().Update(testIpBlockVar, newTestIpBlockProperties).Return(&newTestIpBlock, nil, nil)
 		err := RunIpBlockUpdate(cfg)
 		assert.NoError(t, err)
@@ -215,12 +215,12 @@ func TestRunIpBlockUpdate(t *testing.T) {
 func TestRunIpBlockUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockName), newTestIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockName), newTestIpBlockVar)
 		rm.IpBlocks.EXPECT().Update(testIpBlockVar, newTestIpBlockProperties).Return(&newTestIpBlock, nil, testIpBlockErr)
 		err := RunIpBlockUpdate(cfg)
 		assert.Error(t, err)
@@ -230,13 +230,13 @@ func TestRunIpBlockUpdateErr(t *testing.T) {
 func TestRunIpBlockDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(nil, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.NoError(t, err)
@@ -246,13 +246,13 @@ func TestRunIpBlockDelete(t *testing.T) {
 func TestRunIpBlockDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(nil, testIpBlockErr)
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
@@ -262,13 +262,13 @@ func TestRunIpBlockDeleteErr(t *testing.T) {
 func TestRunIpBlockDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(nil, nil)
 		err := RunIpBlockDelete(cfg)
@@ -279,13 +279,13 @@ func TestRunIpBlockDeleteAskForConfirm(t *testing.T) {
 func TestRunIpBlockDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgIpBlockId), testIpBlockVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		cfg.Stdin = os.Stdin
 		err := RunIpBlockDelete(cfg)
 		assert.Error(t, err)
@@ -297,8 +297,8 @@ func TestGetIpBlocksCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("ipblock", config.ArgCols), []string{"IpBlockId"})
-	getIpBlocksCols(builder.GetGlobalFlagName("ipblock", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("ipblock", config.ArgCols), []string{"IpBlockId"})
+	getIpBlocksCols(core.GetGlobalFlagName("ipblock", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -308,8 +308,8 @@ func TestGetIpBlocksColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("ipblock", config.ArgCols), []string{"Unknown"})
-	getIpBlocksCols(builder.GetGlobalFlagName("ipblock", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("ipblock", config.ArgCols), []string{"Unknown"})
+	getIpBlocksCols(core.GetGlobalFlagName("ipblock", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

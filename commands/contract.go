@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -17,9 +17,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-func contract() *builder.Command {
+func contract() *core.Command {
 	ctx := context.TODO()
-	contractCmd := &builder.Command{
+	contractCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "contract",
 			Short:            "Contract Resources Operations",
@@ -29,14 +29,25 @@ func contract() *builder.Command {
 	}
 	globalFlags := contractCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultContractCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(contractCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = contractCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allContractCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, contractCmd, noPreRun, RunContractGet, "get", "Get information about the Contract Resources on your account",
-		"Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
-		getContractExample, true)
+	get := core.NewCommand(ctx, contractCmd, core.CommandBuilder{
+		Namespace:  "contract",
+		Resource:   "contract",
+		Verb:       "get",
+		ShortDesc:  "Get information about the Contract Resources on your account",
+		LongDesc:   "Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
+		Example:    getContractExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunContractGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgResourceLimits, "", "", "Specify Resource Limits to see details about it")
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgResourceLimits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CORES", "RAM", "HDD", "SSD", "IPS", "K8S"}, cobra.ShellCompDirectiveNoFileComp
@@ -45,13 +56,13 @@ func contract() *builder.Command {
 	return contractCmd
 }
 
-func RunContractGet(c *builder.CommandConfig) error {
+func RunContractGet(c *core.CommandConfig) error {
 	contractResource, _, err := c.Contracts().Get()
 	if err != nil {
 		return err
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceLimits)) {
-		switch strings.ToUpper(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgResourceLimits))) {
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgResourceLimits)) {
+		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgResourceLimits))) {
 		case "CORES":
 			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractCoresCols))
 		case "RAM":
@@ -66,7 +77,7 @@ func RunContractGet(c *builder.CommandConfig) error {
 			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractK8sCols))
 		}
 	}
-	return c.Printer.Print(getContractPrint(c, getContract(&contractResource), getContractCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())))
+	return c.Printer.Print(getContractPrint(c, getContract(&contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())))
 }
 
 // Output Printing
@@ -79,6 +90,9 @@ var (
 	contractSsdCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned"}
 	contractIpsCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "ReservableIps", "ReservedIpsOnContract", "ReservedIpsInUse"}
 	contractK8sCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "K8sClusterLimitTotal", "K8sClustersProvisioned"}
+	allContractCols     = []string{"ContractNumber", "Owner", "Status", "RegistrationDomain", "CoresPerServer", "CoresPerContract", "CoresProvisioned", "RamPerServer", "RamPerContract", "RamProvisioned",
+		"HddLimitPerVolume", "HddLimitPerContract", "HddVolumeProvisioned", "SsdLimitPerVolume", "SsdLimitPerContract", "SsdVolumeProvisioned", "ReservableIps", "ReservedIpsOnContract", "ReservedIpsInUse",
+		"K8sClusterLimitTotal", "K8sClustersProvisioned"}
 )
 
 type ContractPrint struct {
@@ -106,7 +120,7 @@ type ContractPrint struct {
 	K8sClustersProvisioned int32 `json:"K8sClustersProvisioned,omitempty"`
 }
 
-func getContractPrint(c *builder.CommandConfig, cs []resources.Contract, cols []string) printer.Result {
+func getContractPrint(c *core.CommandConfig, cs []resources.Contract, cols []string) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if cs != nil {

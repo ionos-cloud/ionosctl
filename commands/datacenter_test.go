@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -61,11 +61,11 @@ var (
 func TestPreRunDataCenterId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
 		err := PreRunDataCenterId(cfg)
 		assert.NoError(t, err)
 	})
@@ -74,11 +74,11 @@ func TestPreRunDataCenterId(t *testing.T) {
 func TestPreRunDataCenterIdRequiredFlagErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), "")
 		err := PreRunDataCenterId(cfg)
 		assert.Error(t, err)
 	})
@@ -87,12 +87,12 @@ func TestPreRunDataCenterIdRequiredFlagErr(t *testing.T) {
 func TestRunDataCenterList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		rm.Datacenter.EXPECT().List().Return(dcs, nil, nil)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), "")
 		err := RunDataCenterList(cfg)
 		assert.NoError(t, err)
 	})
@@ -101,11 +101,11 @@ func TestRunDataCenterList(t *testing.T) {
 func TestRunDataCenterListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), "")
 		rm.Datacenter.EXPECT().List().Return(dcs, nil, testDatacenterErr)
 		err := RunDataCenterList(cfg)
 		assert.Error(t, err)
@@ -115,11 +115,11 @@ func TestRunDataCenterListErr(t *testing.T) {
 func TestRunDataCenterGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
 		res := resources.Datacenter{Datacenter: dc}
 		rm.Datacenter.EXPECT().Get(testDatacenterVar).Return(&res, nil, nil)
 		err := RunDataCenterGet(cfg)
@@ -130,11 +130,11 @@ func TestRunDataCenterGet(t *testing.T) {
 func TestRunDataCenterGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
 		res := resources.Datacenter{Datacenter: dc}
 		rm.Datacenter.EXPECT().Get(testDatacenterVar).Return(&res, nil, testDatacenterErr)
 		err := RunDataCenterGet(cfg)
@@ -145,14 +145,14 @@ func TestRunDataCenterGetErr(t *testing.T) {
 func TestRunDataCenterCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterName), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterDescription), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterRegion), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterName), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterDescription), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterRegion), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, nil)
 		err := RunDataCenterCreate(cfg)
 		assert.NoError(t, err)
@@ -162,14 +162,14 @@ func TestRunDataCenterCreate(t *testing.T) {
 func TestRunDataCenterCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterName), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterDescription), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterRegion), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterName), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterDescription), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterRegion), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, nil)
 		err := RunDataCenterCreate(cfg)
 		assert.Error(t, err)
@@ -179,14 +179,14 @@ func TestRunDataCenterCreateWaitErr(t *testing.T) {
 func TestRunDataCenterCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterName), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterDescription), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterRegion), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterName), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterDescription), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterRegion), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, testDatacenterErr)
 		err := RunDataCenterCreate(cfg)
 		assert.Error(t, err)
@@ -196,14 +196,14 @@ func TestRunDataCenterCreateErr(t *testing.T) {
 func TestRunDataCenterUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterDescription), testDatacenterNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterName), testDatacenterNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterDescription), testDatacenterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterName), testDatacenterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties).Return(&dcNew, nil, nil)
 		err := RunDataCenterUpdate(cfg)
 		assert.NoError(t, err)
@@ -213,14 +213,14 @@ func TestRunDataCenterUpdate(t *testing.T) {
 func TestRunDataCenterUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterDescription), testDatacenterNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterName), testDatacenterNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterDescription), testDatacenterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterName), testDatacenterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties).Return(&dcNew, nil, nil)
 		err := RunDataCenterUpdate(cfg)
 		assert.Error(t, err)
@@ -230,14 +230,14 @@ func TestRunDataCenterUpdateWaitErr(t *testing.T) {
 func TestRunDataCenterUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterName), testDatacenterNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterDescription), testDatacenterNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterName), testDatacenterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterDescription), testDatacenterNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties).Return(&dcNew, nil, testDatacenterErr)
 		err := RunDataCenterUpdate(cfg)
 		assert.Error(t, err)
@@ -247,13 +247,13 @@ func TestRunDataCenterUpdateErr(t *testing.T) {
 func TestRunDataCenterDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Datacenter.EXPECT().Delete(testDatacenterVar).Return(nil, nil)
 		err := RunDataCenterDelete(cfg)
 		assert.NoError(t, err)
@@ -263,13 +263,13 @@ func TestRunDataCenterDelete(t *testing.T) {
 func TestRunDataCenterDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Datacenter.EXPECT().Delete(testDatacenterVar).Return(nil, testDatacenterErr)
 		err := RunDataCenterDelete(cfg)
 		assert.Error(t, err)
@@ -279,13 +279,13 @@ func TestRunDataCenterDeleteErr(t *testing.T) {
 func TestRunDataCenterDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.Datacenter.EXPECT().Delete(testDatacenterVar).Return(nil, nil)
 		err := RunDataCenterDelete(cfg)
@@ -296,13 +296,13 @@ func TestRunDataCenterDeleteAskForConfirm(t *testing.T) {
 func TestRunDataCenterDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgDataCenterId), testDatacenterVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		cfg.Stdin = os.Stdin
 		err := RunDataCenterDelete(cfg)
 		assert.Error(t, err)
@@ -314,8 +314,8 @@ func TestGetDatacentersCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("datacenter", config.ArgCols), []string{"Name"})
-	getDataCenterCols(builder.GetGlobalFlagName("datacenter", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("datacenter", config.ArgCols), []string{"Name"})
+	getDataCenterCols(core.GetGlobalFlagName("datacenter", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -325,8 +325,8 @@ func TestGetDatacentersColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("datacenter", config.ArgCols), []string{"Unknown"})
-	getDataCenterCols(builder.GetGlobalFlagName("datacenter", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("datacenter", config.ArgCols), []string{"Unknown"})
+	getDataCenterCols(core.GetGlobalFlagName("datacenter", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

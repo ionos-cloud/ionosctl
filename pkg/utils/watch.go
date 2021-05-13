@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
@@ -16,11 +16,12 @@ const (
 	stateUpdatingStatus  = "UPDATING"
 	stateActiveStatus    = "ACTIVE"
 	stateAvailableStatus = "AVAILABLE"
+	stateReadyStatus     = "READY"
 	stateFailedStatus    = "FAILED"
 )
 
 // WatchStateProgress watches the state progress of a Resource until it completes with success: meaning ACTIVE or AVAILABLE or error.
-func WatchStateProgress(ctx context.Context, c *builder.CommandConfig, interrogator InterrogateStateFunc, resourceId string) (<-chan int, <-chan error) {
+func WatchStateProgress(ctx context.Context, c *core.CommandConfig, interrogator InterrogateStateFunc, resourceId string) (<-chan int, <-chan error) {
 	errChan := make(chan error, 1)
 	progressChan := make(chan int)
 	go func() {
@@ -71,6 +72,10 @@ func WatchStateProgress(ctx context.Context, c *builder.CommandConfig, interroga
 				sendingProgress(100)
 				errChan <- nil
 				return
+			case stateReadyStatus:
+				sendingProgress(100)
+				errChan <- nil
+				return
 			case stateFailedStatus:
 				errChan <- errors.New(failed)
 				return
@@ -81,7 +86,7 @@ func WatchStateProgress(ctx context.Context, c *builder.CommandConfig, interroga
 }
 
 // WatchRequestProgress watches the status progress of a Request until it completes with success: meaning DONE or error.
-func WatchRequestProgress(ctx context.Context, c *builder.CommandConfig, requestId string) (<-chan int, <-chan error) {
+func WatchRequestProgress(ctx context.Context, c *core.CommandConfig, requestId string) (<-chan int, <-chan error) {
 	errChan := make(chan error, 1)
 	progressChan := make(chan int)
 	go func() {

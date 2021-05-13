@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -17,9 +17,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-func image() *builder.Command {
+func image() *core.Command {
 	ctx := context.TODO()
-	imageCmd := &builder.Command{
+	imageCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "image",
 			Short:            "Image Operations",
@@ -29,14 +29,25 @@ func image() *builder.Command {
 	}
 	globalFlags := imageCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = imageCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allImageCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(ctx, imageCmd, noPreRun, RunImageList, "list", "List Images",
-		"Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
-		listImagesExample, true)
+	list := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
+		Namespace:  "image",
+		Resource:   "image",
+		Verb:       "list",
+		ShortDesc:  "List Images",
+		LongDesc:   "Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
+		Example:    listImagesExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunImageList,
+		InitClient: true,
+	})
 	list.AddFloat32Flag(config.ArgImageSize, "", 0, "The size of the Image")
 	list.AddStringFlag(config.ArgImageType, "", "", "The type of the Image")
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgImageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -54,9 +65,17 @@ func image() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, imageCmd, PreRunImageId, RunImageGet, "get", "Get a specified Image",
-		"Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
-		getImageExample, true)
+	get := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
+		Namespace:  "image",
+		Resource:   "image",
+		Verb:       "get",
+		ShortDesc:  "Get a specified Image",
+		LongDesc:   "Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
+		Example:    getImageExample,
+		PreCmdRun:  PreRunImageId,
+		CmdRun:     RunImageGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -65,32 +84,32 @@ func image() *builder.Command {
 	return imageCmd
 }
 
-func PreRunImageId(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgImageId)
+func PreRunImageId(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgImageId)
 }
 
-func RunImageList(c *builder.CommandConfig) error {
+func RunImageList(c *core.CommandConfig) error {
 	images, _, err := c.Images().List()
 	if err != nil {
 		return err
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageLocation)) {
-		images = sortImagesByLocation(images, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageLocation)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageLocation)) {
+		images = sortImagesByLocation(images, viper.GetString(core.GetFlagName(c.NS, config.ArgImageLocation)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageLicenceType)) {
-		images = sortImagesByLicenceType(images, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageLicenceType)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageLicenceType)) {
+		images = sortImagesByLicenceType(images, viper.GetString(core.GetFlagName(c.NS, config.ArgImageLicenceType)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageType)) {
-		images = sortImagesByType(images, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageType)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageType)) {
+		images = sortImagesByType(images, viper.GetString(core.GetFlagName(c.NS, config.ArgImageType)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageSize)) {
-		images = sortImagesBySize(images, float32(viper.GetFloat64(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageSize))))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageSize)) {
+		images = sortImagesBySize(images, float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgImageSize))))
 	}
 	return c.Printer.Print(getImagePrint(c, getImages(images)))
 }
 
-func RunImageGet(c *builder.CommandConfig) error {
-	img, _, err := c.Images().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgImageId)))
+func RunImageGet(c *core.CommandConfig) error {
+	img, _, err := c.Images().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
 	if err != nil {
 		return err
 	}
@@ -99,7 +118,10 @@ func RunImageGet(c *builder.CommandConfig) error {
 
 // Output Printing
 
-var defaultImageCols = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType"}
+var (
+	defaultImageCols = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType"}
+	allImageCols     = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType", "Description", "Public"}
+)
 
 type ImagePrint struct {
 	ImageId     string  `json:"ImageId,omitempty"`
@@ -112,13 +134,13 @@ type ImagePrint struct {
 	Public      bool    `json:"Public,omitempty"`
 }
 
-func getImagePrint(c *builder.CommandConfig, imgs []resources.Image) printer.Result {
+func getImagePrint(c *core.CommandConfig, imgs []resources.Image) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if imgs != nil {
 			r.OutputJSON = imgs
 			r.KeyValue = getImagesKVMaps(imgs)
-			r.Columns = getImageCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getImageCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

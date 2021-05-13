@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
@@ -26,13 +26,13 @@ var waitingForRequestMsg = "Waiting for request..."
 var waitingForStateMsg = "Waiting for state..."
 
 // WaitForRequest waits for Request to be executed
-func WaitForRequest(c *builder.CommandConfig, requestPath string) error {
-	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)) {
+func WaitForRequest(c *core.CommandConfig, requestPath string) error {
+	if !viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)) {
 		// Double Check: return if flag not set
 		return nil
 	} else {
 		// Set context timeout
-		timeout := viper.GetInt(builder.GetFlagName(c.ParentName, c.Name, config.ArgTimeout))
+		timeout := viper.GetInt(core.GetFlagName(c.NS, config.ArgTimeout))
 		if timeout == 0 {
 			timeout = config.DefaultTimeoutSeconds
 		}
@@ -72,15 +72,15 @@ func WaitForRequest(c *builder.CommandConfig, requestPath string) error {
 	}
 }
 
-type InterrogateStateFunc func(c *builder.CommandConfig, resourceId string) (*string, error)
+type InterrogateStateFunc func(c *core.CommandConfig, resourceId string) (*string, error)
 
-func WaitForState(c *builder.CommandConfig, interrogator InterrogateStateFunc, resourceId string) error {
-	if !viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
+func WaitForState(c *core.CommandConfig, interrogator InterrogateStateFunc, resourceId string) error {
+	if !viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
 		// Double Check: return if flag not set
 		return nil
 	} else {
 		// Set context timeout
-		timeout := viper.GetInt(builder.GetFlagName(c.ParentName, c.Name, config.ArgTimeout))
+		timeout := viper.GetInt(core.GetFlagName(c.NS, config.ArgTimeout))
 		if timeout == 0 {
 			timeout = config.DefaultTimeoutSeconds
 		}

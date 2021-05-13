@@ -6,8 +6,8 @@ import (
 	"io"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -15,9 +15,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-func location() *builder.Command {
+func location() *core.Command {
 	ctx := context.TODO()
-	locationCmd := &builder.Command{
+	locationCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "location",
 			Short:            "Location Operations",
@@ -27,19 +27,30 @@ func location() *builder.Command {
 	}
 	globalFlags := locationCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultLocationCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = locationCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultLocationCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, locationCmd, noPreRun, RunLocationList, "list", "List Locations",
-		"Use this command to get a list of available locations to create objects on.",
-		listLocationExample, true)
+	core.NewCommand(ctx, locationCmd, core.CommandBuilder{
+		Namespace:  "location",
+		Resource:   "location",
+		Verb:       "list",
+		ShortDesc:  "List Locations",
+		LongDesc:   "Use this command to get a list of available locations to create objects on.",
+		Example:    listLocationExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunLocationList,
+		InitClient: true,
+	})
 
 	return locationCmd
 }
 
-func RunLocationList(c *builder.CommandConfig) error {
+func RunLocationList(c *core.CommandConfig) error {
 	locations, _, err := c.Locations().List()
 	if err != nil {
 		return err
@@ -47,7 +58,7 @@ func RunLocationList(c *builder.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: locations,
 		KeyValue:   getLocationsKVMaps(getLocations(locations)),
-		Columns:    getLocationCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getLocationCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 

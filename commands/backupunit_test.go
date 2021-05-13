@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -67,11 +67,11 @@ var (
 func TestPreRunBackupUnitId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
 		err := PreRunBackupUnitId(cfg)
 		assert.NoError(t, err)
 	})
@@ -80,11 +80,11 @@ func TestPreRunBackupUnitId(t *testing.T) {
 func TestPreRunBackupUnitIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), "")
 		err := PreRunBackupUnitId(cfg)
 		assert.Error(t, err)
 	})
@@ -93,13 +93,13 @@ func TestPreRunBackupUnitIdErr(t *testing.T) {
 func TestPreRunBackupUnitNameEmailPwd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitName), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitName), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitEmail), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitPassword), testBackupUnitVar)
 		err := PreRunBackupUnitNameEmailPwd(cfg)
 		assert.NoError(t, err)
 	})
@@ -108,13 +108,13 @@ func TestPreRunBackupUnitNameEmailPwd(t *testing.T) {
 func TestPreRunBackupUnitNameEmailPwdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitName), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitName), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitEmail), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitPassword), "")
 		err := PreRunBackupUnitNameEmailPwd(cfg)
 		assert.Error(t, err)
 	})
@@ -123,7 +123,7 @@ func TestPreRunBackupUnitNameEmailPwdErr(t *testing.T) {
 func TestRunBackupUnitList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -136,7 +136,7 @@ func TestRunBackupUnitList(t *testing.T) {
 func TestRunBackupUnitListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
@@ -149,11 +149,11 @@ func TestRunBackupUnitListErr(t *testing.T) {
 func TestRunBackupUnitGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().Get(testBackupUnitVar).Return(&backupUnitTestGet, nil, nil)
 		err := RunBackupUnitGet(cfg)
 		assert.NoError(t, err)
@@ -163,11 +163,11 @@ func TestRunBackupUnitGet(t *testing.T) {
 func TestRunBackupUnitGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().Get(testBackupUnitVar).Return(&backupUnitTestGet, nil, testBackupUnitErr)
 		err := RunBackupUnitGet(cfg)
 		assert.Error(t, err)
@@ -177,11 +177,11 @@ func TestRunBackupUnitGetErr(t *testing.T) {
 func TestRunBackupUnitGetSsoUrl(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().GetSsoUrl(testBackupUnitVar).Return(&backupUnitTestGetSSO, nil, nil)
 		err := RunBackupUnitGetSsoUrl(cfg)
 		assert.NoError(t, err)
@@ -191,11 +191,11 @@ func TestRunBackupUnitGetSsoUrl(t *testing.T) {
 func TestRunBackupUnitGetSsoUrlErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().GetSsoUrl(testBackupUnitVar).Return(&backupUnitTestGetSSO, nil, testBackupUnitErr)
 		err := RunBackupUnitGetSsoUrl(cfg)
 		assert.Error(t, err)
@@ -205,13 +205,13 @@ func TestRunBackupUnitGetSsoUrlErr(t *testing.T) {
 func TestRunBackupUnitCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitName), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitName), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitEmail), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitPassword), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().Create(backupUnitTest).Return(&backupUnitTest, nil, nil)
 		err := RunBackupUnitCreate(cfg)
 		assert.NoError(t, err)
@@ -221,13 +221,13 @@ func TestRunBackupUnitCreate(t *testing.T) {
 func TestRunBackupUnitCreateResponseErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitName), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitName), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitEmail), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitPassword), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().Create(backupUnitTest).Return(&backupUnitTest, &testResponse, nil)
 		err := RunBackupUnitCreate(cfg)
 		assert.Error(t, err)
@@ -237,14 +237,14 @@ func TestRunBackupUnitCreateResponseErr(t *testing.T) {
 func TestRunBackupUnitCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitName), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitName), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitEmail), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitPassword), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().Create(backupUnitTest).Return(&backupUnitTest, nil, nil)
 		err := RunBackupUnitCreate(cfg)
 		assert.Error(t, err)
@@ -254,13 +254,13 @@ func TestRunBackupUnitCreateWaitErr(t *testing.T) {
 func TestRunBackupUnitCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitName), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitName), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitEmail), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitPassword), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().Create(backupUnitTest).Return(&backupUnitTest, nil, testBackupUnitErr)
 		err := RunBackupUnitCreate(cfg)
 		assert.Error(t, err)
@@ -270,13 +270,13 @@ func TestRunBackupUnitCreateErr(t *testing.T) {
 func TestRunBackupUnitUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), testBackupUnitNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), testBackupUnitNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitPassword), testBackupUnitNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitEmail), testBackupUnitNewVar)
 		rm.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties).Return(&backupUnitNew, nil, nil)
 		err := RunBackupUnitUpdate(cfg)
 		assert.NoError(t, err)
@@ -286,14 +286,14 @@ func TestRunBackupUnitUpdate(t *testing.T) {
 func TestRunBackupUnitUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), testBackupUnitNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), testBackupUnitNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitPassword), testBackupUnitNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitEmail), testBackupUnitNewVar)
 		rm.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties).Return(&backupUnitNew, nil, nil)
 		err := RunBackupUnitUpdate(cfg)
 		assert.Error(t, err)
@@ -303,13 +303,13 @@ func TestRunBackupUnitUpdateWaitErr(t *testing.T) {
 func TestRunBackupUnitUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitPassword), testBackupUnitNewVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitEmail), testBackupUnitNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitPassword), testBackupUnitNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitEmail), testBackupUnitNewVar)
 		rm.BackupUnit.EXPECT().Update(testBackupUnitVar, backupUnitProperties).Return(&backupUnitNew, nil, testBackupUnitErr)
 		err := RunBackupUnitUpdate(cfg)
 		assert.Error(t, err)
@@ -319,12 +319,12 @@ func TestRunBackupUnitUpdateErr(t *testing.T) {
 func TestRunBackupUnitDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().Delete(testBackupUnitVar).Return(nil, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
@@ -334,12 +334,12 @@ func TestRunBackupUnitDelete(t *testing.T) {
 func TestRunBackupUnitDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
 		rm.BackupUnit.EXPECT().Delete(testBackupUnitVar).Return(nil, testBackupUnitErr)
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
@@ -349,13 +349,13 @@ func TestRunBackupUnitDeleteErr(t *testing.T) {
 func TestRunBackupUnitDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.BackupUnit.EXPECT().Delete(testBackupUnitVar).Return(nil, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
@@ -365,12 +365,12 @@ func TestRunBackupUnitDeleteWaitErr(t *testing.T) {
 func TestRunBackupUnitDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.BackupUnit.EXPECT().Delete(testBackupUnitVar).Return(nil, nil)
 		err := RunBackupUnitDelete(cfg)
@@ -381,12 +381,12 @@ func TestRunBackupUnitDeleteAskForConfirm(t *testing.T) {
 func TestRunBackupUnitDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgBackupUnitId), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testBackupUnitVar)
 		cfg.Stdin = os.Stdin
 		err := RunBackupUnitDelete(cfg)
 		assert.Error(t, err)
@@ -398,8 +398,8 @@ func TestGetBackupUnitCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("backupunit", config.ArgCols), []string{"Name"})
-	getBackupUnitCols(builder.GetGlobalFlagName("backupunit", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("backupunit", config.ArgCols), []string{"Name"})
+	getBackupUnitCols(core.GetGlobalFlagName("backupunit", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -409,8 +409,8 @@ func TestGetBackupUnitColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("backupunit", config.ArgCols), []string{"Unknown"})
-	getBackupUnitCols(builder.GetGlobalFlagName("backupunit", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("backupunit", config.ArgCols), []string{"Unknown"})
+	getBackupUnitCols(core.GetGlobalFlagName("backupunit", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

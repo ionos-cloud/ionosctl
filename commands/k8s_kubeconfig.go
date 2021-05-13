@@ -2,18 +2,18 @@ package commands
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"os"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func k8sKubeconfig() *builder.Command {
+func k8sKubeconfig() *core.Command {
 	ctx := context.TODO()
-	k8sCmd := &builder.Command{
+	k8sCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "kubeconfig",
 			Short:            "Kubernetes Kubeconfig Operations",
@@ -25,9 +25,17 @@ func k8sKubeconfig() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, k8sCmd, PreRunK8sClusterId, RunK8sKubeconfigGet, "get", "Get the kubeconfig file for a Kubernetes Cluster",
-		"Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
-		getK8sKubeconfigExample, true)
+	get := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+		Namespace:  "k8s",
+		Resource:   "kubeconfig",
+		Verb:       "get",
+		ShortDesc:  "Get the kubeconfig file for a Kubernetes Cluster",
+		LongDesc:   "Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
+		Example:    getK8sKubeconfigExample,
+		PreCmdRun:  PreRunK8sClusterId,
+		CmdRun:     RunK8sKubeconfigGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -36,8 +44,8 @@ func k8sKubeconfig() *builder.Command {
 	return k8sCmd
 }
 
-func RunK8sKubeconfigGet(c *builder.CommandConfig) error {
-	u, _, err := c.K8s().ReadKubeConfig(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgK8sClusterId)))
+func RunK8sKubeconfigGet(c *core.CommandConfig) error {
+	u, _, err := c.K8s().ReadKubeConfig(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
 	}

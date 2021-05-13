@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -17,9 +17,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-func snapshot() *builder.Command {
+func snapshot() *core.Command {
 	ctx := context.TODO()
-	snapshotCmd := &builder.Command{
+	snapshotCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "snapshot",
 			Short:            "Snapshot Operations",
@@ -29,20 +29,40 @@ func snapshot() *builder.Command {
 	}
 	globalFlags := snapshotCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultSnapshotCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(snapshotCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(snapshotCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, snapshotCmd, noPreRun, RunSnapshotList, "list", "List Snapshots",
-		"Use this command to get a list of Snapshots.", listSnapshotsExample, true)
+	core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+		Namespace:  "snapshot",
+		Resource:   "snapshot",
+		Verb:       "list",
+		ShortDesc:  "List Snapshots",
+		LongDesc:   "Use this command to get a list of Snapshots.",
+		Example:    listSnapshotsExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunSnapshotList,
+		InitClient: true,
+	})
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotId, RunSnapshotGet, "get", "Get a Snapshot",
-		"Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
-		getSnapshotExample, true)
+	get := core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+		Namespace:  "snapshot",
+		Resource:   "snapshot",
+		Verb:       "get",
+		ShortDesc:  "Get a Snapshot",
+		LongDesc:   "Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
+		Example:    getSnapshotExample,
+		PreCmdRun:  PreRunSnapshotId,
+		CmdRun:     RunSnapshotGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -51,17 +71,26 @@ func snapshot() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, snapshotCmd, PreRunSnapNameLicenceDcIdVolumeId, RunSnapshotCreate, "create", "Create a Snapshot of a Volume within the Virtual Data Center.",
-		`Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
+	create := core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+		Namespace: "snapshot",
+		Resource:  "snapshot",
+		Verb:      "create",
+		ShortDesc: "Create a Snapshot of a Volume within the Virtual Data Center",
+		LongDesc: `Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
 
 * Data Center Id
 * Volume Id
 * Snapshot Name
-* Snapshot Licence Type`, createSnapshotExample, true)
+* Snapshot Licence Type`,
+		Example:    createSnapshotExample,
+		PreCmdRun:  PreRunSnapNameLicenceDcIdVolumeId,
+		CmdRun:     RunSnapshotCreate,
+		InitClient: true,
+	})
 	create.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot"+config.RequiredFlag)
 	create.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
 	create.AddStringFlag(config.ArgSnapshotLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag)
@@ -74,7 +103,7 @@ Required values to run command:
 	})
 	create.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Name(), create.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgSnapshotSecAuthProtection, "", false, "Enable secure authentication protection")
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
@@ -83,14 +112,23 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotId, RunSnapshotUpdate, "update", "Update a Snapshot.",
-		`Use this command to update a specified Snapshot.
+	update := core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+		Namespace: "snapshot",
+		Resource:  "snapshot",
+		Verb:      "update",
+		ShortDesc: "Update a Snapshot",
+		LongDesc: `Use this command to update a specified Snapshot.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
 
-* Snapshot Id`, updateSnapshotExample, true)
+* Snapshot Id`,
+		Example:    updateSnapshotExample,
+		PreCmdRun:  PreRunSnapshotId,
+		CmdRun:     RunSnapshotUpdate,
+		InitClient: true,
+	})
 	update.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot")
 	update.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
 	update.AddStringFlag(config.ArgSnapshotLicenceType, "", "", "Licence Type of the Snapshot")
@@ -118,9 +156,17 @@ Required values to run command:
 	/*
 		Restore Command
 	*/
-	restore := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotIdDcIdVolumeId, RunSnapshotRestore, "restore", "Restore a Snapshot onto a Volume",
-		"Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
-		restoreSnapshotExample, true)
+	restore := core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+		Namespace:  "snapshot",
+		Resource:   "snapshot",
+		Verb:       "restore",
+		ShortDesc:  "Restore a Snapshot onto a Volume",
+		LongDesc:   "Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
+		Example:    restoreSnapshotExample,
+		PreCmdRun:  PreRunSnapshotIdDcIdVolumeId,
+		CmdRun:     RunSnapshotRestore,
+		InitClient: true,
+	})
 	restore.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -131,7 +177,7 @@ Required values to run command:
 	})
 	restore.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(builder.GetFlagName(snapshotCmd.Name(), restore.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(restore.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	restore.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot restore to be executed")
 	restore.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot restore [seconds]")
@@ -139,9 +185,17 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, snapshotCmd, PreRunSnapshotId, RunSnapshotDelete, "delete", "Delete a Snapshot",
-		"Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
-		deleteSnapshotExample, true)
+	deleteCmd := core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+		Namespace:  "snapshot",
+		Resource:   "snapshot",
+		Verb:       "delete",
+		ShortDesc:  "Delete a Snapshot",
+		LongDesc:   "Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
+		Example:    deleteSnapshotExample,
+		PreCmdRun:  PreRunSnapshotId,
+		CmdRun:     RunSnapshotDelete,
+		InitClient: true,
+	})
 	deleteCmd.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -152,19 +206,19 @@ Required values to run command:
 	return snapshotCmd
 }
 
-func PreRunSnapshotId(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgSnapshotId)
+func PreRunSnapshotId(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgSnapshotId)
 }
 
-func PreRunSnapNameLicenceDcIdVolumeId(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName, config.ArgSnapshotLicenceType)
+func PreRunSnapNameLicenceDcIdVolumeId(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName, config.ArgSnapshotLicenceType)
 }
 
-func PreRunSnapshotIdDcIdVolumeId(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
+func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
 }
 
-func RunSnapshotList(c *builder.CommandConfig) error {
+func RunSnapshotList(c *core.CommandConfig) error {
 	ss, _, err := c.Snapshots().List()
 	if err != nil {
 		return err
@@ -172,22 +226,22 @@ func RunSnapshotList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getSnapshotPrint(nil, c, getSnapshots(ss)))
 }
 
-func RunSnapshotGet(c *builder.CommandConfig) error {
-	s, _, err := c.Snapshots().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)))
+func RunSnapshotGet(c *core.CommandConfig) error {
+	s, _, err := c.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(nil, c, getSnapshot(s)))
 }
 
-func RunSnapshotCreate(c *builder.CommandConfig) error {
+func RunSnapshotCreate(c *core.CommandConfig) error {
 	s, resp, err := c.Snapshots().Create(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType)),
-		viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSecAuthProtection)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotName)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotDescription)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotLicenceType)),
+		viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotSecAuthProtection)),
 	)
 	if err != nil {
 		return err
@@ -199,8 +253,8 @@ func RunSnapshotCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
 }
 
-func RunSnapshotUpdate(c *builder.CommandConfig) error {
-	s, resp, err := c.Snapshots().Update(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)), getSnapshotPropertiesSet(c))
+func RunSnapshotUpdate(c *core.CommandConfig) error {
+	s, resp, err := c.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)), getSnapshotPropertiesSet(c))
 	if err != nil {
 		return err
 	}
@@ -211,14 +265,14 @@ func RunSnapshotUpdate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
 }
 
-func RunSnapshotRestore(c *builder.CommandConfig) error {
+func RunSnapshotRestore(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot"); err != nil {
 		return err
 	}
 	resp, err := c.Snapshots().Restore(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgVolumeId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)),
 	)
 	if err != nil {
 		return err
@@ -226,60 +280,60 @@ func RunSnapshotRestore(c *builder.CommandConfig) error {
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 
-func RunSnapshotDelete(c *builder.CommandConfig) error {
+func RunSnapshotDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
 		return err
 	}
-	resp, err := c.Snapshots().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotId)))
+	resp, err := c.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 
-func getSnapshotPropertiesSet(c *builder.CommandConfig) resources.SnapshotProperties {
+func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotProperties {
 	input := resources.SnapshotProperties{}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName)) {
-		input.SetName(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotName)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription)) {
-		input.SetDescription(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDescription)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDescription)) {
+		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotDescription)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType)) {
-		input.SetLicenceType(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotLicenceType)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotLicenceType)) {
+		input.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotLicenceType)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotPlug)) {
-		input.SetCpuHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotCpuHotPlug)) {
+		input.SetCpuHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotCpuHotPlug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotUnplug)) {
-		input.SetCpuHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotCpuHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotCpuHotUnplug)) {
+		input.SetCpuHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotCpuHotUnplug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotPlug)) {
-		input.SetRamHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotRamHotPlug)) {
+		input.SetRamHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotRamHotPlug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotUnplug)) {
-		input.SetRamHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotRamHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotRamHotUnplug)) {
+		input.SetRamHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotRamHotUnplug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotPlug)) {
-		input.SetNicHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotNicHotPlug)) {
+		input.SetNicHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotNicHotPlug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotUnplug)) {
-		input.SetNicHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotNicHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotNicHotUnplug)) {
+		input.SetNicHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotNicHotUnplug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotPlug)) {
-		input.SetDiscVirtioHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDiscVirtioHotPlug)) {
+		input.SetDiscVirtioHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotDiscVirtioHotPlug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotUnplug)) {
-		input.SetDiscVirtioHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscVirtioHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDiscVirtioHotUnplug)) {
+		input.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotDiscVirtioHotUnplug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotPlug)) {
-		input.SetDiscScsiHotPlug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDiscScsiHotPlug)) {
+		input.SetDiscScsiHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotDiscScsiHotPlug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotUnplug)) {
-		input.SetDiscScsiHotUnplug(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotDiscScsiHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDiscScsiHotUnplug)) {
+		input.SetDiscScsiHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotDiscScsiHotUnplug)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSecAuthProtection)) {
-		input.SetSecAuthProtection(viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgSnapshotSecAuthProtection)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotSecAuthProtection)) {
+		input.SetSecAuthProtection(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotSecAuthProtection)))
 	}
 	return input
 }
@@ -296,19 +350,19 @@ type SnapshotPrint struct {
 	State       string  `json:"State,omitempty"`
 }
 
-func getSnapshotPrint(resp *resources.Response, c *builder.CommandConfig, s []resources.Snapshot) printer.Result {
+func getSnapshotPrint(resp *resources.Response, c *core.CommandConfig, s []resources.Snapshot) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
-			r.Resource = c.ParentName
-			r.Verb = c.Name
-			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
 		}
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getSnapshotsKVMaps(s)
-			r.Columns = getSnapshotCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getSnapshotCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

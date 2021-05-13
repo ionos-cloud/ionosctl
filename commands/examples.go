@@ -118,7 +118,7 @@ Status: Command volume attach has been successfully executed`
 	listVolumesServerExample = `ionosctl server volume list --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa 
 VolumeId                               Name   Size   Type   LicenceType   State       Image
 101291d1-2227-432a-9773-97b5ace7b8d3   test   10GB   HDD    LINUX         AVAILABLE`
-	describeVolumeServerExample = `ionosctl server volume describe --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
+	getVolumeServerExample = `ionosctl server volume get --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
 VolumeId                               Name   Size   Type   LicenceType   State       Image
 1ceb4b02-ed41-4651-a90b-9a30bc284e74   test   10GB   HDD    LINUX         AVAILABLE`
 	detachVolumeServerExample = `ionosctl server volume detach --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
@@ -184,7 +184,7 @@ Status: Command nic attach has been successfully executed`
 	listNicsLoadbalancerExample = `ionosctl loadbalancer nic list --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
 NicId                                  Name   Dhcp   LanId   Ips
 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   2       []`
-	describeNicLoadbalancerExample = `ionosctl loadbalancer nic describe --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
+	getNicLoadbalancerExample = `ionosctl loadbalancer nic get --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 
 NicId                                  Name   Dhcp   LanId   Ips
 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   2       []`
 	detachNicLoadbalancerExample = `ionosctl loadbalancer nic detach --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --loadbalancer-id de044efe-cfe1-41b8-9a21-966a9c03d240 --nic-id ba36c888-e966-480d-800c-77c93ec31083 
@@ -567,7 +567,7 @@ e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test
 	getPccExample = `ionosctl pcc get --pcc-id e2337b40-52d9-48d2-bcbc-41c5abc29d11 
 PccId                                  Name   Description
 e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test`
-	getPccPeersExample = `ionosctl pcc get-peers --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 
+	getPccPeersExample = `ionosctl pcc peers get --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 
 LanId   LanName     DatacenterId                           DatacenterName   Location
 1       testlan2    1ef56b51-98be-487e-925a-c9f3dfa4a076   test2            us/las
 1       testlan1    95b7f7f0-a6f3-4fc9-8d06-018d2c1efc89   test1            us/las`

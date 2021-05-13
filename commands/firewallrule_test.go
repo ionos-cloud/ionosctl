@@ -9,8 +9,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -78,13 +78,13 @@ var (
 func TestPreRunGlobalDcServerNicIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
 		err := PreRunGlobalDcServerNicIds(cfg)
 		assert.NoError(t, err)
 	})
@@ -93,13 +93,13 @@ func TestPreRunGlobalDcServerNicIds(t *testing.T) {
 func TestPreRunGlobalDcServerNicIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), "")
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), "")
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), "")
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), "")
 		err := PreRunGlobalDcServerNicIds(cfg)
 		assert.Error(t, err)
 	})
@@ -108,14 +108,14 @@ func TestPreRunGlobalDcServerNicIdsErr(t *testing.T) {
 func TestPreRunGlobalDcServerNicIdsFRuleProtocol(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleProtocol), testFirewallRuleVar)
 		err := PreRunGlobalDcServerNicIdsFRuleProtocol(cfg)
 		assert.NoError(t, err)
 	})
@@ -124,14 +124,14 @@ func TestPreRunGlobalDcServerNicIdsFRuleProtocol(t *testing.T) {
 func TestPreRunGlobalDcServerNicIdsFRuleProtocolErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), "")
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), "")
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), "")
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleProtocol), "")
 		err := PreRunGlobalDcServerNicIdsFRuleProtocol(cfg)
 		assert.Error(t, err)
 	})
@@ -140,14 +140,14 @@ func TestPreRunGlobalDcServerNicIdsFRuleProtocolErr(t *testing.T) {
 func TestPreRunGlobalDcServerNicIdsFRuleId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
 		err := PreRunGlobalDcServerNicIdsFRuleId(cfg)
 		assert.NoError(t, err)
 	})
@@ -156,14 +156,14 @@ func TestPreRunGlobalDcServerNicIdsFRuleId(t *testing.T) {
 func TestPreRunGlobalDcServerNicIdsFRuleIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), "")
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), "")
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), "")
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), "")
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), "")
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), "")
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), "")
 		err := PreRunGlobalDcServerNicIdsFRuleId(cfg)
 		assert.Error(t, err)
 	})
@@ -172,13 +172,13 @@ func TestPreRunGlobalDcServerNicIdsFRuleIdErr(t *testing.T) {
 func TestRunFirewallRuleList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
 		rm.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(testFirewallRules, nil, nil)
 		err := RunFirewallRuleList(cfg)
 		assert.NoError(t, err)
@@ -188,11 +188,11 @@ func TestRunFirewallRuleList(t *testing.T) {
 func TestRunFirewallRuleListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
 		rm.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(testFirewallRules, nil, testFirewallRuleErr)
 		err := RunFirewallRuleList(cfg)
 		assert.Error(t, err)
@@ -202,14 +202,14 @@ func TestRunFirewallRuleListErr(t *testing.T) {
 func TestRunFirewallRuleGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
 		rm.FirewallRule.EXPECT().Get(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(&testRule, nil, testFirewallRuleErr)
 		err := RunFirewallRuleGet(cfg)
 		assert.Error(t, err)
@@ -219,14 +219,14 @@ func TestRunFirewallRuleGetErr(t *testing.T) {
 func TestRunFirewallRuleGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
 		rm.FirewallRule.EXPECT().Get(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(&testRule, nil, nil)
 		err := RunFirewallRuleGet(cfg)
 		assert.NoError(t, err)
@@ -236,21 +236,21 @@ func TestRunFirewallRuleGet(t *testing.T) {
 func TestRunFirewallRuleCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleName), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleName), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.FirewallRule.EXPECT().Create(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRule).Return(&testInputFirewallRule, nil, nil)
 		err := RunFirewallRuleCreate(cfg)
 		assert.NoError(t, err)
@@ -260,21 +260,21 @@ func TestRunFirewallRuleCreate(t *testing.T) {
 func TestRunFirewallRuleCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleName), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleName), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.FirewallRule.EXPECT().Create(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRule).Return(&testInputFirewallRule, &testResponse, nil)
 		err := RunFirewallRuleCreate(cfg)
 		assert.Error(t, err)
@@ -284,22 +284,22 @@ func TestRunFirewallRuleCreateErr(t *testing.T) {
 func TestRunFirewallRuleUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleName), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleName), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.FirewallRule.EXPECT().Update(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRuleProperties).Return(&testRule, nil, nil)
 		err := RunFirewallRuleUpdate(cfg)
 		assert.NoError(t, err)
@@ -309,22 +309,22 @@ func TestRunFirewallRuleUpdate(t *testing.T) {
 func TestRunFirewallRuleUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleName), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleName), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleProtocol), testFirewallRuleProtocol)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRulePortRangeStart), testFirewallRulePortRangeStart)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRulePortRangeStop), testFirewallRulePortRangeEnd)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleSourceIp), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleSourceMac), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleTargetIp), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.FirewallRule.EXPECT().Update(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRuleProperties).Return(&testRule, nil, testFirewallRuleErr)
 		err := RunFirewallRuleUpdate(cfg)
 		assert.Error(t, err)
@@ -334,16 +334,16 @@ func TestRunFirewallRuleUpdateErr(t *testing.T) {
 func TestRunFirewallRuleDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(nil, nil)
 		err := RunFirewallRuleDelete(cfg)
 		assert.NoError(t, err)
@@ -353,16 +353,16 @@ func TestRunFirewallRuleDelete(t *testing.T) {
 func TestRunFirewallRuleDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(nil, testFirewallRuleErr)
 		err := RunFirewallRuleDelete(cfg)
 		assert.Error(t, err)
@@ -372,17 +372,17 @@ func TestRunFirewallRuleDeleteErr(t *testing.T) {
 func TestRunFirewallRuleDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(nil, nil)
 		err := RunFirewallRuleDelete(cfg)
 		assert.NoError(t, err)
@@ -392,16 +392,16 @@ func TestRunFirewallRuleDeleteAskForConfirm(t *testing.T) {
 func TestRunFirewallRuleDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgDataCenterId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgServerId), testFirewallRuleVar)
-		viper.Set(builder.GetGlobalFlagName(cfg.ParentName, config.ArgNicId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgFirewallRuleId), testFirewallRuleVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgWaitForRequest), false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		cfg.Stdin = os.Stdin
 		err := RunFirewallRuleDelete(cfg)
 		assert.Error(t, err)
@@ -413,8 +413,8 @@ func TestGetFirewallRulesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("firewallrule", config.ArgCols), []string{"Name"})
-	getFirewallRulesCols(builder.GetGlobalFlagName("firewallrule", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("firewallrule", config.ArgCols), []string{"Name"})
+	getFirewallRulesCols(core.GetGlobalFlagName("firewallrule", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -424,8 +424,8 @@ func TestGetFirewallRulesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("firewallrule", config.ArgCols), []string{"Unknown"})
-	getFirewallRulesCols(builder.GetGlobalFlagName("firewallrule", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("firewallrule", config.ArgCols), []string{"Unknown"})
+	getFirewallRulesCols(core.GetGlobalFlagName("firewallrule", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

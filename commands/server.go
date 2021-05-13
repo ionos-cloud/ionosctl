@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -18,9 +18,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-func server() *builder.Command {
+func server() *core.Command {
 	ctx := context.TODO()
-	serverCmd := &builder.Command{
+	serverCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "server",
 			Short:            "Server Operations",
@@ -30,14 +30,25 @@ func server() *builder.Command {
 	}
 	globalFlags := serverCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultServerCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultServerCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
 	*/
-	list := builder.NewCommand(ctx, serverCmd, PreRunDataCenterId, RunServerList, "list", "List Servers",
-		"Use this command to list Servers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
-		listServerExample, true)
+	list := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace:  "server",
+		Resource:   "server",
+		Verb:       "list",
+		ShortDesc:  "List Servers",
+		LongDesc:   "Use this command to list Servers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
+		Example:    listServerExample,
+		PreCmdRun:  PreRunDataCenterId,
+		CmdRun:     RunServerList,
+		InitClient: true,
+	})
 	list.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -46,16 +57,24 @@ func server() *builder.Command {
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerGet, "get", "Get a Server",
-		"Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
-		getServerExample, true)
+	get := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace:  "server",
+		Resource:   "server",
+		Verb:       "get",
+		ShortDesc:  "Get a Server",
+		LongDesc:   "Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		Example:    getServerExample,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), get.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified Server to be in AVAILABLE state")
 	get.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for waiting for Server to be in AVAILABLE state [seconds]")
@@ -63,14 +82,23 @@ func server() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, serverCmd, PreRunDataCenterId, RunServerCreate, "create", "Create a Server",
-		`Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
+	create := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace: "server",
+		Resource:  "server",
+		Verb:      "create",
+		ShortDesc: "Create a Server",
+		LongDesc: `Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can also wait for Server to be in AVAILABLE state using `+"`"+`--wait-for-state`+"`"+` option. It is recommended to use both options together for this command.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.
 
 Required values to run command:
 
-* Data Center Id`, createServerExample, true)
+* Data Center Id`,
+		Example:    createServerExample,
+		PreCmdRun:  PreRunDataCenterId,
+		CmdRun:     RunServerCreate,
+		InitClient: true,
+	})
 	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -93,22 +121,31 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerUpdate, "update", "Update a Server",
-		`Use this command to update a specified Server from a Virtual Data Center.
+	update := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace: "server",
+		Resource:  "server",
+		Verb:      "update",
+		ShortDesc: "Update a Server",
+		LongDesc: `Use this command to update a specified Server from a Virtual Data Center.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can also wait for Server to be in AVAILABLE state using `+"`"+`--wait-for-state`+"`"+` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.
 
 Required values to run command:
 
 * Data Center Id
-* Server Id`, updateServerExample, true)
+* Server Id`,
+		Example:    updateServerExample,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerUpdate,
+		InitClient: true,
+	})
 	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), update.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
 	update.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
@@ -128,24 +165,33 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerDelete, "delete", "Delete a Server",
-		`Use this command to delete a specified Server from a Virtual Data Center.
+	deleteCmd := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace: "server",
+		Resource:  "server",
+		Verb:      "delete",
+		ShortDesc: "Delete a Server",
+		LongDesc: `Use this command to delete a specified Server from a Virtual Data Center.
 
 NOTE: This will not automatically remove the storage Volume(s) attached to a Server.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
 * Data Center Id
-* Server Id`, deleteServerExample, true)
+* Server Id`,
+		Example:    deleteServerExample,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerDelete,
+		InitClient: true,
+	})
 	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), deleteCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
@@ -153,22 +199,31 @@ Required values to run command:
 	/*
 		Start Command
 	*/
-	start := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerStart, "start", "Start a Server",
-		`Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
+	start := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace: "server",
+		Resource:  "server",
+		Verb:      "start",
+		ShortDesc: "Start a Server",
+		LongDesc: `Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
 * Data Center Id
-* Server Id`, startServerExample, true)
+* Server Id`,
+		Example:    startServerExample,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerStart,
+		InitClient: true,
+	})
 	start.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = start.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	start.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = start.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), start.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(start.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	start.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server start to be executed")
 	start.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server start [seconds]")
@@ -176,22 +231,31 @@ Required values to run command:
 	/*
 		Stop Command
 	*/
-	stop := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerStop, "stop", "Stop a Server",
-		`Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
+	stop := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace: "server",
+		Resource:  "server",
+		Verb:      "stop",
+		ShortDesc: "Stop a Server",
+		LongDesc: `Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
 * Data Center Id
-* Server Id`, stopServerExample, true)
+* Server Id`,
+		Example:    stopServerExample,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerStop,
+		InitClient: true,
+	})
 	stop.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	stop.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), stop.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(stop.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	stop.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server stop to be executed")
 	stop.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server stop [seconds]")
@@ -199,22 +263,31 @@ Required values to run command:
 	/*
 		Reboot Command
 	*/
-	reboot := builder.NewCommand(ctx, serverCmd, PreRunDcServerIds, RunServerReboot, "reboot", "Force a hard reboot of a Server",
-		`Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
+	reboot := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace: "server",
+		Resource:  "server",
+		Verb:      "reboot",
+		ShortDesc: "Force a hard reboot of a Server",
+		LongDesc: `Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
-You can wait for the Request to be executed using `+"`"+`--wait-for-request`+"`"+` option. You can force the command to execute without user input using `+"`"+`--force`+"`"+` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
 * Data Center Id
-* Server Id`, resetServerExample, true)
+* Server Id`,
+		Example:    resetServerExample,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerReboot,
+		InitClient: true,
+	})
 	reboot.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	reboot.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(builder.GetFlagName(serverCmd.Name(), reboot.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(reboot.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	reboot.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server reboot to be executed")
 	reboot.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
@@ -224,12 +297,12 @@ Required values to run command:
 	return serverCmd
 }
 
-func PreRunDcServerIds(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgDataCenterId, config.ArgServerId)
+func PreRunDcServerIds(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgServerId)
 }
 
-func RunServerList(c *builder.CommandConfig) error {
-	servers, _, err := c.Servers().List(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)))
+func RunServerList(c *core.CommandConfig) error {
+	servers, _, err := c.Servers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
@@ -237,17 +310,17 @@ func RunServerList(c *builder.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: servers,
 		KeyValue:   getServersKVMaps(ss),
-		Columns:    getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
-func RunServerGet(c *builder.CommandConfig) error {
-	if err := utils.WaitForState(c, GetStateServer, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId))); err != nil {
+func RunServerGet(c *core.CommandConfig) error {
+	if err := utils.WaitForState(c, GetStateServer, viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))); err != nil {
 		return err
 	}
 	svr, _, err := c.Servers().Get(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
 	if err != nil {
 		return err
@@ -255,18 +328,18 @@ func RunServerGet(c *builder.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: svr,
 		KeyValue:   getServersKVMaps([]resources.Server{*svr}),
-		Columns:    getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
-func RunServerCreate(c *builder.CommandConfig) error {
+func RunServerCreate(c *core.CommandConfig) error {
 	svr, resp, err := c.Servers().Create(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerName)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCPUFamily)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerZone)),
-		viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCores)),
-		viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerName)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerCPUFamily)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerZone)),
+		viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerCores)),
+		viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerRAM)),
 	)
 	if err != nil {
 		return err
@@ -275,12 +348,12 @@ func RunServerCreate(c *builder.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
+	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
 		if id, ok := svr.GetIdOk(); ok && id != nil {
 			if err = utils.WaitForState(c, GetStateServer, *id); err != nil {
 				return err
 			}
-			if svr, _, err = c.Servers().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
+			if svr, _, err = c.Servers().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 				*id); err != nil {
 				return err
 			}
@@ -291,35 +364,35 @@ func RunServerCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     svr,
 		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
-		Columns:        getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "server",
 		Verb:           "create",
-		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
-		WaitForState:   viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)),
+		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
+		WaitForState:   viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)),
 	})
 }
 
-func RunServerUpdate(c *builder.CommandConfig) error {
+func RunServerUpdate(c *core.CommandConfig) error {
 	input := resources.ServerProperties{}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerName)) {
-		input.SetName(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgServerName)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCPUFamily)) {
-		input.SetCpuFamily(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCPUFamily)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerCPUFamily)) {
+		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgServerCPUFamily)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerZone)) {
-		input.SetAvailabilityZone(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerZone)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerZone)) {
+		input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgServerZone)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCores)) {
-		input.SetCores(viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerCores)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerCores)) {
+		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerCores)))
 	}
-	if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)) {
-		input.SetRam(viper.GetInt32(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerRAM)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerRAM)) {
+		input.SetRam(viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerRAM)))
 	}
 	svr, resp, err := c.Servers().Update(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 		input,
 	)
 	if err != nil {
@@ -329,34 +402,34 @@ func RunServerUpdate(c *builder.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	if viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)) {
-		if err = utils.WaitForState(c, GetStateServer, viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId))); err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
+		if err = utils.WaitForState(c, GetStateServer, viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))); err != nil {
 			return err
 		}
-		if svr, _, err = c.Servers().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-			viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId))); err != nil {
+		if svr, _, err = c.Servers().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))); err != nil {
 			return err
 		}
 	}
 	return c.Printer.Print(printer.Result{
 		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
-		Columns:        getServersCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr()),
+		Columns:        getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		OutputJSON:     svr,
 		ApiResponse:    resp,
 		Resource:       "server",
 		Verb:           "update",
-		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
-		WaitForState:   viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForState)),
+		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
+		WaitForState:   viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)),
 	})
 }
 
-func RunServerDelete(c *builder.CommandConfig) error {
+func RunServerDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().Delete(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
 	if err != nil {
 		return err
@@ -369,17 +442,17 @@ func RunServerDelete(c *builder.CommandConfig) error {
 		ApiResponse:    resp,
 		Resource:       "server",
 		Verb:           "delete",
-		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
 	})
 }
 
-func RunServerStart(c *builder.CommandConfig) error {
+func RunServerStart(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "start server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().Start(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
 	if err != nil {
 		return err
@@ -392,17 +465,17 @@ func RunServerStart(c *builder.CommandConfig) error {
 		ApiResponse:    resp,
 		Resource:       "server",
 		Verb:           "start",
-		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
 	})
 }
 
-func RunServerStop(c *builder.CommandConfig) error {
+func RunServerStop(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().Stop(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
 	if err != nil {
 		return err
@@ -415,17 +488,17 @@ func RunServerStop(c *builder.CommandConfig) error {
 		ApiResponse:    resp,
 		Resource:       "server",
 		Verb:           "stop",
-		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
 	})
 }
 
-func RunServerReboot(c *builder.CommandConfig) error {
+func RunServerReboot(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().Reboot(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
 	if err != nil {
 		return err
@@ -438,14 +511,14 @@ func RunServerReboot(c *builder.CommandConfig) error {
 		ApiResponse:    resp,
 		Resource:       "server",
 		Verb:           "reboot",
-		WaitForRequest: viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest)),
+		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
 	})
 }
 
 // Wait for State
 
-func GetStateServer(c *builder.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.Servers().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgDataCenterId)), objId)
+func GetStateServer(c *core.CommandConfig, objId string) (*string, error) {
+	obj, _, err := c.Servers().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)), objId)
 	if err != nil {
 		return nil, err
 	}

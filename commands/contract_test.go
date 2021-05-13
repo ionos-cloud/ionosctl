@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -56,7 +56,7 @@ var (
 func TestRunContractGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -69,7 +69,7 @@ func TestRunContractGet(t *testing.T) {
 func TestRunContractGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -84,8 +84,8 @@ func TestGetContractsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("contract", config.ArgCols), []string{"ContractNumber"})
-	getContractCols(builder.GetGlobalFlagName("contract", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("contract", config.ArgCols), []string{"ContractNumber"})
+	getContractCols(core.GetGlobalFlagName("contract", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -95,8 +95,8 @@ func TestGetContractsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("contract", config.ArgCols), []string{"Unknown"})
-	getContractCols(builder.GetGlobalFlagName("contract", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("contract", config.ArgCols), []string{"Unknown"})
+	getContractCols(core.GetGlobalFlagName("contract", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

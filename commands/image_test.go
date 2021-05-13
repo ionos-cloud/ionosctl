@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -46,11 +46,11 @@ var (
 func TestPreImageId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testImageVar)
 		err := PreRunImageId(cfg)
 		assert.NoError(t, err)
 	})
@@ -59,11 +59,11 @@ func TestPreImageId(t *testing.T) {
 func TestPreImageIdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.PreCmdConfigTest(t, w, func(cfg *builder.PreCommandConfig) {
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), "")
 		err := PreRunImageId(cfg)
 		assert.Error(t, err)
 	})
@@ -72,7 +72,7 @@ func TestPreImageIdErr(t *testing.T) {
 func TestRunImageList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -85,7 +85,7 @@ func TestRunImageList(t *testing.T) {
 func TestRunImageListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
@@ -98,14 +98,14 @@ func TestRunImageListErr(t *testing.T) {
 func TestRunImageListSort(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageLocation), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageLicenceType), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageType), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageSize), testImageSize)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageLocation), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageLicenceType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageSize), testImageSize)
 		rm.Image.EXPECT().List().Return(images, nil, nil)
 		err := RunImageList(cfg)
 		assert.NoError(t, err)
@@ -115,14 +115,14 @@ func TestRunImageListSort(t *testing.T) {
 func TestRunImageListSortErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageLocation), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageLicenceType), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageType), testImageVar)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageSize), testImageSize)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageLocation), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageLicenceType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageSize), testImageSize)
 		rm.Image.EXPECT().List().Return(images, nil, testImageErr)
 		err := RunImageList(cfg)
 		assert.Error(t, err)
@@ -132,11 +132,11 @@ func TestRunImageListSortErr(t *testing.T) {
 func TestRunImageGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testImageVar)
 		rm.Image.EXPECT().Get(testImageVar).Return(&img, nil, nil)
 		err := RunImageGet(cfg)
 		assert.NoError(t, err)
@@ -146,11 +146,11 @@ func TestRunImageGet(t *testing.T) {
 func TestRunImageGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	builder.CmdConfigTest(t, w, func(cfg *builder.CommandConfig, rm *builder.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(builder.GetFlagName(cfg.ParentName, cfg.Name, config.ArgImageId), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testImageVar)
 		rm.Image.EXPECT().Get(testImageVar).Return(&img, nil, testImageErr)
 		err := RunImageGet(cfg)
 		assert.Error(t, err)
@@ -162,8 +162,8 @@ func TestGetImagesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("image", config.ArgCols), []string{"Name"})
-	getImageCols(builder.GetGlobalFlagName("image", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("image", config.ArgCols), []string{"Name"})
+	getImageCols(core.GetGlobalFlagName("image", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -173,8 +173,8 @@ func TestGetImagesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(builder.GetGlobalFlagName("image", config.ArgCols), []string{"Unknown"})
-	getImageCols(builder.GetGlobalFlagName("image", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("image", config.ArgCols), []string{"Unknown"})
+	getImageCols(core.GetGlobalFlagName("image", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

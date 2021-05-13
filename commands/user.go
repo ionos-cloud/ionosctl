@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/builder"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
@@ -18,31 +18,52 @@ import (
 	"github.com/spf13/viper"
 )
 
-func user() *builder.Command {
+func user() *core.Command {
 	ctx := context.TODO()
-	userCmd := &builder.Command{
+	userCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "user",
 			Short:            "User Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl user` + "`" + ` allows you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl s3key` + "`" + ` commands.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl user` + "`" + ` allow you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl s3key` + "`" + ` commands.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := userCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultUserCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(userCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(userCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = userCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Command
 	*/
-	builder.NewCommand(ctx, userCmd, noPreRun, RunUserList, "list", "List Users",
-		"Use this command to get a list of existing Users available on your account.", listUserExample, true)
+	core.NewCommand(ctx, userCmd, core.CommandBuilder{
+		Namespace:  "user",
+		Resource:   "user",
+		Verb:       "list",
+		ShortDesc:  "List Users",
+		LongDesc:   "Use this command to get a list of existing Users available on your account.",
+		Example:    listUserExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunUserList,
+		InitClient: true,
+	})
 
 	/*
 		Get Command
 	*/
-	get := builder.NewCommand(ctx, userCmd, PreRunUserId, RunUserGet, "get", "Get a User",
-		"Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id", getUserExample, true)
+	get := core.NewCommand(ctx, userCmd, core.CommandBuilder{
+		Namespace:  "user",
+		Resource:   "user",
+		Verb:       "get",
+		ShortDesc:  "Get a User",
+		LongDesc:   "Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id",
+		Example:    getUserExample,
+		PreCmdRun:  PreRunUserId,
+		CmdRun:     RunUserGet,
+		InitClient: true,
+	})
 	get.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -51,8 +72,12 @@ func user() *builder.Command {
 	/*
 		Create Command
 	*/
-	create := builder.NewCommand(ctx, userCmd, PreRunUserNameEmailPwd, RunUserCreate, "create", "Create a User under a particular contract",
-		`Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
+	create := core.NewCommand(ctx, userCmd, core.CommandBuilder{
+		Namespace: "user",
+		Resource:  "user",
+		Verb:      "create",
+		ShortDesc: "Create a User under a particular contract",
+		LongDesc: `Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
 Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
 
@@ -61,7 +86,12 @@ Required values to run a command:
 * User First Name
 * User Last Name
 * User Email
-* User Password`, createUserExample, true)
+* User Password`,
+		Example:    createUserExample,
+		PreCmdRun:  PreRunUserNameEmailPwd,
+		CmdRun:     RunUserCreate,
+		InitClient: true,
+	})
 	create.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User "+config.RequiredFlag)
@@ -72,14 +102,23 @@ Required values to run a command:
 	/*
 		Update Command
 	*/
-	update := builder.NewCommand(ctx, userCmd, noPreRun, RunUserUpdate, "update", "Update a User",
-		`Use this command to update details about a specific User including their privileges.
+	update := core.NewCommand(ctx, userCmd, core.CommandBuilder{
+		Namespace: "user",
+		Resource:  "user",
+		Verb:      "update",
+		ShortDesc: "Update a User",
+		LongDesc: `Use this command to update details about a specific User including their privileges.
 
 Note: The password attribute is immutable. It is not allowed in update requests. It is recommended that the new User log into the DCD and change their password.
 
 Required values to run command:
 
-* User Id`, updateUserExample, true)
+* User Id`,
+		Example:    updateUserExample,
+		PreCmdRun:  noPreRun,
+		CmdRun:     RunUserUpdate,
+		InitClient: true,
+	})
 	update.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User")
 	update.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User")
 	update.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User")
@@ -93,12 +132,21 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := builder.NewCommand(ctx, userCmd, PreRunUserId, RunUserDelete, "delete", "Blacklists the User, disabling them",
-		`This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
+	deleteCmd := core.NewCommand(ctx, userCmd, core.CommandBuilder{
+		Namespace: "user",
+		Resource:  "user",
+		Verb:      "delete",
+		ShortDesc: "Blacklists the User, disabling them",
+		LongDesc: `This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
 
 Required values to run command:
 
-* User Id`, deleteUserExample, true)
+* User Id`,
+		Example:    deleteUserExample,
+		PreCmdRun:  PreRunUserId,
+		CmdRun:     RunUserDelete,
+		InitClient: true,
+	})
 	deleteCmd.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -109,15 +157,15 @@ Required values to run command:
 	return userCmd
 }
 
-func PreRunUserId(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgUserId)
+func PreRunUserId(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgUserId)
 }
 
-func PreRunUserNameEmailPwd(c *builder.PreCommandConfig) error {
-	return builder.CheckRequiredFlags(c.ParentName, c.Name, config.ArgUserFirstName, config.ArgUserLastName, config.ArgUserEmail, config.ArgUserPassword)
+func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgUserFirstName, config.ArgUserLastName, config.ArgUserEmail, config.ArgUserPassword)
 }
 
-func RunUserList(c *builder.CommandConfig) error {
+func RunUserList(c *core.CommandConfig) error {
 	users, _, err := c.Users().List()
 	if err != nil {
 		return err
@@ -125,21 +173,21 @@ func RunUserList(c *builder.CommandConfig) error {
 	return c.Printer.Print(getUserPrint(nil, c, getUsers(users)))
 }
 
-func RunUserGet(c *builder.CommandConfig) error {
-	u, _, err := c.Users().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)))
+func RunUserGet(c *core.CommandConfig) error {
+	u, _, err := c.Users().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getUserPrint(nil, c, getUser(u)))
 }
 
-func RunUserCreate(c *builder.CommandConfig) error {
-	firstname := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserFirstName))
-	lastname := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserLastName))
-	email := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserEmail))
-	pwd := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserPassword))
-	secureAuth := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserForceSecAuth))
-	admin := viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserAdministrator))
+func RunUserCreate(c *core.CommandConfig) error {
+	firstname := viper.GetString(core.GetFlagName(c.NS, config.ArgUserFirstName))
+	lastname := viper.GetString(core.GetFlagName(c.NS, config.ArgUserLastName))
+	email := viper.GetString(core.GetFlagName(c.NS, config.ArgUserEmail))
+	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgUserPassword))
+	secureAuth := viper.GetBool(core.GetFlagName(c.NS, config.ArgUserForceSecAuth))
+	admin := viper.GetBool(core.GetFlagName(c.NS, config.ArgUserAdministrator))
 	newUser := resources.User{
 		User: ionoscloud.User{
 			Properties: &ionoscloud.UserProperties{
@@ -159,8 +207,8 @@ func RunUserCreate(c *builder.CommandConfig) error {
 	return c.Printer.Print(getUserPrint(resp, c, getUser(u)))
 }
 
-func RunUserUpdate(c *builder.CommandConfig) error {
-	oldUser, resp, err := c.Users().Get(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)))
+func RunUserUpdate(c *core.CommandConfig) error {
+	oldUser, resp, err := c.Users().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if err != nil {
 		return err
 	}
@@ -170,60 +218,60 @@ func RunUserUpdate(c *builder.CommandConfig) error {
 			Properties: &newProperties.UserProperties,
 		},
 	}
-	userUpd, resp, err := c.Users().Update(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)), newUser)
+	userUpd, resp, err := c.Users().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)), newUser)
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getUserPrint(resp, c, getUser(userUpd)))
 }
 
-func RunUserDelete(c *builder.CommandConfig) error {
+func RunUserDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
 		return err
 	}
-	resp, err := c.Users().Delete(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)))
+	resp, err := c.Users().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getUserPrint(resp, c, nil))
 }
 
-func getUserInfo(oldUser *resources.User, c *builder.CommandConfig) *resources.UserProperties {
+func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.UserProperties {
 	var (
 		firstName, lastName, email string
 		forceSecureAuth, admin     bool
 	)
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserFirstName)) {
-			firstName = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserFirstName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserFirstName)) {
+			firstName = viper.GetString(core.GetFlagName(c.NS, config.ArgUserFirstName))
 		} else {
 			if name, ok := properties.GetFirstnameOk(); ok && name != nil {
 				firstName = *name
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserLastName)) {
-			lastName = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserLastName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserLastName)) {
+			lastName = viper.GetString(core.GetFlagName(c.NS, config.ArgUserLastName))
 		} else {
 			if name, ok := properties.GetLastnameOk(); ok && name != nil {
 				lastName = *name
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserEmail)) {
-			email = viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserEmail))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserEmail)) {
+			email = viper.GetString(core.GetFlagName(c.NS, config.ArgUserEmail))
 		} else {
 			if e, ok := properties.GetEmailOk(); ok && e != nil {
 				email = *e
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserForceSecAuth)) {
-			forceSecureAuth = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserForceSecAuth))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserForceSecAuth)) {
+			forceSecureAuth = viper.GetBool(core.GetFlagName(c.NS, config.ArgUserForceSecAuth))
 		} else {
 			if secAuth, ok := properties.GetForceSecAuthOk(); ok && secAuth != nil {
 				forceSecureAuth = *secAuth
 			}
 		}
-		if viper.IsSet(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserAdministrator)) {
-			admin = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserAdministrator))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserAdministrator)) {
+			admin = viper.GetBool(core.GetFlagName(c.NS, config.ArgUserAdministrator))
 		} else {
 			if administrator, ok := properties.GetAdministratorOk(); ok && administrator != nil {
 				admin = *administrator
@@ -241,9 +289,9 @@ func getUserInfo(oldUser *resources.User, c *builder.CommandConfig) *resources.U
 	}
 }
 
-func groupUser() *builder.Command {
+func groupUser() *core.Command {
 	ctx := context.TODO()
-	groupUserCmd := &builder.Command{
+	groupUserCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "user",
 			Short:            "Group User Operations",
@@ -253,13 +301,25 @@ func groupUser() *builder.Command {
 	}
 	globalFlags := groupUserCmd.GlobalFlags()
 	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(builder.GetGlobalFlagName(groupUserCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(groupUserCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = groupUserCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		List Users Command
 	*/
-	listUsers := builder.NewCommand(ctx, groupUserCmd, PreRunGroupId, RunGroupUserList, "list", "List Users from a Group",
-		"Use this command to get a list of Users from a specific Group.\n\nRequired values to run command:\n\n* Group Id", listGroupUsersExample, true)
+	listUsers := core.NewCommand(ctx, groupUserCmd, core.CommandBuilder{
+		Namespace:  "group",
+		Resource:   "user",
+		Verb:       "list",
+		ShortDesc:  "List Users from a Group",
+		LongDesc:   "Use this command to get a list of Users from a specific Group.\n\nRequired values to run command:\n\n* Group Id",
+		Example:    listGroupUsersExample,
+		PreCmdRun:  PreRunGroupId,
+		CmdRun:     RunGroupUserList,
+		InitClient: true,
+	})
 	listUsers.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = listUsers.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -268,8 +328,17 @@ func groupUser() *builder.Command {
 	/*
 		Add User Command
 	*/
-	addUser := builder.NewCommand(ctx, groupUserCmd, PreRunGroupUserIds, RunGroupUserAdd, "add", "Add User to a Group",
-		"Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", addGroupUserExample, true)
+	addUser := core.NewCommand(ctx, groupUserCmd, core.CommandBuilder{
+		Namespace:  "group",
+		Resource:   "user",
+		Verb:       "add",
+		ShortDesc:  "Add User to a Group",
+		LongDesc:   "Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
+		Example:    addGroupUserExample,
+		PreCmdRun:  PreRunGroupUserIds,
+		CmdRun:     RunGroupUserAdd,
+		InitClient: true,
+	})
 	addUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -282,49 +351,58 @@ func groupUser() *builder.Command {
 	/*
 		Remove User Command
 	*/
-	removeUser := builder.NewCommand(ctx, groupUserCmd, PreRunGroupUserIds, RunGroupUserRemove, "remove", "Remove User from a Group",
-		"Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id", removeGroupUserExample, true)
+	removeUser := core.NewCommand(ctx, groupUserCmd, core.CommandBuilder{
+		Namespace:  "group",
+		Resource:   "user",
+		Verb:       "remove",
+		ShortDesc:  "Remove User from a Group",
+		LongDesc:   "Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
+		Example:    removeGroupUserExample,
+		PreCmdRun:  PreRunGroupUserIds,
+		CmdRun:     RunGroupUserRemove,
+		InitClient: true,
+	})
 	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeUser.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupUsersIds(os.Stderr, viper.GetString(builder.GetFlagName(groupUserCmd.Name(), removeUser.Name(), config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return getGroupUsersIds(os.Stderr, viper.GetString(core.GetFlagName(removeUser.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return groupUserCmd
 }
 
-func RunGroupUserList(c *builder.CommandConfig) error {
-	users, _, err := c.Groups().ListUsers(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)))
+func RunGroupUserList(c *core.CommandConfig) error {
+	users, _, err := c.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getUserPrint(nil, c, getGroupUsers(users)))
 }
 
-func RunGroupUserAdd(c *builder.CommandConfig) error {
-	id := viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId))
+func RunGroupUserAdd(c *core.CommandConfig) error {
+	id := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
 	u := resources.User{
 		User: ionoscloud.User{
 			Id: &id,
 		},
 	}
-	userAdded, resp, err := c.Groups().AddUser(viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)), u)
+	userAdded, resp, err := c.Groups().AddUser(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)), u)
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(getUserPrint(resp, c, getUser(userAdded)))
 }
 
-func RunGroupUserRemove(c *builder.CommandConfig) error {
+func RunGroupUserRemove(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove user from group"); err != nil {
 		return err
 	}
 	resp, err := c.Groups().RemoveUser(
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgGroupId)),
-		viper.GetString(builder.GetFlagName(c.ParentName, c.Name, config.ArgUserId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
 	)
 	if err != nil {
 		return err
@@ -348,19 +426,19 @@ type UserPrint struct {
 	Active            bool   `json:"Active,omitempty"`
 }
 
-func getUserPrint(resp *resources.Response, c *builder.CommandConfig, users []resources.User) printer.Result {
+func getUserPrint(resp *resources.Response, c *core.CommandConfig, users []resources.User) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
-			r.Resource = c.ParentName
-			r.Verb = c.Name
-			r.WaitForRequest = viper.GetBool(builder.GetFlagName(c.ParentName, c.Name, config.ArgWaitForRequest))
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
 		}
 		if users != nil {
 			r.OutputJSON = users
 			r.KeyValue = getUsersKVMaps(users)
-			r.Columns = getUserCols(builder.GetGlobalFlagName(c.ParentName, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getUserCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r
