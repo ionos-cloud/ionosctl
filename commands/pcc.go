@@ -165,14 +165,6 @@ func RunPccGet(c *core.CommandConfig) error {
 	return c.Printer.Print(getPccPrint(nil, c, getPcc(u)))
 }
 
-func RunPccPeersGet(c *core.CommandConfig) error {
-	u, _, err := c.Pccs().GetPeers(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(getPccPeerPrint(c, *u))
-}
-
 func RunPccCreate(c *core.CommandConfig) error {
 	name := viper.GetString(core.GetFlagName(c.NS, config.ArgPccName))
 	description := viper.GetString(core.GetFlagName(c.NS, config.ArgPccDescription))
@@ -292,6 +284,14 @@ func peers() *core.Command {
 	return peerCmd
 }
 
+func RunPccPeersGet(c *core.CommandConfig) error {
+	u, _, err := c.Pccs().GetPeers(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
+	if err != nil {
+		return err
+	}
+	return c.Printer.Print(getPccPeerPrint(c, *u))
+}
+
 // Output Printing
 
 var defaultPccCols = []string{"PccId", "Name", "Description"}
@@ -362,7 +362,7 @@ func getPccPeersCols(flagName string, outErr io.Writer) []string {
 		}
 		return pccCols
 	} else {
-		return defaultPccCols
+		return defaultPccPeersCols
 	}
 }
 

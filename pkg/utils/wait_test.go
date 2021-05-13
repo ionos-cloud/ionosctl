@@ -179,11 +179,11 @@ func TestWaitForRequestJsonStatusErr(t *testing.T) {
 var (
 	testInterrogatorFuncErr       = func(c *core.CommandConfig, resourceId string) (*string, error) { return nil, nil }
 	testInterrogatorFailedFunc    = func(c *core.CommandConfig, resourceId string) (*string, error) { return &testFailedStateVar, nil }
-	testInterrogatorUpdatingFunc  = func(c *core.CommandConfig, resourceId string) (*string, error) { return &testUpdatingStateVar, nil }
-	testInterrogatorDeployingFunc = func(c *core.CommandConfig, resourceId string) (*string, error) { return &testDeployingStateVar, nil }
+	testInterrogatorAvailableFunc = func(c *core.CommandConfig, resourceId string) (*string, error) { return &testAvailableStateVar, nil }
+	testInterrogatorReadyFunc     = func(c *core.CommandConfig, resourceId string) (*string, error) { return &testReadyStateVar, nil }
 	testInterrogatorActiveFunc    = func(c *core.CommandConfig, resourceId string) (*string, error) { return &testActiveStateVar, nil }
-	testUpdatingStateVar          = stateUpdatingStatus
-	testDeployingStateVar         = stateDeployingStatus
+	testReadyStateVar             = stateReadyStatus
+	testAvailableStateVar         = stateAvailableStatus
 	testActiveStateVar            = stateActiveStatus
 )
 
@@ -253,6 +253,42 @@ func TestWaitForState(t *testing.T) {
 		viper.Set(config.ArgOutput, "text")
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		err := WaitForState(cfg, testInterrogatorActiveFunc, pathRequest)
+		assert.NoError(t, err)
+	})
+}
+
+func TestWaitForStateAvailable(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		p := mockprinter.NewMockPrintService(ctrl)
+		p.EXPECT().GetStdout().Return(nil)
+
+		cfg.Printer = p
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, "text")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		err := WaitForState(cfg, testInterrogatorAvailableFunc, pathRequest)
+		assert.NoError(t, err)
+	})
+}
+
+func TestWaitForStateReady(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		p := mockprinter.NewMockPrintService(ctrl)
+		p.EXPECT().GetStdout().Return(nil)
+
+		cfg.Printer = p
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, "text")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
+		err := WaitForState(cfg, testInterrogatorReadyFunc, pathRequest)
 		assert.NoError(t, err)
 	})
 }
