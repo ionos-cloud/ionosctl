@@ -99,14 +99,8 @@ var (
 					MinNodeCount: &testNodepoolIntNewVar,
 					MaxNodeCount: &testNodepoolIntNewVar,
 				},
-				Annotations: &ionoscloud.KubernetesNodePoolAnnotation{
-					Key:   &testNodepoolNewVar,
-					Value: &testNodepoolNewVar,
-				},
-				Labels: &ionoscloud.KubernetesNodePoolLabel{
-					Key:   &testNodepoolNewVar,
-					Value: &testNodepoolNewVar,
-				},
+				Annotations: &nodepoolTestMap,
+				Labels:      &nodepoolTestMap,
 				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testNodepoolNewVar,
 					Time:         &testNodepoolNewVar,
@@ -119,32 +113,22 @@ var (
 			},
 		},
 	}
-	nodepoolTestUpdatedNew = resources.K8sNodePoolUpdated{
+	nodepoolTestMap = map[string]string{
+		testNodepoolNewVar: testNodepoolNewVar,
+	}
+	nodepoolTestUpdatedNew = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Id: &testNodepoolVar,
 			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
-				Name:             &testNodepoolVar,
-				DatacenterId:     &testNodepoolVar,
-				CpuFamily:        &testNodepoolVar,
-				AvailabilityZone: &testNodepoolVar,
-				StorageType:      &testNodepoolVar,
-				K8sVersion:       &testNodepoolNewVar,
-				NodeCount:        &testNodepoolIntNewVar,
-				RamSize:          &testNodepoolIntVar,
-				StorageSize:      &testNodepoolIntVar,
-				CoresCount:       &testNodepoolIntVar,
+				Name:       &testNodepoolVar,
+				K8sVersion: &testNodepoolNewVar,
+				NodeCount:  &testNodepoolIntNewVar,
 				AutoScaling: &ionoscloud.KubernetesAutoScaling{
 					MinNodeCount: &testNodepoolIntNewVar,
 					MaxNodeCount: &testNodepoolIntNewVar,
 				},
-				Annotations: &ionoscloud.KubernetesNodePoolAnnotation{
-					Key:   &testNodepoolNewVar,
-					Value: &testNodepoolNewVar,
-				},
-				Labels: &ionoscloud.KubernetesNodePoolLabel{
-					Key:   &testNodepoolNewVar,
-					Value: &testNodepoolNewVar,
-				},
+				Annotations: &nodepoolTestMap,
+				Labels:      &nodepoolTestMap,
 				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testNodepoolNewVar,
 					Time:         &testNodepoolNewVar,
@@ -165,20 +149,13 @@ var (
 			},
 		},
 	}
-	nodepoolTestUpdatedOld = resources.K8sNodePoolUpdated{
+	nodepoolTestUpdatedOld = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Id: &testNodepoolVar,
 			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
-				Name:             &testNodepoolVar,
-				NodeCount:        &testNodepoolIntVar,
-				DatacenterId:     &testNodepoolVar,
-				CpuFamily:        &testNodepoolVar,
-				AvailabilityZone: &testNodepoolVar,
-				RamSize:          &testNodepoolIntVar,
-				StorageSize:      &testNodepoolIntVar,
-				StorageType:      &testNodepoolVar,
-				K8sVersion:       &testNodepoolVar,
-				CoresCount:       &testNodepoolIntVar,
+				Name:       &testNodepoolVar,
+				NodeCount:  &testNodepoolIntVar,
+				K8sVersion: &testNodepoolVar,
 			},
 		},
 	}

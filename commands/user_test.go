@@ -18,9 +18,9 @@ import (
 )
 
 var (
-	userTest = resources.User{
-		User: ionoscloud.User{
-			Properties: &ionoscloud.UserProperties{
+	userTest = resources.UserPost{
+		UserPost: ionoscloud.UserPost{
+			Properties: &ionoscloud.UserPropertiesPost{
 				Firstname:     &testUserVar,
 				Lastname:      &testUserVar,
 				Email:         &testUserVar,
@@ -48,7 +48,7 @@ var (
 	users = resources.Users{
 		Users: ionoscloud.Users{
 			Id:    &testUserVar,
-			Items: &[]ionoscloud.User{userTest.User},
+			Items: &[]ionoscloud.User{userTestGet.User},
 		},
 	}
 	userProperties = resources.UserProperties{
@@ -370,7 +370,7 @@ func TestRunUserDeleteAskForConfirmErr(t *testing.T) {
 var (
 	groupUsersTest = resources.GroupMembers{
 		GroupMembers: ionoscloud.GroupMembers{
-			Items: &[]ionoscloud.User{userTest.User},
+			Items: &[]ionoscloud.User{userTestGet.User},
 		},
 	}
 	groupUserTest = resources.User{
