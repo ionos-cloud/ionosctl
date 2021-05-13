@@ -99,8 +99,8 @@ func (s *k8sService) ListClusters() (K8sClusters, *Response, error) {
 }
 
 func (s *k8sService) GetCluster(clusterId string) (*K8sCluster, *Response, error) {
-	req := s.client.KubernetesApi.K8sFindBySClusterId(s.context, clusterId)
-	user, res, err := s.client.KubernetesApi.K8sFindBySClusterIdExecute(req)
+	req := s.client.KubernetesApi.K8sFindByClusterId(s.context, clusterId)
+	user, res, err := s.client.KubernetesApi.K8sFindByClusterIdExecute(req)
 	return &K8sCluster{user}, &Response{*res}, err
 }
 

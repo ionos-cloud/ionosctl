@@ -185,7 +185,7 @@ func (a *KubernetesApiService) K8sDeleteExecute(r ApiK8sDeleteRequest) (map[stri
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiK8sFindBySClusterIdRequest struct {
+type ApiK8sFindByClusterIdRequest struct {
 	ctx _context.Context
 	ApiService *KubernetesApiService
 	k8sClusterId string
@@ -194,32 +194,32 @@ type ApiK8sFindBySClusterIdRequest struct {
 	xContractNumber *int32
 }
 
-func (r ApiK8sFindBySClusterIdRequest) Pretty(pretty bool) ApiK8sFindBySClusterIdRequest {
+func (r ApiK8sFindByClusterIdRequest) Pretty(pretty bool) ApiK8sFindByClusterIdRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiK8sFindBySClusterIdRequest) Depth(depth int32) ApiK8sFindBySClusterIdRequest {
+func (r ApiK8sFindByClusterIdRequest) Depth(depth int32) ApiK8sFindByClusterIdRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiK8sFindBySClusterIdRequest) XContractNumber(xContractNumber int32) ApiK8sFindBySClusterIdRequest {
+func (r ApiK8sFindByClusterIdRequest) XContractNumber(xContractNumber int32) ApiK8sFindByClusterIdRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiK8sFindBySClusterIdRequest) Execute() (KubernetesCluster, *APIResponse, error) {
-	return r.ApiService.K8sFindBySClusterIdExecute(r)
+func (r ApiK8sFindByClusterIdRequest) Execute() (KubernetesCluster, *APIResponse, error) {
+	return r.ApiService.K8sFindByClusterIdExecute(r)
 }
 
 /*
- * K8sFindBySClusterId Retrieve Kubernetes Cluster
+ * K8sFindByClusterId Retrieve Kubernetes Cluster
  * This will retrieve a single Kubernetes Cluster.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param k8sClusterId The unique ID of the Kubernetes Cluster
- * @return ApiK8sFindBySClusterIdRequest
+ * @return ApiK8sFindByClusterIdRequest
  */
-func (a *KubernetesApiService) K8sFindBySClusterId(ctx _context.Context, k8sClusterId string) ApiK8sFindBySClusterIdRequest {
-	return ApiK8sFindBySClusterIdRequest{
+func (a *KubernetesApiService) K8sFindByClusterId(ctx _context.Context, k8sClusterId string) ApiK8sFindByClusterIdRequest {
+	return ApiK8sFindByClusterIdRequest{
 		ApiService: a,
 		ctx: ctx,
 		k8sClusterId: k8sClusterId,
@@ -230,7 +230,7 @@ func (a *KubernetesApiService) K8sFindBySClusterId(ctx _context.Context, k8sClus
  * Execute executes the request
  * @return KubernetesCluster
  */
-func (a *KubernetesApiService) K8sFindBySClusterIdExecute(r ApiK8sFindBySClusterIdRequest) (KubernetesCluster, *APIResponse, error) {
+func (a *KubernetesApiService) K8sFindByClusterIdExecute(r ApiK8sFindByClusterIdRequest) (KubernetesCluster, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -240,7 +240,7 @@ func (a *KubernetesApiService) K8sFindBySClusterIdExecute(r ApiK8sFindBySCluster
 		localVarReturnValue  KubernetesCluster
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "KubernetesApiService.K8sFindBySClusterId")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "KubernetesApiService.K8sFindByClusterId")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -303,7 +303,7 @@ func (a *KubernetesApiService) K8sFindBySClusterIdExecute(r ApiK8sFindBySCluster
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
-		Operation: "K8sFindBySClusterId",
+		Operation: "K8sFindByClusterId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
