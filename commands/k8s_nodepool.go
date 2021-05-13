@@ -275,7 +275,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))); err != nil {
 		return err
 	}
-	return c.Printer.Print(getK8sNodePoolUpdatedPrint(c, newNodePoolUpdated))
+	return c.Printer.Print(getK8sNodePoolPrint(c, getK8sNodePool(newNodePoolUpdated)))
 }
 
 func RunK8sNodePoolDelete(c *core.CommandConfig) error {
@@ -306,7 +306,7 @@ func GetStateK8sNodePool(c *core.CommandConfig, objId string) (*string, error) {
 	return nil, nil
 }
 
-func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePool, error) {
+func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, error) {
 	var (
 		k8sversion string
 		err        error
@@ -327,9 +327,9 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePool, error) {
 	nodeZone := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeZone))
 	storageSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgStorageSize))
 	storageType := viper.GetString(core.GetFlagName(c.NS, config.ArgStorageType))
-	return &resources.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+	return &resources.K8sNodePoolForPost{
+		KubernetesNodePoolForPost: ionoscloud.KubernetesNodePoolForPost{
+			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPost{
 				Name:             &n,
 				K8sVersion:       &k8sversion,
 				DatacenterId:     &dcId,
@@ -345,8 +345,8 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePool, error) {
 	}, nil
 }
 
-func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandConfig) resources.K8sNodePool {
-	propertiesUpdated := resources.K8sNodePoolProperties{}
+func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandConfig) resources.K8sNodePoolForPut {
+	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 			propertiesUpdated.SetK8sVersion(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion)))
@@ -398,18 +398,16 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 			viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sAnnotationValue)) {
 			key := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sAnnotationKey))
 			value := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sAnnotationValue))
-			propertiesUpdated.SetAnnotations(ionoscloud.KubernetesNodePoolAnnotation{
-				Key:   &key,
-				Value: &value,
+			propertiesUpdated.SetAnnotations(map[string]string{
+				key: value,
 			})
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLabelKey)) &&
 			viper.IsSet(core.GetFlagName(c.NS, config.ArgLabelValue)) {
 			key := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 			value := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue))
-			propertiesUpdated.SetLabels(ionoscloud.KubernetesNodePoolLabel{
-				Key:   &key,
-				Value: &value,
+			propertiesUpdated.SetLabels(map[string]string{
+				key: value,
 			})
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanId)) {
@@ -424,9 +422,9 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 			propertiesUpdated.SetLans(newLans)
 		}
 	}
-	return resources.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &propertiesUpdated.KubernetesNodePoolProperties,
+	return resources.K8sNodePoolForPut{
+		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }
@@ -464,18 +462,6 @@ func getK8sNodePoolPrint(c *core.CommandConfig, k8ss []resources.K8sNodePool) pr
 			r.OutputJSON = k8ss
 			r.KeyValue = getK8sNodePoolsKVMaps(k8ss)
 			r.Columns = getK8sNodePoolCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
-		}
-	}
-	return r
-}
-
-func getK8sNodePoolUpdatedPrint(c *core.CommandConfig, k8ss *resources.K8sNodePoolUpdated) printer.Result {
-	r := printer.Result{}
-	if c != nil {
-		r.Resource = c.Resource
-		r.Verb = c.Verb
-		if k8ss != nil {
-			r.OutputJSON = k8ss
 		}
 	}
 	return r

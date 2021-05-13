@@ -26,6 +26,14 @@ type K8sClusterProperties struct {
 	ionoscloud.KubernetesClusterProperties
 }
 
+type K8sClusterPropertiesForPut struct {
+	ionoscloud.KubernetesClusterPropertiesForPut
+}
+
+type K8sClusterPropertiesForPost struct {
+	ionoscloud.KubernetesClusterPropertiesForPost
+}
+
 type K8sClusters struct {
 	ionoscloud.KubernetesClusters
 }
@@ -36,6 +44,14 @@ type K8sNodePool struct {
 
 type K8sNodePoolProperties struct {
 	ionoscloud.KubernetesNodePoolProperties
+}
+
+type K8sNodePoolPropertiesForPut struct {
+	ionoscloud.KubernetesNodePoolPropertiesForPut
+}
+
+type K8sNodePoolPropertiesForPost struct {
+	ionoscloud.KubernetesNodePoolPropertiesForPost
 }
 
 type K8sNodePoolForPost struct {

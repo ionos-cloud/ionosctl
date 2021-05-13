@@ -22,6 +22,14 @@ type UserProperties struct {
 	ionoscloud.UserProperties
 }
 
+type UserPropertiesPut struct {
+	ionoscloud.UserPropertiesPut
+}
+
+type UserPropertiesPost struct {
+	ionoscloud.UserPropertiesPost
+}
+
 type Users struct {
 	ionoscloud.Users
 }

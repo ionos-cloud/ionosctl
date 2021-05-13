@@ -284,7 +284,7 @@ func GetStateK8sCluster(c *core.CommandConfig, objId string) (*string, error) {
 	return nil, nil
 }
 
-func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sCluster, error) {
+func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, error) {
 	var (
 		name       string
 		k8sversion string
@@ -298,9 +298,9 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sCluster, error) {
 			return nil, err
 		}
 	}
-	return &resources.K8sCluster{
-		KubernetesCluster: ionoscloud.KubernetesCluster{
-			Properties: &ionoscloud.KubernetesClusterProperties{
+	return &resources.K8sClusterForPost{
+		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
+			Properties: &ionoscloud.KubernetesClusterPropertiesForPost{
 				Name:       &name,
 				K8sVersion: &k8sversion,
 			},
@@ -308,8 +308,8 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sCluster, error) {
 	}, nil
 }
 
-func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) resources.K8sCluster {
-	propertiesUpdated := resources.K8sClusterProperties{}
+func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) resources.K8sClusterForPut {
+	propertiesUpdated := resources.K8sClusterPropertiesForPut{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sClusterName)) {
 			n := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterName))
@@ -337,9 +337,9 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 			}
 		}
 	}
-	return resources.K8sCluster{
-		KubernetesCluster: ionoscloud.KubernetesCluster{
-			Properties: &propertiesUpdated.KubernetesClusterProperties,
+	return resources.K8sClusterForPut{
+		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
+			Properties: &propertiesUpdated.KubernetesClusterPropertiesForPut,
 		},
 	}
 }
