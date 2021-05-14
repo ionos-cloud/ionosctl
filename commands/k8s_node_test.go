@@ -24,6 +24,7 @@ var (
 				Name:       &testNodeVar,
 				K8sVersion: &testNodeVar,
 				PublicIP:   &testNodeVar,
+				PrivateIP:  &testNodeVar,
 			},
 		},
 	}

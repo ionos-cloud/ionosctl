@@ -119,19 +119,21 @@ func RunImageGet(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultImageCols = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType"}
-	allImageCols     = []string{"ImageId", "Name", "Location", "Size", "LicenceType", "ImageType", "Description", "Public"}
+	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit"}
+	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit"}
 )
 
 type ImagePrint struct {
-	ImageId     string  `json:"ImageId,omitempty"`
-	Name        string  `json:"Name,omitempty"`
-	Description string  `json:"Description,omitempty"`
-	Location    string  `json:"Location,omitempty"`
-	Size        float32 `json:"Size,omitempty"`
-	LicenceType string  `json:"LicenceType,omitempty"`
-	ImageType   string  `json:"ImageType,omitempty"`
-	Public      bool    `json:"Public,omitempty"`
+	ImageId      string   `json:"ImageId,omitempty"`
+	Name         string   `json:"Name,omitempty"`
+	Description  string   `json:"Description,omitempty"`
+	Location     string   `json:"Location,omitempty"`
+	Size         float32  `json:"Size,omitempty"`
+	LicenceType  string   `json:"LicenceType,omitempty"`
+	ImageType    string   `json:"ImageType,omitempty"`
+	Public       bool     `json:"Public,omitempty"`
+	ImageAliases []string `json:"ImageAliases,omitempty"`
+	CloudInit    string   `json:"CloudInit,omitempty"`
 }
 
 func getImagePrint(c *core.CommandConfig, imgs []resources.Image) printer.Result {
@@ -155,14 +157,16 @@ func getImageCols(flagName string, outErr io.Writer) []string {
 	}
 
 	columnsMap := map[string]string{
-		"ImageId":     "ImageId",
-		"Name":        "Name",
-		"Description": "Description",
-		"Location":    "Location",
-		"Size":        "Size",
-		"LicenceType": "LicenceType",
-		"ImageType":   "ImageType",
-		"Public":      "Public",
+		"ImageId":      "ImageId",
+		"Name":         "Name",
+		"Description":  "Description",
+		"Location":     "Location",
+		"Size":         "Size",
+		"LicenceType":  "LicenceType",
+		"ImageType":    "ImageType",
+		"Public":       "Public",
+		"ImageAliases": "ImageAliases",
+		"CloudInit":    "CloudInit",
 	}
 	var datacenterCols []string
 	for _, k := range cols {
@@ -229,6 +233,12 @@ func getImageKVMap(img resources.Image) map[string]interface{} {
 		}
 		if public, ok := properties.GetPublicOk(); ok && public != nil {
 			imgPrint.Public = *public
+		}
+		if aliases, ok := properties.GetImageAliasesOk(); ok && aliases != nil {
+			imgPrint.ImageAliases = *aliases
+		}
+		if cloudInit, ok := properties.GetCloudInitOk(); ok && cloudInit != nil {
+			imgPrint.CloudInit = *cloudInit
 		}
 	}
 	return structs.Map(imgPrint)

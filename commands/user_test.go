@@ -65,6 +65,17 @@ var (
 			Properties: &userProperties.UserProperties,
 		},
 	}
+	userNewPut = resources.UserPut{
+		UserPut: ionoscloud.UserPut{
+			Properties: &ionoscloud.UserPropertiesPut{
+				Firstname:     &testUserNewVar,
+				Lastname:      &testUserNewVar,
+				Email:         &testUserNewVar,
+				Administrator: &testUserBoolVar,
+				ForceSecAuth:  &testUserBoolVar,
+			},
+		},
+	}
 	testUserBoolVar = false
 	testUserVar     = "test-user"
 	testUserNewVar  = "test-new-user"
@@ -194,7 +205,7 @@ func TestRunUserCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserLastName), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserEmail), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserPassword), testUserVar)
-		rm.User.EXPECT().Create(userTest).Return(&userTest, nil, nil)
+		rm.User.EXPECT().Create(userTest).Return(&userTestGet, nil, nil)
 		err := RunUserCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -211,7 +222,7 @@ func TestRunUserCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserLastName), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserEmail), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserPassword), testUserVar)
-		rm.User.EXPECT().Create(userTest).Return(&userTest, &testResponse, nil)
+		rm.User.EXPECT().Create(userTest).Return(&userTestGet, &testResponse, nil)
 		err := RunUserCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -228,7 +239,7 @@ func TestRunUserCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserLastName), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserEmail), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserPassword), testUserVar)
-		rm.User.EXPECT().Create(userTest).Return(&userTest, nil, testUserErr)
+		rm.User.EXPECT().Create(userTest).Return(&userTestGet, nil, testUserErr)
 		err := RunUserCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -247,8 +258,8 @@ func TestRunUserUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserEmail), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserForceSecAuth), testUserBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserAdministrator), testUserBoolVar)
-		rm.User.EXPECT().Get(testUserVar).Return(&userTest, nil, nil)
-		rm.User.EXPECT().Update(testUserVar, userNew).Return(&userNew, nil, nil)
+		rm.User.EXPECT().Get(testUserVar).Return(&userTestGet, nil, nil)
+		rm.User.EXPECT().Update(testUserVar, userNewPut).Return(&userNew, nil, nil)
 		err := RunUserUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -263,7 +274,7 @@ func TestRunUserUpdateOldUser(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserId), testUserVar)
 		rm.User.EXPECT().Get(testUserVar).Return(&userNew, nil, nil)
-		rm.User.EXPECT().Update(testUserVar, userNew).Return(&userNew, nil, nil)
+		rm.User.EXPECT().Update(testUserVar, userNewPut).Return(&userNew, nil, nil)
 		err := RunUserUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -280,8 +291,8 @@ func TestRunUserUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserFirstName), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserLastName), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserEmail), testUserNewVar)
-		rm.User.EXPECT().Get(testUserVar).Return(&userTest, nil, nil)
-		rm.User.EXPECT().Update(testUserVar, userNew).Return(&userNew, nil, testUserErr)
+		rm.User.EXPECT().Get(testUserVar).Return(&userTestGet, nil, nil)
+		rm.User.EXPECT().Update(testUserVar, userNewPut).Return(&userNew, nil, testUserErr)
 		err := RunUserUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -298,7 +309,7 @@ func TestRunUserUpdateGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserFirstName), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserLastName), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserEmail), testUserNewVar)
-		rm.User.EXPECT().Get(testUserVar).Return(&userTest, nil, testUserErr)
+		rm.User.EXPECT().Get(testUserVar).Return(&userTestGet, nil, testUserErr)
 		err := RunUserUpdate(cfg)
 		assert.Error(t, err)
 	})

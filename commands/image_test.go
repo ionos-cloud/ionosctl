@@ -21,13 +21,15 @@ var (
 		Image: ionoscloud.Image{
 			Id: &testImageVar,
 			Properties: &ionoscloud.ImageProperties{
-				Name:        &testImageVar,
-				Location:    &testImageVar,
-				Description: &testImageVar,
-				Size:        &testImageSize,
-				LicenceType: &testImageVar,
-				ImageType:   &testImageVar,
-				Public:      &testImagePublic,
+				Name:         &testImageVar,
+				Location:     &testImageVar,
+				Description:  &testImageVar,
+				Size:         &testImageSize,
+				LicenceType:  &testImageVar,
+				ImageType:    &testImageVar,
+				Public:       &testImagePublic,
+				ImageAliases: &[]string{testImageVar},
+				CloudInit:    &testImageVar,
 			},
 		},
 	}

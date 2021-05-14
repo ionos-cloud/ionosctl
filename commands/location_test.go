@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -21,8 +22,9 @@ var (
 		Location: ionoscloud.Location{
 			Id: &testLocationVar,
 			Properties: &ionoscloud.LocationProperties{
-				Name:     &testLocationVar,
-				Features: &[]string{testLocationVar},
+				Name:         &testLocationVar,
+				Features:     &[]string{testLocationVar},
+				ImageAliases: &[]string{testLocationVar},
 			},
 		},
 	}
@@ -32,9 +34,35 @@ var (
 			Items: &[]ionoscloud.Location{loc.Location},
 		},
 	}
-	testLocationVar = "test-location"
+	testLocationVar = "test/location"
 	testLocationErr = errors.New("location test error occurred")
 )
+
+func TestPreLocationId(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocationId), testLocationVar)
+		err := PreRunLocationId(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreLocationIdErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocationId), "")
+		err := PreRunLocationId(cfg)
+		assert.Error(t, err)
+	})
+}
 
 func TestRunLocationList(t *testing.T) {
 	var b bytes.Buffer
@@ -58,6 +86,49 @@ func TestRunLocationListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		rm.Location.EXPECT().List().Return(locations, nil, testLocationErr)
 		err := RunLocationList(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunLocationGet(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocationId), testLocationVar)
+		testIds := strings.Split(testLocationVar, "/")
+		rm.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, nil, nil)
+		err := RunLocationGet(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLocationGetErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocationId), testLocationVar)
+		testIds := strings.Split(testLocationVar, "/")
+		rm.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, nil, testLocationErr)
+		err := RunLocationGet(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunLocationGetLocationErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocationId), "us")
+		err := RunLocationGet(cfg)
 		assert.Error(t, err)
 	})
 }

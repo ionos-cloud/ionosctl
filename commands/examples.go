@@ -23,6 +23,10 @@ us/las       lasvegas    [SSD]
 us/ewr       newark      [SSD]
 de/txl       berlin      [SSD]
 gb/lhr       london      [SSD]`
+	getLocationExample = `ionosctl location get --location-id us/las 
+LocationId   Name       Features
+us/las       lasvegas   [SSD_STORAGE_ZONING SSD]`
+
 	/*
 		Data Center Examples
 	*/

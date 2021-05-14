@@ -38,6 +38,7 @@ const (
 	ArgVolumeName                  = "volume-name"
 	ArgVolumeZone                  = "volume-zone"
 	ArgVolumeSshKey                = "volume-ssh-keys"
+	ArgLocationId                  = "location-id"
 	ArgLanId                       = "lan-id"
 	ArgLanName                     = "lan-name"
 	ArgLanPublic                   = "lan-public"
@@ -175,6 +176,7 @@ const (
 	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
 	RequiredFlagIpBlockId      = "The unique IpBlock Id " + RequiredFlag
 	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
+	RequiredFlagLocationId     = "The unique Location Id " + RequiredFlag
 	RequiredFlagLabelKey       = "The unique Label Key " + RequiredFlag
 	RequiredFlagLabelValue     = "The unique Label Value " + RequiredFlag
 	RequiredFlagUserId         = "The unique User Id " + RequiredFlag
