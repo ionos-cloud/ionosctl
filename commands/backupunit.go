@@ -275,13 +275,14 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 
 // Output Printing
 
-var defaultBackupUnitCols = []string{"BackupUnitId", "Name", "Email"}
+var defaultBackupUnitCols = []string{"BackupUnitId", "Name", "Email", "State"}
 
 type BackupUnitPrint struct {
 	BackupUnitId     string `json:"BackupUnitId,omitempty"`
 	Name             string `json:"Name,omitempty"`
 	Email            string `json:"Email,omitempty"`
 	BackupUnitSsoUrl string `json:"BackupUnitSsoUrl,omitempty"`
+	State            string `json:"State,omitempty"`
 }
 
 func getBackupUnitPrint(resp *resources.Response, c *core.CommandConfig, backupUnits []resources.BackupUnit) printer.Result {
@@ -322,6 +323,7 @@ func getBackupUnitCols(flagName string, outErr io.Writer) []string {
 			"Name":         "Name",
 			"Password":     "Password",
 			"Email":        "Email",
+			"State":        "State",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -368,6 +370,11 @@ func getBackupUnitsKVMaps(us []resources.BackupUnit) []map[string]interface{} {
 			}
 			if email, ok := properties.GetEmailOk(); ok && email != nil {
 				uPrint.Email = *email
+			}
+		}
+		if metadata, ok := u.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				uPrint.State = *state
 			}
 		}
 		o := structs.Map(uPrint)

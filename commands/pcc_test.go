@@ -30,6 +30,7 @@ var (
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Id:         &testPccVar,
 			Properties: pccTest.Properties,
+			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	pccPeerTest = resources.Peer{

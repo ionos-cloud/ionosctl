@@ -294,12 +294,13 @@ func RunPccPeersGet(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultPccCols = []string{"PccId", "Name", "Description"}
+var defaultPccCols = []string{"PccId", "Name", "Description", "State"}
 
 type PccPrint struct {
 	PccId       string `json:"PccId,omitempty"`
 	Name        string `json:"Name,omitempty"`
 	Description string `json:"Description,omitempty"`
+	State       string `json:"State,omitempty"`
 }
 
 func getPccPrint(resp *resources.Response, c *core.CommandConfig, pccs []resources.PrivateCrossConnect) printer.Result {
@@ -373,6 +374,7 @@ func getPccCols(flagName string, outErr io.Writer) []string {
 			"PccId":       "PccId",
 			"Name":        "Name",
 			"Description": "Description",
+			"State":       "State",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -419,6 +421,11 @@ func getPccsKVMaps(us []resources.PrivateCrossConnect) []map[string]interface{} 
 			}
 			if d, ok := properties.GetDescriptionOk(); ok && d != nil {
 				uPrint.Description = *d
+			}
+		}
+		if metadata, ok := u.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				uPrint.State = *state
 			}
 		}
 		o := structs.Map(uPrint)

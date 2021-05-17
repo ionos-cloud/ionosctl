@@ -31,6 +31,7 @@ var (
 		BackupUnit: ionoscloud.BackupUnit{
 			Id:         &testBackupUnitVar,
 			Properties: backupUnitTest.Properties,
+			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	backupUnitTestGetSSO = resources.BackupUnitSSO{

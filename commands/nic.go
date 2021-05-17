@@ -537,8 +537,8 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips"}
-	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "FirewallActive", "Mac"}
+	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State"}
+	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State", "FirewallActive", "Mac"}
 )
 
 type NicPrint struct {
@@ -549,6 +549,7 @@ type NicPrint struct {
 	Ips            []string `json:"Ips,omitempty"`
 	FirewallActive bool     `json:"FirewallActive,omitempty"`
 	Mac            string   `json:"Mac,omitempty"`
+	State          string   `json:"State,omitempty"`
 }
 
 func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resources.Nic) printer.Result {
@@ -585,6 +586,7 @@ func getNicsCols(flagName string, outErr io.Writer) []string {
 		"Ips":            "Ips",
 		"FirewallActive": "FirewallActive",
 		"Mac":            "Mac",
+		"State":          "State",
 	}
 	var nicCols []string
 	for _, k := range cols {
@@ -625,25 +627,31 @@ func getAttachedNics(nics resources.BalancedNics) []resources.Nic {
 func getNicsKVMaps(ns []resources.Nic) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ns))
 	for _, n := range ns {
-		properties := n.GetProperties()
 		var nicprint NicPrint
 		if id, ok := n.GetIdOk(); ok && id != nil {
 			nicprint.NicId = *id
 		}
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			nicprint.Name = *name
+		if properties, ok := n.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				nicprint.Name = *name
+			}
+			if dhcp, ok := properties.GetDhcpOk(); ok && dhcp != nil {
+				nicprint.Dhcp = *dhcp
+			}
+			if lanId, ok := properties.GetLanOk(); ok && lanId != nil {
+				nicprint.LanId = *lanId
+			}
+			if factive, ok := properties.GetFirewallActiveOk(); ok && factive != nil {
+				nicprint.FirewallActive = *factive
+			}
+			if mac, ok := properties.GetMacOk(); ok && mac != nil {
+				nicprint.Mac = *mac
+			}
 		}
-		if dhcp, ok := properties.GetDhcpOk(); ok && dhcp != nil {
-			nicprint.Dhcp = *dhcp
-		}
-		if lanId, ok := properties.GetLanOk(); ok && lanId != nil {
-			nicprint.LanId = *lanId
-		}
-		if factive, ok := properties.GetFirewallActiveOk(); ok && factive != nil {
-			nicprint.FirewallActive = *factive
-		}
-		if mac, ok := properties.GetMacOk(); ok && mac != nil {
-			nicprint.Mac = *mac
+		if metadata, ok := n.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				nicprint.State = *state
+			}
 		}
 		o := structs.Map(nicprint)
 		out = append(out, o)

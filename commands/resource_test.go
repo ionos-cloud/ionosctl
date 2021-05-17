@@ -33,6 +33,7 @@ var (
 				Name:              &testResourceVar,
 				SecAuthProtection: &testResourceBoolVar,
 			},
+			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	rs = resources.Resources{

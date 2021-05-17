@@ -257,6 +257,8 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	})
 }
 
+// Output Printing
+
 var (
 	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "State"}
 	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version"}
