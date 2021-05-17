@@ -125,10 +125,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgImageAlias, "", "", "The Image alias")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgImageAlias, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getImageAliases(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
+	create.AddStringFlag(config.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
 	create.AddStringFlag(config.ArgImagePassword, "", "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringFlag(config.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
 	create.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")

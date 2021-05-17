@@ -18,7 +18,7 @@ Use this command to get a list of available public Images. Use flags to retrieve
 
 ```text
   -u, --api-url string              Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings                Columns to be printed in the standard output (default [ImageId,Name,Location,Size,LicenceType,ImageType])
+      --cols strings                Columns to be printed in the standard output (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
   -c, --config string               Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                       Force command to execute without user input
   -h, --help                        help for list

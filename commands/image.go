@@ -270,36 +270,6 @@ func getImageIds(outErr io.Writer) []string {
 	return imgsIds
 }
 
-func getImageAliases(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
-	)
-	clierror.CheckError(err, outErr)
-	imageSvc := resources.NewImageService(clientSvc.Get(), context.TODO())
-	images, _, err := imageSvc.List()
-	clierror.CheckError(err, outErr)
-	imgsAliases := make([]string, 0)
-	if items, ok := images.Images.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if properties, ok := item.GetPropertiesOk(); ok && properties != nil {
-				if itemAliases, ok := properties.GetImageAliasesOk(); ok && itemAliases != nil {
-					for _, itemAlias := range *itemAliases {
-						imgsAliases = append(imgsAliases, itemAlias)
-					}
-				}
-			}
-		}
-	} else {
-		return nil
-	}
-	return imgsAliases
-}
-
 // Output Columns Sorting
 
 func sortImagesByLocation(images resources.Images, location string) resources.Images {

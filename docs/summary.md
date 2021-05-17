@@ -79,6 +79,7 @@
 * [LoadbalancerNicDetach](subcommands/loadbalancer-nic-detach.md)
 * [LoadbalancerNicGet](subcommands/loadbalancer-nic-get.md)
 * [LoadbalancerNicList](subcommands/loadbalancer-nic-list.md)
+* [LocationGet](subcommands/location-get.md)
 * [LocationList](subcommands/location-list.md)
 * [NicCreate](subcommands/nic-create.md)
 * [NicDelete](subcommands/nic-delete.md)
