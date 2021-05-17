@@ -93,8 +93,8 @@ Required values to run command:
 	})
 	create.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot"+config.RequiredFlag)
 	create.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
-	create.AddStringFlag(config.ArgSnapshotLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag)
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgSnapshotLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag)
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
@@ -105,7 +105,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgSnapshotSecAuthProtection, "", false, "Enable secure authentication protection")
+	create.AddBoolFlag(config.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
@@ -131,25 +131,25 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot")
 	update.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
-	update.AddStringFlag(config.ArgSnapshotLicenceType, "", "", "Licence Type of the Snapshot")
-	_ = update.Command.RegisterFlagCompletionFunc(config.ArgSnapshotLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgSnapshotCpuHotPlug, "", false, "This volume is capable of CPU hot plug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotCpuHotUnplug, "", false, "This volume is capable of CPU hot unplug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotRamHotPlug, "", false, "This volume is capable of memory hot plug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotRamHotUnplug, "", false, "This volume is capable of memory hot unplug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotNicHotPlug, "", false, "This volume is capable of NIC hot plug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotNicHotUnplug, "", false, "This volume is capable of NIC hot unplug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotDiscVirtioHotPlug, "", false, "This volume is capable of VirtIO drive hot plug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotDiscVirtioHotUnplug, "", false, "This volume is capable of VirtIO drive hot unplug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required)")
-	update.AddBoolFlag(config.ArgSnapshotSecAuthProtection, "", false, "Enable secure authentication protection")
+	update.AddBoolFlag(config.ArgCpuHotPlug, "", false, "This volume is capable of CPU hot plug (no reboot required)")
+	update.AddBoolFlag(config.ArgCpuHotUnplug, "", false, "This volume is capable of CPU hot unplug (no reboot required)")
+	update.AddBoolFlag(config.ArgRamHotPlug, "", false, "This volume is capable of memory hot plug (no reboot required)")
+	update.AddBoolFlag(config.ArgRamHotUnplug, "", false, "This volume is capable of memory hot unplug (no reboot required)")
+	update.AddBoolFlag(config.ArgNicHotPlug, "", false, "This volume is capable of NIC hot plug (no reboot required)")
+	update.AddBoolFlag(config.ArgNicHotUnplug, "", false, "This volume is capable of NIC hot unplug (no reboot required)")
+	update.AddBoolFlag(config.ArgDiscVirtioHotPlug, "", false, "This volume is capable of VirtIO drive hot plug (no reboot required)")
+	update.AddBoolFlag(config.ArgDiscVirtioHotUnplug, "", false, "This volume is capable of VirtIO drive hot unplug (no reboot required)")
+	update.AddBoolFlag(config.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required)")
+	update.AddBoolFlag(config.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required)")
+	update.AddBoolFlag(config.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
@@ -211,7 +211,7 @@ func PreRunSnapshotId(c *core.PreCommandConfig) error {
 }
 
 func PreRunSnapNameLicenceDcIdVolumeId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName, config.ArgSnapshotLicenceType)
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName, config.ArgLicenceType)
 }
 
 func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
@@ -240,8 +240,8 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotName)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotDescription)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotLicenceType)),
-		viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotSecAuthProtection)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)),
+		viper.GetBool(core.GetFlagName(c.NS, config.ArgSecAuthProtection)),
 	)
 	if err != nil {
 		return err
@@ -299,41 +299,41 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDescription)) {
 		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotDescription)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotLicenceType)) {
-		input.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotLicenceType)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
+		input.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotCpuHotPlug)) {
-		input.SetCpuHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotCpuHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotPlug)) {
+		input.SetCpuHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotPlug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotCpuHotUnplug)) {
-		input.SetCpuHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotCpuHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotUnplug)) {
+		input.SetCpuHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotUnplug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotRamHotPlug)) {
-		input.SetRamHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotRamHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamHotPlug)) {
+		input.SetRamHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotPlug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotRamHotUnplug)) {
-		input.SetRamHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotRamHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamHotUnplug)) {
+		input.SetRamHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotUnplug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotNicHotPlug)) {
-		input.SetNicHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotNicHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotPlug)) {
+		input.SetNicHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotPlug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotNicHotUnplug)) {
-		input.SetNicHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotNicHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotUnplug)) {
+		input.SetNicHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotUnplug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDiscVirtioHotPlug)) {
-		input.SetDiscVirtioHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotDiscVirtioHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)) {
+		input.SetDiscVirtioHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDiscVirtioHotUnplug)) {
-		input.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotDiscVirtioHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)) {
+		input.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDiscScsiHotPlug)) {
-		input.SetDiscScsiHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotDiscScsiHotPlug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscScsiHotPlug)) {
+		input.SetDiscScsiHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscScsiHotPlug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDiscScsiHotUnplug)) {
-		input.SetDiscScsiHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotDiscScsiHotUnplug)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscScsiHotUnplug)) {
+		input.SetDiscScsiHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscScsiHotUnplug)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotSecAuthProtection)) {
-		input.SetSecAuthProtection(viper.GetBool(core.GetFlagName(c.NS, config.ArgSnapshotSecAuthProtection)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSecAuthProtection)) {
+		input.SetSecAuthProtection(viper.GetBool(core.GetFlagName(c.NS, config.ArgSecAuthProtection)))
 	}
 	return input
 }

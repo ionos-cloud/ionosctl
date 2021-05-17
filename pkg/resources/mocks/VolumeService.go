@@ -35,9 +35,9 @@ func (m *MockVolumesService) EXPECT() *MockVolumesServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockVolumesService) Create(datacenterId, name, bus, volumetype, licencetype, zone string, size float32) (*resources.Volume, *resources.Response, error) {
+func (m *MockVolumesService) Create(datacenterId string, input resources.Volume) (*resources.Volume, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", datacenterId, name, bus, volumetype, licencetype, zone, size)
+	ret := m.ctrl.Call(m, "Create", datacenterId, input)
 	ret0, _ := ret[0].(*resources.Volume)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,9 +45,9 @@ func (m *MockVolumesService) Create(datacenterId, name, bus, volumetype, licence
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockVolumesServiceMockRecorder) Create(datacenterId, name, bus, volumetype, licencetype, zone, size interface{}) *gomock.Call {
+func (mr *MockVolumesServiceMockRecorder) Create(datacenterId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockVolumesService)(nil).Create), datacenterId, name, bus, volumetype, licencetype, zone, size)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockVolumesService)(nil).Create), datacenterId, input)
 }
 
 // Delete mocks base method.

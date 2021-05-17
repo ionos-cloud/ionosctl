@@ -14,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	multierror "go.uber.org/multierr"
@@ -83,25 +84,60 @@ func volume() *core.Command {
 		Resource:  "volume",
 		Verb:      "create",
 		ShortDesc: "Create a Volume",
-		LongDesc: `Use this command to create a Volume on your account. Creates a volume within the data center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type and availability zone for the object.
+		LongDesc: `Use this command to create a Volume on your account. Creates a volume within the Data Center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type, availability zone, image and other properties for the object.
+
+Note: You will need to provide a valid value for either the Image, Image Alias, or the Licence Type options. The Licence Type is required, but if Image or Image Alias is supplied, then Licence Type is already set and cannot be changed. Similarly either the Image Password or SSH Keys attributes need to be defined when creating a Volume that uses an Image or Image Alias of an IONOS public HDD Image. You may wish to set a valid value for Image Password even when using SSH Keys so that it is possible to authenticate with a password when using the remote console feature of the DCD.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
 
-* Data Center Id`,
+* Data Center Id
+* Licence Type/Image Id or Image Alias`,
 		Example:    createVolumeExample,
-		PreCmdRun:  PreRunGlobalDcId,
+		PreCmdRun:  PreRunGlobalDcIdVolumeProperties,
 		CmdRun:     RunVolumeCreate,
 		InitClient: true,
 	})
 	create.AddStringFlag(config.ArgVolumeName, "", "", "Name of the Volume")
 	create.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
 	create.AddStringFlag(config.ArgVolumeBus, "", "VIRTIO", "Bus for the Volume")
-	create.AddStringFlag(config.ArgVolumeLicenceType, "", "LINUX", "Licence Type of the Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(config.ArgVolumeType, "", "HDD", "Type of the Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"HDD", "SSD", "SSD Standard", "SSD Premium"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(config.ArgVolumeZone, "", "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
-	create.AddStringFlag(config.ArgVolumeSshKey, "", "", "Ssh Key of the Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"AUTO", "ZONE_1", "ZONE_2", "ZONE_3"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgBackupUnitId, "", "", "The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgImageId, "", "", "The Image Id or snapshot Id to be used as template for the new Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgImageAlias, "", "", "The Image alias")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgImageAlias, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getImageAliases(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgImagePassword, "", "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
+	create.AddStringFlag(config.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
+	create.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
+	create.AddBoolFlag(config.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
+	create.AddBoolFlag(config.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
+	create.AddBoolFlag(config.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
+	create.AddBoolFlag(config.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
+	create.AddBoolFlag(config.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
+	create.AddStringSliceFlag(config.ArgSshKeys, "", []string{""}, "SSH Keys of the Volume")
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume creation [seconds]")
 
@@ -135,7 +171,12 @@ Required values to run command:
 	update.AddStringFlag(config.ArgVolumeName, "", "", "Name of the Volume")
 	update.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
 	update.AddStringFlag(config.ArgVolumeBus, "", "VIRTIO", "Bus of the Volume")
-	update.AddStringFlag(config.ArgVolumeSshKey, "", "", "Ssh Key of the Volume")
+	update.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
+	update.AddBoolFlag(config.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
+	update.AddBoolFlag(config.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
+	update.AddBoolFlag(config.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
+	update.AddBoolFlag(config.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
+	update.AddBoolFlag(config.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume update to be executed")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume update [seconds]")
 
@@ -170,6 +211,29 @@ Required values to run command:
 	return volumeCmd
 }
 
+func PreRunGlobalDcIdVolumeProperties(c *core.PreCommandConfig) error {
+	var result error
+	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId); err != nil {
+		result = multierror.Append(result, err)
+	}
+	// Check required flags
+	if !viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
+		if !viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) &&
+			!viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
+			result = multierror.Append(result, errors.New("image-id, image-alias or licence-type option must be set"))
+		} else {
+			if !viper.IsSet(core.GetFlagName(c.NS, config.ArgImagePassword)) &&
+				!viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
+				result = multierror.Append(result, errors.New("image-password or ssh-keys option must be set"))
+			}
+		}
+	}
+	if result != nil {
+		return result
+	}
+	return nil
+}
+
 func PreRunGlobalDcIdVolumeId(c *core.PreCommandConfig) error {
 	var result error
 	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId); err != nil {
@@ -198,7 +262,7 @@ func RunVolumeList(c *core.CommandConfig) error {
 }
 
 func RunVolumeGet(c *core.CommandConfig) error {
-	volume, _, err := c.Volumes().Get(
+	vol, _, err := c.Volumes().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 	)
@@ -206,32 +270,23 @@ func RunVolumeGet(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON: volume,
-		KeyValue:   getVolumesKVMaps([]resources.Volume{*volume}),
+		OutputJSON: vol,
+		KeyValue:   getVolumesKVMaps([]resources.Volume{*vol}),
 		Columns:    getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
 func RunVolumeCreate(c *core.CommandConfig) error {
-	volume, resp, err := c.Volumes().Create(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeBus)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeType)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeLicenceType)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeZone)),
-		float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgVolumeSize))),
-	)
+	vol, resp, err := c.Volumes().Create(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)), getNewVolume(c))
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:     volume,
-		KeyValue:       getVolumesKVMaps([]resources.Volume{*volume}),
+		OutputJSON:     vol,
+		KeyValue:       getVolumesKVMaps([]resources.Volume{*vol}),
 		Columns:        getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "volume",
@@ -241,31 +296,20 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 }
 
 func RunVolumeUpdate(c *core.CommandConfig) error {
-	input := resources.VolumeProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)))
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeBus)) {
-		input.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeBus)))
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeSize)) {
-		input.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgVolumeSize))))
-	}
-	volume, resp, err := c.Volumes().Update(
+	vol, resp, err := c.Volumes().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
-		input,
+		getVolumeInfo(c),
 	)
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:     volume,
-		KeyValue:       getVolumesKVMaps([]resources.Volume{*volume}),
+		OutputJSON:     vol,
+		KeyValue:       getVolumesKVMaps([]resources.Volume{*vol}),
 		Columns:        getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "volume",
@@ -295,6 +339,95 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		Verb:           "delete",
 		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
 	})
+}
+
+func getNewVolume(c *core.CommandConfig) resources.Volume {
+	proper := resources.VolumeProperties{}
+	// It will get the default values, if flags not set
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)))
+	proper.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeBus)))
+	proper.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeType)))
+	proper.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeZone)))
+	proper.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgVolumeSize))))
+
+	// Check if flags are set and set options
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitId)) {
+		proper.SetBackupunitId(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
+		proper.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) {
+		proper.SetImage(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
+		proper.SetImageAlias(viper.GetString(core.GetFlagName(c.NS, config.ArgImageAlias)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImagePassword)) {
+		proper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgImagePassword)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
+		proper.SetSshKeys(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgSshKeys)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserData)) {
+		proper.SetUserData(viper.GetString(core.GetFlagName(c.NS, config.ArgUserData)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotPlug)) {
+		proper.SetCpuHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotPlug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamHotPlug)) {
+		proper.SetRamHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotPlug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotPlug)) {
+		proper.SetNicHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotPlug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotUnplug)) {
+		proper.SetNicHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotUnplug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)) {
+		proper.SetDiscVirtioHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)) {
+		proper.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)))
+	}
+	return resources.Volume{
+		Volume: ionoscloud.Volume{
+			Properties: &proper.VolumeProperties,
+		},
+	}
+}
+
+func getVolumeInfo(c *core.CommandConfig) resources.VolumeProperties {
+	input := resources.VolumeProperties{}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeBus)) {
+		input.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeBus)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeSize)) {
+		input.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgVolumeSize))))
+	}
+	// Check if flags are set and set options
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotPlug)) {
+		input.SetCpuHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotPlug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamHotPlug)) {
+		input.SetRamHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotPlug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotPlug)) {
+		input.SetNicHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotPlug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotUnplug)) {
+		input.SetNicHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotUnplug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)) {
+		input.SetDiscVirtioHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)) {
+		input.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)))
+	}
+	return input
 }
 
 // Server Volume Commands
@@ -510,7 +643,8 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 
 var (
 	defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
-	allVolumeCols     = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image", "Bus", "AvailabilityZone", "BackUpUnitId", "SshKeys"}
+	allVolumeCols     = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image", "Bus", "AvailabilityZone", "BackupunitId", "SshKeys",
+		"ImageAlias", "DeviceNumber", "UserData"}
 )
 
 type VolumePrint struct {
@@ -522,9 +656,12 @@ type VolumePrint struct {
 	Bus              string   `json:"Bus,omitempty"`
 	AvailabilityZone string   `json:"AvailabilityZone,omitempty"`
 	State            string   `json:"State,omitempty"`
-	BackUpUnitId     string   `json:"BackUpUnitId,omitempty"`
 	Image            string   `json:"Image,omitempty"`
+	ImageAlias       string   `json:"ImageAlias,omitempty"`
 	SshKeys          []string `json:"SshKeys,omitempty"`
+	DeviceNumber     int64    `json:"DeviceNumber,omitempty"`
+	BackupunitId     string   `json:"BackupunitId,omitempty"`
+	UserData         string   `json:"UserData,omitempty"`
 }
 
 func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []resources.Volume) printer.Result {
@@ -562,9 +699,12 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 		"Bus":              "Bus",
 		"AvailabilityZone": "AvailabilityZone",
 		"State":            "State",
-		"BackUpUnitId":     "BackUpUnitId",
 		"Image":            "Image",
+		"ImageAlias":       "ImageAlias",
 		"SshKeys":          "SshKeys",
+		"DeviceNumber":     "DeviceNumber",
+		"BackupunitId":     "BackupunitId",
+		"UserData":         "UserData",
 	}
 	var volumeCols []string
 	for _, k := range cols {
@@ -633,10 +773,19 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 			volumePrint.State = *state
 		}
 		if backUpUnitId, ok := properties.GetBackupunitIdOk(); ok && backUpUnitId != nil {
-			volumePrint.BackUpUnitId = *backUpUnitId
+			volumePrint.BackupunitId = *backUpUnitId
 		}
 		if img, ok := properties.GetImageOk(); ok && img != nil {
 			volumePrint.Image = *img
+		}
+		if imgA, ok := properties.GetImageAliasOk(); ok && imgA != nil {
+			volumePrint.ImageAlias = *imgA
+		}
+		if userData, ok := properties.GetUserDataOk(); ok && userData != nil {
+			volumePrint.UserData = *userData
+		}
+		if no, ok := properties.GetDeviceNumberOk(); ok && no != nil {
+			volumePrint.DeviceNumber = *no
 		}
 		if sshKeys, ok := properties.GetSshKeysOk(); ok && sshKeys != nil {
 			volumePrint.SshKeys = *sshKeys

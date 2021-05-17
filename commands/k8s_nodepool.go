@@ -139,7 +139,7 @@ Required values to run a command:
 		Resource:  "nodepool",
 		Verb:      "update",
 		ShortDesc: "Update a Kubernetes NodePool",
-		LongDesc: `Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster.
+		LongDesc: `Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster. You can also add reserved public IP addresses to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. The array must contain one extra IP than maximum number of Nodes could be. (nodeCount+1 if fixed node amount or maxNodeCount+1 if auto scaling is used) The extra provided IP Will be used during rebuilding of Nodes.
 
 You can wait for the Node Pool to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
 
@@ -165,6 +165,7 @@ Required values to run command:
 		return []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
+	update.AddStringSliceFlag(config.ArgPublicIps, "", []string{""}, "Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2")
 	update.AddIntFlag(config.ArgLanId, "", 0, "The unique LAN Id of existing LANs to be attached to worker Nodes")
 	update.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -420,6 +421,9 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 				}
 			}
 			propertiesUpdated.SetLans(newLans)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgPublicIps)) {
+			propertiesUpdated.SetPublicIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgPublicIps)))
 		}
 	}
 	return resources.K8sNodePoolForPut{

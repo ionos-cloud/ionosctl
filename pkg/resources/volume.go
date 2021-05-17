@@ -25,7 +25,7 @@ type AttachedVolumes struct {
 type VolumesService interface {
 	List(datacenterId string) (Volumes, *Response, error)
 	Get(datacenterId, volumeId string) (*Volume, *Response, error)
-	Create(datacenterId, name, bus, volumetype, licencetype, zone string, size float32) (*Volume, *Response, error)
+	Create(datacenterId string, input Volume) (*Volume, *Response, error)
 	Update(datacenterId, volumeId string, input VolumeProperties) (*Volume, *Response, error)
 	Delete(datacenterId, volumeId string) (*Response, error)
 }
@@ -56,19 +56,8 @@ func (vs *volumesService) Get(datacenterId, volumeId string) (*Volume, *Response
 	return &Volume{volume}, &Response{*res}, err
 }
 
-func (vs *volumesService) Create(datacenterId, name, bus, volumetype, licencetype, zone string, size float32) (*Volume, *Response, error) {
-	v := ionoscloud.Volume{
-		Metadata: nil,
-		Properties: &ionoscloud.VolumeProperties{
-			Name:             &name,
-			Type:             &volumetype,
-			Size:             &size,
-			AvailabilityZone: &zone,
-			Bus:              &bus,
-			LicenceType:      &licencetype,
-		},
-	}
-	req := vs.client.VolumeApi.DatacentersVolumesPost(vs.context, datacenterId).Volume(v)
+func (vs *volumesService) Create(datacenterId string, input Volume) (*Volume, *Response, error) {
+	req := vs.client.VolumeApi.DatacentersVolumesPost(vs.context, datacenterId).Volume(input.Volume)
 	volume, res, err := vs.client.VolumeApi.DatacentersVolumesPostExecute(req)
 	return &Volume{volume}, &Response{*res}, err
 }
