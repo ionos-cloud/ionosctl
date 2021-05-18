@@ -230,6 +230,25 @@ func TestRunLoadBalancerUpdateErr(t *testing.T) {
 	})
 }
 
+func TestRunLoadBalancerUpdateResponseErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerName), testLoadbalancerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerDhcp), dhcpLoadbalancerNew)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerIp), testLoadbalancerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.Loadbalancer.EXPECT().Update(testLoadbalancerVar, testLoadbalancerVar, loadbalancerProperties).Return(&loadbalancerNew, &testResponse, nil)
+		err := RunLoadBalancerUpdate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunLoadBalancerUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

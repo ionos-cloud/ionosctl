@@ -194,27 +194,18 @@ func RunLanList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	ss := getLans(lans)
-	return c.Printer.Print(printer.Result{
-		OutputJSON: lans,
-		KeyValue:   getLansKVMaps(ss),
-		Columns:    getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getLanPrint(nil, c, getLans(lans)))
 }
 
 func RunLanGet(c *core.CommandConfig) error {
-	lan, _, err := c.Lans().Get(
+	l, _, err := c.Lans().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: lan,
-		KeyValue:   getLansKVMaps([]resources.Lan{*lan}),
-		Columns:    getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getLanPrint(nil, c, []resources.Lan{*l}))
 }
 
 func RunLanCreate(c *core.CommandConfig) error {
@@ -262,7 +253,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPccId)) {
 		input.SetPcc(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	}
-	lan, resp, err := c.Lans().Update(
+	lanUpdated, resp, err := c.Lans().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 		input,
@@ -274,15 +265,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:     lan,
-		KeyValue:       getLansKVMaps([]resources.Lan{*lan}),
-		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse:    resp,
-		Resource:       "lan",
-		Verb:           "update",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getLanPrint(resp, c, []resources.Lan{*lanUpdated}))
 }
 
 func RunLanDelete(c *core.CommandConfig) error {
@@ -300,12 +283,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "lan",
-		Verb:           "delete",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getLanPrint(resp, c, nil))
 }
 
 // Output Printing
@@ -318,6 +296,24 @@ type LanPrint struct {
 	Public bool   `json:"Public,omitempty"`
 	PccId  string `json:"PccId,omitempty"`
 	State  string `json:"State,omitempty"`
+}
+
+func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resources.Lan) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
+		}
+		if lans != nil {
+			r.OutputJSON = lans
+			r.KeyValue = getLansKVMaps(lans)
+			r.Columns = getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
 }
 
 func getLansCols(flagName string, outErr io.Writer) []string {

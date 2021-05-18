@@ -307,12 +307,7 @@ func RunServerList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	ss := getServers(servers)
-	return c.Printer.Print(printer.Result{
-		OutputJSON: servers,
-		KeyValue:   getServersKVMaps(ss),
-		Columns:    getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getServerPrint(nil, c, getServers(servers)))
 }
 
 func RunServerGet(c *core.CommandConfig) error {
@@ -326,11 +321,7 @@ func RunServerGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: svr,
-		KeyValue:   getServersKVMaps([]resources.Server{*svr}),
-		Columns:    getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getServerPrint(nil, c, []resources.Server{*svr}))
 }
 
 func RunServerCreate(c *core.CommandConfig) error {
@@ -359,19 +350,10 @@ func RunServerCreate(c *core.CommandConfig) error {
 				return err
 			}
 		} else {
-			return errors.New("error getting new Server id")
+			return errors.New("error getting new server id")
 		}
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:     svr,
-		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
-		Columns:        getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "create",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-		WaitForState:   viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, []resources.Server{*svr}))
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
@@ -412,16 +394,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 			return err
 		}
 	}
-	return c.Printer.Print(printer.Result{
-		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
-		Columns:        getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON:     svr,
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "update",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-		WaitForState:   viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, []resources.Server{*svr}))
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
@@ -439,12 +412,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "delete",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 func RunServerStart(c *core.CommandConfig) error {
@@ -462,12 +430,7 @@ func RunServerStart(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "start",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 func RunServerStop(c *core.CommandConfig) error {
@@ -485,12 +448,7 @@ func RunServerStop(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "stop",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 func RunServerReboot(c *core.CommandConfig) error {
@@ -508,12 +466,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "reboot",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 // Wait for State
@@ -544,6 +497,25 @@ type ServerPrint struct {
 	Ram              string `json:"Ram,omitempty"`
 	CpuFamily        string `json:"CpuFamily,omitempty"`
 	VmState          string `json:"VmState,omitempty"`
+}
+
+func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.Server) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState))
+		}
+		if ss != nil {
+			r.OutputJSON = ss
+			r.KeyValue = getServersKVMaps(ss)
+			r.Columns = getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
 }
 
 func getServersCols(flagName string, outErr io.Writer) []string {

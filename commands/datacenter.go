@@ -164,12 +164,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	dcs := getDataCenters(datacenters)
-	return c.Printer.Print(printer.Result{
-		OutputJSON: datacenters,
-		KeyValue:   getDataCentersKVMaps(dcs),
-		Columns:    getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getDataCenterPrint(nil, c, getDataCenters(datacenters)))
 }
 
 func RunDataCenterGet(c *core.CommandConfig) error {
@@ -177,11 +172,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		KeyValue:   getDataCentersKVMaps([]resources.Datacenter{*dc}),
-		Columns:    getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON: dc,
-	})
+	return c.Printer.Print(getDataCenterPrint(nil, c, []resources.Datacenter{*dc}))
 }
 
 func RunDataCenterCreate(c *core.CommandConfig) error {
@@ -196,15 +187,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		KeyValue:       getDataCentersKVMaps([]resources.Datacenter{*dc}),
-		Columns:        getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON:     dc,
-		ApiResponse:    resp,
-		Resource:       "datacenter",
-		Verb:           "create",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getDataCenterPrint(resp, c, []resources.Datacenter{*dc}))
 }
 
 func RunDataCenterUpdate(c *core.CommandConfig) error {
@@ -226,15 +209,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		KeyValue:       getDataCentersKVMaps([]resources.Datacenter{*dc}),
-		Columns:        getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON:     dc,
-		ApiResponse:    resp,
-		Resource:       "datacenter",
-		Verb:           "update",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getDataCenterPrint(resp, c, []resources.Datacenter{*dc}))
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
@@ -249,12 +224,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "datacenter",
-		Verb:           "delete",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getDataCenterPrint(resp, c, nil))
 }
 
 // Output Printing
@@ -273,6 +243,24 @@ type DatacenterPrint struct {
 	State             string   `json:"State,omitempty"`
 	Features          []string `json:"Features,omitempty"`
 	SecAuthProtection bool     `json:"SecAuthProtection,omitempty"`
+}
+
+func getDataCenterPrint(resp *resources.Response, c *core.CommandConfig, dcs []resources.Datacenter) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
+		}
+		if dcs != nil {
+			r.OutputJSON = dcs
+			r.KeyValue = getDataCentersKVMaps(dcs)
+			r.Columns = getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
 }
 
 func getDataCenterCols(flagName string, outErr io.Writer) []string {
