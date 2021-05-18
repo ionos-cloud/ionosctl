@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -115,7 +116,7 @@ func WatchRequestProgress(ctx context.Context, c *core.CommandConfig, requestId 
 				errChan <- err
 				return
 			}
-			status, err := getRequestStatus(reqStatus)
+			status, message, err := getRequestStatus(reqStatus)
 			if err != nil {
 				errChan <- err
 				return
@@ -123,7 +124,7 @@ func WatchRequestProgress(ctx context.Context, c *core.CommandConfig, requestId 
 
 			// Check Resource State
 			// Send Progress, Send Error if any
-			switch *status {
+			switch status {
 			case ionoscloud.RequestStatusQueued:
 				sendingProgress(1)
 				break
@@ -135,7 +136,7 @@ func WatchRequestProgress(ctx context.Context, c *core.CommandConfig, requestId 
 				errChan <- nil
 				return
 			case ionoscloud.RequestStatusFailed:
-				errChan <- errors.New(failed)
+				errChan <- errors.New(fmt.Sprintf("%s %s", status, message))
 				return
 			}
 		}
@@ -143,13 +144,18 @@ func WatchRequestProgress(ctx context.Context, c *core.CommandConfig, requestId 
 	return progressChan, errChan
 }
 
-func getRequestStatus(reqStatus *resources.RequestStatus) (*string, error) {
+func getRequestStatus(reqStatus *resources.RequestStatus) (string, string, error) {
 	if reqStatus != nil {
 		if metadata, ok := reqStatus.GetMetadataOk(); ok && metadata != nil {
-			if status, ok := metadata.GetStatusOk(); ok && status != nil {
-				return status, nil
+			var status, message string
+			if s, ok := metadata.GetStatusOk(); ok && s != nil {
+				status = *s
 			}
+			if msg, ok := metadata.GetMessageOk(); ok && msg != nil {
+				message = *msg
+			}
+			return status, message, nil
 		}
 	}
-	return nil, errors.New("error getting request status")
+	return "", "", errors.New("error getting request status")
 }

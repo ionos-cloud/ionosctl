@@ -37,7 +37,7 @@ type ServersService interface {
 	ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error)
 	GetVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
 	ListCdroms(datacenterId, serverId string) (Cdroms, *Response, error)
-	AttachCdrom(datacenterId, serverId string, cdrom Image) (*Image, *Response, error)
+	AttachCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error)
 	GetCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error)
 	DetachCdrom(datacenterId, serverId, cdromId string) (*Response, error)
 }
@@ -113,28 +113,28 @@ func (ss *serversService) Reboot(datacenterId, serverId string) (*Response, erro
 	return &Response{*res}, err
 }
 
-func (vs *serversService) ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error) {
-	req := vs.client.ServerApi.DatacentersServersVolumesGet(vs.context, datacenterId, serverId)
-	vols, res, err := vs.client.ServerApi.DatacentersServersVolumesGetExecute(req)
+func (ss *serversService) ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error) {
+	req := ss.client.ServerApi.DatacentersServersVolumesGet(ss.context, datacenterId, serverId)
+	vols, res, err := ss.client.ServerApi.DatacentersServersVolumesGetExecute(req)
 	return AttachedVolumes{vols}, &Response{*res}, err
 }
 
-func (vs *serversService) AttachVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
-	req := vs.client.ServerApi.DatacentersServersVolumesPost(vs.context, datacenterId, serverId)
+func (ss *serversService) AttachVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
+	req := ss.client.ServerApi.DatacentersServersVolumesPost(ss.context, datacenterId, serverId)
 	req = req.Volume(ionoscloud.Volume{Id: &volumeId})
-	vol, res, err := vs.client.ServerApi.DatacentersServersVolumesPostExecute(req)
+	vol, res, err := ss.client.ServerApi.DatacentersServersVolumesPostExecute(req)
 	return &Volume{vol}, &Response{*res}, err
 }
 
-func (vs *serversService) GetVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
-	req := vs.client.ServerApi.DatacentersServersVolumesFindById(vs.context, datacenterId, serverId, volumeId)
-	vol, res, err := vs.client.ServerApi.DatacentersServersVolumesFindByIdExecute(req)
+func (ss *serversService) GetVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
+	req := ss.client.ServerApi.DatacentersServersVolumesFindById(ss.context, datacenterId, serverId, volumeId)
+	vol, res, err := ss.client.ServerApi.DatacentersServersVolumesFindByIdExecute(req)
 	return &Volume{vol}, &Response{*res}, err
 }
 
-func (vs *serversService) DetachVolume(datacenterId, serverId, volumeId string) (*Response, error) {
-	req := vs.client.ServerApi.DatacentersServersVolumesDelete(vs.context, datacenterId, serverId, volumeId)
-	_, res, err := vs.client.ServerApi.DatacentersServersVolumesDeleteExecute(req)
+func (ss *serversService) DetachVolume(datacenterId, serverId, volumeId string) (*Response, error) {
+	req := ss.client.ServerApi.DatacentersServersVolumesDelete(ss.context, datacenterId, serverId, volumeId)
+	_, res, err := ss.client.ServerApi.DatacentersServersVolumesDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -144,8 +144,8 @@ func (ss *serversService) ListCdroms(datacenterId, serverId string) (Cdroms, *Re
 	return Cdroms{imgs}, &Response{*res}, err
 }
 
-func (ss *serversService) AttachCdrom(datacenterId, serverId string, cdrom Image) (*Image, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersCdromsPost(ss.context, datacenterId, serverId).Cdrom(cdrom.Image)
+func (ss *serversService) AttachCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error) {
+	req := ss.client.ServerApi.DatacentersServersCdromsPost(ss.context, datacenterId, serverId).Cdrom(ionoscloud.Image{Id: &cdromId})
 	img, res, err := ss.client.ServerApi.DatacentersServersCdromsPostExecute(req)
 	return &Image{img}, &Response{*res}, err
 }

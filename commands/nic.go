@@ -442,7 +442,7 @@ Required values to run command:
 		ShortDesc: "Detach a NIC from a Load Balancer",
 		LongDesc: `Use this command to remove the association of a NIC with a Load Balancer.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--ignore-stdin` + "`" + ` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 

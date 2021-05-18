@@ -35,9 +35,9 @@ func (m *MockServersService) EXPECT() *MockServersServiceMockRecorder {
 }
 
 // AttachCdrom mocks base method.
-func (m *MockServersService) AttachCdrom(datacenterId, serverId string, cdrom resources.Image) (*resources.Image, *resources.Response, error) {
+func (m *MockServersService) AttachCdrom(datacenterId, serverId, cdromId string) (*resources.Image, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AttachCdrom", datacenterId, serverId, cdrom)
+	ret := m.ctrl.Call(m, "AttachCdrom", datacenterId, serverId, cdromId)
 	ret0, _ := ret[0].(*resources.Image)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,9 +45,9 @@ func (m *MockServersService) AttachCdrom(datacenterId, serverId string, cdrom re
 }
 
 // AttachCdrom indicates an expected call of AttachCdrom.
-func (mr *MockServersServiceMockRecorder) AttachCdrom(datacenterId, serverId, cdrom interface{}) *gomock.Call {
+func (mr *MockServersServiceMockRecorder) AttachCdrom(datacenterId, serverId, cdromId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AttachCdrom", reflect.TypeOf((*MockServersService)(nil).AttachCdrom), datacenterId, serverId, cdrom)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AttachCdrom", reflect.TypeOf((*MockServersService)(nil).AttachCdrom), datacenterId, serverId, cdromId)
 }
 
 // AttachVolume mocks base method.

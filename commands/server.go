@@ -293,6 +293,7 @@ Required values to run command:
 	reboot.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
 
 	serverCmd.AddCommand(serverVolume())
+	serverCmd.AddCommand(serverCdrom())
 
 	return serverCmd
 }

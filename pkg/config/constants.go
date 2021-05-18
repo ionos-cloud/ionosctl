@@ -144,6 +144,7 @@ const (
 	ArgPublicIps                  = "public-ips"
 	ArgPublic                     = "public"
 	ArgGatewayIp                  = "gateway-ip"
+	ArgCdromId                    = "cdrom-id"
 )
 
 // Default values
@@ -193,4 +194,5 @@ const (
 	RequiredFlagK8sClusterId   = "The unique K8s Cluster Id " + RequiredFlag
 	RequiredFlagK8sNodePoolId  = "The unique K8s Node Pool Id " + RequiredFlag
 	RequiredFlagK8sNodeId      = "The unique K8s Node Id " + RequiredFlag
+	RequiredFlagCdromId        = "The unique Cdrom Id " + RequiredFlag
 )
