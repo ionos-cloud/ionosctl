@@ -34,6 +34,22 @@ func (m *MockServersService) EXPECT() *MockServersServiceMockRecorder {
 	return m.recorder
 }
 
+// AttachCdrom mocks base method.
+func (m *MockServersService) AttachCdrom(datacenterId, serverId string, cdrom resources.Image) (*resources.Image, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AttachCdrom", datacenterId, serverId, cdrom)
+	ret0, _ := ret[0].(*resources.Image)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// AttachCdrom indicates an expected call of AttachCdrom.
+func (mr *MockServersServiceMockRecorder) AttachCdrom(datacenterId, serverId, cdrom interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AttachCdrom", reflect.TypeOf((*MockServersService)(nil).AttachCdrom), datacenterId, serverId, cdrom)
+}
+
 // AttachVolume mocks base method.
 func (m *MockServersService) AttachVolume(datacenterId, serverId, volumeId string) (*resources.Volume, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -81,6 +97,21 @@ func (mr *MockServersServiceMockRecorder) Delete(datacenterId, serverId interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockServersService)(nil).Delete), datacenterId, serverId)
 }
 
+// DetachCdrom mocks base method.
+func (m *MockServersService) DetachCdrom(datacenterId, serverId, cdromId string) (*resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DetachCdrom", datacenterId, serverId, cdromId)
+	ret0, _ := ret[0].(*resources.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DetachCdrom indicates an expected call of DetachCdrom.
+func (mr *MockServersServiceMockRecorder) DetachCdrom(datacenterId, serverId, cdromId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DetachCdrom", reflect.TypeOf((*MockServersService)(nil).DetachCdrom), datacenterId, serverId, cdromId)
+}
+
 // DetachVolume mocks base method.
 func (m *MockServersService) DetachVolume(datacenterId, serverId, volumeId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -110,6 +141,22 @@ func (m *MockServersService) Get(datacenterId, serverId string) (*resources.Serv
 func (mr *MockServersServiceMockRecorder) Get(datacenterId, serverId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockServersService)(nil).Get), datacenterId, serverId)
+}
+
+// GetCdrom mocks base method.
+func (m *MockServersService) GetCdrom(datacenterId, serverId, cdromId string) (*resources.Image, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCdrom", datacenterId, serverId, cdromId)
+	ret0, _ := ret[0].(*resources.Image)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetCdrom indicates an expected call of GetCdrom.
+func (mr *MockServersServiceMockRecorder) GetCdrom(datacenterId, serverId, cdromId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCdrom", reflect.TypeOf((*MockServersService)(nil).GetCdrom), datacenterId, serverId, cdromId)
 }
 
 // GetVolume mocks base method.
@@ -142,6 +189,22 @@ func (m *MockServersService) List(datacenterId string) (resources.Servers, *reso
 func (mr *MockServersServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockServersService)(nil).List), datacenterId)
+}
+
+// ListCdroms mocks base method.
+func (m *MockServersService) ListCdroms(datacenterId, serverId string) (resources.Cdroms, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListCdroms", datacenterId, serverId)
+	ret0, _ := ret[0].(resources.Cdroms)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListCdroms indicates an expected call of ListCdroms.
+func (mr *MockServersServiceMockRecorder) ListCdroms(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCdroms", reflect.TypeOf((*MockServersService)(nil).ListCdroms), datacenterId, serverId)
 }
 
 // ListVolumes mocks base method.

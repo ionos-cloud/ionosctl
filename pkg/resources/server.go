@@ -18,6 +18,10 @@ type Servers struct {
 	ionoscloud.Servers
 }
 
+type Cdroms struct {
+	ionoscloud.Cdroms
+}
+
 // ServersService is a wrapper around ionoscloud.Server
 type ServersService interface {
 	List(datacenterId string) (Servers, *Response, error)
@@ -32,6 +36,10 @@ type ServersService interface {
 	DetachVolume(datacenterId, serverId, volumeId string) (*Response, error)
 	ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error)
 	GetVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
+	ListCdroms(datacenterId, serverId string) (Cdroms, *Response, error)
+	AttachCdrom(datacenterId, serverId string, cdrom Image) (*Image, *Response, error)
+	GetCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error)
+	DetachCdrom(datacenterId, serverId, cdromId string) (*Response, error)
 }
 
 type serversService struct {
@@ -127,5 +135,29 @@ func (vs *serversService) GetVolume(datacenterId, serverId, volumeId string) (*V
 func (vs *serversService) DetachVolume(datacenterId, serverId, volumeId string) (*Response, error) {
 	req := vs.client.ServerApi.DatacentersServersVolumesDelete(vs.context, datacenterId, serverId, volumeId)
 	_, res, err := vs.client.ServerApi.DatacentersServersVolumesDeleteExecute(req)
+	return &Response{*res}, err
+}
+
+func (ss *serversService) ListCdroms(datacenterId, serverId string) (Cdroms, *Response, error) {
+	req := ss.client.ServerApi.DatacentersServersCdromsGet(ss.context, datacenterId, serverId)
+	imgs, res, err := ss.client.ServerApi.DatacentersServersCdromsGetExecute(req)
+	return Cdroms{imgs}, &Response{*res}, err
+}
+
+func (ss *serversService) AttachCdrom(datacenterId, serverId string, cdrom Image) (*Image, *Response, error) {
+	req := ss.client.ServerApi.DatacentersServersCdromsPost(ss.context, datacenterId, serverId).Cdrom(cdrom.Image)
+	img, res, err := ss.client.ServerApi.DatacentersServersCdromsPostExecute(req)
+	return &Image{img}, &Response{*res}, err
+}
+
+func (ss *serversService) GetCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error) {
+	req := ss.client.ServerApi.DatacentersServersCdromsFindById(ss.context, datacenterId, serverId, cdromId)
+	img, res, err := ss.client.ServerApi.DatacentersServersCdromsFindByIdExecute(req)
+	return &Image{img}, &Response{*res}, err
+}
+
+func (ss *serversService) DetachCdrom(datacenterId, serverId, cdromId string) (*Response, error) {
+	req := ss.client.ServerApi.DatacentersServersCdromsDelete(ss.context, datacenterId, serverId, cdromId)
+	_, res, err := ss.client.ServerApi.DatacentersServersCdromsDeleteExecute(req)
 	return &Response{*res}, err
 }
