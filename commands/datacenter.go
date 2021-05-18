@@ -173,14 +173,14 @@ func RunDataCenterList(c *core.CommandConfig) error {
 }
 
 func RunDataCenterGet(c *core.CommandConfig) error {
-	datacenter, _, err := c.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	dc, _, err := c.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		KeyValue:   getDataCentersKVMaps([]resources.Datacenter{*datacenter}),
+		KeyValue:   getDataCentersKVMaps([]resources.Datacenter{*dc}),
 		Columns:    getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON: datacenter,
+		OutputJSON: dc,
 	})
 }
 
@@ -260,17 +260,19 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "State"}
-	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version"}
+	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "Features", "State"}
+	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version", "Features", "SecAuthProtection"}
 )
 
 type DatacenterPrint struct {
-	DatacenterId string `json:"DatacenterId,omitempty"`
-	Name         string `json:"Name,omitempty"`
-	Location     string `json:"Location,omitempty"`
-	Description  string `json:"Description,omitempty"`
-	Version      int32  `json:"Version,omitempty"`
-	State        string `json:"State,omitempty"`
+	DatacenterId      string   `json:"DatacenterId,omitempty"`
+	Name              string   `json:"Name,omitempty"`
+	Location          string   `json:"Location,omitempty"`
+	Description       string   `json:"Description,omitempty"`
+	Version           int32    `json:"Version,omitempty"`
+	State             string   `json:"State,omitempty"`
+	Features          []string `json:"Features,omitempty"`
+	SecAuthProtection bool     `json:"SecAuthProtection,omitempty"`
 }
 
 func getDataCenterCols(flagName string, outErr io.Writer) []string {
@@ -282,12 +284,14 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 	}
 
 	columnsMap := map[string]string{
-		"DatacenterId": "DatacenterId",
-		"Name":         "Name",
-		"Location":     "Location",
-		"Version":      "Version",
-		"Description":  "Description",
-		"State":        "State",
+		"DatacenterId":      "DatacenterId",
+		"Name":              "Name",
+		"Location":          "Location",
+		"Version":           "Version",
+		"Description":       "Description",
+		"State":             "State",
+		"Features":          "Features",
+		"SecAuthProtection": "SecAuthProtection",
 	}
 	var datacenterCols []string
 	for _, k := range cols {
@@ -312,22 +316,29 @@ func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(dcs))
 	for _, dc := range dcs {
-		properties := dc.GetProperties()
 		var dcPrint DatacenterPrint
 		if dcid, ok := dc.GetIdOk(); ok && dcid != nil {
 			dcPrint.DatacenterId = *dcid
 		}
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			dcPrint.Name = *name
-		}
-		if location, ok := properties.GetLocationOk(); ok && location != nil {
-			dcPrint.Location = *location
-		}
-		if description, ok := properties.GetDescriptionOk(); ok && description != nil {
-			dcPrint.Description = *description
-		}
-		if version, ok := properties.GetVersionOk(); ok && version != nil {
-			dcPrint.Version = *version
+		if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				dcPrint.Name = *name
+			}
+			if loc, ok := properties.GetLocationOk(); ok && loc != nil {
+				dcPrint.Location = *loc
+			}
+			if description, ok := properties.GetDescriptionOk(); ok && description != nil {
+				dcPrint.Description = *description
+			}
+			if ver, ok := properties.GetVersionOk(); ok && ver != nil {
+				dcPrint.Version = *ver
+			}
+			if feat, ok := properties.GetFeaturesOk(); ok && feat != nil {
+				dcPrint.Features = *feat
+			}
+			if secAuth, ok := properties.GetSecAuthProtectionOk(); ok && secAuth != nil {
+				dcPrint.SecAuthProtection = *secAuth
+			}
 		}
 		if metadata, ok := dc.GetMetadataOk(); ok && metadata != nil {
 			if state, ok := metadata.GetStateOk(); ok && state != nil {

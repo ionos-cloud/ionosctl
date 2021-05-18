@@ -34,6 +34,7 @@ var (
 			Ram:              &ram,
 			CpuFamily:        &testServerVar,
 			AvailabilityZone: &testServerVar,
+			VmState:          &state,
 		},
 	}
 	ss = resources.Servers{

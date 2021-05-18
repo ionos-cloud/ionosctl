@@ -533,7 +533,7 @@ func GetStateServer(c *core.CommandConfig, objId string) (*string, error) {
 
 // Output Printing
 
-var defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "State", "Cores", "Ram", "CpuFamily"}
+var defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
 
 type ServerPrint struct {
 	ServerId         string `json:"ServerId,omitempty"`
@@ -543,6 +543,7 @@ type ServerPrint struct {
 	Cores            int32  `json:"Cores,omitempty"`
 	Ram              string `json:"Ram,omitempty"`
 	CpuFamily        string `json:"CpuFamily,omitempty"`
+	VmState          string `json:"VmState,omitempty"`
 }
 
 func getServersCols(flagName string, outErr io.Writer) []string {
@@ -558,6 +559,7 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 		"Name":             "Name",
 		"AvailabilityZone": "AvailabilityZone",
 		"State":            "State",
+		"VmState":          "VmState",
 		"Cores":            "Cores",
 		"Ram":              "Ram",
 		"CpuFamily":        "CpuFamily",
@@ -585,29 +587,34 @@ func getServers(servers resources.Servers) []resources.Server {
 func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
-		properties := s.GetProperties()
-		metadata := s.GetMetadata()
 		var serverPrint ServerPrint
 		if id, ok := s.GetIdOk(); ok && id != nil {
 			serverPrint.ServerId = *id
 		}
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			serverPrint.Name = *name
+		if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				serverPrint.Name = *name
+			}
+			if cores, ok := properties.GetCoresOk(); ok && cores != nil {
+				serverPrint.Cores = *cores
+			}
+			if ram, ok := properties.GetRamOk(); ok && ram != nil {
+				serverPrint.Ram = fmt.Sprintf("%vMB", *ram)
+			}
+			if cpuFamily, ok := properties.GetCpuFamilyOk(); ok && cpuFamily != nil {
+				serverPrint.CpuFamily = *cpuFamily
+			}
+			if zone, ok := properties.GetAvailabilityZoneOk(); ok && zone != nil {
+				serverPrint.AvailabilityZone = *zone
+			}
+			if vmState, ok := properties.GetVmStateOk(); ok && vmState != nil {
+				serverPrint.VmState = *vmState
+			}
 		}
-		if cores, ok := properties.GetCoresOk(); ok && cores != nil {
-			serverPrint.Cores = *cores
-		}
-		if ram, ok := properties.GetRamOk(); ok && ram != nil {
-			serverPrint.Ram = fmt.Sprintf("%vMB", *ram)
-		}
-		if cpuFamily, ok := properties.GetCpuFamilyOk(); ok && cpuFamily != nil {
-			serverPrint.CpuFamily = *cpuFamily
-		}
-		if zone, ok := properties.GetAvailabilityZoneOk(); ok && zone != nil {
-			serverPrint.AvailabilityZone = *zone
-		}
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			serverPrint.State = *state
+		if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				serverPrint.State = *state
+			}
 		}
 		o := structs.Map(serverPrint)
 		out = append(out, o)

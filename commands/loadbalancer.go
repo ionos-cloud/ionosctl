@@ -182,20 +182,20 @@ func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {
 }
 
 func RunLoadBalancerList(c *core.CommandConfig) error {
-	loadbalancers, _, err := c.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	lbs, _, err := c.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
-	ss := getLoadbalancers(loadbalancers)
+	ss := getLoadbalancers(lbs)
 	return c.Printer.Print(printer.Result{
-		OutputJSON: loadbalancers,
+		OutputJSON: lbs,
 		KeyValue:   getLoadbalancersKVMaps(ss),
 		Columns:    getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
 func RunLoadBalancerGet(c *core.CommandConfig) error {
-	loadbalancer, _, err := c.Loadbalancers().Get(
+	lb, _, err := c.Loadbalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 	)
@@ -203,14 +203,14 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON: loadbalancer,
-		KeyValue:   getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
+		OutputJSON: lb,
+		KeyValue:   getLoadbalancersKVMaps([]resources.Loadbalancer{*lb}),
 		Columns:    getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
 func RunLoadBalancerCreate(c *core.CommandConfig) error {
-	loadbalancer, resp, err := c.Loadbalancers().Create(
+	lb, resp, err := c.Loadbalancers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerName)),
 		viper.GetBool(core.GetFlagName(c.NS, config.ArgLoadBalancerDhcp)),
@@ -223,8 +223,8 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:     loadbalancer,
-		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
+		OutputJSON:     lb,
+		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*lb}),
 		Columns:        getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "loadbalancer",
@@ -244,7 +244,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLoadBalancerDhcp)) {
 		input.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgLoadBalancerDhcp)))
 	}
-	loadbalancer, resp, err := c.Loadbalancers().Update(
+	lb, resp, err := c.Loadbalancers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 		input,
@@ -257,8 +257,8 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(printer.Result{
-		OutputJSON:     loadbalancer,
-		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
+		OutputJSON:     lb,
+		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*lb}),
 		Columns:        getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "loadbalancer",

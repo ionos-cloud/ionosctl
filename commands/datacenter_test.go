@@ -22,10 +22,12 @@ var (
 	dc        = ionoscloud.Datacenter{
 		Id: &testDatacenterVar,
 		Properties: &ionoscloud.DatacenterProperties{
-			Name:        &testDatacenterVar,
-			Description: &testDatacenterVar,
-			Location:    &testDatacenterVar,
-			Version:     &dcVersion,
+			Name:              &testDatacenterVar,
+			Description:       &testDatacenterVar,
+			Location:          &testDatacenterVar,
+			Version:           &dcVersion,
+			Features:          &[]string{testDatacenterVar},
+			SecAuthProtection: &testDatacenterBoolVar,
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &testStateVar,
@@ -53,9 +55,10 @@ var (
 			Items: &[]ionoscloud.Datacenter{dc, dc},
 		},
 	}
-	testDatacenterVar    = "test-datacenter"
-	testDatacenterNewVar = "test-new-datacenter"
-	testDatacenterErr    = errors.New("datacenter test error occurred")
+	testDatacenterVar     = "test-datacenter"
+	testDatacenterBoolVar = false
+	testDatacenterNewVar  = "test-new-datacenter"
+	testDatacenterErr     = errors.New("datacenter test error occurred")
 )
 
 func TestPreRunDataCenterId(t *testing.T) {

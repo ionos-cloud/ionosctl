@@ -18,7 +18,7 @@ Use this command to retrieve a complete list of Virtual Data Centers provisioned
 
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings     Columns to be printed in the standard output (default [DatacenterId,Name,Location,State])
+      --cols strings     Columns to be printed in the standard output (default [DatacenterId,Name,Location,Features,State])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force            Force command to execute without user input
   -h, --help             help for list
