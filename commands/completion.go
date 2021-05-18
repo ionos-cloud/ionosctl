@@ -128,7 +128,7 @@ func RunCompletionFish(c *core.CommandConfig) error {
 const (
 	completionBashLong = `Use this command to generate completion code for BASH terminal. IonosCTL supports completion for commands and flags.
 
-To load completions for the current session, execute: 
+To load completions for the current session, execute:
 
     source <(ionosctl completion bash)
 
@@ -139,8 +139,7 @@ To make these changes permanent, append the above line to your ` + "`" + `.bashr
 You will need to start a new shell for this setup to take effect.`
 	completionZshLong = `Use this command to generate completion code for ZSH terminal. IonosCTL supports completion for commands and flags.
 
-If shell completions are not already enabled for your environment, you need to enable them. 
-Add the following line to your ` + "`" + `~/.zshrc` + "`" + ` file:
+If shell completions are not already enabled for your environment, you need to enable them. Add the following line to your ` + "`" + `~/.zshrc` + "`" + ` file:
 
     autoload -Uz compinit; compinit
 
@@ -149,8 +148,7 @@ To load completions for each session execute the following commands:
     mkdir -p ~/.config/ionosctl/completion/zsh
     ionosctl completion zsh > ~/.config/ionosctl/completion/zsh/_ionosctl
 
-Finally add the following line to your ` + "`" + `~/.zshrc` + "`" + `file, *before* you
-call the ` + "`" + `compinit` + "`" + ` function:
+Finally add the following line to your ` + "`" + `~/.zshrc` + "`" + `file, before you call the ` + "`" + `compinit` + "`" + ` function:
 
     fpath+=(~/.config/ionosctl/completion/zsh)
 
@@ -161,15 +159,14 @@ In the end your ` + "`" + `~/.zshrc` + "`" + ` file should contain the following
     autoload -Uz compinit; compinit
     # ...
 
-You will need to start a new shell for this setup to take effect.
-Note: ZSH completions require zsh 5.2 or newer.`
+You will need to start a new shell for this setup to take effect. Note: ZSH completions require zsh 5.2 or newer.`
 	completionPowerShellLong = `Use this command to generate completion code for PowerShell terminal. IonosCTL supports completion for commands and flags.
 
 PowerShell supports three different completion modes:
 
-- TabCompleteNext (default Windows style - on each key press the next option is displayed)
-- Complete (works like Bash)
-- MenuComplete (works like Zsh)
+* TabCompleteNext (default Windows style - on each key press the next option is displayed)
+* Complete (works like Bash)
+* MenuComplete (works like Zsh)
 
 You set the mode with ` + "`" + `Set-PSReadLineKeyHandler -Key Tab -Function <mode>` + "`" + `
 
@@ -177,7 +174,7 @@ Descriptions will only be supported for Complete and MenuComplete.
 
 Follow the next steps to enable it:
 
-To load completions for the current session, execute: 
+To load completions for the current session, execute:
 
     PS> ionosctl completion powershell | Out-String | Invoke-Expression
 

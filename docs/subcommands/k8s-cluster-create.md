@@ -32,7 +32,7 @@ Required values to run a command:
   -h, --help                  help for create
       --k8s-version string    The K8s version for the Cluster. If not set, it will be used the default one
   -o, --output string         Desired output format [text|json] (default "text")
-      --public                The indicator if the Cluster is public or private
+      --public                The indicator if the Cluster is public or private (default true)
   -q, --quiet                 Quiet output
       --timeout int           Timeout option for waiting for Cluster/Request [seconds] (default 600)
       --wait-for-request      Wait for the Request for Cluster creation to be executed
