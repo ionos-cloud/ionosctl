@@ -25,7 +25,7 @@ Required values to run command:
       --backupunit-email string      The e-mail address you want to update for the BackupUnit
       --backupunit-id string         The unique BackupUnit Id (required)
       --backupunit-password string   Alphanumeric password you want to update for the BackupUnit
-      --cols strings                 Columns to be printed in the standard output (default [BackupUnitId,Name,Email])
+      --cols strings                 Columns to be printed in the standard output (default [BackupUnitId,Name,Email,State])
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                        Force command to execute without user input
   -h, --help                         help for update

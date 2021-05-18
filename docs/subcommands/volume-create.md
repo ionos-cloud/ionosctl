@@ -36,7 +36,7 @@ Required values to run command:
       --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
       --force                    Force command to execute without user input
   -h, --help                     help for create
-      --image-alias string       The Image alias
+      --image-alias string       The Image Alias to set instead of Image Id
       --image-id string          The Image Id or snapshot Id to be used as template for the new Volume
       --image-password string    Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
       --licence-type string      Licence Type of the Volume
