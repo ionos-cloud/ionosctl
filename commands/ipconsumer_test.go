@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
 	"regexp"
 	"testing"
 
@@ -130,6 +129,5 @@ func TestGetIpConsumerColsErr(t *testing.T) {
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
-	fmt.Println(b.String())
 	assert.True(t, re.Match(b.Bytes()))
 }
