@@ -23,8 +23,8 @@ func ipfailover() *core.Command {
 	ipfailoverCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "ipfailover",
-			Short:            "ipfailover Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl ipfailover` + "`" + ` allows you to see information about ipfailovers available to create objects.`,
+			Short:            "IP Failover Operations",
+			Long:             `The sub-command of ` + "`" + `ionosctl ipfailover` + "`" + ` allows you to see information about IP Failovers groups available on a LAN, to add/remove IP Failover group from a LAN.`,
 			TraverseChildren: true,
 		},
 	}
@@ -36,20 +36,57 @@ func ipfailover() *core.Command {
 	})
 
 	/*
+		List Command
+	*/
+	listCmd := core.NewCommand(ctx, ipfailoverCmd, core.CommandBuilder{
+		Namespace:  "ipfailover",
+		Resource:   "ipfailover",
+		Verb:       "list",
+		ShortDesc:  "List IP Failovers groups from a LAN",
+		LongDesc:   "Use this command to get a list of IP Failovers groups from a LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* Lan Id",
+		Example:    listIpFailoverExample,
+		PreCmdRun:  PreRunDcLanIds,
+		CmdRun:     RunIpFailoverList,
+		InitClient: true,
+	})
+	listCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = listCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	listCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	_ = listCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(listCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+
+	/*
 		Add Command
 	*/
 	addCmd := core.NewCommand(ctx, ipfailoverCmd, core.CommandBuilder{
-		Namespace:  "ipfailover",
-		Resource:   "ipfailover",
-		Verb:       "add",
-		ShortDesc:  "Add IPFailover to a LAN",
-		LongDesc:   "Use this command to get a list of available ipfailovers to create objects on.",
-		Example:    "",
-		PreCmdRun:  noPreRun,
+		Namespace: "ipfailover",
+		Resource:  "ipfailover",
+		Verb:      "add",
+		ShortDesc: "Add IP Failover group to a LAN",
+		LongDesc: `Use this command to add an IP Failover group to a LAN. 
+
+Successfully setting up an IP Failover group requires three steps:
+
+* Add a reserved IP address to a NIC that will become the IP Failover master.
+* Use ` + "`" + `ionosctl ipfailover add` + "`" + ` command to enable IP Failover by providing the relevant IP and NIC Id values.
+* Add the same reserved IP address to any other NICs that are a member of the same LAN. Those NICs will become IP Failover members.
+
+Required values to run command:
+
+* Data Center Id
+* Lan Id
+* Server Id
+* Nic Id
+* IP address`,
+		Example:    addIpFailoverExample,
+		PreCmdRun:  PreRunDcLanServerNicIdsIp,
 		CmdRun:     RunIpFailoverAdd,
 		InitClient: true,
 	})
-	addCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagLanId)
+	addCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = addCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -57,7 +94,7 @@ func ipfailover() *core.Command {
 	_ = addCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagNicId)
+	addCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = addCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -66,23 +103,31 @@ func ipfailover() *core.Command {
 		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(addCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(config.ArgIp, "", "", config.RequiredFlagNicId)
+	addCmd.AddStringFlag(config.ArgIp, "", "", "IP address to be added "+config.RequiredFlag)
 
 	/*
 		Remove Command
 	*/
 	removeCmd := core.NewCommand(ctx, ipfailoverCmd, core.CommandBuilder{
-		Namespace:  "ipfailover",
-		Resource:   "ipfailover",
-		Verb:       "remove",
-		ShortDesc:  "Add IPFailover to a LAN",
-		LongDesc:   "Use this command to get a list of available ipfailovers to create objects on.",
-		Example:    "",
-		PreCmdRun:  noPreRun,
+		Namespace: "ipfailover",
+		Resource:  "ipfailover",
+		Verb:      "remove",
+		ShortDesc: "Remove IP Failover group from a LAN",
+		LongDesc: `Use this command to remove an IP Failover group from a LAN.
+
+Required values to run command:
+
+* Data Center Id
+* Lan Id
+* Server Id
+* Nic Id
+* IP address`,
+		Example:    removeIpFailoverExample,
+		PreCmdRun:  PreRunDcLanServerNicIdsIp,
 		CmdRun:     RunIpFailoverRemove,
 		InitClient: true,
 	})
-	removeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagLanId)
+	removeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -90,7 +135,7 @@ func ipfailover() *core.Command {
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagNicId)
+	removeCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -99,9 +144,37 @@ func ipfailover() *core.Command {
 		return getNicsIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(removeCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(config.ArgIp, "", "", config.RequiredFlagNicId)
+	removeCmd.AddStringFlag(config.ArgIp, "", "", "Allocated IP "+config.RequiredFlag)
 
 	return ipfailoverCmd
+}
+
+func PreRunDcLanIds(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgLanId)
+}
+
+func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgLanId, config.ArgServerId, config.ArgNicId, config.ArgIp)
+}
+
+func RunIpFailoverList(c *core.CommandConfig) error {
+	l, _, err := c.Lans().Get(
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
+	)
+	if err != nil {
+		return err
+	}
+
+	if properties, ok := l.GetPropertiesOk(); ok && properties != nil {
+		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
+			return c.Printer.Print(getIpFailoverPrint(nil, c, getIpFailovers(ipfailovers)))
+		} else {
+			return errors.New("error getting ip failover group")
+		}
+	} else {
+		return errors.New("error getting lan properties")
+	}
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
@@ -120,9 +193,12 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 	if properties, ok := lanUpdated.GetPropertiesOk(); ok && properties != nil {
 		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
 			return c.Printer.Print(getIpFailoverPrint(nil, c, getIpFailovers(ipfailovers)))
+		} else {
+			return errors.New("error getting updated ip failover group")
 		}
+	} else {
+		return errors.New("error getting updated lan properties")
 	}
-	return nil
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
@@ -135,6 +211,9 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	}
 	if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
 		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
+				return err
+			}
 			_, resp, err := c.Lans().Update(
 				viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 				viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
@@ -147,9 +226,13 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 			if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 				return err
 			}
+			return c.Printer.Print(getIpFailoverPrint(resp, c, nil))
+		} else {
+			return errors.New("error getting ip failover group to update")
 		}
+	} else {
+		return errors.New("error getting lan properties to update")
 	}
-	return c.Printer.Print(getIpFailoverPrint(nil, c, nil))
 }
 
 func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {

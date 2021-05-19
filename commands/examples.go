@@ -256,6 +256,19 @@ RequestId: e65fc2fe-8005-48a5-9d06-f1a4f8bc9ef1
 Status: Command lan delete & wait have been successfully executed`
 
 	/*
+		IP Failover Examples
+	*/
+	addIpFailoverExample = `ionosctl ipfailover add --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --server-id 11c8ac02-224b-4bd0-833c-196719860fc1 --lan-id 1 --nic-id 5662f39c-b7cb-4840-b6ab-ae43cd0202cc --ip "x.x.x.x"
+NicId                                  IP
+5662f39c-b7cb-4840-b6ab-ae43cd0202cc   x.x.x.x`
+	removeIpFailoverExample = `ionosctl ipfailover remove --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --server-id 11c8ac02-224b-4bd0-833c-196719860fc1 --nic-id 5662f39c-b7cb-4840-b6ab-ae43cd0202cc --lan-id 1 --ip "x.x.x.x"
+Warning: Are you sure you want to remove ip failover group from lan (y/N) ? 
+y
+RequestId: 0643462d-22c7-4396-b8e8-dd3c42fce83a
+Status: Command ipfailover remove has been successfully executed`
+	listIpFailoverExample = `ionosctl ipfailover list --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --lan-id 1`
+
+	/*
 		Request Examples
 	*/
 	getRequestExample = `ionosctl request get --request-id 20333e60-d65c-4a95-846b-08c48b871186 
@@ -345,7 +358,7 @@ y
 1.2s Waiting for request... DONE
 RequestId: 6b1aa258-799f-4712-9f90-ba4494d84026
 Status: Command ipblock delete & wait have been successfully executed`
-	consumersListIpBlockExample = `ionosctl ipblock consumers list --ipblock-id 564f4984-8349-40c1-bcd8-ba177ebf2fb6`
+	listIpConsumersExample = `ionosctl ipconsumer list --ipblock-id 564f4984-8349-40c1-bcd8-ba177ebf2fb6`
 
 	/*
 		Firewall Rule Examples
