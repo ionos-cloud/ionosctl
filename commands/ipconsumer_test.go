@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
 	"regexp"
 	"testing"
 
@@ -96,6 +95,8 @@ func TestRunIpConsumersListErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpConsumerVar)
 		rm.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumer}, nil, testIpConsumerErr)
 		err := RunIpConsumersList(cfg)
@@ -130,6 +131,5 @@ func TestGetIpConsumerColsErr(t *testing.T) {
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
-	fmt.Println(b.String())
 	assert.True(t, re.Match(b.Bytes()))
 }
