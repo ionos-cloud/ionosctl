@@ -147,6 +147,7 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgNicDhcp, "", config.DefaultNicDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for NIC update to be executed")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
+	update.AddStringSliceFlag(config.ArgNicIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
 
 	/*
 		Delete Command
@@ -267,6 +268,9 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanId)) {
 		input.NicProperties.SetLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicIps)) {
+		input.NicProperties.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgNicIps)))
 	}
 	nicUpd, resp, err := c.Nics().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
@@ -646,6 +650,9 @@ func getNicsKVMaps(ns []resources.Nic) []map[string]interface{} {
 			}
 			if mac, ok := properties.GetMacOk(); ok && mac != nil {
 				nicprint.Mac = *mac
+			}
+			if ips, ok := properties.GetIpsOk(); ok && ips != nil {
+				nicprint.Ips = *ips
 			}
 		}
 		if metadata, ok := n.GetMetadataOk(); ok && metadata != nil {

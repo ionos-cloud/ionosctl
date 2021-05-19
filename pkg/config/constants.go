@@ -145,6 +145,7 @@ const (
 	ArgPublic                     = "public"
 	ArgGatewayIp                  = "gateway-ip"
 	ArgCdromId                    = "cdrom-id"
+	ArgIp                         = "ip"
 )
 
 // Default values
