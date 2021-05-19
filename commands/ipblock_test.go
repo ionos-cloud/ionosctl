@@ -341,29 +341,3 @@ func TestGetIpBlocksIds(t *testing.T) {
 	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }
-
-func TestRunIpConsumersList(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
-		rm.IpBlocks.EXPECT().Get(testIpBlockVar).Return(&resources.IpBlock{IpBlock: testIpBlock}, nil, nil)
-		err := RunIpConsumersList(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestRunIpConsumersListErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
-		viper.Reset()
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
-		rm.IpBlocks.EXPECT().Get(testIpBlockVar).Return(&resources.IpBlock{IpBlock: testIpBlock}, nil, testIpBlockErr)
-		err := RunIpConsumersList(cfg)
-		assert.Error(t, err)
-	})
-}

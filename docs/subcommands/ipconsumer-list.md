@@ -2,12 +2,12 @@
 description: List IpConsumers
 ---
 
-# IpblockConsumersList
+# IpconsumerList
 
 ## Usage
 
 ```text
-ionosctl ipblock consumers list [flags]
+ionosctl ipconsumer list [flags]
 ```
 
 ## Description
@@ -34,6 +34,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipblock consumers list --ipblock-id 564f4984-8349-40c1-bcd8-ba177ebf2fb6
+ionosctl ipconsumer list --ipblock-id 564f4984-8349-40c1-bcd8-ba177ebf2fb6
 ```
 

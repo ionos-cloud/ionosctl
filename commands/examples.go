@@ -345,7 +345,7 @@ y
 1.2s Waiting for request... DONE
 RequestId: 6b1aa258-799f-4712-9f90-ba4494d84026
 Status: Command ipblock delete & wait have been successfully executed`
-	consumersListIpBlockExample = `ionosctl ipblock consumers list --ipblock-id 564f4984-8349-40c1-bcd8-ba177ebf2fb6`
+	listIpConsumersExample = `ionosctl ipconsumer list --ipblock-id 564f4984-8349-40c1-bcd8-ba177ebf2fb6`
 
 	/*
 		Firewall Rule Examples
