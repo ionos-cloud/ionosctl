@@ -18,7 +18,7 @@ import (
 type KubernetesClusters struct {
 	// Unique representation for Kubernetes Cluster as a collection on a resource.
 	Id *string `json:"id,omitempty"`
-	// The type of resource within a collection
+	// The type of object that has been created
 	Type *string `json:"type,omitempty"`
 	// URL to the collection representation (absolute path)
 	Href *string `json:"href,omitempty"`

@@ -49,8 +49,10 @@ type VolumeProperties struct {
 	DiscVirtioHotUnplug *bool `json:"discVirtioHotUnplug,omitempty"`
 	// The LUN ID of the storage volume. Null for volumes not mounted to any VM
 	DeviceNumber *int64 `json:"deviceNumber,omitempty"`
-	// The uuid of the Backup Unit that user has access to. The property is immutable and is only allowed to be set on a new volume creation. It is mandatory to provied either public image or imageAlias in conjunction with this property.
+	// The uuid of the Backup Unit that user has access to. The property is immutable and is only allowed to be set on a new volume creation. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property.
 	BackupunitId *string `json:"backupunitId,omitempty"`
+	// The cloud-init configuration for the volume as base64 encoded string. The property is immutable and is only allowed to be set on a new volume creation. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property.
+	UserData *string `json:"userData,omitempty"`
 }
 
 
@@ -828,6 +830,49 @@ func (o *VolumeProperties) HasBackupunitId() bool {
 }
 
 
+
+// GetUserData returns the UserData field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *VolumeProperties) GetUserData() *string {
+	if o == nil {
+		return nil
+	}
+
+
+	return o.UserData
+
+}
+
+// GetUserDataOk returns a tuple with the UserData field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *VolumeProperties) GetUserDataOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+
+	return o.UserData, true
+}
+
+// SetUserData sets field value
+func (o *VolumeProperties) SetUserData(v string) {
+
+
+	o.UserData = &v
+
+}
+
+// HasUserData returns a boolean if a field has been set.
+func (o *VolumeProperties) HasUserData() bool {
+	if o != nil && o.UserData != nil {
+		return true
+	}
+
+	return false
+}
+
+
 func (o VolumeProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
@@ -918,6 +963,11 @@ func (o VolumeProperties) MarshalJSON() ([]byte, error) {
 
 	if o.BackupunitId != nil {
 		toSerialize["backupunitId"] = o.BackupunitId
+	}
+	
+
+	if o.UserData != nil {
+		toSerialize["userData"] = o.UserData
 	}
 	
 	return json.Marshal(toSerialize)

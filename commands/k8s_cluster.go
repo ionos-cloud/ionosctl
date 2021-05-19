@@ -111,10 +111,12 @@ Required values to run a command:
 		InitClient: true,
 	})
 	create.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, it will be used the default one")
+	create.AddBoolFlag(config.ArgPublic, "", true, "The indicator if the Cluster is public or private")
+	create.AddStringFlag(config.ArgGatewayIp, "", "", "The IP address of the gateway used by the Cluster. This is mandatory when `public` is set to `false` and should not be provided otherwise")
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Cluster creation to be executed")
 	create.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the new Cluster to be in ACTIVE state")
 	create.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for Cluster/Request [seconds]")
-	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, it will be used the default one")
 
 	/*
 		Update Command
@@ -284,13 +286,13 @@ func GetStateK8sCluster(c *core.CommandConfig, objId string) (*string, error) {
 	return nil, nil
 }
 
-func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sCluster, error) {
+func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, error) {
 	var (
-		name       string
 		k8sversion string
 		err        error
 	)
-	name = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterName))
+	proper := resources.K8sClusterPropertiesForPost{}
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterName)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 	} else {
@@ -298,18 +300,22 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sCluster, error) {
 			return nil, err
 		}
 	}
-	return &resources.K8sCluster{
-		KubernetesCluster: ionoscloud.KubernetesCluster{
-			Properties: &ionoscloud.KubernetesClusterProperties{
-				Name:       &name,
-				K8sVersion: &k8sversion,
-			},
+	proper.SetK8sVersion(k8sversion)
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPublic)) {
+		proper.SetPublic(viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgGatewayIp)) {
+		proper.SetGatewayIp(viper.GetString(core.GetFlagName(c.NS, config.ArgGatewayIp)))
+	}
+	return &resources.K8sClusterForPost{
+		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
+			Properties: &proper.KubernetesClusterPropertiesForPost,
 		},
 	}, nil
 }
 
-func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) resources.K8sCluster {
-	propertiesUpdated := resources.K8sClusterProperties{}
+func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) resources.K8sClusterForPut {
+	propertiesUpdated := resources.K8sClusterPropertiesForPut{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sClusterName)) {
 			n := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterName))
@@ -337,18 +343,18 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 			}
 		}
 	}
-	return resources.K8sCluster{
-		KubernetesCluster: ionoscloud.KubernetesCluster{
-			Properties: &propertiesUpdated.KubernetesClusterProperties,
+	return resources.K8sClusterForPut{
+		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
+			Properties: &propertiesUpdated.KubernetesClusterPropertiesForPut,
 		},
 	}
 }
 
 // Output Printing
 
-var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow"}
+var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "Public", "State", "MaintenanceWindow"}
 
-var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions"}
+var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "Public", "GatewayIp"}
 
 type K8sClusterPrint struct {
 	ClusterId                string   `json:"ClusterId,omitempty"`
@@ -358,6 +364,8 @@ type K8sClusterPrint struct {
 	ViableNodePoolVersions   []string `json:"ViableNodePoolVersions,omitempty"`
 	MaintenanceWindow        string   `json:"MaintenanceWindow,omitempty"`
 	State                    string   `json:"State,omitempty"`
+	GatewayIps               string   `json:"GatewayIps,omitempty"`
+	Public                   bool     `json:"Public,omitempty"`
 }
 
 func getK8sClusterPrint(resp *resources.Response, c *core.CommandConfig, k8ss []resources.K8sCluster) printer.Result {
@@ -389,6 +397,8 @@ func getK8sClusterCols(flagName string, outErr io.Writer) []string {
 			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
 			"ViableNodePoolVersions":   "ViableNodePoolVersions",
 			"MaintenanceWindow":        "MaintenanceWindow",
+			"Public":                   "Public",
+			"GatewayIps":               "GatewayIps",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -449,6 +459,12 @@ func getK8sClustersKVMaps(us []resources.K8sCluster) []map[string]interface{} {
 				if time, ok := maintenance.GetTimeOk(); ok && time != nil {
 					uPrint.MaintenanceWindow = fmt.Sprintf("%s %s", uPrint.MaintenanceWindow, *time)
 				}
+			}
+			if pub, ok := properties.GetPublicOk(); ok && pub != nil {
+				uPrint.Public = *pub
+			}
+			if gatewayIps, ok := properties.GetGatewayIpOk(); ok && gatewayIps != nil {
+				uPrint.GatewayIps = *gatewayIps
 			}
 		}
 		if meta, ok := u.GetMetadataOk(); ok && meta != nil {

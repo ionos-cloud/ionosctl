@@ -25,6 +25,19 @@ var (
 			Size:     &testIpBlockSize,
 			Name:     &testIpBlockVar,
 			Ips:      &testIpBlockIpsVar,
+			IpConsumers: &[]ionoscloud.IpConsumer{
+				{
+					Ip:              &testIpBlockVar,
+					Mac:             &testIpBlockVar,
+					NicId:           &testIpBlockVar,
+					ServerId:        &testIpBlockVar,
+					ServerName:      &testIpBlockVar,
+					DatacenterId:    &testIpBlockVar,
+					DatacenterName:  &testIpBlockVar,
+					K8sNodePoolUuid: &testIpBlockVar,
+					K8sClusterUuid:  &testIpBlockVar,
+				},
+			},
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &testIpBlockStateVar,

@@ -156,13 +156,14 @@ func RunGroupResourceList(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultResourceCols = []string{"ResourceId", "Name", "SecAuthProtection", "Type"}
+var defaultResourceCols = []string{"ResourceId", "Name", "SecAuthProtection", "Type", "State"}
 
 type ResourcePrint struct {
 	ResourceId        string `json:"ResourceId,omitempty"`
 	Name              string `json:"Name,omitempty"`
 	SecAuthProtection bool   `json:"SecAuthProtection,omitempty"`
 	Type              string `json:"Type,omitempty"`
+	State             string `json:"State,omitempty"`
 }
 
 func getResourcePrint(c *core.CommandConfig, groups []resources.Resource) printer.Result {
@@ -185,6 +186,7 @@ func getResourceCols(flagName string, outErr io.Writer) []string {
 			"Name":              "Name",
 			"SecAuthProtection": "SecAuthProtection",
 			"Type":              "Type",
+			"State":             "State",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -245,6 +247,11 @@ func getResourcesKVMaps(rs []resources.Resource) []map[string]interface{} {
 		}
 		if typeResource, ok := r.GetTypeOk(); ok && typeResource != nil {
 			rPrint.Type = string(*typeResource)
+		}
+		if metadata, ok := r.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				rPrint.State = *state
+			}
 		}
 		o := structs.Map(rPrint)
 		out = append(out, o)

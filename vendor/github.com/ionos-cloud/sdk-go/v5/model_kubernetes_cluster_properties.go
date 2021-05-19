@@ -25,6 +25,10 @@ type KubernetesClusterProperties struct {
 	AvailableUpgradeVersions *[]string `json:"availableUpgradeVersions,omitempty"`
 	// List of versions that may be used for node pools under this cluster
 	ViableNodePoolVersions *[]string `json:"viableNodePoolVersions,omitempty"`
+	// The indicator if the cluster is public or private. Be aware that setting it to false is currently in beta phase.
+	Public *bool `json:"public,omitempty"`
+	// The IP address of the gateway used by the cluster. This is mandatory when `public` is set to `false` and should not be provided otherwise.
+	GatewayIp *string `json:"gatewayIp,omitempty"`
 }
 
 
@@ -243,6 +247,92 @@ func (o *KubernetesClusterProperties) HasViableNodePoolVersions() bool {
 }
 
 
+
+// GetPublic returns the Public field value
+// If the value is explicit nil, the zero value for bool will be returned
+func (o *KubernetesClusterProperties) GetPublic() *bool {
+	if o == nil {
+		return nil
+	}
+
+
+	return o.Public
+
+}
+
+// GetPublicOk returns a tuple with the Public field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *KubernetesClusterProperties) GetPublicOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+
+	return o.Public, true
+}
+
+// SetPublic sets field value
+func (o *KubernetesClusterProperties) SetPublic(v bool) {
+
+
+	o.Public = &v
+
+}
+
+// HasPublic returns a boolean if a field has been set.
+func (o *KubernetesClusterProperties) HasPublic() bool {
+	if o != nil && o.Public != nil {
+		return true
+	}
+
+	return false
+}
+
+
+
+// GetGatewayIp returns the GatewayIp field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *KubernetesClusterProperties) GetGatewayIp() *string {
+	if o == nil {
+		return nil
+	}
+
+
+	return o.GatewayIp
+
+}
+
+// GetGatewayIpOk returns a tuple with the GatewayIp field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *KubernetesClusterProperties) GetGatewayIpOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+
+	return o.GatewayIp, true
+}
+
+// SetGatewayIp sets field value
+func (o *KubernetesClusterProperties) SetGatewayIp(v string) {
+
+
+	o.GatewayIp = &v
+
+}
+
+// HasGatewayIp returns a boolean if a field has been set.
+func (o *KubernetesClusterProperties) HasGatewayIp() bool {
+	if o != nil && o.GatewayIp != nil {
+		return true
+	}
+
+	return false
+}
+
+
 func (o KubernetesClusterProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
@@ -268,6 +358,16 @@ func (o KubernetesClusterProperties) MarshalJSON() ([]byte, error) {
 
 	if o.ViableNodePoolVersions != nil {
 		toSerialize["viableNodePoolVersions"] = o.ViableNodePoolVersions
+	}
+	
+
+	if o.Public != nil {
+		toSerialize["public"] = o.Public
+	}
+	
+
+	if o.GatewayIp != nil {
+		toSerialize["gatewayIp"] = o.GatewayIp
 	}
 	
 	return json.Marshal(toSerialize)

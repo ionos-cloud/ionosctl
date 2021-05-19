@@ -1813,13 +1813,13 @@ type ApiK8sNodepoolsPostRequest struct {
 	ctx _context.Context
 	ApiService *KubernetesApiService
 	k8sClusterId string
-	kubernetesNodePool *KubernetesNodePool
+	kubernetesNodePool *KubernetesNodePoolForPost
 	pretty *bool
 	depth *int32
 	xContractNumber *int32
 }
 
-func (r ApiK8sNodepoolsPostRequest) KubernetesNodePool(kubernetesNodePool KubernetesNodePool) ApiK8sNodepoolsPostRequest {
+func (r ApiK8sNodepoolsPostRequest) KubernetesNodePool(kubernetesNodePool KubernetesNodePoolForPost) ApiK8sNodepoolsPostRequest {
 	r.kubernetesNodePool = &kubernetesNodePool
 	return r
 }
@@ -1983,13 +1983,13 @@ type ApiK8sNodepoolsPutRequest struct {
 	ApiService *KubernetesApiService
 	k8sClusterId string
 	nodepoolId string
-	kubernetesNodePool *KubernetesNodePool
+	kubernetesNodePool *KubernetesNodePoolForPut
 	pretty *bool
 	depth *int32
 	xContractNumber *int32
 }
 
-func (r ApiK8sNodepoolsPutRequest) KubernetesNodePool(kubernetesNodePool KubernetesNodePool) ApiK8sNodepoolsPutRequest {
+func (r ApiK8sNodepoolsPutRequest) KubernetesNodePool(kubernetesNodePool KubernetesNodePoolForPut) ApiK8sNodepoolsPutRequest {
 	r.kubernetesNodePool = &kubernetesNodePool
 	return r
 }
@@ -2006,7 +2006,7 @@ func (r ApiK8sNodepoolsPutRequest) XContractNumber(xContractNumber int32) ApiK8s
 	return r
 }
 
-func (r ApiK8sNodepoolsPutRequest) Execute() (KubernetesNodePoolForPut, *APIResponse, error) {
+func (r ApiK8sNodepoolsPutRequest) Execute() (KubernetesNodePool, *APIResponse, error) {
 	return r.ApiService.K8sNodepoolsPutExecute(r)
 }
 
@@ -2029,16 +2029,16 @@ func (a *KubernetesApiService) K8sNodepoolsPut(ctx _context.Context, k8sClusterI
 
 /*
  * Execute executes the request
- * @return KubernetesNodePoolForPut
+ * @return KubernetesNodePool
  */
-func (a *KubernetesApiService) K8sNodepoolsPutExecute(r ApiK8sNodepoolsPutRequest) (KubernetesNodePoolForPut, *APIResponse, error) {
+func (a *KubernetesApiService) K8sNodepoolsPutExecute(r ApiK8sNodepoolsPutRequest) (KubernetesNodePool, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  KubernetesNodePoolForPut
+		localVarReturnValue  KubernetesNodePool
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "KubernetesApiService.K8sNodepoolsPut")
@@ -2154,13 +2154,13 @@ func (a *KubernetesApiService) K8sNodepoolsPutExecute(r ApiK8sNodepoolsPutReques
 type ApiK8sPostRequest struct {
 	ctx _context.Context
 	ApiService *KubernetesApiService
-	kubernetesCluster *KubernetesCluster
+	kubernetesCluster *KubernetesClusterForPost
 	pretty *bool
 	depth *int32
 	xContractNumber *int32
 }
 
-func (r ApiK8sPostRequest) KubernetesCluster(kubernetesCluster KubernetesCluster) ApiK8sPostRequest {
+func (r ApiK8sPostRequest) KubernetesCluster(kubernetesCluster KubernetesClusterForPost) ApiK8sPostRequest {
 	r.kubernetesCluster = &kubernetesCluster
 	return r
 }
@@ -2320,13 +2320,13 @@ type ApiK8sPutRequest struct {
 	ctx _context.Context
 	ApiService *KubernetesApiService
 	k8sClusterId string
-	kubernetesCluster *KubernetesCluster
+	kubernetesCluster *KubernetesClusterForPut
 	pretty *bool
 	depth *int32
 	xContractNumber *int32
 }
 
-func (r ApiK8sPutRequest) KubernetesCluster(kubernetesCluster KubernetesCluster) ApiK8sPutRequest {
+func (r ApiK8sPutRequest) KubernetesCluster(kubernetesCluster KubernetesClusterForPut) ApiK8sPutRequest {
 	r.kubernetesCluster = &kubernetesCluster
 	return r
 }

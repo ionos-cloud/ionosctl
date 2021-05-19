@@ -28,13 +28,13 @@ func TestNewUserService(t *testing.T) {
 	t.Run("create_user_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		userSvc := NewUserService(svc.Get(), ctx)
-		_, _, err := userSvc.Create(User{})
+		_, _, err := userSvc.Create(UserPost{})
 		assert.Error(t, err)
 	})
 	t.Run("update_user_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		userSvc := NewUserService(svc.Get(), ctx)
-		_, _, err := userSvc.Update(testResourceVar, User{})
+		_, _, err := userSvc.Update(testResourceVar, UserPut{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_user_error", func(t *testing.T) {

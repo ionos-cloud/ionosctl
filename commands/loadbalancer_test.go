@@ -45,6 +45,7 @@ var (
 		Loadbalancer: ionoscloud.Loadbalancer{
 			Id:         &testLoadbalancerVar,
 			Properties: &loadbalancerProperties.LoadbalancerProperties,
+			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	testLoadbalancerVar    = "test-loadbalancer"

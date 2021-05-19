@@ -30,8 +30,6 @@ type UserProperties struct {
 	SecAuthActive *bool `json:"secAuthActive,omitempty"`
 	// Canonical (S3) id of the user for a given identity
 	S3CanonicalUserId *string `json:"s3CanonicalUserId,omitempty"`
-	// User password
-	Password *string `json:"password,omitempty"`
 	// indicates if the user is active
 	Active *bool `json:"active,omitempty"`
 }
@@ -339,49 +337,6 @@ func (o *UserProperties) HasS3CanonicalUserId() bool {
 
 
 
-// GetPassword returns the Password field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *UserProperties) GetPassword() *string {
-	if o == nil {
-		return nil
-	}
-
-
-	return o.Password
-
-}
-
-// GetPasswordOk returns a tuple with the Password field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *UserProperties) GetPasswordOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-
-	return o.Password, true
-}
-
-// SetPassword sets field value
-func (o *UserProperties) SetPassword(v string) {
-
-
-	o.Password = &v
-
-}
-
-// HasPassword returns a boolean if a field has been set.
-func (o *UserProperties) HasPassword() bool {
-	if o != nil && o.Password != nil {
-		return true
-	}
-
-	return false
-}
-
-
-
 // GetActive returns the Active field value
 // If the value is explicit nil, the zero value for bool will be returned
 func (o *UserProperties) GetActive() *bool {
@@ -459,11 +414,6 @@ func (o UserProperties) MarshalJSON() ([]byte, error) {
 
 	if o.S3CanonicalUserId != nil {
 		toSerialize["s3CanonicalUserId"] = o.S3CanonicalUserId
-	}
-	
-
-	if o.Password != nil {
-		toSerialize["password"] = o.Password
 	}
 	
 

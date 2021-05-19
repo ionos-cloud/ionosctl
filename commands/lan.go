@@ -310,13 +310,14 @@ func RunLanDelete(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultLanCols = []string{"LanId", "Name", "Public", "PccId"}
+var defaultLanCols = []string{"LanId", "Name", "Public", "PccId", "State"}
 
 type LanPrint struct {
 	LanId  string `json:"LanId,omitempty"`
 	Name   string `json:"Name,omitempty"`
 	Public bool   `json:"Public,omitempty"`
 	PccId  string `json:"PccId,omitempty"`
+	State  string `json:"State,omitempty"`
 }
 
 func getLansCols(flagName string, outErr io.Writer) []string {
@@ -332,6 +333,7 @@ func getLansCols(flagName string, outErr io.Writer) []string {
 		"Name":   "Name",
 		"Public": "Public",
 		"PccId":  "PccId",
+		"State":  "State",
 	}
 	var lanCols []string
 	for _, k := range cols {
@@ -356,19 +358,25 @@ func getLans(lans resources.Lans) []resources.Lan {
 func getLansKVMaps(ls []resources.Lan) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ls))
 	for _, l := range ls {
-		properties := l.GetProperties()
 		var lanprint LanPrint
 		if id, ok := l.GetIdOk(); ok && id != nil {
 			lanprint.LanId = *id
 		}
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			lanprint.Name = *name
+		if properties, ok := l.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				lanprint.Name = *name
+			}
+			if public, ok := properties.GetPublicOk(); ok && public != nil {
+				lanprint.Public = *public
+			}
+			if pccId, ok := properties.GetPccOk(); ok && pccId != nil {
+				lanprint.PccId = *pccId
+			}
 		}
-		if public, ok := properties.GetPublicOk(); ok && public != nil {
-			lanprint.Public = *public
-		}
-		if pccId, ok := properties.GetPccOk(); ok && pccId != nil {
-			lanprint.PccId = *pccId
+		if metadata, ok := l.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				lanprint.State = *state
+			}
 		}
 		o := structs.Map(lanprint)
 		out = append(out, o)

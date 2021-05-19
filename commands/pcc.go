@@ -263,28 +263,28 @@ func peers() *core.Command {
 	})
 
 	/*
-		Get Command
+		List Command
 	*/
-	getPeers := core.NewCommand(ctx, peerCmd, core.CommandBuilder{
+	listPeers := core.NewCommand(ctx, peerCmd, core.CommandBuilder{
 		Namespace:  "pcc",
 		Resource:   "peers",
-		Verb:       "get",
-		ShortDesc:  "Get a Private Cross-Connect Peers",
+		Verb:       "list",
+		ShortDesc:  "Get a list of Peers from a Private Cross-Connect",
 		LongDesc:   "Use this command to get a list of Peers from a Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
-		Example:    getPccPeersExample,
+		Example:    listPccPeersExample,
 		PreCmdRun:  PreRunPccId,
-		CmdRun:     RunPccPeersGet,
+		CmdRun:     RunPccPeersList,
 		InitClient: true,
 	})
-	getPeers.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
-	_ = getPeers.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	listPeers.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
+	_ = listPeers.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return peerCmd
 }
 
-func RunPccPeersGet(c *core.CommandConfig) error {
+func RunPccPeersList(c *core.CommandConfig) error {
 	u, _, err := c.Pccs().GetPeers(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	if err != nil {
 		return err
@@ -294,12 +294,13 @@ func RunPccPeersGet(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultPccCols = []string{"PccId", "Name", "Description"}
+var defaultPccCols = []string{"PccId", "Name", "Description", "State"}
 
 type PccPrint struct {
 	PccId       string `json:"PccId,omitempty"`
 	Name        string `json:"Name,omitempty"`
 	Description string `json:"Description,omitempty"`
+	State       string `json:"State,omitempty"`
 }
 
 func getPccPrint(resp *resources.Response, c *core.CommandConfig, pccs []resources.PrivateCrossConnect) printer.Result {
@@ -373,6 +374,7 @@ func getPccCols(flagName string, outErr io.Writer) []string {
 			"PccId":       "PccId",
 			"Name":        "Name",
 			"Description": "Description",
+			"State":       "State",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -419,6 +421,11 @@ func getPccsKVMaps(us []resources.PrivateCrossConnect) []map[string]interface{} 
 			}
 			if d, ok := properties.GetDescriptionOk(); ok && d != nil {
 				uPrint.Description = *d
+			}
+		}
+		if metadata, ok := u.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				uPrint.State = *state
 			}
 		}
 		o := structs.Map(uPrint)

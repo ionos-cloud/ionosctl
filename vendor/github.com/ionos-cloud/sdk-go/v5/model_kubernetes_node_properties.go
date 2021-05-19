@@ -19,7 +19,9 @@ type KubernetesNodeProperties struct {
 	// A Kubernetes Node Name.
 	Name *string `json:"name"`
 	// A valid public IP.
-	PublicIP *string `json:"publicIP"`
+	PublicIP *string `json:"publicIP,omitempty"`
+	// A valid private IP.
+	PrivateIP *string `json:"privateIP,omitempty"`
 	// The kubernetes version in which a nodepool is running. This imposes restrictions on what kubernetes versions can be run in a cluster's nodepools. Additionally, not all kubernetes versions are viable upgrade targets for all prior versions.
 	K8sVersion *string `json:"k8sVersion"`
 }
@@ -112,6 +114,49 @@ func (o *KubernetesNodeProperties) HasPublicIP() bool {
 
 
 
+// GetPrivateIP returns the PrivateIP field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *KubernetesNodeProperties) GetPrivateIP() *string {
+	if o == nil {
+		return nil
+	}
+
+
+	return o.PrivateIP
+
+}
+
+// GetPrivateIPOk returns a tuple with the PrivateIP field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *KubernetesNodeProperties) GetPrivateIPOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+
+	return o.PrivateIP, true
+}
+
+// SetPrivateIP sets field value
+func (o *KubernetesNodeProperties) SetPrivateIP(v string) {
+
+
+	o.PrivateIP = &v
+
+}
+
+// HasPrivateIP returns a boolean if a field has been set.
+func (o *KubernetesNodeProperties) HasPrivateIP() bool {
+	if o != nil && o.PrivateIP != nil {
+		return true
+	}
+
+	return false
+}
+
+
+
 // GetK8sVersion returns the K8sVersion field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *KubernetesNodeProperties) GetK8sVersion() *string {
@@ -164,6 +209,11 @@ func (o KubernetesNodeProperties) MarshalJSON() ([]byte, error) {
 
 	if o.PublicIP != nil {
 		toSerialize["publicIP"] = o.PublicIP
+	}
+	
+
+	if o.PrivateIP != nil {
+		toSerialize["privateIP"] = o.PrivateIP
 	}
 	
 

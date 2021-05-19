@@ -18,6 +18,10 @@ type IpBlocks struct {
 	ionoscloud.IpBlocks
 }
 
+type IpConsumer struct {
+	ionoscloud.IpConsumer
+}
+
 // IpBlocksService is a wrapper around ionoscloud.IpBlock
 type IpBlocksService interface {
 	List() (IpBlocks, *Response, error)

@@ -33,6 +33,7 @@ var (
 			FirewallActive: &dhcpNic,
 			Mac:            &testNicVar,
 		},
+		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 	}
 	nicProperties = resources.NicProperties{
 		NicProperties: ionoscloud.NicProperties{

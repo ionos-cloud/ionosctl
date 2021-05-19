@@ -34,7 +34,7 @@ Required values to run a command:
       --backupunit-email string      The e-mail address you want to assign to the BackupUnit (required)
       --backupunit-name string       Alphanumeric name you want to assign to the BackupUnit (required)
       --backupunit-password string   Alphanumeric password you want to assign to the BackupUnit (required)
-      --cols strings                 Columns to be printed in the standard output (default [BackupUnitId,Name,Email])
+      --cols strings                 Columns to be printed in the standard output (default [BackupUnitId,Name,Email,State])
   -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                        Force command to execute without user input
   -h, --help                         help for create

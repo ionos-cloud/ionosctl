@@ -31,6 +31,7 @@ var (
 	lp = ionoscloud.LanPost{
 		Id:         &testLanVar,
 		Properties: lanPostTest.Properties,
+		Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 	}
 	l = ionoscloud.Lan{
 		Id: &testLanVar,

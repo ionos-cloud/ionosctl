@@ -293,8 +293,8 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp"}
-	allLoadbalancerCols     = []string{"LoadBalancerId", "Name", "Dhcp", "Ip"}
+	defaultLoadbalancerCols = []string{"LoadBalancerId", "Name", "Dhcp", "State"}
+	allLoadbalancerCols     = []string{"LoadBalancerId", "Name", "Dhcp", "State", "Ip"}
 )
 
 type LoadbalancerPrint struct {
@@ -302,6 +302,7 @@ type LoadbalancerPrint struct {
 	Name           string `json:"Name,omitempty"`
 	Dhcp           bool   `json:"Dhcp,omitempty"`
 	Ip             string `json:"Ip,omitempty"`
+	State          string `json:"State,omitempty"`
 }
 
 func getLoadbalancersCols(flagName string, outErr io.Writer) []string {
@@ -317,6 +318,7 @@ func getLoadbalancersCols(flagName string, outErr io.Writer) []string {
 		"Name":           "Name",
 		"Dhcp":           "Dhcp",
 		"Ip":             "Ip",
+		"State":          "State",
 	}
 	var loadbalancerCols []string
 	for _, k := range cols {
@@ -341,19 +343,25 @@ func getLoadbalancers(loadbalancers resources.Loadbalancers) []resources.Loadbal
 func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(vs))
 	for _, v := range vs {
-		properties := v.GetProperties()
 		var loadbalancerPrint LoadbalancerPrint
 		if id, ok := v.GetIdOk(); ok && id != nil {
 			loadbalancerPrint.LoadBalancerId = *id
 		}
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			loadbalancerPrint.Name = *name
+		if properties, ok := v.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				loadbalancerPrint.Name = *name
+			}
+			if dhcp, ok := properties.GetDhcpOk(); ok && dhcp != nil {
+				loadbalancerPrint.Dhcp = *dhcp
+			}
+			if ip, ok := properties.GetIpOk(); ok && ip != nil {
+				loadbalancerPrint.Ip = *ip
+			}
 		}
-		if dhcp, ok := properties.GetDhcpOk(); ok && dhcp != nil {
-			loadbalancerPrint.Dhcp = *dhcp
-		}
-		if ip, ok := properties.GetIpOk(); ok && ip != nil {
-			loadbalancerPrint.Ip = *ip
+		if metadata, ok := v.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				loadbalancerPrint.State = *state
+			}
 		}
 		o := structs.Map(loadbalancerPrint)
 		out = append(out, o)

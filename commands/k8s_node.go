@@ -241,13 +241,14 @@ func GetStateK8sNode(c *core.CommandConfig, objId string) (*string, error) {
 
 // Output Printing
 
-var defaultK8sNodeCols = []string{"NodeId", "Name", "K8sVersion", "PublicIP", "State"}
+var defaultK8sNodeCols = []string{"NodeId", "Name", "K8sVersion", "PublicIP", "PrivateIP", "State"}
 
 type K8sNodePrint struct {
 	NodeId     string `json:"NodeId,omitempty"`
 	Name       string `json:"Name,omitempty"`
 	K8sVersion string `json:"K8sVersion,omitempty"`
 	PublicIP   string `json:"PublicIP,omitempty"`
+	PrivateIP  string `json:"PrivateIP,omitempty"`
 	State      string `json:"State,omitempty"`
 }
 
@@ -271,6 +272,7 @@ func getK8sNodeCols(flagName string, outErr io.Writer) []string {
 			"Name":       "Name",
 			"K8sVersion": "K8sVersion",
 			"PublicIP":   "PublicIP",
+			"PrivateIP":  "PrivateIP",
 			"State":      "State",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
@@ -321,6 +323,9 @@ func getK8sNodesKVMaps(us []resources.K8sNode) []map[string]interface{} {
 			}
 			if v, ok := properties.GetPublicIPOk(); ok && v != nil {
 				uPrint.PublicIP = *v
+			}
+			if priv, ok := properties.GetPrivateIPOk(); ok && priv != nil {
+				uPrint.PrivateIP = *priv
 			}
 		}
 		if meta, ok := u.GetMetadataOk(); ok && meta != nil {

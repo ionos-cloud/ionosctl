@@ -20,22 +20,72 @@ import (
 var (
 	sizeVolume    = float32(12)
 	sizeVolumeNew = float32(12)
-	zoneVolume    = "ZONE 1"
+	zoneVolume    = "ZONE_1"
 	v             = ionoscloud.Volume{
 		Id: &testVolumeVar,
 		Properties: &ionoscloud.VolumeProperties{
-			Name:             &testVolumeVar,
-			Size:             &sizeVolume,
-			LicenceType:      &testVolumeVar,
-			Type:             &testVolumeVar,
-			Bus:              &testVolumeVar,
-			AvailabilityZone: &zoneVolume,
-			Image:            &testVolumeVar,
-			BackupunitId:     &testVolumeVar,
-			SshKeys:          &testVolumeSliceVar,
+			Name:                &testVolumeVar,
+			Size:                &sizeVolume,
+			LicenceType:         &testVolumeVar,
+			Type:                &testVolumeVar,
+			Bus:                 &testVolumeVar,
+			Image:               &testVolumeVar,
+			ImageAlias:          &testVolumeVar,
+			AvailabilityZone:    &zoneVolume,
+			SshKeys:             &testVolumeSliceVar,
+			BackupunitId:        &testVolumeVar,
+			UserData:            &testVolumeVar,
+			CpuHotPlug:          &testVolumeBoolVar,
+			RamHotPlug:          &testVolumeBoolVar,
+			NicHotPlug:          &testVolumeBoolVar,
+			NicHotUnplug:        &testVolumeBoolVar,
+			DiscVirtioHotPlug:   &testVolumeBoolVar,
+			DiscVirtioHotUnplug: &testVolumeBoolVar,
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &testVolumeVar,
+		},
+	}
+	testVolume = resources.Volume{
+		Volume: ionoscloud.Volume{
+			Properties: &ionoscloud.VolumeProperties{
+				Name:                &testVolumeVar,
+				Size:                &sizeVolume,
+				LicenceType:         &testVolumeVar,
+				Type:                &testVolumeVar,
+				Bus:                 &testVolumeVar,
+				AvailabilityZone:    &zoneVolume,
+				BackupunitId:        &testVolumeVar,
+				UserData:            &testVolumeVar,
+				CpuHotPlug:          &testVolumeBoolVar,
+				RamHotPlug:          &testVolumeBoolVar,
+				NicHotPlug:          &testVolumeBoolVar,
+				NicHotUnplug:        &testVolumeBoolVar,
+				DiscVirtioHotPlug:   &testVolumeBoolVar,
+				DiscVirtioHotUnplug: &testVolumeBoolVar,
+			},
+		},
+	}
+	testVolumeImg = resources.Volume{
+		Volume: ionoscloud.Volume{
+			Properties: &ionoscloud.VolumeProperties{
+				Name:                &testVolumeVar,
+				Size:                &sizeVolume,
+				Image:               &testVolumeVar,
+				ImageAlias:          &testVolumeVar,
+				ImagePassword:       &testVolumeVar,
+				Type:                &testVolumeVar,
+				Bus:                 &testVolumeVar,
+				AvailabilityZone:    &zoneVolume,
+				BackupunitId:        &testVolumeVar,
+				UserData:            &testVolumeVar,
+				CpuHotPlug:          &testVolumeBoolVar,
+				RamHotPlug:          &testVolumeBoolVar,
+				NicHotPlug:          &testVolumeBoolVar,
+				NicHotUnplug:        &testVolumeBoolVar,
+				DiscVirtioHotPlug:   &testVolumeBoolVar,
+				DiscVirtioHotUnplug: &testVolumeBoolVar,
+			},
 		},
 	}
 	vs = resources.Volumes{
@@ -46,21 +96,33 @@ var (
 	}
 	volumeProperties = resources.VolumeProperties{
 		VolumeProperties: ionoscloud.VolumeProperties{
-			Name: &testVolumeNewVar,
-			Bus:  &testVolumeNewVar,
-			Size: &sizeVolumeNew,
+			Name:                &testVolumeNewVar,
+			Bus:                 &testVolumeNewVar,
+			Size:                &sizeVolumeNew,
+			CpuHotPlug:          &testVolumeBoolVar,
+			RamHotPlug:          &testVolumeBoolVar,
+			NicHotPlug:          &testVolumeBoolVar,
+			NicHotUnplug:        &testVolumeBoolVar,
+			DiscVirtioHotPlug:   &testVolumeBoolVar,
+			DiscVirtioHotUnplug: &testVolumeBoolVar,
 		},
 	}
 	volumeNew = resources.Volume{
 		Volume: ionoscloud.Volume{
 			Id: &testVolumeVar,
 			Properties: &ionoscloud.VolumeProperties{
-				Name:             volumeProperties.VolumeProperties.Name,
-				Size:             volumeProperties.VolumeProperties.Size,
-				LicenceType:      &testVolumeVar,
-				Type:             &testVolumeVar,
-				Bus:              volumeProperties.VolumeProperties.Bus,
-				AvailabilityZone: &zoneVolume,
+				Name:                volumeProperties.VolumeProperties.Name,
+				Size:                volumeProperties.VolumeProperties.Size,
+				LicenceType:         &testVolumeVar,
+				Type:                &testVolumeVar,
+				Bus:                 volumeProperties.VolumeProperties.Bus,
+				AvailabilityZone:    &zoneVolume,
+				CpuHotPlug:          &testVolumeBoolVar,
+				RamHotPlug:          &testVolumeBoolVar,
+				NicHotPlug:          &testVolumeBoolVar,
+				NicHotUnplug:        &testVolumeBoolVar,
+				DiscVirtioHotPlug:   &testVolumeBoolVar,
+				DiscVirtioHotUnplug: &testVolumeBoolVar,
 			},
 		},
 	}
@@ -71,6 +133,7 @@ var (
 		},
 	}
 	testVolumeVar      = "test-volume"
+	testVolumeBoolVar  = false
 	testVolumeSliceVar = []string{"test-volume"}
 	testVolumeNewVar   = "test-new-volume"
 	testVolumeErr      = errors.New("volume test: error occurred")
@@ -100,6 +163,75 @@ func TestPreRunGlobalDcIdVolumeIdRequiredFlagsErr(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), "")
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), "")
 		err := PreRunGlobalDcIdVolumeId(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunGlobalDcIdVolumePropertiesErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), "")
+		err := PreRunGlobalDcIdVolumeProperties(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunGlobalDcIdVolumePropertiesLicenceType(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testVolumeVar)
+		err := PreRunGlobalDcIdVolumeProperties(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunGlobalDcIdVolumePropertiesLicenceTypeErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		err := PreRunGlobalDcIdVolumeProperties(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunGlobalDcIdVolumePropertiesImg(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImagePassword), testVolumeVar)
+		err := PreRunGlobalDcIdVolumeProperties(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunGlobalDcIdVolumePropertiesImgErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), testVolumeVar)
+		err := PreRunGlobalDcIdVolumeProperties(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -172,12 +304,51 @@ func TestRunVolumeCreate(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeName), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeSize), sizeVolume)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeLicenceType), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeBus), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserData), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Volume.EXPECT().Create(testVolumeVar, testVolumeVar, testVolumeVar, testVolumeVar, testVolumeVar, zoneVolume, sizeVolume).Return(&resources.Volume{Volume: v}, nil, nil)
+		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&resources.Volume{Volume: v}, nil, nil)
+		err := RunVolumeCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunVolumeCreateImg(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeName), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeSize), sizeVolume)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImagePassword), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeType), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeBus), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserData), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.Volume.EXPECT().Create(testVolumeVar, testVolumeImg).Return(&resources.Volume{Volume: v}, nil, nil)
 		err := RunVolumeCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -193,12 +364,20 @@ func TestRunVolumeCreateErr(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeName), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeSize), sizeVolume)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeLicenceType), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeBus), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserData), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Volume.EXPECT().Create(testVolumeVar, testVolumeVar, testVolumeVar, testVolumeVar, testVolumeVar, zoneVolume, sizeVolume).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
+		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
 		err := RunVolumeCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -214,12 +393,20 @@ func TestRunVolumeCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeName), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeSize), sizeVolume)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeLicenceType), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeBus), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBackupUnitId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserData), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Volume.EXPECT().Create(testVolumeVar, testVolumeVar, testVolumeVar, testVolumeVar, testVolumeVar, zoneVolume, sizeVolume).Return(&resources.Volume{Volume: v}, nil, nil)
+		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&resources.Volume{Volume: v}, nil, nil)
 		err := RunVolumeCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -237,6 +424,12 @@ func TestRunVolumeUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeName), testVolumeNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeSize), sizeVolumeNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeBus), testVolumeNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Volume.EXPECT().Update(testVolumeVar, testVolumeVar, volumeProperties).Return(&volumeNew, nil, nil)
 		err := RunVolumeUpdate(cfg)
@@ -256,6 +449,12 @@ func TestRunVolumeUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeName), testVolumeNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeSize), sizeVolumeNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeBus), testVolumeNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Volume.EXPECT().Update(testVolumeVar, testVolumeVar, volumeProperties).Return(&volumeNew, nil, testVolumeErr)
 		err := RunVolumeUpdate(cfg)
@@ -275,6 +474,12 @@ func TestRunVolumeUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeName), testVolumeNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeSize), sizeVolumeNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeBus), testVolumeNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Volume.EXPECT().Update(testVolumeVar, testVolumeVar, volumeProperties).Return(&volumeNew, nil, nil)
 		err := RunVolumeUpdate(cfg)

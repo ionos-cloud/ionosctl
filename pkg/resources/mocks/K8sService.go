@@ -35,7 +35,7 @@ func (m *MockK8sService) EXPECT() *MockK8sServiceMockRecorder {
 }
 
 // CreateCluster mocks base method.
-func (m *MockK8sService) CreateCluster(u resources.K8sCluster) (*resources.K8sCluster, *resources.Response, error) {
+func (m *MockK8sService) CreateCluster(u resources.K8sClusterForPost) (*resources.K8sCluster, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateCluster", u)
 	ret0, _ := ret[0].(*resources.K8sCluster)
@@ -51,7 +51,7 @@ func (mr *MockK8sServiceMockRecorder) CreateCluster(u interface{}) *gomock.Call 
 }
 
 // CreateNodePool mocks base method.
-func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePool) (*resources.K8sNodePool, *resources.Response, error) {
+func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePoolForPost) (*resources.K8sNodePool, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateNodePool", clusterId, nodepool)
 	ret0, _ := ret[0].(*resources.K8sNodePool)
@@ -271,7 +271,7 @@ func (mr *MockK8sServiceMockRecorder) RecreateNode(clusterId, nodepoolId, nodeId
 }
 
 // UpdateCluster mocks base method.
-func (m *MockK8sService) UpdateCluster(clusterId string, input resources.K8sCluster) (*resources.K8sCluster, *resources.Response, error) {
+func (m *MockK8sService) UpdateCluster(clusterId string, input resources.K8sClusterForPut) (*resources.K8sCluster, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateCluster", clusterId, input)
 	ret0, _ := ret[0].(*resources.K8sCluster)
@@ -287,10 +287,10 @@ func (mr *MockK8sServiceMockRecorder) UpdateCluster(clusterId, input interface{}
 }
 
 // UpdateNodePool mocks base method.
-func (m *MockK8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool resources.K8sNodePool) (*resources.K8sNodePoolUpdated, *resources.Response, error) {
+func (m *MockK8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool resources.K8sNodePoolForPut) (*resources.K8sNodePool, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateNodePool", clusterId, nodepoolId, nodepool)
-	ret0, _ := ret[0].(*resources.K8sNodePoolUpdated)
+	ret0, _ := ret[0].(*resources.K8sNodePool)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2

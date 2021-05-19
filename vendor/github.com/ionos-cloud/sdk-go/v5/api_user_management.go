@@ -3584,13 +3584,13 @@ func (a *UserManagementApiService) UmUsersOwnsGetExecute(r ApiUmUsersOwnsGetRequ
 type ApiUmUsersPostRequest struct {
 	ctx _context.Context
 	ApiService *UserManagementApiService
-	user *User
+	user *UserPost
 	pretty *bool
 	depth *int32
 	xContractNumber *int32
 }
 
-func (r ApiUmUsersPostRequest) User(user User) ApiUmUsersPostRequest {
+func (r ApiUmUsersPostRequest) User(user UserPost) ApiUmUsersPostRequest {
 	r.user = &user
 	return r
 }
@@ -3750,13 +3750,13 @@ type ApiUmUsersPutRequest struct {
 	ctx _context.Context
 	ApiService *UserManagementApiService
 	userId string
-	user *User
+	user *UserPut
 	pretty *bool
 	depth *int32
 	xContractNumber *int32
 }
 
-func (r ApiUmUsersPutRequest) User(user User) ApiUmUsersPutRequest {
+func (r ApiUmUsersPutRequest) User(user UserPut) ApiUmUsersPutRequest {
 	r.user = &user
 	return r
 }
@@ -4593,7 +4593,7 @@ func (r ApiUmUsersS3keysPutRequest) Execute() (S3Key, *APIResponse, error) {
 
 /*
  * UmUsersS3keysPut Modify a S3 key having the given key id
- * You can enable or disable a given S3 key
+ * You can enable or disable a given S3 key.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param userId
  * @param keyId The unique access key ID of the S3 key

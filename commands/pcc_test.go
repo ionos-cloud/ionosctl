@@ -30,6 +30,7 @@ var (
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Id:         &testPccVar,
 			Properties: pccTest.Properties,
+			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
 	pccPeerTest = resources.Peer{
@@ -143,7 +144,7 @@ func TestRunPccGetErr(t *testing.T) {
 	})
 }
 
-func TestRunPccPeersGet(t *testing.T) {
+func TestRunPccPeersList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -152,12 +153,12 @@ func TestRunPccPeersGet(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, nil)
-		err := RunPccPeersGet(cfg)
+		err := RunPccPeersList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunPccPeersGetErr(t *testing.T) {
+func TestRunPccPeersListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -166,7 +167,7 @@ func TestRunPccPeersGetErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, testPccErr)
-		err := RunPccPeersGet(cfg)
+		err := RunPccPeersList(cfg)
 		assert.Error(t, err)
 	})
 }

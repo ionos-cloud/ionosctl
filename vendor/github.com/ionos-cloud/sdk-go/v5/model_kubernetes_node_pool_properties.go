@@ -26,7 +26,7 @@ type KubernetesNodePoolProperties struct {
 	CpuFamily *string `json:"cpuFamily"`
 	// Number of cores for node
 	CoresCount *int32 `json:"coresCount"`
-	// RAM size for node, minimum size 2048MB is recommended. Ram size must be set to multiple of 1024MB.
+	// RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB.
 	RamSize *int32 `json:"ramSize"`
 	// The availability zone in which the target VM should exist
 	AvailabilityZone *string `json:"availabilityZone"`
@@ -40,8 +40,10 @@ type KubernetesNodePoolProperties struct {
 	AutoScaling *KubernetesAutoScaling `json:"autoScaling,omitempty"`
 	// array of additional LANs attached to worker nodes
 	Lans *[]KubernetesNodePoolLan `json:"lans,omitempty"`
-	Labels *KubernetesNodePoolLabel `json:"labels,omitempty"`
-	Annotations *KubernetesNodePoolAnnotation `json:"annotations,omitempty"`
+	// map of labels attached to node pool
+	Labels *map[string]string `json:"labels,omitempty"`
+	// map of annotations attached to node pool
+	Annotations *map[string]string `json:"annotations,omitempty"`
 	// Optional array of reserved public IP addresses to be used by the nodes. IPs must be from same location as the data center used for the node pool. The array must contain one extra IP than maximum number of nodes could be. (nodeCount+1 if fixed node amount or maxNodeCount+1 if auto scaling is used) The extra provided IP Will be used during rebuilding of nodes.
 	PublicIps *[]string `json:"publicIps,omitempty"`
 	// List of available versions for upgrading the node pool
@@ -610,8 +612,8 @@ func (o *KubernetesNodePoolProperties) HasLans() bool {
 
 
 // GetLabels returns the Labels field value
-// If the value is explicit nil, the zero value for KubernetesNodePoolLabel will be returned
-func (o *KubernetesNodePoolProperties) GetLabels() *KubernetesNodePoolLabel {
+// If the value is explicit nil, the zero value for map[string]string will be returned
+func (o *KubernetesNodePoolProperties) GetLabels() *map[string]string {
 	if o == nil {
 		return nil
 	}
@@ -624,7 +626,7 @@ func (o *KubernetesNodePoolProperties) GetLabels() *KubernetesNodePoolLabel {
 // GetLabelsOk returns a tuple with the Labels field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesNodePoolProperties) GetLabelsOk() (*KubernetesNodePoolLabel, bool) {
+func (o *KubernetesNodePoolProperties) GetLabelsOk() (*map[string]string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -634,7 +636,7 @@ func (o *KubernetesNodePoolProperties) GetLabelsOk() (*KubernetesNodePoolLabel, 
 }
 
 // SetLabels sets field value
-func (o *KubernetesNodePoolProperties) SetLabels(v KubernetesNodePoolLabel) {
+func (o *KubernetesNodePoolProperties) SetLabels(v map[string]string) {
 
 
 	o.Labels = &v
@@ -653,8 +655,8 @@ func (o *KubernetesNodePoolProperties) HasLabels() bool {
 
 
 // GetAnnotations returns the Annotations field value
-// If the value is explicit nil, the zero value for KubernetesNodePoolAnnotation will be returned
-func (o *KubernetesNodePoolProperties) GetAnnotations() *KubernetesNodePoolAnnotation {
+// If the value is explicit nil, the zero value for map[string]string will be returned
+func (o *KubernetesNodePoolProperties) GetAnnotations() *map[string]string {
 	if o == nil {
 		return nil
 	}
@@ -667,7 +669,7 @@ func (o *KubernetesNodePoolProperties) GetAnnotations() *KubernetesNodePoolAnnot
 // GetAnnotationsOk returns a tuple with the Annotations field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *KubernetesNodePoolProperties) GetAnnotationsOk() (*KubernetesNodePoolAnnotation, bool) {
+func (o *KubernetesNodePoolProperties) GetAnnotationsOk() (*map[string]string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -677,7 +679,7 @@ func (o *KubernetesNodePoolProperties) GetAnnotationsOk() (*KubernetesNodePoolAn
 }
 
 // SetAnnotations sets field value
-func (o *KubernetesNodePoolProperties) SetAnnotations(v KubernetesNodePoolAnnotation) {
+func (o *KubernetesNodePoolProperties) SetAnnotations(v map[string]string) {
 
 
 	o.Annotations = &v

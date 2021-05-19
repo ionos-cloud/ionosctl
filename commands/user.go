@@ -188,9 +188,9 @@ func RunUserCreate(c *core.CommandConfig) error {
 	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgUserPassword))
 	secureAuth := viper.GetBool(core.GetFlagName(c.NS, config.ArgUserForceSecAuth))
 	admin := viper.GetBool(core.GetFlagName(c.NS, config.ArgUserAdministrator))
-	newUser := resources.User{
-		User: ionoscloud.User{
-			Properties: &ionoscloud.UserProperties{
+	newUser := resources.UserPost{
+		UserPost: ionoscloud.UserPost{
+			Properties: &ionoscloud.UserPropertiesPost{
 				Firstname:     &firstname,
 				Lastname:      &lastname,
 				Email:         &email,
@@ -212,13 +212,8 @@ func RunUserUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	newProperties := getUserInfo(oldUser, c)
-	newUser := resources.User{
-		User: ionoscloud.User{
-			Properties: &newProperties.UserProperties,
-		},
-	}
-	userUpd, resp, err := c.Users().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)), newUser)
+	newUser := getUserInfo(oldUser, c)
+	userUpd, resp, err := c.Users().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)), *newUser)
 	if err != nil {
 		return err
 	}
@@ -236,7 +231,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getUserPrint(resp, c, nil))
 }
 
-func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.UserProperties {
+func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.UserPut {
 	var (
 		firstName, lastName, email string
 		forceSecureAuth, admin     bool
@@ -278,13 +273,15 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 			}
 		}
 	}
-	return &resources.UserProperties{
-		UserProperties: ionoscloud.UserProperties{
-			Firstname:     &firstName,
-			Lastname:      &lastName,
-			Email:         &email,
-			Administrator: &admin,
-			ForceSecAuth:  &forceSecureAuth,
+	return &resources.UserPut{
+		UserPut: ionoscloud.UserPut{
+			Properties: &ionoscloud.UserPropertiesPut{
+				Firstname:     &firstName,
+				Lastname:      &lastName,
+				Email:         &email,
+				Administrator: &admin,
+				ForceSecAuth:  &forceSecureAuth,
+			},
 		},
 	}
 }

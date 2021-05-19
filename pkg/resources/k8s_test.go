@@ -28,13 +28,13 @@ func TestNewK8sService(t *testing.T) {
 	t.Run("createcluster_k8s_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		k8sSvc := NewK8sService(svc.Get(), ctx)
-		_, _, err := k8sSvc.CreateCluster(K8sCluster{})
+		_, _, err := k8sSvc.CreateCluster(K8sClusterForPost{})
 		assert.Error(t, err)
 	})
 	t.Run("updatecluster_k8s_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		k8sSvc := NewK8sService(svc.Get(), ctx)
-		_, _, err := k8sSvc.UpdateCluster(testK8sResourceVar, K8sCluster{})
+		_, _, err := k8sSvc.UpdateCluster(testK8sResourceVar, K8sClusterForPut{})
 		assert.Error(t, err)
 	})
 	t.Run("deletecluster_k8s_error", func(t *testing.T) {
@@ -64,13 +64,13 @@ func TestNewK8sService(t *testing.T) {
 	t.Run("createnodepool_k8s_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		k8sSvc := NewK8sService(svc.Get(), ctx)
-		_, _, err := k8sSvc.CreateNodePool(testK8sResourceVar, K8sNodePool{})
+		_, _, err := k8sSvc.CreateNodePool(testK8sResourceVar, K8sNodePoolForPost{})
 		assert.Error(t, err)
 	})
 	t.Run("updatenodepool_k8s_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		k8sSvc := NewK8sService(svc.Get(), ctx)
-		_, _, err := k8sSvc.UpdateNodePool(testK8sResourceVar, testK8sResourceVar, K8sNodePool{})
+		_, _, err := k8sSvc.UpdateNodePool(testK8sResourceVar, testK8sResourceVar, K8sNodePoolForPut{})
 		assert.Error(t, err)
 	})
 	t.Run("deletenodepool_k8s_error", func(t *testing.T) {
