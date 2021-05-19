@@ -103,7 +103,9 @@ Required values to run command:
 		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(addCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(config.ArgIp, "", "", "IP address to be added "+config.RequiredFlag)
+	addCmd.AddStringFlag(config.ArgIp, "", "", "IP address to be added to IP Failover Group "+config.RequiredFlag)
+	addCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for IpBlock creation to be executed")
+	addCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock creation [seconds]")
 
 	/*
 		Remove Command
@@ -145,6 +147,8 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(removeCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeCmd.AddStringFlag(config.ArgIp, "", "", "Allocated IP "+config.RequiredFlag)
+	removeCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for IpBlock creation to be executed")
+	removeCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock creation [seconds]")
 
 	return ipfailoverCmd
 }
@@ -158,7 +162,8 @@ func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
 }
 
 func RunIpFailoverList(c *core.CommandConfig) error {
-	l, _, err := c.Lans().Get(
+	ipsFailovers := make([]resources.IpFailover, 0)
+	obj, _, err := c.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
@@ -166,18 +171,18 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 		return err
 	}
 
-	if properties, ok := l.GetPropertiesOk(); ok && properties != nil {
-		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
-			return c.Printer.Print(getIpFailoverPrint(nil, c, getIpFailovers(ipfailovers)))
-		} else {
-			return errors.New("error getting ip failover group")
+	if properties, ok := obj.GetPropertiesOk(); ok && properties != nil {
+		if ipFailovers, ok := properties.GetIpFailoverOk(); ok && ipFailovers != nil {
+			for _, ip := range *ipFailovers {
+				ipsFailovers = append(ipsFailovers, resources.IpFailover{IPFailover: ip})
+			}
 		}
-	} else {
-		return errors.New("error getting lan properties")
 	}
+	return c.Printer.Print(getIpFailoverPrint(nil, c, ipsFailovers))
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
+	ipsFailovers := make([]resources.IpFailover, 0)
 	lanUpdated, resp, err := c.Lans().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
@@ -191,17 +196,19 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		return err
 	}
 	if properties, ok := lanUpdated.GetPropertiesOk(); ok && properties != nil {
-		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
-			return c.Printer.Print(getIpFailoverPrint(nil, c, getIpFailovers(ipfailovers)))
-		} else {
-			return errors.New("error getting updated ip failover group")
+		if ipFailovers, ok := properties.GetIpFailoverOk(); ok && ipFailovers != nil {
+			for _, ip := range *ipFailovers {
+				ipsFailovers = append(ipsFailovers, resources.IpFailover{IPFailover: ip})
+			}
 		}
-	} else {
-		return errors.New("error getting updated lan properties")
 	}
+	return c.Printer.Print(getIpFailoverPrint(nil, c, ipsFailovers))
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
+		return err
+	}
 	oldLan, _, err := c.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
@@ -211,9 +218,6 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	}
 	if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
 		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
-				return err
-			}
 			_, resp, err := c.Lans().Update(
 				viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 				viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
@@ -271,11 +275,11 @@ func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]ionoscloud.IPFailo
 
 // Output Printing
 
-var defaultIpFailoverCols = []string{"NicId", "IP"}
+var defaultIpFailoverCols = []string{"NicId", "Ip"}
 
 type IpFailoverPrint struct {
 	NicId string `json:"NicId,omitempty"`
-	IP    string `json:"IP,omitempty"`
+	Ip    string `json:"Ip,omitempty"`
 }
 
 func getIpFailoverPrint(resp *resources.Response, c *core.CommandConfig, ips []resources.IpFailover) printer.Result {
@@ -296,38 +300,25 @@ func getIpFailoverPrint(resp *resources.Response, c *core.CommandConfig, ips []r
 	return r
 }
 
-func getIpFailovers(ips *[]ionoscloud.IPFailover) []resources.IpFailover {
-	ls := make([]resources.IpFailover, 0)
-	if ips != nil {
-		for _, s := range *ips {
-			ls = append(ls, resources.IpFailover{IPFailover: s})
-		}
-	}
-	return ls
-}
-
 func getIpFailoverCols(flagName string, outErr io.Writer) []string {
-	var cols []string
 	if viper.IsSet(flagName) {
-		cols = viper.GetStringSlice(flagName)
+		var groupCols []string
+		columnsMap := map[string]string{
+			"NicId": "NicId",
+			"Ip":    "Ip",
+		}
+		for _, k := range viper.GetStringSlice(flagName) {
+			col := columnsMap[k]
+			if col != "" {
+				groupCols = append(groupCols, col)
+			} else {
+				clierror.CheckError(errors.New("unknown column "+k), outErr)
+			}
+		}
+		return groupCols
 	} else {
 		return defaultIpFailoverCols
 	}
-
-	columnsMap := map[string]string{
-		"NicId": "NicId",
-		"IP":    "IP",
-	}
-	var lanCols []string
-	for _, k := range cols {
-		col := columnsMap[k]
-		if col != "" {
-			lanCols = append(lanCols, col)
-		} else {
-			clierror.CheckError(errors.New("unknown column "+k), outErr)
-		}
-	}
-	return lanCols
 }
 
 func getIpFailoverKVMaps(ls []resources.IpFailover) []map[string]interface{} {
@@ -338,7 +329,7 @@ func getIpFailoverKVMaps(ls []resources.IpFailover) []map[string]interface{} {
 			ipPrint.NicId = *nicId
 		}
 		if ip, ok := l.GetIpOk(); ok && ip != nil {
-			ipPrint.IP = *ip
+			ipPrint.Ip = *ip
 		}
 		o := structs.Map(ipPrint)
 		out = append(out, o)

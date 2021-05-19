@@ -259,7 +259,7 @@ Status: Command lan delete & wait have been successfully executed`
 		IP Failover Examples
 	*/
 	addIpFailoverExample = `ionosctl ipfailover add --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --server-id 11c8ac02-224b-4bd0-833c-196719860fc1 --lan-id 1 --nic-id 5662f39c-b7cb-4840-b6ab-ae43cd0202cc --ip "x.x.x.x"
-NicId                                  IP
+NicId                                  Ip
 5662f39c-b7cb-4840-b6ab-ae43cd0202cc   x.x.x.x`
 	removeIpFailoverExample = `ionosctl ipfailover remove --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --server-id 11c8ac02-224b-4bd0-833c-196719860fc1 --nic-id 5662f39c-b7cb-4840-b6ab-ae43cd0202cc --lan-id 1 --ip "x.x.x.x"
 Warning: Are you sure you want to remove ip failover group from lan (y/N) ? 

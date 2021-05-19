@@ -32,24 +32,26 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [NicId,IP])
+      --cols strings           Columns to be printed in the standard output (default [NicId,Ip])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
       --force                  Force command to execute without user input
   -h, --help                   help for add
-      --ip string              IP address to be added (required)
+      --ip string              IP address to be added to IP Failover Group (required)
       --lan-id string          The unique LAN Id (required)
       --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
+      --timeout int            Timeout option for Request for IpBlock creation [seconds] (default 60)
+      --wait-for-request       Wait for the Request for IpBlock creation to be executed
 ```
 
 ## Examples
 
 ```text
 ionosctl ipfailover add --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --server-id 11c8ac02-224b-4bd0-833c-196719860fc1 --lan-id 1 --nic-id 5662f39c-b7cb-4840-b6ab-ae43cd0202cc --ip "x.x.x.x"
-NicId                                  IP
+NicId                                  Ip
 5662f39c-b7cb-4840-b6ab-ae43cd0202cc   x.x.x.x
 ```
 

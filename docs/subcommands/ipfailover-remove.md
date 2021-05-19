@@ -26,7 +26,7 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [NicId,IP])
+      --cols strings           Columns to be printed in the standard output (default [NicId,Ip])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
       --force                  Force command to execute without user input
@@ -37,6 +37,8 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
+      --timeout int            Timeout option for Request for IpBlock creation [seconds] (default 60)
+      --wait-for-request       Wait for the Request for IpBlock creation to be executed
 ```
 
 ## Examples

@@ -28,9 +28,18 @@ var (
 			},
 		},
 	}
-	testIpFailoverVar     = "test-ip-failover"
-	testIpFailoverBoolVar = false
-	testIpFailoverErr     = errors.New("ip failover error test")
+	testLanPropertiesIpFailover = resources.LanProperties{
+		LanProperties: ionoscloud.LanProperties{
+			IpFailover: &[]ionoscloud.IPFailover{
+				{
+					Ip:      &testIpFailoverVar,
+					NicUuid: &testIpFailoverVar,
+				},
+			},
+		},
+	}
+	testIpFailoverVar = "test-ip-failover"
+	testIpFailoverErr = errors.New("ip failover error test")
 )
 
 //func TestRunIpFailoverList(t *testing.T) {
@@ -60,3 +69,21 @@ func TestRunIpFailoverListErr(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+//func TestRunIpFailoverAdd(t *testing.T) {
+//	var b bytes.Buffer
+//	w := bufio.NewWriter(&b)
+//	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+//		viper.Reset()
+//		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+//		viper.Set(config.ArgQuiet, false)
+//		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testIpFailoverVar)
+//		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testIpFailoverVar)
+//		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testIpFailoverVar)
+//		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testIpFailoverVar)
+//		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testIpFailoverVar)
+//		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, testLanPropertiesIpFailover).Return(&testLanIpFailover, nil, nil)
+//		err := RunIpFailoverAdd(cfg)
+//		assert.NoError(t, err)
+//	})
+//}
