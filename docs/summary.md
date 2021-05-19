@@ -43,7 +43,7 @@
 * [IpblockGet](subcommands/ipblock-get.md)
 * [IpblockList](subcommands/ipblock-list.md)
 * [IpblockUpdate](subcommands/ipblock-update.md)
-* [IpblockConsumersList](subcommands/ipblock-consumers-list.md)
+* [IpConsumerList](subcommands/ipconsumer-list.md)
 * [K8sClusterCreate](subcommands/k8s-cluster-create.md)
 * [K8sClusterDelete](subcommands/k8s-cluster-delete.md)
 * [K8sClusterGet](subcommands/k8s-cluster-get.md)
