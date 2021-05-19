@@ -56,19 +56,24 @@ func ipconsumer() *core.Command {
 }
 
 func RunIpConsumersList(c *core.CommandConfig) error {
-	ipsConsumers := make([]resources.IpConsumer, 0)
 	ipBlock, _, err := c.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
 	if err != nil {
 		return err
 	}
+
 	if properties, ok := ipBlock.GetPropertiesOk(); ok && properties != nil {
 		if ipCons, ok := properties.GetIpConsumersOk(); ok && ipCons != nil {
+			ipsConsumers := make([]resources.IpConsumer, 0)
 			for _, ip := range *ipCons {
 				ipsConsumers = append(ipsConsumers, resources.IpConsumer{IpConsumer: ip})
 			}
+			return c.Printer.Print(getIpConsumerPrint(c, ipsConsumers))
+		} else {
+			return errors.New("error getting ipconsumers")
 		}
+	} else {
+		return errors.New("error getting ipblock properties")
 	}
-	return c.Printer.Print(getIpConsumerPrint(c, ipsConsumers))
 }
 
 // Output Printing
