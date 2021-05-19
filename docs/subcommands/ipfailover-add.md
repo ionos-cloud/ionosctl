@@ -43,8 +43,8 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-      --timeout int            Timeout option for Request for IpBlock creation [seconds] (default 60)
-      --wait-for-request       Wait for the Request for IpBlock creation to be executed
+      --timeout int            Timeout option for Request for IP Failover creation [seconds] (default 60)
+      --wait-for-request       Wait for the Request for IP Failover creation to be executed
 ```
 
 ## Examples
