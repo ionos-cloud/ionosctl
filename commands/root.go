@@ -157,6 +157,7 @@ func addCommands() {
 	rootCmd.AddCommand(loadBalancer())
 	rootCmd.AddCommand(ipblock())
 	rootCmd.AddCommand(ipconsumer())
+	rootCmd.AddCommand(ipfailover())
 	rootCmd.AddCommand(request())
 	rootCmd.AddCommand(snapshot())
 	rootCmd.AddCommand(image())

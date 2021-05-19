@@ -256,6 +256,19 @@ RequestId: e65fc2fe-8005-48a5-9d06-f1a4f8bc9ef1
 Status: Command lan delete & wait have been successfully executed`
 
 	/*
+		IP Failover Examples
+	*/
+	addIpFailoverExample = `ionosctl ipfailover add --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --server-id 11c8ac02-224b-4bd0-833c-196719860fc1 --lan-id 1 --nic-id 5662f39c-b7cb-4840-b6ab-ae43cd0202cc --ip "x.x.x.x"
+NicId                                  Ip
+5662f39c-b7cb-4840-b6ab-ae43cd0202cc   x.x.x.x`
+	removeIpFailoverExample = `ionosctl ipfailover remove --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --server-id 11c8ac02-224b-4bd0-833c-196719860fc1 --nic-id 5662f39c-b7cb-4840-b6ab-ae43cd0202cc --lan-id 1 --ip "x.x.x.x"
+Warning: Are you sure you want to remove ip failover group from lan (y/N) ? 
+y
+RequestId: 0643462d-22c7-4396-b8e8-dd3c42fce83a
+Status: Command ipfailover remove has been successfully executed`
+	listIpFailoverExample = `ionosctl ipfailover list --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --lan-id 1`
+
+	/*
 		Request Examples
 	*/
 	getRequestExample = `ionosctl request get --request-id 20333e60-d65c-4a95-846b-08c48b871186 
@@ -654,4 +667,28 @@ a0e5d4c4-6b09-4965-8e98-59a749301d20   test12345-n3q55ggmap   1.19.8       x.x.x
 [1.18.16 1.18.15 1.18.12 1.18.5 1.18.9 1.19.8]`
 	getK8sVersionExample = `ionosctl k8s version get 
 "1.19.8"`
+
+	/*
+		Server Cdrom Example
+	*/
+	listCdromServerExample = `ionosctl server cdrom list --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e 
+ImageId                                Name                              ImageAliases                       Location   LicenceType   ImageType   CloudInit
+80c63662-49a0-11ea-94e0-525400f64d8d   CentOS-8.1.1911-x86_64-boot.iso   [centos:8_iso centos:latest_iso]   us/las     LINUX         CDROM       NONE`
+	getCdromServerExample = `ionosctl server cdrom get --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 80c63662-49a0-11ea-94e0-525400f64d8d 
+ImageId                                Name                              ImageAliases                       Location   LicenceType   ImageType   CloudInit
+80c63662-49a0-11ea-94e0-525400f64d8d   CentOS-8.1.1911-x86_64-boot.iso   [centos:latest_iso centos:8_iso]   us/las     LINUX         CDROM       NONE`
+	attachCdromServerExample = `ionosctl server cdrom attach --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 99d43e40-49a0-11ea-94e0-525400f64d8d --wait-for-request 
+1.4s Waiting for request... FAILED                                                                                                                                                                         
+Error: FAILED [VDC-5-622] Image 99d43e40-49a0-11ea-94e0-525400f64d8d is from location us/ewr but Virtual Data Center is from another location us/las
+
+ionosctl server cdrom attach --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 80c63662-49a0-11ea-94e0-525400f64d8d --wait-for-request 
+13s Waiting for request..  DONE                                                                                                                                                                            
+ImageId                                Name                              ImageAliases                       Location   LicenceType   ImageType   CloudInit
+80c63662-49a0-11ea-94e0-525400f64d8d   CentOS-8.1.1911-x86_64-boot.iso   [centos:latest_iso centos:8_iso]   us/las     LINUX         CDROM       NONE
+RequestId: 3f63b766-b27c-42a4-b421-6e2cfb57a877
+Status: Command cdrom attach & wait have been successfully executed`
+	detachCdromServerExample = ` ionosctl server cdrom detach --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 80c63662-49a0-11ea-94e0-525400f64d8d --wait-for-request --force 
+15s Waiting for request. DONE                                                                                                                                                                              
+RequestId: f6eb5b4a-7eb9-4515-872a-dd5acc296968
+Status: Command cdrom detach & wait have been successfully executed`
 )

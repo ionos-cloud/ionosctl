@@ -1,32 +1,34 @@
 ---
-description: List Servers
+description: List IP Failovers groups from a LAN
 ---
 
-# ServerList
+# IpfailoverList
 
 ## Usage
 
 ```text
-ionosctl server list [flags]
+ionosctl ipfailover list [flags]
 ```
 
 ## Description
 
-Use this command to list Servers from a specified Virtual Data Center.
+Use this command to get a list of IP Failovers groups from a LAN.
 
 Required values to run command:
 
 * Data Center Id
+* Lan Id
 
 ## Options
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+      --cols strings           Columns to be printed in the standard output (default [NicId,Ip])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
       --force                  Force command to execute without user input
   -h, --help                   help for list
+      --lan-id string          The unique LAN Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
 ```
@@ -34,8 +36,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d 
-ServerId                               Name         AvailabilityZone   State       Cores   Ram     CpuFamily
-f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               AVAILABLE   4       256MB   AMD_OPTERON
+ionosctl ipfailover list --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --lan-id 1
 ```
 

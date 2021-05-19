@@ -37,6 +37,7 @@ Required values to run command:
       --lan-id int             The LAN ID the NIC sits on (default 1)
       --nic-dhcp               Boolean value that indicates if the NIC is using DHCP (true) or not (false) (default true)
       --nic-id string          The unique NIC Id (required)
+      --nic-ips strings        IPs assigned to the NIC
       --nic-name string        The name of the NIC
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output

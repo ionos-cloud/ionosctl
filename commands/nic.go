@@ -147,6 +147,7 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgNicDhcp, "", config.DefaultNicDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for NIC update to be executed")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
+	update.AddStringSliceFlag(config.ArgNicIps, "", []string{""}, "IPs assigned to the NIC")
 
 	/*
 		Delete Command
@@ -222,12 +223,7 @@ func RunNicGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: nic,
-		KeyValue:   getNicsKVMaps([]resources.Nic{*nic}),
-		Columns:    getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
-
+	return c.Printer.Print(getNicPrint(nil, c, []resources.Nic{*nic}))
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
@@ -246,15 +242,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:     nic,
-		KeyValue:       getNicsKVMaps([]resources.Nic{*nic}),
-		Columns:        getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse:    resp,
-		Resource:       "nic",
-		Verb:           "create",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getNicPrint(resp, c, []resources.Nic{*nic}))
 }
 
 func RunNicUpdate(c *core.CommandConfig) error {
@@ -267,6 +255,9 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanId)) {
 		input.NicProperties.SetLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicIps)) {
+		input.NicProperties.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgNicIps)))
 	}
 	nicUpd, resp, err := c.Nics().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
@@ -281,15 +272,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:     nicUpd,
-		KeyValue:       getNicsKVMaps([]resources.Nic{*nicUpd}),
-		Columns:        getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse:    resp,
-		Resource:       "nic",
-		Verb:           "update",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getNicPrint(resp, c, []resources.Nic{*nicUpd}))
 }
 
 func RunNicDelete(c *core.CommandConfig) error {
@@ -308,12 +291,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "nic",
-		Verb:           "delete",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getNicPrint(resp, c, nil))
 }
 
 // LoadBalancer Nic Commands
@@ -442,7 +420,7 @@ Required values to run command:
 		ShortDesc: "Detach a NIC from a Load Balancer",
 		LongDesc: `Use this command to remove the association of a NIC with a Load Balancer.
 
-You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--ignore-stdin` + "`" + ` option.
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
 Required values to run command:
 
@@ -646,6 +624,9 @@ func getNicsKVMaps(ns []resources.Nic) []map[string]interface{} {
 			}
 			if mac, ok := properties.GetMacOk(); ok && mac != nil {
 				nicprint.Mac = *mac
+			}
+			if ips, ok := properties.GetIpsOk(); ok && ips != nil {
+				nicprint.Ips = *ips
 			}
 		}
 		if metadata, ok := n.GetMetadataOk(); ok && metadata != nil {

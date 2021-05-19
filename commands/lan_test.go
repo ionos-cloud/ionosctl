@@ -275,6 +275,26 @@ func TestRunLanUpdateErr(t *testing.T) {
 	})
 }
 
+func TestRunLanUpdateResponseErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanName), testLanNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanPublic), publicNewLan)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testLanNewVar)
+		rm.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, &testResponse, nil)
+		err := RunLanUpdate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunLanUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

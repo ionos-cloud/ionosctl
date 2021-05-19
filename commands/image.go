@@ -105,7 +105,7 @@ func RunImageList(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageSize)) {
 		images = sortImagesBySize(images, float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgImageSize))))
 	}
-	return c.Printer.Print(getImagePrint(c, getImages(images)))
+	return c.Printer.Print(getImagePrint(nil, c, getImages(images)))
 }
 
 func RunImageGet(c *core.CommandConfig) error {
@@ -113,7 +113,7 @@ func RunImageGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getImagePrint(c, getImage(img)))
+	return c.Printer.Print(getImagePrint(nil, c, getImage(img)))
 }
 
 // Output Printing
@@ -136,9 +136,15 @@ type ImagePrint struct {
 	CloudInit    string   `json:"CloudInit,omitempty"`
 }
 
-func getImagePrint(c *core.CommandConfig, imgs []resources.Image) printer.Result {
+func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []resources.Image) printer.Result {
 	r := printer.Result{}
 	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
+		}
 		if imgs != nil {
 			r.OutputJSON = imgs
 			r.KeyValue = getImagesKVMaps(imgs)

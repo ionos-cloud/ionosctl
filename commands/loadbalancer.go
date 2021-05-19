@@ -182,35 +182,26 @@ func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {
 }
 
 func RunLoadBalancerList(c *core.CommandConfig) error {
-	loadbalancers, _, err := c.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	lbs, _, err := c.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
-	ss := getLoadbalancers(loadbalancers)
-	return c.Printer.Print(printer.Result{
-		OutputJSON: loadbalancers,
-		KeyValue:   getLoadbalancersKVMaps(ss),
-		Columns:    getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getLoadbalancerPrint(nil, c, getLoadbalancers(lbs)))
 }
 
 func RunLoadBalancerGet(c *core.CommandConfig) error {
-	loadbalancer, _, err := c.Loadbalancers().Get(
+	lb, _, err := c.Loadbalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 	)
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: loadbalancer,
-		KeyValue:   getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
-		Columns:    getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getLoadbalancerPrint(nil, c, []resources.Loadbalancer{*lb}))
 }
 
 func RunLoadBalancerCreate(c *core.CommandConfig) error {
-	loadbalancer, resp, err := c.Loadbalancers().Create(
+	lb, resp, err := c.Loadbalancers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerName)),
 		viper.GetBool(core.GetFlagName(c.NS, config.ArgLoadBalancerDhcp)),
@@ -222,15 +213,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:     loadbalancer,
-		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
-		Columns:        getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse:    resp,
-		Resource:       "loadbalancer",
-		Verb:           "create",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getLoadbalancerPrint(resp, c, []resources.Loadbalancer{*lb}))
 }
 
 func RunLoadBalancerUpdate(c *core.CommandConfig) error {
@@ -244,7 +227,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLoadBalancerDhcp)) {
 		input.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgLoadBalancerDhcp)))
 	}
-	loadbalancer, resp, err := c.Loadbalancers().Update(
+	lb, resp, err := c.Loadbalancers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 		input,
@@ -256,15 +239,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:     loadbalancer,
-		KeyValue:       getLoadbalancersKVMaps([]resources.Loadbalancer{*loadbalancer}),
-		Columns:        getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse:    resp,
-		Resource:       "loadbalancer",
-		Verb:           "update",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getLoadbalancerPrint(resp, c, []resources.Loadbalancer{*lb}))
 }
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
@@ -282,12 +257,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "loadbalancer",
-		Verb:           "delete",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getLoadbalancerPrint(resp, c, nil))
 }
 
 // Output Printing
@@ -303,6 +273,24 @@ type LoadbalancerPrint struct {
 	Dhcp           bool   `json:"Dhcp,omitempty"`
 	Ip             string `json:"Ip,omitempty"`
 	State          string `json:"State,omitempty"`
+}
+
+func getLoadbalancerPrint(resp *resources.Response, c *core.CommandConfig, lbs []resources.Loadbalancer) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
+		}
+		if lbs != nil {
+			r.OutputJSON = lbs
+			r.KeyValue = getLoadbalancersKVMaps(lbs)
+			r.Columns = getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
 }
 
 func getLoadbalancersCols(flagName string, outErr io.Writer) []string {

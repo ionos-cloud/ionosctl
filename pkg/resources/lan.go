@@ -10,6 +10,10 @@ type Lan struct {
 	ionoscloud.Lan
 }
 
+type IpFailover struct {
+	ionoscloud.IPFailover
+}
+
 type LanProperties struct {
 	ionoscloud.LanProperties
 }

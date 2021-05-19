@@ -24,7 +24,7 @@ Required values to run command:
 
 ```text
   -u, --api-url string                  Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings                    Columns to be printed in the standard output (default [DatacenterId,Name,Location,State])
+      --cols strings                    Columns to be printed in the standard output (default [DatacenterId,Name,Location,Features,State])
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-description string   Description of the Data Center
       --datacenter-id string            The unique Data Center Id (required)

@@ -293,6 +293,7 @@ Required values to run command:
 	reboot.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
 
 	serverCmd.AddCommand(serverVolume())
+	serverCmd.AddCommand(serverCdrom())
 
 	return serverCmd
 }
@@ -306,12 +307,7 @@ func RunServerList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	ss := getServers(servers)
-	return c.Printer.Print(printer.Result{
-		OutputJSON: servers,
-		KeyValue:   getServersKVMaps(ss),
-		Columns:    getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getServerPrint(nil, c, getServers(servers)))
 }
 
 func RunServerGet(c *core.CommandConfig) error {
@@ -325,11 +321,7 @@ func RunServerGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: svr,
-		KeyValue:   getServersKVMaps([]resources.Server{*svr}),
-		Columns:    getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getServerPrint(nil, c, []resources.Server{*svr}))
 }
 
 func RunServerCreate(c *core.CommandConfig) error {
@@ -358,19 +350,10 @@ func RunServerCreate(c *core.CommandConfig) error {
 				return err
 			}
 		} else {
-			return errors.New("error getting new Server id")
+			return errors.New("error getting new server id")
 		}
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:     svr,
-		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
-		Columns:        getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "create",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-		WaitForState:   viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, []resources.Server{*svr}))
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
@@ -411,16 +394,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 			return err
 		}
 	}
-	return c.Printer.Print(printer.Result{
-		KeyValue:       getServersKVMaps([]resources.Server{*svr}),
-		Columns:        getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		OutputJSON:     svr,
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "update",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-		WaitForState:   viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, []resources.Server{*svr}))
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
@@ -438,12 +412,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "delete",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 func RunServerStart(c *core.CommandConfig) error {
@@ -461,12 +430,7 @@ func RunServerStart(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "start",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 func RunServerStop(c *core.CommandConfig) error {
@@ -484,12 +448,7 @@ func RunServerStop(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "stop",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 func RunServerReboot(c *core.CommandConfig) error {
@@ -507,12 +466,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "server",
-		Verb:           "reboot",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 // Wait for State
@@ -532,7 +486,7 @@ func GetStateServer(c *core.CommandConfig, objId string) (*string, error) {
 
 // Output Printing
 
-var defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "State", "Cores", "Ram", "CpuFamily"}
+var defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
 
 type ServerPrint struct {
 	ServerId         string `json:"ServerId,omitempty"`
@@ -542,6 +496,26 @@ type ServerPrint struct {
 	Cores            int32  `json:"Cores,omitempty"`
 	Ram              string `json:"Ram,omitempty"`
 	CpuFamily        string `json:"CpuFamily,omitempty"`
+	VmState          string `json:"VmState,omitempty"`
+}
+
+func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.Server) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		if resp != nil {
+			r.ApiResponse = resp
+			r.Resource = c.Resource
+			r.Verb = c.Verb
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
+			r.WaitForState = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState))
+		}
+		if ss != nil {
+			r.OutputJSON = ss
+			r.KeyValue = getServersKVMaps(ss)
+			r.Columns = getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
 }
 
 func getServersCols(flagName string, outErr io.Writer) []string {
@@ -557,6 +531,7 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 		"Name":             "Name",
 		"AvailabilityZone": "AvailabilityZone",
 		"State":            "State",
+		"VmState":          "VmState",
 		"Cores":            "Cores",
 		"Ram":              "Ram",
 		"CpuFamily":        "CpuFamily",
@@ -584,29 +559,34 @@ func getServers(servers resources.Servers) []resources.Server {
 func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
-		properties := s.GetProperties()
-		metadata := s.GetMetadata()
 		var serverPrint ServerPrint
 		if id, ok := s.GetIdOk(); ok && id != nil {
 			serverPrint.ServerId = *id
 		}
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			serverPrint.Name = *name
+		if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
+			if name, ok := properties.GetNameOk(); ok && name != nil {
+				serverPrint.Name = *name
+			}
+			if cores, ok := properties.GetCoresOk(); ok && cores != nil {
+				serverPrint.Cores = *cores
+			}
+			if ram, ok := properties.GetRamOk(); ok && ram != nil {
+				serverPrint.Ram = fmt.Sprintf("%vMB", *ram)
+			}
+			if cpuFamily, ok := properties.GetCpuFamilyOk(); ok && cpuFamily != nil {
+				serverPrint.CpuFamily = *cpuFamily
+			}
+			if zone, ok := properties.GetAvailabilityZoneOk(); ok && zone != nil {
+				serverPrint.AvailabilityZone = *zone
+			}
+			if vmState, ok := properties.GetVmStateOk(); ok && vmState != nil {
+				serverPrint.VmState = *vmState
+			}
 		}
-		if cores, ok := properties.GetCoresOk(); ok && cores != nil {
-			serverPrint.Cores = *cores
-		}
-		if ram, ok := properties.GetRamOk(); ok && ram != nil {
-			serverPrint.Ram = fmt.Sprintf("%vMB", *ram)
-		}
-		if cpuFamily, ok := properties.GetCpuFamilyOk(); ok && cpuFamily != nil {
-			serverPrint.CpuFamily = *cpuFamily
-		}
-		if zone, ok := properties.GetAvailabilityZoneOk(); ok && zone != nil {
-			serverPrint.AvailabilityZone = *zone
-		}
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			serverPrint.State = *state
+		if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
+			if state, ok := metadata.GetStateOk(); ok && state != nil {
+				serverPrint.State = *state
+			}
 		}
 		o := structs.Map(serverPrint)
 		out = append(out, o)
