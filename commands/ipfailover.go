@@ -176,9 +176,13 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 			for _, ip := range *ipFailovers {
 				ipsFailovers = append(ipsFailovers, resources.IpFailover{IPFailover: ip})
 			}
+			return c.Printer.Print(getIpFailoverPrint(nil, c, ipsFailovers))
+		} else {
+			return errors.New("error getting ipfailovers")
 		}
+	} else {
+		return errors.New("error getting lan properties")
 	}
-	return c.Printer.Print(getIpFailoverPrint(nil, c, ipsFailovers))
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
@@ -200,9 +204,13 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 			for _, ip := range *ipFailovers {
 				ipsFailovers = append(ipsFailovers, resources.IpFailover{IPFailover: ip})
 			}
+			return c.Printer.Print(getIpFailoverPrint(nil, c, ipsFailovers))
+		} else {
+			return errors.New("error getting ipfailovers")
 		}
+	} else {
+		return errors.New("error getting lan properties")
 	}
-	return c.Printer.Print(getIpFailoverPrint(nil, c, ipsFailovers))
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
@@ -232,10 +240,10 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 			}
 			return c.Printer.Print(getIpFailoverPrint(resp, c, nil))
 		} else {
-			return errors.New("error getting ip failover group to update")
+			return errors.New("error getting ipfailovers")
 		}
 	} else {
-		return errors.New("error getting lan properties to update")
+		return errors.New("error getting lan properties")
 	}
 }
 
