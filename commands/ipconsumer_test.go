@@ -3,12 +3,13 @@ package commands
 import (
 	"bufio"
 	"bytes"
+	"testing"
+
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestRunIpConsumersList(t *testing.T) {
