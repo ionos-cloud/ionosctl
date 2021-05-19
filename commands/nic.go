@@ -223,12 +223,7 @@ func RunNicGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON: nic,
-		KeyValue:   getNicsKVMaps([]resources.Nic{*nic}),
-		Columns:    getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
-
+	return c.Printer.Print(getNicPrint(nil, c, []resources.Nic{*nic}))
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
@@ -247,15 +242,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:     nic,
-		KeyValue:       getNicsKVMaps([]resources.Nic{*nic}),
-		Columns:        getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse:    resp,
-		Resource:       "nic",
-		Verb:           "create",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getNicPrint(resp, c, []resources.Nic{*nic}))
 }
 
 func RunNicUpdate(c *core.CommandConfig) error {
@@ -285,15 +272,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		OutputJSON:     nicUpd,
-		KeyValue:       getNicsKVMaps([]resources.Nic{*nicUpd}),
-		Columns:        getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-		ApiResponse:    resp,
-		Resource:       "nic",
-		Verb:           "update",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getNicPrint(resp, c, []resources.Nic{*nicUpd}))
 }
 
 func RunNicDelete(c *core.CommandConfig) error {
@@ -312,12 +291,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(printer.Result{
-		ApiResponse:    resp,
-		Resource:       "nic",
-		Verb:           "delete",
-		WaitForRequest: viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest)),
-	})
+	return c.Printer.Print(getNicPrint(resp, c, nil))
 }
 
 // LoadBalancer Nic Commands
