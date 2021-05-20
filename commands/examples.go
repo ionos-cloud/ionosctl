@@ -477,7 +477,7 @@ Warning: Are you sure you want to remove user from group (y/N) ?
 y
 RequestId: 07e1eb6a-2618-42dd-b614-6b34359a79b3
 Status: Command user remove has been successfully executed`
-	addGroupUserExample = ` ionosctl group user add --group-id 45ba215b-6897-40b6-879c-cbadb527cefd --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d 
+	addGroupUserExample = `ionosctl group user add --group-id 45ba215b-6897-40b6-879c-cbadb527cefd --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d 
 UserId                                 Firstname   Lastname   Email                    S3CanonicalUserId                  Administrator   ForceSecAuth   SecAuthActive   Active
 62599641-aa2d-4ecc-bdc4-118f5f39f23d   test        test       testrandom53@gmail.com   f670112b3e74038b51db78d5836d7854   false           false          false           true
 RequestId: 296f4d86-629c-44f4-bacc-0fefb2356029
@@ -691,7 +691,7 @@ ImageId                                Name                              ImageAl
 80c63662-49a0-11ea-94e0-525400f64d8d   CentOS-8.1.1911-x86_64-boot.iso   [centos:latest_iso centos:8_iso]   us/las     LINUX         CDROM       NONE
 RequestId: 3f63b766-b27c-42a4-b421-6e2cfb57a877
 Status: Command cdrom attach & wait have been successfully executed`
-	detachCdromServerExample = ` ionosctl server cdrom detach --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 80c63662-49a0-11ea-94e0-525400f64d8d --wait-for-request --force 
+	detachCdromServerExample = `ionosctl server cdrom detach --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 80c63662-49a0-11ea-94e0-525400f64d8d --wait-for-request --force 
 15s Waiting for request. DONE                                                                                                                                                                              
 RequestId: f6eb5b4a-7eb9-4515-872a-dd5acc296968
 Status: Command cdrom detach & wait have been successfully executed`

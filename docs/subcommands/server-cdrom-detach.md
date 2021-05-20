@@ -54,7 +54,7 @@ Required values to run command:
 ## Examples
 
 ```text
- ionosctl server cdrom detach --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 80c63662-49a0-11ea-94e0-525400f64d8d --wait-for-request --force 
+ionosctl server cdrom detach --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 80c63662-49a0-11ea-94e0-525400f64d8d --wait-for-request --force 
 15s Waiting for request. DONE                                                                                                                                                                              
 RequestId: f6eb5b4a-7eb9-4515-872a-dd5acc296968
 Status: Command cdrom detach & wait have been successfully executed
