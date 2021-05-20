@@ -22,6 +22,7 @@ func location() *core.Command {
 	locationCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "location",
+			Aliases:          []string{"loc"},
 			Short:            "Location Operations",
 			Long:             `The sub-command of ` + "`" + `ionosctl location` + "`" + ` allows you to see information about locations available to create objects.`,
 			TraverseChildren: true,

@@ -22,6 +22,7 @@ func image() *core.Command {
 	imageCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "image",
+			Aliases:          []string{"img"},
 			Short:            "Image Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl image` + "`" + ` allow you to see information about the Images available.`,
 			TraverseChildren: true,

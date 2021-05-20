@@ -24,6 +24,7 @@ func k8sNodePool() *core.Command {
 	k8sCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "nodepool",
+			Aliases:          []string{"np"},
 			Short:            "Kubernetes NodePool Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl k8s nodepool` + "`" + ` allow you to list, get, create, update, delete Kubernetes NodePools.`,
 			TraverseChildren: true,

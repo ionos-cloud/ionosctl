@@ -23,6 +23,7 @@ func request() *core.Command {
 	reqCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "request",
+			Aliases:          []string{"req"},
 			Short:            "Request Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl request` + "`" + ` allow you to see information about requests on your account. With the ` + "`" + `ionosctl request` + "`" + ` command, you can list, get or wait for a Request.`,
 			TraverseChildren: true,

@@ -23,6 +23,7 @@ func user() *core.Command {
 	userCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "user",
+			Aliases:          []string{"u"},
 			Short:            "User Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl user` + "`" + ` allow you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl s3key` + "`" + ` commands.`,
 			TraverseChildren: true,
@@ -291,6 +292,7 @@ func groupUser() *core.Command {
 	groupUserCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "user",
+			Aliases:          []string{"u"},
 			Short:            "Group User Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl group user` + "`" + ` allow you to list, add, remove Users from a Group.`,
 			TraverseChildren: true,

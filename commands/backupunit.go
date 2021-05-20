@@ -25,6 +25,7 @@ func backupunit() *core.Command {
 	backupUnitCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "backupunit",
+			Aliases:          []string{"b"},
 			Short:            "BackupUnit Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl backupunit` + "`" + ` allow you to list, get, create, update, delete BackupUnits under your account.`,
 			TraverseChildren: true,

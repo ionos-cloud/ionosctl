@@ -22,6 +22,7 @@ func snapshot() *core.Command {
 	snapshotCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "snapshot",
+			Aliases:          []string{"snap"},
 			Short:            "Snapshot Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl snapshot` + "`" + ` allow you to see information, to create, update, delete Snapshots.`,
 			TraverseChildren: true,

@@ -15,9 +15,10 @@ func completion() *core.Command {
 	ctx := context.TODO()
 	completionCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:   "completion",
-			Short: "Generate code to enable auto-completion with `TAB` key",
-			Long:  "Use this command to generate completion code for specific shell for `ionosctl` commands and flags.",
+			Use:     "completion",
+			Aliases: []string{"comp"},
+			Short:   "Generate code to enable auto-completion with `TAB` key",
+			Long:    "Use this command to generate completion code for specific shell for `ionosctl` commands and flags.",
 		}}
 	core.NewCommand(ctx, completionCmd, core.CommandBuilder{
 		Namespace:  "completion",

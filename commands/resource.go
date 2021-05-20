@@ -21,6 +21,7 @@ func resource() *core.Command {
 	resourceCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "resource",
+			Aliases:          []string{"res"},
 			Short:            "Resource Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl resource` + "`" + ` allow you to list, get Resources.`,
 			TraverseChildren: true,

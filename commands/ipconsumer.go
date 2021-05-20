@@ -21,6 +21,7 @@ func ipconsumer() *core.Command {
 	resourceCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "ipconsumer",
+			Aliases:          []string{"consumer", "cons", "ipc"},
 			Short:            "Ip Consumer Operations",
 			Long:             `The sub-command of ` + "`" + `ionosctl ipconsumer` + "`" + ` allows you to list information about where each IP address from an IpBlock is being used.`,
 			TraverseChildren: true,

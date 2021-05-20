@@ -24,6 +24,7 @@ func firewallrule() *core.Command {
 	firewallRuleCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "firewallrule",
+			Aliases:          []string{"firewall", "fr", "f"},
 			Short:            "Firewall Rule Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl firewallrule` + "`" + ` allow you to create, list, get, update, delete Firewall Rules.`,
 			TraverseChildren: true,
