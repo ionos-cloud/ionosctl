@@ -29,14 +29,14 @@ Required values to run command:
       --cols strings           Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for delete
       --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
-      --timeout int            Timeout option for Request for NIC deletion [seconds] (default 60)
-      --wait-for-request       Wait for the Request for NIC deletion to be executed
+  -t, --timeout int            Timeout option for Request for NIC deletion [seconds] (default 60)
+  -w, --wait-for-request       Wait for the Request for NIC deletion to be executed
 ```
 
 ## Examples

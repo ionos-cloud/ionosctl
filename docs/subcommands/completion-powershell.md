@@ -38,7 +38,7 @@ To load completions for every new session, run:
 PS> ionosctl completion powershell > ionosctl.ps1
 ```
 
-and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file.
+and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file. 
 
 You will need to start a new PowerShell for this setup to take effect.
 
@@ -49,7 +49,7 @@ Note: PowerShell completions require version 5.0 or above, which comes with Wind
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force            Force command to execute without user input
+  -f, --force            Force command to execute without user input
   -h, --help             help for powershell
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output

@@ -28,15 +28,15 @@ Required values to run command:
       --cols strings         Columns to be printed in the standard output (default [ShareId,EditPrivilege,SharePrivilege,Type])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --edit-privilege       Update the group's permission to edit privileges on resource
-      --force                Force command to execute without user input
+  -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
   -h, --help                 help for update
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
       --resource-id string   The unique Resource Id (required)
       --share-privilege      Update the group's permission to share resource
-      --timeout int          Timeout option for Request for Resource Share update [seconds] (default 60)
-      --wait-for-request     Wait for the Request for Resource Share update to be executed
+  -t, --timeout int          Timeout option for Request for Resource Share update [seconds] (default 60)
+  -w, --wait-for-request     Wait for the Request for Resource Share update to be executed
 ```
 
 ## Examples

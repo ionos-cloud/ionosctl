@@ -32,11 +32,11 @@ Required values to run command:
       --cols strings           Columns to be printed in the standard output. Example: --cols "ResourceId,Name" (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for create
       --icmp-code int          Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.
       --icmp-type int          Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types.
-      --name string            The name for the Firewall Rule
+  -n, --name string            The name for the Firewall Rule
       --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
       --port-range-end int     Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports. (default 1)
@@ -47,8 +47,8 @@ Required values to run command:
       --source-ip string       Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.
       --source-mac string      Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses.
       --target-ip string       In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.
-      --timeout int            Timeout option for Request for Firewall Rule creation [seconds] (default 60)
-      --wait-for-request       Wait for Request for Firewall Rule creation to be executed
+  -t, --timeout int            Timeout option for Request for Firewall Rule creation [seconds] (default 60)
+  -w, --wait-for-request       Wait for Request for Firewall Rule creation to be executed
 ```
 
 ## Examples

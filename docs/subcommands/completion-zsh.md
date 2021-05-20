@@ -27,7 +27,7 @@ mkdir -p ~/.config/ionosctl/completion/zsh
 ionosctl completion zsh > ~/.config/ionosctl/completion/zsh/_ionosctl
 ```
 
-Finally add the following line to your `~/.zshrc` file, before you call the `compinit` function:
+Finally add the following line to your `~/.zshrc`file, before you call the `compinit` function:
 
 ```text
 fpath+=(~/.config/ionosctl/completion/zsh)
@@ -49,7 +49,7 @@ You will need to start a new shell for this setup to take effect. Note: ZSH comp
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force            Force command to execute without user input
+  -f, --force            Force command to execute without user input
   -h, --help             help for zsh
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output

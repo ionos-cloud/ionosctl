@@ -29,7 +29,7 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
       --firewallrule-id string   The unique FirewallRule Id (required)
-      --force                    Force command to execute without user input
+  -f, --force                    Force command to execute without user input
   -h, --help                     help for get
       --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")

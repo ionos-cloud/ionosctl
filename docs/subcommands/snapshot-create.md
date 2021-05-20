@@ -30,17 +30,17 @@ Required values to run command:
       --cols strings           Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --description string     Description of the Snapshot
-      --force                  Force command to execute without user input
+  -d, --description string     Description of the Snapshot
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for create
       --licence-type string    Licence Type of the Snapshot(required)
-      --name string            Name of the Snapshot(required)
+  -n, --name string            Name of the Snapshot(required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --sec-auth-protection    Enable secure authentication protection
-      --timeout int            Timeout option for Request for Snapshot creation [seconds] (default 60)
+  -t, --timeout int            Timeout option for Request for Snapshot creation [seconds] (default 60)
       --volume-id string       The unique Volume Id (required)
-      --wait-for-request       Wait for the Request for Snapshot creation to be executed
+  -w, --wait-for-request       Wait for the Request for Snapshot creation to be executed
 ```
 
 ## Examples

@@ -28,13 +28,13 @@ Required values to run command:
       --cols strings           Columns to be printed in the standard output (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for stop
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-      --timeout int            Timeout option for Request for Server stop [seconds] (default 60)
-      --wait-for-request       Wait for the Request for Server stop to be executed
+  -t, --timeout int            Timeout option for Request for Server stop [seconds] (default 60)
+  -w, --wait-for-request       Wait for the Request for Server stop to be executed
 ```
 
 ## Examples

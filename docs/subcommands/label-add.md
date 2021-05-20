@@ -28,7 +28,7 @@ Required values to run command:
       --cols strings           Columns to be printed in the standard output (default [Key,Value])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for add
       --ipblock-id string      The unique IpBlock Id
       --label-key string       The unique Label Key (required)

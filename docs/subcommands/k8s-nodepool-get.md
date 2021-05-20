@@ -26,13 +26,13 @@ Required values to run command:
       --cluster-id string    The unique K8s Cluster Id (required)
       --cols strings         Columns to be printed in the standard output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                Force command to execute without user input
+  -f, --force                Force command to execute without user input
   -h, --help                 help for get
       --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --timeout int          Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
-      --wait-for-state       Wait for specified NodePool to be in ACTIVE state
+  -t, --timeout int          Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
+  -W, --wait-for-state       Wait for specified NodePool to be in ACTIVE state
 ```
 
 ## Examples

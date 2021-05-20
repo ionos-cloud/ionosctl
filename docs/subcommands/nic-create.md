@@ -29,16 +29,16 @@ Required values to run a command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
       --dhcp                   Set to false if you wish to disable DHCP on the NIC (default true)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for create
       --ips strings            IPs assigned to the NIC. This can be a collection
       --lan-id int             The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created (default 1)
-      --name string            The name of the NIC
+  -n, --name string            The name of the NIC
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
-      --timeout int            Timeout option for Request for NIC creation [seconds] (default 60)
-      --wait-for-request       Wait for the Request for NIC creation to be executed
+  -t, --timeout int            Timeout option for Request for NIC creation [seconds] (default 60)
+  -w, --wait-for-request       Wait for the Request for NIC creation to be executed
 ```
 
 ## Examples

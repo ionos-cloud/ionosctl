@@ -26,15 +26,15 @@ Required values to run command:
   -u, --api-url string     Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings       Columns to be printed in the standard output (default [IpBlockId,Name,Location,Size,Ips,State])
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force              Force command to execute without user input
+  -f, --force              Force command to execute without user input
   -h, --help               help for create
-      --location string    Location of the IpBlock (required)
-      --name string        Name of the IpBlock
+  -l, --location string    Location of the IpBlock (required)
+  -n, --name string        Name of the IpBlock
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
       --size int           Size of the IpBlock (default 2)
-      --timeout int        Timeout option for Request for IpBlock creation [seconds] (default 60)
-      --wait-for-request   Wait for the Request for IpBlock creation to be executed
+  -t, --timeout int        Timeout option for Request for IpBlock creation [seconds] (default 60)
+  -w, --wait-for-request   Wait for the Request for IpBlock creation to be executed
 ```
 
 ## Examples

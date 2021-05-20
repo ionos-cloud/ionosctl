@@ -25,7 +25,7 @@ Required values to run command:
   -u, --api-url string    Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings      Columns to be printed in the standard output (default [GroupId,Name,CreateDataCenter,CreateSnapshot,ReserveIp,AccessActivityLog,CreatePcc,S3Privilege,CreateBackupUnit,CreateInternetAccess,CreateK8s])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force             Force command to execute without user input
+  -f, --force             Force command to execute without user input
       --group-id string   The unique Group Id (required)
   -h, --help              help for remove
   -o, --output string     Desired output format [text|json] (default "text")

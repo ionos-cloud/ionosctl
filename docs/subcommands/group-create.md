@@ -31,15 +31,15 @@ Required values to run a command:
       --create-nic         The group will be allowed to create NICs
       --create-pcc         The group will be allowed to create PCCs
       --create-snapshot    The group will be allowed to create Snapshots
-      --force              Force command to execute without user input
+  -f, --force              Force command to execute without user input
   -h, --help               help for create
-      --name string        Name for the Group (required)
+  -n, --name string        Name for the Group (required)
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
       --reserve-ip         The group will be allowed to reserve IP addresses
       --s3privilege        The group will be allowed to manage S3
-      --timeout int        Timeout option for Request for Group creation [seconds] (default 60)
-      --wait-for-request   Wait for Request for Group creation to be executed
+  -t, --timeout int        Timeout option for Request for Group creation [seconds] (default 60)
+  -w, --wait-for-request   Wait for Request for Group creation to be executed
 ```
 
 ## Examples

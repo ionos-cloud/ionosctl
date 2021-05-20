@@ -31,14 +31,14 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
       --firewallrule-id string   The unique FirewallRule Id (required)
-      --force                    Force command to execute without user input
+  -f, --force                    Force command to execute without user input
   -h, --help                     help for delete
       --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id (required)
-      --timeout int              Timeout option for Request for Firewall Rule deletion [seconds] (default 60)
-      --wait-for-request         Wait for Request for Firewall Rule deletion to be executed
+  -t, --timeout int              Timeout option for Request for Firewall Rule deletion [seconds] (default 60)
+  -w, --wait-for-request         Wait for Request for Firewall Rule deletion to be executed
 ```
 
 ## Examples

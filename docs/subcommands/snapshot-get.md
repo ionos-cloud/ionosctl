@@ -24,7 +24,7 @@ Required values to run command:
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings         Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                Force command to execute without user input
+  -f, --force                Force command to execute without user input
   -h, --help                 help for get
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output

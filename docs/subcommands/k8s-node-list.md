@@ -26,7 +26,7 @@ Required values to run command:
       --cluster-id string    The unique K8s Cluster Id (required)
       --cols strings         Columns to be printed in the standard output (default [NodeId,Name,K8sVersion,PublicIP,PrivateIP,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                Force command to execute without user input
+  -f, --force                Force command to execute without user input
   -h, --help                 help for list
       --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")

@@ -34,18 +34,18 @@ Required values to run command:
       --datacenter-id string     The unique Data Center Id (required)
       --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required)
       --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
-      --force                    Force command to execute without user input
+  -f, --force                    Force command to execute without user input
   -h, --help                     help for update
-      --name string              Name of the Volume
+  -n, --name string              Name of the Volume
       --nic-hot-plug             It is capable of nic hot plug (no reboot required)
       --nic-hot-unplug           It is capable of nic hot unplug (no reboot required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --ram-hot-plug             It is capable of memory hot plug (no reboot required)
       --size float32             Size in GB of the Volume (default 10)
-      --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
+  -t, --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
       --volume-id string         The unique Volume Id (required)
-      --wait-for-request         Wait for the Request for Volume update to be executed
+  -w, --wait-for-request         Wait for the Request for Volume update to be executed
 ```
 
 ## Examples

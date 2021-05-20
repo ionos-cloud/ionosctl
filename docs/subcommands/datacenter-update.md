@@ -27,14 +27,14 @@ Required values to run command:
       --cols strings           Columns to be printed in the standard output (default [DatacenterId,Name,Location,Features,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --description string     Description of the Data Center
-      --force                  Force command to execute without user input
+  -d, --description string     Description of the Data Center
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for update
-      --name string            Name of the Data Center
+  -n, --name string            Name of the Data Center
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option for Request for Data Center update [seconds] (default 60)
-      --wait-for-request       Wait for the Request for Data Center update to be executed
+  -t, --timeout int            Timeout option for Request for Data Center update [seconds] (default 60)
+  -w, --wait-for-request       Wait for the Request for Data Center update to be executed
 ```
 
 ## Examples

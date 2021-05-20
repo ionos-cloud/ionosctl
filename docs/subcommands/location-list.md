@@ -20,7 +20,7 @@ Use this command to get a list of available locations to create objects on.
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cols strings     Columns to be printed in the standard output (default [LocationId,Name,Features])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force            Force command to execute without user input
+  -f, --force            Force command to execute without user input
   -h, --help             help for list
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output

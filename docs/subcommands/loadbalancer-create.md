@@ -28,13 +28,13 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
       --dhcp                   Indicates if the Load Balancer will reserve an IP using DHCP (default true)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for create
-      --name string            Name of the Load Balancer
+  -n, --name string            Name of the Load Balancer
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option for Request for Load Balancer creation [seconds] (default 60)
-      --wait-for-request       Wait for Request for Load Balancer creation to be executed
+  -t, --timeout int            Timeout option for Request for Load Balancer creation [seconds] (default 60)
+  -w, --wait-for-request       Wait for Request for Load Balancer creation to be executed
 ```
 
 ## Examples

@@ -29,7 +29,7 @@ Required values to run command:
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --email string        The email for the User
       --first-name string   The firstname for the User
-      --force               Force command to execute without user input
+  -f, --force               Force command to execute without user input
       --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User
   -h, --help                help for update
       --last-name string    The lastname for the User
