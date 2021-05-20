@@ -30,7 +30,7 @@ func serverCdrom() *core.Command {
 		},
 	}
 	globalFlags := serverCdromCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultImageCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultImageCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allImageCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCdromCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = serverCdromCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

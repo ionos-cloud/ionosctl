@@ -50,7 +50,7 @@ func firewallrule() *core.Command {
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultFirewallRuleCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultFirewallRuleCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allFirewallRuleCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

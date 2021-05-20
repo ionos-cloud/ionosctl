@@ -31,7 +31,7 @@ func ipfailover() *core.Command {
 		},
 	}
 	globalFlags := ipfailoverCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultIpFailoverCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultIpFailoverCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultIpFailoverCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(ipfailoverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = ipfailoverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

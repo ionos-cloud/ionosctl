@@ -214,21 +214,21 @@ To redirect all the output to `dev/null`, except for error messages, you can use
 
 For `delete`,`stop`,`detach` commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` or `-f` flag.
 
-## Output formatting
+### Output formatting
 
-To obtain only a specific field/column or a collection of columns on output, you can use the `--cols` or `-C` option with the list of desired fields.
+To obtain only a specific field/column or a collection of columns on output, you can use the `--cols` option with the list of desired fields.
 
 For example, if you want to print only the Id and the Location for your existing Virtual Data Centers, you can use the following command:
 
 ```text
-ionosctl datacenter list -C "DatacenterId,Location"
+ionosctl datacenter list --cols "DatacenterId,Location"
 DatacenterId     Location
 DATACENTER_ID1   us/ewr
 DATACENTER_ID2   us/las
 DATACENTER_ID3   us/las
 ```
 
-Note: When using `TAB` in autocompletion, on `--format`, `-F` option on a specific resource, the available columns for that resource will be displayed.
+Note: When using `TAB` in autocompletion, on `--cols` option on a specific resource, the available columns for that resource will be displayed.
 
 ### Testing
 

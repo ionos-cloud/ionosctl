@@ -29,7 +29,7 @@ func resource() *core.Command {
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultResourceCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultResourceCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultResourceCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -122,7 +122,7 @@ func groupResource() *core.Command {
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultResourceCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultResourceCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultResourceCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

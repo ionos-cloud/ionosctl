@@ -28,7 +28,6 @@ const (
 	ArgServerUrl             = "api-url"
 	ArgServerUrlShort        = "u"
 	ArgCols                  = "cols"
-	ArgColsShort             = "C"
 	ArgUserData              = "user-data"
 	ArgFirstName             = "first-name"
 	ArgLastName              = "last-name"

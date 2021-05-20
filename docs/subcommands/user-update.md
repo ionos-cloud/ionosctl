@@ -32,7 +32,7 @@ Required values to run command:
 ```text
       --admin               Assigns the User to have administrative rights
   -u, --api-url string      Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-  -C, --cols strings        Set of columns to be printed on output 
+      --cols strings        Set of columns to be printed on output 
                             Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active] (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -e, --email string        The email for the User

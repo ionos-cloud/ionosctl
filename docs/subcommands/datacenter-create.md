@@ -29,7 +29,7 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-  -C, --cols strings         Set of columns to be printed on output 
+      --cols strings         Set of columns to be printed on output 
                              Available columns: [DatacenterId Name Location State Description Version Features SecAuthProtection] (default [DatacenterId,Name,Location,Features,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -d, --description string   Description of the Data Center

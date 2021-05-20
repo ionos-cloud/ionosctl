@@ -41,7 +41,7 @@ func nic() *core.Command {
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultNicCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultNicCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -311,7 +311,7 @@ func loadBalancerNic() *core.Command {
 		},
 	}
 	globalFlags := loadbalancerNicCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultNicCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultNicCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerNicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = loadbalancerNicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

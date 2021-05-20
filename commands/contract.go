@@ -30,7 +30,7 @@ func contract() *core.Command {
 		},
 	}
 	globalFlags := contractCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultContractCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultContractCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allContractCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = contractCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

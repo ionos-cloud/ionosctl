@@ -30,7 +30,7 @@ func image() *core.Command {
 		},
 	}
 	globalFlags := imageCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultImageCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultImageCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allImageCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = imageCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -30,7 +30,7 @@ func share() *core.Command {
 		},
 	}
 	globalFlags := shareCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultGroupShareCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupShareCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultGroupShareCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(shareCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = shareCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

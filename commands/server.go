@@ -30,7 +30,7 @@ func server() *core.Command {
 		},
 	}
 	globalFlags := serverCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultServerCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultServerCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultServerCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

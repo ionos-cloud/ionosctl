@@ -30,7 +30,7 @@ func pcc() *core.Command {
 		},
 	}
 	globalFlags := pccCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultPccCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultPccCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultPccCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(pccCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = pccCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -258,7 +258,7 @@ func peers() *core.Command {
 		},
 	}
 	globalFlags := peerCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultPccPeersCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultPccPeersCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultPccPeersCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(peerCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = peerCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

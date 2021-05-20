@@ -30,7 +30,7 @@ func location() *core.Command {
 		},
 	}
 	globalFlags := locationCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultLocationCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultLocationCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allLocationCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = locationCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

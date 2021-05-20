@@ -36,7 +36,7 @@ func lan() *core.Command {
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultLanCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultLanCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultLanCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

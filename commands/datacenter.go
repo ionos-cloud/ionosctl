@@ -30,7 +30,7 @@ func datacenter() *core.Command {
 		},
 	}
 	globalFlags := datacenterCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultDatacenterCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultDatacenterCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allDatacenterCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(datacenterCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

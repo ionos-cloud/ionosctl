@@ -26,7 +26,7 @@ func label() *core.Command {
 		},
 	}
 	globalFlags := labelCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultLabelResourceCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultLabelResourceCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultLabelResourceCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -37,7 +37,7 @@ func volume() *core.Command {
 	_ = volumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultVolumeCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultVolumeCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allVolumeCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = volumeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -413,7 +413,7 @@ func serverVolume() *core.Command {
 		},
 	}
 	globalFlags := serverVolumeCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultVolumeCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultVolumeCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allVolumeCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverVolumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = serverVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

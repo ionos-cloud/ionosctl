@@ -31,7 +31,7 @@ func user() *core.Command {
 		},
 	}
 	globalFlags := userCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultUserCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultUserCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultUserCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(userCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = userCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -301,7 +301,7 @@ func groupUser() *core.Command {
 		},
 	}
 	globalFlags := groupUserCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultUserCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultUserCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultUserCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(groupUserCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = groupUserCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

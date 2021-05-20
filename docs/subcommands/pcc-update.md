@@ -22,7 +22,7 @@ Required values to run command:
 
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-  -C, --cols strings         Set of columns to be printed on output 
+      --cols strings         Set of columns to be printed on output 
                              Available columns: [PccId Name Description State] (default [PccId,Name,Description,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -d, --description string   The description for the Private Cross-Connect
