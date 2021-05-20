@@ -10,6 +10,13 @@ description: Get a Kubernetes Cluster
 ionosctl k8s cluster get [flags]
 ```
 
+## Aliases
+
+For `cluster` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific Kubernetes Cluster.You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.

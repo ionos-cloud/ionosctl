@@ -10,6 +10,13 @@ description: Update a Snapshot
 ionosctl snapshot update [flags]
 ```
 
+## Aliases
+
+For `snapshot` command:
+```text
+[snap]
+```
+
 ## Description
 
 Use this command to update a specified Snapshot.

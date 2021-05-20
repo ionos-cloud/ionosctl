@@ -10,6 +10,13 @@ description: Delete a Data Center
 ionosctl datacenter delete [flags]
 ```
 
+## Aliases
+
+For `datacenter` command:
+```text
+[dc]
+```
+
 ## Description
 
 Use this command to delete a specified Virtual Data Center (VDC) from your account. This will remove all objects within the VDC and remove the VDC object itself. 

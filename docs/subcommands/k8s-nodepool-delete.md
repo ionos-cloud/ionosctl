@@ -10,6 +10,13 @@ description: Delete a Kubernetes NodePool
 ionosctl k8s nodepool delete [flags]
 ```
 
+## Aliases
+
+For `nodepool` command:
+```text
+[np]
+```
+
 ## Description
 
 This command deletes a Kubernetes Node Pool within an existing Kubernetes Cluster.

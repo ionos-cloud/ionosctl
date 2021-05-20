@@ -10,6 +10,13 @@ description: Create a Volume
 ionosctl volume create [flags]
 ```
 
+## Aliases
+
+For `volume` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to create a Volume on your account. Creates a volume within the Data Center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type, availability zone, image and other properties for the object.

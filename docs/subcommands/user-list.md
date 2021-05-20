@@ -10,6 +10,13 @@ description: List Users
 ionosctl user list [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
 ## Description
 
 Use this command to get a list of existing Users available on your account.

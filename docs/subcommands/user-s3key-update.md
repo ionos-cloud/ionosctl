@@ -10,6 +10,18 @@ description: Update a S3Key
 ionosctl user s3key update [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
+For `s3key` command:
+```text
+[k]
+```
+
 ## Description
 
 Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.

@@ -10,6 +10,18 @@ description: Delete a S3Key
 ionosctl user s3key delete [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
+For `s3key` command:
+```text
+[k]
+```
+
 ## Description
 
 Use this command to delete a specific S3Key of an User.

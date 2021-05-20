@@ -10,6 +10,13 @@ description: Update a Volume
 ionosctl volume update [flags]
 ```
 
+## Aliases
+
+For `volume` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards.

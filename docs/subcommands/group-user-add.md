@@ -10,6 +10,18 @@ description: Add User to a Group
 ionosctl group user add [flags]
 ```
 
+## Aliases
+
+For `group` command:
+```text
+[g]
+```
+
+For `user` command:
+```text
+[u]
+```
+
 ## Description
 
 Use this command to add an existing User to a specific Group.

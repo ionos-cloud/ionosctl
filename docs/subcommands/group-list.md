@@ -10,6 +10,13 @@ description: List Groups
 ionosctl group list [flags]
 ```
 
+## Aliases
+
+For `group` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get a list of available Groups available on your account.

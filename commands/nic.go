@@ -302,6 +302,7 @@ func loadBalancerNic() *core.Command {
 	loadbalancerNicCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "nic",
+			Aliases:          []string{"n"},
 			Short:            "Load Balancer Nic Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl loadbalancer nic` + "`" + ` allow you to manage NICs on Load Balancers on your account.`,
 			TraverseChildren: true,

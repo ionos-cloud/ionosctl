@@ -10,6 +10,18 @@ description: Detach a CD-ROM from a Server
 ionosctl server cdrom detach [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
+For `cdrom` command:
+```text
+[cd]
+```
+
 ## Description
 
 This will detach the CD-ROM from the Server.

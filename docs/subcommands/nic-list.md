@@ -10,6 +10,13 @@ description: List NICs
 ionosctl nic list [flags]
 ```
 
+## Aliases
+
+For `nic` command:
+```text
+[n]
+```
+
 ## Description
 
 Use this command to get a list of NICs on your account.

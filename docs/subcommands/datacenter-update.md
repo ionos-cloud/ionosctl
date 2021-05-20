@@ -10,6 +10,13 @@ description: Update a Data Center
 ionosctl datacenter update [flags]
 ```
 
+## Aliases
+
+For `datacenter` command:
+```text
+[dc]
+```
+
 ## Description
 
 Use this command to change a Virtual Data Center's name, description.

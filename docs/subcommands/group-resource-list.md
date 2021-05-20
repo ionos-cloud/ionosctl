@@ -10,6 +10,18 @@ description: List Resources from a Group
 ionosctl group resource list [flags]
 ```
 
+## Aliases
+
+For `group` command:
+```text
+[g]
+```
+
+For `resource` command:
+```text
+[res]
+```
+
 ## Description
 
 Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.

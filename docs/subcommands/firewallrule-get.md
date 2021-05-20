@@ -10,6 +10,13 @@ description: Get a Firewall Rule
 ionosctl firewallrule get [flags]
 ```
 
+## Aliases
+
+For `firewallrule` command:
+```text
+[firewall fr f]
+```
+
 ## Description
 
 Use this command to retrieve information of a specified Firewall Rule.

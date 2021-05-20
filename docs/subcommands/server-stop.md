@@ -10,6 +10,13 @@ description: Stop a Server
 ionosctl server stop [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
 ## Description
 
 Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.

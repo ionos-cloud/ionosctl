@@ -10,6 +10,13 @@ description: List Images
 ionosctl image list [flags]
 ```
 
+## Aliases
+
+For `image` command:
+```text
+[img]
+```
+
 ## Description
 
 Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.

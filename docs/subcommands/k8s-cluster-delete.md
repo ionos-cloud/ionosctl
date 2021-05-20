@@ -10,6 +10,13 @@ description: Delete a Kubernetes Cluster
 ionosctl k8s cluster delete [flags]
 ```
 
+## Aliases
+
+For `cluster` command:
+```text
+[c]
+```
+
 ## Description
 
 This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.

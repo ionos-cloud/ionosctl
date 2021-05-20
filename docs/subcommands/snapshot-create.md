@@ -10,6 +10,13 @@ description: Create a Snapshot of a Volume within the Virtual Data Center
 ionosctl snapshot create [flags]
 ```
 
+## Aliases
+
+For `snapshot` command:
+```text
+[snap]
+```
+
 ## Description
 
 Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.

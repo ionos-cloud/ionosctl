@@ -10,6 +10,18 @@ description: Get an attached NIC to a Load Balancer
 ionosctl loadbalancer nic get [flags]
 ```
 
+## Aliases
+
+For `loadbalancer` command:
+```text
+[lb]
+```
+
+For `nic` command:
+```text
+[n]
+```
+
 ## Description
 
 Use this command to retrieve the attributes of a given load balanced NIC.

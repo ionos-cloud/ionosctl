@@ -10,6 +10,13 @@ description: Delete a FirewallRule
 ionosctl firewallrule delete [flags]
 ```
 
+## Aliases
+
+For `firewallrule` command:
+```text
+[firewall fr f]
+```
+
 ## Description
 
 Use this command to delete a specified Firewall Rule from a Virtual Data Center.

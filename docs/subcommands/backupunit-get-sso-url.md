@@ -10,6 +10,13 @@ description: Get BackupUnit SSO URL
 ionosctl backupunit get-sso-url [flags]
 ```
 
+## Aliases
+
+For `backupunit` command:
+```text
+[b]
+```
+
 ## Description
 
 Use this command to access the GUI with a Single Sign On (SSO) URL that can be retrieved from the Cloud API using this request. If you copy the entire value returned and paste it into a browser, you will be logged into the BackupUnit GUI.

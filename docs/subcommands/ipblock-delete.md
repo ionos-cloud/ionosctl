@@ -10,6 +10,13 @@ description: Delete an IpBlock
 ionosctl ipblock delete [flags]
 ```
 
+## Aliases
+
+For `ipblock` command:
+```text
+[block ipb]
+```
+
 ## Description
 
 Use this command to delete a specified IpBlock.

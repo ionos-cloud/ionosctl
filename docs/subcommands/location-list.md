@@ -10,6 +10,13 @@ description: List Locations
 ionosctl location list [flags]
 ```
 
+## Aliases
+
+For `location` command:
+```text
+[loc]
+```
+
 ## Description
 
 Use this command to get a list of available locations to create objects on.

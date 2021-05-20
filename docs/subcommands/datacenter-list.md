@@ -10,6 +10,13 @@ description: List Data Centers
 ionosctl datacenter list [flags]
 ```
 
+## Aliases
+
+For `datacenter` command:
+```text
+[dc]
+```
+
 ## Description
 
 Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.

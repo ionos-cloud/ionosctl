@@ -10,6 +10,13 @@ description: Update a Load Balancer
 ionosctl loadbalancer update [flags]
 ```
 
+## Aliases
+
+For `loadbalancer` command:
+```text
+[lb]
+```
+
 ## Description
 
 Use this command to update the configuration of a specified Load Balancer.

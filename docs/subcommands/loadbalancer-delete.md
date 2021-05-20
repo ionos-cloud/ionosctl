@@ -10,6 +10,13 @@ description: Delete a Load Balancer
 ionosctl loadbalancer delete [flags]
 ```
 
+## Aliases
+
+For `loadbalancer` command:
+```text
+[lb]
+```
+
 ## Description
 
 Use this command to delete the specified Load Balancer.

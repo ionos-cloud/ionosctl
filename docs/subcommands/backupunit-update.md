@@ -10,6 +10,13 @@ description: Update a BackupUnit
 ionosctl backupunit update [flags]
 ```
 
+## Aliases
+
+For `backupunit` command:
+```text
+[b]
+```
+
 ## Description
 
 Use this command to update details about a specific BackupUnit. The password and the email may be updated.

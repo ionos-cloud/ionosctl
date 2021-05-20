@@ -10,6 +10,18 @@ description: List Users from a Group
 ionosctl group user list [flags]
 ```
 
+## Aliases
+
+For `group` command:
+```text
+[g]
+```
+
+For `user` command:
+```text
+[u]
+```
+
 ## Description
 
 Use this command to get a list of Users from a specific Group.

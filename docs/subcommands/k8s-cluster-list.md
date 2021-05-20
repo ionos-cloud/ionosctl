@@ -10,6 +10,13 @@ description: List Kubernetes Clusters
 ionosctl k8s cluster list [flags]
 ```
 
+## Aliases
+
+For `cluster` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to get a list of existing Kubernetes Clusters.

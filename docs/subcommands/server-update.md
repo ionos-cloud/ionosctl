@@ -10,6 +10,13 @@ description: Update a Server
 ionosctl server update [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
 ## Description
 
 Use this command to update a specified Server from a Virtual Data Center.

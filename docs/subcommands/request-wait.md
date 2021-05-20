@@ -10,6 +10,13 @@ description: Wait a Request
 ionosctl request wait [flags]
 ```
 
+## Aliases
+
+For `request` command:
+```text
+[req]
+```
+
 ## Description
 
 Use this command to wait for a specified Request to execute.

@@ -10,6 +10,13 @@ description: List Servers
 ionosctl server list [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
 ## Description
 
 Use this command to list Servers from a specified Virtual Data Center.

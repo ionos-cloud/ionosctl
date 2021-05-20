@@ -131,43 +131,55 @@ const (
 
 To load completions for the current session, execute:
 
-    source <(ionosctl completion bash)
+` + "```text" + `
+source <(ionosctl completion bash)
+` + "```" + `
 
 To make these changes permanent, append the above line to your ` + "`" + `.bashrc` + "`" + ` file and use:
 
-    source ~/.bashrc
+` + "```text" + `
+source ~/.bashrc
+` + "```" + `
 
 You will need to start a new shell for this setup to take effect.`
 	completionZshLong = `Use this command to generate completion code for ZSH terminal. IonosCTL supports completion for commands and flags.
 
 If shell completions are not already enabled for your environment, you need to enable them. Add the following line to your ` + "`" + `~/.zshrc` + "`" + ` file:
 
-    autoload -Uz compinit; compinit
+` + "```text" + `
+autoload -Uz compinit; compinit
+` + "```" + `
 
 To load completions for each session execute the following commands:
 
-    mkdir -p ~/.config/ionosctl/completion/zsh
-    ionosctl completion zsh > ~/.config/ionosctl/completion/zsh/_ionosctl
+` + "```text" + `
+mkdir -p ~/.config/ionosctl/completion/zsh
+ionosctl completion zsh > ~/.config/ionosctl/completion/zsh/_ionosctl
+` + "```" + `
 
 Finally add the following line to your ` + "`" + `~/.zshrc` + "`" + `file, before you call the ` + "`" + `compinit` + "`" + ` function:
 
-    fpath+=(~/.config/ionosctl/completion/zsh)
+` + "```text" + `
+fpath+=(~/.config/ionosctl/completion/zsh)
+` + "```" + `
 
 In the end your ` + "`" + `~/.zshrc` + "`" + ` file should contain the following two lines in the order given here:
 
-    fpath+=(~/.config/ionosctl/completion/zsh)
-    #  ... anything else that needs to be done before compinit
-    autoload -Uz compinit; compinit
-    # ...
+` + "```text" + `
+fpath+=(~/.config/ionosctl/completion/zsh)
+#  ... anything else that needs to be done before compinit
+autoload -Uz compinit; compinit
+# ...
+` + "```" + `
 
 You will need to start a new shell for this setup to take effect. Note: ZSH completions require zsh 5.2 or newer.`
 	completionPowerShellLong = `Use this command to generate completion code for PowerShell terminal. IonosCTL supports completion for commands and flags.
 
 PowerShell supports three different completion modes:
 
-* TabCompleteNext (default Windows style - on each key press the next option is displayed)
-* Complete (works like Bash)
-* MenuComplete (works like Zsh)
+* TabCompleteNext \(default Windows style - on each key press the next option is displayed\)
+* Complete \(works like Bash\)
+* MenuComplete \(works like Zsh\)
 
 You set the mode with ` + "`" + `Set-PSReadLineKeyHandler -Key Tab -Function <mode>` + "`" + `
 
@@ -177,11 +189,15 @@ Follow the next steps to enable it:
 
 To load completions for the current session, execute:
 
-    PS> ionosctl completion powershell | Out-String | Invoke-Expression
+` + "```text" + `
+PS> ionosctl completion powershell | Out-String | Invoke-Expression
+` + "```" + `
 
 To load completions for every new session, run:
 
-    PS> ionosctl completion powershell > ionosctl.ps1
+` + "```text" + `
+PS> ionosctl completion powershell > ionosctl.ps1
+` + "```" + `
 
 and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file. 
 
@@ -192,9 +208,13 @@ Note: PowerShell completions require version 5.0 or above, which comes with Wind
 
 To load completions into the current shell execute:
 
-    ionosctl completion fish | source
+` + "```text" + `
+ionosctl completion fish | source
+` + "```" + `
 
 In order to make the completions permanent execute once:
 
-    ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish`
+` + "```text" + `
+ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
+` + "```" + ``
 )

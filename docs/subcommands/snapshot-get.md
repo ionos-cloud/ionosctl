@@ -10,6 +10,13 @@ description: Get a Snapshot
 ionosctl snapshot get [flags]
 ```
 
+## Aliases
+
+For `snapshot` command:
+```text
+[snap]
+```
+
 ## Description
 
 Use this command to get information about a specified Snapshot.

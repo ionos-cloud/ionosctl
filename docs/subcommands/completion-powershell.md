@@ -10,6 +10,13 @@ description: Generate code to enable auto-completion with `TAB` key for PowerShe
 ionosctl completion powershell [flags]
 ```
 
+## Aliases
+
+For `completion` command:
+```text
+[comp]
+```
+
 ## Description
 
 Use this command to generate completion code for PowerShell terminal. IonosCTL supports completion for commands and flags.

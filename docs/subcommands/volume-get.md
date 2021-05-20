@@ -10,6 +10,13 @@ description: Get a Volume
 ionosctl volume get [flags]
 ```
 
+## Aliases
+
+For `volume` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to retrieve information about a Volume using its ID.

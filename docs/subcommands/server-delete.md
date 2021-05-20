@@ -10,6 +10,13 @@ description: Delete a Server
 ionosctl server delete [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
 ## Description
 
 Use this command to delete a specified Server from a Virtual Data Center.

@@ -10,6 +10,13 @@ description: Get a Data Center
 ionosctl datacenter get [flags]
 ```
 
+## Aliases
+
+For `datacenter` command:
+```text
+[dc]
+```
+
 ## Description
 
 Use this command to retrieve details about a Virtual Data Center by using its ID.

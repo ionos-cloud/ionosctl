@@ -10,6 +10,13 @@ description: Generate code to enable auto-completion with `TAB` key for BASH ter
 ionosctl completion bash [flags]
 ```
 
+## Aliases
+
+For `completion` command:
+```text
+[comp]
+```
+
 ## Description
 
 Use this command to generate completion code for BASH terminal. IonosCTL supports completion for commands and flags.

@@ -10,6 +10,13 @@ description: Get a Load Balancer
 ionosctl loadbalancer get [flags]
 ```
 
+## Aliases
+
+For `loadbalancer` command:
+```text
+[lb]
+```
+
 ## Description
 
 Use this command to retrieve information about a Load Balancer instance.

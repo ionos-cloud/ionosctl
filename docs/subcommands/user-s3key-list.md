@@ -10,6 +10,18 @@ description: List User S3Keys
 ionosctl user s3key list [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
+For `s3key` command:
+```text
+[k]
+```
+
 ## Description
 
 Use this command to get a list of S3Keys of a specified User.

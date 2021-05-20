@@ -10,6 +10,13 @@ description: Force a hard reboot of a Server
 ionosctl server reboot [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
 ## Description
 
 Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.

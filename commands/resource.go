@@ -113,6 +113,7 @@ func groupResource() *core.Command {
 	resourceCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "resource",
+			Aliases:          []string{"res"},
 			Short:            "Group Resource Operations",
 			Long:             `The sub-command of ` + "`" + `ionosctl group resource` + "`" + ` allows you to list Resources from a Group.`,
 			TraverseChildren: true,

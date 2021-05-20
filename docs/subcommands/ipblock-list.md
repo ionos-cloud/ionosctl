@@ -10,6 +10,13 @@ description: List IpBlocks
 ionosctl ipblock list [flags]
 ```
 
+## Aliases
+
+For `ipblock` command:
+```text
+[block ipb]
+```
+
 ## Description
 
 Use this command to list IpBlocks.

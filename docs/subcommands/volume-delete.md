@@ -10,6 +10,13 @@ description: Delete a Volume
 ionosctl volume delete [flags]
 ```
 
+## Aliases
+
+For `volume` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!

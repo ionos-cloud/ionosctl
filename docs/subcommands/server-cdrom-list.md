@@ -10,6 +10,18 @@ description: List attached CD-ROMs from a Server
 ionosctl server cdrom list [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
+For `cdrom` command:
+```text
+[cd]
+```
+
 ## Description
 
 Use this command to retrieve a list of CD-ROMs attached to the Server.

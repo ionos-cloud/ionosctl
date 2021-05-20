@@ -10,6 +10,13 @@ description: Create a Data Center
 ionosctl datacenter create [flags]
 ```
 
+## Aliases
+
+For `datacenter` command:
+```text
+[dc]
+```
+
 ## Description
 
 Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.

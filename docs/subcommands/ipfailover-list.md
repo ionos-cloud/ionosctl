@@ -10,6 +10,13 @@ description: List IP Failovers groups from a LAN
 ionosctl ipfailover list [flags]
 ```
 
+## Aliases
+
+For `ipfailover` command:
+```text
+[failover ipf]
+```
+
 ## Description
 
 Use this command to get a list of IP Failovers groups from a LAN.

@@ -10,6 +10,13 @@ description: Create a NIC
 ionosctl nic create [flags]
 ```
 
+## Aliases
+
+For `nic` command:
+```text
+[n]
+```
+
 ## Description
 
 Use this command to create/add a new NIC to the target Server. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.

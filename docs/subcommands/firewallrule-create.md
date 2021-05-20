@@ -10,6 +10,13 @@ description: Create a Firewall Rule
 ionosctl firewallrule create [flags]
 ```
 
+## Aliases
+
+For `firewallrule` command:
+```text
+[firewall fr f]
+```
+
 ## Description
 
 Use this command to create/add a new Firewall Rule to the specified NIC. All Firewall Rules must be associated with a NIC.

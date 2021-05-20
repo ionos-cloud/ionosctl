@@ -10,6 +10,13 @@ description: List IpConsumers
 ionosctl ipconsumer list [flags]
 ```
 
+## Aliases
+
+For `ipconsumer` command:
+```text
+[consumer cons ipc]
+```
+
 ## Description
 
 Use this command to get a list of Resources where each IP address from an IpBlock is being used.

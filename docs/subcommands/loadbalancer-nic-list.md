@@ -10,6 +10,18 @@ description: List attached NICs from a Load Balancer
 ionosctl loadbalancer nic list [flags]
 ```
 
+## Aliases
+
+For `loadbalancer` command:
+```text
+[lb]
+```
+
+For `nic` command:
+```text
+[n]
+```
+
 ## Description
 
 Use this command to get a list of attached NICs to a Load Balancer from a Data Center.

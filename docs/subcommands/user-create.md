@@ -10,6 +10,13 @@ description: Create a User under a particular contract
 ionosctl user create [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
 ## Description
 
 Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.

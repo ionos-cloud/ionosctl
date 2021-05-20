@@ -25,7 +25,7 @@ func volume() *core.Command {
 	volumeCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "volume",
-			Aliases:          []string{"vol", "v"},
+			Aliases:          []string{"v"},
 			Short:            "Volume Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command ` + "`" + `ionosctl server volume attach` + "`" + `.`,
 			TraverseChildren: true,
@@ -405,7 +405,7 @@ func serverVolume() *core.Command {
 	serverVolumeCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "volume",
-			Aliases:          []string{"vol", "v"},
+			Aliases:          []string{"v"},
 			Short:            "Server Volume Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl server volume` + "`" + ` allow you to attach, get, list, detach Volumes from Servers.`,
 			TraverseChildren: true,

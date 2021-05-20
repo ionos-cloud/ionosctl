@@ -10,6 +10,18 @@ description: List attached Volumes from a Server
 ionosctl server volume list [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
+For `volume` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to retrieve a list of Volumes attached to the Server.

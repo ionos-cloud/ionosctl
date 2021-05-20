@@ -10,6 +10,13 @@ description: Update a FirewallRule
 ionosctl firewallrule update [flags]
 ```
 
+## Aliases
+
+For `firewallrule` command:
+```text
+[firewall fr f]
+```
+
 ## Description
 
 Use this command to update a specified Firewall Rule.

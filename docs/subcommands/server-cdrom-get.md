@@ -10,6 +10,18 @@ description: Get a specific attached CD-ROM from a Server
 ionosctl server cdrom get [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
+For `cdrom` command:
+```text
+[cd]
+```
+
 ## Description
 
 Use this command to retrieve information about an attached CD-ROM on Server.

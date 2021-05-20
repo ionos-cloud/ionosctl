@@ -10,6 +10,13 @@ description: Update a Group
 ionosctl group update [flags]
 ```
 
+## Aliases
+
+For `group` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to update details about a specific Group.

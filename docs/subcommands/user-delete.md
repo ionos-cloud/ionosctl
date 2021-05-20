@@ -10,6 +10,13 @@ description: Blacklists the User, disabling them
 ionosctl user delete [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
 ## Description
 
 This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.

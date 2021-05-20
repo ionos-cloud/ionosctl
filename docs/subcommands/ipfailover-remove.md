@@ -10,6 +10,13 @@ description: Remove IP Failover group from a LAN
 ionosctl ipfailover remove [flags]
 ```
 
+## Aliases
+
+For `ipfailover` command:
+```text
+[failover ipf]
+```
+
 ## Description
 
 Use this command to remove an IP Failover group from a LAN.

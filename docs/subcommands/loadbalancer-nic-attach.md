@@ -10,6 +10,18 @@ description: Attach a NIC to a Load Balancer
 ionosctl loadbalancer nic attach [flags]
 ```
 
+## Aliases
+
+For `loadbalancer` command:
+```text
+[lb]
+```
+
+For `nic` command:
+```text
+[n]
+```
+
 ## Description
 
 Use this command to associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.

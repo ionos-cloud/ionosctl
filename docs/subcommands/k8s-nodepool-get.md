@@ -10,6 +10,13 @@ description: Get a Kubernetes NodePool
 ionosctl k8s nodepool get [flags]
 ```
 
+## Aliases
+
+For `nodepool` command:
+```text
+[np]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster. You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.

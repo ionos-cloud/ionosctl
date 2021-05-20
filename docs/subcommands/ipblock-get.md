@@ -10,6 +10,13 @@ description: Get an IpBlock
 ionosctl ipblock get [flags]
 ```
 
+## Aliases
+
+For `ipblock` command:
+```text
+[block ipb]
+```
+
 ## Description
 
 Use this command to retrieve the attributes of a specific IpBlock.

@@ -10,6 +10,13 @@ description: List Kubernetes Versions
 ionosctl k8s version list [flags]
 ```
 
+## Aliases
+
+For `version` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to retrieve all available Kubernetes versions.

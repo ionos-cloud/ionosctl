@@ -10,6 +10,18 @@ description: Create a S3Key for a User
 ionosctl user s3key create [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
+For `s3key` command:
+```text
+[k]
+```
+
 ## Description
 
 Use this command to create a S3Key for a particular User.

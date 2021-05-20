@@ -10,6 +10,13 @@ description: Restore a Snapshot onto a Volume
 ionosctl snapshot restore [flags]
 ```
 
+## Aliases
+
+For `snapshot` command:
+```text
+[snap]
+```
+
 ## Description
 
 Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.

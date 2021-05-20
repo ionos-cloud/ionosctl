@@ -10,6 +10,18 @@ description: Attach a CD-ROM to a Server
 ionosctl server cdrom attach [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
+For `cdrom` command:
+```text
+[cd]
+```
+
 ## Description
 
 Use this command to attach a CD-ROM to an existing Server.

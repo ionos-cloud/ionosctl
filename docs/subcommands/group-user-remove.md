@@ -10,6 +10,18 @@ description: Remove User from a Group
 ionosctl group user remove [flags]
 ```
 
+## Aliases
+
+For `group` command:
+```text
+[g]
+```
+
+For `user` command:
+```text
+[u]
+```
+
 ## Description
 
 Use this command to remove a User from a Group.

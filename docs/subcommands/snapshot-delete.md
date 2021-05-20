@@ -10,6 +10,13 @@ description: Delete a Snapshot
 ionosctl snapshot delete [flags]
 ```
 
+## Aliases
+
+For `snapshot` command:
+```text
+[snap]
+```
+
 ## Description
 
 Use this command to delete the specified Snapshot.

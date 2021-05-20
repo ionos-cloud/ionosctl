@@ -10,6 +10,13 @@ description: Get a Group
 ionosctl group get [flags]
 ```
 
+## Aliases
+
+For `group` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific Group.

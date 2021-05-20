@@ -118,9 +118,16 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 		buf.WriteString(fmt.Sprintf("```text\n%s [command]\n```\n\n", cmd.Command.CommandPath()))
 	}
 
-	if len(cmd.Command.Aliases) > 0 {
+	if len(cmd.Command.Aliases) > 0 || len(cmd.Command.Parent().Aliases) > 0 {
 		buf.WriteString("## Aliases\n\n")
-		buf.WriteString(fmt.Sprintf("```text\n%s\n```\n\n", cmd.Command.Aliases))
+		// Write available aliases for all 3 levels of Command
+		if cmd.Command.Parent().Parent() != nil {
+			writeCmdAliases(&core.Command{Command: cmd.Command.Parent().Parent()}, buf)
+		}
+		if cmd.Command.Parent() != nil {
+			writeCmdAliases(&core.Command{Command: cmd.Command.Parent()}, buf)
+		}
+		writeCmdAliases(cmd, buf)
 	}
 
 	buf.WriteString("## Description\n\n")
@@ -173,6 +180,16 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 
 	_, err := buf.WriteTo(w)
 	return err
+}
+
+func writeCmdAliases(cmd *core.Command, buf *bytes.Buffer) {
+	if cmd != nil {
+		if len(cmd.Command.Aliases) > 0 {
+			buf.WriteString(fmt.Sprintf("For `%s` command:\n", cmd.Command.Name()))
+			buf.WriteString(fmt.Sprintf("```text\n%s\n```\n\n", cmd.Command.Aliases))
+		}
+	}
+	return
 }
 
 func customizeTitle(title, old, new string) string {

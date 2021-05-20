@@ -10,6 +10,13 @@ description: Get a specified Image
 ionosctl image get [flags]
 ```
 
+## Aliases
+
+For `image` command:
+```text
+[img]
+```
+
 ## Description
 
 Use this command to get information about a specified Image.

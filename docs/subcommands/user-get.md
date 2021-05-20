@@ -10,6 +10,13 @@ description: Get a User
 ionosctl user get [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific User.

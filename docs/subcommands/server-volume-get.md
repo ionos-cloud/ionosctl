@@ -10,6 +10,18 @@ description: Get an attached Volume from a Server
 ionosctl server volume get [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
+For `volume` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to retrieve information about an attached Volume on Server.

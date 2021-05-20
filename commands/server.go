@@ -23,7 +23,7 @@ func server() *core.Command {
 	serverCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "server",
-			Aliases:          []string{"svr", "s"},
+			Aliases:          []string{"s"},
 			Short:            "Server Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl server` + "`" + ` allow you to create, list, get, update, delete, start, stop, reboot Servers.`,
 			TraverseChildren: true,

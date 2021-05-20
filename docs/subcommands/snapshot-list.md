@@ -10,6 +10,13 @@ description: List Snapshots
 ionosctl snapshot list [flags]
 ```
 
+## Aliases
+
+For `snapshot` command:
+```text
+[snap]
+```
+
 ## Description
 
 Use this command to get a list of Snapshots.

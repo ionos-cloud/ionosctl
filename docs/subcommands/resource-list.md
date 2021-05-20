@@ -10,6 +10,13 @@ description: List Resources
 ionosctl resource list [flags]
 ```
 
+## Aliases
+
+For `resource` command:
+```text
+[res]
+```
+
 ## Description
 
 Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.

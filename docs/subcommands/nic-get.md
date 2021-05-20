@@ -10,6 +10,13 @@ description: Get a NIC
 ionosctl nic get [flags]
 ```
 
+## Aliases
+
+For `nic` command:
+```text
+[n]
+```
+
 ## Description
 
 Use this command to get information about a specified NIC from specified Data Center and Server.

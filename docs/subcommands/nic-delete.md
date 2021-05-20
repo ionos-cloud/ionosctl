@@ -10,6 +10,13 @@ description: Delete a NIC
 ionosctl nic delete [flags]
 ```
 
+## Aliases
+
+For `nic` command:
+```text
+[n]
+```
+
 ## Description
 
 This command deletes a specified NIC.

@@ -10,6 +10,13 @@ description: Get a BackupUnit
 ionosctl backupunit get [flags]
 ```
 
+## Aliases
+
+For `backupunit` command:
+```text
+[b]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific BackupUnit.

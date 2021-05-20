@@ -10,6 +10,18 @@ description: Detach a Volume from a Server
 ionosctl server volume detach [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
+For `volume` command:
+```text
+[v]
+```
+
 ## Description
 
 This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.

@@ -10,6 +10,13 @@ description: List BackupUnits
 ionosctl backupunit list [flags]
 ```
 
+## Aliases
+
+For `backupunit` command:
+```text
+[b]
+```
+
 ## Description
 
 Use this command to get a list of existing BackupUnits available on your account.

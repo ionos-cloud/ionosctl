@@ -10,6 +10,13 @@ description: Get information about the Contract Resources on your account
 ionosctl contract get [flags]
 ```
 
+## Aliases
+
+For `contract` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.

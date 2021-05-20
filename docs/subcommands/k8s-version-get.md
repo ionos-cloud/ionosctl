@@ -10,6 +10,13 @@ description: Get Kubernetes Default Version
 ionosctl k8s version get [flags]
 ```
 
+## Aliases
+
+For `version` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to retrieve the current default Kubernetes version for Clusters and NodePools.

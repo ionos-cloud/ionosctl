@@ -10,6 +10,13 @@ description: List Load Balancers
 ionosctl loadbalancer list [flags]
 ```
 
+## Aliases
+
+For `loadbalancer` command:
+```text
+[lb]
+```
+
 ## Description
 
 Use this command to retrieve a list of Load Balancers within a Virtual Data Center on your account.

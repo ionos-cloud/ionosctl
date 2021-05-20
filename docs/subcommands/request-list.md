@@ -10,6 +10,13 @@ description: List Requests
 ionosctl request list [flags]
 ```
 
+## Aliases
+
+For `request` command:
+```text
+[req]
+```
+
 ## Description
 
 Use this command to list all Requests on your account

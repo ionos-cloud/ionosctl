@@ -10,6 +10,13 @@ description: Update an IpBlock
 ionosctl ipblock update [flags]
 ```
 
+## Aliases
+
+For `ipblock` command:
+```text
+[block ipb]
+```
+
 ## Description
 
 Use this command to update the properties of an existing IpBlock.

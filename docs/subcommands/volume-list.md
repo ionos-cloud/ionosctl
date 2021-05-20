@@ -10,6 +10,13 @@ description: List Volumes
 ionosctl volume list [flags]
 ```
 
+## Aliases
+
+For `volume` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to list all Volumes from a Data Center on your account.

@@ -10,6 +10,18 @@ description: Attach a Volume to a Server
 ionosctl server volume attach [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s]
+```
+
+For `volume` command:
+```text
+[v]
+```
+
 ## Description
 
 Use this command to attach a pre-existing Volume to a Server.

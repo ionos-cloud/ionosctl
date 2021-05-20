@@ -10,6 +10,13 @@ description: Get a Request
 ionosctl request get [flags]
 ```
 
+## Aliases
+
+For `request` command:
+```text
+[req]
+```
+
 ## Description
 
 Use this command to get information about a specified Request.

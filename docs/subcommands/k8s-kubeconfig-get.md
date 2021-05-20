@@ -10,6 +10,13 @@ description: Get the kubeconfig file for a Kubernetes Cluster
 ionosctl k8s kubeconfig get [flags]
 ```
 
+## Aliases
+
+For `kubeconfig` command:
+```text
+[config]
+```
+
 ## Description
 
 Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.

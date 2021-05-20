@@ -10,6 +10,13 @@ description: Update a User
 ionosctl user update [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
 ## Description
 
 Use this command to update details about a specific User including their privileges.

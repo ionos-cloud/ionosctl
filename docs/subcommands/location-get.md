@@ -10,6 +10,13 @@ description: Get a Location
 ionosctl location get [flags]
 ```
 
+## Aliases
+
+For `location` command:
+```text
+[loc]
+```
+
 ## Description
 
 Use this command to get information about a specific Location from a Region.

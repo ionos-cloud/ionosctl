@@ -10,6 +10,13 @@ description: Get all Resources of a Type or a specific Resource Type
 ionosctl resource get [flags]
 ```
 
+## Aliases
+
+For `resource` command:
+```text
+[res]
+```
+
 ## Description
 
 Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.

@@ -10,6 +10,13 @@ description: Generate code to enable auto-completion with `TAB` key for Fish ter
 ionosctl completion fish [flags]
 ```
 
+## Aliases
+
+For `completion` command:
+```text
+[comp]
+```
+
 ## Description
 
 Use this command to generate completion code for Fish terminal. IonosCTL supports completion for commands and flags.

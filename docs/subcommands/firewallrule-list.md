@@ -10,6 +10,13 @@ description: List Firewall Rules
 ionosctl firewallrule list [flags]
 ```
 
+## Aliases
+
+For `firewallrule` command:
+```text
+[firewall fr f]
+```
+
 ## Description
 
 Use this command to get a list of Firewall Rules from a specified NIC from a Server.

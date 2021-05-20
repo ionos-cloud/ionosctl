@@ -10,6 +10,13 @@ description: Delete a Group
 ionosctl group delete [flags]
 ```
 
+## Aliases
+
+For `group` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this operation to delete a single Group. Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
