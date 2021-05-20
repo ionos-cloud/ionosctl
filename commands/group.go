@@ -87,7 +87,7 @@ Required values to run a command:
 		CmdRun:     RunGroupCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, "", "", "Name for the Group "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
 	create.AddBoolFlag(config.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
 	create.AddBoolFlag(config.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
@@ -97,8 +97,8 @@ Required values to run a command:
 	create.AddBoolFlag(config.ArgCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
 	create.AddBoolFlag(config.ArgCreateNic, "", false, "The group will be allowed to create NICs")
 	create.AddBoolFlag(config.ArgCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Group creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
 
 	/*
 		Update Command
@@ -124,7 +124,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgName, "", "", "Name for the Group "+config.RequiredFlag)
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group "+config.RequiredFlag)
 	update.AddBoolFlag(config.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
 	update.AddBoolFlag(config.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
 	update.AddBoolFlag(config.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
@@ -134,8 +134,8 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
 	update.AddBoolFlag(config.ArgCreateNic, "", false, "The group will be allowed to create NICs")
 	update.AddBoolFlag(config.ArgCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Group update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Group update [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group update [seconds]")
 
 	/*
 		Delete Command
@@ -159,8 +159,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Group deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Group deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group deletion [seconds]")
 
 	groupCmd.AddCommand(groupResource())
 	groupCmd.AddCommand(groupUser())

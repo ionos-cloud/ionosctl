@@ -57,7 +57,7 @@ func image() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(config.ArgLocation, "", "", "The location of the Image")
+	list.AddStringFlag(config.ArgLocation, config.ArgLocationShort, "", "The location of the Image")
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

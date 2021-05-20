@@ -87,8 +87,8 @@ func k8sCluster() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified Cluster to be in ACTIVE state")
-	get.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for Cluster to be in ACTIVE state [seconds]")
+	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified Cluster to be in ACTIVE state")
+	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for Cluster to be in ACTIVE state [seconds]")
 
 	/*
 		Create Command
@@ -110,13 +110,13 @@ Required values to run a command:
 		CmdRun:     RunK8sClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the K8s Cluster "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, it will be used the default one")
 	create.AddBoolFlag(config.ArgPublic, "", true, "The indicator if the Cluster is public or private")
 	create.AddStringFlag(config.ArgGatewayIp, "", "", "The IP address of the gateway used by the Cluster. This is mandatory when `public` is set to `false` and should not be provided otherwise")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Cluster creation to be executed")
-	create.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the new Cluster to be in ACTIVE state")
-	create.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for Cluster/Request [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Cluster creation to be executed")
+	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new Cluster to be in ACTIVE state")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for Cluster/Request [seconds]")
 
 	/*
 		Update Command
@@ -138,7 +138,7 @@ Required values to run command:
 		CmdRun:     RunK8sClusterUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgName, "", "", "The name for the K8s Cluster")
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the K8s Cluster")
 	update.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster")
 	update.AddStringFlag(config.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -149,8 +149,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified Cluster to be in ACTIVE state after updating")
-	update.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds]")
+	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified Cluster to be in ACTIVE state after updating")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds]")
 
 	/*
 		Delete Command
@@ -176,8 +176,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Cluster deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for Request [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Cluster deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for Request [seconds]")
 
 	return k8sCmd
 }

@@ -77,8 +77,8 @@ func k8sNodePool() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified NodePool to be in ACTIVE state")
-	get.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
+	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified NodePool to be in ACTIVE state")
+	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
 
 	/*
 		Create Command
@@ -102,7 +102,7 @@ Required values to run a command:
 		CmdRun:     RunK8sNodePoolCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, "", "", "The name for the K8s NodePool "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the K8s NodePool "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, it will be used the default one")
 	create.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -119,7 +119,7 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgAvailabilityZone, "", "AUTO", "The compute Availability Zone in which the Node should exist")
+	create.AddStringFlag(config.ArgAvailabilityZone, config.ArgAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -128,8 +128,8 @@ Required values to run a command:
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddIntFlag(config.ArgStorageSize, "", 10, "The total allocated storage capacity of a Node")
-	create.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	create.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
+	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
 
 	/*
 		Update Command
@@ -175,8 +175,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	update.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
+	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
 
 	/*
 		Delete Command

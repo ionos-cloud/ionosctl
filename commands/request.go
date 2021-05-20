@@ -93,7 +93,7 @@ Required values to run command:
 	_ = wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
+	wait.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
 
 	return reqCmd
 }

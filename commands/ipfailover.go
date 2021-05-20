@@ -104,8 +104,8 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(addCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	addCmd.AddStringFlag(config.ArgIp, "", "", "IP address to be added to IP Failover Group "+config.RequiredFlag)
-	addCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for IP Failover creation to be executed")
-	addCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover creation [seconds]")
+	addCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IP Failover creation to be executed")
+	addCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover creation [seconds]")
 
 	/*
 		Remove Command
@@ -147,8 +147,8 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(removeCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeCmd.AddStringFlag(config.ArgIp, "", "", "Allocated IP "+config.RequiredFlag)
-	removeCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for IP Failover deletion to be executed")
-	removeCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover deletion [seconds]")
+	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IP Failover deletion to be executed")
+	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover deletion [seconds]")
 
 	return ipfailoverCmd
 }

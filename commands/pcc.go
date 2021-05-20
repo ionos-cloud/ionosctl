@@ -83,10 +83,10 @@ func pcc() *core.Command {
 		CmdRun:     RunPccCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, "", "", "The name for the Private Cross-Connect")
-	create.AddStringFlag(config.ArgDescription, "", "", "The description for the Private Cross-Connect")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Private Cross-Connect creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect creation [seconds]")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Private Cross-Connect")
+	create.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect creation [seconds]")
 
 	/*
 		Update Command
@@ -106,14 +106,14 @@ Required values to run command:
 		CmdRun:     RunPccUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgName, "", "", "The name for the Private Cross-Connect")
-	update.AddStringFlag(config.ArgDescription, "", "", "The description for the Private Cross-Connect")
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Private Cross-Connect")
+	update.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
 	update.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Private Cross-Connect update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect update [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect update [seconds]")
 
 	/*
 		Delete Command
@@ -137,8 +137,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect deletion [seconds]")
 
 	pccCmd.AddCommand(peers())
 

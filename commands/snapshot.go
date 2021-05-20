@@ -91,8 +91,8 @@ Required values to run command:
 		CmdRun:     RunSnapshotCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, "", "", "Name of the Snapshot"+config.RequiredFlag)
-	create.AddStringFlag(config.ArgDescription, "", "", "Description of the Snapshot")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Snapshot"+config.RequiredFlag)
+	create.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Snapshot")
 	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
@@ -106,8 +106,8 @@ Required values to run command:
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
 	/*
 		Update Command
@@ -129,8 +129,8 @@ Required values to run command:
 		CmdRun:     RunSnapshotUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgName, "", "", "Name of the Snapshot")
-	update.AddStringFlag(config.ArgDescription, "", "", "Description of the Snapshot")
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Snapshot")
+	update.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Snapshot")
 	update.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
@@ -150,8 +150,8 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required)")
 	update.AddBoolFlag(config.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required)")
 	update.AddBoolFlag(config.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
 	/*
 		Restore Command
@@ -179,8 +179,8 @@ Required values to run command:
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(restore.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot restore to be executed")
-	restore.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot restore [seconds]")
+	restore.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot restore to be executed")
+	restore.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot restore [seconds]")
 
 	/*
 		Delete Command
@@ -200,8 +200,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
 
 	return snapshotCmd
 }

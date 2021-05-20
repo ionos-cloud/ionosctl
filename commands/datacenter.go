@@ -87,14 +87,14 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		CmdRun:     RunDataCenterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, "", "", "Name of the Data Center")
-	create.AddStringFlag(config.ArgDescription, "", "", "Description of the Data Center")
-	create.AddStringFlag(config.ArgLocation, "", "de/txl", "Location for the Data Center")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Data Center")
+	create.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Data Center")
+	create.AddStringFlag(config.ArgLocation, config.ArgLocationShort, "de/txl", "Location for the Data Center")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
 
 	/*
 		Update Command
@@ -120,10 +120,10 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgName, "", "", "Name of the Data Center")
-	update.AddStringFlag(config.ArgDescription, "", "", "Description of the Data Center")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center update [seconds]")
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Data Center")
+	update.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Data Center")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center update [seconds]")
 
 	/*
 		Delete Command
@@ -149,8 +149,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center deletion")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center deletion")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
 
 	return datacenterCmd
 }
