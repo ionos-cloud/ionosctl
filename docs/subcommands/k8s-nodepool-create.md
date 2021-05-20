@@ -28,12 +28,12 @@ Required values to run a command:
   -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -z, --availability-zone string   The compute Availability Zone in which the Node should exist (default "AUTO")
       --cluster-id string          The unique K8s Cluster Id (required)
-      --cols strings               Columns to be printed in the standard output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores-count int            The total number of cores for the Node (default 2)
       --cpu-family string          CPU Type (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
+  -F, --format strings             Set of fields to be printed on output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -h, --help                       help for create
       --k8s-version string         The K8s version for the NodePool. If not set, it will be used the default one
   -n, --name string                The name for the K8s NodePool (required)

@@ -22,10 +22,10 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings         Columns to be printed in the standard output (default [DatacenterId,Name,Location,Features,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -d, --description string   Description of the Data Center
   -f, --force                Force command to execute without user input
+  -F, --format strings       Set of fields to be printed on output (default [DatacenterId,Name,Location,Features,State])
   -h, --help                 help for create
   -l, --location string      Location for the Data Center (default "de/txl")
   -n, --name string          Name of the Data Center

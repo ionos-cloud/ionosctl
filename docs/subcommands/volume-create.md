@@ -30,13 +30,13 @@ Required values to run command:
   -z, --availability-zone string   Availability zone of the Volume. Storage zone can only be selected prior provisioning (default "AUTO")
       --backupunit-id string       The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property
       --bus string                 Bus for the Volume (default "VIRTIO")
-      --cols strings               Columns to be printed in the standard output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cpu-hot-plug               It is capable of CPU hot plug (no reboot required)
       --datacenter-id string       The unique Data Center Id (required)
       --disc-virtio-hot-plug       It is capable of Virt-IO drive hot plug (no reboot required)
       --disc-virtio-hot-unplug     It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
   -f, --force                      Force command to execute without user input
+  -F, --format strings             Set of fields to be printed on output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -h, --help                       help for create
       --image-alias string         The Image Alias to set instead of Image Id
       --image-id string            The Image Id or snapshot Id to be used as template for the new Volume
