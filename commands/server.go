@@ -103,15 +103,15 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
-	create.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
-	create.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
-	create.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family for the Server")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgServerCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgName, "", "", "Name of the Server")
+	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "Cores option of the Server")
+	create.AddIntFlag(config.ArgRamSize, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
+	create.AddStringFlag(config.ArgCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family for the Server")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgServerZone, "", "AUTO", "Availability zone of the Server")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgServerZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgAvailabilityZone, "", "AUTO", "Availability zone of the Server")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server creation to be executed")
@@ -147,17 +147,17 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
-	update.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(config.ArgName, "", "", "Name of the Server")
+	update.AddStringFlag(config.ArgCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgServerZone, "", "", "Availability zone of the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(config.ArgAvailabilityZone, "", "", "Availability zone of the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
-	update.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
+	update.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "Cores option of the Server")
+	update.AddIntFlag(config.ArgRamSize, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server update to be executed")
 	update.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the updated Server to be in AVAILABLE state")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds]")
@@ -326,12 +326,12 @@ func RunServerGet(c *core.CommandConfig) error {
 
 func RunServerCreate(c *core.CommandConfig) error {
 	svr, resp, err := c.Servers().Create(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerName)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerCPUFamily)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerZone)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerCores)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerRAM)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)),
+		viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)),
+		viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize)),
 	)
 	if err != nil {
 		return err
@@ -358,20 +358,20 @@ func RunServerCreate(c *core.CommandConfig) error {
 
 func RunServerUpdate(c *core.CommandConfig) error {
 	input := resources.ServerProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgServerName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerCPUFamily)) {
-		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgServerCPUFamily)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCPUFamily)) {
+		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerZone)) {
-		input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgServerZone)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgAvailabilityZone)) {
+		input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerCores)) {
-		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerCores)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
+		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerRAM)) {
-		input.SetRam(viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerRAM)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamSize)) {
+		input.SetRam(viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize)))
 	}
 	svr, resp, err := c.Servers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),

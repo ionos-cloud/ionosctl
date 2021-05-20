@@ -91,8 +91,8 @@ Required values to run command:
 		CmdRun:     RunSnapshotCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot"+config.RequiredFlag)
-	create.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
+	create.AddStringFlag(config.ArgName, "", "", "Name of the Snapshot"+config.RequiredFlag)
+	create.AddStringFlag(config.ArgDescription, "", "", "Description of the Snapshot")
 	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
@@ -129,8 +129,8 @@ Required values to run command:
 		CmdRun:     RunSnapshotUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot")
-	update.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
+	update.AddStringFlag(config.ArgName, "", "", "Name of the Snapshot")
+	update.AddStringFlag(config.ArgDescription, "", "", "Description of the Snapshot")
 	update.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
@@ -211,7 +211,7 @@ func PreRunSnapshotId(c *core.PreCommandConfig) error {
 }
 
 func PreRunSnapNameLicenceDcIdVolumeId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName, config.ArgLicenceType)
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgName, config.ArgLicenceType)
 }
 
 func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
@@ -238,8 +238,8 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	s, resp, err := c.Snapshots().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotName)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotDescription)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDescription)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)),
 		viper.GetBool(core.GetFlagName(c.NS, config.ArgSecAuthProtection)),
 	)
@@ -293,11 +293,11 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 
 func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotProperties {
 	input := resources.SnapshotProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDescription)) {
-		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotDescription)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDescription)) {
+		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgDescription)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
 		input.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)))

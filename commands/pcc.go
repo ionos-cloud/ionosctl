@@ -83,8 +83,8 @@ func pcc() *core.Command {
 		CmdRun:     RunPccCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgPccName, "", "", "The name for the Private Cross-Connect")
-	create.AddStringFlag(config.ArgPccDescription, "", "", "The description for the Private Cross-Connect")
+	create.AddStringFlag(config.ArgName, "", "", "The name for the Private Cross-Connect")
+	create.AddStringFlag(config.ArgDescription, "", "", "The description for the Private Cross-Connect")
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Private Cross-Connect creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect creation [seconds]")
 
@@ -106,8 +106,8 @@ Required values to run command:
 		CmdRun:     RunPccUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgPccName, "", "", "The name for the Private Cross-Connect")
-	update.AddStringFlag(config.ArgPccDescription, "", "", "The description for the Private Cross-Connect")
+	update.AddStringFlag(config.ArgName, "", "", "The name for the Private Cross-Connect")
+	update.AddStringFlag(config.ArgDescription, "", "", "The description for the Private Cross-Connect")
 	update.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -166,8 +166,8 @@ func RunPccGet(c *core.CommandConfig) error {
 }
 
 func RunPccCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, config.ArgPccName))
-	description := viper.GetString(core.GetFlagName(c.NS, config.ArgPccDescription))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	description := viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
 	newUser := resources.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Properties: &ionoscloud.PrivateCrossConnectProperties{
@@ -222,15 +222,15 @@ func RunPccDelete(c *core.CommandConfig) error {
 func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *resources.PrivateCrossConnectProperties {
 	var namePcc, description string
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgPccName)) {
-			namePcc = viper.GetString(core.GetFlagName(c.NS, config.ArgPccName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+			namePcc = viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				namePcc = *name
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgPccDescription)) {
-			description = viper.GetString(core.GetFlagName(c.NS, config.ArgPccDescription))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgDescription)) {
+			description = viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
 		} else {
 			if desc, ok := properties.GetDescriptionOk(); ok && desc != nil {
 				description = *desc

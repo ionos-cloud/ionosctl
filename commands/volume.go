@@ -99,22 +99,22 @@ Required values to run command:
 		CmdRun:     RunVolumeCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgVolumeName, "", "", "Name of the Volume")
-	create.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
-	create.AddStringFlag(config.ArgVolumeBus, "", "VIRTIO", "Bus for the Volume")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgName, "", "", "Name of the Volume")
+	create.AddFloat32Flag(config.ArgSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
+	create.AddStringFlag(config.ArgBus, "", "VIRTIO", "Bus for the Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Volume")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgVolumeType, "", "HDD", "Type of the Volume")
+	create.AddStringFlag(config.ArgType, "", "HDD", "Type of the Volume")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD", "SSD Standard", "SSD Premium"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgVolumeZone, "", "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgAvailabilityZone, "", "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2", "ZONE_3"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgBackupUnitId, "", "", "The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property")
@@ -126,7 +126,7 @@ Required values to run command:
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
-	create.AddStringFlag(config.ArgImagePassword, "", "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
+	create.AddStringFlag(config.ArgPassword, "", "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringFlag(config.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
 	create.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
 	create.AddBoolFlag(config.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
@@ -165,9 +165,9 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgVolumeName, "", "", "Name of the Volume")
-	update.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
-	update.AddStringFlag(config.ArgVolumeBus, "", "VIRTIO", "Bus of the Volume")
+	update.AddStringFlag(config.ArgName, "", "", "Name of the Volume")
+	update.AddFloat32Flag(config.ArgSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
+	update.AddStringFlag(config.ArgBus, "", "VIRTIO", "Bus of the Volume")
 	update.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
 	update.AddBoolFlag(config.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
 	update.AddBoolFlag(config.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
@@ -219,7 +219,7 @@ func PreRunGlobalDcIdVolumeProperties(c *core.PreCommandConfig) error {
 			!viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
 			result = multierror.Append(result, errors.New("image-id, image-alias or licence-type option must be set"))
 		} else {
-			if !viper.IsSet(core.GetFlagName(c.NS, config.ArgImagePassword)) &&
+			if !viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) &&
 				!viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
 				result = multierror.Append(result, errors.New("image-password or ssh-keys option must be set"))
 			}
@@ -311,11 +311,11 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 func getNewVolume(c *core.CommandConfig) resources.Volume {
 	proper := resources.VolumeProperties{}
 	// It will get the default values, if flags not set
-	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)))
-	proper.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeBus)))
-	proper.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeType)))
-	proper.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeZone)))
-	proper.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgVolumeSize))))
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	proper.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
+	proper.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
+	proper.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
+	proper.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgSize))))
 
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitId)) {
@@ -330,8 +330,8 @@ func getNewVolume(c *core.CommandConfig) resources.Volume {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
 		proper.SetImageAlias(viper.GetString(core.GetFlagName(c.NS, config.ArgImageAlias)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImagePassword)) {
-		proper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgImagePassword)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
+		proper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgPassword)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
 		proper.SetSshKeys(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgSshKeys)))
@@ -366,14 +366,14 @@ func getNewVolume(c *core.CommandConfig) resources.Volume {
 
 func getVolumeInfo(c *core.CommandConfig) resources.VolumeProperties {
 	input := resources.VolumeProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeBus)) {
-		input.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeBus)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBus)) {
+		input.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeSize)) {
-		input.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgVolumeSize))))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSize)) {
+		input.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgSize))))
 	}
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotPlug)) {

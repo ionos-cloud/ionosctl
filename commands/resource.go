@@ -62,8 +62,8 @@ func resource() *core.Command {
 		CmdRun:     RunResourceGet,
 		InitClient: true,
 	})
-	getRsc.AddStringFlag(config.ArgResourceType, "", "", "The specific Type of Resources to retrieve information about")
-	_ = getRsc.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getRsc.AddStringFlag(config.ArgType, "", "", "The specific Type of Resources to retrieve information about")
+	_ = getRsc.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"datacenter", "snapshot", "image", "ipblock", "pcc", "backupunit", "k8s"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	getRsc.AddStringFlag(config.ArgResourceId, "", "", "The ID of the specific Resource to retrieve information about")
@@ -75,7 +75,7 @@ func resource() *core.Command {
 }
 
 func PreRunResourceType(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgResourceType)
+	return core.CheckRequiredFlags(c.NS, config.ArgType)
 }
 
 func RunResourceList(c *core.CommandConfig) error {
@@ -89,7 +89,7 @@ func RunResourceList(c *core.CommandConfig) error {
 func RunResourceGet(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgResourceId)) {
 		resourceListed, _, err := c.Users().GetResourceByTypeAndId(
-			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType)),
+			viper.GetString(core.GetFlagName(c.NS, config.ArgType)),
 			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		)
 		if err != nil {
@@ -97,7 +97,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 		}
 		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
-		resourcesListed, _, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType)))
+		resourcesListed, _, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
 		if err != nil {
 			return err
 		}

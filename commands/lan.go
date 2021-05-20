@@ -97,8 +97,8 @@ Required values to run command:
 		CmdRun:     RunLanCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
-	create.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Indicates if the LAN faces the public Internet (true) or not (false)")
+	create.AddStringFlag(config.ArgName, "", "", "The name of the LAN")
+	create.AddBoolFlag(config.ArgPublic, "", config.DefaultPublic, "Indicates if the LAN faces the public Internet (true) or not (false)")
 	create.AddStringFlag(config.ArgPccId, "", "", "The unique Id of the Private Cross-Connect the LAN will connect to")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -131,12 +131,12 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
+	update.AddStringFlag(config.ArgName, "", "", "The name of the LAN")
 	update.AddStringFlag(config.ArgPccId, "", "", "The unique Id of the Private Cross-Connect the LAN will connect to")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Public option for LAN")
+	update.AddBoolFlag(config.ArgPublic, "", config.DefaultPublic, "Public option for LAN")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for LAN update to be executed")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for LAN update [seconds]")
 
@@ -209,8 +209,8 @@ func RunLanGet(c *core.CommandConfig) error {
 }
 
 func RunLanCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, config.ArgLanName))
-	public := viper.GetBool(core.GetFlagName(c.NS, config.ArgLanPublic))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	public := viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic))
 	properties := ionoscloud.LanPropertiesPost{
 		Name:   &name,
 		Public: &public,
@@ -244,11 +244,11 @@ func RunLanCreate(c *core.CommandConfig) error {
 
 func RunLanUpdate(c *core.CommandConfig) error {
 	input := resources.LanProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgLanName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanPublic)) {
-		input.SetPublic(viper.GetBool(core.GetFlagName(c.NS, config.ArgLanPublic)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPublic)) {
+		input.SetPublic(viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPccId)) {
 		input.SetPcc(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))

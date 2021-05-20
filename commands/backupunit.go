@@ -117,9 +117,9 @@ Required values to run a command:
 		CmdRun:     RunBackupUnitCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgBackupUnitName, "", "", "Alphanumeric name you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgBackupUnitEmail, "", "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgBackupUnitPassword, "", "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, "", "", "Alphanumeric name you want to assign to the BackupUnit "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgEmail, "", "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgPassword, "", "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for BackupUnit creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit creation [seconds]")
 
@@ -141,8 +141,8 @@ Required values to run command:
 		CmdRun:     RunBackupUnitUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgBackupUnitPassword, "", "", "Alphanumeric password you want to update for the BackupUnit")
-	update.AddStringFlag(config.ArgBackupUnitEmail, "", "", "The e-mail address you want to update for the BackupUnit")
+	update.AddStringFlag(config.ArgPassword, "", "", "Alphanumeric password you want to update for the BackupUnit")
+	update.AddStringFlag(config.ArgEmail, "", "", "The e-mail address you want to update for the BackupUnit")
 	update.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -183,7 +183,7 @@ func PreRunBackupUnitId(c *core.PreCommandConfig) error {
 }
 
 func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgBackupUnitName, config.ArgBackupUnitEmail, config.ArgBackupUnitPassword)
+	return core.CheckRequiredFlags(c.NS, config.ArgName, config.ArgEmail, config.ArgPassword)
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {
@@ -211,9 +211,9 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitName))
-	email := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitEmail))
-	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitPassword))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
+	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 	newBackupUnit := resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Properties: &ionoscloud.BackupUnitProperties{
@@ -262,12 +262,12 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 
 func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 	var properties resources.BackupUnitProperties
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitPassword)) {
-		pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitPassword))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
+		pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 		properties.SetPassword(pwd)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitEmail)) {
-		email := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitEmail))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgEmail)) {
+		email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
 		properties.SetEmail(email)
 	}
 	return &properties

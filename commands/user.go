@@ -92,12 +92,12 @@ Required values to run a command:
 		CmdRun:     RunUserCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserPassword, "", "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
-	create.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
-	create.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
+	create.AddStringFlag(config.ArgFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgLastName, "", "", "The lastname for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgEmail, "", "", "The email for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgPassword, "", "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
+	create.AddBoolFlag(config.ArgAdministrator, "", false, "Assigns the User to have administrative rights")
+	create.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 
 	/*
 		Update Command
@@ -119,11 +119,11 @@ Required values to run command:
 		CmdRun:     RunUserUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User")
-	update.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User")
-	update.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User")
-	update.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
-	update.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
+	update.AddStringFlag(config.ArgFirstName, "", "", "The firstname for the User")
+	update.AddStringFlag(config.ArgLastName, "", "", "The lastname for the User")
+	update.AddStringFlag(config.ArgEmail, "", "", "The email for the User")
+	update.AddBoolFlag(config.ArgAdministrator, "", false, "Assigns the User to have administrative rights")
+	update.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 	update.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -162,7 +162,7 @@ func PreRunUserId(c *core.PreCommandConfig) error {
 }
 
 func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgUserFirstName, config.ArgUserLastName, config.ArgUserEmail, config.ArgUserPassword)
+	return core.CheckRequiredFlags(c.NS, config.ArgFirstName, config.ArgLastName, config.ArgEmail, config.ArgPassword)
 }
 
 func RunUserList(c *core.CommandConfig) error {
@@ -182,12 +182,12 @@ func RunUserGet(c *core.CommandConfig) error {
 }
 
 func RunUserCreate(c *core.CommandConfig) error {
-	firstname := viper.GetString(core.GetFlagName(c.NS, config.ArgUserFirstName))
-	lastname := viper.GetString(core.GetFlagName(c.NS, config.ArgUserLastName))
-	email := viper.GetString(core.GetFlagName(c.NS, config.ArgUserEmail))
-	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgUserPassword))
-	secureAuth := viper.GetBool(core.GetFlagName(c.NS, config.ArgUserForceSecAuth))
-	admin := viper.GetBool(core.GetFlagName(c.NS, config.ArgUserAdministrator))
+	firstname := viper.GetString(core.GetFlagName(c.NS, config.ArgFirstName))
+	lastname := viper.GetString(core.GetFlagName(c.NS, config.ArgLastName))
+	email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
+	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
+	secureAuth := viper.GetBool(core.GetFlagName(c.NS, config.ArgForceSecAuth))
+	admin := viper.GetBool(core.GetFlagName(c.NS, config.ArgAdministrator))
 	newUser := resources.UserPost{
 		UserPost: ionoscloud.UserPost{
 			Properties: &ionoscloud.UserPropertiesPost{
@@ -237,36 +237,36 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		forceSecureAuth, admin     bool
 	)
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserFirstName)) {
-			firstName = viper.GetString(core.GetFlagName(c.NS, config.ArgUserFirstName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirstName)) {
+			firstName = viper.GetString(core.GetFlagName(c.NS, config.ArgFirstName))
 		} else {
 			if name, ok := properties.GetFirstnameOk(); ok && name != nil {
 				firstName = *name
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserLastName)) {
-			lastName = viper.GetString(core.GetFlagName(c.NS, config.ArgUserLastName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLastName)) {
+			lastName = viper.GetString(core.GetFlagName(c.NS, config.ArgLastName))
 		} else {
 			if name, ok := properties.GetLastnameOk(); ok && name != nil {
 				lastName = *name
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserEmail)) {
-			email = viper.GetString(core.GetFlagName(c.NS, config.ArgUserEmail))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgEmail)) {
+			email = viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
 		} else {
 			if e, ok := properties.GetEmailOk(); ok && e != nil {
 				email = *e
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserForceSecAuth)) {
-			forceSecureAuth = viper.GetBool(core.GetFlagName(c.NS, config.ArgUserForceSecAuth))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgForceSecAuth)) {
+			forceSecureAuth = viper.GetBool(core.GetFlagName(c.NS, config.ArgForceSecAuth))
 		} else {
 			if secAuth, ok := properties.GetForceSecAuthOk(); ok && secAuth != nil {
 				forceSecureAuth = *secAuth
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserAdministrator)) {
-			admin = viper.GetBool(core.GetFlagName(c.NS, config.ArgUserAdministrator))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgAdministrator)) {
+			admin = viper.GetBool(core.GetFlagName(c.NS, config.ArgAdministrator))
 		} else {
 			if administrator, ok := properties.GetAdministratorOk(); ok && administrator != nil {
 				admin = *administrator

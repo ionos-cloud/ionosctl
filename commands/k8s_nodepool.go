@@ -102,7 +102,7 @@ Required values to run a command:
 		CmdRun:     RunK8sNodePoolCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgK8sNodePoolName, "", "", "The name for the K8s NodePool "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, "", "", "The name for the K8s NodePool "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, it will be used the default one")
 	create.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -119,7 +119,7 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgK8sNodeZone, "", "AUTO", "The compute Availability Zone in which the Node should exist")
+	create.AddStringFlag(config.ArgAvailabilityZone, "", "AUTO", "The compute Availability Zone in which the Node should exist")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -214,7 +214,7 @@ func PreRunK8sClusterNodePoolIds(c *core.PreCommandConfig) error {
 }
 
 func PreRunK8sClusterDcIdsNodePoolName(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgDataCenterId, config.ArgK8sNodePoolName)
+	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgDataCenterId, config.ArgName)
 }
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
@@ -312,7 +312,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		k8sversion string
 		err        error
 	)
-	n := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolName))
+	n := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 	} else {
@@ -325,7 +325,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily))
 	coresCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCoresCount))
 	ramSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize))
-	nodeZone := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeZone))
+	nodeZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
 	storageSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgStorageSize))
 	storageType := viper.GetString(core.GetFlagName(c.NS, config.ArgStorageType))
 	return &resources.K8sNodePoolForPost{

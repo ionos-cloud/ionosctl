@@ -100,9 +100,9 @@ Required values to run a command:
 		CmdRun:     RunNicCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgNicName, "", "", "The name of the NIC")
-	create.AddStringSliceFlag(config.ArgNicIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
-	create.AddBoolFlag(config.ArgNicDhcp, "", config.DefaultNicDhcp, "Set to false if you wish to disable DHCP on the NIC")
+	create.AddStringFlag(config.ArgName, "", "", "The name of the NIC")
+	create.AddStringSliceFlag(config.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
+	create.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC")
 	create.AddIntFlag(config.ArgLanId, "", config.DefaultNicLanId, "The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
@@ -139,15 +139,15 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId)), viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgNicName, "", "", "The name of the NIC")
+	update.AddStringFlag(config.ArgName, "", "", "The name of the NIC")
 	update.AddIntFlag(config.ArgLanId, "", config.DefaultNicLanId, "The LAN ID the NIC sits on")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgNicDhcp, "", config.DefaultNicDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
+	update.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for NIC update to be executed")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
-	update.AddStringSliceFlag(config.ArgNicIps, "", []string{""}, "IPs assigned to the NIC")
+	update.AddStringSliceFlag(config.ArgIps, "", []string{""}, "IPs assigned to the NIC")
 
 	/*
 		Delete Command
@@ -230,9 +230,9 @@ func RunNicCreate(c *core.CommandConfig) error {
 	nic, resp, err := c.Nics().Create(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicName)),
-		viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgNicIps)),
-		viper.GetBool(core.GetFlagName(c.NS, config.ArgNicDhcp)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
+		viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)),
+		viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)),
 		viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
 	if err != nil {
@@ -247,17 +247,17 @@ func RunNicCreate(c *core.CommandConfig) error {
 
 func RunNicUpdate(c *core.CommandConfig) error {
 	input := resources.NicProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicName)) {
-		input.NicProperties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgNicName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.NicProperties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicDhcp)) {
-		input.NicProperties.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicDhcp)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDhcp)) {
+		input.NicProperties.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanId)) {
 		input.NicProperties.SetLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicIps)) {
-		input.NicProperties.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgNicIps)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIps)) {
+		input.NicProperties.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
 	}
 	nicUpd, resp, err := c.Nics().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),

@@ -87,10 +87,10 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		CmdRun:     RunDataCenterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
-	create.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
-	create.AddStringFlag(config.ArgDataCenterRegion, "", "de/txl", "Location for the Data Center")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterRegion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgName, "", "", "Name of the Data Center")
+	create.AddStringFlag(config.ArgDescription, "", "", "Description of the Data Center")
+	create.AddStringFlag(config.ArgLocation, "", "de/txl", "Location for the Data Center")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
@@ -120,8 +120,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
-	update.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
+	update.AddStringFlag(config.ArgName, "", "", "Name of the Data Center")
+	update.AddStringFlag(config.ArgDescription, "", "", "Description of the Data Center")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center update to be executed")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center update [seconds]")
 
@@ -176,9 +176,9 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 }
 
 func RunDataCenterCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterName))
-	description := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterDescription))
-	region := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterRegion))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	description := viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
+	region := viper.GetString(core.GetFlagName(c.NS, config.ArgLocation))
 	dc, resp, err := c.DataCenters().Create(name, description, region)
 	if err != nil {
 		return err
@@ -192,11 +192,11 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 
 func RunDataCenterUpdate(c *core.CommandConfig) error {
 	input := resources.DatacenterProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDataCenterName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDataCenterDescription)) {
-		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterDescription)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDescription)) {
+		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgDescription)))
 	}
 	dc, resp, err := c.DataCenters().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),

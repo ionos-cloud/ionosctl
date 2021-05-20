@@ -100,8 +100,8 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgLoadBalancerName, "", "", "Name of the Load Balancer")
-	create.AddBoolFlag(config.ArgLoadBalancerDhcp, "", config.DefaultLoadBalancerDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
+	create.AddStringFlag(config.ArgName, "", "", "Name of the Load Balancer")
+	create.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Load Balancer creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer creation [seconds]")
 
@@ -134,9 +134,9 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgLoadBalancerName, "", "", "Name of the Load Balancer")
-	update.AddStringFlag(config.ArgLoadBalancerIp, "", "", "The IP of the Load Balancer")
-	update.AddBoolFlag(config.ArgLoadBalancerDhcp, "", config.DefaultLoadBalancerDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
+	update.AddStringFlag(config.ArgName, "", "", "Name of the Load Balancer")
+	update.AddStringFlag(config.ArgIp, "", "", "The IP of the Load Balancer")
+	update.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Load Balancer update to be executed")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer update [seconds]")
 
@@ -203,8 +203,8 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	lb, resp, err := c.Loadbalancers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerName)),
-		viper.GetBool(core.GetFlagName(c.NS, config.ArgLoadBalancerDhcp)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
+		viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)),
 	)
 	if err != nil {
 		return err
@@ -218,14 +218,14 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 
 func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	input := resources.LoadbalancerProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLoadBalancerName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLoadBalancerIp)) {
-		input.SetIp(viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerIp)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIp)) {
+		input.SetIp(viper.GetString(core.GetFlagName(c.NS, config.ArgIp)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLoadBalancerDhcp)) {
-		input.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgLoadBalancerDhcp)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDhcp)) {
+		input.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)))
 	}
 	lb, resp, err := c.Loadbalancers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),

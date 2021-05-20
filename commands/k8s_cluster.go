@@ -110,7 +110,7 @@ Required values to run a command:
 		CmdRun:     RunK8sClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, "", "", "The name for the K8s Cluster "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, it will be used the default one")
 	create.AddBoolFlag(config.ArgPublic, "", true, "The indicator if the Cluster is public or private")
 	create.AddStringFlag(config.ArgGatewayIp, "", "", "The IP address of the gateway used by the Cluster. This is mandatory when `public` is set to `false` and should not be provided otherwise")
@@ -138,7 +138,7 @@ Required values to run command:
 		CmdRun:     RunK8sClusterUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgK8sClusterName, "", "", "The name for the K8s Cluster")
+	update.AddStringFlag(config.ArgName, "", "", "The name for the K8s Cluster")
 	update.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster")
 	update.AddStringFlag(config.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -187,7 +187,7 @@ func PreRunK8sClusterId(c *core.PreCommandConfig) error {
 }
 
 func PreRunK8sClusterName(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterName)
+	return core.CheckRequiredFlags(c.NS, config.ArgName)
 }
 
 func RunK8sClusterList(c *core.CommandConfig) error {
@@ -292,7 +292,7 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 		err        error
 	)
 	proper := resources.K8sClusterPropertiesForPost{}
-	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterName)))
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 	} else {
@@ -317,8 +317,8 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) resources.K8sClusterForPut {
 	propertiesUpdated := resources.K8sClusterPropertiesForPut{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sClusterName)) {
-			n := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+			n := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 			propertiesUpdated.SetName(n)
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {

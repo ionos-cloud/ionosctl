@@ -88,12 +88,12 @@ Required values to run command:
 		CmdRun:     RunIpBlockCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgIpBlockName, "", "", "Name of the IpBlock")
-	create.AddStringFlag(config.ArgIpBlockLocation, "", "", "Location of the IpBlock "+config.RequiredFlag)
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgIpBlockLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgName, "", "", "Name of the IpBlock")
+	create.AddStringFlag(config.ArgLocation, "", "", "Location of the IpBlock "+config.RequiredFlag)
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(config.ArgIpBlockSize, "", 2, "Size of the IpBlock")
+	create.AddIntFlag(config.ArgSize, "", 2, "Size of the IpBlock")
 	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for IpBlock creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock creation [seconds]")
 
@@ -121,7 +121,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgIpBlockName, "", "", "Name of the IpBlock")
+	update.AddStringFlag(config.ArgName, "", "", "Name of the IpBlock")
 	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for IpBlock update to be executed")
 	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock update [seconds]")
 
@@ -156,7 +156,7 @@ Required values to run command:
 }
 
 func PreRunIpBlockLocation(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgIpBlockLocation)
+	return core.CheckRequiredFlags(c.NS, config.ArgLocation)
 }
 
 func PreRunIpBlockId(c *core.PreCommandConfig) error {
@@ -181,9 +181,9 @@ func RunIpBlockGet(c *core.CommandConfig) error {
 
 func RunIpBlockCreate(c *core.CommandConfig) error {
 	i, resp, err := c.IpBlocks().Create(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockName)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockLocation)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgIpBlockSize)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgLocation)),
+		viper.GetInt32(core.GetFlagName(c.NS, config.ArgSize)),
 	)
 	if err != nil {
 		return err
@@ -197,8 +197,8 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 
 func RunIpBlockUpdate(c *core.CommandConfig) error {
 	input := resources.IpBlockProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIpBlockName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
 	i, resp, err := c.IpBlocks().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)),
