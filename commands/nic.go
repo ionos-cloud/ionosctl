@@ -23,6 +23,7 @@ func nic() *core.Command {
 	nicCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "nic",
+			Aliases:          []string{"n"},
 			Short:            "Network Interfaces Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl nic` + "`" + ` allow you to create, list, get, update, delete NICs. To attach a NIC to a Load Balancer, use the Load Balancer command ` + "`" + `ionosctl loadbalancer attach-nic` + "`" + `.`,
 			TraverseChildren: true,

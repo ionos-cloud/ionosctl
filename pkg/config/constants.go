@@ -86,6 +86,7 @@ const (
 	ArgLabelKey              = "label-key"
 	ArgLabelValue            = "label-value"
 	ArgResourceLimits        = "resource-limits"
+	ArgResourceType          = "resource-type"
 	ArgUserId                = "user-id"
 	ArgUserData              = "user-data"
 	ArgFirstName             = "first-name"

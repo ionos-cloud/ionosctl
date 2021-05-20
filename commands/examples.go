@@ -1,6 +1,7 @@
 package commands
 
 const (
+
 	/*
 		Login Examples
 	*/
@@ -13,10 +14,11 @@ USERNAME
 Enter your password:
 
 Status: Authentication successful!`
+
 	/*
 		Location Examples
 	*/
-	listLocationExample = `ionosctl location list 
+	listLocationExample = `ionosctl location list
 LocationId   Name        Features
 de/fra       frankfurt   [SSD]
 us/las       lasvegas    [SSD]
@@ -40,19 +42,19 @@ ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las     1`
 	getDatacenterExample = `ionosctl datacenter get --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774
 DatacenterId                           Name             Location
 ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las`
-	createDatacenterExample = `ionosctl datacenter create --datacenter-name demoDatacenter --datacenter-location us/las
+	createDatacenterExample = `ionosctl datacenter create --name demoDatacenter --location us/las
 DatacenterId                           Name             Location
 f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d   demoDatacenter   us/las
 RequestId: 98ab8148-96c4-4091-90e8-9ee2b8a172f4
 Status: Command datacenter create has been successfully executed
 
-ionosctl datacenter create --datacenter-name demoDatacenter --datacenter-location gb/lhr --wait-for-state 
+ionosctl datacenter create --name demoDatacenter --location gb/lhr --wait-for-request 
 1.2s Waiting for request... DONE
 DatacenterId                           Name             Location
 8e543958-04f5-4872-bbf3-b28d46393ac7   demoDatacenter   gb/lhr
 RequestId: 2401b498-8afb-4728-a22a-d2b26f5e31c3
 Status: Command datacenter create & wait have been successfully executed`
-	updateDatacenterExample = `ionosctl datacenter update --datacenter-id 8e543958-04f5-4872-bbf3-b28d46393ac7 --datacenter-description demoDescription --cols "DatacenterId,Description"
+	updateDatacenterExample = `ionosctl datacenter update --datacenter-id 8e543958-04f5-4872-bbf3-b28d46393ac7 --description demoDescription --format "DatacenterId,Description"
 DatacenterId                           Description
 8e543958-04f5-4872-bbf3-b28d46393ac7   demoDescription
 RequestId: 46af6915-9003-4f11-a1fe-bab1eac9bccc
@@ -76,20 +78,20 @@ f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               AVAILABLE
 	getServerExample = `ionosctl server get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff 
 ServerId                               Name         AvailabilityZone   State       Cores   Ram     CpuFamily
 f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               AVAILABLE   4       256MB   AMD_OPTERON`
-	createServerExample = `ionosctl server create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-name demoServer
+	createServerExample = `ionosctl server create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --name demoServer
 ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily
 f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    2       256MB   AMD_OPTERON
 RequestId: 07fd3682-8642-4a5e-a57a-056e909a2af8
 Status: Command server create has been successfully executed
 
-ionosctl server create --datacenter-id 3087bf8b-3c84-405f-8b22-1978a36aa933 --server-name testing --wait-for-request --wait-for-state 
+ionosctl server create --datacenter-id 3087bf8b-3c84-405f-8b22-1978a36aa933 --name testing --wait-for-request --wait-for-state 
 6.2s Waiting for request... DONE                                                                                                                                                                           
 100ms Waiting for state. DONE                                                                                                                                                                              
 ServerId                               Name      AvailabilityZone   State       Cores   Ram     CpuFamily
 af960bf3-1585-4040-9c14-343a368339ac   testing   AUTO               AVAILABLE   2       256MB   AMD_OPTERON
 RequestId: 9e6db134-284b-41a4-b581-c567c744b874
 Status: Command server create & wait have been successfully executed`
-	updateServerExample = `ionosctl server update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff --server-cores 4
+	updateServerExample = `ionosctl server update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff --cores 4
 ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily
 f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    4       256MB   AMD_OPTERON
 RequestId: 571a1bbb-26b3-449d-9885-a20e50dc3b95
@@ -134,12 +136,12 @@ Status: Command volume detach has been successfully executed`
 	/*
 		Volume Examples
 	*/
-	createVolumeExample = `ionosctl volume create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-name demoVolume
+	createVolumeExample = `ionosctl volume create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --name demoVolume
 VolumeId                               Name         Size   Type   LicenceType   State   Image
 ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   10GB   HDD    LINUX         BUSY    
 RequestId: a2da3bb7-3851-4e80-a5e9-6e98a66cebab
 Status: Command volume create has been successfully executed`
-	updateVolumeExample = `ionosctl volume update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-id ce510144-9bc6-4115-bd3d-b9cd232dd422 --volume-size 20
+	updateVolumeExample = `ionosctl volume update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-id ce510144-9bc6-4115-bd3d-b9cd232dd422 --size 20
 VolumeId                               Name         Size   Type   LicenceType   State   Image
 ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   20GB   HDD    LINUX         BUSY    
 RequestId: ad4080a9-a51f-4d81-ae40-660cbfe009f4
@@ -158,12 +160,12 @@ Status: Command volume delete has been successfully executed`
 	/*
 		Load Balancer Examples
 	*/
-	createLoadbalancerExample = `ionosctl loadbalancer create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-name demoLoadBalancer
+	createLoadbalancerExample = `ionosctl loadbalancer create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --name demoLoadBalancer
 LoadbalancerId                         Name               Dhcp
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   true
 RequestId: 74441964-1134-4009-8b81-d7189170885e
 Status: Command loadbalancer create has been successfully executed`
-	updateLoadbalancerExample = `ionosctl loadbalancer update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --loadbalancer-dhcp=false --wait-for-request
+	updateLoadbalancerExample = `ionosctl loadbalancer update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --dhcp=false --wait-for-request
 1.2s Waiting for request... DONE
 LoadbalancerId                         Name               Dhcp
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   false
@@ -200,7 +202,7 @@ Status: Command nic detach has been successfully executed`
 	/*
 		NIC Examples
 	*/
-	createNicExample = `ionosctl nic create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-name demoNic
+	createNicExample = `ionosctl nic create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --name demoNic
 NicId                                  Name      Dhcp   LanId   Ips
 2978400e-da90-405f-905e-8200d4f48158   demoNic   true   1       []
 RequestId: 67bdb2fb-b1ee-419a-9bcf-f8ea4b800653
@@ -225,12 +227,12 @@ Status: Command nic delete has been successfully executed`
 	/*
 		Lan Examples
 	*/
-	createLanExample = `ionosctl lan create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-name demoLan
+	createLanExample = `ionosctl lan create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --name demoLan
 LanId   Name      Public   PccId
 4       demoLan   false
 RequestId: da824a69-a12a-4153-b302-a797b3581c2b
 Status: Command lan create has been successfully executed`
-	updateLanExample = `ionosctl lan update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --lan-name demoLAN --lan-public=true
+	updateLanExample = `ionosctl lan update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --name demoLAN --public=true
 LanId   Name      Public    PccId
 3       demoLAN   true
 RequestId: 0a174dca-62b1-4360-aef8-89fd31c196f2
@@ -281,7 +283,7 @@ RequestId                              Status   Message
 	/*
 		Image Examples
 	*/
-	listImagesExample = `ionosctl image list --image-location us/las --image-type HDD
+	listImagesExample = `ionosctl image list --location us/las --type HDD
 ImageId                                Name                                 Location   Size   LicenceType   ImageType
 8991cf6c-8706-11eb-a1d6-72dfddd36b99   windows-2012-r2-server-2021-03       us/las     14     WINDOWS       HDD
 7ab978cb-870a-11eb-a1d6-72dfddd36b99   windows-2016-server-2021-03          us/las     14     WINDOWS2016   HDD
@@ -311,12 +313,12 @@ dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSnapshot   LINUX         10
 	getSnapshotExample = `ionosctl snapshot get --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c 
 SnapshotId                             Name           LicenceType   Size
 dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSNapshot   LINUX         10`
-	createSnapshotExample = `ionosctl snapshot create --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --snapshot-name testSnapshot
+	createSnapshotExample = `ionosctl snapshot create --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --name testSnapshot
 SnapshotId                             Name           LicenceType   Size
 dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSnapshot   LINUX         0
 RequestId: fed5555a-ac00-41c8-abbe-cc53c8179716
 Status: Command snapshot create has been successfully executed`
-	updateSnapshotExample = `ionosctl snapshot update --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --snapshot-name test
+	updateSnapshotExample = `ionosctl snapshot update --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --name test
 SnapshotId                             Name   LicenceType   Size
 dc688daf-8e54-4db8-ac4a-487ad5a34e9c   test   LINUX         10
 RequestId: 3540e9be-ed35-41c0-83d9-923882bfa9bd
@@ -369,12 +371,12 @@ f537ff0e-8b2c-4ce6-8a92-297a5ad08ca1   test        TCP        80               8
 	getFirewallRuleExample = `ionosctl firewallrule get --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id f537ff0e-8b2c-4ce6-8a92-297a5ad08ca1 
 FirewallRuleId                         Name        Protocol   PortRangeStart   PortRangeEnd   State
 f537ff0e-8b2c-4ce6-8a92-297a5ad08ca1   test        TCP        80               80             AVAILABLE`
-	createFirewallRuleExample = `ionosctl firewallrule create --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-protocol TCP --firewallrule-name demo --firewallrule-port-range-start 2476 --firewallrule-port-range-end 2476
+	createFirewallRuleExample = `ionosctl firewallrule create --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --protocol TCP --name demo --port-range-start 2476 --port-range-end 2476
 FirewallRuleId                         Name   Protocol   PortRangeStart   PortRangeEnd   State
 4221e2c8-0316-447c-aeed-69ac92e585be   demo   TCP        2476             2476           BUSY
 RequestId: 09a47137-e377-4a79-b2b9-16744e298ad5
 Status: Command firewallrule create has been successfully executed`
-	updateFirewallRuleExample = `ionosctl firewallrule update --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id 4221e2c8-0316-447c-aeed-69ac92e585be --firewallrule-name new-test --wait-for-request 
+	updateFirewallRuleExample = `ionosctl firewallrule update --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id 4221e2c8-0316-447c-aeed-69ac92e585be --name new-test --wait-for-request 
 1.2s Waiting for request... DONE
 FirewallRuleId                         Name       Protocol   PortRangeStart   PortRangeEnd   State
 4221e2c8-0316-447c-aeed-69ac92e585be   new-test   TCP        2476             2476           BUSY
@@ -431,7 +433,7 @@ UserId                                 Firstname   Lastname   Email             
 99499053-059e-4ee6-b56f-66b0df93262d   test1       test1      testrandom16@ionos.com   false           false          false                               true
 RequestId: ca349e08-5820-41ba-8252-ee4c8dd2ccdb
 Status: Command user create has been successfully executed`
-	updateUserExample = `ionosctl user update --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 --user-administrator=true
+	updateUserExample = `ionosctl user update --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 --administrator=true
 UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
 2470f439-1d73-42f8-90a9-f78cf2776c74   test1       test1      testrandom12@ionos.com   true            false          false           a74101e7c1948450432d5b6512f2712c   true
 RequestId: 439f79fc-5bfc-43da-92f3-0d804ebb28ac
@@ -443,7 +445,7 @@ Status: Command user delete has been successfully executed`
 	/*
 		Group Examples
 	*/
-	createGroupExample = `ionosctl group create --group-name test --wait-for-request
+	createGroupExample = `ionosctl group create --name test --wait-for-request
 1.2s Waiting for request... DONE
 GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
 1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false`
@@ -453,7 +455,7 @@ GroupId                                Name   CreateDataCenter   CreateSnapshot 
 	listGroupExample = `ionosctl group list
 GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
 1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false`
-	updateGroupExample = `ionosctl group update --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --group-reserve-ip 
+	updateGroupExample = `ionosctl group update --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --reserve-ip 
 GroupId                                Name         CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
 e99f4cdb-746d-4c3c-b38c-b749ca23f917   testUpdate   true               true             true        false               false       false         false              false                  true
 RequestId: 2bfe43a4-ea09-48fc-bb53-136c7f7d061f
@@ -463,6 +465,7 @@ Warning: Are you sure you want to delete group (y/N) ?
 y
 RequestId: e20d2851-0d20-453d-b752-ed1c34a83625
 Status: Command group delete has been successfully executed`
+
 	/*
 		Group Users Examples
 	*/
@@ -486,6 +489,7 @@ Status: Command user add has been successfully executed`
 	listGroupResourcesExample = `ionosctl group resource list --group-id 45ba215b-6897-40b6-879c-cbadb527cefd 
 ResourceId                             Name   SecAuthProtection   Type
 aa8e07a2-287a-4b45-b5e9-94761750a53c   test   false               datacenter`
+
 	/*
 		Resources Example
 	*/
@@ -558,13 +562,13 @@ BackupUnitId                           Name          Email
 	getBackupUnitSSOExample = `ionosctl backupunit get-sso-url --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17 
 BackupUnitSsoUrl
 https://backup.ionos.com?etc.etc.etc`
-	createBackupUnitExample = `ionosctl backupunit create --backupunit-name test1234test --backupunit-email testrandom18@ionos.com --backupunit-password ********
+	createBackupUnitExample = `ionosctl backupunit create --name test1234test --email testrandom18@ionos.com --password ********
 NOTE: To login with backup agent use: https://backup.ionos.com, with CONTRACT_NUMBER-BACKUP_UNIT_NAME and BACKUP_UNIT_PASSWORD!
 BackupUnitId                           Name           Email
 271a0627-70eb-4e36-8ff5-2e190f88cd2b   test1234test   testrandom18@ionos.com
 RequestId: 2cd34841-f0b1-4ac7-9741-89a2575a9962
 Status: Command backupunit create has been successfully executed`
-	updateBackupUnitExample = `ionosctl backupunit update --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17 --backupunit-email testrandom22@ionos.com
+	updateBackupUnitExample = `ionosctl backupunit update --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17 --email testrandom22@ionos.com
 BackupUnitId                           Name          Email
 9fa48167-6375-4d93-b33c-e1ba3f461c17   test1234567   testrandom22@ionos.com
 RequestId: a91fbce0-bb98-4be1-9d7f-90d3f6da8ffe
@@ -589,12 +593,12 @@ e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test`
 LanId   LanName     DatacenterId                           DatacenterName   Location
 1       testlan2    1ef56b51-98be-487e-925a-c9f3dfa4a076   test2            us/las
 1       testlan1    95b7f7f0-a6f3-4fc9-8d06-018d2c1efc89   test1            us/las`
-	createPccExample = `ionosctl pcc create --pcc-name test --pcc-description "test test" --wait-for-request 
+	createPccExample = `ionosctl pcc create --name test --description "test test" --wait-for-request 
 PccId                                  Name   Description
 e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test
 RequestId: 64720266-c6e8-4e78-8e31-6754f006dcb1
 Status: Command pcc create & wait have been successfully executed`
-	updatePccExample = `ionosctl pcc update --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 --pcc-description test
+	updatePccExample = `ionosctl pcc update --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 --description test
 PccId                                  Name   Description
 4b9c6a43-a338-11eb-b70c-7ade62b52cc0   test   test
 RequestId: 81525f2d-cc91-4c55-84b8-07fac9a47e35
@@ -615,12 +619,12 @@ cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       ACTIVE`
 	getK8sClusterExample = `ionosctl k8s cluster get --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d 
 ClusterId                              Name    K8sVersion   State
 cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       ACTIVE`
-	createK8sClusterExample = `ionosctl k8s cluster create --cluster-name demoTest
+	createK8sClusterExample = `ionosctl k8s cluster create --name demoTest
 ClusterId                              Name       K8sVersion  State
 29d9b0c4-351d-4c9e-87e1-201cc0d49afb   demoTest   1.19.8      DEPLOYING
 RequestId: 583ba6ae-dd0b-4c68-8fb2-41b3d7bc471b
 Status: Command k8s cluster create has been successfully executed`
-	updateK8sClusterExample = `ionosctl k8s cluster update --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d --cluster-name testCluster
+	updateK8sClusterExample = `ionosctl k8s cluster update --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d --name testCluster
 ClusterId                              Name          K8sVersion   State
 cb47b98f-b8dd-4108-8ac0-b636e36a161d   testCluster   1.19.8       UPDATING`
 	deleteK8sClusterExample = `ionosctl k8s cluster delete --cluster-id 01d870e6-4118-4396-90bd-917fda3e948d 
@@ -635,7 +639,7 @@ NodePoolId                             Name        K8sVersion  NodeCount   Datac
 	getK8sNodePoolExample = `ionosctl k8s nodepool get --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
 NodePoolId                             Name        K8sVersion  NodeCount   DatacenterId                           State
 939811fe-cc13-41e2-8a49-87db58c7a812   test12345   1.19.8      2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   UPDATING`
-	createK8sNodePoolExample = `ionosctl k8s nodepool create --datacenter-id 3af92af6-c2eb-41e0-b946-6e7ba321abf2 --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-name test1234
+	createK8sNodePoolExample = `ionosctl k8s nodepool create --datacenter-id 3af92af6-c2eb-41e0-b946-6e7ba321abf2 --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --name test1234
 NodePoolId                             Name       K8sVersion   NodeCount   DatacenterId                           State
 a274bc0e-efa5-41c0-828d-39e38f4ad361   test1234   1.19.8       2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   DEPLOYING`
 	updateK8sNodePoolExample = `ionosctl k8s nodepool update --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id f01f4d6c-41a9-47c3-a5a5-f3667cc25265 --node-count=1
@@ -666,7 +670,7 @@ a0e5d4c4-6b09-4965-8e98-59a749301d20   test12345-n3q55ggmap   1.19.8       x.x.x
 	listK8sVersionsExample = `ionosctl k8s version list 
 [1.18.16 1.18.15 1.18.12 1.18.5 1.18.9 1.19.8]`
 	getK8sVersionExample = `ionosctl k8s version get 
-"1.19.8"`
+1.19.8`
 
 	/*
 		Server Cdrom Example

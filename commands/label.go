@@ -55,9 +55,9 @@ func label() *core.Command {
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringP(config.ArgType, "", "", "Resource Type")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgType), globalFlags.Lookup(config.ArgType))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringP(config.ArgResourceType, "", "", "Resource Type")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgResourceType), globalFlags.Lookup(config.ArgResourceType))
+	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"datacenter", "volume", "server", "snapshot", "ipblock"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -146,7 +146,7 @@ func label() *core.Command {
 
 func PreRunGlobalResourceTypeLabelKey(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgType); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgResourceType); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := checkResourceIds(c); err != nil {
@@ -163,7 +163,7 @@ func PreRunGlobalResourceTypeLabelKey(c *core.PreCommandConfig) error {
 
 func PreRunGlobalResourceTypeLabelKeyValue(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgType); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgResourceType); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := checkResourceIds(c); err != nil {
@@ -185,7 +185,7 @@ func PreRunLabelUrn(c *core.PreCommandConfig) error {
 const labelResourceWarning = "Please use `--resource-type` flag with one option: \"datacenter\", \"volume\", \"server\", \"snapshot\", \"ipblock\""
 
 func RunLabelList(c *core.CommandConfig) error {
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgType)) {
+	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
 	case config.DatacenterResource:
 		return RunDataCenterLabelsList(c)
 	case config.ServerResource:
@@ -206,7 +206,7 @@ func RunLabelList(c *core.CommandConfig) error {
 }
 
 func RunLabelGet(c *core.CommandConfig) error {
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgType)) {
+	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
 	case config.DatacenterResource:
 		return RunDataCenterLabelGet(c)
 	case config.ServerResource:
@@ -231,7 +231,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 }
 
 func RunLabelAdd(c *core.CommandConfig) error {
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgType)) {
+	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
 	case config.DatacenterResource:
 		return RunDataCenterLabelAdd(c)
 	case config.ServerResource:
@@ -248,7 +248,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunLabelRemove(c *core.CommandConfig) error {
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgType)) {
+	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
 	case config.DatacenterResource:
 		return RunDataCenterLabelRemove(c)
 	case config.ServerResource:
@@ -265,7 +265,7 @@ func RunLabelRemove(c *core.CommandConfig) error {
 }
 
 func checkResourceIds(c *core.PreCommandConfig) error {
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgType)) {
+	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
 	case config.DatacenterResource:
 		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId)
 	case config.ServerResource:
