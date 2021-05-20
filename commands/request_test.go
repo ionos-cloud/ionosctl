@@ -163,8 +163,8 @@ func TestGetRequestsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("request", config.ArgCols), []string{"RequestId"})
-	getRequestsCols(core.GetGlobalFlagName("request", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("request", config.ArgFormat), []string{"RequestId"})
+	getRequestsCols(core.GetGlobalFlagName("request", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -174,8 +174,8 @@ func TestGetRequestsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("request", config.ArgCols), []string{"Unknown"})
-	getRequestsCols(core.GetGlobalFlagName("request", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("request", config.ArgFormat), []string{"Unknown"})
+	getRequestsCols(core.GetGlobalFlagName("request", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

@@ -381,8 +381,8 @@ func TestGetSharesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("share", config.ArgCols), []string{"Type"})
-	getGroupShareCols(core.GetGlobalFlagName("share", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("share", config.ArgFormat), []string{"Type"})
+	getGroupShareCols(core.GetGlobalFlagName("share", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -392,8 +392,8 @@ func TestGetSharesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("share", config.ArgCols), []string{"Unknown"})
-	getGroupShareCols(core.GetGlobalFlagName("share", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("share", config.ArgFormat), []string{"Unknown"})
+	getGroupShareCols(core.GetGlobalFlagName("share", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

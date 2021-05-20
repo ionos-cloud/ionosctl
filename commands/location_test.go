@@ -138,8 +138,8 @@ func TestGetLocationsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("location", config.ArgCols), []string{"Name"})
-	getLocationCols(core.GetGlobalFlagName("location", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("location", config.ArgFormat), []string{"Name"})
+	getLocationCols(core.GetGlobalFlagName("location", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -149,8 +149,8 @@ func TestGetLocationsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("location", config.ArgCols), []string{"Unknown"})
-	getLocationCols(core.GetGlobalFlagName("location", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("location", config.ArgFormat), []string{"Unknown"})
+	getLocationCols(core.GetGlobalFlagName("location", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

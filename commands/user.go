@@ -29,9 +29,9 @@ func user() *core.Command {
 		},
 	}
 	globalFlags := userCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultUserCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(userCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = userCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultUserCols, "Set of fields to be printed on output")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(userCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
+	_ = userCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -297,9 +297,9 @@ func groupUser() *core.Command {
 		},
 	}
 	globalFlags := groupUserCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(groupUserCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = groupUserCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultGroupCols, "Set of fields to be printed on output")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(groupUserCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
+	_ = groupUserCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -435,7 +435,7 @@ func getUserPrint(resp *resources.Response, c *core.CommandConfig, users []resou
 		if users != nil {
 			r.OutputJSON = users
 			r.KeyValue = getUsersKVMaps(users)
-			r.Columns = getUserCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getUserCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
 		}
 	}
 	return r

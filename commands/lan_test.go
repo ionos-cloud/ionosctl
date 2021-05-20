@@ -406,8 +406,8 @@ func TestGetLansCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("lan", config.ArgCols), []string{"Name"})
-	getLansCols(core.GetGlobalFlagName("lan", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("lan", config.ArgFormat), []string{"Name"})
+	getLansCols(core.GetGlobalFlagName("lan", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -417,8 +417,8 @@ func TestGetLansColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("lan", config.ArgCols), []string{"Unknown"})
-	getLansCols(core.GetGlobalFlagName("lan", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("lan", config.ArgFormat), []string{"Unknown"})
+	getLansCols(core.GetGlobalFlagName("lan", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

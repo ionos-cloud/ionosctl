@@ -500,8 +500,8 @@ func TestGetGroupsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Name"})
-	getGroupCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("resource", config.ArgFormat), []string{"Name"})
+	getGroupCols(core.GetGlobalFlagName("resource", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -511,8 +511,8 @@ func TestGetGroupsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Unknown"})
-	getGroupCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("resource", config.ArgFormat), []string{"Unknown"})
+	getGroupCols(core.GetGlobalFlagName("resource", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

@@ -28,9 +28,9 @@ func snapshot() *core.Command {
 		},
 	}
 	globalFlags := snapshotCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultSnapshotCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(snapshotCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultSnapshotCols, "Set of fields to be printed on output")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(snapshotCmd.NS, config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
+	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -362,7 +362,7 @@ func getSnapshotPrint(resp *resources.Response, c *core.CommandConfig, s []resou
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getSnapshotsKVMaps(s)
-			r.Columns = getSnapshotCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getSnapshotCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
 		}
 	}
 	return r

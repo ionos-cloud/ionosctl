@@ -348,8 +348,8 @@ func TestGetS3KeyCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("s3key", config.ArgCols), []string{"Active"})
-	getS3KeyCols(core.GetGlobalFlagName("s3key", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("s3key", config.ArgFormat), []string{"Active"})
+	getS3KeyCols(core.GetGlobalFlagName("s3key", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -359,8 +359,8 @@ func TestGetS3KeyColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("s3key", config.ArgCols), []string{"Unknown"})
-	getS3KeyCols(core.GetGlobalFlagName("s3key", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("s3key", config.ArgFormat), []string{"Unknown"})
+	getS3KeyCols(core.GetGlobalFlagName("s3key", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

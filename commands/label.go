@@ -25,9 +25,9 @@ func label() *core.Command {
 		},
 	}
 	globalFlags := labelCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultLabelResourceCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultLabelResourceCols, "Set of fields to be printed on output")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
+	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLabelResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringP(config.ArgDataCenterId, "", "", "The unique Data Center Id")

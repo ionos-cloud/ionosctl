@@ -29,9 +29,9 @@ func request() *core.Command {
 		},
 	}
 	globalFlags := reqCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = reqCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultRequestCols, "Set of fields to be printed on output")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
+	_ = reqCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultRequestCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -110,7 +110,7 @@ func RunRequestList(c *core.CommandConfig) error {
 	rqs := getRequests(requests)
 	return c.Printer.Print(printer.Result{
 		OutputJSON: requests,
-		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr()),
 		KeyValue:   getRequestsKVMaps(rqs),
 	})
 }
@@ -123,7 +123,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: request,
 		KeyValue:   getRequestsKVMaps([]resources.Request{*request}),
-		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr()),
 	})
 }
 
@@ -148,7 +148,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: request,
 		KeyValue:   getRequestsKVMaps([]resources.Request{*request}),
-		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
+		Columns:    getRequestsCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr()),
 	})
 }
 

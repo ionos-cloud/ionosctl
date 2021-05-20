@@ -722,8 +722,8 @@ func TestGetK8sNodePoolCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("nodepool", config.ArgCols), []string{"Name"})
-	getK8sNodePoolCols(core.GetGlobalFlagName("nodepool", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("nodepool", config.ArgFormat), []string{"Name"})
+	getK8sNodePoolCols(core.GetGlobalFlagName("nodepool", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -733,8 +733,8 @@ func TestGetK8sNodePoolColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("nodepool", config.ArgCols), []string{"Unknown"})
-	getK8sNodePoolCols(core.GetGlobalFlagName("nodepool", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("nodepool", config.ArgFormat), []string{"Unknown"})
+	getK8sNodePoolCols(core.GetGlobalFlagName("nodepool", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

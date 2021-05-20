@@ -413,8 +413,8 @@ func TestGetFirewallRulesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("firewallrule", config.ArgCols), []string{"Name"})
-	getFirewallRulesCols(core.GetGlobalFlagName("firewallrule", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("firewallrule", config.ArgFormat), []string{"Name"})
+	getFirewallRulesCols(core.GetGlobalFlagName("firewallrule", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -424,8 +424,8 @@ func TestGetFirewallRulesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("firewallrule", config.ArgCols), []string{"Unknown"})
-	getFirewallRulesCols(core.GetGlobalFlagName("firewallrule", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("firewallrule", config.ArgFormat), []string{"Unknown"})
+	getFirewallRulesCols(core.GetGlobalFlagName("firewallrule", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

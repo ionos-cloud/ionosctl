@@ -164,8 +164,8 @@ func TestGetImagesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("image", config.ArgCols), []string{"Name"})
-	getImageCols(core.GetGlobalFlagName("image", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("image", config.ArgFormat), []string{"Name"})
+	getImageCols(core.GetGlobalFlagName("image", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -175,8 +175,8 @@ func TestGetImagesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("image", config.ArgCols), []string{"Unknown"})
-	getImageCols(core.GetGlobalFlagName("image", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("image", config.ArgFormat), []string{"Unknown"})
+	getImageCols(core.GetGlobalFlagName("image", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

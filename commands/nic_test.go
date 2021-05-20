@@ -407,8 +407,8 @@ func TestGetNicsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("nic", config.ArgCols), []string{"Name"})
-	getNicsCols(core.GetGlobalFlagName("nic", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("nic", config.ArgFormat), []string{"Name"})
+	getNicsCols(core.GetGlobalFlagName("nic", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -418,8 +418,8 @@ func TestGetNicsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("nic", config.ArgCols), []string{"Unknown"})
-	getNicsCols(core.GetGlobalFlagName("nic", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("nic", config.ArgFormat), []string{"Unknown"})
+	getNicsCols(core.GetGlobalFlagName("nic", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

@@ -398,8 +398,8 @@ func TestGetPccsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("pcc", config.ArgCols), []string{"Name"})
-	getPccCols(core.GetGlobalFlagName("pcc", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("pcc", config.ArgFormat), []string{"Name"})
+	getPccCols(core.GetGlobalFlagName("pcc", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -409,8 +409,8 @@ func TestGetPccsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("pcc", config.ArgCols), []string{"Unknown"})
-	getPccCols(core.GetGlobalFlagName("pcc", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("pcc", config.ArgFormat), []string{"Unknown"})
+	getPccCols(core.GetGlobalFlagName("pcc", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

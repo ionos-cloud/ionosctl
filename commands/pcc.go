@@ -29,9 +29,9 @@ func pcc() *core.Command {
 		},
 	}
 	globalFlags := pccCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultPccCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(pccCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = pccCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultPccCols, "Set of fields to be printed on output")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(pccCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
+	_ = pccCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPccCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -256,9 +256,9 @@ func peers() *core.Command {
 		},
 	}
 	globalFlags := peerCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultPccPeersCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(peerCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = peerCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultPccPeersCols, "Set of fields to be printed on output")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(peerCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
+	_ = peerCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPccPeersCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -315,7 +315,7 @@ func getPccPrint(resp *resources.Response, c *core.CommandConfig, pccs []resourc
 		if pccs != nil {
 			r.OutputJSON = pccs
 			r.KeyValue = getPccsKVMaps(pccs)
-			r.Columns = getPccCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), os.Stderr)
+			r.Columns = getPccCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), os.Stderr)
 		}
 	}
 	return r
@@ -337,7 +337,7 @@ func getPccPeerPrint(c *core.CommandConfig, pccs []resources.Peer) printer.Resul
 		if pccs != nil {
 			r.OutputJSON = pccs
 			r.KeyValue = getPccPeersKVMaps(pccs)
-			r.Columns = getPccPeersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), os.Stderr)
+			r.Columns = getPccPeersCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), os.Stderr)
 		}
 	}
 	return r

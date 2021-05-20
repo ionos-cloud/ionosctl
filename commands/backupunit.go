@@ -31,9 +31,9 @@ func backupunit() *core.Command {
 		},
 	}
 	globalFlags := backupUnitCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultBackupUnitCols, "Columns to be printed in the standard output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = backupUnitCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultBackupUnitCols, "Set of fields to be printed on output")
+	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
+	_ = backupUnitCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultBackupUnitCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -297,7 +297,7 @@ func getBackupUnitPrint(resp *resources.Response, c *core.CommandConfig, backupU
 		if backupUnits != nil {
 			r.OutputJSON = backupUnits
 			r.KeyValue = getBackupUnitsKVMaps(backupUnits)
-			r.Columns = getBackupUnitCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			r.Columns = getBackupUnitCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
 		}
 	}
 	return r

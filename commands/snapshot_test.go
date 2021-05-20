@@ -437,8 +437,8 @@ func TestGetSnapshotsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("snapshot", config.ArgCols), []string{"Name"})
-	getSnapshotCols(core.GetGlobalFlagName("snapshot", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("snapshot", config.ArgFormat), []string{"Name"})
+	getSnapshotCols(core.GetGlobalFlagName("snapshot", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -448,8 +448,8 @@ func TestGetSnapshotsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("snapshot", config.ArgCols), []string{"Unknown"})
-	getSnapshotCols(core.GetGlobalFlagName("snapshot", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("snapshot", config.ArgFormat), []string{"Unknown"})
+	getSnapshotCols(core.GetGlobalFlagName("snapshot", config.ArgFormat), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
