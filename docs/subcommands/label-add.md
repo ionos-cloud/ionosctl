@@ -35,9 +35,9 @@ Required values to run command:
       --label-value string     The unique Label Value (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --resource-type string   Resource Type
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
+      --type string            Resource Type
       --volume-id string       The unique Volume Id
 ```
 

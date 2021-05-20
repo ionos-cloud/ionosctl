@@ -26,34 +26,34 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --backupunit-id string     The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property
-      --cols strings             Columns to be printed in the standard output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
-  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --cpu-hot-plug             It is capable of CPU hot plug (no reboot required)
-      --datacenter-id string     The unique Data Center Id (required)
-      --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required)
-      --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
-      --force                    Force command to execute without user input
-  -h, --help                     help for create
-      --image-alias string       The Image Alias to set instead of Image Id
-      --image-id string          The Image Id or snapshot Id to be used as template for the new Volume
-      --image-password string    Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
-      --licence-type string      Licence Type of the Volume
-      --nic-hot-plug             It is capable of nic hot plug (no reboot required)
-      --nic-hot-unplug           It is capable of nic hot unplug (no reboot required)
-  -o, --output string            Desired output format [text|json] (default "text")
-  -q, --quiet                    Quiet output
-      --ram-hot-plug             It is capable of memory hot plug (no reboot required)
-      --ssh-keys strings         SSH Keys of the Volume
-      --timeout int              Timeout option for Request for Volume creation [seconds] (default 60)
-      --user-data string         The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property
-      --volume-bus string        Bus for the Volume (default "VIRTIO")
-      --volume-name string       Name of the Volume
-      --volume-size float32      Size in GB of the Volume (default 10)
-      --volume-type string       Type of the Volume (default "HDD")
-      --volume-zone string       Availability zone of the Volume. Storage zone can only be selected prior provisioning (default "AUTO")
-      --wait-for-request         Wait for the Request for Volume creation to be executed
+  -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --availability-zone string   Availability zone of the Volume. Storage zone can only be selected prior provisioning (default "AUTO")
+      --backupunit-id string       The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property
+      --bus string                 Bus for the Volume (default "VIRTIO")
+      --cols strings               Columns to be printed in the standard output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
+  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --cpu-hot-plug               It is capable of CPU hot plug (no reboot required)
+      --datacenter-id string       The unique Data Center Id (required)
+      --disc-virtio-hot-plug       It is capable of Virt-IO drive hot plug (no reboot required)
+      --disc-virtio-hot-unplug     It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
+      --force                      Force command to execute without user input
+  -h, --help                       help for create
+      --image-alias string         The Image Alias to set instead of Image Id
+      --image-id string            The Image Id or snapshot Id to be used as template for the new Volume
+      --licence-type string        Licence Type of the Volume
+      --name string                Name of the Volume
+      --nic-hot-plug               It is capable of nic hot plug (no reboot required)
+      --nic-hot-unplug             It is capable of nic hot unplug (no reboot required)
+  -o, --output string              Desired output format [text|json] (default "text")
+      --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
+  -q, --quiet                      Quiet output
+      --ram-hot-plug               It is capable of memory hot plug (no reboot required)
+      --size float32               Size in GB of the Volume (default 10)
+      --ssh-keys strings           SSH Keys of the Volume
+      --timeout int                Timeout option for Request for Volume creation [seconds] (default 60)
+      --type string                Type of the Volume (default "HDD")
+      --user-data string           The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property
+      --wait-for-request           Wait for the Request for Volume creation to be executed
 ```
 
 ## Examples

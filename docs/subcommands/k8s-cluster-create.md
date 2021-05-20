@@ -23,20 +23,20 @@ Required values to run a command:
 ## Options
 
 ```text
-  -u, --api-url string        Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cluster-name string   The name for the K8s Cluster (required)
-      --cols strings          Columns to be printed in the standard output (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
-  -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                 Force command to execute without user input
-      --gateway-ip public     The IP address of the gateway used by the Cluster. This is mandatory when public is set to `false` and should not be provided otherwise
-  -h, --help                  help for create
-      --k8s-version string    The K8s version for the Cluster. If not set, it will be used the default one
-  -o, --output string         Desired output format [text|json] (default "text")
-      --public                The indicator if the Cluster is public or private (default true)
-  -q, --quiet                 Quiet output
-      --timeout int           Timeout option for waiting for Cluster/Request [seconds] (default 600)
-      --wait-for-request      Wait for the Request for Cluster creation to be executed
-      --wait-for-state        Wait for the new Cluster to be in ACTIVE state
+  -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings         Columns to be printed in the standard output (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
+  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --force                Force command to execute without user input
+      --gateway-ip public    The IP address of the gateway used by the Cluster. This is mandatory when public is set to `false` and should not be provided otherwise
+  -h, --help                 help for create
+      --k8s-version string   The K8s version for the Cluster. If not set, it will be used the default one
+      --name string          The name for the K8s Cluster (required)
+  -o, --output string        Desired output format [text|json] (default "text")
+      --public               The indicator if the Cluster is public or private (default true)
+  -q, --quiet                Quiet output
+      --timeout int          Timeout option for waiting for Cluster/Request [seconds] (default 600)
+      --wait-for-request     Wait for the Request for Cluster creation to be executed
+      --wait-for-state       Wait for the new Cluster to be in ACTIVE state
 ```
 
 ## Examples

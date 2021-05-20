@@ -21,18 +21,18 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 ## Options
 
 ```text
-  -u, --api-url string                  Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings                    Columns to be printed in the standard output (default [DatacenterId,Name,Location,Features,State])
-  -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-description string   Description of the Data Center
-      --datacenter-location string      Location for the Data Center (default "de/txl")
-      --datacenter-name string          Name of the Data Center
-      --force                           Force command to execute without user input
-  -h, --help                            help for create
-  -o, --output string                   Desired output format [text|json] (default "text")
-  -q, --quiet                           Quiet output
-      --timeout int                     Timeout option for Request for Data Center creation [seconds] (default 60)
-      --wait-for-request                Wait for the Request for Data Center creation to be executed
+  -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings         Columns to be printed in the standard output (default [DatacenterId,Name,Location,Features,State])
+  -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --description string   Description of the Data Center
+      --force                Force command to execute without user input
+  -h, --help                 help for create
+      --location string      Location for the Data Center (default "de/txl")
+      --name string          Name of the Data Center
+  -o, --output string        Desired output format [text|json] (default "text")
+  -q, --quiet                Quiet output
+      --timeout int          Timeout option for Request for Data Center creation [seconds] (default 60)
+      --wait-for-request     Wait for the Request for Data Center creation to be executed
 ```
 
 ## Examples

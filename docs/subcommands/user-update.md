@@ -23,19 +23,19 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings             Columns to be printed in the standard output (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
-  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                    Force command to execute without user input
-  -h, --help                     help for update
-  -o, --output string            Desired output format [text|json] (default "text")
-  -q, --quiet                    Quiet output
-      --user-administrator       Assigns the User to have administrative rights
-      --user-email string        The email for the User
-      --user-first-name string   The firstname for the User
-      --user-force-secure        Indicates if secure (two-factor) authentication should be forced for the User
-      --user-id string           The unique User Id (required)
-      --user-last-name string    The lastname for the User
+      --administrator       Assigns the User to have administrative rights
+  -u, --api-url string      Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings        Columns to be printed in the standard output (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --email string        The email for the User
+      --first-name string   The firstname for the User
+      --force               Force command to execute without user input
+      --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User
+  -h, --help                help for update
+      --last-name string    The lastname for the User
+  -o, --output string       Desired output format [text|json] (default "text")
+  -q, --quiet               Quiet output
+      --user-id string      The unique User Id (required)
 ```
 
 ## Examples

@@ -31,10 +31,10 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
       --force                  Force command to execute without user input
   -h, --help                   help for create
-      --lan-name string        The name of the LAN
-      --lan-public             Indicates if the LAN faces the public Internet (true) or not (false)
+      --name string            The name of the LAN
   -o, --output string          Desired output format [text|json] (default "text")
       --pcc-id string          The unique Id of the Private Cross-Connect the LAN will connect to
+      --public                 Indicates if the LAN faces the public Internet (true) or not (false)
   -q, --quiet                  Quiet output
       --timeout int            Timeout option for Request for LAN creation [seconds] (default 60)
       --wait-for-request       Wait for the Request for LAN creation to be executed

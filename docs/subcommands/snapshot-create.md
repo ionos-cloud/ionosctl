@@ -26,21 +26,21 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string                Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings                  Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size,State])
-  -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string          The unique Data Center Id (required)
-      --force                         Force command to execute without user input
-  -h, --help                          help for create
-      --licence-type string           Licence Type of the Snapshot(required)
-  -o, --output string                 Desired output format [text|json] (default "text")
-  -q, --quiet                         Quiet output
-      --sec-auth-protection           Enable secure authentication protection
-      --snapshot-description string   Description of the Snapshot
-      --snapshot-name string          Name of the Snapshot(required)
-      --timeout int                   Timeout option for Request for Snapshot creation [seconds] (default 60)
-      --volume-id string              The unique Volume Id (required)
-      --wait-for-request              Wait for the Request for Snapshot creation to be executed
+  -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings           Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size,State])
+  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --datacenter-id string   The unique Data Center Id (required)
+      --description string     Description of the Snapshot
+      --force                  Force command to execute without user input
+  -h, --help                   help for create
+      --licence-type string    Licence Type of the Snapshot(required)
+      --name string            Name of the Snapshot(required)
+  -o, --output string          Desired output format [text|json] (default "text")
+  -q, --quiet                  Quiet output
+      --sec-auth-protection    Enable secure authentication protection
+      --timeout int            Timeout option for Request for Snapshot creation [seconds] (default 60)
+      --volume-id string       The unique Volume Id (required)
+      --wait-for-request       Wait for the Request for Snapshot creation to be executed
 ```
 
 ## Examples

@@ -21,18 +21,18 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string               Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --backupunit-email string      The e-mail address you want to update for the BackupUnit
-      --backupunit-id string         The unique BackupUnit Id (required)
-      --backupunit-password string   Alphanumeric password you want to update for the BackupUnit
-      --cols strings                 Columns to be printed in the standard output (default [BackupUnitId,Name,Email,State])
-  -c, --config string                Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                        Force command to execute without user input
-  -h, --help                         help for update
-  -o, --output string                Desired output format [text|json] (default "text")
-  -q, --quiet                        Quiet output
-      --timeout int                  Timeout option for Request for BackupUnit update [seconds] (default 60)
-      --wait-for-request             Wait for the Request for BackupUnit update to be executed
+  -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --backupunit-id string   The unique BackupUnit Id (required)
+      --cols strings           Columns to be printed in the standard output (default [BackupUnitId,Name,Email,State])
+  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --email string           The e-mail address you want to update for the BackupUnit
+      --force                  Force command to execute without user input
+  -h, --help                   help for update
+  -o, --output string          Desired output format [text|json] (default "text")
+      --password string        Alphanumeric password you want to update for the BackupUnit
+  -q, --quiet                  Quiet output
+      --timeout int            Timeout option for Request for BackupUnit update [seconds] (default 60)
+      --wait-for-request       Wait for the Request for BackupUnit update to be executed
 ```
 
 ## Examples

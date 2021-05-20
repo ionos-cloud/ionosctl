@@ -25,7 +25,6 @@ Required values to run command:
 ```text
   -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cluster-id string         The unique K8s Cluster Id (required)
-      --cluster-name string       The name for the K8s Cluster
       --cols strings              Columns to be printed in the standard output (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --force                     Force command to execute without user input
@@ -33,6 +32,7 @@ Required values to run command:
       --k8s-version string        The K8s version for the Cluster
       --maintenance-day string    The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string   The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
+      --name string               The name for the K8s Cluster
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
       --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)

@@ -25,26 +25,26 @@ Required values to run a command:
 ## Options
 
 ```text
-  -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cluster-id string      The unique K8s Cluster Id (required)
-      --cols strings           Columns to be printed in the standard output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
-  -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --cores-count int        The total number of cores for the Node (default 2)
-      --cpu-family string      CPU Type (default "AMD_OPTERON")
-      --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
-  -h, --help                   help for create
-      --k8s-version string     The K8s version for the NodePool. If not set, it will be used the default one
-      --node-count int         The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
-      --node-zone string       The compute Availability Zone in which the Node should exist (default "AUTO")
-      --nodepool-name string   The name for the K8s NodePool (required)
-  -o, --output string          Desired output format [text|json] (default "text")
-  -q, --quiet                  Quiet output
-      --ram-size int           The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB (default 2048)
-      --storage-size int       The total allocated storage capacity of a Node (default 10)
-      --storage-type string    Storage Type (default "HDD")
-      --timeout int            Timeout option for waiting for NodePool/Request [seconds] (default 600)
-      --wait-for-state         Wait for the new NodePool to be in ACTIVE state
+  -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --availability-zone string   The compute Availability Zone in which the Node should exist (default "AUTO")
+      --cluster-id string          The unique K8s Cluster Id (required)
+      --cols strings               Columns to be printed in the standard output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
+  -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --cores-count int            The total number of cores for the Node (default 2)
+      --cpu-family string          CPU Type (default "AMD_OPTERON")
+      --datacenter-id string       The unique Data Center Id (required)
+      --force                      Force command to execute without user input
+  -h, --help                       help for create
+      --k8s-version string         The K8s version for the NodePool. If not set, it will be used the default one
+      --name string                The name for the K8s NodePool (required)
+      --node-count int             The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
+  -o, --output string              Desired output format [text|json] (default "text")
+  -q, --quiet                      Quiet output
+      --ram-size int               The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB (default 2048)
+      --storage-size int           The total allocated storage capacity of a Node (default 10)
+      --storage-type string        Storage Type (default "HDD")
+      --timeout int                Timeout option for waiting for NodePool/Request [seconds] (default 600)
+      --wait-for-state             Wait for the new NodePool to be in ACTIVE state
 ```
 
 ## Examples

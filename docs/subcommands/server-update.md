@@ -25,19 +25,19 @@ Required values to run command:
 
 ```text
   -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --availability-zone string   Availability zone of the Server
       --cols strings               Columns to be printed in the standard output (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --cores int                  Cores option of the Server (default 2)
+      --cpu-family string          CPU Family of the Server (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
       --force                      Force command to execute without user input
   -h, --help                       help for update
+      --name string                Name of the Server
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
-      --server-cores int           Cores option of the Server (default 2)
-      --server-cpu-family string   CPU Family of the Server (default "AMD_OPTERON")
+      --ram-size int               RAM[GB] option for the Server (default 256)
       --server-id string           The unique Server Id (required)
-      --server-name string         Name of the Server
-      --server-ram int             RAM[GB] option for the Server (default 256)
-      --server-zone string         Availability zone of the Server
       --timeout int                Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds] (default 60)
       --wait-for-request           Wait for the Request for Server update to be executed
       --wait-for-state             Wait for the updated Server to be in AVAILABLE state
