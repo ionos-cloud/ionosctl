@@ -257,7 +257,7 @@ func TestRunUserUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLastName), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgEmail), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgForceSecAuth), testUserBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAdministrator), testUserBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAdmin), testUserBoolVar)
 		rm.User.EXPECT().Get(testUserVar).Return(&userTestGet, nil, nil)
 		rm.User.EXPECT().Update(testUserVar, userNewPut).Return(&userNew, nil, nil)
 		err := RunUserUpdate(cfg)

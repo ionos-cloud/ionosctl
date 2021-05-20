@@ -49,7 +49,7 @@ func k8sCluster() *core.Command {
 		},
 	}
 	globalFlags := k8sCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultK8sClusterCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultK8sClusterCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sClusterCols, cobra.ShellCompDirectiveNoFileComp
@@ -105,7 +105,7 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 
 Required values to run a command:
 
-* K8s Cluster Name`,
+* Name`,
 		Example:    createK8sClusterExample,
 		PreCmdRun:  PreRunK8sClusterName,
 		CmdRun:     RunK8sClusterCreate,

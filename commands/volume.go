@@ -27,7 +27,7 @@ func volume() *core.Command {
 			Use:              "volume",
 			Aliases:          []string{"vol", "v"},
 			Short:            "Volume Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command ` + "`" + `ionosctl server attach-volume` + "`" + `.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command ` + "`" + `ionosctl server volume attach` + "`" + `.`,
 			TraverseChildren: true,
 		},
 	}
@@ -37,7 +37,7 @@ func volume() *core.Command {
 	_ = volumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultVolumeCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultVolumeCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = volumeCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
@@ -127,7 +127,7 @@ Required values to run command:
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
-	create.AddStringFlag(config.ArgPassword, "", "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringFlag(config.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
 	create.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
 	create.AddBoolFlag(config.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
@@ -412,7 +412,7 @@ func serverVolume() *core.Command {
 		},
 	}
 	globalFlags := serverVolumeCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultVolumeCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultVolumeCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverVolumeCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = serverVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp

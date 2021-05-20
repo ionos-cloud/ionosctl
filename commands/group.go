@@ -30,7 +30,7 @@ func group() *core.Command {
 		},
 	}
 	globalFlags := groupCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultGroupCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultGroupCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(groupCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = groupCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp
@@ -82,7 +82,7 @@ func group() *core.Command {
 
 Required values to run a command:
 
-* Group Name`,
+* Name`,
 		Example:    createGroupExample,
 		PreCmdRun:  PreRunGroupName,
 		CmdRun:     RunGroupCreate,

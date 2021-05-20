@@ -28,7 +28,7 @@ func ipconsumer() *core.Command {
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultIpConsumerCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultIpConsumerCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allIpConsumerCols, cobra.ShellCompDirectiveNoFileComp

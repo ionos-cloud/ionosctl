@@ -29,34 +29,36 @@ const (
 	ArgServerUrlShort        = "u"
 	ArgFormat                = "format"
 	ArgFormatShort           = "F"
-	ArgDataCenterId          = "datacenter-id"
+	ArgUserData              = "user-data"
+	ArgFirstName             = "first-name"
+	ArgLastName              = "last-name"
+	ArgToken                 = "token"
+	ArgUser                  = "user"
+	ArgEmail                 = "email"
+	ArgEmailShort            = "e"
+	ArgPassword              = "password"
+	ArgPasswordShort         = "p"
+	ArgAdmin                 = "admin"
 	ArgName                  = "name"
 	ArgNameShort             = "n"
 	ArgDescription           = "description"
 	ArgDescriptionShort      = "d"
 	ArgLocation              = "location"
 	ArgLocationShort         = "l"
-	ArgServerId              = "server-id"
 	ArgAvailabilityZone      = "availability-zone"
 	ArgAvailabilityZoneShort = "z"
 	ArgCores                 = "cores"
 	ArgRamSize               = "ram-size"
 	ArgCPUFamily             = "cpu-family"
-	ArgVolumeId              = "volume-id"
 	ArgSize                  = "size"
 	ArgBus                   = "bus"
 	ArgLicenceType           = "licence-type"
 	ArgType                  = "type"
 	ArgSshKeys               = "ssh-keys"
-	ArgLocationId            = "location-id"
-	ArgLanId                 = "lan-id"
 	ArgPublic                = "public"
-	ArgNicId                 = "nic-id"
 	ArgIps                   = "ips"
-	ArgDhcp                  = "dhcp"
-	ArgLoadBalancerId        = "loadbalancer-id"
 	ArgIp                    = "ip"
-	ArgRequestId             = "request-id"
+	ArgDhcp                  = "dhcp"
 	ArgCpuHotPlug            = "cpu-hot-plug"
 	ArgCpuHotUnplug          = "cpu-hot-unplug"
 	ArgRamHotPlug            = "ram-hot-plug"
@@ -68,12 +70,7 @@ const (
 	ArgDiscScsiHotPlug       = "disc-scsi-hot-plug"
 	ArgDiscScsiHotUnplug     = "disc-scsi-hot-unplug"
 	ArgSecAuthProtection     = "sec-auth-protection"
-	ArgSnapshotId            = "snapshot-id"
-	ArgImageId               = "image-id"
 	ArgImageAlias            = "image-alias"
-	ArgPassword              = "password"
-	ArgIpBlockId             = "ipblock-id"
-	ArgFirewallRuleId        = "firewallrule-id"
 	ArgProtocol              = "protocol"
 	ArgSourceMac             = "source-mac"
 	ArgSourceIp              = "source-ip"
@@ -87,14 +84,7 @@ const (
 	ArgLabelValue            = "label-value"
 	ArgResourceLimits        = "resource-limits"
 	ArgResourceType          = "resource-type"
-	ArgUserId                = "user-id"
-	ArgUserData              = "user-data"
-	ArgFirstName             = "first-name"
-	ArgLastName              = "last-name"
-	ArgEmail                 = "email"
-	ArgAdministrator         = "administrator"
 	ArgForceSecAuth          = "force-secure-auth"
-	ArgGroupId               = "group-id"
 	ArgCreateDc              = "create-dc"
 	ArgCreateSnapshot        = "create-snapshot"
 	ArgReserveIp             = "reserve-ip"
@@ -104,51 +94,48 @@ const (
 	ArgCreatePcc             = "create-pcc"
 	ArgCreateNic             = "create-nic"
 	ArgCreateK8s             = "create-k8s"
-	ArgResourceId            = "resource-id"
 	ArgEditPrivilege         = "edit-privilege"
 	ArgSharePrivilege        = "share-privilege"
-	ArgS3KeyId               = "s3key-id"
 	ArgS3KeyActive           = "s3key-active"
-	ArgBackupUnitId          = "backupunit-id"
-	ArgPccId                 = "pcc-id"
-	ArgK8sClusterId          = "cluster-id"
 	ArgK8sVersion            = "k8s-version"
-	ArgK8sNodePoolId         = "nodepool-id"
 	ArgK8sNodeCount          = "node-count"
-	ArgCoresCount            = "cores-count"
 	ArgCpuFamily             = "cpu-family"
 	ArgStorageType           = "storage-type"
 	ArgStorageSize           = "storage-size"
 	ArgK8sMinNodeCount       = "min-node-count"
 	ArgK8sMaxNodeCount       = "max-node-count"
-	ArgK8sNodeId             = "node-id"
 	ArgK8sMaintenanceDay     = "maintenance-day"
 	ArgK8sMaintenanceTime    = "maintenance-time"
 	ArgK8sAnnotationKey      = "annotation-key"
 	ArgK8sAnnotationValue    = "annotation-value"
 	ArgPublicIps             = "public-ips"
 	ArgGatewayIp             = "gateway-ip"
-	ArgCdromId               = "cdrom-id"
 )
 
-// Default values
+// IDs Flags
 const (
-	DefaultApiURL          = "https://api.ionos.com/cloudapi/v5"
-	DefaultConfigFileName  = "/config.json"
-	DefaultOutputFormat    = "text"
-	DefaultWait            = false
-	DefaultPublic          = false
-	DefaultDhcp            = true
-	DefaultTimeoutSeconds  = int(60)
-	K8sTimeoutSeconds      = int(600)
-	DefaultServerCores     = 2
-	DefaultServerRAM       = 256
-	DefaultVolumeSize      = 10
-	DefaultNicLanId        = 1
-	DefaultServerCPUFamily = "AMD_OPTERON"
-	Username               = "userdata.name"
-	Password               = "userdata.password"
-	Token                  = "userdata.token"
+	ArgDataCenterId   = "datacenter-id"
+	ArgServerId       = "server-id"
+	ArgNicId          = "nic-id"
+	ArgLanId          = "lan-id"
+	ArgLocationId     = "location-id"
+	ArgVolumeId       = "volume-id"
+	ArgLoadBalancerId = "loadbalancer-id"
+	ArgRequestId      = "request-id"
+	ArgSnapshotId     = "snapshot-id"
+	ArgImageId        = "image-id"
+	ArgIpBlockId      = "ipblock-id"
+	ArgFirewallRuleId = "firewallrule-id"
+	ArgUserId         = "user-id"
+	ArgGroupId        = "group-id"
+	ArgResourceId     = "resource-id"
+	ArgS3KeyId        = "s3key-id"
+	ArgBackupUnitId   = "backupunit-id"
+	ArgPccId          = "pcc-id"
+	ArgK8sClusterId   = "cluster-id"
+	ArgK8sNodePoolId  = "nodepool-id"
+	ArgK8sNodeId      = "node-id"
+	ArgCdromId        = "cdrom-id"
 )
 
 // Required Flags
@@ -178,4 +165,24 @@ const (
 	RequiredFlagK8sNodePoolId  = "The unique K8s Node Pool Id " + RequiredFlag
 	RequiredFlagK8sNodeId      = "The unique K8s Node Id " + RequiredFlag
 	RequiredFlagCdromId        = "The unique Cdrom Id " + RequiredFlag
+)
+
+// Default values
+const (
+	DefaultApiURL          = "https://api.ionos.com/cloudapi/v5"
+	DefaultConfigFileName  = "/config.json"
+	DefaultOutputFormat    = "text"
+	DefaultWait            = false
+	DefaultPublic          = false
+	DefaultDhcp            = true
+	DefaultTimeoutSeconds  = int(60)
+	K8sTimeoutSeconds      = int(600)
+	DefaultServerCores     = 2
+	DefaultServerRAM       = 256
+	DefaultVolumeSize      = 10
+	DefaultNicLanId        = 1
+	DefaultServerCPUFamily = "AMD_OPTERON"
+	Username               = "userdata.name"
+	Password               = "userdata.password"
+	Token                  = "userdata.token"
 )

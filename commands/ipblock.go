@@ -29,7 +29,7 @@ func ipblock() *core.Command {
 		},
 	}
 	globalFlags := ipblockCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultIpBlockCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultIpBlockCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(ipblockCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = ipblockCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpBlockCols, cobra.ShellCompDirectiveNoFileComp
@@ -83,7 +83,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 
 Required values to run command:
 
-* IpBlock Location`,
+* Location`,
 		Example:    createIpBlockExample,
 		PreCmdRun:  PreRunIpBlockLocation,
 		CmdRun:     RunIpBlockCreate,

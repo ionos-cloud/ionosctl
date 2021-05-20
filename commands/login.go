@@ -35,18 +35,18 @@ Note: The command can also be used without ` + "`" + `--user` + "`" + ` and ` + 
 		CmdRun:     RunLoginUser,
 		InitClient: false,
 	})
-	loginCmd.AddStringFlag("user", "", "", "Username to authenticate")
-	loginCmd.AddStringFlag("password", "", "", "Password to authenticate")
-	loginCmd.AddStringFlag("token", "", "", "Token to authenticate")
+	loginCmd.AddStringFlag(config.ArgUser, "", "", "Username to authenticate")
+	loginCmd.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Password to authenticate")
+	loginCmd.AddStringFlag(config.ArgToken, "", "", "Token to authenticate")
 
 	return loginCmd
 }
 
 func RunLoginUser(c *core.CommandConfig) error {
 	var err error
-	username := viper.GetString(core.GetFlagName(c.NS, "user"))
-	pwd := viper.GetString(core.GetFlagName(c.NS, "password"))
-	token := viper.GetString(core.GetFlagName(c.NS, "token"))
+	username := viper.GetString(core.GetFlagName(c.NS, config.ArgUser))
+	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
+	token := viper.GetString(core.GetFlagName(c.NS, config.ArgToken))
 
 	if username == "" {
 		err := c.Printer.Print("Enter your username:")

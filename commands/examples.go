@@ -36,7 +36,7 @@ us/las       lasvegas   [SSD_STORAGE_ZONING SSD]`
 DatacenterId                           Name             Location
 ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las
 
-ionosctl datacenter list --cols "DatacenterId,Name,Location,Version"
+ionosctl datacenter list --format "DatacenterId,Name,Location,Version"
 DatacenterId                           Name             Location   Version
 ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las     1`
 	getDatacenterExample = `ionosctl datacenter get --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774

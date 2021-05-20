@@ -25,12 +25,12 @@ func user() *core.Command {
 			Use:              "user",
 			Aliases:          []string{"u"},
 			Short:            "User Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl user` + "`" + ` allow you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl s3key` + "`" + ` commands.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl user` + "`" + ` allow you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group user` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl user s3key` + "`" + ` commands.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := userCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultUserCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultUserCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(userCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = userCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
@@ -84,10 +84,10 @@ Note: The password set here cannot be updated through the API currently. It is r
 
 Required values to run a command:
 
-* User First Name
-* User Last Name
-* User Email
-* User Password`,
+* First Name
+* Last Name
+* Email
+* Password`,
 		Example:    createUserExample,
 		PreCmdRun:  PreRunUserNameEmailPwd,
 		CmdRun:     RunUserCreate,
@@ -95,9 +95,9 @@ Required values to run a command:
 	})
 	create.AddStringFlag(config.ArgFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgLastName, "", "", "The lastname for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgEmail, "", "", "The email for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgPassword, "", "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
-	create.AddBoolFlag(config.ArgAdministrator, "", false, "Assigns the User to have administrative rights")
+	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
+	create.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
 	create.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 
 	/*
@@ -122,8 +122,8 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgFirstName, "", "", "The firstname for the User")
 	update.AddStringFlag(config.ArgLastName, "", "", "The lastname for the User")
-	update.AddStringFlag(config.ArgEmail, "", "", "The email for the User")
-	update.AddBoolFlag(config.ArgAdministrator, "", false, "Assigns the User to have administrative rights")
+	update.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User")
+	update.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
 	update.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 	update.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -188,7 +188,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 	email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
 	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 	secureAuth := viper.GetBool(core.GetFlagName(c.NS, config.ArgForceSecAuth))
-	admin := viper.GetBool(core.GetFlagName(c.NS, config.ArgAdministrator))
+	admin := viper.GetBool(core.GetFlagName(c.NS, config.ArgAdmin))
 	newUser := resources.UserPost{
 		UserPost: ionoscloud.UserPost{
 			Properties: &ionoscloud.UserPropertiesPost{
@@ -266,8 +266,8 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 				forceSecureAuth = *secAuth
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgAdministrator)) {
-			admin = viper.GetBool(core.GetFlagName(c.NS, config.ArgAdministrator))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgAdmin)) {
+			admin = viper.GetBool(core.GetFlagName(c.NS, config.ArgAdmin))
 		} else {
 			if administrator, ok := properties.GetAdministratorOk(); ok && administrator != nil {
 				admin = *administrator
@@ -299,7 +299,7 @@ func groupUser() *core.Command {
 		},
 	}
 	globalFlags := groupUserCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultGroupCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultGroupCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(groupUserCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = groupUserCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp

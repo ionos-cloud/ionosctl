@@ -31,7 +31,7 @@ func k8sNodePool() *core.Command {
 		},
 	}
 	globalFlags := k8sCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultK8sNodePoolCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultK8sNodePoolCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sNodePoolCols, cobra.ShellCompDirectiveNoFileComp
@@ -97,7 +97,7 @@ Required values to run a command:
 
 * K8s Cluster Id
 * Datacenter Id
-* K8s NodePool Name`,
+* Name`,
 		Example:    createK8sNodePoolExample,
 		PreCmdRun:  PreRunK8sClusterDcIdsNodePoolName,
 		CmdRun:     RunK8sNodePoolCreate,
@@ -114,7 +114,7 @@ Required values to run a command:
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
-	create.AddIntFlag(config.ArgCoresCount, "", 2, "The total number of cores for the Node")
+	create.AddIntFlag(config.ArgCores, "", 2, "The total number of cores for the Node")
 	create.AddIntFlag(config.ArgRamSize, "", 2048, "The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB")
 	create.AddStringFlag(config.ArgCpuFamily, "", config.DefaultServerCPUFamily, "CPU Type")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -324,7 +324,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sNodeCount))
 	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily))
-	coresCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCoresCount))
+	coresCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
 	ramSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize))
 	nodeZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
 	storageSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgStorageSize))

@@ -29,7 +29,7 @@ func snapshot() *core.Command {
 		},
 	}
 	globalFlags := snapshotCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultSnapshotCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultSnapshotCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(snapshotCmd.NS, config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
@@ -85,8 +85,8 @@ Required values to run command:
 
 * Data Center Id
 * Volume Id
-* Snapshot Name
-* Snapshot Licence Type`,
+* Name
+* Licence Type`,
 		Example:    createSnapshotExample,
 		PreCmdRun:  PreRunSnapNameLicenceDcIdVolumeId,
 		CmdRun:     RunSnapshotCreate,

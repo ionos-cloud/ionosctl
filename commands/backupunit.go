@@ -32,7 +32,7 @@ func backupunit() *core.Command {
 		},
 	}
 	globalFlags := backupUnitCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultBackupUnitCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultBackupUnitCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = backupUnitCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultBackupUnitCols, cobra.ShellCompDirectiveNoFileComp
@@ -110,17 +110,17 @@ Notes:
 
 Required values to run a command:
 
-* BackupUnit Name
-* BackupUnit Email
-* BackupUnit Password`,
+* Name
+* Email
+* Password`,
 		Example:    createBackupUnitExample,
 		PreCmdRun:  PreRunBackupUnitNameEmailPwd,
 		CmdRun:     RunBackupUnitCreate,
 		InitClient: true,
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Alphanumeric name you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgEmail, "", "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgPassword, "", "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit creation [seconds]")
 
@@ -142,8 +142,8 @@ Required values to run command:
 		CmdRun:     RunBackupUnitUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgPassword, "", "", "Alphanumeric password you want to update for the BackupUnit")
-	update.AddStringFlag(config.ArgEmail, "", "", "The e-mail address you want to update for the BackupUnit")
+	update.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Alphanumeric password you want to update for the BackupUnit")
+	update.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The e-mail address you want to update for the BackupUnit")
 	update.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp

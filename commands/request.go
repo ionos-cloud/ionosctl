@@ -30,7 +30,7 @@ func request() *core.Command {
 		},
 	}
 	globalFlags := reqCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultRequestCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultRequestCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = reqCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultRequestCols, cobra.ShellCompDirectiveNoFileComp

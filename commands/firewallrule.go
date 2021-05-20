@@ -49,7 +49,7 @@ func firewallrule() *core.Command {
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultFirewallRuleCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultFirewallRuleCols, "Collection of fields to be printed on output. Example: --format \"ResourceId,Name\"")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allFirewallRuleCols, cobra.ShellCompDirectiveNoFileComp
@@ -111,7 +111,7 @@ Required values to run command:
 * Data Center Id
 * Server Id
 * Nic Id 
-* Firewall Rule Protocol`,
+* Protocol`,
 		Example:    createFirewallRuleExample,
 		PreCmdRun:  PreRunGlobalDcServerNicIdsFRuleProtocol,
 		CmdRun:     RunFirewallRuleCreate,

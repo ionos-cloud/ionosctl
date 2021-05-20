@@ -25,7 +25,7 @@ func nic() *core.Command {
 			Use:              "nic",
 			Aliases:          []string{"n"},
 			Short:            "Network Interfaces Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl nic` + "`" + ` allow you to create, list, get, update, delete NICs. To attach a NIC to a Load Balancer, use the Load Balancer command ` + "`" + `ionosctl loadbalancer attach-nic` + "`" + `.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl nic` + "`" + ` allow you to create, list, get, update, delete NICs. To attach a NIC to a Load Balancer, use the Load Balancer command ` + "`" + `ionosctl loadbalancer nic attach` + "`" + `.`,
 			TraverseChildren: true,
 		},
 	}
@@ -40,7 +40,7 @@ func nic() *core.Command {
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultNicCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultNicCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
@@ -308,7 +308,7 @@ func loadBalancerNic() *core.Command {
 		},
 	}
 	globalFlags := loadbalancerNicCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultNicCols, "Set of fields to be printed on output")
+	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultNicCols, "Collection of fields to be printed on output")
 	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerNicCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
 	_ = loadbalancerNicCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
