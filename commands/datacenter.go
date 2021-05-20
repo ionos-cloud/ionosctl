@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -29,9 +30,10 @@ func datacenter() *core.Command {
 		},
 	}
 	globalFlags := datacenterCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultDatacenterCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(datacenterCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultDatacenterCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allDatacenterCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(datacenterCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allDatacenterCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -257,7 +259,7 @@ func getDataCenterPrint(resp *resources.Response, c *core.CommandConfig, dcs []r
 		if dcs != nil {
 			r.OutputJSON = dcs
 			r.KeyValue = getDataCentersKVMaps(dcs)
-			r.Columns = getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getDataCenterCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

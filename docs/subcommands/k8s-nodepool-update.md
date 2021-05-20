@@ -35,9 +35,10 @@ Required values to run command:
       --annotation-value string   Annotation value. Must be set together with --annotation-key
   -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cluster-id string         The unique K8s Cluster Id (required)
+  -C, --cols strings              Set of columns to be printed on output 
+                                  Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                     Force command to execute without user input
-  -F, --format strings            Collection of fields to be printed on output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -h, --help                      help for update
       --k8s-version string        The K8s version for the NodePool. K8s version downgrade is not supported
       --label-key string          Label key. Must be set together with --label-value

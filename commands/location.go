@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -29,9 +30,10 @@ func location() *core.Command {
 		},
 	}
 	globalFlags := locationCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultLocationCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(locationCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = locationCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultLocationCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allLocationCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = locationCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLocationCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -84,7 +86,7 @@ func RunLocationList(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: locations,
 		KeyValue:   getLocationsKVMaps(getLocations(locations)),
-		Columns:    getLocationCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr()),
+		Columns:    getLocationCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 
@@ -101,7 +103,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON: loc,
 		KeyValue:   getLocationsKVMaps(getLocation(loc)),
-		Columns:    getLocationCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr()),
+		Columns:    getLocationCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 	})
 }
 

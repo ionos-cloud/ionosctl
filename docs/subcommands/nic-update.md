@@ -36,11 +36,12 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -C, --cols strings           Set of columns to be printed on output 
+                               Available columns: [NicId Name Dhcp LanId Ips State FirewallActive Mac] (default [NicId,Name,Dhcp,LanId,Ips,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
       --dhcp                   Boolean value that indicates if the NIC is using DHCP (true) or not (false) (default true)
   -f, --force                  Force command to execute without user input
-  -F, --format strings         Collection of fields to be printed on output (default [NicId,Name,Dhcp,LanId,Ips,State])
   -h, --help                   help for update
       --ips strings            IPs assigned to the NIC
       --lan-id int             The LAN ID the NIC sits on (default 1)

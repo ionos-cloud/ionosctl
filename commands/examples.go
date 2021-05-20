@@ -36,7 +36,7 @@ us/las       lasvegas   [SSD_STORAGE_ZONING SSD]`
 DatacenterId                           Name             Location
 ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las
 
-ionosctl datacenter list --format "DatacenterId,Name,Location,Version"
+ionosctl datacenter list --cols "DatacenterId,Name,Location,Version"
 DatacenterId                           Name             Location   Version
 ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las     1`
 	getDatacenterExample = `ionosctl datacenter get --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774
@@ -54,7 +54,7 @@ DatacenterId                           Name             Location
 8e543958-04f5-4872-bbf3-b28d46393ac7   demoDatacenter   gb/lhr
 RequestId: 2401b498-8afb-4728-a22a-d2b26f5e31c3
 Status: Command datacenter create & wait have been successfully executed`
-	updateDatacenterExample = `ionosctl datacenter update --datacenter-id 8e543958-04f5-4872-bbf3-b28d46393ac7 --description demoDescription --format "DatacenterId,Description"
+	updateDatacenterExample = `ionosctl datacenter update --datacenter-id 8e543958-04f5-4872-bbf3-b28d46393ac7 --description demoDescription --cols "DatacenterId,Description"
 DatacenterId                           Description
 8e543958-04f5-4872-bbf3-b28d46393ac7   demoDescription
 RequestId: 46af6915-9003-4f11-a1fe-bab1eac9bccc

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -29,9 +30,10 @@ func loadBalancer() *core.Command {
 		},
 	}
 	globalFlags := loadbalancerCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultLoadbalancerCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = loadbalancerCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultLoadbalancerCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allLoadbalancerCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = loadbalancerCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLoadbalancerCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -288,7 +290,7 @@ func getLoadbalancerPrint(resp *resources.Response, c *core.CommandConfig, lbs [
 		if lbs != nil {
 			r.OutputJSON = lbs
 			r.KeyValue = getLoadbalancersKVMaps(lbs)
-			r.Columns = getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getLoadbalancersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

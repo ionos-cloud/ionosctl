@@ -30,9 +30,10 @@ func server() *core.Command {
 		},
 	}
 	globalFlags := serverCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultServerCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultServerCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultServerCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultServerCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -513,7 +514,7 @@ func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resour
 		if ss != nil {
 			r.OutputJSON = ss
 			r.KeyValue = getServersKVMaps(ss)
-			r.Columns = getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getServersCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

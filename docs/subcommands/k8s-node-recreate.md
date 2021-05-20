@@ -27,9 +27,10 @@ Required values to run command:
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cluster-id string    The unique K8s Cluster Id (required)
+  -C, --cols strings         Set of columns to be printed on output 
+                             Available columns: [NodeId Name K8sVersion PublicIP PrivateIP State] (default [NodeId,Name,K8sVersion,PublicIP,PrivateIP,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
-  -F, --format strings       Collection of fields to be printed on output (default [NodeId,Name,K8sVersion,PublicIP,PrivateIP,State])
   -h, --help                 help for recreate
       --node-id string       The unique K8s Node Id (required)
       --nodepool-id string   The unique K8s Node Pool Id (required)

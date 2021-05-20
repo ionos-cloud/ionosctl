@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -29,9 +30,10 @@ func image() *core.Command {
 		},
 	}
 	globalFlags := imageCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultImageCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = imageCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultImageCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allImageCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = imageCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allImageCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -149,7 +151,7 @@ func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []resou
 		if imgs != nil {
 			r.OutputJSON = imgs
 			r.KeyValue = getImagesKVMaps(imgs)
-			r.Columns = getImageCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getImageCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

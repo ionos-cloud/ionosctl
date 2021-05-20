@@ -25,9 +25,10 @@ Use this command to get information about the Contract Resources on your account
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -C, --cols strings             Set of columns to be printed on output 
+                                 Available columns: [ContractNumber Owner Status RegistrationDomain CoresPerServer CoresPerContract CoresProvisioned RamPerServer RamPerContract RamProvisioned HddLimitPerVolume HddLimitPerContract HddVolumeProvisioned SsdLimitPerVolume SsdLimitPerContract SsdVolumeProvisioned ReservableIps ReservedIpsOnContract ReservedIpsInUse K8sClusterLimitTotal K8sClustersProvisioned] (default [ContractNumber,Owner,Status,RegistrationDomain])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                    Force command to execute without user input
-  -F, --format strings           Collection of fields to be printed on output (default [ContractNumber,Owner,Status,RegistrationDomain])
   -h, --help                     help for get
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output

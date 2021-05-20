@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -29,9 +30,10 @@ func ipblock() *core.Command {
 		},
 	}
 	globalFlags := ipblockCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultIpBlockCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(ipblockCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = ipblockCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultIpBlockCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultIpBlockCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(ipblockCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = ipblockCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpBlockCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -255,7 +257,7 @@ func getIpBlockPrint(resp *resources.Response, c *core.CommandConfig, ipBlocks [
 		if ipBlocks != nil {
 			r.OutputJSON = ipBlocks
 			r.KeyValue = getIpBlocksKVMaps(ipBlocks)
-			r.Columns = getIpBlocksCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getIpBlocksCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

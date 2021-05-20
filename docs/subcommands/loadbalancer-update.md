@@ -32,11 +32,12 @@ Required values to run command:
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -C, --cols strings             Set of columns to be printed on output 
+                                 Available columns: [LoadBalancerId Name Dhcp State Ip] (default [LoadBalancerId,Name,Dhcp,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
       --dhcp                     Indicates if the Load Balancer will reserve an IP using DHCP (default true)
   -f, --force                    Force command to execute without user input
-  -F, --format strings           Collection of fields to be printed on output (default [LoadBalancerId,Name,Dhcp,State])
   -h, --help                     help for update
       --ip string                The IP of the Load Balancer
       --loadbalancer-id string   The unique Load Balancer Id (required)

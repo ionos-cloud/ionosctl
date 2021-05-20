@@ -203,13 +203,27 @@ Note: PowerShell completions require version 5.0 or above, which comes with Wind
 
 ### Output configuration
 
-You can control the output format with the `--output` option. `ionosctl` supports JSON format for all commands output by specifying `--output=json`.
+You can control the output format with the `--output` or `-o` option. `ionosctl` supports JSON format for all commands output by specifying `--output=json`.
 
-To redirect all the output to `dev/null`, except for error messages, you can use `--quiet` option. 
+To redirect all the output to `dev/null`, except for error messages, you can use `--quiet` or `-q` option. 
 
-For `list` and `get` commands, you can also specify which information should be printed using `--cols` option.
+For `delete`,`stop`,`detach` commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` or `-f` flag.
 
-For `delete`,`stop`,`detach` commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` flag.
+## Output formatting
+
+To obtain only a specific field/column or a collection of columns on output, you can use the `--cols` or `-C` option with the list of desired fields.
+
+For example, if you want to print only the Id and the Location for your existing Virtual Data Centers, you can use the following command:
+
+```text
+ionosctl datacenter list -C "DatacenterId,Location"
+DatacenterId     Location
+DATACENTER_ID1   us/ewr
+DATACENTER_ID2   us/las
+DATACENTER_ID3   us/las
+```
+
+Note: When using `TAB` in autocompletion, on `--format`, `-F` option on a specific resource, the available columns for that resource will be displayed.
 
 ### Testing 
 
@@ -219,7 +233,7 @@ make test
 
 ### Examples
 
-For more information about each available command, including examples, use `ionosctl [command] --help` or `ionosctl help [command]` or see the [full reference documentation](./docs/subcommands). 
+For more information about each available command, including examples, use `ionosctl [command] --help`, `ionosctl [command] -h` or `ionosctl help [command]` or see the [full reference documentation](./docs/subcommands). 
 
 ### Uninstalling `ionosctl` 
 

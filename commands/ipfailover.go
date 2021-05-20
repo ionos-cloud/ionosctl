@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -30,9 +31,10 @@ func ipfailover() *core.Command {
 		},
 	}
 	globalFlags := ipfailoverCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultIpFailoverCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(ipfailoverCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = ipfailoverCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultIpFailoverCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultIpFailoverCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(ipfailoverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = ipfailoverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpFailoverCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -303,7 +305,7 @@ func getIpFailoverPrint(resp *resources.Response, c *core.CommandConfig, ips []r
 		if ips != nil {
 			r.OutputJSON = ips
 			r.KeyValue = getIpFailoverKVMaps(ips)
-			r.Columns = getIpFailoverCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getIpFailoverCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

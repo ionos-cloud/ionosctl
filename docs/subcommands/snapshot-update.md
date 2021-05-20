@@ -31,6 +31,8 @@ Required values to run command:
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -C, --cols strings             Set of columns to be printed on output 
+                                 Available columns: [SnapshotId Name LicenceType Size State] (default [SnapshotId,Name,LicenceType,Size,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cpu-hot-plug             This volume is capable of CPU hot plug (no reboot required)
       --cpu-hot-unplug           This volume is capable of CPU hot unplug (no reboot required)
@@ -40,7 +42,6 @@ Required values to run command:
       --disc-virtio-hot-plug     This volume is capable of VirtIO drive hot plug (no reboot required)
       --disc-virtio-hot-unplug   This volume is capable of VirtIO drive hot unplug (no reboot required)
   -f, --force                    Force command to execute without user input
-  -F, --format strings           Collection of fields to be printed on output (default [SnapshotId,Name,LicenceType,Size,State])
   -h, --help                     help for update
       --licence-type string      Licence Type of the Snapshot
   -n, --name string              Name of the Snapshot

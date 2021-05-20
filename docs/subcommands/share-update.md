@@ -25,10 +25,11 @@ Required values to run command:
 
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -C, --cols strings         Set of columns to be printed on output 
+                             Available columns: [ShareId EditPrivilege SharePrivilege Type] (default [ShareId,EditPrivilege,SharePrivilege,Type])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --edit-privilege       Update the group's permission to edit privileges on resource
   -f, --force                Force command to execute without user input
-  -F, --format strings       Collection of fields to be printed on output (default [ShareId,EditPrivilege,SharePrivilege,Type])
       --group-id string      The unique Group Id (required)
   -h, --help                 help for update
   -o, --output string        Desired output format [text|json] (default "text")

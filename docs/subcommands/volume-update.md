@@ -35,13 +35,14 @@ Required values to run command:
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --bus string               Bus of the Volume (default "VIRTIO")
+  -C, --cols strings             Set of columns to be printed on output 
+                                 Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId SshKeys ImageAlias DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cpu-hot-plug             It is capable of CPU hot plug (no reboot required)
       --datacenter-id string     The unique Data Center Id (required)
       --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required)
       --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
   -f, --force                    Force command to execute without user input
-  -F, --format strings           Collection of fields to be printed on output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -h, --help                     help for update
   -n, --name string              Name of the Volume
       --nic-hot-plug             It is capable of nic hot plug (no reboot required)

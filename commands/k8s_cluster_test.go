@@ -629,8 +629,8 @@ func TestGetK8sClusterCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("k8s-cluster", config.ArgFormat), []string{"Name"})
-	getK8sClusterCols(core.GetGlobalFlagName("k8s-cluster", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("k8s-cluster", config.ArgCols), []string{"Name"})
+	getK8sClusterCols(core.GetGlobalFlagName("k8s-cluster", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -640,8 +640,8 @@ func TestGetK8sClusterColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("k8s-cluster", config.ArgFormat), []string{"Unknown"})
-	getK8sClusterCols(core.GetGlobalFlagName("k8s-cluster", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("k8s-cluster", config.ArgCols), []string{"Unknown"})
+	getK8sClusterCols(core.GetGlobalFlagName("k8s-cluster", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

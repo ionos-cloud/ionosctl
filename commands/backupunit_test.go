@@ -399,8 +399,8 @@ func TestGetBackupUnitCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("backupunit", config.ArgFormat), []string{"Name"})
-	getBackupUnitCols(core.GetGlobalFlagName("backupunit", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("backupunit", config.ArgCols), []string{"Name"})
+	getBackupUnitCols(core.GetGlobalFlagName("backupunit", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -410,8 +410,8 @@ func TestGetBackupUnitColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("backupunit", config.ArgFormat), []string{"Unknown"})
-	getBackupUnitCols(core.GetGlobalFlagName("backupunit", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("backupunit", config.ArgCols), []string{"Unknown"})
+	getBackupUnitCols(core.GetGlobalFlagName("backupunit", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

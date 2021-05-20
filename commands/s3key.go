@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -30,9 +31,10 @@ func userS3key() *core.Command {
 		},
 	}
 	globalFlags := s3keyCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultS3KeyCols, "Collection of fields to be printed on output. You can also print SecretKey, using `--format=\"S3KeyId,Active,SecretKey\"`")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(s3keyCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = s3keyCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultS3KeyCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultS3KeyCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(s3keyCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = s3keyCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultS3KeyCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -265,7 +267,7 @@ func getS3KeyPrint(resp *resources.Response, c *core.CommandConfig, s []resource
 		if s != nil {
 			r.OutputJSON = s
 			r.KeyValue = getS3KeysKVMaps(s)
-			r.Columns = getS3KeyCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getS3KeyCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

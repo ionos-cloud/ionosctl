@@ -39,10 +39,11 @@ Required values to run command:
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cdrom-id string        The unique Cdrom Id (required)
+  -C, --cols strings           Set of columns to be printed on output 
+                               Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -F, --format strings         Collection of fields to be printed on output (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
   -h, --help                   help for detach
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output

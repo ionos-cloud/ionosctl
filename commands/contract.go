@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 
@@ -29,9 +30,10 @@ func contract() *core.Command {
 		},
 	}
 	globalFlags := contractCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultContractCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = contractCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultContractCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allContractCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = contractCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allContractCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -78,7 +80,7 @@ func RunContractGet(c *core.CommandConfig) error {
 			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractK8sCols))
 		}
 	}
-	return c.Printer.Print(getContractPrint(c, getContract(&contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())))
+	return c.Printer.Print(getContractPrint(c, getContract(&contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())))
 }
 
 // Output Printing

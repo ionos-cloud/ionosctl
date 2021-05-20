@@ -199,8 +199,8 @@ func TestGetResourcesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("resource", config.ArgFormat), []string{"Type"})
-	getResourceCols(core.GetGlobalFlagName("resource", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Type"})
+	getResourceCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -210,8 +210,8 @@ func TestGetResourcesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("resource", config.ArgFormat), []string{"Unknown"})
-	getResourceCols(core.GetGlobalFlagName("resource", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Unknown"})
+	getResourceCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

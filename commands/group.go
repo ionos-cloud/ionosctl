@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -30,9 +31,10 @@ func group() *core.Command {
 		},
 	}
 	globalFlags := groupCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultGroupCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(groupCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = groupCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultGroupCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultGroupCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = groupCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -399,7 +401,7 @@ func getGroupPrint(resp *resources.Response, c *core.CommandConfig, groups []res
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getGroupsKVMaps(groups)
-			r.Columns = getGroupCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getGroupCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

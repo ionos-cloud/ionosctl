@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 
@@ -29,9 +30,10 @@ func serverCdrom() *core.Command {
 		},
 	}
 	globalFlags := serverCdromCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultImageCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCdromCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = serverCdromCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultImageCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allImageCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCdromCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = serverCdromCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allImageCols, cobra.ShellCompDirectiveNoFileComp
 	})
 

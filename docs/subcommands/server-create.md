@@ -32,12 +32,13 @@ Required values to run command:
 ```text
   -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -z, --availability-zone string   Availability zone of the Server (default "AUTO")
+  -C, --cols strings               Set of columns to be printed on output 
+                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  Cores option of the Server (default 2)
       --cpu-family string          CPU Family for the Server (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
-  -F, --format strings             Collection of fields to be printed on output (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -h, --help                       help for create
   -n, --name string                Name of the Server
   -o, --output string              Desired output format [text|json] (default "text")

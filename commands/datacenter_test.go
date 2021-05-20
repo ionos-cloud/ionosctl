@@ -350,8 +350,8 @@ func TestGetDatacentersCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("datacenter", config.ArgFormat), []string{"Name"})
-	getDataCenterCols(core.GetGlobalFlagName("datacenter", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("datacenter", config.ArgCols), []string{"Name"})
+	getDataCenterCols(core.GetGlobalFlagName("datacenter", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -361,8 +361,8 @@ func TestGetDatacentersColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("datacenter", config.ArgFormat), []string{"Unknown"})
-	getDataCenterCols(core.GetGlobalFlagName("datacenter", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("datacenter", config.ArgCols), []string{"Unknown"})
+	getDataCenterCols(core.GetGlobalFlagName("datacenter", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

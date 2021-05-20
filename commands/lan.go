@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -35,9 +36,10 @@ func lan() *core.Command {
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultLanCols, "Collection of fields to be printed on output. Example: --format \"ResourceId,Name\"")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultLanCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultLanCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -234,7 +236,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     l,
 		KeyValue:       getLanPostsKVMaps([]resources.LanPost{*l}),
-		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr()),
+		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "lan",
 		Verb:           "create",
@@ -310,7 +312,7 @@ func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resourc
 		if lans != nil {
 			r.OutputJSON = lans
 			r.KeyValue = getLansKVMaps(lans)
-			r.Columns = getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

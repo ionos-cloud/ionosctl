@@ -31,9 +31,10 @@ Required values to run a command:
 
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -C, --cols strings         Set of columns to be printed on output 
+                             Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions Public GatewayIp] (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
-  -F, --format strings       Collection of fields to be printed on output (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
       --gateway-ip public    The IP address of the gateway used by the Cluster. This is mandatory when public is set to `false` and should not be provided otherwise
   -h, --help                 help for create
       --k8s-version string   The K8s version for the Cluster. If not set, it will be used the default one

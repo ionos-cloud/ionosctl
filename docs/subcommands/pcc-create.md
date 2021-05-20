@@ -18,10 +18,11 @@ Use this command to create a Private Cross-Connect. You can specify the name and
 
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -C, --cols strings         Set of columns to be printed on output 
+                             Available columns: [PccId Name Description State] (default [PccId,Name,Description,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -d, --description string   The description for the Private Cross-Connect
   -f, --force                Force command to execute without user input
-  -F, --format strings       Collection of fields to be printed on output (default [PccId,Name,Description,State])
   -h, --help                 help for create
   -n, --name string          The name for the Private Cross-Connect
   -o, --output string        Desired output format [text|json] (default "text")

@@ -578,8 +578,8 @@ func TestVolumesCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("volume", config.ArgFormat), []string{"Name"})
-	getVolumesCols(core.GetGlobalFlagName("volume", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("volume", config.ArgCols), []string{"Name"})
+	getVolumesCols(core.GetGlobalFlagName("volume", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -589,8 +589,8 @@ func TestGetVolumesColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("volume", config.ArgFormat), []string{"Unknown"})
-	getVolumesCols(core.GetGlobalFlagName("volume", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("volume", config.ArgCols), []string{"Unknown"})
+	getVolumesCols(core.GetGlobalFlagName("volume", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

@@ -534,8 +534,8 @@ func TestGetUsersCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("user", config.ArgFormat), []string{"Firstname"})
-	getUserCols(core.GetGlobalFlagName("user", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("user", config.ArgCols), []string{"Firstname"})
+	getUserCols(core.GetGlobalFlagName("user", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -545,8 +545,8 @@ func TestGetUsersColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("user", config.ArgFormat), []string{"Unknown"})
-	getUserCols(core.GetGlobalFlagName("user", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("user", config.ArgCols), []string{"Unknown"})
+	getUserCols(core.GetGlobalFlagName("user", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

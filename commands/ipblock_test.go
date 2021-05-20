@@ -310,8 +310,8 @@ func TestGetIpBlocksCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("ipblock", config.ArgFormat), []string{"IpBlockId"})
-	getIpBlocksCols(core.GetGlobalFlagName("ipblock", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("ipblock", config.ArgCols), []string{"IpBlockId"})
+	getIpBlocksCols(core.GetGlobalFlagName("ipblock", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -321,8 +321,8 @@ func TestGetIpBlocksColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("ipblock", config.ArgFormat), []string{"Unknown"})
-	getIpBlocksCols(core.GetGlobalFlagName("ipblock", config.ArgFormat), w)
+	viper.Set(core.GetGlobalFlagName("ipblock", config.ArgCols), []string{"Unknown"})
+	getIpBlocksCols(core.GetGlobalFlagName("ipblock", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

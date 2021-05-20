@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -28,9 +29,10 @@ func ipconsumer() *core.Command {
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultIpConsumerCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultIpConsumerCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allIpConsumerCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allIpConsumerCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -102,7 +104,7 @@ func getIpConsumerPrint(c *core.CommandConfig, groups []resources.IpConsumer) pr
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getIpConsumersKVMaps(groups)
-			r.Columns = getIpConsumerCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getIpConsumerCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

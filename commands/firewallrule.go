@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -49,9 +50,10 @@ func firewallrule() *core.Command {
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultFirewallRuleCols, "Collection of fields to be printed on output. Example: --format \"ResourceId,Name\"")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultFirewallRuleCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allFirewallRuleCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allFirewallRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -388,7 +390,7 @@ func getFirewallRulePrint(resp *resources.Response, c *core.CommandConfig, rule 
 		if rule != nil {
 			r.OutputJSON = rule
 			r.KeyValue = getFirewallRulesKVMaps(rule)
-			r.Columns = getFirewallRulesCols(core.GetGlobalFlagName(c.Resource, config.ArgFormat), c.Printer.GetStderr())
+			r.Columns = getFirewallRulesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
 	return r

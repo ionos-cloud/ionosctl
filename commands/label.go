@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/fatih/structs"
@@ -25,9 +26,10 @@ func label() *core.Command {
 		},
 	}
 	globalFlags := labelCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgFormat, config.ArgFormatShort, defaultLabelResourceCols, "Collection of fields to be printed on output")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgFormat), globalFlags.Lookup(config.ArgFormat))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgFormat, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	globalFlags.StringSliceP(config.ArgCols, config.ArgColsShort, defaultLabelResourceCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultLabelResourceCols))
+	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLabelResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	globalFlags.StringP(config.ArgDataCenterId, "", "", "The unique Data Center Id")
