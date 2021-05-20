@@ -29,7 +29,7 @@ Required values to run command:
       --datacenter-id string     The unique Data Center Id (required)
       --dhcp                     Indicates if the Load Balancer will reserve an IP using DHCP (default true)
   -f, --force                    Force command to execute without user input
-  -F, --format strings           Set of fields to be printed on output (default [LoadBalancerId,Name,Dhcp,State])
+  -F, --format strings           Collection of fields to be printed on output (default [LoadBalancerId,Name,Dhcp,State])
   -h, --help                     help for update
       --ip string                The IP of the Load Balancer
       --loadbalancer-id string   The unique Load Balancer Id (required)
@@ -43,7 +43,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --loadbalancer-dhcp=false --wait-for-request
+ionosctl loadbalancer update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c --dhcp=false --wait-for-request
 1.2s Waiting for request... DONE
 LoadbalancerId                         Name               Dhcp
 3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   false

@@ -20,7 +20,7 @@ Use this command to get a list of available public Images. Use flags to retrieve
   -u, --api-url string        Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                 Force command to execute without user input
-  -F, --format strings        Set of fields to be printed on output (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
+  -F, --format strings        Collection of fields to be printed on output (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
   -h, --help                  help for list
       --licence-type string   The licence type of the Image
   -l, --location string       The location of the Image
@@ -33,7 +33,7 @@ Use this command to get a list of available public Images. Use flags to retrieve
 ## Examples
 
 ```text
-ionosctl image list --image-location us/las --image-type HDD
+ionosctl image list --location us/las --type HDD
 ImageId                                Name                                 Location   Size   LicenceType   ImageType
 8991cf6c-8706-11eb-a1d6-72dfddd36b99   windows-2012-r2-server-2021-03       us/las     14     WINDOWS       HDD
 7ab978cb-870a-11eb-a1d6-72dfddd36b99   windows-2016-server-2021-03          us/las     14     WINDOWS2016   HDD

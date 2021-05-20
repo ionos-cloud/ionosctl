@@ -23,22 +23,22 @@ Notes:
 
 Required values to run a command:
 
-* BackupUnit Name
-* BackupUnit Email
-* BackupUnit Password
+* Name
+* Email
+* Password
 
 ## Options
 
 ```text
   -u, --api-url string     Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --email string       The e-mail address you want to assign to the BackupUnit (required)
+  -e, --email string       The e-mail address you want to assign to the BackupUnit (required)
   -f, --force              Force command to execute without user input
-  -F, --format strings     Set of fields to be printed on output (default [BackupUnitId,Name,Email,State])
+  -F, --format strings     Collection of fields to be printed on output (default [BackupUnitId,Name,Email,State])
   -h, --help               help for create
   -n, --name string        Alphanumeric name you want to assign to the BackupUnit (required)
   -o, --output string      Desired output format [text|json] (default "text")
-      --password string    Alphanumeric password you want to assign to the BackupUnit (required)
+  -p, --password string    Alphanumeric password you want to assign to the BackupUnit (required)
   -q, --quiet              Quiet output
   -t, --timeout int        Timeout option for Request for BackupUnit creation [seconds] (default 60)
   -w, --wait-for-request   Wait for the Request for BackupUnit creation to be executed
@@ -47,7 +47,7 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl backupunit create --backupunit-name test1234test --backupunit-email testrandom18@ionos.com --backupunit-password ********
+ionosctl backupunit create --name test1234test --email testrandom18@ionos.com --password ********
 NOTE: To login with backup agent use: https://backup.ionos.com, with CONTRACT_NUMBER-BACKUP_UNIT_NAME and BACKUP_UNIT_PASSWORD!
 BackupUnitId                           Name           Email
 271a0627-70eb-4e36-8ff5-2e190f88cd2b   test1234test   testrandom18@ionos.com

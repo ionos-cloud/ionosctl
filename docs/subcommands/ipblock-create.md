@@ -18,7 +18,7 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
-* IpBlock Location
+* Location
 
 ## Options
 
@@ -26,7 +26,7 @@ Required values to run command:
   -u, --api-url string     Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force              Force command to execute without user input
-  -F, --format strings     Set of fields to be printed on output (default [IpBlockId,Name,Location,Size,Ips,State])
+  -F, --format strings     Collection of fields to be printed on output (default [IpBlockId,Name,Location,Size,Ips,State])
   -h, --help               help for create
   -l, --location string    Location of the IpBlock (required)
   -n, --name string        Name of the IpBlock

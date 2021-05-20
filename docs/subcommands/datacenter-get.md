@@ -25,7 +25,7 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -F, --format strings         Set of fields to be printed on output (default [DatacenterId,Name,Location,Features,State])
+  -F, --format strings         Collection of fields to be printed on output (default [DatacenterId,Name,Location,Features,State])
   -h, --help                   help for get
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output

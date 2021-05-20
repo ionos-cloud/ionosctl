@@ -27,7 +27,7 @@ Required values to run command:
       --cluster-id string         The unique K8s Cluster Id (required)
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                     Force command to execute without user input
-  -F, --format strings            Set of fields to be printed on output (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
+  -F, --format strings            Collection of fields to be printed on output (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
   -h, --help                      help for update
       --k8s-version string        The K8s version for the Cluster
       --maintenance-day string    The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
@@ -42,7 +42,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s cluster update --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d --cluster-name testCluster
+ionosctl k8s cluster update --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d --name testCluster
 ClusterId                              Name          K8sVersion   State
 cb47b98f-b8dd-4108-8ac0-b636e36a161d   testCluster   1.19.8       UPDATING
 ```

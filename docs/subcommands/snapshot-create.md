@@ -20,8 +20,8 @@ Required values to run command:
 
 * Data Center Id
 * Volume Id
-* Snapshot Name
-* Snapshot Licence Type
+* Name
+* Licence Type
 
 ## Options
 
@@ -31,7 +31,7 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -d, --description string     Description of the Snapshot
   -f, --force                  Force command to execute without user input
-  -F, --format strings         Set of fields to be printed on output (default [SnapshotId,Name,LicenceType,Size,State])
+  -F, --format strings         Collection of fields to be printed on output (default [SnapshotId,Name,LicenceType,Size,State])
   -h, --help                   help for create
       --licence-type string    Licence Type of the Snapshot(required)
   -n, --name string            Name of the Snapshot(required)
@@ -46,7 +46,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot create --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --snapshot-name testSnapshot
+ionosctl snapshot create --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --name testSnapshot
 SnapshotId                             Name           LicenceType   Size
 dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSnapshot   LINUX         0
 RequestId: fed5555a-ac00-41c8-abbe-cc53c8179716

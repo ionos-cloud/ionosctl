@@ -29,7 +29,7 @@ Required values to run a command:
       --datacenter-id string   The unique Data Center Id (required)
       --dhcp                   Set to false if you wish to disable DHCP on the NIC (default true)
   -f, --force                  Force command to execute without user input
-  -F, --format strings         Set of fields to be printed on output (default [NicId,Name,Dhcp,LanId,Ips,State])
+  -F, --format strings         Collection of fields to be printed on output (default [NicId,Name,Dhcp,LanId,Ips,State])
   -h, --help                   help for create
       --ips strings            IPs assigned to the NIC. This can be a collection
       --lan-id int             The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created (default 1)
@@ -44,7 +44,7 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl nic create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-name demoNic
+ionosctl nic create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --name demoNic
 NicId                                  Name      Dhcp   LanId   Ips
 2978400e-da90-405f-905e-8200d4f48158   demoNic   true   1       []
 RequestId: 67bdb2fb-b1ee-419a-9bcf-f8ea4b800653

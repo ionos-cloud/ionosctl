@@ -25,7 +25,7 @@ Required values to run command:
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -d, --description string   The description for the Private Cross-Connect
   -f, --force                Force command to execute without user input
-  -F, --format strings       Set of fields to be printed on output (default [PccId,Name,Description,State])
+  -F, --format strings       Collection of fields to be printed on output (default [PccId,Name,Description,State])
   -h, --help                 help for update
   -n, --name string          The name for the Private Cross-Connect
   -o, --output string        Desired output format [text|json] (default "text")
@@ -38,7 +38,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pcc update --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 --pcc-description test
+ionosctl pcc update --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 --description test
 PccId                                  Name   Description
 4b9c6a43-a338-11eb-b70c-7ade62b52cc0   test   test
 RequestId: 81525f2d-cc91-4c55-84b8-07fac9a47e35

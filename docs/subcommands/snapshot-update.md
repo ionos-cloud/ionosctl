@@ -33,7 +33,7 @@ Required values to run command:
       --disc-virtio-hot-plug     This volume is capable of VirtIO drive hot plug (no reboot required)
       --disc-virtio-hot-unplug   This volume is capable of VirtIO drive hot unplug (no reboot required)
   -f, --force                    Force command to execute without user input
-  -F, --format strings           Set of fields to be printed on output (default [SnapshotId,Name,LicenceType,Size,State])
+  -F, --format strings           Collection of fields to be printed on output (default [SnapshotId,Name,LicenceType,Size,State])
   -h, --help                     help for update
       --licence-type string      Licence Type of the Snapshot
   -n, --name string              Name of the Snapshot
@@ -52,7 +52,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot update --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --snapshot-name test
+ionosctl snapshot update --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --name test
 SnapshotId                             Name   LicenceType   Size
 dc688daf-8e54-4db8-ac4a-487ad5a34e9c   test   LINUX         10
 RequestId: 3540e9be-ed35-41c0-83d9-923882bfa9bd

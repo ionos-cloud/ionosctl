@@ -16,7 +16,7 @@ Use this command to create a new Group and set Group privileges. You need to spe
 
 Required values to run a command:
 
-* Group Name
+* Name
 
 ## Options
 
@@ -31,7 +31,7 @@ Required values to run a command:
       --create-pcc         The group will be allowed to create PCCs
       --create-snapshot    The group will be allowed to create Snapshots
   -f, --force              Force command to execute without user input
-  -F, --format strings     Set of fields to be printed on output (default [GroupId,Name,CreateDataCenter,CreateSnapshot,ReserveIp,AccessActivityLog,CreatePcc,S3Privilege,CreateBackupUnit,CreateInternetAccess,CreateK8s])
+  -F, --format strings     Collection of fields to be printed on output (default [GroupId,Name,CreateDataCenter,CreateSnapshot,ReserveIp,AccessActivityLog,CreatePcc,S3Privilege,CreateBackupUnit,CreateInternetAccess,CreateK8s])
   -h, --help               help for create
   -n, --name string        Name for the Group (required)
   -o, --output string      Desired output format [text|json] (default "text")
@@ -45,7 +45,7 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl group create --group-name test --wait-for-request
+ionosctl group create --name test --wait-for-request
 1.2s Waiting for request... DONE
 GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
 1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false

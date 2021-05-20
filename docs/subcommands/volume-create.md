@@ -36,7 +36,7 @@ Required values to run command:
       --disc-virtio-hot-plug       It is capable of Virt-IO drive hot plug (no reboot required)
       --disc-virtio-hot-unplug     It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
   -f, --force                      Force command to execute without user input
-  -F, --format strings             Set of fields to be printed on output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
+  -F, --format strings             Collection of fields to be printed on output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -h, --help                       help for create
       --image-alias string         The Image Alias to set instead of Image Id
       --image-id string            The Image Id or snapshot Id to be used as template for the new Volume
@@ -45,7 +45,7 @@ Required values to run command:
       --nic-hot-plug               It is capable of nic hot plug (no reboot required)
       --nic-hot-unplug             It is capable of nic hot unplug (no reboot required)
   -o, --output string              Desired output format [text|json] (default "text")
-      --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
+  -p, --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output
       --ram-hot-plug               It is capable of memory hot plug (no reboot required)
       --size float32               Size in GB of the Volume (default 10)
@@ -59,7 +59,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl volume create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-name demoVolume
+ionosctl volume create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --name demoVolume
 VolumeId                               Name         Size   Type   LicenceType   State   Image
 ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   10GB   HDD    LINUX         BUSY    
 RequestId: a2da3bb7-3851-4e80-a5e9-6e98a66cebab

@@ -30,7 +30,7 @@ Note: The command can also be used without `--user` and `--password` flags. For 
   -f, --force             Force command to execute without user input
   -h, --help              help for login
   -o, --output string     Desired output format [text|json] (default "text")
-      --password string   Password to authenticate
+  -p, --password string   Password to authenticate
   -q, --quiet             Quiet output
       --token string      Token to authenticate
       --user string       Username to authenticate

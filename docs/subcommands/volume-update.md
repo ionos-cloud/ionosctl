@@ -34,7 +34,7 @@ Required values to run command:
       --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required)
       --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
   -f, --force                    Force command to execute without user input
-  -F, --format strings           Set of fields to be printed on output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
+  -F, --format strings           Collection of fields to be printed on output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -h, --help                     help for update
   -n, --name string              Name of the Volume
       --nic-hot-plug             It is capable of nic hot plug (no reboot required)
@@ -51,7 +51,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl volume update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-id ce510144-9bc6-4115-bd3d-b9cd232dd422 --volume-size 20
+ionosctl volume update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --volume-id ce510144-9bc6-4115-bd3d-b9cd232dd422 --size 20
 VolumeId                               Name         Size   Type   LicenceType   State   Image
 ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   20GB   HDD    LINUX         BUSY    
 RequestId: ad4080a9-a51f-4d81-ae40-660cbfe009f4

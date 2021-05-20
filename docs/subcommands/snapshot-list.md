@@ -20,7 +20,7 @@ Use this command to get a list of Snapshots.
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
-  -F, --format strings   Set of fields to be printed on output (default [SnapshotId,Name,LicenceType,Size,State])
+  -F, --format strings   Collection of fields to be printed on output (default [SnapshotId,Name,LicenceType,Size,State])
   -h, --help             help for list
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output

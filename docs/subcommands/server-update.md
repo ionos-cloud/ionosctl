@@ -31,7 +31,7 @@ Required values to run command:
       --cpu-family string          CPU Family of the Server (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
-  -F, --format strings             Set of fields to be printed on output (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+  -F, --format strings             Collection of fields to be printed on output (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -h, --help                       help for update
   -n, --name string                Name of the Server
   -o, --output string              Desired output format [text|json] (default "text")
@@ -46,7 +46,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff --server-cores 4
+ionosctl server update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff --cores 4
 ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily
 f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    4       256MB   AMD_OPTERON
 RequestId: 571a1bbb-26b3-449d-9885-a20e50dc3b95

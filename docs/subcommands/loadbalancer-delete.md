@@ -28,7 +28,7 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
   -f, --force                    Force command to execute without user input
-  -F, --format strings           Set of fields to be printed on output (default [LoadBalancerId,Name,Dhcp,State])
+  -F, --format strings           Collection of fields to be printed on output (default [LoadBalancerId,Name,Dhcp,State])
   -h, --help                     help for delete
       --loadbalancer-id string   The unique Load Balancer Id (required)
   -o, --output string            Desired output format [text|json] (default "text")

@@ -28,7 +28,7 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -F, --format strings         Columns to be printed in the standard output. Example: --cols "ResourceId,Name" (default [LanId,Name,Public,PccId,State])
+  -F, --format strings         Collection of fields to be printed on output. Example: --format "ResourceId,Name" (default [LanId,Name,Public,PccId,State])
   -h, --help                   help for update
       --lan-id string          The unique LAN Id (required)
   -n, --name string            The name of the LAN
@@ -43,7 +43,7 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --lan-name demoLAN --lan-public=true
+ionosctl lan update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --name demoLAN --public=true
 LanId   Name      Public    PccId
 3       demoLAN   true
 RequestId: 0a174dca-62b1-4360-aef8-89fd31c196f2

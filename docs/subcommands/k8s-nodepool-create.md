@@ -20,7 +20,7 @@ Required values to run a command:
 
 * K8s Cluster Id
 * Datacenter Id
-* K8s NodePool Name
+* Name
 
 ## Options
 
@@ -29,11 +29,11 @@ Required values to run a command:
   -z, --availability-zone string   The compute Availability Zone in which the Node should exist (default "AUTO")
       --cluster-id string          The unique K8s Cluster Id (required)
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --cores-count int            The total number of cores for the Node (default 2)
+      --cores int                  The total number of cores for the Node (default 2)
       --cpu-family string          CPU Type (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
-  -F, --format strings             Set of fields to be printed on output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
+  -F, --format strings             Collection of fields to be printed on output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -h, --help                       help for create
       --k8s-version string         The K8s version for the NodePool. If not set, it will be used the default one
   -n, --name string                The name for the K8s NodePool (required)
@@ -50,7 +50,7 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool create --datacenter-id 3af92af6-c2eb-41e0-b946-6e7ba321abf2 --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-name test1234
+ionosctl k8s nodepool create --datacenter-id 3af92af6-c2eb-41e0-b946-6e7ba321abf2 --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --name test1234
 NodePoolId                             Name       K8sVersion   NodeCount   DatacenterId                           State
 a274bc0e-efa5-41c0-828d-39e38f4ad361   test1234   1.19.8       2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   DEPLOYING
 ```

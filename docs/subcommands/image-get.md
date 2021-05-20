@@ -24,7 +24,7 @@ Required values to run command:
   -u, --api-url string    Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force             Force command to execute without user input
-  -F, --format strings    Set of fields to be printed on output (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
+  -F, --format strings    Collection of fields to be printed on output (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
   -h, --help              help for get
       --image-id string   The unique Image Id (required)
   -o, --output string     Desired output format [text|json] (default "text")

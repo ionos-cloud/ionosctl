@@ -30,7 +30,7 @@ Required values to run command:
       --cpu-family string          CPU Family for the Server (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
-  -F, --format strings             Set of fields to be printed on output (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+  -F, --format strings             Collection of fields to be printed on output (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -h, --help                       help for create
   -n, --name string                Name of the Server
   -o, --output string              Desired output format [text|json] (default "text")
@@ -44,13 +44,13 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-name demoServer
+ionosctl server create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --name demoServer
 ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily
 f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    2       256MB   AMD_OPTERON
 RequestId: 07fd3682-8642-4a5e-a57a-056e909a2af8
 Status: Command server create has been successfully executed
 
-ionosctl server create --datacenter-id 3087bf8b-3c84-405f-8b22-1978a36aa933 --server-name testing --wait-for-request --wait-for-state 
+ionosctl server create --datacenter-id 3087bf8b-3c84-405f-8b22-1978a36aa933 --name testing --wait-for-request --wait-for-state 
 6.2s Waiting for request... DONE                                                                                                                                                                           
 100ms Waiting for state. DONE                                                                                                                                                                              
 ServerId                               Name      AvailabilityZone   State       Cores   Ram     CpuFamily

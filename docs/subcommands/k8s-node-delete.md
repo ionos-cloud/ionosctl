@@ -27,7 +27,7 @@ Required values to run command:
       --cluster-id string    The unique K8s Cluster Id (required)
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
-  -F, --format strings       Set of fields to be printed on output (default [NodeId,Name,K8sVersion,PublicIP,PrivateIP,State])
+  -F, --format strings       Collection of fields to be printed on output (default [NodeId,Name,K8sVersion,PublicIP,PrivateIP,State])
   -h, --help                 help for delete
       --node-id string       The unique K8s Node Id (required)
       --nodepool-id string   The unique K8s Node Pool Id (required)

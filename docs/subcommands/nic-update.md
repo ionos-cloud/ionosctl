@@ -33,7 +33,7 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
       --dhcp                   Boolean value that indicates if the NIC is using DHCP (true) or not (false) (default true)
   -f, --force                  Force command to execute without user input
-  -F, --format strings         Set of fields to be printed on output (default [NicId,Name,Dhcp,LanId,Ips,State])
+  -F, --format strings         Collection of fields to be printed on output (default [NicId,Name,Dhcp,LanId,Ips,State])
   -h, --help                   help for update
       --ips strings            IPs assigned to the NIC
       --lan-id int             The LAN ID the NIC sits on (default 1)

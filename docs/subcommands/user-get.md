@@ -24,7 +24,7 @@ Required values to run command:
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
-  -F, --format strings   Set of fields to be printed on output (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
+  -F, --format strings   Collection of fields to be printed on output (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
   -h, --help             help for get
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
