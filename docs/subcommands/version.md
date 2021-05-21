@@ -12,7 +12,7 @@ ionosctl version [flags]
 
 ## Description
 
-The `ionosctl version` command displays the version of the ionosctl software.
+The `ionosctl version` command displays the current version of the ionosctl software and the latest Github release.
 
 ## Options
 
@@ -23,5 +23,11 @@ The `ionosctl version` command displays the version of the ionosctl software.
   -h, --help             help for version
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
+```
+
+## Examples
+
+```text
+ionosctl version
 ```
 
