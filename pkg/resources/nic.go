@@ -86,22 +86,3 @@ func (ns *nicsService) Delete(datacenterId, serverId, nicId string) (*Response, 
 	_, resp, err := ns.client.NicApi.DatacentersServersNicsDeleteExecute(req)
 	return &Response{*resp}, err
 }
-
-func (ns *nicsService) AttachToLan(datacenterId, lanId, nicId string) (*Nic, *Response, error) {
-	req := ns.client.LanApi.DatacentersLansNicsPost(ns.context, datacenterId, lanId)
-	req = req.Nic(ionoscloud.Nic{Id: &nicId})
-	nic, resp, err := ns.client.LanApi.DatacentersLansNicsPostExecute(req)
-	return &Nic{nic}, &Response{*resp}, err
-}
-
-func (ns *nicsService) ListAttachedToLan(datacenterId, lanId string) (LanNics, *Response, error) {
-	req := ns.client.LanApi.DatacentersLansNicsGet(ns.context, datacenterId, lanId)
-	nics, resp, err := ns.client.LanApi.DatacentersLansNicsGetExecute(req)
-	return LanNics{nics}, &Response{*resp}, err
-}
-
-func (ns *nicsService) GetAttachedToLan(datacenterId, lanId, nicId string) (*Nic, *Response, error) {
-	req := ns.client.LanApi.DatacentersLansNicsFindById(ns.context, datacenterId, lanId, nicId)
-	n, resp, err := ns.client.LanApi.DatacentersLansNicsFindByIdExecute(req)
-	return &Nic{n}, &Response{*resp}, err
-}
