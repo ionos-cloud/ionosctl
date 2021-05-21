@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.4]
+
+- Updated sdk-go version to v5.1.0
+- Added commands for IpFailover, IpConsumer, CD-ROM commands
+- Added missing properties for resources (e.g. `State`)
+
 ## [5.0.3]
 
 - Updated sdk-go to v5.0.3
