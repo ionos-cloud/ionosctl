@@ -2,9 +2,14 @@ package commands
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"net/http"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 )
+
+const latestReleaseUrl = "https://api.github.com/repos/ionos-cloud/ionosctl/releases/latest"
 
 func version() *core.Command {
 	ctx := context.TODO()
@@ -28,5 +33,32 @@ func RunVersion(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return nil
+
+	// Get and Print the latest Github Release for IONOS Cloud CLI
+	latestGhRelease, err := getGithubLatestVersion(latestReleaseUrl)
+	if err != nil {
+		return err
+	}
+	return c.Printer.Print("Latest Github Release: " + latestGhRelease)
+}
+
+// getGithubLatestVersion retrieves the latest official release
+// from Github or returns an error, if any.
+func getGithubLatestVersion(u string) (string, error) {
+	res, err := http.Get(u)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	var m map[string]interface{}
+	if err = json.NewDecoder(res.Body).Decode(&m); err != nil {
+		return "", err
+	}
+
+	tn, ok := m["tag_name"]
+	if !ok {
+		return "", errors.New("error finding tag_name in response")
+	}
+	return tn.(string), nil
 }
