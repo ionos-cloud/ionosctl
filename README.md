@@ -5,11 +5,9 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=security_rating)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=coverage)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 [![Release](https://img.shields.io/github/v/release/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl/releases/latest)
 [![Release Date](https://img.shields.io/github/release-date/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl/releases/latest)
-[![Go](https://img.shields.io/github/go-mod/go-version/ionos-cloud/ionosctl.svg)](http://golang.org)
 
 ![Alt text](.github/IONOS.CLOUD.BLU.svg?raw=true "Title")
 
