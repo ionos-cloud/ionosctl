@@ -528,6 +528,48 @@ func (c *APIClient) decode(v interface{}, b []byte, contentType string) (err err
 	return errors.New("undefined response type")
 }
 
+func (c *APIClient) GetRequestStatus(ctx context.Context, path string) (*RequestStatus, *APIResponse, error) {
+
+	r, err := c.prepareRequest(ctx, path, http.MethodGet, nil, nil, nil, nil, "", "", nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resp, err := c.callAPI(r)
+
+	var responseBody = make([]byte, 0)
+	if resp != nil {
+		var errRead error
+		responseBody, errRead = ioutil.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+		if errRead != nil {
+			return nil, nil, errRead
+		}
+
+	}
+
+	apiResponse := &APIResponse {
+		Response: resp,
+		Method: http.MethodGet,
+		RequestURL: path,
+		Operation: "GetRequestStatus",
+	}
+
+	apiResponse.Payload = responseBody
+
+	if err != nil {
+		return nil, apiResponse, err
+	}
+
+	status := &RequestStatus{}
+	err = c.decode(status, responseBody, resp.Header.Get("Content-Type"))
+	if err != nil {
+		return nil, apiResponse, err
+	}
+
+	return status, apiResponse, nil
+
+}
 
 func (c *APIClient) WaitForRequest(ctx context.Context, path string) (*APIResponse, error) {
 
