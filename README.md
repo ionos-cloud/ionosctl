@@ -257,7 +257,7 @@ make test
 
 ### Examples
 
-For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h`  or `ionosctl help [command]` or see the [full reference documentation](subcommands) to see examples.
+For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h`  or `ionosctl help [command]` or see the [full reference documentation](docs/subcommands) to see examples.
 
 ### Uninstalling `ionosctl` 
 

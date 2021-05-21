@@ -433,7 +433,7 @@ UserId                                 Firstname   Lastname   Email             
 99499053-059e-4ee6-b56f-66b0df93262d   test1       test1      testrandom16@ionos.com   false           false          false                               true
 RequestId: ca349e08-5820-41ba-8252-ee4c8dd2ccdb
 Status: Command user create has been successfully executed`
-	updateUserExample = `ionosctl user update --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 --administrator=true
+	updateUserExample = `ionosctl user update --user-id 2470f439-1d73-42f8-90a9-f78cf2776c74 --admin=true
 UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId                  Active
 2470f439-1d73-42f8-90a9-f78cf2776c74   test1       test1      testrandom12@ionos.com   true            false          false           a74101e7c1948450432d5b6512f2712c   true
 RequestId: 439f79fc-5bfc-43da-92f3-0d804ebb28ac
