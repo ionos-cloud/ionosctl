@@ -206,19 +206,25 @@ You will need to start a new PowerShell for this setup to take effect.
 
 Note: PowerShell completions require version 5.0 or above, which comes with Windows 10 and can be downloaded separately for Windows 7 or 8.1.
 
-### Output configuration
+### Output formatting
 
-You can control the output format with the `--output` or `-o` option. `ionosctl` supports JSON format for all commands output by specifying `--output=json`.
+* Use the `--output` option
+
+You can control the output format with the `--output` or `-o` option. IonosCTL supports JSON format for all commands output by specifying `--output=json`. By default, the output is set to human-readable format.
+
+* Use the `--quiet` option
 
 To redirect all the output to `dev/null`, except for error messages, you can use `--quiet` or `-q` option.
 
-For `delete`,`stop`,`detach` commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` or `-f` flag.
+* Use the `--force` option
 
-### Output formatting
+For deletion/removal commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` or `-f` option.
 
-To obtain only a specific field/column or a collection of columns on output, you can use the `--cols` option with the list of desired fields.
+* Use the `--cols` option
 
-For example, if you want to print only the Id and the Location for your existing Virtual Data Centers, you can use the following command:
+To obtain only a specific field/column, or a collection of columns on output, you can use the `--cols` option with the list of desired fields.
+
+For example, if you want to print only the Datacenter ID and the Location for your existing Virtual Data Centers, you can use the following command:
 
 ```text
 ionosctl datacenter list --cols "DatacenterId,Location"
@@ -230,6 +236,20 @@ DATACENTER_ID3   us/las
 
 Note: When using `TAB` in autocompletion, on `--cols` option on a specific resource, the available columns for that resource will be displayed.
 
+### Help Information
+
+You can see all available options for each command, use:
+
+```text
+ionosctl help [command]
+
+ionosctl help [command] [command]
+
+ionosctl [command] --help
+
+ionosctl [command] -h
+```
+
 ### Testing
 
 ```text
@@ -238,7 +258,7 @@ make test
 
 ### Examples
 
-For more information about each available command, including examples, use `ionosctl [command] --help`, `ionosctl [command] -h`  or `ionosctl help [command]` or see the [full reference documentation](subcommands).
+For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h`  or `ionosctl help [command]` or see the [full reference documentation](subcommands) to see examples.
 
 ### Uninstalling `ionosctl`
 
