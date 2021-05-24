@@ -80,7 +80,7 @@ username
 Enter your password:
 ```
 
-After providing credentials, you will be notified if you logged in successfully or not:
+You can also use token for authentication. After providing credentials, you will be notified if you logged in successfully or not:
 
 ```text
 Status: Authentication successful!
@@ -102,9 +102,7 @@ If you want to use a different configuration file, use `--config` option.
 
 * Using environment variables
 
-
-
-Note: `ionosctl` also supports authentication with token.
+For authentication with IONOS Cloud, you can also set the environment variables `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`. 
 
 ### Enabling Shell Auto-Completion
 

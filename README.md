@@ -69,40 +69,46 @@ Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Mod
 
 ### Authenticating with Ionos Cloud
 
-Before using `ionosctl` to perform any operations, you will need to set your credentials for Ionos Cloud account: 
+* Using `login` command
 
+Before using `ionosctl` to perform any operations, you will need to set your credentials for Ionos Cloud account:
+
+```text
+ionosctl login --user username --password password
 ```
-ionosctl login --user username --password password 
-```
+
 The command can also be used without setting the `--user` and `--password` flags:
-```
+
+```text
 ionosctl login
 Enter your username:
 username
 Enter your password:
-
 ```
 
-After providing credentials, you will be notified if you logged in successfully or not:
+You can also use token for authentication. After providing credentials, you will be notified if you logged in successfully or not:
 
-```
+```text
 Status: Authentication successful!
 ```
 
-```
+```text
 Error: 401 Unauthorized
 ```
 
-After a successful authentication, you will no longer need to provide credentials unless you want to change them. 
-By default, they will be stored in 
-- macOS: `${HOME}/Library/Application Support/ionosctl/config.json`
-- Linux: `${XDG_CONFIG_HOME}/ionosctl/config.json`
-- Windows: `%APPDATA%\ionosctl\config.json`
-and retrieved every time you will perform an action on your account.
+After a successful authentication, you will no longer need to provide credentials unless you want to change them. By default, they will be stored in
+
+* macOS: `${HOME}/Library/Application Support/ionosctl/config.json`
+* Linux: `${XDG_CONFIG_HOME}/ionosctl/config.json`
+* Windows: `%APPDATA%\ionosctl\config.json`
+
+  and retrieved every time you will perform an action on your account.
 
 If you want to use a different configuration file, use `--config` option.
 
-Note: `ionosctl` also supports authentication with token.
+* Using environment variables
+
+For authentication with IONOS Cloud, you can also set the environment variables `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`.
 
 ### Enabling Shell Auto-Completion
 
