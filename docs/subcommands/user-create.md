@@ -44,11 +44,11 @@ Required values to run a command:
                             Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active] (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -e, --email string        The email for the User (required)
-      --first-name string   The firstname for the User (required)
+      --first-name string   The first name for the User (required)
   -f, --force               Force command to execute without user input
       --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User
   -h, --help                help for create
-      --last-name string    The lastname for the User (required)
+      --last-name string    The last name for the User (required)
   -o, --output string       Desired output format [text|json] (default "text")
   -p, --password string     The password for the User (must be at least 5 characters long) (required)
   -q, --quiet               Quiet output

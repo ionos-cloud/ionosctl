@@ -277,6 +277,7 @@ func peers() *core.Command {
 		Namespace:  "pcc",
 		Resource:   "peers",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "Get a list of Peers from a Private Cross-Connect",
 		LongDesc:   "Use this command to get a list of Peers from a Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
 		Example:    listPccPeersExample,

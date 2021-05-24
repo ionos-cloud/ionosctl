@@ -23,6 +23,7 @@ The `ionosctl version` command displays the current version of the ionosctl soft
   -h, --help             help for version
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
+      --updates          Check for latest updates for CLI
 ```
 
 ## Examples

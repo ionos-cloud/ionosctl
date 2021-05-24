@@ -98,8 +98,8 @@ Required values to run a command:
 		CmdRun:     RunUserCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgLastName, "", "", "The lastname for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgFirstName, "", "", "The first name for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgLastName, "", "", "The last name for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
@@ -126,8 +126,8 @@ Required values to run command:
 		CmdRun:     RunUserUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgFirstName, "", "", "The firstname for the User")
-	update.AddStringFlag(config.ArgLastName, "", "", "The lastname for the User")
+	update.AddStringFlag(config.ArgFirstName, "", "", "The first name for the User")
+	update.AddStringFlag(config.ArgLastName, "", "", "The last name for the User")
 	update.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User")
 	update.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
 	update.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")

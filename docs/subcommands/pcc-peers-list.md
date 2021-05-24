@@ -10,6 +10,13 @@ description: Get a list of Peers from a Private Cross-Connect
 ionosctl pcc peers list [flags]
 ```
 
+## Aliases
+
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of Peers from a Private Cross-Connect.
