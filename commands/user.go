@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -23,13 +24,15 @@ func user() *core.Command {
 	userCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "user",
+			Aliases:          []string{"u"},
 			Short:            "User Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl user` + "`" + ` allow you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl s3key` + "`" + ` commands.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl user` + "`" + ` allow you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group user` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl user s3key` + "`" + ` commands.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := userCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultUserCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultUserCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultUserCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(userCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = userCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
@@ -42,6 +45,7 @@ func user() *core.Command {
 		Namespace:  "user",
 		Resource:   "user",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Users",
 		LongDesc:   "Use this command to get a list of existing Users available on your account.",
 		Example:    listUserExample,
@@ -57,6 +61,7 @@ func user() *core.Command {
 		Namespace:  "user",
 		Resource:   "user",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a User",
 		LongDesc:   "Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id",
 		Example:    getUserExample,
@@ -64,7 +69,7 @@ func user() *core.Command {
 		CmdRun:     RunUserGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	get.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -76,6 +81,7 @@ func user() *core.Command {
 		Namespace: "user",
 		Resource:  "user",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a User under a particular contract",
 		LongDesc: `Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
@@ -83,21 +89,21 @@ Note: The password set here cannot be updated through the API currently. It is r
 
 Required values to run a command:
 
-* User First Name
-* User Last Name
-* User Email
-* User Password`,
+* First Name
+* Last Name
+* Email
+* Password`,
 		Example:    createUserExample,
 		PreCmdRun:  PreRunUserNameEmailPwd,
 		CmdRun:     RunUserCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgUserPassword, "", "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
-	create.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
-	create.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
+	create.AddStringFlag(config.ArgFirstName, "", "", "The first name for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgLastName, "", "", "The last name for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
+	create.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
+	create.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 
 	/*
 		Update Command
@@ -106,6 +112,7 @@ Required values to run a command:
 		Namespace: "user",
 		Resource:  "user",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a User",
 		LongDesc: `Use this command to update details about a specific User including their privileges.
 
@@ -119,12 +126,12 @@ Required values to run command:
 		CmdRun:     RunUserUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgUserFirstName, "", "", "The firstname for the User")
-	update.AddStringFlag(config.ArgUserLastName, "", "", "The lastname for the User")
-	update.AddStringFlag(config.ArgUserEmail, "", "", "The email for the User")
-	update.AddBoolFlag(config.ArgUserAdministrator, "", false, "Assigns the User to have administrative rights")
-	update.AddBoolFlag(config.ArgUserForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
-	update.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	update.AddStringFlag(config.ArgFirstName, "", "", "The first name for the User")
+	update.AddStringFlag(config.ArgLastName, "", "", "The last name for the User")
+	update.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User")
+	update.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
+	update.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
+	update.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -136,6 +143,7 @@ Required values to run command:
 		Namespace: "user",
 		Resource:  "user",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Blacklists the User, disabling them",
 		LongDesc: `This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
 
@@ -147,7 +155,7 @@ Required values to run command:
 		CmdRun:     RunUserDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	deleteCmd.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -162,7 +170,7 @@ func PreRunUserId(c *core.PreCommandConfig) error {
 }
 
 func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgUserFirstName, config.ArgUserLastName, config.ArgUserEmail, config.ArgUserPassword)
+	return core.CheckRequiredFlags(c.NS, config.ArgFirstName, config.ArgLastName, config.ArgEmail, config.ArgPassword)
 }
 
 func RunUserList(c *core.CommandConfig) error {
@@ -182,12 +190,12 @@ func RunUserGet(c *core.CommandConfig) error {
 }
 
 func RunUserCreate(c *core.CommandConfig) error {
-	firstname := viper.GetString(core.GetFlagName(c.NS, config.ArgUserFirstName))
-	lastname := viper.GetString(core.GetFlagName(c.NS, config.ArgUserLastName))
-	email := viper.GetString(core.GetFlagName(c.NS, config.ArgUserEmail))
-	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgUserPassword))
-	secureAuth := viper.GetBool(core.GetFlagName(c.NS, config.ArgUserForceSecAuth))
-	admin := viper.GetBool(core.GetFlagName(c.NS, config.ArgUserAdministrator))
+	firstname := viper.GetString(core.GetFlagName(c.NS, config.ArgFirstName))
+	lastname := viper.GetString(core.GetFlagName(c.NS, config.ArgLastName))
+	email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
+	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
+	secureAuth := viper.GetBool(core.GetFlagName(c.NS, config.ArgForceSecAuth))
+	admin := viper.GetBool(core.GetFlagName(c.NS, config.ArgAdmin))
 	newUser := resources.UserPost{
 		UserPost: ionoscloud.UserPost{
 			Properties: &ionoscloud.UserPropertiesPost{
@@ -237,36 +245,36 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		forceSecureAuth, admin     bool
 	)
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserFirstName)) {
-			firstName = viper.GetString(core.GetFlagName(c.NS, config.ArgUserFirstName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirstName)) {
+			firstName = viper.GetString(core.GetFlagName(c.NS, config.ArgFirstName))
 		} else {
 			if name, ok := properties.GetFirstnameOk(); ok && name != nil {
 				firstName = *name
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserLastName)) {
-			lastName = viper.GetString(core.GetFlagName(c.NS, config.ArgUserLastName))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLastName)) {
+			lastName = viper.GetString(core.GetFlagName(c.NS, config.ArgLastName))
 		} else {
 			if name, ok := properties.GetLastnameOk(); ok && name != nil {
 				lastName = *name
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserEmail)) {
-			email = viper.GetString(core.GetFlagName(c.NS, config.ArgUserEmail))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgEmail)) {
+			email = viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
 		} else {
 			if e, ok := properties.GetEmailOk(); ok && e != nil {
 				email = *e
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserForceSecAuth)) {
-			forceSecureAuth = viper.GetBool(core.GetFlagName(c.NS, config.ArgUserForceSecAuth))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgForceSecAuth)) {
+			forceSecureAuth = viper.GetBool(core.GetFlagName(c.NS, config.ArgForceSecAuth))
 		} else {
 			if secAuth, ok := properties.GetForceSecAuthOk(); ok && secAuth != nil {
 				forceSecureAuth = *secAuth
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserAdministrator)) {
-			admin = viper.GetBool(core.GetFlagName(c.NS, config.ArgUserAdministrator))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgAdmin)) {
+			admin = viper.GetBool(core.GetFlagName(c.NS, config.ArgAdmin))
 		} else {
 			if administrator, ok := properties.GetAdministratorOk(); ok && administrator != nil {
 				admin = *administrator
@@ -291,16 +299,18 @@ func groupUser() *core.Command {
 	groupUserCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "user",
+			Aliases:          []string{"u"},
 			Short:            "Group User Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl group user` + "`" + ` allow you to list, add, remove Users from a Group.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := groupUserCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultGroupCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultUserCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultUserCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(groupUserCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = groupUserCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp
+		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -310,6 +320,7 @@ func groupUser() *core.Command {
 		Namespace:  "group",
 		Resource:   "user",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Users from a Group",
 		LongDesc:   "Use this command to get a list of Users from a specific Group.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    listGroupUsersExample,
@@ -329,6 +340,7 @@ func groupUser() *core.Command {
 		Namespace:  "group",
 		Resource:   "user",
 		Verb:       "add",
+		Aliases:    []string{"a"},
 		ShortDesc:  "Add User to a Group",
 		LongDesc:   "Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    addGroupUserExample,
@@ -340,7 +352,7 @@ func groupUser() *core.Command {
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	addUser.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	addUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -352,6 +364,7 @@ func groupUser() *core.Command {
 		Namespace:  "group",
 		Resource:   "user",
 		Verb:       "remove",
+		Aliases:    []string{"r"},
 		ShortDesc:  "Remove User from a Group",
 		LongDesc:   "Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    removeGroupUserExample,
@@ -363,7 +376,7 @@ func groupUser() *core.Command {
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeUser.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	removeUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupUsersIds(os.Stderr, viper.GetString(core.GetFlagName(removeUser.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})

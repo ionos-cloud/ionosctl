@@ -10,6 +10,18 @@ description: Get a BackupUnit
 ionosctl backupunit get [flags]
 ```
 
+## Aliases
+
+For `backupunit` command:
+```text
+[b backup]
+```
+
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific BackupUnit.
@@ -22,10 +34,11 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --backupunit-id string   The unique BackupUnit Id (required)
-      --cols strings           Columns to be printed in the standard output (default [BackupUnitId,Name,Email,State])
+  -i, --backupunit-id string   The unique BackupUnit Id (required)
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for get
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output

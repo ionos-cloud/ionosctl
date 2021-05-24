@@ -10,6 +10,18 @@ description: Wait a Request
 ionosctl request wait [flags]
 ```
 
+## Aliases
+
+For `request` command:
+```text
+[req]
+```
+
+For `wait` command:
+```text
+[w]
+```
+
 ## Description
 
 Use this command to wait for a specified Request to execute.
@@ -24,14 +36,15 @@ Required values to run command:
 
 ```text
   -u, --api-url string      Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings        Columns to be printed in the standard output (default [RequestId,Status,Message])
+      --cols strings        Set of columns to be printed on output 
+                            Available columns: [RequestId Status Message] (default [RequestId,Status,Message])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force               Force command to execute without user input
+  -f, --force               Force command to execute without user input
   -h, --help                help for wait
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-      --request-id string   The unique Request Id (required)
-      --timeout int         Timeout option waiting for Request [seconds] (default 60)
+  -i, --request-id string   The unique Request Id (required)
+  -t, --timeout int         Timeout option waiting for Request [seconds] (default 60)
 ```
 
 ## Examples

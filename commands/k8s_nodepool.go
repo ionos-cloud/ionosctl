@@ -24,13 +24,15 @@ func k8sNodePool() *core.Command {
 	k8sCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "nodepool",
+			Aliases:          []string{"np"},
 			Short:            "Kubernetes NodePool Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl k8s nodepool` + "`" + ` allow you to list, get, create, update, delete Kubernetes NodePools.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := k8sCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultK8sNodePoolCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultK8sNodePoolCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allK8sNodePoolCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allK8sNodePoolCols, cobra.ShellCompDirectiveNoFileComp
@@ -43,6 +45,7 @@ func k8sNodePool() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "nodepool",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes NodePools",
 		LongDesc:   "Use this command to get a list of all contained NodePools in a selected Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		Example:    listK8sNodePoolsExample,
@@ -62,6 +65,7 @@ func k8sNodePool() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "nodepool",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Kubernetes NodePool",
 		LongDesc:   "Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster. You can wait for the Node Pool to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		Example:    getK8sNodePoolExample,
@@ -73,12 +77,12 @@ func k8sNodePool() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
+	get.AddStringFlag(config.ArgK8sNodePoolId, config.ArgIdShort, "", config.RequiredFlagK8sNodePoolId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified NodePool to be in ACTIVE state")
-	get.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
+	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified NodePool to be in ACTIVE state")
+	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
 
 	/*
 		Create Command
@@ -87,6 +91,7 @@ func k8sNodePool() *core.Command {
 		Namespace: "k8s",
 		Resource:  "nodepool",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Kubernetes NodePool",
 		LongDesc: `Use this command to create a Node Pool into an existing Kubernetes Cluster. The Kubernetes Cluster must be in state "ACTIVE" before creating a Node Pool. The worker Nodes within the Node Pools will be deployed into an existing Data Center. Regarding the name for the Kubernetes NodePool, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. Regarding the Kubernetes Version for the NodePool, if not set via flag, it will be used the default one: ` + "`" + `ionosctl k8s version get` + "`" + `.
 
@@ -96,13 +101,13 @@ Required values to run a command:
 
 * K8s Cluster Id
 * Datacenter Id
-* K8s NodePool Name`,
+* Name`,
 		Example:    createK8sNodePoolExample,
 		PreCmdRun:  PreRunK8sClusterDcIdsNodePoolName,
 		CmdRun:     RunK8sNodePoolCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgK8sNodePoolName, "", "", "The name for the K8s NodePool "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the K8s NodePool "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, it will be used the default one")
 	create.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -113,13 +118,13 @@ Required values to run a command:
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
-	create.AddIntFlag(config.ArgCoresCount, "", 2, "The total number of cores for the Node")
+	create.AddIntFlag(config.ArgCores, "", 2, "The total number of cores for the Node")
 	create.AddIntFlag(config.ArgRamSize, "", 2048, "The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB")
 	create.AddStringFlag(config.ArgCpuFamily, "", config.DefaultServerCPUFamily, "CPU Type")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgK8sNodeZone, "", "AUTO", "The compute Availability Zone in which the Node should exist")
+	create.AddStringFlag(config.ArgAvailabilityZone, config.ArgAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -128,8 +133,8 @@ Required values to run a command:
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddIntFlag(config.ArgStorageSize, "", 10, "The total allocated storage capacity of a Node")
-	create.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	create.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
+	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
 
 	/*
 		Update Command
@@ -138,6 +143,7 @@ Required values to run a command:
 		Namespace: "k8s",
 		Resource:  "nodepool",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Kubernetes NodePool",
 		LongDesc: `Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster. You can also add reserved public IP addresses to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. The array must contain one extra IP than maximum number of Nodes could be. (nodeCount+1 if fixed node amount or maxNodeCount+1 if auto scaling is used) The extra provided IP Will be used during rebuilding of Nodes.
 
@@ -171,12 +177,12 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
+	update.AddStringFlag(config.ArgK8sNodePoolId, config.ArgIdShort, "", config.RequiredFlagK8sNodePoolId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	update.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
+	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
 
 	/*
 		Delete Command
@@ -185,6 +191,7 @@ Required values to run command:
 		Namespace: "k8s",
 		Resource:  "nodepool",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Kubernetes NodePool",
 		LongDesc: `This command deletes a Kubernetes Node Pool within an existing Kubernetes Cluster.
 
@@ -201,7 +208,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgK8sNodePoolId, "", "", config.RequiredFlagK8sNodePoolId)
+	deleteCmd.AddStringFlag(config.ArgK8sNodePoolId, config.ArgIdShort, "", config.RequiredFlagK8sNodePoolId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -214,7 +221,7 @@ func PreRunK8sClusterNodePoolIds(c *core.PreCommandConfig) error {
 }
 
 func PreRunK8sClusterDcIdsNodePoolName(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgDataCenterId, config.ArgK8sNodePoolName)
+	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgDataCenterId, config.ArgName)
 }
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
@@ -312,7 +319,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		k8sversion string
 		err        error
 	)
-	n := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolName))
+	n := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 	} else {
@@ -323,9 +330,9 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sNodeCount))
 	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily))
-	coresCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCoresCount))
+	coresCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
 	ramSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize))
-	nodeZone := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeZone))
+	nodeZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
 	storageSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgStorageSize))
 	storageType := viper.GetString(core.GetFlagName(c.NS, config.ArgStorageType))
 	return &resources.K8sNodePoolForPost{

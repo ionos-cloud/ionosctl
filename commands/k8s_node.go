@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -22,13 +23,15 @@ func k8sNode() *core.Command {
 	k8sCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "node",
+			Aliases:          []string{"n"},
 			Short:            "Kubernetes Node Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl k8s node` + "`" + ` allow you to list, get, recreate, delete Kubernetes Nodes.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := k8sCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultK8sNodeCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultK8sNodeCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultK8sNodeCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodeCols, cobra.ShellCompDirectiveNoFileComp
@@ -41,6 +44,7 @@ func k8sNode() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "node",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes Nodes",
 		LongDesc:   "Use this command to get a list of existing Kubernetes Nodes.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		Example:    listK8sNodesExample,
@@ -64,6 +68,7 @@ func k8sNode() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "node",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Kubernetes Node",
 		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
 		Example:    getK8sNodeExample,
@@ -79,15 +84,15 @@ func k8sNode() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgK8sNodeId, "", "", config.RequiredFlagK8sNodeId)
+	get.AddStringFlag(config.ArgK8sNodeId, config.ArgIdShort, "", config.RequiredFlagK8sNodeId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodesIds(os.Stderr,
 			viper.GetString(core.GetFlagName(get.NS, config.ArgK8sClusterId)),
 			viper.GetString(core.GetFlagName(get.NS, config.ArgK8sNodePoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified Node to be in ACTIVE state")
-	get.AddIntFlag(config.ArgTimeout, "", config.K8sTimeoutSeconds, "Timeout option for waiting for Node to be in ACTIVE state [seconds]")
+	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified Node to be in ACTIVE state")
+	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for Node to be in ACTIVE state [seconds]")
 
 	/*
 		Recreate Command
@@ -96,6 +101,7 @@ func k8sNode() *core.Command {
 		Namespace: "k8s",
 		Resource:  "node",
 		Verb:      "recreate",
+		Aliases:   []string{"r"},
 		ShortDesc: "Recreate a Kubernetes Node",
 		LongDesc: `You can recreate a single Kubernetes Node.
 
@@ -119,7 +125,7 @@ Required values to run command:
 	_ = recreate.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(recreate.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	recreate.AddStringFlag(config.ArgK8sNodeId, "", "", config.RequiredFlagK8sNodeId)
+	recreate.AddStringFlag(config.ArgK8sNodeId, config.ArgIdShort, "", config.RequiredFlagK8sNodeId)
 	_ = recreate.Command.RegisterFlagCompletionFunc(config.ArgK8sNodeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodesIds(os.Stderr,
 			viper.GetString(core.GetFlagName(recreate.NS, config.ArgK8sClusterId)),
@@ -134,6 +140,7 @@ Required values to run command:
 		Namespace: "k8s",
 		Resource:  "node",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Kubernetes Node",
 		LongDesc: `This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.
 

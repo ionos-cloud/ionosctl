@@ -10,6 +10,18 @@ description: Update a Snapshot
 ionosctl snapshot update [flags]
 ```
 
+## Aliases
+
+For `snapshot` command:
+```text
+[ss snap]
+```
+
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update a specified Snapshot.
@@ -23,36 +35,37 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string                Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings                  Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size,State])
-  -c, --config string                 Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --cpu-hot-plug                  This volume is capable of CPU hot plug (no reboot required)
-      --cpu-hot-unplug                This volume is capable of CPU hot unplug (no reboot required)
-      --disc-scsi-hot-plug            This volume is capable of SCSI drive hot plug (no reboot required)
-      --disc-scsi-hot-unplug          This volume is capable of SCSI drive hot unplug (no reboot required)
-      --disc-virtio-hot-plug          This volume is capable of VirtIO drive hot plug (no reboot required)
-      --disc-virtio-hot-unplug        This volume is capable of VirtIO drive hot unplug (no reboot required)
-      --force                         Force command to execute without user input
-  -h, --help                          help for update
-      --licence-type string           Licence Type of the Snapshot
-      --nic-hot-plug                  This volume is capable of NIC hot plug (no reboot required)
-      --nic-hot-unplug                This volume is capable of NIC hot unplug (no reboot required)
-  -o, --output string                 Desired output format [text|json] (default "text")
-  -q, --quiet                         Quiet output
-      --ram-hot-plug                  This volume is capable of memory hot plug (no reboot required)
-      --ram-hot-unplug                This volume is capable of memory hot unplug (no reboot required)
-      --sec-auth-protection           Enable secure authentication protection
-      --snapshot-description string   Description of the Snapshot
-      --snapshot-id string            The unique Snapshot Id (required)
-      --snapshot-name string          Name of the Snapshot
-      --timeout int                   Timeout option for Request for Snapshot creation [seconds] (default 60)
-      --wait-for-request              Wait for the Request for Snapshot creation to be executed
+  -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings             Set of columns to be printed on output 
+                                 Available columns: [SnapshotId Name LicenceType Size State] (default [SnapshotId,Name,LicenceType,Size,State])
+  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --cpu-hot-plug             This volume is capable of CPU hot plug (no reboot required)
+      --cpu-hot-unplug           This volume is capable of CPU hot unplug (no reboot required)
+  -d, --description string       Description of the Snapshot
+      --disc-scsi-hot-plug       This volume is capable of SCSI drive hot plug (no reboot required)
+      --disc-scsi-hot-unplug     This volume is capable of SCSI drive hot unplug (no reboot required)
+      --disc-virtio-hot-plug     This volume is capable of VirtIO drive hot plug (no reboot required)
+      --disc-virtio-hot-unplug   This volume is capable of VirtIO drive hot unplug (no reboot required)
+  -f, --force                    Force command to execute without user input
+  -h, --help                     help for update
+      --licence-type string      Licence Type of the Snapshot
+  -n, --name string              Name of the Snapshot
+      --nic-hot-plug             This volume is capable of NIC hot plug (no reboot required)
+      --nic-hot-unplug           This volume is capable of NIC hot unplug (no reboot required)
+  -o, --output string            Desired output format [text|json] (default "text")
+  -q, --quiet                    Quiet output
+      --ram-hot-plug             This volume is capable of memory hot plug (no reboot required)
+      --ram-hot-unplug           This volume is capable of memory hot unplug (no reboot required)
+      --sec-auth-protection      Enable secure authentication protection
+  -i, --snapshot-id string       The unique Snapshot Id (required)
+  -t, --timeout int              Timeout option for Request for Snapshot creation [seconds] (default 60)
+  -w, --wait-for-request         Wait for the Request for Snapshot creation to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl snapshot update --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --snapshot-name test
+ionosctl snapshot update --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --name test
 SnapshotId                             Name   LicenceType   Size
 dc688daf-8e54-4db8-ac4a-487ad5a34e9c   test   LINUX         10
 RequestId: 3540e9be-ed35-41c0-83d9-923882bfa9bd

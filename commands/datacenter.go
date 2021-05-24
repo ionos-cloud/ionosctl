@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -22,14 +23,15 @@ func datacenter() *core.Command {
 	datacenterCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "datacenter",
-			Aliases:          []string{"dc"},
+			Aliases:          []string{"d", "dc"},
 			Short:            "Data Center Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl datacenter` + "`" + ` allow you to create, list, get, update and delete Data Centers.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := datacenterCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultDatacenterCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultDatacenterCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allDatacenterCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(datacenterCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = datacenterCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allDatacenterCols, cobra.ShellCompDirectiveNoFileComp
@@ -42,6 +44,7 @@ func datacenter() *core.Command {
 		Namespace:  "datacenter",
 		Resource:   "datacenter",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Data Centers",
 		LongDesc:   "Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.",
 		Example:    listDatacenterExample,
@@ -57,6 +60,7 @@ func datacenter() *core.Command {
 		Namespace:  "datacenter",
 		Resource:   "datacenter",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Data Center",
 		LongDesc:   "Use this command to retrieve details about a Virtual Data Center by using its ID.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    getDatacenterExample,
@@ -64,7 +68,7 @@ func datacenter() *core.Command {
 		CmdRun:     RunDataCenterGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	get.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.RequiredFlagDatacenterId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -76,6 +80,7 @@ func datacenter() *core.Command {
 		Namespace: "datacenter",
 		Resource:  "datacenter",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Data Center",
 		LongDesc: `Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
 
@@ -87,14 +92,14 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		CmdRun:     RunDataCenterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
-	create.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
-	create.AddStringFlag(config.ArgDataCenterRegion, "", "de/txl", "Location for the Data Center")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterRegion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Data Center")
+	create.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Data Center")
+	create.AddStringFlag(config.ArgLocation, config.ArgLocationShort, "de/txl", "Location for the Data Center")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
 
 	/*
 		Update Command
@@ -103,6 +108,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		Namespace: "datacenter",
 		Resource:  "datacenter",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Data Center",
 		LongDesc: `Use this command to change a Virtual Data Center's name, description.
 
@@ -116,14 +122,14 @@ Required values to run command:
 		CmdRun:     RunDataCenterUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	update.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.RequiredFlagDatacenterId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgDataCenterName, "", "", "Name of the Data Center")
-	update.AddStringFlag(config.ArgDataCenterDescription, "", "", "Description of the Data Center")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center update [seconds]")
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Data Center")
+	update.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Data Center")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center update [seconds]")
 
 	/*
 		Delete Command
@@ -132,6 +138,7 @@ Required values to run command:
 		Namespace: "datacenter",
 		Resource:  "datacenter",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Data Center",
 		LongDesc: `Use this command to delete a specified Virtual Data Center (VDC) from your account. This will remove all objects within the VDC and remove the VDC object itself. 
 
@@ -145,12 +152,12 @@ Required values to run command:
 		CmdRun:     RunDataCenterDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.RequiredFlagDatacenterId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Data Center deletion")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center deletion")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
 
 	return datacenterCmd
 }
@@ -176,9 +183,9 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 }
 
 func RunDataCenterCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterName))
-	description := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterDescription))
-	region := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterRegion))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	description := viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
+	region := viper.GetString(core.GetFlagName(c.NS, config.ArgLocation))
 	dc, resp, err := c.DataCenters().Create(name, description, region)
 	if err != nil {
 		return err
@@ -192,11 +199,11 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 
 func RunDataCenterUpdate(c *core.CommandConfig) error {
 	input := resources.DatacenterProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDataCenterName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDataCenterDescription)) {
-		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterDescription)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDescription)) {
+		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgDescription)))
 	}
 	dc, resp, err := c.DataCenters().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),

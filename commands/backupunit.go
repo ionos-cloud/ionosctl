@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -25,13 +26,15 @@ func backupunit() *core.Command {
 	backupUnitCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "backupunit",
+			Aliases:          []string{"b", "backup"},
 			Short:            "BackupUnit Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl backupunit` + "`" + ` allow you to list, get, create, update, delete BackupUnits under your account.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := backupUnitCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultBackupUnitCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultBackupUnitCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultBackupUnitCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = backupUnitCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultBackupUnitCols, cobra.ShellCompDirectiveNoFileComp
@@ -44,6 +47,7 @@ func backupunit() *core.Command {
 		Namespace:  "backupunit",
 		Resource:   "backupunit",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List BackupUnits",
 		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.",
 		Example:    listBackupUnitsExample,
@@ -59,6 +63,7 @@ func backupunit() *core.Command {
 		Namespace:  "backupunit",
 		Resource:   "backupunit",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a BackupUnit",
 		LongDesc:   "Use this command to retrieve details about a specific BackupUnit.\n\nRequired values to run command:\n\n* BackupUnit Id",
 		Example:    getBackupUnitExample,
@@ -66,7 +71,7 @@ func backupunit() *core.Command {
 		CmdRun:     RunBackupUnitGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
+	get.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -85,7 +90,7 @@ func backupunit() *core.Command {
 		CmdRun:     RunBackupUnitGetSsoUrl,
 		InitClient: true,
 	})
-	getsso.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
+	getsso.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
 	_ = getsso.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -97,6 +102,7 @@ func backupunit() *core.Command {
 		Namespace: "backupunit",
 		Resource:  "backupunit",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a BackupUnit",
 		LongDesc: `Use this command to create a BackupUnit under a particular contract. You need to specify the name, email and password for the new BackupUnit.
 
@@ -109,19 +115,19 @@ Notes:
 
 Required values to run a command:
 
-* BackupUnit Name
-* BackupUnit Email
-* BackupUnit Password`,
+* Name
+* Email
+* Password`,
 		Example:    createBackupUnitExample,
 		PreCmdRun:  PreRunBackupUnitNameEmailPwd,
 		CmdRun:     RunBackupUnitCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgBackupUnitName, "", "", "Alphanumeric name you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgBackupUnitEmail, "", "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgBackupUnitPassword, "", "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for BackupUnit creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit creation [seconds]")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Alphanumeric name you want to assign to the BackupUnit "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag)
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit creation [seconds]")
 
 	/*
 		Update Command
@@ -130,6 +136,7 @@ Required values to run a command:
 		Namespace: "backupunit",
 		Resource:  "backupunit",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a BackupUnit",
 		LongDesc: `Use this command to update details about a specific BackupUnit. The password and the email may be updated.
 
@@ -141,14 +148,14 @@ Required values to run command:
 		CmdRun:     RunBackupUnitUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgBackupUnitPassword, "", "", "Alphanumeric password you want to update for the BackupUnit")
-	update.AddStringFlag(config.ArgBackupUnitEmail, "", "", "The e-mail address you want to update for the BackupUnit")
-	update.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
+	update.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Alphanumeric password you want to update for the BackupUnit")
+	update.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The e-mail address you want to update for the BackupUnit")
+	update.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for BackupUnit update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit update [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit update [seconds]")
 
 	/*
 		Delete Command
@@ -157,6 +164,7 @@ Required values to run command:
 		Namespace: "backupunit",
 		Resource:  "backupunit",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a BackupUnit",
 		LongDesc: `Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.
 
@@ -168,12 +176,12 @@ Required values to run command:
 		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
+	deleteCmd.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for BackupUnit deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit deletion [seconds]")
 
 	return backupUnitCmd
 }
@@ -183,7 +191,7 @@ func PreRunBackupUnitId(c *core.PreCommandConfig) error {
 }
 
 func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgBackupUnitName, config.ArgBackupUnitEmail, config.ArgBackupUnitPassword)
+	return core.CheckRequiredFlags(c.NS, config.ArgName, config.ArgEmail, config.ArgPassword)
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {
@@ -211,9 +219,9 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitName))
-	email := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitEmail))
-	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitPassword))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
+	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 	newBackupUnit := resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Properties: &ionoscloud.BackupUnitProperties{
@@ -262,12 +270,12 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 
 func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 	var properties resources.BackupUnitProperties
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitPassword)) {
-		pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitPassword))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
+		pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 		properties.SetPassword(pwd)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitEmail)) {
-		email := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitEmail))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgEmail)) {
+		email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
 		properties.SetEmail(email)
 	}
 	return &properties

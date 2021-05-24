@@ -10,6 +10,13 @@ description: Authentication command for SDK
 ionosctl login [flags]
 ```
 
+## Aliases
+
+For `login` command:
+```text
+[log auth]
+```
+
 ## Description
 
 Use this command to authenticate. By default, user data will be saved in:
@@ -27,10 +34,10 @@ Note: The command can also be used without `--user` and `--password` flags. For 
 ```text
   -u, --api-url string    Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force             Force command to execute without user input
+  -f, --force             Force command to execute without user input
   -h, --help              help for login
   -o, --output string     Desired output format [text|json] (default "text")
-      --password string   Password to authenticate
+  -p, --password string   Password to authenticate
   -q, --quiet             Quiet output
       --token string      Token to authenticate
       --user string       Username to authenticate

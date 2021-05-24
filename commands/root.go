@@ -26,6 +26,7 @@ var (
 	ServerURL string
 	Output    string
 	Quiet     bool
+	Force     bool
 
 	cfgFile string
 
@@ -63,22 +64,22 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootPFlagSet := rootCmd.GlobalFlags()
-	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, "c", config.GetConfigFile(), "Configuration file used for authentication")
+	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, config.ArgConfigShort, config.GetConfigFile(), "Configuration file used for authentication")
 	_ = viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
 
-	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, "u", config.DefaultApiURL, "Override default API endpoint")
+	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, config.ArgServerUrlShort, config.DefaultApiURL, "Override default API endpoint")
 	_ = viper.BindPFlag(config.ArgServerUrl, rootPFlagSet.Lookup(config.ArgServerUrl))
 
-	rootPFlagSet.StringVarP(&Output, config.ArgOutput, "o", config.DefaultOutputFormat, "Desired output format [text|json]")
+	rootPFlagSet.StringVarP(&Output, config.ArgOutput, config.ArgOutputShort, config.DefaultOutputFormat, "Desired output format [text|json]")
 	_ = viper.BindPFlag(config.ArgOutput, rootPFlagSet.Lookup(config.ArgOutput))
 	_ = rootCmd.Command.RegisterFlagCompletionFunc(config.ArgOutput, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"json", "text"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, "q", false, "Quiet output")
+	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, config.ArgQuietShort, false, "Quiet output")
 	_ = viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
 
-	rootPFlagSet.Bool(config.ArgForce, false, "Force command to execute without user input")
+	rootPFlagSet.BoolVarP(&Force, config.ArgForce, config.ArgForceShort, false, "Force command to execute without user input")
 	_ = viper.BindPFlag(config.ArgForce, rootPFlagSet.Lookup(config.ArgForce))
 
 	addCommands()

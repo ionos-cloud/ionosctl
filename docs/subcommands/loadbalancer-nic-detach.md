@@ -10,6 +10,23 @@ description: Detach a NIC from a Load Balancer
 ionosctl loadbalancer nic detach [flags]
 ```
 
+## Aliases
+
+For `loadbalancer` command:
+```text
+[lb]
+```
+
+For `nic` command:
+```text
+[n]
+```
+
+For `detach` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to remove the association of a NIC with a Load Balancer.
@@ -26,17 +43,18 @@ Required values to run command:
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings             Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips,State])
+      --cols strings             Set of columns to be printed on output 
+                                 Available columns: [NicId Name Dhcp LanId Ips State FirewallActive Mac] (default [NicId,Name,Dhcp,LanId,Ips,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
-      --force                    Force command to execute without user input
+  -f, --force                    Force command to execute without user input
   -h, --help                     help for detach
       --loadbalancer-id string   The unique Load Balancer Id (required)
-      --nic-id string            The unique NIC Id (required)
+  -i, --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --timeout int              Timeout option for Request for NIC detachment [seconds] (default 60)
-      --wait-for-request         Wait for the Request for NIC detachment to be executed
+  -t, --timeout int              Timeout option for Request for NIC detachment [seconds] (default 60)
+  -w, --wait-for-request         Wait for the Request for NIC detachment to be executed
 ```
 
 ## Examples

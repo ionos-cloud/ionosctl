@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -23,13 +24,15 @@ func ipfailover() *core.Command {
 	ipfailoverCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "ipfailover",
+			Aliases:          []string{"ipf"},
 			Short:            "IP Failover Operations",
 			Long:             `The sub-command of ` + "`" + `ionosctl ipfailover` + "`" + ` allows you to see information about IP Failovers groups available on a LAN, to add/remove IP Failover group from a LAN.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := ipfailoverCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultIpFailoverCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultIpFailoverCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultIpFailoverCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(ipfailoverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = ipfailoverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpFailoverCols, cobra.ShellCompDirectiveNoFileComp
@@ -42,6 +45,7 @@ func ipfailover() *core.Command {
 		Namespace:  "ipfailover",
 		Resource:   "ipfailover",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List IP Failovers groups from a LAN",
 		LongDesc:   "Use this command to get a list of IP Failovers groups from a LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* Lan Id",
 		Example:    listIpFailoverExample,
@@ -65,6 +69,7 @@ func ipfailover() *core.Command {
 		Namespace: "ipfailover",
 		Resource:  "ipfailover",
 		Verb:      "add",
+		Aliases:   []string{"a"},
 		ShortDesc: "Add IP Failover group to a LAN",
 		LongDesc: `Use this command to add an IP Failover group to a LAN. 
 
@@ -104,8 +109,8 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(addCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	addCmd.AddStringFlag(config.ArgIp, "", "", "IP address to be added to IP Failover Group "+config.RequiredFlag)
-	addCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for IP Failover creation to be executed")
-	addCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover creation [seconds]")
+	addCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IP Failover creation to be executed")
+	addCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover creation [seconds]")
 
 	/*
 		Remove Command
@@ -114,6 +119,7 @@ Required values to run command:
 		Namespace: "ipfailover",
 		Resource:  "ipfailover",
 		Verb:      "remove",
+		Aliases:   []string{"r"},
 		ShortDesc: "Remove IP Failover group from a LAN",
 		LongDesc: `Use this command to remove an IP Failover group from a LAN.
 
@@ -147,8 +153,8 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(removeCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeCmd.AddStringFlag(config.ArgIp, "", "", "Allocated IP "+config.RequiredFlag)
-	removeCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for IP Failover deletion to be executed")
-	removeCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover deletion [seconds]")
+	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IP Failover deletion to be executed")
+	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover deletion [seconds]")
 
 	return ipfailoverCmd
 }

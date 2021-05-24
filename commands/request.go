@@ -23,13 +23,15 @@ func request() *core.Command {
 	reqCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "request",
+			Aliases:          []string{"req"},
 			Short:            "Request Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl request` + "`" + ` allow you to see information about requests on your account. With the ` + "`" + `ionosctl request` + "`" + ` command, you can list, get or wait for a Request.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := reqCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultRequestCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultRequestCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultRequestCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = reqCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultRequestCols, cobra.ShellCompDirectiveNoFileComp
@@ -42,6 +44,7 @@ func request() *core.Command {
 		Namespace:  "request",
 		Resource:   "request",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Requests",
 		LongDesc:   "Use this command to list all Requests on your account",
 		Example:    "",
@@ -57,6 +60,7 @@ func request() *core.Command {
 		Namespace:  "request",
 		Resource:   "request",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Request",
 		LongDesc:   "Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		Example:    getRequestExample,
@@ -64,7 +68,7 @@ func request() *core.Command {
 		CmdRun:     RunRequestGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
+	get.AddStringFlag(config.ArgRequestId, config.ArgIdShort, "", config.RequiredFlagRequestId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -76,6 +80,7 @@ func request() *core.Command {
 		Namespace: "request",
 		Resource:  "request",
 		Verb:      "wait",
+		Aliases:   []string{"w"},
 		ShortDesc: "Wait a Request",
 		LongDesc: `Use this command to wait for a specified Request to execute.
 
@@ -89,11 +94,11 @@ Required values to run command:
 		CmdRun:     RunRequestWait,
 		InitClient: true,
 	})
-	wait.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
+	wait.AddStringFlag(config.ArgRequestId, config.ArgIdShort, "", config.RequiredFlagRequestId)
 	_ = wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	wait.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
+	wait.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
 
 	return reqCmd
 }

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -22,13 +23,15 @@ func snapshot() *core.Command {
 	snapshotCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "snapshot",
+			Aliases:          []string{"ss", "snap"},
 			Short:            "Snapshot Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl snapshot` + "`" + ` allow you to see information, to create, update, delete Snapshots.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := snapshotCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultSnapshotCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultSnapshotCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultSnapshotCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(snapshotCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
@@ -41,6 +44,7 @@ func snapshot() *core.Command {
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Snapshots",
 		LongDesc:   "Use this command to get a list of Snapshots.",
 		Example:    listSnapshotsExample,
@@ -56,6 +60,7 @@ func snapshot() *core.Command {
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Snapshot",
 		LongDesc:   "Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		Example:    getSnapshotExample,
@@ -63,7 +68,7 @@ func snapshot() *core.Command {
 		CmdRun:     RunSnapshotGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
+	get.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -75,6 +80,7 @@ func snapshot() *core.Command {
 		Namespace: "snapshot",
 		Resource:  "snapshot",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Snapshot of a Volume within the Virtual Data Center",
 		LongDesc: `Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
@@ -84,15 +90,15 @@ Required values to run command:
 
 * Data Center Id
 * Volume Id
-* Snapshot Name
-* Snapshot Licence Type`,
+* Name
+* Licence Type`,
 		Example:    createSnapshotExample,
 		PreCmdRun:  PreRunSnapNameLicenceDcIdVolumeId,
 		CmdRun:     RunSnapshotCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot"+config.RequiredFlag)
-	create.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Snapshot"+config.RequiredFlag)
+	create.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Snapshot")
 	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
@@ -106,8 +112,8 @@ Required values to run command:
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
 	/*
 		Update Command
@@ -116,6 +122,7 @@ Required values to run command:
 		Namespace: "snapshot",
 		Resource:  "snapshot",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Snapshot",
 		LongDesc: `Use this command to update a specified Snapshot.
 
@@ -129,13 +136,13 @@ Required values to run command:
 		CmdRun:     RunSnapshotUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgSnapshotName, "", "", "Name of the Snapshot")
-	update.AddStringFlag(config.ArgSnapshotDescription, "", "", "Description of the Snapshot")
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Snapshot")
+	update.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Snapshot")
 	update.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
+	update.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -150,8 +157,8 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required)")
 	update.AddBoolFlag(config.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required)")
 	update.AddBoolFlag(config.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
 	/*
 		Restore Command
@@ -160,6 +167,7 @@ Required values to run command:
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "restore",
+		Aliases:    []string{"r"},
 		ShortDesc:  "Restore a Snapshot onto a Volume",
 		LongDesc:   "Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
 		Example:    restoreSnapshotExample,
@@ -167,7 +175,7 @@ Required values to run command:
 		CmdRun:     RunSnapshotRestore,
 		InitClient: true,
 	})
-	restore.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
+	restore.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId)
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -179,8 +187,8 @@ Required values to run command:
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(restore.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot restore to be executed")
-	restore.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot restore [seconds]")
+	restore.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot restore to be executed")
+	restore.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot restore [seconds]")
 
 	/*
 		Delete Command
@@ -189,6 +197,7 @@ Required values to run command:
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "delete",
+		Aliases:    []string{"d"},
 		ShortDesc:  "Delete a Snapshot",
 		LongDesc:   "Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		Example:    deleteSnapshotExample,
@@ -196,12 +205,12 @@ Required values to run command:
 		CmdRun:     RunSnapshotDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgSnapshotId, "", "", config.RequiredFlagSnapshotId)
+	deleteCmd.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Snapshot deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
 
 	return snapshotCmd
 }
@@ -211,7 +220,7 @@ func PreRunSnapshotId(c *core.PreCommandConfig) error {
 }
 
 func PreRunSnapNameLicenceDcIdVolumeId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotName, config.ArgLicenceType)
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgName, config.ArgLicenceType)
 }
 
 func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
@@ -238,8 +247,8 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	s, resp, err := c.Snapshots().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotName)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotDescription)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDescription)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)),
 		viper.GetBool(core.GetFlagName(c.NS, config.ArgSecAuthProtection)),
 	)
@@ -293,11 +302,11 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 
 func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotProperties {
 	input := resources.SnapshotProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSnapshotDescription)) {
-		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotDescription)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDescription)) {
+		input.SetDescription(viper.GetString(core.GetFlagName(c.NS, config.ArgDescription)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
 		input.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)))

@@ -10,6 +10,23 @@ description: Get a specific attached CD-ROM from a Server
 ionosctl server cdrom get [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s svr]
+```
+
+For `cdrom` command:
+```text
+[cd]
+```
+
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve information about an attached CD-ROM on Server.
@@ -24,11 +41,12 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cdrom-id string        The unique Cdrom Id (required)
-      --cols strings           Columns to be printed in the standard output (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
+  -i, --cdrom-id string        The unique Cdrom Id (required)
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for get
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output

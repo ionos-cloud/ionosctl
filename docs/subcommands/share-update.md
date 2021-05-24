@@ -10,6 +10,13 @@ description: Update a Resource Share from a Group
 ionosctl share update [flags]
 ```
 
+## Aliases
+
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update the permissions that a Group has for a specific Resource Share.
@@ -25,18 +32,19 @@ Required values to run command:
 
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings         Columns to be printed in the standard output (default [ShareId,EditPrivilege,SharePrivilege,Type])
+      --cols strings         Set of columns to be printed on output 
+                             Available columns: [ShareId EditPrivilege SharePrivilege Type] (default [ShareId,EditPrivilege,SharePrivilege,Type])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --edit-privilege       Update the group's permission to edit privileges on resource
-      --force                Force command to execute without user input
+  -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
   -h, --help                 help for update
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --resource-id string   The unique Resource Id (required)
+  -i, --resource-id string   The unique Resource Id (required)
       --share-privilege      Update the group's permission to share resource
-      --timeout int          Timeout option for Request for Resource Share update [seconds] (default 60)
-      --wait-for-request     Wait for the Request for Resource Share update to be executed
+  -t, --timeout int          Timeout option for Request for Resource Share update [seconds] (default 60)
+  -w, --wait-for-request     Wait for the Request for Resource Share update to be executed
 ```
 
 ## Examples

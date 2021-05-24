@@ -10,6 +10,18 @@ description: Delete a BackupUnit
 ionosctl backupunit delete [flags]
 ```
 
+## Aliases
+
+For `backupunit` command:
+```text
+[b backup]
+```
+
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.
@@ -22,15 +34,16 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --backupunit-id string   The unique BackupUnit Id (required)
-      --cols strings           Columns to be printed in the standard output (default [BackupUnitId,Name,Email,State])
+  -i, --backupunit-id string   The unique BackupUnit Id (required)
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for delete
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option for Request for BackupUnit deletion [seconds] (default 60)
-      --wait-for-request       Wait for the Request for BackupUnit deletion to be executed
+  -t, --timeout int            Timeout option for Request for BackupUnit deletion [seconds] (default 60)
+  -w, --wait-for-request       Wait for the Request for BackupUnit deletion to be executed
 ```
 
 ## Examples

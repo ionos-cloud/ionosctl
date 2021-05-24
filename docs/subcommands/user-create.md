@@ -10,6 +10,18 @@ description: Create a User under a particular contract
 ionosctl user create [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
@@ -18,27 +30,28 @@ Note: The password set here cannot be updated through the API currently. It is r
 
 Required values to run a command:
 
-* User First Name
-* User Last Name
-* User Email
-* User Password
+* First Name
+* Last Name
+* Email
+* Password
 
 ## Options
 
 ```text
-  -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings             Columns to be printed in the standard output (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
-  -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                    Force command to execute without user input
-  -h, --help                     help for create
-  -o, --output string            Desired output format [text|json] (default "text")
-  -q, --quiet                    Quiet output
-      --user-administrator       Assigns the User to have administrative rights
-      --user-email string        The email for the User (required)
-      --user-first-name string   The firstname for the User (required)
-      --user-force-secure        Indicates if secure (two-factor) authentication should be forced for the User
-      --user-last-name string    The lastname for the User (required)
-      --user-password string     The password for the User (must be at least 5 characters long) (required)
+      --admin               Assigns the User to have administrative rights
+  -u, --api-url string      Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings        Set of columns to be printed on output 
+                            Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active] (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -e, --email string        The email for the User (required)
+      --first-name string   The first name for the User (required)
+  -f, --force               Force command to execute without user input
+      --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User
+  -h, --help                help for create
+      --last-name string    The last name for the User (required)
+  -o, --output string       Desired output format [text|json] (default "text")
+  -p, --password string     The password for the User (must be at least 5 characters long) (required)
+  -q, --quiet               Quiet output
 ```
 
 ## Examples

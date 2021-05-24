@@ -10,6 +10,18 @@ description: List Firewall Rules
 ionosctl firewallrule list [flags]
 ```
 
+## Aliases
+
+For `firewallrule` command:
+```text
+[f fr firewall]
+```
+
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of Firewall Rules from a specified NIC from a Server.
@@ -24,10 +36,11 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output. Example: --cols "ResourceId,Name" (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [FirewallRuleId Name Protocol SourceMac SourceIP TargetIP PortRangeStart PortRangeEnd State] (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for list
       --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")

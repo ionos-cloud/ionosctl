@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 
@@ -22,13 +23,15 @@ func serverCdrom() *core.Command {
 	serverCdromCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "cdrom",
+			Aliases:          []string{"cd"},
 			Short:            "Server CD-ROM Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl server cdrom` + "`" + ` allow you to attach, get, list, detach CD-ROMs from Servers.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := serverCdromCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultImageCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allImageCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCdromCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = serverCdromCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allImageCols, cobra.ShellCompDirectiveNoFileComp
@@ -41,6 +44,7 @@ func serverCdrom() *core.Command {
 		Namespace: "server",
 		Resource:  "cdrom",
 		Verb:      "attach",
+		Aliases:   []string{"a"},
 		ShortDesc: "Attach a CD-ROM to a Server",
 		LongDesc: `Use this command to attach a CD-ROM to an existing Server.
 
@@ -60,7 +64,7 @@ Required values to run command:
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachCdrom.AddStringFlag(config.ArgCdromId, "", "", config.RequiredFlagCdromId)
+	attachCdrom.AddStringFlag(config.ArgCdromId, config.ArgIdShort, "", config.RequiredFlagCdromId)
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(config.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImagesCdromIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -68,8 +72,8 @@ Required values to run command:
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachCdrom.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachCdrom.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for CD-ROM attachment to be executed")
-	attachCdrom.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Cdrom attachment [seconds]")
+	attachCdrom.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for CD-ROM attachment to be executed")
+	attachCdrom.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Cdrom attachment [seconds]")
 
 	/*
 		List Cdroms Command
@@ -78,6 +82,7 @@ Required values to run command:
 		Namespace:  "server",
 		Resource:   "cdrom",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached CD-ROMs from a Server",
 		LongDesc:   "Use this command to retrieve a list of CD-ROMs attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listCdromServerExample,
@@ -101,6 +106,7 @@ Required values to run command:
 		Namespace:  "server",
 		Resource:   "cdrom",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a specific attached CD-ROM from a Server",
 		LongDesc:   "Use this command to retrieve information about an attached CD-ROM on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Cdrom Id",
 		Example:    getCdromServerExample,
@@ -116,7 +122,7 @@ Required values to run command:
 	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(getCdromCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	getCdromCmd.AddStringFlag(config.ArgCdromId, "", "", config.RequiredFlagCdromId)
+	getCdromCmd.AddStringFlag(config.ArgCdromId, config.ArgIdShort, "", config.RequiredFlagCdromId)
 	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(config.ArgCdromId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedCdromsIds(os.Stderr, viper.GetString(core.GetFlagName(getCdromCmd.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(getCdromCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -128,6 +134,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "cdrom",
 		Verb:      "detach",
+		Aliases:   []string{"d"},
 		ShortDesc: "Detach a CD-ROM from a Server",
 		LongDesc: `This will detach the CD-ROM from the Server.
 
@@ -147,7 +154,7 @@ Required values to run command:
 	_ = detachCdrom.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachCdrom.AddStringFlag(config.ArgCdromId, "", "", config.RequiredFlagCdromId)
+	detachCdrom.AddStringFlag(config.ArgCdromId, config.ArgIdShort, "", config.RequiredFlagCdromId)
 	_ = detachCdrom.Command.RegisterFlagCompletionFunc(config.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedCdromsIds(os.Stderr, viper.GetString(core.GetFlagName(detachCdrom.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(detachCdrom.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
@@ -156,8 +163,8 @@ Required values to run command:
 	_ = detachCdrom.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(detachCdrom.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachCdrom.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for CD-ROM detachment to be executed")
-	detachCdrom.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for CD-ROM detachment [seconds]")
+	detachCdrom.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for CD-ROM detachment to be executed")
+	detachCdrom.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for CD-ROM detachment [seconds]")
 
 	return serverCdromCmd
 }

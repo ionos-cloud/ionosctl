@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -21,13 +22,15 @@ func resource() *core.Command {
 	resourceCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "resource",
+			Aliases:          []string{"res"},
 			Short:            "Resource Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl resource` + "`" + ` allow you to list, get Resources.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultResourceCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultResourceCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultResourceCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
@@ -40,6 +43,7 @@ func resource() *core.Command {
 		Namespace:  "resource",
 		Resource:   "resource",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Resources",
 		LongDesc:   "Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.",
 		Example:    listResourcesExample,
@@ -55,18 +59,19 @@ func resource() *core.Command {
 		Namespace:  "resource",
 		Resource:   "resource",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get all Resources of a Type or a specific Resource Type",
-		LongDesc:   "Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Resource Type",
+		LongDesc:   "Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.\n\nRequired values to run command:\n\n* Type",
 		Example:    getResourceExample,
 		PreCmdRun:  PreRunResourceType,
 		CmdRun:     RunResourceGet,
 		InitClient: true,
 	})
-	getRsc.AddStringFlag(config.ArgResourceType, "", "", "The specific Type of Resources to retrieve information about")
-	_ = getRsc.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getRsc.AddStringFlag(config.ArgType, "", "", "The specific Type of Resources to retrieve information about")
+	_ = getRsc.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"datacenter", "snapshot", "image", "ipblock", "pcc", "backupunit", "k8s"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	getRsc.AddStringFlag(config.ArgResourceId, "", "", "The ID of the specific Resource to retrieve information about")
+	getRsc.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", "The ID of the specific Resource to retrieve information about")
 	_ = getRsc.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -75,7 +80,7 @@ func resource() *core.Command {
 }
 
 func PreRunResourceType(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgResourceType)
+	return core.CheckRequiredFlags(c.NS, config.ArgType)
 }
 
 func RunResourceList(c *core.CommandConfig) error {
@@ -89,7 +94,7 @@ func RunResourceList(c *core.CommandConfig) error {
 func RunResourceGet(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgResourceId)) {
 		resourceListed, _, err := c.Users().GetResourceByTypeAndId(
-			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType)),
+			viper.GetString(core.GetFlagName(c.NS, config.ArgType)),
 			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		)
 		if err != nil {
@@ -97,7 +102,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 		}
 		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
-		resourcesListed, _, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType)))
+		resourcesListed, _, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
 		if err != nil {
 			return err
 		}
@@ -112,13 +117,15 @@ func groupResource() *core.Command {
 	resourceCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "resource",
+			Aliases:          []string{"res"},
 			Short:            "Group Resource Operations",
 			Long:             `The sub-command of ` + "`" + `ionosctl group resource` + "`" + ` allows you to list Resources from a Group.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultResourceCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultResourceCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultResourceCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
@@ -131,6 +138,7 @@ func groupResource() *core.Command {
 		Namespace:  "group",
 		Resource:   "resource",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Resources from a Group",
 		LongDesc:   "Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    listGroupResourcesExample,

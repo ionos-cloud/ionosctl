@@ -10,6 +10,13 @@ description: Get a Resource Share from a Group
 ionosctl share get [flags]
 ```
 
+## Aliases
+
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve the details of a specific Shared Resource available to a specified Group.
@@ -23,14 +30,15 @@ Required values to run command:
 
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings         Columns to be printed in the standard output (default [ShareId,EditPrivilege,SharePrivilege,Type])
+      --cols strings         Set of columns to be printed on output 
+                             Available columns: [ShareId EditPrivilege SharePrivilege Type] (default [ShareId,EditPrivilege,SharePrivilege,Type])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                Force command to execute without user input
+  -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
   -h, --help                 help for get
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --resource-id string   The unique Resource Id (required)
+  -i, --resource-id string   The unique Resource Id (required)
 ```
 
 ## Examples

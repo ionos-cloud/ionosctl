@@ -19,6 +19,8 @@ type CommandBuilder struct {
 	ShortDesc string
 	// Long Description
 	LongDesc string
+	// Aliases
+	Aliases []string
 	// Example of Command run
 	Example string
 

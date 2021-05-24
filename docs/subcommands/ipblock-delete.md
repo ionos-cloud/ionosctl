@@ -10,6 +10,18 @@ description: Delete an IpBlock
 ionosctl ipblock delete [flags]
 ```
 
+## Aliases
+
+For `ipblock` command:
+```text
+[ipb]
+```
+
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a specified IpBlock.
@@ -24,15 +36,16 @@ Required values to run command:
 
 ```text
   -u, --api-url string      Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings        Columns to be printed in the standard output (default [IpBlockId,Name,Location,Size,Ips,State])
+      --cols strings        Set of columns to be printed on output 
+                            Available columns: [IpBlockId Name Location Size Ips State] (default [IpBlockId,Name,Location,Size,Ips,State])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force               Force command to execute without user input
+  -f, --force               Force command to execute without user input
   -h, --help                help for delete
-      --ipblock-id string   The unique IpBlock Id (required)
+  -i, --ipblock-id string   The unique IpBlock Id (required)
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-      --timeout int         Timeout option for Request for IpBlock deletion [seconds] (default 60)
-      --wait-for-request    Wait for the Request for IpBlock deletion to be executed
+  -t, --timeout int         Timeout option for Request for IpBlock deletion [seconds] (default 60)
+  -w, --wait-for-request    Wait for the Request for IpBlock deletion to be executed
 ```
 
 ## Examples

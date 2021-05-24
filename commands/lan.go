@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -24,6 +25,7 @@ func lan() *core.Command {
 	lanCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "lan",
+			Aliases:          []string{"l"},
 			Short:            "LAN Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl lan` + "`" + ` allow you to create, list, get, update, delete LANs.`,
 			TraverseChildren: true,
@@ -35,7 +37,8 @@ func lan() *core.Command {
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSlice(config.ArgCols, defaultLanCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultLanCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultLanCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(lanCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = lanCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLanCols, cobra.ShellCompDirectiveNoFileComp
@@ -48,6 +51,7 @@ func lan() *core.Command {
 		Namespace:  "lan",
 		Resource:   "lan",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List LANs",
 		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listLanExample,
@@ -63,6 +67,7 @@ func lan() *core.Command {
 		Namespace:  "lan",
 		Resource:   "lan",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a LAN",
 		LongDesc:   "Use this command to retrieve information of a given LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		Example:    getLanExample,
@@ -70,7 +75,7 @@ func lan() *core.Command {
 		CmdRun:     RunLanGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	get.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.RequiredFlagLanId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -82,6 +87,7 @@ func lan() *core.Command {
 		Namespace: "lan",
 		Resource:  "lan",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a LAN",
 		LongDesc: `Use this command to create a new LAN within a Virtual Data Center on your account. The name, the public option and the Private Cross-Connect Id can be set.
 
@@ -97,14 +103,14 @@ Required values to run command:
 		CmdRun:     RunLanCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
-	create.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Indicates if the LAN faces the public Internet (true) or not (false)")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name of the LAN")
+	create.AddBoolFlag(config.ArgPublic, "", config.DefaultPublic, "Indicates if the LAN faces the public Internet (true) or not (false)")
 	create.AddStringFlag(config.ArgPccId, "", "", "The unique Id of the Private Cross-Connect the LAN will connect to")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for LAN creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for LAN creation [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for LAN creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN creation [seconds]")
 
 	/*
 		Update Command
@@ -113,6 +119,7 @@ Required values to run command:
 		Namespace: "lan",
 		Resource:  "lan",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a LAN",
 		LongDesc: `Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Private Cross-Connect.
 
@@ -127,18 +134,18 @@ Required values to run command:
 		CmdRun:     RunLanUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	update.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.RequiredFlagLanId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgLanName, "", "", "The name of the LAN")
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name of the LAN")
 	update.AddStringFlag(config.ArgPccId, "", "", "The unique Id of the Private Cross-Connect the LAN will connect to")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgLanPublic, "", config.DefaultLanPublic, "Public option for LAN")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for LAN update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for LAN update [seconds]")
+	update.AddBoolFlag(config.ArgPublic, "", config.DefaultPublic, "Public option for LAN")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for LAN update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN update [seconds]")
 
 	/*
 		Delete Command
@@ -147,6 +154,7 @@ Required values to run command:
 		Namespace: "lan",
 		Resource:  "lan",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a LAN",
 		LongDesc: `Use this command to delete a specified LAN from a Virtual Data Center.
 
@@ -161,12 +169,12 @@ Required values to run command:
 		CmdRun:     RunLanDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	deleteCmd.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.RequiredFlagLanId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for LAN deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for LAN deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
 
 	return lanCmd
 }
@@ -209,8 +217,8 @@ func RunLanGet(c *core.CommandConfig) error {
 }
 
 func RunLanCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, config.ArgLanName))
-	public := viper.GetBool(core.GetFlagName(c.NS, config.ArgLanPublic))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	public := viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic))
 	properties := ionoscloud.LanPropertiesPost{
 		Name:   &name,
 		Public: &public,
@@ -244,11 +252,11 @@ func RunLanCreate(c *core.CommandConfig) error {
 
 func RunLanUpdate(c *core.CommandConfig) error {
 	input := resources.LanProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgLanName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanPublic)) {
-		input.SetPublic(viper.GetBool(core.GetFlagName(c.NS, config.ArgLanPublic)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPublic)) {
+		input.SetPublic(viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPccId)) {
 		input.SetPcc(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))

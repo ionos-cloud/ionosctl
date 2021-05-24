@@ -10,6 +10,18 @@ description: List IP Failovers groups from a LAN
 ionosctl ipfailover list [flags]
 ```
 
+## Aliases
+
+For `ipfailover` command:
+```text
+[ipf]
+```
+
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of IP Failovers groups from a LAN.
@@ -23,10 +35,11 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [NicId,Ip])
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [NicId Ip] (default [NicId,Ip])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for list
       --lan-id string          The unique LAN Id (required)
   -o, --output string          Desired output format [text|json] (default "text")

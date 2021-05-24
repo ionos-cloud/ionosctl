@@ -10,6 +10,13 @@ description: List Labels from Resources
 ionosctl label list [flags]
 ```
 
+## Aliases
+
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to list all Labels from all Resources under your account. If you want to list all Labels from a specific Resource, use `--resource-type` option together with the Resource Id: `--datacenter-id`, `--server-id`, `--volume-id`.
@@ -18,10 +25,11 @@ Use this command to list all Labels from all Resources under your account. If yo
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [Key,Value])
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [Key Value] (default [Key,Value])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for list
       --ipblock-id string      The unique IpBlock Id
   -o, --output string          Desired output format [text|json] (default "text")

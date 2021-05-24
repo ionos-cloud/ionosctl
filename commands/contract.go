@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 
@@ -22,13 +23,15 @@ func contract() *core.Command {
 	contractCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "contract",
+			Aliases:          []string{"c"},
 			Short:            "Contract Resources Operations",
 			Long:             `The sub-command of ` + "`" + `ionosctl contract` + "`" + ` allows you to see information about Contract Resources for your account.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := contractCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultContractCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultContractCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allContractCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(contractCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = contractCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allContractCols, cobra.ShellCompDirectiveNoFileComp
@@ -41,6 +44,7 @@ func contract() *core.Command {
 		Namespace:  "contract",
 		Resource:   "contract",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get information about the Contract Resources on your account",
 		LongDesc:   "Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
 		Example:    getContractExample,

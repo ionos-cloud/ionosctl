@@ -23,13 +23,15 @@ func server() *core.Command {
 	serverCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "server",
+			Aliases:          []string{"s", "svr"},
 			Short:            "Server Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl server` + "`" + ` allow you to create, list, get, update, delete, start, stop, reboot Servers.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := serverCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultServerCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultServerCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultServerCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultServerCols, cobra.ShellCompDirectiveNoFileComp
@@ -42,6 +44,7 @@ func server() *core.Command {
 		Namespace:  "server",
 		Resource:   "server",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Servers",
 		LongDesc:   "Use this command to list Servers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listServerExample,
@@ -61,6 +64,7 @@ func server() *core.Command {
 		Namespace:  "server",
 		Resource:   "server",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Server",
 		LongDesc:   "Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    getServerExample,
@@ -72,12 +76,12 @@ func server() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	get.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for specified Server to be in AVAILABLE state")
-	get.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for waiting for Server to be in AVAILABLE state [seconds]")
+	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified Server to be in AVAILABLE state")
+	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for waiting for Server to be in AVAILABLE state [seconds]")
 
 	/*
 		Create Command
@@ -86,6 +90,7 @@ func server() *core.Command {
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Server",
 		LongDesc: `Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
@@ -103,20 +108,20 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
-	create.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
-	create.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
-	create.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family for the Server")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgServerCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Server")
+	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "Cores option of the Server")
+	create.AddIntFlag(config.ArgRamSize, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
+	create.AddStringFlag(config.ArgCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family for the Server")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgServerZone, "", "AUTO", "Availability zone of the Server")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgServerZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgAvailabilityZone, config.ArgAvailabilityZoneShort, "AUTO", "Availability zone of the Server")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server creation to be executed")
-	create.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for new Server to be in AVAILABLE state")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server creation to be executed")
+	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for new Server to be in AVAILABLE state")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]")
 
 	/*
 		Update Command
@@ -125,6 +130,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Server",
 		LongDesc: `Use this command to update a specified Server from a Virtual Data Center.
 
@@ -143,24 +149,24 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	update.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgServerName, "", "", "Name of the Server")
-	update.AddStringFlag(config.ArgServerCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Server")
+	update.AddStringFlag(config.ArgCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgServerZone, "", "", "Availability zone of the Server")
-	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(config.ArgAvailabilityZone, config.ArgAvailabilityZoneShort, "", "Availability zone of the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddIntFlag(config.ArgServerCores, "", config.DefaultServerCores, "Cores option of the Server")
-	update.AddIntFlag(config.ArgServerRAM, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server update to be executed")
-	update.AddBoolFlag(config.ArgWaitForState, "", config.DefaultWait, "Wait for the updated Server to be in AVAILABLE state")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds]")
+	update.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "Cores option of the Server")
+	update.AddIntFlag(config.ArgRamSize, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server update to be executed")
+	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the updated Server to be in AVAILABLE state")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds]")
 
 	/*
 		Delete Command
@@ -169,6 +175,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Server",
 		LongDesc: `Use this command to delete a specified Server from a Virtual Data Center.
 
@@ -189,12 +196,12 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	deleteCmd.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
 
 	/*
 		Start Command
@@ -203,6 +210,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "start",
+		Aliases:   []string{"on"},
 		ShortDesc: "Start a Server",
 		LongDesc: `Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
 
@@ -221,12 +229,12 @@ Required values to run command:
 	_ = start.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	start.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	start.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
 	_ = start.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(start.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	start.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server start to be executed")
-	start.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server start [seconds]")
+	start.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server start to be executed")
+	start.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server start [seconds]")
 
 	/*
 		Stop Command
@@ -235,6 +243,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "stop",
+		Aliases:   []string{"off"},
 		ShortDesc: "Stop a Server",
 		LongDesc: `Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
@@ -253,12 +262,12 @@ Required values to run command:
 	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	stop.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	stop.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
 	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(stop.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	stop.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server stop to be executed")
-	stop.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server stop [seconds]")
+	stop.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server stop to be executed")
+	stop.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server stop [seconds]")
 
 	/*
 		Reboot Command
@@ -267,6 +276,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "reboot",
+		Aliases:   []string{"r"},
 		ShortDesc: "Force a hard reboot of a Server",
 		LongDesc: `Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 
@@ -285,12 +295,12 @@ Required values to run command:
 	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	reboot.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	reboot.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
 	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(reboot.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	reboot.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Server reboot to be executed")
-	reboot.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
+	reboot.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server reboot to be executed")
+	reboot.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
 
 	serverCmd.AddCommand(serverVolume())
 	serverCmd.AddCommand(serverCdrom())
@@ -326,12 +336,12 @@ func RunServerGet(c *core.CommandConfig) error {
 
 func RunServerCreate(c *core.CommandConfig) error {
 	svr, resp, err := c.Servers().Create(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerName)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerCPUFamily)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerZone)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerCores)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerRAM)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)),
+		viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)),
+		viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize)),
 	)
 	if err != nil {
 		return err
@@ -358,20 +368,20 @@ func RunServerCreate(c *core.CommandConfig) error {
 
 func RunServerUpdate(c *core.CommandConfig) error {
 	input := resources.ServerProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgServerName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerCPUFamily)) {
-		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgServerCPUFamily)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCPUFamily)) {
+		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerZone)) {
-		input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgServerZone)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgAvailabilityZone)) {
+		input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerCores)) {
-		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerCores)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
+		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgServerRAM)) {
-		input.SetRam(viper.GetInt32(core.GetFlagName(c.NS, config.ArgServerRAM)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamSize)) {
+		input.SetRam(viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize)))
 	}
 	svr, resp, err := c.Servers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),

@@ -10,6 +10,18 @@ description: Force a hard reboot of a Server
 ionosctl server reboot [flags]
 ```
 
+## Aliases
+
+For `server` command:
+```text
+[s svr]
+```
+
+For `reboot` command:
+```text
+[r]
+```
+
 ## Description
 
 Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
@@ -25,16 +37,17 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for reboot
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --server-id string       The unique Server Id (required)
-      --timeout int            Timeout option for Request for Server reboot [seconds] (default 60)
-      --wait-for-request       Wait for the Request for Server reboot to be executed
+  -i, --server-id string       The unique Server Id (required)
+  -t, --timeout int            Timeout option for Request for Server reboot [seconds] (default 60)
+  -w, --wait-for-request       Wait for the Request for Server reboot to be executed
 ```
 
 ## Examples

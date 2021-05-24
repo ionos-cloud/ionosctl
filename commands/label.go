@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/fatih/structs"
@@ -25,7 +26,8 @@ func label() *core.Command {
 		},
 	}
 	globalFlags := labelCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultLabelResourceCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultLabelResourceCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultLabelResourceCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLabelResourceCols, cobra.ShellCompDirectiveNoFileComp
@@ -68,6 +70,7 @@ func label() *core.Command {
 		Namespace:  "label",
 		Resource:   "label",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Labels from Resources",
 		LongDesc:   "Use this command to list all Labels from all Resources under your account. If you want to list all Labels from a specific Resource, use `--resource-type` option together with the Resource Id: `--datacenter-id`, `--server-id`, `--volume-id`.",
 		Example:    listLabelsExample,
@@ -83,6 +86,7 @@ func label() *core.Command {
 		Namespace:  "label",
 		Resource:   "label",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Label",
 		LongDesc:   "Use this command to get information about a specified Label from a specified Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key",
 		Example:    getLabelExample,
@@ -115,6 +119,7 @@ func label() *core.Command {
 		Namespace:  "label",
 		Resource:   "label",
 		Verb:       "add",
+		Aliases:    []string{"a"},
 		ShortDesc:  "Add a Label to a Resource",
 		LongDesc:   "Use this command to add a Label to a specific Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key\n* Label Value",
 		Example:    addLabelExample,
@@ -132,6 +137,7 @@ func label() *core.Command {
 		Namespace:  "label",
 		Resource:   "label",
 		Verb:       "remove",
+		Aliases:    []string{"r"},
 		ShortDesc:  "Remove a Label from a Resource",
 		LongDesc:   "Use this command to remove a Label from a Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key",
 		Example:    removeLabelExample,

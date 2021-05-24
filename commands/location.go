@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -22,13 +23,15 @@ func location() *core.Command {
 	locationCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "location",
+			Aliases:          []string{"loc"},
 			Short:            "Location Operations",
 			Long:             `The sub-command of ` + "`" + `ionosctl location` + "`" + ` allows you to see information about locations available to create objects.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := locationCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultLocationCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultLocationCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allLocationCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = locationCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLocationCols, cobra.ShellCompDirectiveNoFileComp
@@ -41,6 +44,7 @@ func location() *core.Command {
 		Namespace:  "location",
 		Resource:   "location",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Locations",
 		LongDesc:   "Use this command to get a list of available locations to create objects on.",
 		Example:    listLocationExample,
@@ -56,6 +60,7 @@ func location() *core.Command {
 		Namespace:  "location",
 		Resource:   "location",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Location",
 		LongDesc:   "Use this command to get information about a specific Location from a Region.\n\nRequired values to run command:\n\n* Location Id",
 		Example:    getLocationExample,
@@ -63,7 +68,7 @@ func location() *core.Command {
 		CmdRun:     RunLocationGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgLocationId, "", "", config.RequiredFlagLocationId)
+	get.AddStringFlag(config.ArgLocationId, config.ArgIdShort, "", config.RequiredFlagLocationId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

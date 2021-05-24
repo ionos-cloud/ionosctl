@@ -10,6 +10,18 @@ description: Delete a Volume
 ionosctl volume delete [flags]
 ```
 
+## Aliases
+
+For `volume` command:
+```text
+[v vol]
+```
+
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!
@@ -25,16 +37,17 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId SshKeys ImageAlias DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for delete
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --timeout int            Timeout option for Request for Volume deletion [seconds] (default 60)
-      --volume-id string       The unique Volume Id (required)
-      --wait-for-request       Wait for the Request for Volume deletion to be executed
+  -t, --timeout int            Timeout option for Request for Volume deletion [seconds] (default 60)
+  -i, --volume-id string       The unique Volume Id (required)
+  -w, --wait-for-request       Wait for the Request for Volume deletion to be executed
 ```
 
 ## Examples

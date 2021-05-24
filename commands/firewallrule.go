@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -24,6 +25,7 @@ func firewallrule() *core.Command {
 	firewallRuleCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "firewallrule",
+			Aliases:          []string{"f", "fr", "firewall"},
 			Short:            "Firewall Rule Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl firewallrule` + "`" + ` allow you to create, list, get, update, delete Firewall Rules.`,
 			TraverseChildren: true,
@@ -48,7 +50,8 @@ func firewallrule() *core.Command {
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSlice(config.ArgCols, defaultFirewallRuleCols, "Columns to be printed in the standard output. Example: --cols \"ResourceId,Name\"")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultFirewallRuleCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allFirewallRuleCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = firewallRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allFirewallRuleCols, cobra.ShellCompDirectiveNoFileComp
@@ -61,6 +64,7 @@ func firewallrule() *core.Command {
 		Namespace:  "firewallrule",
 		Resource:   "firewallrule",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Firewall Rules",
 		LongDesc:   "Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id",
 		Example:    listFirewallRuleExample,
@@ -76,6 +80,7 @@ func firewallrule() *core.Command {
 		Namespace:  "firewallrule",
 		Resource:   "firewallrule",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Firewall Rule",
 		LongDesc:   "Use this command to retrieve information of a specified Firewall Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id\n* FirewallRule Id",
 		Example:    getFirewallRuleExample,
@@ -83,7 +88,7 @@ func firewallrule() *core.Command {
 		CmdRun:     RunFirewallRuleGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
+	get.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.RequiredFlagFirewallRuleId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
@@ -98,6 +103,7 @@ func firewallrule() *core.Command {
 		Namespace: "firewallrule",
 		Resource:  "firewallrule",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Firewall Rule",
 		LongDesc: `Use this command to create/add a new Firewall Rule to the specified NIC. All Firewall Rules must be associated with a NIC.
 
@@ -110,23 +116,23 @@ Required values to run command:
 * Data Center Id
 * Server Id
 * Nic Id 
-* Firewall Rule Protocol`,
+* Protocol`,
 		Example:    createFirewallRuleExample,
 		PreCmdRun:  PreRunGlobalDcServerNicIdsFRuleProtocol,
 		CmdRun:     RunFirewallRuleCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgFirewallRuleName, "", "", "The name for the Firewall Rule")
-	create.AddStringFlag(config.ArgFirewallRuleProtocol, "", "", "The Protocol for Firewall Rule: TCP, UDP, ICMP, ANY "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgFirewallRuleSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses.")
-	create.AddStringFlag(config.ArgFirewallRuleSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.")
-	create.AddStringFlag(config.ArgFirewallRuleTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.")
-	create.AddIntFlag(config.ArgFirewallRuleIcmpType, "", 0, "Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types.")
-	create.AddIntFlag(config.ArgFirewallRuleIcmpCode, "", 0, "Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.")
-	create.AddIntFlag(config.ArgFirewallRulePortRangeStart, "", 1, "Define the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
-	create.AddIntFlag(config.ArgFirewallRulePortRangeStop, "", 1, "Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Firewall Rule creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule creation [seconds]")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Firewall Rule")
+	create.AddStringFlag(config.ArgProtocol, "", "", "The Protocol for Firewall Rule: TCP, UDP, ICMP, ANY "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses.")
+	create.AddStringFlag(config.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.")
+	create.AddStringFlag(config.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.")
+	create.AddIntFlag(config.ArgIcmpType, "", 0, "Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types.")
+	create.AddIntFlag(config.ArgIcmpCode, "", 0, "Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.")
+	create.AddIntFlag(config.ArgPortRangeStart, "", 1, "Define the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
+	create.AddIntFlag(config.ArgPortRangeStop, "", 1, "Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule creation [seconds]")
 
 	/*
 		Update Command
@@ -135,6 +141,7 @@ Required values to run command:
 		Namespace: "firewallrule",
 		Resource:  "firewallrule",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a FirewallRule",
 		LongDesc: `Use this command to update a specified Firewall Rule.
 
@@ -151,23 +158,23 @@ Required values to run command:
 		CmdRun:     RunFirewallRuleUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgFirewallRuleName, "", "", "The name for the Firewall Rule")
-	update.AddStringFlag(config.ArgFirewallRuleSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses.")
-	update.AddStringFlag(config.ArgFirewallRuleSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.")
-	update.AddStringFlag(config.ArgFirewallRuleTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.")
-	update.AddIntFlag(config.ArgFirewallRuleIcmpType, "", 0, "Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types.")
-	update.AddIntFlag(config.ArgFirewallRuleIcmpCode, "", 0, "Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.")
-	update.AddIntFlag(config.ArgFirewallRulePortRangeStart, "", 1, "Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
-	update.AddIntFlag(config.ArgFirewallRulePortRangeStop, "", 1, "Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
-	update.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Firewall Rule")
+	update.AddStringFlag(config.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses.")
+	update.AddStringFlag(config.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.")
+	update.AddStringFlag(config.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.")
+	update.AddIntFlag(config.ArgIcmpType, "", 0, "Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types.")
+	update.AddIntFlag(config.ArgIcmpCode, "", 0, "Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.")
+	update.AddIntFlag(config.ArgPortRangeStart, "", 1, "Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
+	update.AddIntFlag(config.ArgPortRangeStop, "", 1, "Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
+	update.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.RequiredFlagFirewallRuleId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Firewall Rule update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule update [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule update [seconds]")
 
 	/*
 		Delete Command
@@ -176,6 +183,7 @@ Required values to run command:
 		Namespace: "firewallrule",
 		Resource:  "firewallrule",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a FirewallRule",
 		LongDesc: `Use this command to delete a specified Firewall Rule from a Virtual Data Center.
 
@@ -192,15 +200,15 @@ Required values to run command:
 		CmdRun:     RunFirewallRuleDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgFirewallRuleId, "", "", config.RequiredFlagFirewallRuleId)
+	deleteCmd.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.RequiredFlagFirewallRuleId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgDataCenterId)),
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgServerId)),
 			viper.GetString(core.GetGlobalFlagName(firewallRuleCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for Firewall Rule deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
 
 	return firewallRuleCmd
 }
@@ -214,7 +222,7 @@ func PreRunGlobalDcServerNicIdsFRuleProtocol(c *core.PreCommandConfig) error {
 	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)
 	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgFirewallRuleProtocol); err != nil {
+	if err := core.CheckRequiredFlags(c.NS, config.ArgProtocol); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if result != nil {
@@ -326,32 +334,32 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 // Get Firewall Rule Properties set used for create and update commands
 func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleProperties {
 	properties := resources.FirewallRuleProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallRuleName)) {
-		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallRuleProtocol)) {
-		properties.SetProtocol(viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleProtocol)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgProtocol)) {
+		properties.SetProtocol(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallRuleSourceIp)) {
-		properties.SetSourceIp(viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleSourceIp)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSourceIp)) {
+		properties.SetSourceIp(viper.GetString(core.GetFlagName(c.NS, config.ArgSourceIp)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallRuleSourceMac)) {
-		properties.SetSourceMac(viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleSourceMac)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSourceMac)) {
+		properties.SetSourceMac(viper.GetString(core.GetFlagName(c.NS, config.ArgSourceMac)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallRuleTargetIp)) {
-		properties.SetTargetIp(viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleTargetIp)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgTargetIp)) {
+		properties.SetTargetIp(viper.GetString(core.GetFlagName(c.NS, config.ArgTargetIp)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallRuleIcmpCode)) {
-		properties.SetIcmpCode(viper.GetInt32(core.GetFlagName(c.NS, config.ArgFirewallRuleIcmpCode)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIcmpCode)) {
+		properties.SetIcmpCode(viper.GetInt32(core.GetFlagName(c.NS, config.ArgIcmpCode)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallRuleIcmpType)) {
-		properties.SetIcmpType(viper.GetInt32(core.GetFlagName(c.NS, config.ArgFirewallRuleIcmpType)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIcmpType)) {
+		properties.SetIcmpType(viper.GetInt32(core.GetFlagName(c.NS, config.ArgIcmpType)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallRulePortRangeStart)) {
-		properties.SetPortRangeStart(viper.GetInt32(core.GetFlagName(c.NS, config.ArgFirewallRulePortRangeStart)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPortRangeStart)) {
+		properties.SetPortRangeStart(viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeStart)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallRulePortRangeStop)) {
-		properties.SetPortRangeEnd(viper.GetInt32(core.GetFlagName(c.NS, config.ArgFirewallRulePortRangeStop)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPortRangeStop)) {
+		properties.SetPortRangeEnd(viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeStop)))
 	}
 	return properties
 }

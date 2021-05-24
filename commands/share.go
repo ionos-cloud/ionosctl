@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -29,7 +30,8 @@ func share() *core.Command {
 		},
 	}
 	globalFlags := shareCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultGroupShareCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupShareCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultGroupShareCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(shareCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = shareCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultGroupShareCols, cobra.ShellCompDirectiveNoFileComp
@@ -42,6 +44,7 @@ func share() *core.Command {
 		Namespace:  "share",
 		Resource:   "share",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Resources Shares through a Group",
 		LongDesc:   "Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    listSharesExample,
@@ -61,6 +64,7 @@ func share() *core.Command {
 		Namespace:  "share",
 		Resource:   "share",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Resource Share from a Group",
 		LongDesc:   "Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
 		Example:    getShareExample,
@@ -72,7 +76,7 @@ func share() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
+	get.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -84,6 +88,7 @@ func share() *core.Command {
 		Namespace: "share",
 		Resource:  "share",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Resource Share for a Group",
 		LongDesc: `Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.
 
@@ -100,14 +105,14 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
+	create.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgEditPrivilege, "", false, "Set the group's permission to edit privileges on resource")
 	create.AddBoolFlag(config.ArgSharePrivilege, "", false, "Set the group's permission to share resource")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Resource share to executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Resource to be shared through a Group [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Resource share to executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Resource to be shared through a Group [seconds]")
 
 	/*
 		Update Command
@@ -116,6 +121,7 @@ Required values to run a command:
 		Namespace: "share",
 		Resource:  "share",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Resource Share from a Group",
 		LongDesc: `Use this command to update the permissions that a Group has for a specific Resource Share.
 
@@ -134,14 +140,14 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
+	update.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgEditPrivilege, "", false, "Update the group's permission to edit privileges on resource")
 	update.AddBoolFlag(config.ArgSharePrivilege, "", false, "Update the group's permission to share resource")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Resource Share update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share update [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Resource Share update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share update [seconds]")
 
 	/*
 		Delete Command
@@ -150,6 +156,7 @@ Required values to run command:
 		Namespace: "share",
 		Resource:  "share",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Resource Share from a Group",
 		LongDesc: `This command deletes a Resource Share from a specified Group.
 
@@ -166,12 +173,12 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgResourceId, "", "", config.RequiredFlagResourceId)
+	deleteCmd.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Resource Share deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Resource Share deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share deletion [seconds]")
 
 	return shareCmd
 }

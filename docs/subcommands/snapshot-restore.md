@@ -10,6 +10,18 @@ description: Restore a Snapshot onto a Volume
 ionosctl snapshot restore [flags]
 ```
 
+## Aliases
+
+For `snapshot` command:
+```text
+[ss snap]
+```
+
+For `restore` command:
+```text
+[r]
+```
+
 ## Description
 
 Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.
@@ -24,17 +36,18 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [SnapshotId,Name,LicenceType,Size,State])
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [SnapshotId Name LicenceType Size State] (default [SnapshotId,Name,LicenceType,Size,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for restore
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --snapshot-id string     The unique Snapshot Id (required)
-      --timeout int            Timeout option for Request for Snapshot restore [seconds] (default 60)
+  -i, --snapshot-id string     The unique Snapshot Id (required)
+  -t, --timeout int            Timeout option for Request for Snapshot restore [seconds] (default 60)
       --volume-id string       The unique Volume Id (required)
-      --wait-for-request       Wait for the Request for Snapshot restore to be executed
+  -w, --wait-for-request       Wait for the Request for Snapshot restore to be executed
 ```
 
 ## Examples

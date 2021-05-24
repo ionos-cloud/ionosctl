@@ -10,6 +10,18 @@ description: Update a NIC
 ionosctl nic update [flags]
 ```
 
+## Aliases
+
+For `nic` command:
+```text
+[n]
+```
+
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update the configuration of a specified NIC. Some restrictions are in place: The primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer. You can also add additional reserved, public IPs to the NIC.
@@ -29,21 +41,22 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings           Columns to be printed in the standard output (default [NicId,Name,Dhcp,LanId,Ips,State])
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [NicId Name Dhcp LanId Ips State FirewallActive Mac] (default [NicId,Name,Dhcp,LanId,Ips,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --force                  Force command to execute without user input
+      --dhcp                   Boolean value that indicates if the NIC is using DHCP (true) or not (false) (default true)
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for update
+      --ips strings            IPs assigned to the NIC
       --lan-id int             The LAN ID the NIC sits on (default 1)
-      --nic-dhcp               Boolean value that indicates if the NIC is using DHCP (true) or not (false) (default true)
-      --nic-id string          The unique NIC Id (required)
-      --nic-ips strings        IPs assigned to the NIC
-      --nic-name string        The name of the NIC
+  -n, --name string            The name of the NIC
+  -i, --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
-      --timeout int            Timeout option for Request for NIC update [seconds] (default 60)
-      --wait-for-request       Wait for the Request for NIC update to be executed
+  -t, --timeout int            Timeout option for Request for NIC update [seconds] (default 60)
+  -w, --wait-for-request       Wait for the Request for NIC update to be executed
 ```
 
 ## Examples

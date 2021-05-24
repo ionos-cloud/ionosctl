@@ -63,6 +63,8 @@ Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Mod
 
 ### Authenticating with Ionos Cloud
 
+* Using `login` command
+
 Before using `ionosctl` to perform any operations, you will need to set your credentials for Ionos Cloud account:
 
 ```text
@@ -78,7 +80,7 @@ username
 Enter your password:
 ```
 
-After providing credentials, you will be notified if you logged in successfully or not:
+You can also use token for authentication. After providing credentials, you will be notified if you logged in successfully or not:
 
 ```text
 Status: Authentication successful!
@@ -98,7 +100,9 @@ After a successful authentication, you will no longer need to provide credential
 
 If you want to use a different configuration file, use `--config` option.
 
-Note: `ionosctl` also supports authentication with token.
+* Using environment variables
+
+For authentication with IONOS Cloud, you can also set the environment variables: `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`. 
 
 ### Enabling Shell Auto-Completion
 
@@ -206,15 +210,49 @@ You will need to start a new PowerShell for this setup to take effect.
 
 Note: PowerShell completions require version 5.0 or above, which comes with Windows 10 and can be downloaded separately for Windows 7 or 8.1.
 
-### Output configuration
+### Output formatting
 
-You can control the output format with the `--output` option. `ionosctl` supports JSON format for all commands output by specifying `--output=json`.
+* Use the `--output` option
 
-To redirect all the output to `dev/null`, except for error messages, you can use `--quiet` option.
+You can control the output format with the `--output` or `-o` option. IonosCTL supports JSON format for all commands output by specifying `--output=json`. By default, the output is set to human-readable format.
 
-For `list` and `get` commands, you can also specify which information should be printed using `--cols` option.
+* Use the `--quiet` option
 
-For `delete`,`stop`,`detach` commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` flag.
+To redirect all the output to `dev/null`, except for error messages, you can use `--quiet` or `-q` option.
+
+* Use the `--force` option
+
+For deletion/removal commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` or `-f` option.
+
+* Use the `--cols` option
+
+To obtain only a specific field/column, or a collection of columns on output, you can use the `--cols` option with the list of desired fields.
+
+For example, if you want to print only the Datacenter ID and the Location for your existing Virtual Data Centers, you can use the following command:
+
+```text
+ionosctl datacenter list --cols "DatacenterId,Location"
+DatacenterId     Location
+DATACENTER_ID1   us/ewr
+DATACENTER_ID2   us/las
+DATACENTER_ID3   us/las
+```
+
+Note: When using `TAB` in autocompletion, on `--cols` option on a specific resource, the available columns for that resource will be displayed.
+
+### Help Information
+
+You can see all available options for each command, use:
+
+```text
+ionosctl help [command]
+
+ionosctl help [command] [command]
+
+ionosctl [command] --help
+
+ionosctl [command] -h
+```
 
 ### Testing
 
@@ -224,7 +262,7 @@ make test
 
 ### Examples
 
-For more information about each available command, including examples, use `ionosctl [command] --help` or `ionosctl help [command]` or see the [full reference documentation](subcommands).
+For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h`  or `ionosctl help [command]` or see the [full reference documentation](subcommands) to see examples.
 
 ### Uninstalling `ionosctl`
 

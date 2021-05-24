@@ -13,6 +13,7 @@ func k8sVersion() *core.Command {
 	k8sCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "version",
+			Aliases:          []string{"v"},
 			Short:            "Kubernetes Version Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl k8s version` + "`" + ` allow you to get information about available Kubernetes versions.`,
 			TraverseChildren: true,
@@ -26,6 +27,7 @@ func k8sVersion() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "version",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes Versions",
 		LongDesc:   "Use this command to retrieve all available Kubernetes versions.",
 		Example:    listK8sVersionsExample,
@@ -41,6 +43,7 @@ func k8sVersion() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "version",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get Kubernetes Default Version",
 		LongDesc:   "Use this command to retrieve the current default Kubernetes version for Clusters and NodePools.",
 		Example:    getK8sVersionExample,

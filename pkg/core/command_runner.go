@@ -19,6 +19,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		Use:     info.Verb,
 		Short:   info.ShortDesc,
 		Long:    info.LongDesc,
+		Aliases: info.Aliases,
 		Example: info.Example,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			p := getPrinter()

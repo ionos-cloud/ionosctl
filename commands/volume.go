@@ -25,8 +25,9 @@ func volume() *core.Command {
 	volumeCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "volume",
+			Aliases:          []string{"v", "vol"},
 			Short:            "Volume Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command ` + "`" + `ionosctl server attach-volume` + "`" + `.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl volume` + "`" + ` manage your block storage volumes by creating, updating, getting specific information, deleting Volumes. To attach a Volume to a Server, use the Server command ` + "`" + `ionosctl server volume attach` + "`" + `.`,
 			TraverseChildren: true,
 		},
 	}
@@ -36,7 +37,8 @@ func volume() *core.Command {
 	_ = volumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSlice(config.ArgCols, defaultVolumeCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultVolumeCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allVolumeCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = volumeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
@@ -49,6 +51,7 @@ func volume() *core.Command {
 		Namespace:  "volume",
 		Resource:   "volume",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Volumes",
 		LongDesc:   "Use this command to list all Volumes from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listVolumeExample,
@@ -64,6 +67,7 @@ func volume() *core.Command {
 		Namespace:  "volume",
 		Resource:   "volume",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Volume",
 		LongDesc:   "Use this command to retrieve information about a Volume using its ID.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id",
 		Example:    getVolumeExample,
@@ -71,7 +75,7 @@ func volume() *core.Command {
 		CmdRun:     RunVolumeGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	get.AddStringFlag(config.ArgVolumeId, config.ArgIdShort, "", config.RequiredFlagVolumeId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -83,6 +87,7 @@ func volume() *core.Command {
 		Namespace: "volume",
 		Resource:  "volume",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Volume",
 		LongDesc: `Use this command to create a Volume on your account. Creates a volume within the Data Center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type, availability zone, image and other properties for the object.
 
@@ -99,22 +104,22 @@ Required values to run command:
 		CmdRun:     RunVolumeCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgVolumeName, "", "", "Name of the Volume")
-	create.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
-	create.AddStringFlag(config.ArgVolumeBus, "", "VIRTIO", "Bus for the Volume")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Volume")
+	create.AddFloat32Flag(config.ArgSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
+	create.AddStringFlag(config.ArgBus, "", "VIRTIO", "Bus for the Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Volume")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgVolumeType, "", "HDD", "Type of the Volume")
+	create.AddStringFlag(config.ArgType, "", "HDD", "Type of the Volume")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD", "SSD Standard", "SSD Premium"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgVolumeZone, "", "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
-	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgAvailabilityZone, config.ArgAvailabilityZoneShort, "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2", "ZONE_3"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgBackupUnitId, "", "", "The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property")
@@ -126,7 +131,7 @@ Required values to run command:
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
-	create.AddStringFlag(config.ArgImagePassword, "", "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringFlag(config.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
 	create.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
 	create.AddBoolFlag(config.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
@@ -135,8 +140,8 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
 	create.AddBoolFlag(config.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
 	create.AddStringSliceFlag(config.ArgSshKeys, "", []string{""}, "SSH Keys of the Volume")
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume creation [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume creation [seconds]")
 
 	/*
 		Update Command
@@ -145,6 +150,7 @@ Required values to run command:
 		Namespace: "volume",
 		Resource:  "volume",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Volume",
 		LongDesc: `Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards.
 
@@ -161,21 +167,21 @@ Required values to run command:
 		CmdRun:     RunVolumeUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	update.AddStringFlag(config.ArgVolumeId, config.ArgIdShort, "", config.RequiredFlagVolumeId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgVolumeName, "", "", "Name of the Volume")
-	update.AddFloat32Flag(config.ArgVolumeSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
-	update.AddStringFlag(config.ArgVolumeBus, "", "VIRTIO", "Bus of the Volume")
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Volume")
+	update.AddFloat32Flag(config.ArgSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
+	update.AddStringFlag(config.ArgBus, "", "VIRTIO", "Bus of the Volume")
 	update.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
 	update.AddBoolFlag(config.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
 	update.AddBoolFlag(config.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
 	update.AddBoolFlag(config.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
 	update.AddBoolFlag(config.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
 	update.AddBoolFlag(config.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume update [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume update [seconds]")
 
 	/*
 		Delete Command
@@ -184,6 +190,7 @@ Required values to run command:
 		Namespace: "volume",
 		Resource:  "volume",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Volume",
 		LongDesc: `Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!
 
@@ -198,12 +205,12 @@ Required values to run command:
 		CmdRun:     RunVolumeDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	deleteCmd.AddStringFlag(config.ArgVolumeId, config.ArgIdShort, "", config.RequiredFlagVolumeId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume deletion [seconds]")
 
 	return volumeCmd
 }
@@ -219,7 +226,7 @@ func PreRunGlobalDcIdVolumeProperties(c *core.PreCommandConfig) error {
 			!viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
 			result = multierror.Append(result, errors.New("image-id, image-alias or licence-type option must be set"))
 		} else {
-			if !viper.IsSet(core.GetFlagName(c.NS, config.ArgImagePassword)) &&
+			if !viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) &&
 				!viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
 				result = multierror.Append(result, errors.New("image-password or ssh-keys option must be set"))
 			}
@@ -311,11 +318,11 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 func getNewVolume(c *core.CommandConfig) resources.Volume {
 	proper := resources.VolumeProperties{}
 	// It will get the default values, if flags not set
-	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)))
-	proper.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeBus)))
-	proper.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeType)))
-	proper.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeZone)))
-	proper.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgVolumeSize))))
+	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	proper.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
+	proper.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
+	proper.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
+	proper.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgSize))))
 
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitId)) {
@@ -330,8 +337,8 @@ func getNewVolume(c *core.CommandConfig) resources.Volume {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
 		proper.SetImageAlias(viper.GetString(core.GetFlagName(c.NS, config.ArgImageAlias)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImagePassword)) {
-		proper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgImagePassword)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
+		proper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgPassword)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
 		proper.SetSshKeys(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgSshKeys)))
@@ -366,14 +373,14 @@ func getNewVolume(c *core.CommandConfig) resources.Volume {
 
 func getVolumeInfo(c *core.CommandConfig) resources.VolumeProperties {
 	input := resources.VolumeProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeBus)) {
-		input.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeBus)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBus)) {
+		input.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgVolumeSize)) {
-		input.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgVolumeSize))))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSize)) {
+		input.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgSize))))
 	}
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotPlug)) {
@@ -404,13 +411,15 @@ func serverVolume() *core.Command {
 	serverVolumeCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "volume",
+			Aliases:          []string{"v", "vol"},
 			Short:            "Server Volume Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl server volume` + "`" + ` allow you to attach, get, list, detach Volumes from Servers.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := serverVolumeCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultVolumeCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultVolumeCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allVolumeCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverVolumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = serverVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
@@ -423,6 +432,7 @@ func serverVolume() *core.Command {
 		Namespace: "server",
 		Resource:  "volume",
 		Verb:      "attach",
+		Aliases:   []string{"a"},
 		ShortDesc: "Attach a Volume to a Server",
 		LongDesc: `Use this command to attach a pre-existing Volume to a Server.
 
@@ -442,7 +452,7 @@ Required values to run command:
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	attachVolume.AddStringFlag(config.ArgVolumeId, config.ArgIdShort, "", config.RequiredFlagVolumeId)
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(attachVolume.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -450,8 +460,8 @@ Required values to run command:
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachVolume.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachVolume.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume attachment to be executed")
-	attachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume attachment [seconds]")
+	attachVolume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume attachment to be executed")
+	attachVolume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume attachment [seconds]")
 
 	/*
 		List Volumes Command
@@ -460,6 +470,7 @@ Required values to run command:
 		Namespace:  "server",
 		Resource:   "volume",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached Volumes from a Server",
 		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listVolumesServerExample,
@@ -483,6 +494,7 @@ Required values to run command:
 		Namespace:  "server",
 		Resource:   "volume",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get an attached Volume from a Server",
 		LongDesc:   "Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
 		Example:    getVolumeServerExample,
@@ -498,7 +510,7 @@ Required values to run command:
 	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(getVolumeCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	getVolumeCmd.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	getVolumeCmd.AddStringFlag(config.ArgVolumeId, config.ArgIdShort, "", config.RequiredFlagVolumeId)
 	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(getVolumeCmd.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(getVolumeCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -510,6 +522,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "volume",
 		Verb:      "detach",
+		Aliases:   []string{"d"},
 		ShortDesc: "Detach a Volume from a Server",
 		LongDesc: `This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.
 
@@ -529,7 +542,7 @@ Required values to run command:
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachVolume.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	detachVolume.AddStringFlag(config.ArgVolumeId, config.ArgIdShort, "", config.RequiredFlagVolumeId)
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(detachVolume.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(detachVolume.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
@@ -538,8 +551,8 @@ Required values to run command:
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(detachVolume.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachVolume.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for Volume detachment to be executed")
-	detachVolume.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for Volume detachment [seconds]")
+	detachVolume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume detachment to be executed")
+	detachVolume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume detachment [seconds]")
 
 	return serverVolumeCmd
 }

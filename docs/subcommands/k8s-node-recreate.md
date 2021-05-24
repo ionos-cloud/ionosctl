@@ -10,6 +10,18 @@ description: Recreate a Kubernetes Node
 ionosctl k8s node recreate [flags]
 ```
 
+## Aliases
+
+For `node` command:
+```text
+[n]
+```
+
+For `recreate` command:
+```text
+[r]
+```
+
 ## Description
 
 You can recreate a single Kubernetes Node.
@@ -27,11 +39,12 @@ Required values to run command:
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cluster-id string    The unique K8s Cluster Id (required)
-      --cols strings         Columns to be printed in the standard output (default [NodeId,Name,K8sVersion,PublicIP,PrivateIP,State])
+      --cols strings         Set of columns to be printed on output 
+                             Available columns: [NodeId Name K8sVersion PublicIP PrivateIP State] (default [NodeId,Name,K8sVersion,PublicIP,PrivateIP,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                Force command to execute without user input
+  -f, --force                Force command to execute without user input
   -h, --help                 help for recreate
-      --node-id string       The unique K8s Node Id (required)
+  -i, --node-id string       The unique K8s Node Id (required)
       --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output

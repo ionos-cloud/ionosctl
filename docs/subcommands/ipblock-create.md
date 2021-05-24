@@ -10,6 +10,18 @@ description: Create/Reserve an IpBlock
 ionosctl ipblock create [flags]
 ```
 
+## Aliases
+
+For `ipblock` command:
+```text
+[ipb]
+```
+
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
@@ -18,23 +30,24 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 
 Required values to run command:
 
-* IpBlock Location
+* Location
 
 ## Options
 
 ```text
-  -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings              Columns to be printed in the standard output (default [IpBlockId,Name,Location,Size,Ips,State])
-  -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                     Force command to execute without user input
-  -h, --help                      help for create
-      --ipblock-location string   Location of the IpBlock (required)
-      --ipblock-name string       Name of the IpBlock
-      --ipblock-size int          Size of the IpBlock (default 2)
-  -o, --output string             Desired output format [text|json] (default "text")
-  -q, --quiet                     Quiet output
-      --timeout int               Timeout option for Request for IpBlock creation [seconds] (default 60)
-      --wait-for-request          Wait for the Request for IpBlock creation to be executed
+  -u, --api-url string     Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings       Set of columns to be printed on output 
+                           Available columns: [IpBlockId Name Location Size Ips State] (default [IpBlockId,Name,Location,Size,Ips,State])
+  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -f, --force              Force command to execute without user input
+  -h, --help               help for create
+  -l, --location string    Location of the IpBlock (required)
+  -n, --name string        Name of the IpBlock
+  -o, --output string      Desired output format [text|json] (default "text")
+  -q, --quiet              Quiet output
+      --size int           Size of the IpBlock (default 2)
+  -t, --timeout int        Timeout option for Request for IpBlock creation [seconds] (default 60)
+  -w, --wait-for-request   Wait for the Request for IpBlock creation to be executed
 ```
 
 ## Examples

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -21,13 +22,15 @@ func ipconsumer() *core.Command {
 	resourceCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "ipconsumer",
+			Aliases:          []string{"ipc"},
 			Short:            "Ip Consumer Operations",
 			Long:             `The sub-command of ` + "`" + `ionosctl ipconsumer` + "`" + ` allows you to list information about where each IP address from an IpBlock is being used.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultIpConsumerCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultIpConsumerCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allIpConsumerCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allIpConsumerCols, cobra.ShellCompDirectiveNoFileComp
@@ -40,6 +43,7 @@ func ipconsumer() *core.Command {
 		Namespace:  "ipconsumer",
 		Resource:   "ipconsumer",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List IpConsumers",
 		LongDesc:   "Use this command to get a list of Resources where each IP address from an IpBlock is being used.\n\nRequired values to run command:\n\n* IpBlock Id",
 		Example:    listIpConsumersExample,

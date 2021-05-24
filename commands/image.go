@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -22,13 +23,15 @@ func image() *core.Command {
 	imageCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "image",
+			Aliases:          []string{"img"},
 			Short:            "Image Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl image` + "`" + ` allow you to see information about the Images available.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := imageCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultImageCols, "Columns to be printed in the standard output")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultImageCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allImageCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = imageCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allImageCols, cobra.ShellCompDirectiveNoFileComp
@@ -41,6 +44,7 @@ func image() *core.Command {
 		Namespace:  "image",
 		Resource:   "image",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Images",
 		LongDesc:   "Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
 		Example:    listImagesExample,
@@ -48,17 +52,17 @@ func image() *core.Command {
 		CmdRun:     RunImageList,
 		InitClient: true,
 	})
-	list.AddFloat32Flag(config.ArgImageSize, "", 0, "The size of the Image")
-	list.AddStringFlag(config.ArgImageType, "", "", "The type of the Image")
-	_ = list.Command.RegisterFlagCompletionFunc(config.ArgImageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddFloat32Flag(config.ArgSize, "", 0, "The size of the Image")
+	list.AddStringFlag(config.ArgType, "", "", "The type of the Image")
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CDROM", "HDD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(config.ArgImageLicenceType, "", "", "The licence type of the Image")
-	_ = list.Command.RegisterFlagCompletionFunc(config.ArgImageLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(config.ArgLicenceType, "", "", "The licence type of the Image")
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(config.ArgImageLocation, "", "", "The location of the Image")
-	_ = list.Command.RegisterFlagCompletionFunc(config.ArgImageLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(config.ArgLocation, config.ArgLocationShort, "", "The location of the Image")
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -69,6 +73,7 @@ func image() *core.Command {
 		Namespace:  "image",
 		Resource:   "image",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a specified Image",
 		LongDesc:   "Use this command to get information about a specified Image.\n\nRequired values to run command:\n\n* Image Id",
 		Example:    getImageExample,
@@ -76,7 +81,7 @@ func image() *core.Command {
 		CmdRun:     RunImageGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgImageId, "", "", config.RequiredFlagImageId)
+	get.AddStringFlag(config.ArgImageId, config.ArgIdShort, "", config.RequiredFlagImageId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -93,17 +98,17 @@ func RunImageList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageLocation)) {
-		images = sortImagesByLocation(images, viper.GetString(core.GetFlagName(c.NS, config.ArgImageLocation)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLocation)) {
+		images = sortImagesByLocation(images, viper.GetString(core.GetFlagName(c.NS, config.ArgLocation)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageLicenceType)) {
-		images = sortImagesByLicenceType(images, viper.GetString(core.GetFlagName(c.NS, config.ArgImageLicenceType)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
+		images = sortImagesByLicenceType(images, viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageType)) {
-		images = sortImagesByType(images, viper.GetString(core.GetFlagName(c.NS, config.ArgImageType)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgType)) {
+		images = sortImagesByType(images, viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageSize)) {
-		images = sortImagesBySize(images, float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgImageSize))))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSize)) {
+		images = sortImagesBySize(images, float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgSize))))
 	}
 	return c.Printer.Print(getImagePrint(nil, c, getImages(images)))
 }

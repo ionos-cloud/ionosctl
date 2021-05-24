@@ -10,6 +10,18 @@ description: Update a Kubernetes NodePool
 ionosctl k8s nodepool update [flags]
 ```
 
+## Aliases
+
+For `nodepool` command:
+```text
+[np]
+```
+
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster. You can also add reserved public IP addresses to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. The array must contain one extra IP than maximum number of Nodes could be. (nodeCount+1 if fixed node amount or maxNodeCount+1 if auto scaling is used) The extra provided IP Will be used during rebuilding of Nodes.
@@ -28,9 +40,10 @@ Required values to run command:
       --annotation-value string   Annotation value. Must be set together with --annotation-key
   -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
       --cluster-id string         The unique K8s Cluster Id (required)
-      --cols strings              Columns to be printed in the standard output (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
+      --cols strings              Set of columns to be printed on output 
+                                  Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                     Force command to execute without user input
+  -f, --force                     Force command to execute without user input
   -h, --help                      help for update
       --k8s-version string        The K8s version for the NodePool. K8s version downgrade is not supported
       --label-key string          Label key. Must be set together with --label-value
@@ -41,12 +54,12 @@ Required values to run command:
       --max-node-count int        The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count (default 1)
       --min-node-count int        The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count (default 1)
       --node-count int            The number of worker Nodes that the NodePool should contain (default 1)
-      --nodepool-id string        The unique K8s Node Pool Id (required)
+  -i, --nodepool-id string        The unique K8s Node Pool Id (required)
   -o, --output string             Desired output format [text|json] (default "text")
       --public-ips strings        Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2
   -q, --quiet                     Quiet output
-      --timeout int               Timeout option for waiting for NodePool/Request [seconds] (default 600)
-      --wait-for-state            Wait for the new NodePool to be in ACTIVE state
+  -t, --timeout int               Timeout option for waiting for NodePool/Request [seconds] (default 600)
+  -W, --wait-for-state            Wait for the new NodePool to be in ACTIVE state
 ```
 
 ## Examples

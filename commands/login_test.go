@@ -20,8 +20,8 @@ func TestRunLoginUserBufferUserErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
-		viper.Set(core.GetFlagName(cfg.NS, "user"), "")
-		viper.Set(core.GetFlagName(cfg.NS, "password"), testPassword)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
 		cfg.Stdin = bytes.NewReader([]byte(testUsername + "\n"))
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
@@ -33,8 +33,8 @@ func TestRunLoginUserBufferErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
-		viper.Set(core.GetFlagName(cfg.NS, "user"), "")
-		viper.Set(core.GetFlagName(cfg.NS, "password"), testPassword)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
 		cfg.Stdin = bytes.NewReader([]byte(testUsername))
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
@@ -45,8 +45,8 @@ func TestRunLoginUserUnauthorizedErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
-		viper.Set(core.GetFlagName(cfg.NS, "user"), testUsername)
-		viper.Set(core.GetFlagName(cfg.NS, "password"), testPassword)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), testUsername)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 		assert.True(t, err.Error() == "401 Unauthorized")
@@ -57,8 +57,8 @@ func TestRunLoginUserBufferPwdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
-		viper.Set(core.GetFlagName(cfg.NS, "user"), testUsername)
-		viper.Set(core.GetFlagName(cfg.NS, "password"), "")
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), testUsername)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), "")
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 	})
@@ -69,8 +69,8 @@ func TestRunLoginUserConfigSet(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-		viper.Set(core.GetFlagName(cfg.NS, "user"), testUsername)
-		viper.Set(core.GetFlagName(cfg.NS, "password"), testPassword)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), testUsername)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 	})

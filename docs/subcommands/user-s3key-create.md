@@ -10,6 +10,23 @@ description: Create a S3Key for a User
 ionosctl user s3key create [flags]
 ```
 
+## Aliases
+
+For `user` command:
+```text
+[u]
+```
+
+For `s3key` command:
+```text
+[k s3k]
+```
+
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a S3Key for a particular User.
@@ -25,16 +42,17 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string                           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols --cols="S3KeyId,Active,SecretKey"   Columns to be printed in the standard output. You can also print SecretKey, using --cols="S3KeyId,Active,SecretKey" (default [S3KeyId,Active])
-  -c, --config string                            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                                    Force command to execute without user input
-  -h, --help                                     help for create
-  -o, --output string                            Desired output format [text|json] (default "text")
-  -q, --quiet                                    Quiet output
-      --timeout int                              Timeout option for Request for User S3Key creation [seconds] (default 60)
-      --user-id string                           The unique User Id (required)
-      --wait-for-request                         Wait for the Request for User S3Key creation to be executed
+  -u, --api-url string     Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --cols strings       Set of columns to be printed on output 
+                           Available columns: [S3KeyId Active] (default [S3KeyId,Active])
+  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -f, --force              Force command to execute without user input
+  -h, --help               help for create
+  -o, --output string      Desired output format [text|json] (default "text")
+  -q, --quiet              Quiet output
+  -t, --timeout int        Timeout option for Request for User S3Key creation [seconds] (default 60)
+      --user-id string     The unique User Id (required)
+  -w, --wait-for-request   Wait for the Request for User S3Key creation to be executed
 ```
 
 ## Examples

@@ -10,6 +10,18 @@ description: Get an IpBlock
 ionosctl ipblock get [flags]
 ```
 
+## Aliases
+
+For `ipblock` command:
+```text
+[ipb]
+```
+
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve the attributes of a specific IpBlock.
@@ -22,11 +34,12 @@ Required values to run command:
 
 ```text
   -u, --api-url string      Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings        Columns to be printed in the standard output (default [IpBlockId,Name,Location,Size,Ips,State])
+      --cols strings        Set of columns to be printed on output 
+                            Available columns: [IpBlockId Name Location Size Ips State] (default [IpBlockId,Name,Location,Size,Ips,State])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force               Force command to execute without user input
+  -f, --force               Force command to execute without user input
   -h, --help                help for get
-      --ipblock-id string   The unique IpBlock Id (required)
+  -i, --ipblock-id string   The unique IpBlock Id (required)
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
 ```

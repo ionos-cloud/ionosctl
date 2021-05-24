@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -23,13 +24,15 @@ func userS3key() *core.Command {
 	s3keyCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "s3key",
+			Aliases:          []string{"k", "s3k"},
 			Short:            "User S3Key Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl user s3key` + "`" + ` allow you to see information, to list, get, create, update, delete Users S3Keys.`,
 			TraverseChildren: true,
 		},
 	}
 	globalFlags := s3keyCmd.GlobalFlags()
-	globalFlags.StringSlice(config.ArgCols, defaultS3KeyCols, "Columns to be printed in the standard output. You can also print SecretKey, using `--cols=\"S3KeyId,Active,SecretKey\"`")
+	globalFlags.StringSliceP(config.ArgCols, "", defaultS3KeyCols,
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultS3KeyCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(s3keyCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = s3keyCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultS3KeyCols, cobra.ShellCompDirectiveNoFileComp
@@ -42,6 +45,7 @@ func userS3key() *core.Command {
 		Namespace:  "user",
 		Resource:   "s3key",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List User S3Keys",
 		LongDesc:   "Use this command to get a list of S3Keys of a specified User.\n\nRequired values to run command:\n\n* User Id",
 		Example:    listS3KeysExample,
@@ -61,6 +65,7 @@ func userS3key() *core.Command {
 		Namespace:  "user",
 		Resource:   "s3key",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a User S3Key",
 		LongDesc:   "Use this command to get information about a specified S3Key from a specified User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    getS3KeyExample,
@@ -72,7 +77,7 @@ func userS3key() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
+	get.AddStringFlag(config.ArgS3KeyId, config.ArgIdShort, "", config.RequiredFlagS3KeyId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -84,6 +89,7 @@ func userS3key() *core.Command {
 		Namespace: "user",
 		Resource:  "s3key",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a S3Key for a User",
 		LongDesc: `Use this command to create a S3Key for a particular User.
 
@@ -103,8 +109,8 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for User S3Key creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key creation [seconds]")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for User S3Key creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key creation [seconds]")
 
 	/*
 		Update Command
@@ -113,6 +119,7 @@ Required values to run command:
 		Namespace: "user",
 		Resource:  "s3key",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a S3Key",
 		LongDesc: `Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
 
@@ -133,12 +140,12 @@ Required values to run command:
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgS3KeyActive, "", false, "Enable or disable an User S3Key")
-	update.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
+	update.AddStringFlag(config.ArgS3KeyId, config.ArgIdShort, "", config.RequiredFlagS3KeyId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for the Request for User S3Key update to be executed")
-	update.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key update [seconds]")
+	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for User S3Key update to be executed")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key update [seconds]")
 
 	/*
 		Delete Command
@@ -147,6 +154,7 @@ Required values to run command:
 		Namespace:  "user",
 		Resource:   "s3key",
 		Verb:       "delete",
+		Aliases:    []string{"d"},
 		ShortDesc:  "Delete a S3Key",
 		LongDesc:   "Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    deleteS3KeyExample,
@@ -158,12 +166,12 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgS3KeyId, "", "", config.RequiredFlagS3KeyId)
+	deleteCmd.AddStringFlag(config.ArgS3KeyId, config.ArgIdShort, "", config.RequiredFlagS3KeyId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, "", config.DefaultWait, "Wait for Request for User S3Key deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, "", config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for User S3Key deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key deletion [seconds]")
 
 	return s3keyCmd
 }

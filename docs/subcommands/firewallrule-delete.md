@@ -10,6 +10,18 @@ description: Delete a FirewallRule
 ionosctl firewallrule delete [flags]
 ```
 
+## Aliases
+
+For `firewallrule` command:
+```text
+[f fr firewall]
+```
+
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a specified Firewall Rule from a Virtual Data Center.
@@ -27,18 +39,19 @@ Required values to run command:
 
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings             Columns to be printed in the standard output. Example: --cols "ResourceId,Name" (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
+      --cols strings             Set of columns to be printed on output 
+                                 Available columns: [FirewallRuleId Name Protocol SourceMac SourceIP TargetIP PortRangeStart PortRangeEnd State] (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
-      --firewallrule-id string   The unique FirewallRule Id (required)
-      --force                    Force command to execute without user input
+  -i, --firewallrule-id string   The unique FirewallRule Id (required)
+  -f, --force                    Force command to execute without user input
   -h, --help                     help for delete
       --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id (required)
-      --timeout int              Timeout option for Request for Firewall Rule deletion [seconds] (default 60)
-      --wait-for-request         Wait for Request for Firewall Rule deletion to be executed
+  -t, --timeout int              Timeout option for Request for Firewall Rule deletion [seconds] (default 60)
+  -w, --wait-for-request         Wait for Request for Firewall Rule deletion to be executed
 ```
 
 ## Examples

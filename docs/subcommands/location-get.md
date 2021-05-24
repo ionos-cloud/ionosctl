@@ -10,6 +10,18 @@ description: Get a Location
 ionosctl location get [flags]
 ```
 
+## Aliases
+
+For `location` command:
+```text
+[loc]
+```
+
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get information about a specific Location from a Region.
@@ -22,11 +34,12 @@ Required values to run command:
 
 ```text
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cols strings         Columns to be printed in the standard output (default [LocationId,Name,Features])
+      --cols strings         Set of columns to be printed on output 
+                             Available columns: [LocationId Name Features ImageAliases] (default [LocationId,Name,Features])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                Force command to execute without user input
+  -f, --force                Force command to execute without user input
   -h, --help                 help for get
-      --location-id string   The unique Location Id (required)
+  -i, --location-id string   The unique Location Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
 ```

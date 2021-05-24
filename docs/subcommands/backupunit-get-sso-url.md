@@ -10,6 +10,13 @@ description: Get BackupUnit SSO URL
 ionosctl backupunit get-sso-url [flags]
 ```
 
+## Aliases
+
+For `backupunit` command:
+```text
+[b backup]
+```
+
 ## Description
 
 Use this command to access the GUI with a Single Sign On (SSO) URL that can be retrieved from the Cloud API using this request. If you copy the entire value returned and paste it into a browser, you will be logged into the BackupUnit GUI.
@@ -22,10 +29,11 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --backupunit-id string   The unique BackupUnit Id (required)
-      --cols strings           Columns to be printed in the standard output (default [BackupUnitId,Name,Email,State])
+  -i, --backupunit-id string   The unique BackupUnit Id (required)
+      --cols strings           Set of columns to be printed on output 
+                               Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force                  Force command to execute without user input
+  -f, --force                  Force command to execute without user input
   -h, --help                   help for get-sso-url
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output

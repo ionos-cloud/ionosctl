@@ -10,6 +10,18 @@ description: Delete a Kubernetes Cluster
 ionosctl k8s cluster delete [flags]
 ```
 
+## Aliases
+
+For `cluster` command:
+```text
+[c]
+```
+
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
@@ -24,15 +36,16 @@ Required values to run command:
 
 ```text
   -u, --api-url string      Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cluster-id string   The unique K8s Cluster Id (required)
-      --cols strings        Columns to be printed in the standard output (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
+  -i, --cluster-id string   The unique K8s Cluster Id (required)
+      --cols strings        Set of columns to be printed on output 
+                            Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions Public GatewayIp] (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --force               Force command to execute without user input
+  -f, --force               Force command to execute without user input
   -h, --help                help for delete
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-      --timeout int         Timeout option for waiting for Request [seconds] (default 600)
-      --wait-for-request    Wait for the Request for Cluster deletion to be executed
+  -t, --timeout int         Timeout option for waiting for Request [seconds] (default 600)
+  -w, --wait-for-request    Wait for the Request for Cluster deletion to be executed
 ```
 
 ## Examples
