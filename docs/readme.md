@@ -63,6 +63,8 @@ Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Mod
 
 ### Authenticating with Ionos Cloud
 
+* Using `login` command
+
 Before using `ionosctl` to perform any operations, you will need to set your credentials for Ionos Cloud account:
 
 ```text
@@ -97,6 +99,10 @@ After a successful authentication, you will no longer need to provide credential
   and retrieved every time you will perform an action on your account.
 
 If you want to use a different configuration file, use `--config` option.
+
+* Using environment variables
+
+
 
 Note: `ionosctl` also supports authentication with token.
 

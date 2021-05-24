@@ -25,6 +25,7 @@ func lan() *core.Command {
 	lanCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "lan",
+			Aliases:          []string{"l"},
 			Short:            "LAN Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl lan` + "`" + ` allow you to create, list, get, update, delete LANs.`,
 			TraverseChildren: true,
@@ -72,7 +73,7 @@ func lan() *core.Command {
 		CmdRun:     RunLanGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	get.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.RequiredFlagLanId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -129,7 +130,7 @@ Required values to run command:
 		CmdRun:     RunLanUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	update.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.RequiredFlagLanId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -163,7 +164,7 @@ Required values to run command:
 		CmdRun:     RunLanDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	deleteCmd.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.RequiredFlagLanId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(lanCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})

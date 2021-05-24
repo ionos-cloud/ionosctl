@@ -66,7 +66,7 @@ func request() *core.Command {
 		CmdRun:     RunRequestGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
+	get.AddStringFlag(config.ArgRequestId, config.ArgIdShort, "", config.RequiredFlagRequestId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -91,7 +91,7 @@ Required values to run command:
 		CmdRun:     RunRequestWait,
 		InitClient: true,
 	})
-	wait.AddStringFlag(config.ArgRequestId, "", "", config.RequiredFlagRequestId)
+	wait.AddStringFlag(config.ArgRequestId, config.ArgIdShort, "", config.RequiredFlagRequestId)
 	_ = wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

@@ -66,7 +66,7 @@ func ipblock() *core.Command {
 		CmdRun:     RunIpBlockGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
+	get.AddStringFlag(config.ArgIpBlockId, config.ArgIdShort, "", config.RequiredFlagIpBlockId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -120,7 +120,7 @@ Required values to run command:
 		CmdRun:     RunIpBlockUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
+	update.AddStringFlag(config.ArgIpBlockId, config.ArgIdShort, "", config.RequiredFlagIpBlockId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -148,7 +148,7 @@ Required values to run command:
 		CmdRun:     RunIpBlockDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
+	deleteCmd.AddStringFlag(config.ArgIpBlockId, config.ArgIdShort, "", config.RequiredFlagIpBlockId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

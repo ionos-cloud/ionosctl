@@ -113,6 +113,7 @@ const (
 
 // IDs Flags
 const (
+	ArgIdShort        = "i"
 	ArgDataCenterId   = "datacenter-id"
 	ArgServerId       = "server-id"
 	ArgNicId          = "nic-id"

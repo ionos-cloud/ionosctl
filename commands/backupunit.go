@@ -26,7 +26,7 @@ func backupunit() *core.Command {
 	backupUnitCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "backupunit",
-			Aliases:          []string{"b"},
+			Aliases:          []string{"b", "backup"},
 			Short:            "BackupUnit Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl backupunit` + "`" + ` allow you to list, get, create, update, delete BackupUnits under your account.`,
 			TraverseChildren: true,
@@ -69,7 +69,7 @@ func backupunit() *core.Command {
 		CmdRun:     RunBackupUnitGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
+	get.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -88,7 +88,7 @@ func backupunit() *core.Command {
 		CmdRun:     RunBackupUnitGetSsoUrl,
 		InitClient: true,
 	})
-	getsso.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
+	getsso.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
 	_ = getsso.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -146,7 +146,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Alphanumeric password you want to update for the BackupUnit")
 	update.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The e-mail address you want to update for the BackupUnit")
-	update.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
+	update.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -171,7 +171,7 @@ Required values to run command:
 		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgBackupUnitId, "", "", config.RequiredFlagBackupUnitId)
+	deleteCmd.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
