@@ -24,7 +24,7 @@ func ipfailover() *core.Command {
 	ipfailoverCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "ipfailover",
-			Aliases:          []string{"failover", "ipf"},
+			Aliases:          []string{"ipf", "failover"},
 			Short:            "IP Failover Operations",
 			Long:             `The sub-command of ` + "`" + `ionosctl ipfailover` + "`" + ` allows you to see information about IP Failovers groups available on a LAN, to add/remove IP Failover group from a LAN.`,
 			TraverseChildren: true,

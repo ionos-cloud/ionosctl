@@ -14,7 +14,7 @@ ionosctl snapshot restore [flags]
 
 For `snapshot` command:
 ```text
-[snap]
+[ss snap]
 ```
 
 For `restore` command:

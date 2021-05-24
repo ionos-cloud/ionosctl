@@ -17,6 +17,11 @@ For `completion` command:
 [comp]
 ```
 
+For `bash` command:
+```text
+[b]
+```
+
 ## Description
 
 Use this command to generate completion code for BASH terminal. IonosCTL supports completion for commands and flags.

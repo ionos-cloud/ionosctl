@@ -14,7 +14,7 @@ ionosctl snapshot create [flags]
 
 For `snapshot` command:
 ```text
-[snap]
+[ss snap]
 ```
 
 For `create` command:

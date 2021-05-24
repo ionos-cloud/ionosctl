@@ -24,7 +24,7 @@ func userS3key() *core.Command {
 	s3keyCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "s3key",
-			Aliases:          []string{"k"},
+			Aliases:          []string{"k", "s3k"},
 			Short:            "User S3Key Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl user s3key` + "`" + ` allow you to see information, to list, get, create, update, delete Users S3Keys.`,
 			TraverseChildren: true,

@@ -17,6 +17,11 @@ For `completion` command:
 [comp]
 ```
 
+For `zsh` command:
+```text
+[z]
+```
+
 ## Description
 
 Use this command to generate completion code for ZSH terminal. IonosCTL supports completion for commands and flags.

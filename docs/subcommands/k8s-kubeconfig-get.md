@@ -14,7 +14,7 @@ ionosctl k8s kubeconfig get [flags]
 
 For `kubeconfig` command:
 ```text
-[config]
+[cfg config]
 ```
 
 For `get` command:

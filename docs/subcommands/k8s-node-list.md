@@ -12,6 +12,11 @@ ionosctl k8s node list [flags]
 
 ## Aliases
 
+For `node` command:
+```text
+[n]
+```
+
 For `list` command:
 ```text
 [l ls]

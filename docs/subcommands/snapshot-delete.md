@@ -14,7 +14,7 @@ ionosctl snapshot delete [flags]
 
 For `snapshot` command:
 ```text
-[snap]
+[ss snap]
 ```
 
 For `delete` command:

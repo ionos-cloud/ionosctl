@@ -17,6 +17,11 @@ For `completion` command:
 [comp]
 ```
 
+For `fish` command:
+```text
+[f]
+```
+
 ## Description
 
 Use this command to generate completion code for Fish terminal. IonosCTL supports completion for commands and flags.

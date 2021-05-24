@@ -17,6 +17,11 @@ For `completion` command:
 [comp]
 ```
 
+For `powershell` command:
+```text
+[ps]
+```
+
 ## Description
 
 Use this command to generate completion code for PowerShell terminal. IonosCTL supports completion for commands and flags.

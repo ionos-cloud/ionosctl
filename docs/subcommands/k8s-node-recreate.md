@@ -12,6 +12,11 @@ ionosctl k8s node recreate [flags]
 
 ## Aliases
 
+For `node` command:
+```text
+[n]
+```
+
 For `recreate` command:
 ```text
 [r]

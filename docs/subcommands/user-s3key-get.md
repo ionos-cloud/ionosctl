@@ -19,7 +19,7 @@ For `user` command:
 
 For `s3key` command:
 ```text
-[k]
+[k s3k]
 ```
 
 For `get` command:

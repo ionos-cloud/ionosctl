@@ -14,7 +14,7 @@ ionosctl snapshot update [flags]
 
 For `snapshot` command:
 ```text
-[snap]
+[ss snap]
 ```
 
 For `update` command:

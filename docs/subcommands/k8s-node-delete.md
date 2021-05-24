@@ -12,6 +12,11 @@ ionosctl k8s node delete [flags]
 
 ## Aliases
 
+For `node` command:
+```text
+[n]
+```
+
 For `delete` command:
 ```text
 [d]

@@ -88,6 +88,7 @@ func share() *core.Command {
 		Namespace: "share",
 		Resource:  "share",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Resource Share for a Group",
 		LongDesc: `Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.
 

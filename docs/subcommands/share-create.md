@@ -10,6 +10,13 @@ description: Create a Resource Share for a Group
 ionosctl share create [flags]
 ```
 
+## Aliases
+
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a specific Resource Share to a Group and optionally allow the setting of permissions for that Resource. As an example, you might use this to grant permissions to use an Image or Snapshot to a specific Group.

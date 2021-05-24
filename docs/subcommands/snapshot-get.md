@@ -14,7 +14,7 @@ ionosctl snapshot get [flags]
 
 For `snapshot` command:
 ```text
-[snap]
+[ss snap]
 ```
 
 For `get` command:
