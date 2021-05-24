@@ -102,7 +102,7 @@ If you want to use a different configuration file, use `--config` option.
 
 * Using environment variables
 
-For authentication with IONOS Cloud, you can also set the environment variables `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`. 
+For authentication with IONOS Cloud, you can also set the environment variables: `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`. 
 
 ### Enabling Shell Auto-Completion
 

@@ -8,6 +8,7 @@
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=cli-ionosctl&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=cli-ionosctl)
 [![Release](https://img.shields.io/github/v/release/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl/releases/latest)
 [![Release Date](https://img.shields.io/github/release-date/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl/releases/latest)
+[![Go](https://img.shields.io/github/go-mod/go-version/ionos-cloud/ionosctl.svg)](https://github.com/ionos-cloud/ionosctl)
 
 ![Alt text](.github/IONOS.CLOUD.BLU.svg?raw=true "Title")
 
@@ -108,7 +109,7 @@ If you want to use a different configuration file, use `--config` option.
 
 * Using environment variables
 
-For authentication with IONOS Cloud, you can also set the environment variables `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`.
+For authentication with IONOS Cloud, you can also set the environment variables: `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`.
 
 ### Enabling Shell Auto-Completion
 
