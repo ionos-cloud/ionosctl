@@ -14,7 +14,7 @@ ionosctl ipblock create [flags]
 
 For `ipblock` command:
 ```text
-[ipb block]
+[ipb]
 ```
 
 For `create` command:

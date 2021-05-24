@@ -14,7 +14,7 @@ ionosctl ipfailover remove [flags]
 
 For `ipfailover` command:
 ```text
-[ipf failover]
+[ipf]
 ```
 
 For `remove` command:

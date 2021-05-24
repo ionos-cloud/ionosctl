@@ -14,7 +14,7 @@ ionosctl ipblock delete [flags]
 
 For `ipblock` command:
 ```text
-[ipb block]
+[ipb]
 ```
 
 For `delete` command:

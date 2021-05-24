@@ -23,7 +23,7 @@ func ipblock() *core.Command {
 	ipblockCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "ipblock",
-			Aliases:          []string{"ipb", "block"},
+			Aliases:          []string{"ipb"},
 			Short:            "IpBlock Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl ipblock` + "`" + ` allow you to create/reserve, list, get, update, delete IpBlocks.`,
 			TraverseChildren: true,

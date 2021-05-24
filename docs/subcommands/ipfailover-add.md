@@ -14,7 +14,7 @@ ionosctl ipfailover add [flags]
 
 For `ipfailover` command:
 ```text
-[ipf failover]
+[ipf]
 ```
 
 For `add` command:

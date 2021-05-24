@@ -14,7 +14,7 @@ ionosctl ipconsumer list [flags]
 
 For `ipconsumer` command:
 ```text
-[ipc consumer]
+[ipc]
 ```
 
 For `list` command:

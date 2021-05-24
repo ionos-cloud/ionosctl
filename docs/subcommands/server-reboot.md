@@ -19,7 +19,7 @@ For `server` command:
 
 For `reboot` command:
 ```text
-[reset]
+[r]
 ```
 
 ## Description

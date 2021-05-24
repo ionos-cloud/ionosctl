@@ -14,7 +14,7 @@ ionosctl ipblock get [flags]
 
 For `ipblock` command:
 ```text
-[ipb block]
+[ipb]
 ```
 
 For `get` command:

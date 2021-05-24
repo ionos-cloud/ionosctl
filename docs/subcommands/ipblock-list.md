@@ -14,7 +14,7 @@ ionosctl ipblock list [flags]
 
 For `ipblock` command:
 ```text
-[ipb block]
+[ipb]
 ```
 
 For `list` command:

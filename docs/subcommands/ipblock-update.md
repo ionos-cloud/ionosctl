@@ -14,7 +14,7 @@ ionosctl ipblock update [flags]
 
 For `ipblock` command:
 ```text
-[ipb block]
+[ipb]
 ```
 
 For `update` command:
