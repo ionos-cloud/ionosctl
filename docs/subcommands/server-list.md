@@ -14,7 +14,7 @@ ionosctl server list [flags]
 
 For `server` command:
 ```text
-[s]
+[s svr]
 ```
 
 ## Description

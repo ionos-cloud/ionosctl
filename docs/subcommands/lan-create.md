@@ -10,6 +10,13 @@ description: Create a LAN
 ionosctl lan create [flags]
 ```
 
+## Aliases
+
+For `lan` command:
+```text
+[l]
+```
+
 ## Description
 
 Use this command to create a new LAN within a Virtual Data Center on your account. The name, the public option and the Private Cross-Connect Id can be set.

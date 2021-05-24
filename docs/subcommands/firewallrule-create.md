@@ -14,7 +14,7 @@ ionosctl firewallrule create [flags]
 
 For `firewallrule` command:
 ```text
-[firewall fr f]
+[f fr firewall]
 ```
 
 ## Description

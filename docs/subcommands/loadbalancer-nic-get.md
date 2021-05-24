@@ -43,7 +43,7 @@ Required values to run the command:
   -f, --force                    Force command to execute without user input
   -h, --help                     help for get
       --loadbalancer-id string   The unique Load Balancer Id (required)
-      --nic-id string            The unique NIC Id (required)
+  -i, --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
 ```

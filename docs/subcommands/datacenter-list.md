@@ -14,7 +14,7 @@ ionosctl datacenter list [flags]
 
 For `datacenter` command:
 ```text
-[dc]
+[d dc]
 ```
 
 ## Description

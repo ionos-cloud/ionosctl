@@ -46,7 +46,7 @@ Required values to run command:
       --ips strings            IPs assigned to the NIC
       --lan-id int             The LAN ID the NIC sits on (default 1)
   -n, --name string            The name of the NIC
-      --nic-id string          The unique NIC Id (required)
+  -i, --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id

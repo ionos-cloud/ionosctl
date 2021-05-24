@@ -14,7 +14,7 @@ ionosctl server cdrom attach [flags]
 
 For `server` command:
 ```text
-[s]
+[s svr]
 ```
 
 For `cdrom` command:
@@ -38,7 +38,7 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --cdrom-id string        The unique Cdrom Id (required)
+  -i, --cdrom-id string        The unique Cdrom Id (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

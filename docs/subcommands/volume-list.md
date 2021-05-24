@@ -14,7 +14,7 @@ ionosctl volume list [flags]
 
 For `volume` command:
 ```text
-[v]
+[v vol]
 ```
 
 ## Description

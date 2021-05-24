@@ -31,7 +31,7 @@ Required values to run command:
   -h, --help                 help for get
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --resource-id string   The unique Resource Id (required)
+  -i, --resource-id string   The unique Resource Id (required)
 ```
 
 ## Examples

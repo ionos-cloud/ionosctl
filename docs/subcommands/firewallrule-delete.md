@@ -14,7 +14,7 @@ ionosctl firewallrule delete [flags]
 
 For `firewallrule` command:
 ```text
-[firewall fr f]
+[f fr firewall]
 ```
 
 ## Description
@@ -38,7 +38,7 @@ Required values to run command:
                                  Available columns: [FirewallRuleId Name Protocol SourceMac SourceIP TargetIP PortRangeStart PortRangeEnd State] (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
-      --firewallrule-id string   The unique FirewallRule Id (required)
+  -i, --firewallrule-id string   The unique FirewallRule Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     help for delete
       --nic-id string            The unique NIC Id (required)

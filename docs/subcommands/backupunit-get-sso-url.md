@@ -14,7 +14,7 @@ ionosctl backupunit get-sso-url [flags]
 
 For `backupunit` command:
 ```text
-[b]
+[b backup]
 ```
 
 ## Description
@@ -29,7 +29,7 @@ Required values to run command:
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
-      --backupunit-id string   The unique BackupUnit Id (required)
+  -i, --backupunit-id string   The unique BackupUnit Id (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [BackupUnitId Name Email State] (default [BackupUnitId,Name,Email,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

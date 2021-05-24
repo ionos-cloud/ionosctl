@@ -36,7 +36,7 @@ Required values to run command:
       --datacenter-id string     The unique Data Center Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     help for get
-      --loadbalancer-id string   The unique Load Balancer Id (required)
+  -i, --loadbalancer-id string   The unique Load Balancer Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
 ```

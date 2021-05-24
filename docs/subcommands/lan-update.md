@@ -10,6 +10,13 @@ description: Update a LAN
 ionosctl lan update [flags]
 ```
 
+## Aliases
+
+For `lan` command:
+```text
+[l]
+```
+
 ## Description
 
 Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Private Cross-Connect.
@@ -31,7 +38,7 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for update
-      --lan-id string          The unique LAN Id (required)
+  -i, --lan-id string          The unique LAN Id (required)
   -n, --name string            The name of the LAN
   -o, --output string          Desired output format [text|json] (default "text")
       --pcc-id string          The unique Id of the Private Cross-Connect the LAN will connect to

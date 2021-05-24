@@ -40,7 +40,7 @@ Required values to run command:
   -f, --force                    Force command to execute without user input
   -h, --help                     help for update
       --ip string                The IP of the Load Balancer
-      --loadbalancer-id string   The unique Load Balancer Id (required)
+  -i, --loadbalancer-id string   The unique Load Balancer Id (required)
   -n, --name string              Name of the Load Balancer
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output

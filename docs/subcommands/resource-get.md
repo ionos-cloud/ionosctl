@@ -36,7 +36,7 @@ Required values to run command:
   -h, --help                 help for get
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --resource-id string   The ID of the specific Resource to retrieve information about
+  -i, --resource-id string   The ID of the specific Resource to retrieve information about
       --type string          The specific Type of Resources to retrieve information about
 ```
 

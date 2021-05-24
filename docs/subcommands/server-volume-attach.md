@@ -14,12 +14,12 @@ ionosctl server volume attach [flags]
 
 For `server` command:
 ```text
-[s]
+[s svr]
 ```
 
 For `volume` command:
 ```text
-[v]
+[v vol]
 ```
 
 ## Description
@@ -48,7 +48,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for Volume attachment [seconds] (default 60)
-      --volume-id string       The unique Volume Id (required)
+  -i, --volume-id string       The unique Volume Id (required)
   -w, --wait-for-request       Wait for the Request for Volume attachment to be executed
 ```
 

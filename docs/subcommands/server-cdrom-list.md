@@ -14,7 +14,7 @@ ionosctl server cdrom list [flags]
 
 For `server` command:
 ```text
-[s]
+[s svr]
 ```
 
 For `cdrom` command:

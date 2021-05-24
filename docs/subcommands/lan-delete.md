@@ -10,6 +10,13 @@ description: Delete a LAN
 ionosctl lan delete [flags]
 ```
 
+## Aliases
+
+For `lan` command:
+```text
+[l]
+```
+
 ## Description
 
 Use this command to delete a specified LAN from a Virtual Data Center.
@@ -31,7 +38,7 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for delete
-      --lan-id string          The unique LAN Id (required)
+  -i, --lan-id string          The unique LAN Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for LAN deletion [seconds] (default 60)

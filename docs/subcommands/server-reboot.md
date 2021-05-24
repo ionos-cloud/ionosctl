@@ -14,7 +14,7 @@ ionosctl server reboot [flags]
 
 For `server` command:
 ```text
-[s]
+[s svr]
 ```
 
 ## Description
@@ -40,7 +40,7 @@ Required values to run command:
   -h, --help                   help for reboot
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --server-id string       The unique Server Id (required)
+  -i, --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for Server reboot [seconds] (default 60)
   -w, --wait-for-request       Wait for the Request for Server reboot to be executed
 ```

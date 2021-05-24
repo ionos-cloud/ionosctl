@@ -52,7 +52,7 @@ Required values to run command:
       --ram-hot-plug             This volume is capable of memory hot plug (no reboot required)
       --ram-hot-unplug           This volume is capable of memory hot unplug (no reboot required)
       --sec-auth-protection      Enable secure authentication protection
-      --snapshot-id string       The unique Snapshot Id (required)
+  -i, --snapshot-id string       The unique Snapshot Id (required)
   -t, --timeout int              Timeout option for Request for Snapshot creation [seconds] (default 60)
   -w, --wait-for-request         Wait for the Request for Snapshot creation to be executed
 ```

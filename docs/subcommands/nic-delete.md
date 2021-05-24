@@ -39,7 +39,7 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for delete
-      --nic-id string          The unique NIC Id (required)
+  -i, --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id

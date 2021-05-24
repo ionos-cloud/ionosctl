@@ -14,7 +14,7 @@ ionosctl volume update [flags]
 
 For `volume` command:
 ```text
-[v]
+[v vol]
 ```
 
 ## Description
@@ -52,7 +52,7 @@ Required values to run command:
       --ram-hot-plug             It is capable of memory hot plug (no reboot required)
       --size float32             Size in GB of the Volume (default 10)
   -t, --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
-      --volume-id string         The unique Volume Id (required)
+  -i, --volume-id string         The unique Volume Id (required)
   -w, --wait-for-request         Wait for the Request for Volume update to be executed
 ```
 

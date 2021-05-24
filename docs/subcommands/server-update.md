@@ -14,7 +14,7 @@ ionosctl server update [flags]
 
 For `server` command:
 ```text
-[s]
+[s svr]
 ```
 
 ## Description
@@ -45,7 +45,7 @@ Required values to run command:
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
       --ram-size int               RAM[GB] option for the Server (default 256)
-      --server-id string           The unique Server Id (required)
+  -i, --server-id string           The unique Server Id (required)
   -t, --timeout int                Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds] (default 60)
   -w, --wait-for-request           Wait for the Request for Server update to be executed
   -W, --wait-for-state             Wait for the updated Server to be in AVAILABLE state

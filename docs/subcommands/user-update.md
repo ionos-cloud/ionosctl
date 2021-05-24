@@ -43,7 +43,7 @@ Required values to run command:
       --last-name string    The lastname for the User
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-      --user-id string      The unique User Id (required)
+  -i, --user-id string      The unique User Id (required)
 ```
 
 ## Examples

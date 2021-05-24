@@ -31,7 +31,7 @@ Required values to run command:
   -h, --help                 help for delete
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --resource-id string   The unique Resource Id (required)
+  -i, --resource-id string   The unique Resource Id (required)
   -t, --timeout int          Timeout option for Request for Resource Share deletion [seconds] (default 60)
   -w, --wait-for-request     Wait for the Request for Resource Share deletion to be executed
 ```

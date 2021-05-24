@@ -36,7 +36,7 @@ Required values to run command:
   -h, --help                 help for delete
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --snapshot-id string   The unique Snapshot Id (required)
+  -i, --snapshot-id string   The unique Snapshot Id (required)
   -t, --timeout int          Timeout option for Request for Snapshot deletion [seconds] (default 60)
   -w, --wait-for-request     Wait for the Request for Snapshot deletion to be executed
 ```

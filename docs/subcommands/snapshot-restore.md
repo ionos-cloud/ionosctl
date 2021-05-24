@@ -39,7 +39,7 @@ Required values to run command:
   -h, --help                   help for restore
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --snapshot-id string     The unique Snapshot Id (required)
+  -i, --snapshot-id string     The unique Snapshot Id (required)
   -t, --timeout int            Timeout option for Request for Snapshot restore [seconds] (default 60)
       --volume-id string       The unique Volume Id (required)
   -w, --wait-for-request       Wait for the Request for Snapshot restore to be executed

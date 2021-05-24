@@ -28,7 +28,7 @@ Required values to run command:
   -f, --force              Force command to execute without user input
   -h, --help               help for delete
   -o, --output string      Desired output format [text|json] (default "text")
-      --pcc-id string      The unique Private Cross-Connect Id (required)
+  -i, --pcc-id string      The unique Private Cross-Connect Id (required)
   -q, --quiet              Quiet output
   -t, --timeout int        Timeout option for Request for Private Cross-Connect deletion [seconds] (default 60)
   -w, --wait-for-request   Wait for the Request for Private Cross-Connect deletion to be executed

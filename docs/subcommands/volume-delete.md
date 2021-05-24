@@ -14,7 +14,7 @@ ionosctl volume delete [flags]
 
 For `volume` command:
 ```text
-[v]
+[v vol]
 ```
 
 ## Description
@@ -41,7 +41,7 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for Volume deletion [seconds] (default 60)
-      --volume-id string       The unique Volume Id (required)
+  -i, --volume-id string       The unique Volume Id (required)
   -w, --wait-for-request       Wait for the Request for Volume deletion to be executed
 ```
 

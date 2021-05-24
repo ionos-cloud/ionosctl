@@ -10,6 +10,13 @@ description: List LANs
 ionosctl lan list [flags]
 ```
 
+## Aliases
+
+For `lan` command:
+```text
+[l]
+```
+
 ## Description
 
 Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.

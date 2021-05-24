@@ -42,7 +42,7 @@ Required values to run command:
   -h, --help              help for get
   -o, --output string     Desired output format [text|json] (default "text")
   -q, --quiet             Quiet output
-      --s3key-id string   The unique User S3Key Id (required)
+  -i, --s3key-id string   The unique User S3Key Id (required)
       --user-id string    The unique User Id (required)
 ```
 

@@ -33,7 +33,7 @@ Required values to run command:
                           Available columns: [GroupId Name CreateDataCenter CreateSnapshot ReserveIp AccessActivityLog CreatePcc S3Privilege CreateBackupUnit CreateInternetAccess CreateK8s] (default [GroupId,Name,CreateDataCenter,CreateSnapshot,ReserveIp,AccessActivityLog,CreatePcc,S3Privilege,CreateBackupUnit,CreateInternetAccess,CreateK8s])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force             Force command to execute without user input
-      --group-id string   The unique Group Id (required)
+  -i, --group-id string   The unique Group Id (required)
   -h, --help              help for get
   -o, --output string     Desired output format [text|json] (default "text")
   -q, --quiet             Quiet output

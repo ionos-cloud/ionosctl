@@ -45,7 +45,7 @@ Required values to run command:
   -f, --force                    Force command to execute without user input
   -h, --help                     help for attach
       --loadbalancer-id string   The unique Load Balancer Id (required)
-      --nic-id string            The unique NIC Id (required)
+  -i, --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion

@@ -42,7 +42,7 @@ Required values to run command:
       --create-pcc         The group will be allowed to create PCCs
       --create-snapshot    The group will be allowed to create Snapshots
   -f, --force              Force command to execute without user input
-      --group-id string    The unique Group Id (required)
+  -i, --group-id string    The unique Group Id (required)
   -h, --help               help for update
   -n, --name string        Name for the Group (required)
   -o, --output string      Desired output format [text|json] (default "text")

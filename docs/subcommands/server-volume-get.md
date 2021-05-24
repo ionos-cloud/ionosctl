@@ -14,12 +14,12 @@ ionosctl server volume get [flags]
 
 For `server` command:
 ```text
-[s]
+[s svr]
 ```
 
 For `volume` command:
 ```text
-[v]
+[v vol]
 ```
 
 ## Description
@@ -45,7 +45,7 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
-      --volume-id string       The unique Volume Id (required)
+  -i, --volume-id string       The unique Volume Id (required)
 ```
 
 ## Examples

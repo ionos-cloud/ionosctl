@@ -14,7 +14,7 @@ ionosctl volume get [flags]
 
 For `volume` command:
 ```text
-[v]
+[v vol]
 ```
 
 ## Description
@@ -38,7 +38,7 @@ Required values to run command:
   -h, --help                   help for get
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --volume-id string       The unique Volume Id (required)
+  -i, --volume-id string       The unique Volume Id (required)
 ```
 
 ## Examples

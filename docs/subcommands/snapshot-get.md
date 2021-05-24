@@ -36,7 +36,7 @@ Required values to run command:
   -h, --help                 help for get
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --snapshot-id string   The unique Snapshot Id (required)
+  -i, --snapshot-id string   The unique Snapshot Id (required)
 ```
 
 ## Examples

@@ -14,12 +14,12 @@ ionosctl server volume list [flags]
 
 For `server` command:
 ```text
-[s]
+[s svr]
 ```
 
 For `volume` command:
 ```text
-[v]
+[v vol]
 ```
 
 ## Description

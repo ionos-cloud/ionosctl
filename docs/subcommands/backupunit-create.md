@@ -14,7 +14,7 @@ ionosctl backupunit create [flags]
 
 For `backupunit` command:
 ```text
-[b]
+[b backup]
 ```
 
 ## Description

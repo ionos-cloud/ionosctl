@@ -34,7 +34,7 @@ Required values to run command:
   -h, --help                 help for update
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-      --resource-id string   The unique Resource Id (required)
+  -i, --resource-id string   The unique Resource Id (required)
       --share-privilege      Update the group's permission to share resource
   -t, --timeout int          Timeout option for Request for Resource Share update [seconds] (default 60)
   -w, --wait-for-request     Wait for the Request for Resource Share update to be executed

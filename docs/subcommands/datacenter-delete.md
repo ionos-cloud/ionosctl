@@ -14,7 +14,7 @@ ionosctl datacenter delete [flags]
 
 For `datacenter` command:
 ```text
-[dc]
+[d dc]
 ```
 
 ## Description
@@ -34,7 +34,7 @@ Required values to run command:
       --cols strings           Set of columns to be printed on output 
                                Available columns: [DatacenterId Name Location State Description Version Features SecAuthProtection] (default [DatacenterId,Name,Location,Features,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --datacenter-id string   The unique Data Center Id (required)
+  -i, --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for delete
   -o, --output string          Desired output format [text|json] (default "text")

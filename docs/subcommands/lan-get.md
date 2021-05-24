@@ -10,6 +10,13 @@ description: Get a LAN
 ionosctl lan get [flags]
 ```
 
+## Aliases
+
+For `lan` command:
+```text
+[l]
+```
+
 ## Description
 
 Use this command to retrieve information of a given LAN.
@@ -29,7 +36,7 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for get
-      --lan-id string          The unique LAN Id (required)
+  -i, --lan-id string          The unique LAN Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
 ```

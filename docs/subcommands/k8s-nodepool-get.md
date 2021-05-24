@@ -36,7 +36,7 @@ Required values to run command:
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
   -h, --help                 help for get
-      --nodepool-id string   The unique K8s Node Pool Id (required)
+  -i, --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
