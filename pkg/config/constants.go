@@ -109,6 +109,7 @@ const (
 	ArgK8sAnnotationValue    = "annotation-value"
 	ArgPublicIps             = "public-ips"
 	ArgGatewayIp             = "gateway-ip"
+	ArgUpdates               = "updates"
 )
 
 // IDs Flags

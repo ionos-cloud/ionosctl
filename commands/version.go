@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -29,6 +31,7 @@ func version() *core.Command {
 		CmdRun:     RunVersion,
 		InitClient: false,
 	})
+	versionCmd.AddBoolFlag(config.ArgUpdates, "", false, "Check for latest updates for CLI")
 
 	return versionCmd
 }
@@ -39,12 +42,17 @@ func RunVersion(c *core.CommandConfig) error {
 		return err
 	}
 
-	// Get and Print the latest Github Release for IONOS Cloud CLI
-	latestGhRelease, err := getGithubLatestRelease(latestGhApiReleaseUrl)
-	if err != nil {
-		return err
+	if viper.GetBool(core.GetFlagName(c.NS, config.ArgUpdates)) {
+		/*
+			Latest Github Release for IONOS Cloud CLI
+		*/
+		latestGhRelease, err := getGithubLatestRelease(latestGhApiReleaseUrl)
+		if err != nil {
+			return err
+		}
+		return c.Printer.Print(fmt.Sprintf("Latest ionosctl Github release: %s\nFor more information, go to: %s", latestGhRelease, latestGhReleaseUrl))
 	}
-	return c.Printer.Print(fmt.Sprintf("Latest ionosctl Github release: %s\nFor more information, go to: %s", latestGhRelease, latestGhReleaseUrl))
+	return nil
 }
 
 // getGithubLatestRelease retrieves the latest official release
