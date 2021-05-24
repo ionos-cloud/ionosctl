@@ -22,6 +22,11 @@ For `nic` command:
 [n]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve the attributes of a given load balanced NIC.

@@ -22,6 +22,11 @@ For `nic` command:
 [n]
 ```
 
+For `attach` command:
+```text
+[a]
+```
+
 ## Description
 
 Use this command to associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.

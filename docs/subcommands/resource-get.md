@@ -17,6 +17,11 @@ For `resource` command:
 [res]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get all Resources of a Type or a specific Resource Type using its Type and ID.

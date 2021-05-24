@@ -10,6 +10,13 @@ description: Update a Resource Share from a Group
 ionosctl share update [flags]
 ```
 
+## Aliases
+
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update the permissions that a Group has for a specific Resource Share.

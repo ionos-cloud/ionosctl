@@ -17,6 +17,11 @@ For `snapshot` command:
 [snap]
 ```
 
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.

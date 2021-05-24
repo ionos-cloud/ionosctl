@@ -17,6 +17,11 @@ For `location` command:
 [loc]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of available locations to create objects on.

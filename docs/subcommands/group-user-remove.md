@@ -22,6 +22,11 @@ For `user` command:
 [u]
 ```
 
+For `remove` command:
+```text
+[r]
+```
+
 ## Description
 
 Use this command to remove a User from a Group.

@@ -17,6 +17,11 @@ For `kubeconfig` command:
 [config]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.

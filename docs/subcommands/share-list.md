@@ -10,6 +10,13 @@ description: List Resources Shares through a Group
 ionosctl share list [flags]
 ```
 
+## Aliases
+
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a full list of all the Resources that are shared through a specified Group.

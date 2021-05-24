@@ -17,6 +17,11 @@ For `firewallrule` command:
 [f fr firewall]
 ```
 
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create/add a new Firewall Rule to the specified NIC. All Firewall Rules must be associated with a NIC.

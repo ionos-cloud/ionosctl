@@ -17,6 +17,11 @@ For `cluster` command:
 [c]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific Kubernetes Cluster.You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.

@@ -22,6 +22,11 @@ For `resource` command:
 [res]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of Resources assigned to a Group. To see more details about existing Resources, use `ionosctl resource` commands.

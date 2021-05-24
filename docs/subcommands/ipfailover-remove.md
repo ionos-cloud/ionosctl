@@ -17,6 +17,11 @@ For `ipfailover` command:
 [failover ipf]
 ```
 
+For `remove` command:
+```text
+[r]
+```
+
 ## Description
 
 Use this command to remove an IP Failover group from a LAN.

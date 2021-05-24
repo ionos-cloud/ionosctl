@@ -17,6 +17,11 @@ For `ipconsumer` command:
 [consumer cons ipc]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of Resources where each IP address from an IpBlock is being used.

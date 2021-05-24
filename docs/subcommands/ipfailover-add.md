@@ -17,6 +17,11 @@ For `ipfailover` command:
 [failover ipf]
 ```
 
+For `add` command:
+```text
+[a]
+```
+
 ## Description
 
 Use this command to add an IP Failover group to a LAN. 

@@ -17,6 +17,11 @@ For `nic` command:
 [n]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 This command deletes a specified NIC.

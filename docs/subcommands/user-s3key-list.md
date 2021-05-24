@@ -22,6 +22,11 @@ For `s3key` command:
 [k]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of S3Keys of a specified User.

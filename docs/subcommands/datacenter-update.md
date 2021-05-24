@@ -17,6 +17,11 @@ For `datacenter` command:
 [d dc]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to change a Virtual Data Center's name, description.

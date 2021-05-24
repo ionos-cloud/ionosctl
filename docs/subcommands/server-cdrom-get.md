@@ -22,6 +22,11 @@ For `cdrom` command:
 [cd]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve information about an attached CD-ROM on Server.

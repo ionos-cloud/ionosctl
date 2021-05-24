@@ -17,6 +17,11 @@ For `backupunit` command:
 [b backup]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific BackupUnit.

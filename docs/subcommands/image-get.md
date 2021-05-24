@@ -17,6 +17,11 @@ For `image` command:
 [img]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get information about a specified Image.

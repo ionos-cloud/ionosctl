@@ -22,6 +22,11 @@ For `nic` command:
 [n]
 ```
 
+For `detach` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to remove the association of a NIC with a Load Balancer.

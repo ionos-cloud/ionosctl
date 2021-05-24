@@ -17,6 +17,11 @@ For `ipfailover` command:
 [failover ipf]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of IP Failovers groups from a LAN.

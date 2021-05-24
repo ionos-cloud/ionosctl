@@ -17,6 +17,11 @@ For `request` command:
 [req]
 ```
 
+For `wait` command:
+```text
+[w]
+```
+
 ## Description
 
 Use this command to wait for a specified Request to execute.

@@ -17,6 +17,11 @@ For `volume` command:
 [v vol]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to list all Volumes from a Data Center on your account.

@@ -17,6 +17,11 @@ For `nic` command:
 [n]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update the configuration of a specified NIC. Some restrictions are in place: The primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer. You can also add additional reserved, public IPs to the NIC.

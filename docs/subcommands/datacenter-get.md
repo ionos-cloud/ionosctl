@@ -17,6 +17,11 @@ For `datacenter` command:
 [d dc]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve details about a Virtual Data Center by using its ID.

@@ -17,6 +17,11 @@ For `firewallrule` command:
 [f fr firewall]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a specified Firewall Rule from a Virtual Data Center.

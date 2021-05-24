@@ -17,6 +17,11 @@ For `user` command:
 [u]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update details about a specific User including their privileges.

@@ -17,6 +17,11 @@ For `user` command:
 [u]
 ```
 
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.

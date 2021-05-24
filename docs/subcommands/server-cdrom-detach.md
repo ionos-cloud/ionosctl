@@ -22,6 +22,11 @@ For `cdrom` command:
 [cd]
 ```
 
+For `detach` command:
+```text
+[d]
+```
+
 ## Description
 
 This will detach the CD-ROM from the Server.

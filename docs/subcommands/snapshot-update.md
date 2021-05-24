@@ -17,6 +17,11 @@ For `snapshot` command:
 [snap]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update a specified Snapshot.

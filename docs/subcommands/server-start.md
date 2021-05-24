@@ -17,6 +17,11 @@ For `server` command:
 [s svr]
 ```
 
+For `start` command:
+```text
+[on]
+```
+
 ## Description
 
 Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.

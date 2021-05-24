@@ -17,6 +17,11 @@ For `snapshot` command:
 [snap]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get information about a specified Snapshot.

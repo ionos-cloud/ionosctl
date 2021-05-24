@@ -10,6 +10,13 @@ description: List Kubernetes Nodes
 ionosctl k8s node list [flags]
 ```
 
+## Aliases
+
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of existing Kubernetes Nodes.

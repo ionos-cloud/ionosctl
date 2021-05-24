@@ -22,6 +22,11 @@ For `cdrom` command:
 [cd]
 ```
 
+For `attach` command:
+```text
+[a]
+```
+
 ## Description
 
 Use this command to attach a CD-ROM to an existing Server.

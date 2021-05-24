@@ -22,6 +22,11 @@ For `user` command:
 [u]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of Users from a specific Group.

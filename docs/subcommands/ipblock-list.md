@@ -17,6 +17,11 @@ For `ipblock` command:
 [block ipb]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to list IpBlocks.

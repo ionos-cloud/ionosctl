@@ -10,6 +10,13 @@ description: Remove a Label from a Resource
 ionosctl label remove [flags]
 ```
 
+## Aliases
+
+For `remove` command:
+```text
+[r]
+```
+
 ## Description
 
 Use this command to remove a Label from a Resource.

@@ -22,6 +22,11 @@ For `s3key` command:
 [k]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get information about a specified S3Key from a specified User.

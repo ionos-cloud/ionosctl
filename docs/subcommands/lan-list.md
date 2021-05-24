@@ -17,6 +17,11 @@ For `lan` command:
 [l]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.

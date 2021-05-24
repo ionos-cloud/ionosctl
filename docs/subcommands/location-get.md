@@ -17,6 +17,11 @@ For `location` command:
 [loc]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get information about a specific Location from a Region.

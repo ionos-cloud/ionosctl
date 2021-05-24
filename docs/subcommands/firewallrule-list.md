@@ -17,6 +17,11 @@ For `firewallrule` command:
 [f fr firewall]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of Firewall Rules from a specified NIC from a Server.

@@ -17,6 +17,11 @@ For `nic` command:
 [n]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of NICs on your account.

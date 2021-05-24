@@ -22,6 +22,11 @@ For `s3key` command:
 [k]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a specific S3Key of an User.

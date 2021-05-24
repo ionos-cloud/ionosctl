@@ -17,6 +17,11 @@ For `backupunit` command:
 [b backup]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update details about a specific BackupUnit. The password and the email may be updated.

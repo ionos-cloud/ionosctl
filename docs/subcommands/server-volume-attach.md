@@ -22,6 +22,11 @@ For `volume` command:
 [v vol]
 ```
 
+For `attach` command:
+```text
+[a]
+```
+
 ## Description
 
 Use this command to attach a pre-existing Volume to a Server.

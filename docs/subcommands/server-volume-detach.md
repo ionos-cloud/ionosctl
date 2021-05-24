@@ -22,6 +22,11 @@ For `volume` command:
 [v vol]
 ```
 
+For `detach` command:
+```text
+[d]
+```
+
 ## Description
 
 This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.

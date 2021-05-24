@@ -17,6 +17,11 @@ For `loadbalancer` command:
 [lb]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete the specified Load Balancer.

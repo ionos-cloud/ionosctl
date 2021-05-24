@@ -17,6 +17,11 @@ For `user` command:
 [u]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of existing Users available on your account.

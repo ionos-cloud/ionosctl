@@ -22,6 +22,11 @@ For `volume` command:
 [v vol]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve information about an attached Volume on Server.

@@ -17,6 +17,11 @@ For `ipblock` command:
 [block ipb]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve the attributes of a specific IpBlock.

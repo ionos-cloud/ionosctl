@@ -10,6 +10,13 @@ description: Add a Label to a Resource
 ionosctl label add [flags]
 ```
 
+## Aliases
+
+For `add` command:
+```text
+[a]
+```
+
 ## Description
 
 Use this command to add a Label to a specific Resource.

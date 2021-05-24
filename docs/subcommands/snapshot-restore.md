@@ -17,6 +17,11 @@ For `snapshot` command:
 [snap]
 ```
 
+For `restore` command:
+```text
+[r]
+```
+
 ## Description
 
 Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.

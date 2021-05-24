@@ -10,6 +10,13 @@ description: Delete a Kubernetes Node
 ionosctl k8s node delete [flags]
 ```
 
+## Aliases
+
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.

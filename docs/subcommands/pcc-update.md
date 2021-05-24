@@ -10,6 +10,13 @@ description: Update a Private Cross-Connect
 ionosctl pcc update [flags]
 ```
 
+## Aliases
+
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update details about a specific Private Cross-Connect. Name and description can be updated.

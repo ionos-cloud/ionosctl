@@ -17,6 +17,11 @@ For `loadbalancer` command:
 [lb]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to retrieve a list of Load Balancers within a Virtual Data Center on your account.

@@ -10,6 +10,13 @@ description: List Private Cross-Connects
 ionosctl pcc list [flags]
 ```
 
+## Aliases
+
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of existing Private Cross-Connects available on your account.

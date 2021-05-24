@@ -17,6 +17,11 @@ For `datacenter` command:
 [d dc]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.

@@ -17,6 +17,11 @@ For `loadbalancer` command:
 [lb]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve information about a Load Balancer instance.

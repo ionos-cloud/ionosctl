@@ -17,6 +17,11 @@ For `version` command:
 [v]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to retrieve all available Kubernetes versions.

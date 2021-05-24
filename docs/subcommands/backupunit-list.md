@@ -17,6 +17,11 @@ For `backupunit` command:
 [b backup]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of existing BackupUnits available on your account.

@@ -17,6 +17,11 @@ For `server` command:
 [s svr]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to list Servers from a specified Virtual Data Center.

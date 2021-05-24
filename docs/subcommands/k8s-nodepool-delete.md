@@ -17,6 +17,11 @@ For `nodepool` command:
 [np]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 This command deletes a Kubernetes Node Pool within an existing Kubernetes Cluster.

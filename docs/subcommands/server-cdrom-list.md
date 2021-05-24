@@ -22,6 +22,11 @@ For `cdrom` command:
 [cd]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to retrieve a list of CD-ROMs attached to the Server.

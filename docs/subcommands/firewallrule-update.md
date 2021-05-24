@@ -17,6 +17,11 @@ For `firewallrule` command:
 [f fr firewall]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update a specified Firewall Rule.

@@ -17,6 +17,11 @@ For `snapshot` command:
 [snap]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete the specified Snapshot.

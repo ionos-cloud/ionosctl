@@ -10,6 +10,13 @@ description: Authentication command for SDK
 ionosctl login [flags]
 ```
 
+## Aliases
+
+For `login` command:
+```text
+[log auth]
+```
+
 ## Description
 
 Use this command to authenticate. By default, user data will be saved in:

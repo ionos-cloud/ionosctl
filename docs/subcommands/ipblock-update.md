@@ -17,6 +17,11 @@ For `ipblock` command:
 [block ipb]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update the properties of an existing IpBlock.

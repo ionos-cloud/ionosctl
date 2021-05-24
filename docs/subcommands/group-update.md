@@ -17,6 +17,11 @@ For `group` command:
 [g]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update details about a specific Group.

@@ -17,6 +17,11 @@ For `backupunit` command:
 [b backup]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.

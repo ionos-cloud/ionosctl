@@ -17,6 +17,11 @@ For `cluster` command:
 [c]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.

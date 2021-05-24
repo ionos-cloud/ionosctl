@@ -10,6 +10,13 @@ description: Delete a Resource Share from a Group
 ionosctl share delete [flags]
 ```
 
+## Aliases
+
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 This command deletes a Resource Share from a specified Group.

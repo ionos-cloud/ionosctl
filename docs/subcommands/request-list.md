@@ -17,6 +17,11 @@ For `request` command:
 [req]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to list all Requests on your account

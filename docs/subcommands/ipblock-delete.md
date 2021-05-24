@@ -17,6 +17,11 @@ For `ipblock` command:
 [block ipb]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a specified IpBlock.

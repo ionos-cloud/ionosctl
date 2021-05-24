@@ -10,6 +10,13 @@ description: Get a Resource Share from a Group
 ionosctl share get [flags]
 ```
 
+## Aliases
+
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve the details of a specific Shared Resource available to a specified Group.

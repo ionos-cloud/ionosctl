@@ -17,6 +17,11 @@ For `lan` command:
 [l]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a specified LAN from a Virtual Data Center.

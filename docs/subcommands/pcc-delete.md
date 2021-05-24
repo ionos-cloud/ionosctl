@@ -10,6 +10,13 @@ description: Delete a Private Cross-Connect
 ionosctl pcc delete [flags]
 ```
 
+## Aliases
+
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a Private Cross-Connect.

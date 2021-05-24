@@ -17,6 +17,11 @@ For `version` command:
 [v]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve the current default Kubernetes version for Clusters and NodePools.

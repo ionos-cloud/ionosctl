@@ -22,6 +22,11 @@ For `volume` command:
 [v vol]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to retrieve a list of Volumes attached to the Server.

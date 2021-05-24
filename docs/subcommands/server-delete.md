@@ -17,6 +17,11 @@ For `server` command:
 [s svr]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 Use this command to delete a specified Server from a Virtual Data Center.

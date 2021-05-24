@@ -17,6 +17,11 @@ For `cluster` command:
 [c]
 ```
 
+For `delete` command:
+```text
+[d]
+```
+
 ## Description
 
 This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.

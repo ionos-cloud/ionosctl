@@ -17,6 +17,11 @@ For `group` command:
 [g]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of available Groups available on your account.

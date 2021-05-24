@@ -22,6 +22,11 @@ For `s3key` command:
 [k]
 ```
 
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a S3Key for a particular User.

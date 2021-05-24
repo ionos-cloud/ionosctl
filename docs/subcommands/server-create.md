@@ -17,6 +17,11 @@ For `server` command:
 [s svr]
 ```
 
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.

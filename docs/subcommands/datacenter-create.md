@@ -17,6 +17,11 @@ For `datacenter` command:
 [d dc]
 ```
 
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.

@@ -17,6 +17,11 @@ For `loadbalancer` command:
 [lb]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update the configuration of a specified Load Balancer.

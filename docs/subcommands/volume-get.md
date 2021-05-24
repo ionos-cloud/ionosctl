@@ -17,6 +17,11 @@ For `volume` command:
 [v vol]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve information about a Volume using its ID.

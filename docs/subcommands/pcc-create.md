@@ -10,6 +10,13 @@ description: Create a Private Cross-Connect
 ionosctl pcc create [flags]
 ```
 
+## Aliases
+
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a Private Cross-Connect. You can specify the name and the description for the Private Cross-Connect.

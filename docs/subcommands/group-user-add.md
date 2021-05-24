@@ -22,6 +22,11 @@ For `user` command:
 [u]
 ```
 
+For `add` command:
+```text
+[a]
+```
+
 ## Description
 
 Use this command to add an existing User to a specific Group.

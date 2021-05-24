@@ -17,6 +17,11 @@ For `request` command:
 [req]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get information about a specified Request.

@@ -10,6 +10,13 @@ description: Get a Label
 ionosctl label get [flags]
 ```
 
+## Aliases
+
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get information about a specified Label from a specified Resource.

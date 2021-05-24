@@ -17,6 +17,11 @@ For `lan` command:
 [l]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve information of a given LAN.

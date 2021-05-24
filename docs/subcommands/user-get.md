@@ -17,6 +17,11 @@ For `user` command:
 [u]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific User.

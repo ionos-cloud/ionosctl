@@ -17,6 +17,11 @@ For `nic` command:
 [n]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to get information about a specified NIC from specified Data Center and Server.

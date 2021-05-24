@@ -10,6 +10,13 @@ description: Recreate a Kubernetes Node
 ionosctl k8s node recreate [flags]
 ```
 
+## Aliases
+
+For `recreate` command:
+```text
+[r]
+```
+
 ## Description
 
 You can recreate a single Kubernetes Node.

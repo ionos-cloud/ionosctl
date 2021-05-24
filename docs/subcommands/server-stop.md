@@ -17,6 +17,11 @@ For `server` command:
 [s svr]
 ```
 
+For `stop` command:
+```text
+[off]
+```
+
 ## Description
 
 Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.

@@ -10,6 +10,13 @@ description: Get a Private Cross-Connect
 ionosctl pcc get [flags]
 ```
 
+## Aliases
+
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific Private Cross-Connect.

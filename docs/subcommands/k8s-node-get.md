@@ -10,6 +10,13 @@ description: Get a Kubernetes Node
 ionosctl k8s node get [flags]
 ```
 
+## Aliases
+
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.

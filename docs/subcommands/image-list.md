@@ -17,6 +17,11 @@ For `image` command:
 [img]
 ```
 
+For `list` command:
+```text
+[l ls]
+```
+
 ## Description
 
 Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.

@@ -17,6 +17,11 @@ For `server` command:
 [s svr]
 ```
 
+For `update` command:
+```text
+[u up]
+```
+
 ## Description
 
 Use this command to update a specified Server from a Virtual Data Center.

@@ -17,6 +17,11 @@ For `firewallrule` command:
 [f fr firewall]
 ```
 
+For `get` command:
+```text
+[g]
+```
+
 ## Description
 
 Use this command to retrieve information of a specified Firewall Rule.

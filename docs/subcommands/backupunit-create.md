@@ -17,6 +17,11 @@ For `backupunit` command:
 [b backup]
 ```
 
+For `create` command:
+```text
+[c]
+```
+
 ## Description
 
 Use this command to create a BackupUnit under a particular contract. You need to specify the name, email and password for the new BackupUnit.
