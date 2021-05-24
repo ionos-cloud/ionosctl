@@ -44,6 +44,7 @@ func ipblock() *core.Command {
 		Namespace:  "ipblock",
 		Resource:   "ipblock",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List IpBlocks",
 		LongDesc:   "Use this command to list IpBlocks.",
 		Example:    listIpBlockExample,
@@ -59,6 +60,7 @@ func ipblock() *core.Command {
 		Namespace:  "ipblock",
 		Resource:   "ipblock",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get an IpBlock",
 		LongDesc:   "Use this command to retrieve the attributes of a specific IpBlock.\n\nRequired values to run command:\n\n* IpBlock Id",
 		Example:    getIpBlockExample,
@@ -78,6 +80,7 @@ func ipblock() *core.Command {
 		Namespace: "ipblock",
 		Resource:  "ipblock",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create/Reserve an IpBlock",
 		LongDesc: `Use this command to create/reserve an IpBlock in a specified location that can be used by resources within any Virtual Data Centers provisioned in that same location. An IpBlock consists of one or more static IP addresses. The name, size of the IpBlock can be set.
 
@@ -107,6 +110,7 @@ Required values to run command:
 		Namespace: "ipblock",
 		Resource:  "ipblock",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update an IpBlock",
 		LongDesc: `Use this command to update the properties of an existing IpBlock.
 
@@ -135,6 +139,7 @@ Required values to run command:
 		Namespace: "ipblock",
 		Resource:  "ipblock",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete an IpBlock",
 		LongDesc: `Use this command to delete a specified IpBlock.
 

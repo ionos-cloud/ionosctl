@@ -44,6 +44,7 @@ func server() *core.Command {
 		Namespace:  "server",
 		Resource:   "server",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Servers",
 		LongDesc:   "Use this command to list Servers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listServerExample,
@@ -63,6 +64,7 @@ func server() *core.Command {
 		Namespace:  "server",
 		Resource:   "server",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Server",
 		LongDesc:   "Use this command to get information about a specified Server from a Virtual Data Center. You can also wait for Server to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    getServerExample,
@@ -88,6 +90,7 @@ func server() *core.Command {
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Server",
 		LongDesc: `Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
 
@@ -127,6 +130,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Server",
 		LongDesc: `Use this command to update a specified Server from a Virtual Data Center.
 
@@ -171,6 +175,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Server",
 		LongDesc: `Use this command to delete a specified Server from a Virtual Data Center.
 
@@ -205,6 +210,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "start",
+		Aliases:   []string{"on"},
 		ShortDesc: "Start a Server",
 		LongDesc: `Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
 
@@ -237,6 +243,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "stop",
+		Aliases:   []string{"off"},
 		ShortDesc: "Stop a Server",
 		LongDesc: `Use this command to stop a Server from a Virtual Data Center. The machine will be forcefully powered off, billing will cease, and the public IP, if one is allocated, will be deallocated.
 
@@ -269,6 +276,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "server",
 		Verb:      "reboot",
+		Aliases:   []string{"reset"},
 		ShortDesc: "Force a hard reboot of a Server",
 		LongDesc: `Use this command to force a hard reboot of the Server. Do not use this method if you want to gracefully reboot the machine. This is the equivalent of powering off the machine and turning it back on.
 

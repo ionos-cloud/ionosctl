@@ -44,6 +44,7 @@ func share() *core.Command {
 		Namespace:  "share",
 		Resource:   "share",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Resources Shares through a Group",
 		LongDesc:   "Use this command to get a full list of all the Resources that are shared through a specified Group.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    listSharesExample,
@@ -63,6 +64,7 @@ func share() *core.Command {
 		Namespace:  "share",
 		Resource:   "share",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Resource Share from a Group",
 		LongDesc:   "Use this command to retrieve the details of a specific Shared Resource available to a specified Group.\n\nRequired values to run command:\n\n* Group Id\n* Resource Id",
 		Example:    getShareExample,
@@ -118,6 +120,7 @@ Required values to run a command:
 		Namespace: "share",
 		Resource:  "share",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Resource Share from a Group",
 		LongDesc: `Use this command to update the permissions that a Group has for a specific Resource Share.
 
@@ -152,6 +155,7 @@ Required values to run command:
 		Namespace: "share",
 		Resource:  "share",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Resource Share from a Group",
 		LongDesc: `This command deletes a Resource Share from a specified Group.
 

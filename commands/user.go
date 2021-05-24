@@ -45,6 +45,7 @@ func user() *core.Command {
 		Namespace:  "user",
 		Resource:   "user",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Users",
 		LongDesc:   "Use this command to get a list of existing Users available on your account.",
 		Example:    listUserExample,
@@ -60,6 +61,7 @@ func user() *core.Command {
 		Namespace:  "user",
 		Resource:   "user",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a User",
 		LongDesc:   "Use this command to retrieve details about a specific User.\n\nRequired values to run command:\n\n* User Id",
 		Example:    getUserExample,
@@ -79,6 +81,7 @@ func user() *core.Command {
 		Namespace: "user",
 		Resource:  "user",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a User under a particular contract",
 		LongDesc: `Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
@@ -109,6 +112,7 @@ Required values to run a command:
 		Namespace: "user",
 		Resource:  "user",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a User",
 		LongDesc: `Use this command to update details about a specific User including their privileges.
 
@@ -139,6 +143,7 @@ Required values to run command:
 		Namespace: "user",
 		Resource:  "user",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Blacklists the User, disabling them",
 		LongDesc: `This command blacklists the User, disabling them. The User is not completely purged, therefore if you anticipate needing to create a User with the same name in the future, we suggest renaming the User before you delete it.
 
@@ -315,6 +320,7 @@ func groupUser() *core.Command {
 		Namespace:  "group",
 		Resource:   "user",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Users from a Group",
 		LongDesc:   "Use this command to get a list of Users from a specific Group.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    listGroupUsersExample,
@@ -334,6 +340,7 @@ func groupUser() *core.Command {
 		Namespace:  "group",
 		Resource:   "user",
 		Verb:       "add",
+		Aliases:    []string{"a"},
 		ShortDesc:  "Add User to a Group",
 		LongDesc:   "Use this command to add an existing User to a specific Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    addGroupUserExample,
@@ -357,6 +364,7 @@ func groupUser() *core.Command {
 		Namespace:  "group",
 		Resource:   "user",
 		Verb:       "remove",
+		Aliases:    []string{"r"},
 		ShortDesc:  "Remove User from a Group",
 		LongDesc:   "Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    removeGroupUserExample,

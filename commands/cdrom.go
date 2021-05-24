@@ -44,6 +44,7 @@ func serverCdrom() *core.Command {
 		Namespace: "server",
 		Resource:  "cdrom",
 		Verb:      "attach",
+		Aliases:   []string{"a"},
 		ShortDesc: "Attach a CD-ROM to a Server",
 		LongDesc: `Use this command to attach a CD-ROM to an existing Server.
 
@@ -81,6 +82,7 @@ Required values to run command:
 		Namespace:  "server",
 		Resource:   "cdrom",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached CD-ROMs from a Server",
 		LongDesc:   "Use this command to retrieve a list of CD-ROMs attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listCdromServerExample,
@@ -104,6 +106,7 @@ Required values to run command:
 		Namespace:  "server",
 		Resource:   "cdrom",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a specific attached CD-ROM from a Server",
 		LongDesc:   "Use this command to retrieve information about an attached CD-ROM on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Cdrom Id",
 		Example:    getCdromServerExample,
@@ -131,6 +134,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "cdrom",
 		Verb:      "detach",
+		Aliases:   []string{"d"},
 		ShortDesc: "Detach a CD-ROM from a Server",
 		LongDesc: `This will detach the CD-ROM from the Server.
 

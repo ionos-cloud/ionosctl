@@ -43,6 +43,7 @@ func k8sNode() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "node",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes Nodes",
 		LongDesc:   "Use this command to get a list of existing Kubernetes Nodes.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		Example:    listK8sNodesExample,
@@ -66,6 +67,7 @@ func k8sNode() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "node",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Kubernetes Node",
 		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Node.You can wait for the Node to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id\n* K8s Node Id",
 		Example:    getK8sNodeExample,
@@ -98,6 +100,7 @@ func k8sNode() *core.Command {
 		Namespace: "k8s",
 		Resource:  "node",
 		Verb:      "recreate",
+		Aliases:   []string{"r"},
 		ShortDesc: "Recreate a Kubernetes Node",
 		LongDesc: `You can recreate a single Kubernetes Node.
 
@@ -136,6 +139,7 @@ Required values to run command:
 		Namespace: "k8s",
 		Resource:  "node",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Kubernetes Node",
 		LongDesc: `This command deletes a Kubernetes Node within an existing Kubernetes NodePool in a Cluster.
 

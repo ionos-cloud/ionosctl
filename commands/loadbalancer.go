@@ -44,6 +44,7 @@ func loadBalancer() *core.Command {
 		Namespace:  "loadbalancer",
 		Resource:   "loadbalancer",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Load Balancers",
 		LongDesc:   "Use this command to retrieve a list of Load Balancers within a Virtual Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listLoadbalancerExample,
@@ -63,6 +64,7 @@ func loadBalancer() *core.Command {
 		Namespace:  "loadbalancer",
 		Resource:   "loadbalancer",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Load Balancer",
 		LongDesc:   "Use this command to retrieve information about a Load Balancer instance.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		Example:    getLoadbalancerExample,
@@ -86,6 +88,7 @@ func loadBalancer() *core.Command {
 		Namespace: "loadbalancer",
 		Resource:  "loadbalancer",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Load Balancer",
 		LongDesc: `Use this command to create a new Load Balancer within the Virtual Data Center. Load balancers can be used for public or private IP traffic. The name, IP and DHCP for the Load Balancer can be set.
 
@@ -115,6 +118,7 @@ Required values to run command:
 		Namespace: "loadbalancer",
 		Resource:  "loadbalancer",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Load Balancer",
 		LongDesc: `Use this command to update the configuration of a specified Load Balancer.
 
@@ -150,6 +154,7 @@ Required values to run command:
 		Namespace: "loadbalancer",
 		Resource:  "loadbalancer",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Load Balancer",
 		LongDesc: `Use this command to delete the specified Load Balancer.
 

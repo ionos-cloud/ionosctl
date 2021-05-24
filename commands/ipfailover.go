@@ -45,6 +45,7 @@ func ipfailover() *core.Command {
 		Namespace:  "ipfailover",
 		Resource:   "ipfailover",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List IP Failovers groups from a LAN",
 		LongDesc:   "Use this command to get a list of IP Failovers groups from a LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* Lan Id",
 		Example:    listIpFailoverExample,
@@ -68,6 +69,7 @@ func ipfailover() *core.Command {
 		Namespace: "ipfailover",
 		Resource:  "ipfailover",
 		Verb:      "add",
+		Aliases:   []string{"a"},
 		ShortDesc: "Add IP Failover group to a LAN",
 		LongDesc: `Use this command to add an IP Failover group to a LAN. 
 
@@ -117,6 +119,7 @@ Required values to run command:
 		Namespace: "ipfailover",
 		Resource:  "ipfailover",
 		Verb:      "remove",
+		Aliases:   []string{"r"},
 		ShortDesc: "Remove IP Failover group from a LAN",
 		LongDesc: `Use this command to remove an IP Failover group from a LAN.
 

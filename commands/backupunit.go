@@ -47,6 +47,7 @@ func backupunit() *core.Command {
 		Namespace:  "backupunit",
 		Resource:   "backupunit",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List BackupUnits",
 		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.",
 		Example:    listBackupUnitsExample,
@@ -62,6 +63,7 @@ func backupunit() *core.Command {
 		Namespace:  "backupunit",
 		Resource:   "backupunit",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a BackupUnit",
 		LongDesc:   "Use this command to retrieve details about a specific BackupUnit.\n\nRequired values to run command:\n\n* BackupUnit Id",
 		Example:    getBackupUnitExample,
@@ -100,6 +102,7 @@ func backupunit() *core.Command {
 		Namespace: "backupunit",
 		Resource:  "backupunit",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a BackupUnit",
 		LongDesc: `Use this command to create a BackupUnit under a particular contract. You need to specify the name, email and password for the new BackupUnit.
 
@@ -133,6 +136,7 @@ Required values to run a command:
 		Namespace: "backupunit",
 		Resource:  "backupunit",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a BackupUnit",
 		LongDesc: `Use this command to update details about a specific BackupUnit. The password and the email may be updated.
 
@@ -160,6 +164,7 @@ Required values to run command:
 		Namespace: "backupunit",
 		Resource:  "backupunit",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a BackupUnit",
 		LongDesc: `Use this command to delete a BackupUnit. Deleting a BackupUnit is a dangerous operation. A successful DELETE will remove the backup plans inside a BackupUnit, ALL backups associated with the BackupUnit, the backup user and finally the BackupUnit itself.
 

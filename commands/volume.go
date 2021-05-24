@@ -51,6 +51,7 @@ func volume() *core.Command {
 		Namespace:  "volume",
 		Resource:   "volume",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Volumes",
 		LongDesc:   "Use this command to list all Volumes from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listVolumeExample,
@@ -66,6 +67,7 @@ func volume() *core.Command {
 		Namespace:  "volume",
 		Resource:   "volume",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Volume",
 		LongDesc:   "Use this command to retrieve information about a Volume using its ID.\n\nRequired values to run command:\n\n* Data Center Id\n* Volume Id",
 		Example:    getVolumeExample,
@@ -85,6 +87,7 @@ func volume() *core.Command {
 		Namespace: "volume",
 		Resource:  "volume",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Volume",
 		LongDesc: `Use this command to create a Volume on your account. Creates a volume within the Data Center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type, availability zone, image and other properties for the object.
 
@@ -147,6 +150,7 @@ Required values to run command:
 		Namespace: "volume",
 		Resource:  "volume",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Volume",
 		LongDesc: `Use this command to update a Volume. You may increase the size of an existing storage Volume. You cannot reduce the size of an existing storage Volume. The Volume size will be increased without reboot if the appropriate "hot plug" settings have been set to true. The additional capacity is not added to any partition therefore you will need to adjust the partition inside the operating system afterwards.
 
@@ -186,6 +190,7 @@ Required values to run command:
 		Namespace: "volume",
 		Resource:  "volume",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Volume",
 		LongDesc: `Use this command to delete specified Volume. This will result in the Volume being removed from your Virtual Data Center. Please use this with caution!
 
@@ -427,6 +432,7 @@ func serverVolume() *core.Command {
 		Namespace: "server",
 		Resource:  "volume",
 		Verb:      "attach",
+		Aliases:   []string{"a"},
 		ShortDesc: "Attach a Volume to a Server",
 		LongDesc: `Use this command to attach a pre-existing Volume to a Server.
 
@@ -464,6 +470,7 @@ Required values to run command:
 		Namespace:  "server",
 		Resource:   "volume",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached Volumes from a Server",
 		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listVolumesServerExample,
@@ -487,6 +494,7 @@ Required values to run command:
 		Namespace:  "server",
 		Resource:   "volume",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get an attached Volume from a Server",
 		LongDesc:   "Use this command to retrieve information about an attached Volume on Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Volume Id",
 		Example:    getVolumeServerExample,
@@ -514,6 +522,7 @@ Required values to run command:
 		Namespace: "server",
 		Resource:  "volume",
 		Verb:      "detach",
+		Aliases:   []string{"d"},
 		ShortDesc: "Detach a Volume from a Server",
 		LongDesc: `This will detach the Volume from the Server. Depending on the Volume HotUnplug settings, this may result in the Server being rebooted. This will NOT delete the Volume from your Virtual Data Center. You will need to use a separate command to delete a Volume.
 

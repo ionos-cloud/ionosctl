@@ -44,6 +44,7 @@ func contract() *core.Command {
 		Namespace:  "contract",
 		Resource:   "contract",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get information about the Contract Resources on your account",
 		LongDesc:   "Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
 		Example:    getContractExample,

@@ -44,6 +44,7 @@ func pcc() *core.Command {
 		Namespace:  "pcc",
 		Resource:   "pcc",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Private Cross-Connects",
 		LongDesc:   "Use this command to get a list of existing Private Cross-Connects available on your account.",
 		Example:    listPccsExample,
@@ -59,6 +60,7 @@ func pcc() *core.Command {
 		Namespace:  "pcc",
 		Resource:   "pcc",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Private Cross-Connect",
 		LongDesc:   "Use this command to retrieve details about a specific Private Cross-Connect.\n\nRequired values to run command:\n\n* Pcc Id",
 		Example:    getPccExample,
@@ -78,6 +80,7 @@ func pcc() *core.Command {
 		Namespace:  "pcc",
 		Resource:   "pcc",
 		Verb:       "create",
+		Aliases:    []string{"c"},
 		ShortDesc:  "Create a Private Cross-Connect",
 		LongDesc:   "Use this command to create a Private Cross-Connect. You can specify the name and the description for the Private Cross-Connect.",
 		Example:    createPccExample,
@@ -97,6 +100,7 @@ func pcc() *core.Command {
 		Namespace: "pcc",
 		Resource:  "pcc",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Private Cross-Connect",
 		LongDesc: `Use this command to update details about a specific Private Cross-Connect. Name and description can be updated.
 
@@ -124,6 +128,7 @@ Required values to run command:
 		Namespace: "pcc",
 		Resource:  "pcc",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Private Cross-Connect",
 		LongDesc: `Use this command to delete a Private Cross-Connect.
 

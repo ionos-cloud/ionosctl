@@ -45,6 +45,7 @@ func userS3key() *core.Command {
 		Namespace:  "user",
 		Resource:   "s3key",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List User S3Keys",
 		LongDesc:   "Use this command to get a list of S3Keys of a specified User.\n\nRequired values to run command:\n\n* User Id",
 		Example:    listS3KeysExample,
@@ -64,6 +65,7 @@ func userS3key() *core.Command {
 		Namespace:  "user",
 		Resource:   "s3key",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a User S3Key",
 		LongDesc:   "Use this command to get information about a specified S3Key from a specified User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    getS3KeyExample,
@@ -87,6 +89,7 @@ func userS3key() *core.Command {
 		Namespace: "user",
 		Resource:  "s3key",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a S3Key for a User",
 		LongDesc: `Use this command to create a S3Key for a particular User.
 
@@ -116,6 +119,7 @@ Required values to run command:
 		Namespace: "user",
 		Resource:  "s3key",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a S3Key",
 		LongDesc: `Use this command to update a specified S3Key from a particular User. This operation allows you to enable or disable a specific S3Key.
 
@@ -150,6 +154,7 @@ Required values to run command:
 		Namespace:  "user",
 		Resource:   "s3key",
 		Verb:       "delete",
+		Aliases:    []string{"d"},
 		ShortDesc:  "Delete a S3Key",
 		LongDesc:   "Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    deleteS3KeyExample,

@@ -44,6 +44,7 @@ func snapshot() *core.Command {
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Snapshots",
 		LongDesc:   "Use this command to get a list of Snapshots.",
 		Example:    listSnapshotsExample,
@@ -59,6 +60,7 @@ func snapshot() *core.Command {
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Snapshot",
 		LongDesc:   "Use this command to get information about a specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		Example:    getSnapshotExample,
@@ -78,6 +80,7 @@ func snapshot() *core.Command {
 		Namespace: "snapshot",
 		Resource:  "snapshot",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Snapshot of a Volume within the Virtual Data Center",
 		LongDesc: `Use this command to create a Snapshot. Creation of Snapshots is performed from the perspective of the storage Volume. The name, description and licence type of the Snapshot can be set.
 
@@ -119,6 +122,7 @@ Required values to run command:
 		Namespace: "snapshot",
 		Resource:  "snapshot",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Snapshot",
 		LongDesc: `Use this command to update a specified Snapshot.
 
@@ -163,6 +167,7 @@ Required values to run command:
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "restore",
+		Aliases:    []string{"r"},
 		ShortDesc:  "Restore a Snapshot onto a Volume",
 		LongDesc:   "Use this command to restore a Snapshot onto a Volume. A Snapshot is created as just another image that can be used to create new Volumes or to restore an existing Volume.\n\nRequired values to run command:\n\n* Datacenter Id\n* Volume Id\n* Snapshot Id",
 		Example:    restoreSnapshotExample,
@@ -192,6 +197,7 @@ Required values to run command:
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "delete",
+		Aliases:    []string{"d"},
 		ShortDesc:  "Delete a Snapshot",
 		LongDesc:   "Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		Example:    deleteSnapshotExample,

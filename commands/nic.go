@@ -55,6 +55,7 @@ func nic() *core.Command {
 		Namespace:  "nic",
 		Resource:   "nic",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List NICs",
 		LongDesc:   "Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listNicExample,
@@ -70,6 +71,7 @@ func nic() *core.Command {
 		Namespace:  "nic",
 		Resource:   "nic",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a NIC",
 		LongDesc:   "Use this command to get information about a specified NIC from specified Data Center and Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* NIC Id",
 		Example:    getNicExample,
@@ -89,6 +91,7 @@ func nic() *core.Command {
 		Namespace: "nic",
 		Resource:  "nic",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a NIC",
 		LongDesc: `Use this command to create/add a new NIC to the target Server. You can specify the name, ips, dhcp and Lan Id the NIC will sit on. If the Lan Id does not exist it will be created.
 
@@ -120,6 +123,7 @@ Required values to run a command:
 		Namespace: "nic",
 		Resource:  "nic",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a NIC",
 		LongDesc: `Use this command to update the configuration of a specified NIC. Some restrictions are in place: The primary address of a NIC connected to a Load Balancer can only be changed by changing the IP of the Load Balancer. You can also add additional reserved, public IPs to the NIC.
 
@@ -159,6 +163,7 @@ Required values to run command:
 		Namespace: "nic",
 		Resource:  "nic",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a NIC",
 		LongDesc: `This command deletes a specified NIC.
 
@@ -325,6 +330,7 @@ func loadBalancerNic() *core.Command {
 		Namespace: "loadbalancer",
 		Resource:  "nic",
 		Verb:      "attach",
+		Aliases:   []string{"a"},
 		ShortDesc: "Attach a NIC to a Load Balancer",
 		LongDesc: `Use this command to associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.
 
@@ -368,6 +374,7 @@ Required values to run command:
 		Namespace:  "loadbalancer",
 		Resource:   "nic",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached NICs from a Load Balancer",
 		LongDesc:   "Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		Example:    listNicsLoadbalancerExample,
@@ -391,6 +398,7 @@ Required values to run command:
 		Namespace:  "loadbalancer",
 		Resource:   "nic",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get an attached NIC to a Load Balancer",
 		LongDesc:   "Use this command to retrieve the attributes of a given load balanced NIC.\n\nRequired values to run the command:\n\n* Data Center Id\n* Load Balancer Id\n* NIC Id",
 		Example:    getNicLoadbalancerExample,
@@ -422,6 +430,7 @@ Required values to run command:
 		Namespace: "loadbalancer",
 		Resource:  "nic",
 		Verb:      "detach",
+		Aliases:   []string{"d"},
 		ShortDesc: "Detach a NIC from a Load Balancer",
 		LongDesc: `Use this command to remove the association of a NIC with a Load Balancer.
 

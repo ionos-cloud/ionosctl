@@ -64,6 +64,7 @@ func firewallrule() *core.Command {
 		Namespace:  "firewallrule",
 		Resource:   "firewallrule",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Firewall Rules",
 		LongDesc:   "Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id",
 		Example:    listFirewallRuleExample,
@@ -79,6 +80,7 @@ func firewallrule() *core.Command {
 		Namespace:  "firewallrule",
 		Resource:   "firewallrule",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Firewall Rule",
 		LongDesc:   "Use this command to retrieve information of a specified Firewall Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id\n* FirewallRule Id",
 		Example:    getFirewallRuleExample,
@@ -101,6 +103,7 @@ func firewallrule() *core.Command {
 		Namespace: "firewallrule",
 		Resource:  "firewallrule",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Firewall Rule",
 		LongDesc: `Use this command to create/add a new Firewall Rule to the specified NIC. All Firewall Rules must be associated with a NIC.
 
@@ -138,6 +141,7 @@ Required values to run command:
 		Namespace: "firewallrule",
 		Resource:  "firewallrule",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a FirewallRule",
 		LongDesc: `Use this command to update a specified Firewall Rule.
 
@@ -179,6 +183,7 @@ Required values to run command:
 		Namespace: "firewallrule",
 		Resource:  "firewallrule",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a FirewallRule",
 		LongDesc: `Use this command to delete a specified Firewall Rule from a Virtual Data Center.
 

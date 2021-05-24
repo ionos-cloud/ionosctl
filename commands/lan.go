@@ -51,6 +51,7 @@ func lan() *core.Command {
 		Namespace:  "lan",
 		Resource:   "lan",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List LANs",
 		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listLanExample,
@@ -66,6 +67,7 @@ func lan() *core.Command {
 		Namespace:  "lan",
 		Resource:   "lan",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a LAN",
 		LongDesc:   "Use this command to retrieve information of a given LAN.\n\nRequired values to run command:\n\n* Data Center Id\n* LAN Id",
 		Example:    getLanExample,
@@ -85,6 +87,7 @@ func lan() *core.Command {
 		Namespace: "lan",
 		Resource:  "lan",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a LAN",
 		LongDesc: `Use this command to create a new LAN within a Virtual Data Center on your account. The name, the public option and the Private Cross-Connect Id can be set.
 
@@ -116,6 +119,7 @@ Required values to run command:
 		Namespace: "lan",
 		Resource:  "lan",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a LAN",
 		LongDesc: `Use this command to update a specified LAN. You can update the name, the public option for LAN and the Pcc Id to connect the LAN to a Private Cross-Connect.
 
@@ -150,6 +154,7 @@ Required values to run command:
 		Namespace: "lan",
 		Resource:  "lan",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a LAN",
 		LongDesc: `Use this command to delete a specified LAN from a Virtual Data Center.
 

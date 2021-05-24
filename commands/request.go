@@ -44,6 +44,7 @@ func request() *core.Command {
 		Namespace:  "request",
 		Resource:   "request",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Requests",
 		LongDesc:   "Use this command to list all Requests on your account",
 		Example:    "",
@@ -59,6 +60,7 @@ func request() *core.Command {
 		Namespace:  "request",
 		Resource:   "request",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Request",
 		LongDesc:   "Use this command to get information about a specified Request.\n\nRequired values to run command:\n\n* Request Id",
 		Example:    getRequestExample,
@@ -78,6 +80,7 @@ func request() *core.Command {
 		Namespace: "request",
 		Resource:  "request",
 		Verb:      "wait",
+		Aliases:   []string{"w"},
 		ShortDesc: "Wait a Request",
 		LongDesc: `Use this command to wait for a specified Request to execute.
 

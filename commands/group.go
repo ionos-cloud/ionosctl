@@ -45,6 +45,7 @@ func group() *core.Command {
 		Namespace:  "group",
 		Resource:   "group",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Groups",
 		LongDesc:   "Use this command to get a list of available Groups available on your account.",
 		Example:    listGroupExample,
@@ -60,6 +61,7 @@ func group() *core.Command {
 		Namespace:  "group",
 		Resource:   "group",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Group",
 		LongDesc:   "Use this command to retrieve details about a specific Group.\n\nRequired values to run command:\n\n* Group Id",
 		Example:    getGroupExample,
@@ -79,6 +81,7 @@ func group() *core.Command {
 		Namespace: "group",
 		Resource:  "group",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Group",
 		LongDesc: `Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
 
@@ -110,6 +113,7 @@ Required values to run a command:
 		Namespace: "group",
 		Resource:  "group",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Group",
 		LongDesc: `Use this command to update details about a specific Group.
 
@@ -147,6 +151,7 @@ Required values to run command:
 		Namespace: "group",
 		Resource:  "group",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Group",
 		LongDesc: `Use this operation to delete a single Group. Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
 

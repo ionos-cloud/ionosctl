@@ -44,6 +44,7 @@ func datacenter() *core.Command {
 		Namespace:  "datacenter",
 		Resource:   "datacenter",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Data Centers",
 		LongDesc:   "Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.",
 		Example:    listDatacenterExample,
@@ -59,6 +60,7 @@ func datacenter() *core.Command {
 		Namespace:  "datacenter",
 		Resource:   "datacenter",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Data Center",
 		LongDesc:   "Use this command to retrieve details about a Virtual Data Center by using its ID.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    getDatacenterExample,
@@ -78,6 +80,7 @@ func datacenter() *core.Command {
 		Namespace: "datacenter",
 		Resource:  "datacenter",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Data Center",
 		LongDesc: `Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
 
@@ -105,6 +108,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		Namespace: "datacenter",
 		Resource:  "datacenter",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Data Center",
 		LongDesc: `Use this command to change a Virtual Data Center's name, description.
 
@@ -134,6 +138,7 @@ Required values to run command:
 		Namespace: "datacenter",
 		Resource:  "datacenter",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Data Center",
 		LongDesc: `Use this command to delete a specified Virtual Data Center (VDC) from your account. This will remove all objects within the VDC and remove the VDC object itself. 
 

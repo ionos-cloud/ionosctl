@@ -63,6 +63,7 @@ func k8sCluster() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "cluster",
 		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes Clusters",
 		LongDesc:   "Use this command to get a list of existing Kubernetes Clusters.",
 		Example:    listK8sClustersExample,
@@ -78,6 +79,7 @@ func k8sCluster() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "cluster",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Kubernetes Cluster",
 		LongDesc:   "Use this command to retrieve details about a specific Kubernetes Cluster.You can wait for the Cluster to be in \"ACTIVE\" state using `--wait-for-state` flag together with `--timeout` option.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		Example:    getK8sClusterExample,
@@ -99,6 +101,7 @@ func k8sCluster() *core.Command {
 		Namespace: "k8s",
 		Resource:  "cluster",
 		Verb:      "create",
+		Aliases:   []string{"c"},
 		ShortDesc: "Create a Kubernetes Cluster",
 		LongDesc: `Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: ` + "`" + `ionosctl k8s version get` + "`" + `.
 
@@ -127,6 +130,7 @@ Required values to run a command:
 		Namespace: "k8s",
 		Resource:  "cluster",
 		Verb:      "update",
+		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Kubernetes Cluster",
 		LongDesc: `Use this command to update the name, Kubernetes version, maintenance day and maintenance time of an existing Kubernetes Cluster.
 
@@ -161,6 +165,7 @@ Required values to run command:
 		Namespace: "k8s",
 		Resource:  "cluster",
 		Verb:      "delete",
+		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Kubernetes Cluster",
 		LongDesc: `This command deletes a Kubernetes cluster. The cluster cannot contain any NodePools when deleting.
 

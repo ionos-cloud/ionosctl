@@ -20,6 +20,7 @@ func login() *core.Command {
 		Namespace: "login",
 		Resource:  "login",
 		Verb:      "login",
+		Aliases:   []string{"log", "auth"},
 		ShortDesc: "Authentication command for SDK",
 		LongDesc: `Use this command to authenticate. By default, user data will be saved in:
 

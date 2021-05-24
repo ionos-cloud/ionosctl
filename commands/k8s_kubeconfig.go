@@ -30,6 +30,7 @@ func k8sKubeconfig() *core.Command {
 		Namespace:  "k8s",
 		Resource:   "kubeconfig",
 		Verb:       "get",
+		Aliases:    []string{"g"},
 		ShortDesc:  "Get the kubeconfig file for a Kubernetes Cluster",
 		LongDesc:   "Use this command to retrieve the kubeconfig file for a given Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		Example:    getK8sKubeconfigExample,
