@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.5]
+
+- Added commands aliases
+- Added flags aliases
+- Renamed flags
+- Improved `--cols` option for output
+
 ## [5.0.4]
 
 - Updated sdk-go version to v5.1.0
