@@ -63,26 +63,26 @@ func NewLabelResourceService(client *Client, ctx context.Context) LabelResources
 }
 
 func (svc *labelResourcesService) GetByUrn(labelurn string) (*Label, *Response, error) {
-	req := svc.client.LabelApi.LabelsFindByUrn(svc.context, labelurn)
-	ls, res, err := svc.client.LabelApi.LabelsFindByUrnExecute(req)
+	req := svc.client.LabelsApi.LabelsFindByUrn(svc.context, labelurn)
+	ls, res, err := svc.client.LabelsApi.LabelsFindByUrnExecute(req)
 	return &Label{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) List() (Labels, *Response, error) {
-	req := svc.client.LabelApi.LabelsGet(svc.context)
-	ls, res, err := svc.client.LabelApi.LabelsGetExecute(req)
+	req := svc.client.LabelsApi.LabelsGet(svc.context)
+	ls, res, err := svc.client.LabelsApi.LabelsGetExecute(req)
 	return Labels{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) DatacenterList(datacenterId string) (LabelResources, *Response, error) {
-	req := svc.client.LabelApi.DatacentersLabelsGet(svc.context, datacenterId)
-	ls, res, err := svc.client.LabelApi.DatacentersLabelsGetExecute(req)
+	req := svc.client.LabelsApi.DatacentersLabelsGet(svc.context, datacenterId)
+	ls, res, err := svc.client.LabelsApi.DatacentersLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) DatacenterGet(datacenterId, key string) (*LabelResource, *Response, error) {
-	req := svc.client.LabelApi.DatacentersLabelsFindByKey(svc.context, datacenterId, key)
-	ls, res, err := svc.client.LabelApi.DatacentersLabelsFindByKeyExecute(req)
+	req := svc.client.LabelsApi.DatacentersLabelsFindByKey(svc.context, datacenterId, key)
+	ls, res, err := svc.client.LabelsApi.DatacentersLabelsFindByKeyExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
@@ -93,26 +93,26 @@ func (svc *labelResourcesService) DatacenterCreate(datacenterId, key, value stri
 			Value: &value,
 		},
 	}
-	req := svc.client.LabelApi.DatacentersLabelsPost(svc.context, datacenterId).Label(input)
-	ls, res, err := svc.client.LabelApi.DatacentersLabelsPostExecute(req)
+	req := svc.client.LabelsApi.DatacentersLabelsPost(svc.context, datacenterId).Label(input)
+	ls, res, err := svc.client.LabelsApi.DatacentersLabelsPostExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) DatacenterDelete(datacenterId, key string) (*Response, error) {
-	req := svc.client.LabelApi.DatacentersLabelsDelete(svc.context, datacenterId, key)
-	_, res, err := svc.client.LabelApi.DatacentersLabelsDeleteExecute(req)
+	req := svc.client.LabelsApi.DatacentersLabelsDelete(svc.context, datacenterId, key)
+	_, res, err := svc.client.LabelsApi.DatacentersLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (svc *labelResourcesService) ServerList(datacenterId, serverId string) (LabelResources, *Response, error) {
-	req := svc.client.LabelApi.DatacentersServersLabelsGet(svc.context, datacenterId, serverId)
-	ls, res, err := svc.client.LabelApi.DatacentersServersLabelsGetExecute(req)
+	req := svc.client.LabelsApi.DatacentersServersLabelsGet(svc.context, datacenterId, serverId)
+	ls, res, err := svc.client.LabelsApi.DatacentersServersLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) ServerGet(datacenterId, serverId, key string) (*LabelResource, *Response, error) {
-	req := svc.client.LabelApi.DatacentersServersLabelsFindByKey(svc.context, datacenterId, serverId, key)
-	ls, res, err := svc.client.LabelApi.DatacentersServersLabelsFindByKeyExecute(req)
+	req := svc.client.LabelsApi.DatacentersServersLabelsFindByKey(svc.context, datacenterId, serverId, key)
+	ls, res, err := svc.client.LabelsApi.DatacentersServersLabelsFindByKeyExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
@@ -123,26 +123,26 @@ func (svc *labelResourcesService) ServerCreate(datacenterId, serverId, key, valu
 			Value: &value,
 		},
 	}
-	req := svc.client.LabelApi.DatacentersServersLabelsPost(svc.context, datacenterId, serverId).Label(input)
-	ls, res, err := svc.client.LabelApi.DatacentersServersLabelsPostExecute(req)
+	req := svc.client.LabelsApi.DatacentersServersLabelsPost(svc.context, datacenterId, serverId).Label(input)
+	ls, res, err := svc.client.LabelsApi.DatacentersServersLabelsPostExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) ServerDelete(datacenterId, serverId, key string) (*Response, error) {
-	req := svc.client.LabelApi.DatacentersServersLabelsDelete(svc.context, datacenterId, serverId, key)
-	_, res, err := svc.client.LabelApi.DatacentersServersLabelsDeleteExecute(req)
+	req := svc.client.LabelsApi.DatacentersServersLabelsDelete(svc.context, datacenterId, serverId, key)
+	_, res, err := svc.client.LabelsApi.DatacentersServersLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (svc *labelResourcesService) VolumeList(datacenterId, volumeId string) (LabelResources, *Response, error) {
-	req := svc.client.LabelApi.DatacentersVolumesLabelsGet(svc.context, datacenterId, volumeId)
-	ls, res, err := svc.client.LabelApi.DatacentersVolumesLabelsGetExecute(req)
+	req := svc.client.LabelsApi.DatacentersVolumesLabelsGet(svc.context, datacenterId, volumeId)
+	ls, res, err := svc.client.LabelsApi.DatacentersVolumesLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) VolumeGet(datacenterId, volumeId, key string) (*LabelResource, *Response, error) {
-	req := svc.client.LabelApi.DatacentersVolumesLabelsFindByKey(svc.context, datacenterId, volumeId, key)
-	ls, res, err := svc.client.LabelApi.DatacentersVolumesLabelsFindByKeyExecute(req)
+	req := svc.client.LabelsApi.DatacentersVolumesLabelsFindByKey(svc.context, datacenterId, volumeId, key)
+	ls, res, err := svc.client.LabelsApi.DatacentersVolumesLabelsFindByKeyExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
@@ -153,26 +153,26 @@ func (svc *labelResourcesService) VolumeCreate(datacenterId, volumeId, key, valu
 			Value: &value,
 		},
 	}
-	req := svc.client.LabelApi.DatacentersVolumesLabelsPost(svc.context, datacenterId, volumeId).Label(input)
-	ls, res, err := svc.client.LabelApi.DatacentersVolumesLabelsPostExecute(req)
+	req := svc.client.LabelsApi.DatacentersVolumesLabelsPost(svc.context, datacenterId, volumeId).Label(input)
+	ls, res, err := svc.client.LabelsApi.DatacentersVolumesLabelsPostExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) VolumeDelete(datacenterId, volumeId, key string) (*Response, error) {
-	req := svc.client.LabelApi.DatacentersVolumesLabelsDelete(svc.context, datacenterId, volumeId, key)
-	_, res, err := svc.client.LabelApi.DatacentersVolumesLabelsDeleteExecute(req)
+	req := svc.client.LabelsApi.DatacentersVolumesLabelsDelete(svc.context, datacenterId, volumeId, key)
+	_, res, err := svc.client.LabelsApi.DatacentersVolumesLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (svc *labelResourcesService) IpBlockList(ipblockId string) (LabelResources, *Response, error) {
-	req := svc.client.LabelApi.IpblocksLabelsGet(svc.context, ipblockId)
-	ls, res, err := svc.client.LabelApi.IpblocksLabelsGetExecute(req)
+	req := svc.client.LabelsApi.IpblocksLabelsGet(svc.context, ipblockId)
+	ls, res, err := svc.client.LabelsApi.IpblocksLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) IpBlockGet(ipblockId, key string) (*LabelResource, *Response, error) {
-	req := svc.client.LabelApi.IpblocksLabelsFindByKey(svc.context, ipblockId, key)
-	ls, res, err := svc.client.LabelApi.IpblocksLabelsFindByKeyExecute(req)
+	req := svc.client.LabelsApi.IpblocksLabelsFindByKey(svc.context, ipblockId, key)
+	ls, res, err := svc.client.LabelsApi.IpblocksLabelsFindByKeyExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
@@ -183,26 +183,26 @@ func (svc *labelResourcesService) IpBlockCreate(ipblockId, key, value string) (*
 			Value: &value,
 		},
 	}
-	req := svc.client.LabelApi.IpblocksLabelsPost(svc.context, ipblockId).Label(input)
-	ls, res, err := svc.client.LabelApi.IpblocksLabelsPostExecute(req)
+	req := svc.client.LabelsApi.IpblocksLabelsPost(svc.context, ipblockId).Label(input)
+	ls, res, err := svc.client.LabelsApi.IpblocksLabelsPostExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) IpBlockDelete(ipblockId, key string) (*Response, error) {
-	req := svc.client.LabelApi.IpblocksLabelsDelete(svc.context, ipblockId, key)
-	_, res, err := svc.client.LabelApi.IpblocksLabelsDeleteExecute(req)
+	req := svc.client.LabelsApi.IpblocksLabelsDelete(svc.context, ipblockId, key)
+	_, res, err := svc.client.LabelsApi.IpblocksLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (svc *labelResourcesService) SnapshotList(snapshotId string) (LabelResources, *Response, error) {
-	req := svc.client.LabelApi.SnapshotsLabelsGet(svc.context, snapshotId)
-	ls, res, err := svc.client.LabelApi.SnapshotsLabelsGetExecute(req)
+	req := svc.client.LabelsApi.SnapshotsLabelsGet(svc.context, snapshotId)
+	ls, res, err := svc.client.LabelsApi.SnapshotsLabelsGetExecute(req)
 	return LabelResources{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) SnapshotGet(snapshotId, key string) (*LabelResource, *Response, error) {
-	req := svc.client.LabelApi.SnapshotsLabelsFindByKey(svc.context, snapshotId, key)
-	ls, res, err := svc.client.LabelApi.SnapshotsLabelsFindByKeyExecute(req)
+	req := svc.client.LabelsApi.SnapshotsLabelsFindByKey(svc.context, snapshotId, key)
+	ls, res, err := svc.client.LabelsApi.SnapshotsLabelsFindByKeyExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
@@ -213,13 +213,13 @@ func (svc *labelResourcesService) SnapshotCreate(snapshotId, key, value string) 
 			Value: &value,
 		},
 	}
-	req := svc.client.LabelApi.SnapshotsLabelsPost(svc.context, snapshotId).Label(input)
-	ls, res, err := svc.client.LabelApi.SnapshotsLabelsPostExecute(req)
+	req := svc.client.LabelsApi.SnapshotsLabelsPost(svc.context, snapshotId).Label(input)
+	ls, res, err := svc.client.LabelsApi.SnapshotsLabelsPostExecute(req)
 	return &LabelResource{ls}, &Response{*res}, err
 }
 
 func (svc *labelResourcesService) SnapshotDelete(snapshotId, key string) (*Response, error) {
-	req := svc.client.LabelApi.SnapshotsLabelsDelete(svc.context, snapshotId, key)
-	_, res, err := svc.client.LabelApi.SnapshotsLabelsDeleteExecute(req)
+	req := svc.client.LabelsApi.SnapshotsLabelsDelete(svc.context, snapshotId, key)
+	_, res, err := svc.client.LabelsApi.SnapshotsLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }

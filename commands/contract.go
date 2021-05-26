@@ -68,20 +68,20 @@ func RunContractGet(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgResourceLimits)) {
 		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgResourceLimits))) {
 		case "CORES":
-			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractCoresCols))
+			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractCoresCols))
 		case "RAM":
-			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractRamCols))
+			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractRamCols))
 		case "HDD":
-			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractHddCols))
+			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractHddCols))
 		case "SSD":
-			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractSsdCols))
+			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractSsdCols))
 		case "IPS":
-			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractIpsCols))
+			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractIpsCols))
 		case "K8S":
-			return c.Printer.Print(getContractPrint(c, getContract(&contractResource), contractK8sCols))
+			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractK8sCols))
 		}
 	}
-	return c.Printer.Print(getContractPrint(c, getContract(&contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())))
+	return c.Printer.Print(getContractPrint(c, getContract(contractResource), getContractCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())))
 }
 
 // Output Printing
@@ -176,10 +176,12 @@ func getContractCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getContract(c *resources.Contract) []resources.Contract {
+func getContract(c resources.Contracts) []resources.Contract {
 	cs := make([]resources.Contract, 0)
-	if c != nil {
-		cs = append(cs, resources.Contract{Contract: c.Contract})
+	if items, ok := c.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			cs = append(cs, resources.Contract{Contract: item})
+		}
 	}
 	return cs
 }

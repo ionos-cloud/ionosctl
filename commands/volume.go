@@ -334,9 +334,6 @@ func getNewVolume(c *core.CommandConfig) resources.Volume {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) {
 		proper.SetImage(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
-		proper.SetImageAlias(viper.GetString(core.GetFlagName(c.NS, config.ArgImageAlias)))
-	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
 		proper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgPassword)))
 	}
@@ -624,7 +621,7 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 var (
 	defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
 	allVolumeCols     = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image", "Bus", "AvailabilityZone", "BackupunitId", "SshKeys",
-		"ImageAlias", "DeviceNumber", "UserData"}
+		"DeviceNumber", "UserData"}
 )
 
 type VolumePrint struct {
@@ -637,7 +634,6 @@ type VolumePrint struct {
 	AvailabilityZone string   `json:"AvailabilityZone,omitempty"`
 	State            string   `json:"State,omitempty"`
 	Image            string   `json:"Image,omitempty"`
-	ImageAlias       string   `json:"ImageAlias,omitempty"`
 	SshKeys          []string `json:"SshKeys,omitempty"`
 	DeviceNumber     int64    `json:"DeviceNumber,omitempty"`
 	BackupunitId     string   `json:"BackupunitId,omitempty"`
@@ -757,9 +753,6 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 		}
 		if img, ok := properties.GetImageOk(); ok && img != nil {
 			volumePrint.Image = *img
-		}
-		if imgA, ok := properties.GetImageAliasOk(); ok && imgA != nil {
-			volumePrint.ImageAlias = *imgA
 		}
 		if userData, ok := properties.GetUserDataOk(); ok && userData != nil {
 			volumePrint.UserData = *userData

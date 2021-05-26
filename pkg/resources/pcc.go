@@ -47,21 +47,21 @@ func NewPrivateCrossConnectService(client *Client, ctx context.Context) PccsServ
 }
 
 func (s *pccsService) List() (PrivateCrossConnects, *Response, error) {
-	req := s.client.PrivateCrossConnectApi.PccsGet(s.context)
-	dcs, res, err := s.client.PrivateCrossConnectApi.PccsGetExecute(req)
+	req := s.client.PrivateCrossConnectsApi.PccsGet(s.context)
+	dcs, res, err := s.client.PrivateCrossConnectsApi.PccsGetExecute(req)
 	return PrivateCrossConnects{dcs}, &Response{*res}, err
 }
 
 func (s *pccsService) Get(pccId string) (*PrivateCrossConnect, *Response, error) {
-	req := s.client.PrivateCrossConnectApi.PccsFindById(s.context, pccId)
-	pcc, res, err := s.client.PrivateCrossConnectApi.PccsFindByIdExecute(req)
+	req := s.client.PrivateCrossConnectsApi.PccsFindById(s.context, pccId)
+	pcc, res, err := s.client.PrivateCrossConnectsApi.PccsFindByIdExecute(req)
 	return &PrivateCrossConnect{pcc}, &Response{*res}, err
 }
 
 func (s *pccsService) GetPeers(pccId string) (*[]Peer, *Response, error) {
 	peers := make([]Peer, 0)
-	req := s.client.PrivateCrossConnectApi.PccsFindById(s.context, pccId)
-	pcc, res, err := s.client.PrivateCrossConnectApi.PccsFindByIdExecute(req)
+	req := s.client.PrivateCrossConnectsApi.PccsFindById(s.context, pccId)
+	pcc, res, err := s.client.PrivateCrossConnectsApi.PccsFindByIdExecute(req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -76,19 +76,19 @@ func (s *pccsService) GetPeers(pccId string) (*[]Peer, *Response, error) {
 }
 
 func (s *pccsService) Create(u PrivateCrossConnect) (*PrivateCrossConnect, *Response, error) {
-	req := s.client.PrivateCrossConnectApi.PccsPost(s.context).Pcc(u.PrivateCrossConnect)
-	pcc, res, err := s.client.PrivateCrossConnectApi.PccsPostExecute(req)
+	req := s.client.PrivateCrossConnectsApi.PccsPost(s.context).Pcc(u.PrivateCrossConnect)
+	pcc, res, err := s.client.PrivateCrossConnectsApi.PccsPostExecute(req)
 	return &PrivateCrossConnect{pcc}, &Response{*res}, err
 }
 
 func (s *pccsService) Update(pccId string, input PrivateCrossConnectProperties) (*PrivateCrossConnect, *Response, error) {
-	req := s.client.PrivateCrossConnectApi.PccsPatch(s.context, pccId).Pcc(input.PrivateCrossConnectProperties)
-	pcc, res, err := s.client.PrivateCrossConnectApi.PccsPatchExecute(req)
+	req := s.client.PrivateCrossConnectsApi.PccsPatch(s.context, pccId).Pcc(input.PrivateCrossConnectProperties)
+	pcc, res, err := s.client.PrivateCrossConnectsApi.PccsPatchExecute(req)
 	return &PrivateCrossConnect{pcc}, &Response{*res}, err
 }
 
 func (s *pccsService) Delete(pccId string) (*Response, error) {
-	req := s.client.PrivateCrossConnectApi.PccsDelete(s.context, pccId)
-	_, res, err := s.client.PrivateCrossConnectApi.PccsDeleteExecute(req)
+	req := s.client.PrivateCrossConnectsApi.PccsDelete(s.context, pccId)
+	_, res, err := s.client.PrivateCrossConnectsApi.PccsDeleteExecute(req)
 	return &Response{*res}, err
 }

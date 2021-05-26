@@ -47,37 +47,37 @@ func NewBackupUnitService(client *Client, ctx context.Context) BackupUnitsServic
 }
 
 func (s *backupUnitsService) List() (BackupUnits, *Response, error) {
-	req := s.client.BackupUnitApi.BackupunitsGet(s.context)
-	dcs, res, err := s.client.BackupUnitApi.BackupunitsGetExecute(req)
+	req := s.client.BackupUnitsApi.BackupunitsGet(s.context)
+	dcs, res, err := s.client.BackupUnitsApi.BackupunitsGetExecute(req)
 	return BackupUnits{dcs}, &Response{*res}, err
 }
 
 func (s *backupUnitsService) Get(backupUnitId string) (*BackupUnit, *Response, error) {
-	req := s.client.BackupUnitApi.BackupunitsFindById(s.context, backupUnitId)
-	backupUnit, res, err := s.client.BackupUnitApi.BackupunitsFindByIdExecute(req)
+	req := s.client.BackupUnitsApi.BackupunitsFindById(s.context, backupUnitId)
+	backupUnit, res, err := s.client.BackupUnitsApi.BackupunitsFindByIdExecute(req)
 	return &BackupUnit{backupUnit}, &Response{*res}, err
 }
 
 func (s *backupUnitsService) GetSsoUrl(backupUnitId string) (*BackupUnitSSO, *Response, error) {
-	req := s.client.BackupUnitApi.BackupunitsSsourlGet(s.context, backupUnitId)
-	backupUnit, res, err := s.client.BackupUnitApi.BackupunitsSsourlGetExecute(req)
+	req := s.client.BackupUnitsApi.BackupunitsSsourlGet(s.context, backupUnitId)
+	backupUnit, res, err := s.client.BackupUnitsApi.BackupunitsSsourlGetExecute(req)
 	return &BackupUnitSSO{backupUnit}, &Response{*res}, err
 }
 
 func (s *backupUnitsService) Create(u BackupUnit) (*BackupUnit, *Response, error) {
-	req := s.client.BackupUnitApi.BackupunitsPost(s.context).BackupUnit(u.BackupUnit)
-	backupUnit, res, err := s.client.BackupUnitApi.BackupunitsPostExecute(req)
+	req := s.client.BackupUnitsApi.BackupunitsPost(s.context).BackupUnit(u.BackupUnit)
+	backupUnit, res, err := s.client.BackupUnitsApi.BackupunitsPostExecute(req)
 	return &BackupUnit{backupUnit}, &Response{*res}, err
 }
 
 func (s *backupUnitsService) Update(backupUnitId string, input BackupUnitProperties) (*BackupUnit, *Response, error) {
-	req := s.client.BackupUnitApi.BackupunitsPatch(s.context, backupUnitId).BackupUnitProperties(input.BackupUnitProperties)
-	backupUnit, res, err := s.client.BackupUnitApi.BackupunitsPatchExecute(req)
+	req := s.client.BackupUnitsApi.BackupunitsPatch(s.context, backupUnitId).BackupUnitProperties(input.BackupUnitProperties)
+	backupUnit, res, err := s.client.BackupUnitsApi.BackupunitsPatchExecute(req)
 	return &BackupUnit{backupUnit}, &Response{*res}, err
 }
 
 func (s *backupUnitsService) Delete(backupUnitId string) (*Response, error) {
-	req := s.client.BackupUnitApi.BackupunitsDelete(s.context, backupUnitId)
-	_, res, err := s.client.BackupUnitApi.BackupunitsDeleteExecute(req)
+	req := s.client.BackupUnitsApi.BackupunitsDelete(s.context, backupUnitId)
+	_, res, err := s.client.BackupUnitsApi.BackupunitsDeleteExecute(req)
 	return &Response{*res}, err
 }

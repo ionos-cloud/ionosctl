@@ -41,20 +41,20 @@ func NewRequestService(client *Client, ctx context.Context) RequestsService {
 }
 
 func (rs *requestsService) List() (Requests, *Response, error) {
-	req := rs.client.RequestApi.RequestsGet(rs.context)
-	reqs, res, err := rs.client.RequestApi.RequestsGetExecute(req)
+	req := rs.client.RequestsApi.RequestsGet(rs.context)
+	reqs, res, err := rs.client.RequestsApi.RequestsGetExecute(req)
 	return Requests{reqs}, &Response{*res}, err
 }
 
 func (rs *requestsService) Get(requestId string) (*Request, *Response, error) {
-	req := rs.client.RequestApi.RequestsFindById(rs.context, requestId)
-	reqs, res, err := rs.client.RequestApi.RequestsFindByIdExecute(req)
+	req := rs.client.RequestsApi.RequestsFindById(rs.context, requestId)
+	reqs, res, err := rs.client.RequestsApi.RequestsFindByIdExecute(req)
 	return &Request{reqs}, &Response{*res}, err
 }
 
 func (rs *requestsService) GetStatus(requestId string) (*RequestStatus, *Response, error) {
-	req := rs.client.RequestApi.RequestsStatusGet(rs.context, requestId)
-	reqs, res, err := rs.client.RequestApi.RequestsStatusGetExecute(req)
+	req := rs.client.RequestsApi.RequestsStatusGet(rs.context, requestId)
+	reqs, res, err := rs.client.RequestsApi.RequestsStatusGetExecute(req)
 	return &RequestStatus{reqs}, &Response{*res}, err
 }
 
