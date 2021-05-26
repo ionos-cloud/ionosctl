@@ -38,7 +38,7 @@ Required values to run command:
 ```text
       --annotation-key string     Annotation key. Must be set together with --annotation-value
       --annotation-value string   Annotation value. Must be set together with --annotation-key
-  -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cluster-id string         The unique K8s Cluster Id (required)
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])

@@ -37,7 +37,7 @@ Required values to run a command:
 ## Options
 
 ```text
-  -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
   -z, --availability-zone string   The compute Availability Zone in which the Node should exist (default "AUTO")
       --cluster-id string          The unique K8s Cluster Id (required)
       --cols strings               Set of columns to be printed on output 
