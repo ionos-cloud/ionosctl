@@ -47,6 +47,11 @@ var (
 			},
 		},
 	}
+	testContracts = resources.Contracts{
+		Contracts: ionoscloud.Contracts{
+			Items: &[]ionoscloud.Contract{testContract.Contract},
+		},
+	}
 	testContractInt64 = int64(2)
 	testContractInt32 = int32(1)
 	testContractVar   = "test-contract"
@@ -60,7 +65,7 @@ func TestRunContractGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.Contract.EXPECT().Get().Return(testContract, nil, nil)
+		rm.Contract.EXPECT().Get().Return(testContracts, nil, nil)
 		err := RunContractGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -73,7 +78,7 @@ func TestRunContractGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.Contract.EXPECT().Get().Return(testContract, nil, testContractErr)
+		rm.Contract.EXPECT().Get().Return(testContracts, nil, testContractErr)
 		err := RunContractGet(cfg)
 		assert.Error(t, err)
 	})

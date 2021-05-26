@@ -37,7 +37,7 @@ var (
 		},
 	}
 	testRequestVar     = "test-request"
-	testRequestPathVar = fmt.Sprintf("https://api.ionos.com/cloudapi/v5/requests/%s", testRequestVar)
+	testRequestPathVar = fmt.Sprintf("https://api.ionos.com/cloudapi/v6/requests/%s", testRequestVar)
 	testRequestErr     = errors.New("request test: error occurred")
 )
 
