@@ -22,11 +22,15 @@ var (
 	dc        = ionoscloud.Datacenter{
 		Id: &testDatacenterVar,
 		Properties: &ionoscloud.DatacenterProperties{
-			Name:              &testDatacenterVar,
-			Description:       &testDatacenterVar,
-			Location:          &testDatacenterVar,
-			Version:           &dcVersion,
-			Features:          &[]string{testDatacenterVar},
+			Name:        &testDatacenterVar,
+			Description: &testDatacenterVar,
+			Location:    &testDatacenterVar,
+			Version:     &dcVersion,
+			Features:    &[]string{testDatacenterVar},
+			CpuArchitecture: &[]ionoscloud.CpuArchitectureProperties{
+				{
+					CpuFamily: &testDatacenterVar,
+				}},
 			SecAuthProtection: &testDatacenterBoolVar,
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{
