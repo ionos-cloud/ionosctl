@@ -51,7 +51,7 @@ func (mr *MockK8sServiceMockRecorder) CreateCluster(u interface{}) *gomock.Call 
 }
 
 // CreateNodePool mocks base method.
-func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePoolForPost) (*resources.K8sNodePool, *resources.Response, error) {
+func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePool) (*resources.K8sNodePool, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateNodePool", clusterId, nodepool)
 	ret0, _ := ret[0].(*resources.K8sNodePool)
@@ -240,10 +240,10 @@ func (mr *MockK8sServiceMockRecorder) ListVersions() *gomock.Call {
 }
 
 // ReadKubeConfig mocks base method.
-func (m *MockK8sService) ReadKubeConfig(clusterId string) (resources.K8sKubeconfig, *resources.Response, error) {
+func (m *MockK8sService) ReadKubeConfig(clusterId string) (string, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadKubeConfig", clusterId)
-	ret0, _ := ret[0].(resources.K8sKubeconfig)
+	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -287,10 +287,10 @@ func (mr *MockK8sServiceMockRecorder) UpdateCluster(clusterId, input interface{}
 }
 
 // UpdateNodePool mocks base method.
-func (m *MockK8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool resources.K8sNodePoolForPut) (*resources.K8sNodePool, *resources.Response, error) {
+func (m *MockK8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool resources.K8sNodePool) (*resources.K8sNodePoolForPut, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateNodePool", clusterId, nodepoolId, nodepool)
-	ret0, _ := ret[0].(*resources.K8sNodePool)
+	ret0, _ := ret[0].(*resources.K8sNodePoolForPut)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2

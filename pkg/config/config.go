@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	sdk "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
 
@@ -46,9 +46,9 @@ func Load() (err error) {
 	if err = LoadFile(); err != nil {
 		pathErr := &os.PathError{}
 		if errors.As(err, &viper.ConfigFileNotFoundError{}) || errors.As(err, &pathErr) {
-			_ = viper.BindEnv(Username, sdk.IonosUsernameEnvVar)
-			_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
-			_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
+			_ = viper.BindEnv(Username, ionoscloud.IonosUsernameEnvVar)
+			_ = viper.BindEnv(Password, ionoscloud.IonosPasswordEnvVar)
+			_ = viper.BindEnv(Token, ionoscloud.IonosTokenEnvVar)
 			return nil
 		}
 	}

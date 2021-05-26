@@ -35,7 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
   -z, --availability-zone string   Availability zone of the Server (default "AUTO")
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])

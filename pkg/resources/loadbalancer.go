@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Loadbalancer struct {
@@ -46,14 +46,14 @@ func NewLoadbalancerService(client *Client, ctx context.Context) LoadbalancersSe
 }
 
 func (ls *loadbalancersService) List(datacenterId string) (Loadbalancers, *Response, error) {
-	req := ls.client.LoadBalancerApi.DatacentersLoadbalancersGet(ls.context, datacenterId)
-	s, res, err := ls.client.LoadBalancerApi.DatacentersLoadbalancersGetExecute(req)
+	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersGet(ls.context, datacenterId)
+	s, res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersGetExecute(req)
 	return Loadbalancers{s}, &Response{*res}, err
 }
 
 func (ls *loadbalancersService) Get(datacenterId, loadbalancerId string) (*Loadbalancer, *Response, error) {
-	req := ls.client.LoadBalancerApi.DatacentersLoadbalancersFindById(ls.context, datacenterId, loadbalancerId)
-	s, res, err := ls.client.LoadBalancerApi.DatacentersLoadbalancersFindByIdExecute(req)
+	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersFindById(ls.context, datacenterId, loadbalancerId)
+	s, res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersFindByIdExecute(req)
 	return &Loadbalancer{s}, &Response{*res}, err
 }
 
@@ -64,44 +64,44 @@ func (ls *loadbalancersService) Create(datacenterId, name string, dhcp bool) (*L
 			Dhcp: &dhcp,
 		},
 	}
-	req := ls.client.LoadBalancerApi.DatacentersLoadbalancersPost(ls.context, datacenterId).Loadbalancer(s)
-	loadbalancer, res, err := ls.client.LoadBalancerApi.DatacentersLoadbalancersPostExecute(req)
+	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersPost(ls.context, datacenterId).Loadbalancer(s)
+	loadbalancer, res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersPostExecute(req)
 	return &Loadbalancer{loadbalancer}, &Response{*res}, err
 }
 
 func (ls *loadbalancersService) Update(datacenterId, loadbalancerId string, input LoadbalancerProperties) (*Loadbalancer, *Response, error) {
-	req := ls.client.LoadBalancerApi.DatacentersLoadbalancersPatch(ls.context, datacenterId, loadbalancerId).Loadbalancer(input.LoadbalancerProperties)
-	loadbalancer, resp, err := ls.client.LoadBalancerApi.DatacentersLoadbalancersPatchExecute(req)
+	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersPatch(ls.context, datacenterId, loadbalancerId).Loadbalancer(input.LoadbalancerProperties)
+	loadbalancer, resp, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersPatchExecute(req)
 	return &Loadbalancer{loadbalancer}, &Response{*resp}, err
 }
 
 func (ls *loadbalancersService) Delete(datacenterId, loadbalancerId string) (*Response, error) {
-	req := ls.client.LoadBalancerApi.DatacentersLoadbalancersDelete(ls.context, datacenterId, loadbalancerId)
-	_, res, err := ls.client.LoadBalancerApi.DatacentersLoadbalancersDeleteExecute(req)
+	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersDelete(ls.context, datacenterId, loadbalancerId)
+	_, res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (ns *loadbalancersService) AttachNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error) {
 	input := ionoscloud.Nic{Id: &nicId}
-	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsPost(ns.context, datacenterId, loadbalancerId).Nic(input)
-	nic, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsPostExecute(req)
+	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsPost(ns.context, datacenterId, loadbalancerId).Nic(input)
+	nic, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsPostExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
 
 func (ns *loadbalancersService) ListNics(datacenterId, loadbalancerId string) (BalancedNics, *Response, error) {
-	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsGet(ns.context, datacenterId, loadbalancerId)
-	nics, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsGetExecute(req)
+	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGet(ns.context, datacenterId, loadbalancerId)
+	nics, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGetExecute(req)
 	return BalancedNics{nics}, &Response{*resp}, err
 }
 
 func (ns *loadbalancersService) GetNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error) {
-	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsFindByNicId(ns.context, datacenterId, loadbalancerId, nicId)
-	n, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsFindByNicIdExecute(req)
+	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsFindByNicId(ns.context, datacenterId, loadbalancerId, nicId)
+	n, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsFindByNicIdExecute(req)
 	return &Nic{n}, &Response{*resp}, err
 }
 
 func (ns *loadbalancersService) DetachNic(datacenterId, loadbalancerId, nicId string) (*Response, error) {
-	req := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsDelete(ns.context, datacenterId, loadbalancerId, nicId)
-	_, resp, err := ns.client.LoadBalancerApi.DatacentersLoadbalancersBalancednicsDeleteExecute(req)
+	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsDelete(ns.context, datacenterId, loadbalancerId, nicId)
+	_, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsDeleteExecute(req)
 	return &Response{*resp}, err
 }

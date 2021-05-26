@@ -38,12 +38,12 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
   -z, --availability-zone string   Availability zone of the Volume. Storage zone can only be selected prior provisioning (default "AUTO")
       --backupunit-id string       The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property
       --bus string                 Bus for the Volume (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId SshKeys ImageAlias DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
+                                   Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId SshKeys DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cpu-hot-plug               It is capable of CPU hot plug (no reboot required)
       --datacenter-id string       The unique Data Center Id (required)

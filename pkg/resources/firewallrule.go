@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type FirewallRule struct {
@@ -42,31 +42,31 @@ func NewFirewallRuleService(client *Client, ctx context.Context) FirewallRulesSe
 }
 
 func (svc *firewallRulesService) List(datacenterId, serverId, nicId string) (FirewallRules, *Response, error) {
-	req := svc.client.NicApi.DatacentersServersNicsFirewallrulesGet(svc.context, datacenterId, serverId, nicId)
-	rules, resp, err := svc.client.NicApi.DatacentersServersNicsFirewallrulesGetExecute(req)
+	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesGet(svc.context, datacenterId, serverId, nicId)
+	rules, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesGetExecute(req)
 	return FirewallRules{rules}, &Response{*resp}, err
 }
 
 func (svc *firewallRulesService) Get(datacenterId, serverId, nicId, firewallRuleId string) (*FirewallRule, *Response, error) {
-	req := svc.client.NicApi.DatacentersServersNicsFirewallrulesFindById(svc.context, datacenterId, serverId, nicId, firewallRuleId)
-	rule, resp, err := svc.client.NicApi.DatacentersServersNicsFirewallrulesFindByIdExecute(req)
+	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesFindById(svc.context, datacenterId, serverId, nicId, firewallRuleId)
+	rule, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesFindByIdExecute(req)
 	return &FirewallRule{rule}, &Response{*resp}, err
 }
 
 func (svc *firewallRulesService) Create(datacenterId, serverId, nicId string, input FirewallRule) (*FirewallRule, *Response, error) {
-	req := svc.client.NicApi.DatacentersServersNicsFirewallrulesPost(svc.context, datacenterId, serverId, nicId).Firewallrule(input.FirewallRule)
-	rule, resp, err := svc.client.NicApi.DatacentersServersNicsFirewallrulesPostExecute(req)
+	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesPost(svc.context, datacenterId, serverId, nicId).Firewallrule(input.FirewallRule)
+	rule, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesPostExecute(req)
 	return &FirewallRule{rule}, &Response{*resp}, err
 }
 
 func (svc *firewallRulesService) Update(datacenterId, serverId, nicId, firewallRuleId string, input FirewallRuleProperties) (*FirewallRule, *Response, error) {
-	req := svc.client.NicApi.DatacentersServersNicsFirewallrulesPatch(svc.context, datacenterId, serverId, nicId, firewallRuleId).Firewallrule(input.FirewallruleProperties)
-	rule, resp, err := svc.client.NicApi.DatacentersServersNicsFirewallrulesPatchExecute(req)
+	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesPatch(svc.context, datacenterId, serverId, nicId, firewallRuleId).Firewallrule(input.FirewallruleProperties)
+	rule, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesPatchExecute(req)
 	return &FirewallRule{rule}, &Response{*resp}, err
 }
 
 func (svc *firewallRulesService) Delete(datacenterId, serverId, nicId, firewallRuleId string) (*Response, error) {
-	req := svc.client.NicApi.DatacentersServersNicsFirewallrulesDelete(svc.context, datacenterId, serverId, nicId, firewallRuleId)
-	_, resp, err := svc.client.NicApi.DatacentersServersNicsFirewallrulesDeleteExecute(req)
+	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesDelete(svc.context, datacenterId, serverId, nicId, firewallRuleId)
+	_, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesDeleteExecute(req)
 	return &Response{*resp}, err
 }

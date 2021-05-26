@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Volume struct {
@@ -45,31 +45,31 @@ func NewVolumeService(client *Client, ctx context.Context) VolumesService {
 }
 
 func (vs *volumesService) List(datacenterId string) (Volumes, *Response, error) {
-	req := vs.client.VolumeApi.DatacentersVolumesGet(vs.context, datacenterId)
-	volumes, res, err := vs.client.VolumeApi.DatacentersVolumesGetExecute(req)
+	req := vs.client.VolumesApi.DatacentersVolumesGet(vs.context, datacenterId)
+	volumes, res, err := vs.client.VolumesApi.DatacentersVolumesGetExecute(req)
 	return Volumes{volumes}, &Response{*res}, err
 }
 
 func (vs *volumesService) Get(datacenterId, volumeId string) (*Volume, *Response, error) {
-	req := vs.client.VolumeApi.DatacentersVolumesFindById(vs.context, datacenterId, volumeId)
-	volume, res, err := vs.client.VolumeApi.DatacentersVolumesFindByIdExecute(req)
+	req := vs.client.VolumesApi.DatacentersVolumesFindById(vs.context, datacenterId, volumeId)
+	volume, res, err := vs.client.VolumesApi.DatacentersVolumesFindByIdExecute(req)
 	return &Volume{volume}, &Response{*res}, err
 }
 
 func (vs *volumesService) Create(datacenterId string, input Volume) (*Volume, *Response, error) {
-	req := vs.client.VolumeApi.DatacentersVolumesPost(vs.context, datacenterId).Volume(input.Volume)
-	volume, res, err := vs.client.VolumeApi.DatacentersVolumesPostExecute(req)
+	req := vs.client.VolumesApi.DatacentersVolumesPost(vs.context, datacenterId).Volume(input.Volume)
+	volume, res, err := vs.client.VolumesApi.DatacentersVolumesPostExecute(req)
 	return &Volume{volume}, &Response{*res}, err
 }
 
 func (vs *volumesService) Update(datacenterId, volumeId string, input VolumeProperties) (*Volume, *Response, error) {
-	req := vs.client.VolumeApi.DatacentersVolumesPatch(vs.context, datacenterId, volumeId).Volume(input.VolumeProperties)
-	volume, res, err := vs.client.VolumeApi.DatacentersVolumesPatchExecute(req)
+	req := vs.client.VolumesApi.DatacentersVolumesPatch(vs.context, datacenterId, volumeId).Volume(input.VolumeProperties)
+	volume, res, err := vs.client.VolumesApi.DatacentersVolumesPatchExecute(req)
 	return &Volume{volume}, &Response{*res}, err
 }
 
 func (vs *volumesService) Delete(datacenterId, volumeId string) (*Response, error) {
-	req := vs.client.VolumeApi.DatacentersVolumesDelete(vs.context, datacenterId, volumeId)
-	_, res, err := vs.client.VolumeApi.DatacentersVolumesDeleteExecute(req)
+	req := vs.client.VolumesApi.DatacentersVolumesDelete(vs.context, datacenterId, volumeId)
+	_, res, err := vs.client.VolumesApi.DatacentersVolumesDeleteExecute(req)
 	return &Response{*res}, err
 }

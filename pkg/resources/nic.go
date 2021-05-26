@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Nic struct {
@@ -50,14 +50,14 @@ func NewNicService(client *Client, ctx context.Context) NicsService {
 }
 
 func (ns *nicsService) List(datacenterId, serverId string) (Nics, *Response, error) {
-	req := ns.client.NicApi.DatacentersServersNicsGet(ns.context, datacenterId, serverId)
-	nics, resp, err := ns.client.NicApi.DatacentersServersNicsGetExecute(req)
+	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsGet(ns.context, datacenterId, serverId)
+	nics, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsGetExecute(req)
 	return Nics{nics}, &Response{*resp}, err
 }
 
 func (ns *nicsService) Get(datacenterId, serverId, nicId string) (*Nic, *Response, error) {
-	req := ns.client.NicApi.DatacentersServersNicsFindById(ns.context, datacenterId, serverId, nicId)
-	nic, resp, err := ns.client.NicApi.DatacentersServersNicsFindByIdExecute(req)
+	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsFindById(ns.context, datacenterId, serverId, nicId)
+	nic, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsFindByIdExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
 
@@ -70,19 +70,19 @@ func (ns *nicsService) Create(datacenterId, serverId, name string, ips []string,
 			Lan:  &lan,
 		},
 	}
-	req := ns.client.NicApi.DatacentersServersNicsPost(ns.context, datacenterId, serverId).Nic(input)
-	nic, resp, err := ns.client.NicApi.DatacentersServersNicsPostExecute(req)
+	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsPost(ns.context, datacenterId, serverId).Nic(input)
+	nic, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsPostExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
 
 func (ns *nicsService) Update(datacenterId, serverId, nicId string, input NicProperties) (*Nic, *Response, error) {
-	req := ns.client.NicApi.DatacentersServersNicsPatch(ns.context, datacenterId, serverId, nicId).Nic(input.NicProperties)
-	nic, resp, err := ns.client.NicApi.DatacentersServersNicsPatchExecute(req)
+	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsPatch(ns.context, datacenterId, serverId, nicId).Nic(input.NicProperties)
+	nic, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsPatchExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
 
 func (ns *nicsService) Delete(datacenterId, serverId, nicId string) (*Response, error) {
-	req := ns.client.NicApi.DatacentersServersNicsDelete(ns.context, datacenterId, serverId, nicId)
-	_, resp, err := ns.client.NicApi.DatacentersServersNicsDeleteExecute(req)
+	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsDelete(ns.context, datacenterId, serverId, nicId)
+	_, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsDeleteExecute(req)
 	return &Response{*resp}, err
 }

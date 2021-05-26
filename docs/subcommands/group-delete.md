@@ -33,7 +33,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string     Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -u, --api-url string     Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings       Set of columns to be printed on output 
                            Available columns: [GroupId Name CreateDataCenter CreateSnapshot ReserveIp AccessActivityLog CreatePcc S3Privilege CreateBackupUnit CreateInternetAccess CreateK8s] (default [GroupId,Name,CreateDataCenter,CreateSnapshot,ReserveIp,AccessActivityLog,CreatePcc,S3Privilege,CreateBackupUnit,CreateInternetAccess,CreateK8s])
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

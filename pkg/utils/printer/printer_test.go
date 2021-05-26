@@ -9,7 +9,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -166,7 +166,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 			},
 		},
 	}
-	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v5/requests/123456/status")
+	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v6/requests/123456/status")
 
 	p.Print(res)
 	err = w.Flush()
@@ -179,7 +179,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 	var (
 		b      bytes.Buffer
-		strErr = `path does not contain https://api.ionos.com/cloudapi/v5`
+		strErr = `path does not contain https://api.ionos.com/cloudapi/v6`
 	)
 
 	viper.Set(config.ArgOutput, "json")
@@ -281,7 +281,7 @@ func TestPrinterPrintResultTextRequestId(t *testing.T) {
 			},
 		},
 	}
-	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v5/requests/123456/status")
+	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v6/requests/123456/status")
 
 	p.Print(res)
 	err = w.Flush()

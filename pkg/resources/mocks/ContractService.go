@@ -35,10 +35,10 @@ func (m *MockContractsService) EXPECT() *MockContractsServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockContractsService) Get() (resources.Contract, *resources.Response, error) {
+func (m *MockContractsService) Get() (resources.Contracts, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get")
-	ret0, _ := ret[0].(resources.Contract)
+	ret0, _ := ret[0].(resources.Contracts)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2

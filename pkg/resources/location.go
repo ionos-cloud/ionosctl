@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Location struct {
@@ -36,19 +36,19 @@ func NewLocationService(client *Client, ctx context.Context) LocationsService {
 }
 
 func (s *locationsService) List() (Locations, *Response, error) {
-	req := s.client.LocationApi.LocationsGet(s.context)
-	locations, resp, err := s.client.LocationApi.LocationsGetExecute(req)
+	req := s.client.LocationsApi.LocationsGet(s.context)
+	locations, resp, err := s.client.LocationsApi.LocationsGetExecute(req)
 	return Locations{locations}, &Response{*resp}, err
 }
 
 func (s *locationsService) GetByRegionAndLocationId(regionId, locationId string) (*Location, *Response, error) {
-	req := s.client.LocationApi.LocationsFindByRegionIdAndId(s.context, regionId, locationId)
-	loc, resp, err := s.client.LocationApi.LocationsFindByRegionIdAndIdExecute(req)
+	req := s.client.LocationsApi.LocationsFindByRegionIdAndId(s.context, regionId, locationId)
+	loc, resp, err := s.client.LocationsApi.LocationsFindByRegionIdAndIdExecute(req)
 	return &Location{loc}, &Response{*resp}, err
 }
 
 func (s *locationsService) GetByRegionId(regionId string) (Locations, *Response, error) {
-	req := s.client.LocationApi.LocationsFindByRegionId(s.context, regionId)
-	locs, resp, err := s.client.LocationApi.LocationsFindByRegionIdExecute(req)
+	req := s.client.LocationsApi.LocationsFindByRegionId(s.context, regionId)
+	locs, resp, err := s.client.LocationsApi.LocationsFindByRegionIdExecute(req)
 	return Locations{locs}, &Response{*resp}, err
 }

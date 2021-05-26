@@ -8,21 +8,11 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	kubeconfigTestGet = resources.K8sKubeconfig{
-		KubernetesConfig: ionoscloud.KubernetesConfig{
-			Id: &testKubeconfigVar,
-			Properties: &ionoscloud.KubernetesConfigProperties{
-				Kubeconfig: &testKubeconfigVar,
-			},
-		},
-	}
 	testKubeconfigVar = "test-kubeconfig"
 	testKubeconfigErr = errors.New("kubeconfig test error")
 )
@@ -35,7 +25,7 @@ func TestRunK8sKubeconfigGet(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testKubeconfigVar)
-		rm.K8s.EXPECT().ReadKubeConfig(testKubeconfigVar).Return(kubeconfigTestGet, nil, nil)
+		rm.K8s.EXPECT().ReadKubeConfig(testKubeconfigVar).Return(testKubeconfigVar, nil, nil)
 		err := RunK8sKubeconfigGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -49,7 +39,7 @@ func TestRunK8sKubeconfigGetErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testKubeconfigVar)
-		rm.K8s.EXPECT().ReadKubeConfig(testKubeconfigVar).Return(kubeconfigTestGet, nil, testKubeconfigErr)
+		rm.K8s.EXPECT().ReadKubeConfig(testKubeconfigVar).Return(testKubeconfigVar, nil, testKubeconfigErr)
 		err := RunK8sKubeconfigGet(cfg)
 		assert.Error(t, err)
 	})

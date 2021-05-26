@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Server struct {
@@ -57,14 +57,14 @@ func NewServerService(client *Client, ctx context.Context) ServersService {
 }
 
 func (ss *serversService) List(datacenterId string) (Servers, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersGet(ss.context, datacenterId)
-	s, res, err := ss.client.ServerApi.DatacentersServersGetExecute(req)
+	req := ss.client.ServersApi.DatacentersServersGet(ss.context, datacenterId)
+	s, res, err := ss.client.ServersApi.DatacentersServersGetExecute(req)
 	return Servers{s}, &Response{*res}, err
 }
 
 func (ss *serversService) Get(datacenterId, serverId string) (*Server, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersFindById(ss.context, datacenterId, serverId)
-	s, res, err := ss.client.ServerApi.DatacentersServersFindByIdExecute(req)
+	req := ss.client.ServersApi.DatacentersServersFindById(ss.context, datacenterId, serverId)
+	s, res, err := ss.client.ServersApi.DatacentersServersFindByIdExecute(req)
 	return &Server{s}, &Response{*res}, err
 }
 
@@ -78,86 +78,86 @@ func (ss *serversService) Create(name, cpufamily, datacenterId, zone string, cor
 			CpuFamily:        &cpufamily,
 		},
 	}
-	req := ss.client.ServerApi.DatacentersServersPost(ss.context, datacenterId).Server(s)
-	server, res, err := ss.client.ServerApi.DatacentersServersPostExecute(req)
+	req := ss.client.ServersApi.DatacentersServersPost(ss.context, datacenterId).Server(s)
+	server, res, err := ss.client.ServersApi.DatacentersServersPostExecute(req)
 	return &Server{server}, &Response{*res}, err
 }
 
 func (ss *serversService) Update(datacenterId, serverId string, input ServerProperties) (*Server, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersPatch(ss.context, datacenterId, serverId).Server(input.ServerProperties)
-	server, resp, err := ss.client.ServerApi.DatacentersServersPatchExecute(req)
+	req := ss.client.ServersApi.DatacentersServersPatch(ss.context, datacenterId, serverId).Server(input.ServerProperties)
+	server, resp, err := ss.client.ServersApi.DatacentersServersPatchExecute(req)
 	return &Server{server}, &Response{*resp}, err
 }
 
 func (ss *serversService) Delete(datacenterId, serverId string) (*Response, error) {
-	req := ss.client.ServerApi.DatacentersServersDelete(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServerApi.DatacentersServersDeleteExecute(req)
+	req := ss.client.ServersApi.DatacentersServersDelete(ss.context, datacenterId, serverId)
+	_, res, err := ss.client.ServersApi.DatacentersServersDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (ss *serversService) Start(datacenterId, serverId string) (*Response, error) {
-	req := ss.client.ServerApi.DatacentersServersStartPost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServerApi.DatacentersServersStartPostExecute(req)
+	req := ss.client.ServersApi.DatacentersServersStartPost(ss.context, datacenterId, serverId)
+	_, res, err := ss.client.ServersApi.DatacentersServersStartPostExecute(req)
 	return &Response{*res}, err
 }
 
 func (ss *serversService) Stop(datacenterId, serverId string) (*Response, error) {
-	req := ss.client.ServerApi.DatacentersServersStopPost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServerApi.DatacentersServersStopPostExecute(req)
+	req := ss.client.ServersApi.DatacentersServersStopPost(ss.context, datacenterId, serverId)
+	_, res, err := ss.client.ServersApi.DatacentersServersStopPostExecute(req)
 	return &Response{*res}, err
 }
 
 func (ss *serversService) Reboot(datacenterId, serverId string) (*Response, error) {
-	req := ss.client.ServerApi.DatacentersServersRebootPost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServerApi.DatacentersServersRebootPostExecute(req)
+	req := ss.client.ServersApi.DatacentersServersRebootPost(ss.context, datacenterId, serverId)
+	_, res, err := ss.client.ServersApi.DatacentersServersRebootPostExecute(req)
 	return &Response{*res}, err
 }
 
 func (ss *serversService) ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersVolumesGet(ss.context, datacenterId, serverId)
-	vols, res, err := ss.client.ServerApi.DatacentersServersVolumesGetExecute(req)
+	req := ss.client.ServersApi.DatacentersServersVolumesGet(ss.context, datacenterId, serverId)
+	vols, res, err := ss.client.ServersApi.DatacentersServersVolumesGetExecute(req)
 	return AttachedVolumes{vols}, &Response{*res}, err
 }
 
 func (ss *serversService) AttachVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersVolumesPost(ss.context, datacenterId, serverId)
+	req := ss.client.ServersApi.DatacentersServersVolumesPost(ss.context, datacenterId, serverId)
 	req = req.Volume(ionoscloud.Volume{Id: &volumeId})
-	vol, res, err := ss.client.ServerApi.DatacentersServersVolumesPostExecute(req)
+	vol, res, err := ss.client.ServersApi.DatacentersServersVolumesPostExecute(req)
 	return &Volume{vol}, &Response{*res}, err
 }
 
 func (ss *serversService) GetVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersVolumesFindById(ss.context, datacenterId, serverId, volumeId)
-	vol, res, err := ss.client.ServerApi.DatacentersServersVolumesFindByIdExecute(req)
+	req := ss.client.ServersApi.DatacentersServersVolumesFindById(ss.context, datacenterId, serverId, volumeId)
+	vol, res, err := ss.client.ServersApi.DatacentersServersVolumesFindByIdExecute(req)
 	return &Volume{vol}, &Response{*res}, err
 }
 
 func (ss *serversService) DetachVolume(datacenterId, serverId, volumeId string) (*Response, error) {
-	req := ss.client.ServerApi.DatacentersServersVolumesDelete(ss.context, datacenterId, serverId, volumeId)
-	_, res, err := ss.client.ServerApi.DatacentersServersVolumesDeleteExecute(req)
+	req := ss.client.ServersApi.DatacentersServersVolumesDelete(ss.context, datacenterId, serverId, volumeId)
+	_, res, err := ss.client.ServersApi.DatacentersServersVolumesDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (ss *serversService) ListCdroms(datacenterId, serverId string) (Cdroms, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersCdromsGet(ss.context, datacenterId, serverId)
-	imgs, res, err := ss.client.ServerApi.DatacentersServersCdromsGetExecute(req)
+	req := ss.client.ServersApi.DatacentersServersCdromsGet(ss.context, datacenterId, serverId)
+	imgs, res, err := ss.client.ServersApi.DatacentersServersCdromsGetExecute(req)
 	return Cdroms{imgs}, &Response{*res}, err
 }
 
 func (ss *serversService) AttachCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersCdromsPost(ss.context, datacenterId, serverId).Cdrom(ionoscloud.Image{Id: &cdromId})
-	img, res, err := ss.client.ServerApi.DatacentersServersCdromsPostExecute(req)
+	req := ss.client.ServersApi.DatacentersServersCdromsPost(ss.context, datacenterId, serverId).Cdrom(ionoscloud.Image{Id: &cdromId})
+	img, res, err := ss.client.ServersApi.DatacentersServersCdromsPostExecute(req)
 	return &Image{img}, &Response{*res}, err
 }
 
 func (ss *serversService) GetCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error) {
-	req := ss.client.ServerApi.DatacentersServersCdromsFindById(ss.context, datacenterId, serverId, cdromId)
-	img, res, err := ss.client.ServerApi.DatacentersServersCdromsFindByIdExecute(req)
+	req := ss.client.ServersApi.DatacentersServersCdromsFindById(ss.context, datacenterId, serverId, cdromId)
+	img, res, err := ss.client.ServersApi.DatacentersServersCdromsFindByIdExecute(req)
 	return &Image{img}, &Response{*res}, err
 }
 
 func (ss *serversService) DetachCdrom(datacenterId, serverId, cdromId string) (*Response, error) {
-	req := ss.client.ServerApi.DatacentersServersCdromsDelete(ss.context, datacenterId, serverId, cdromId)
-	_, res, err := ss.client.ServerApi.DatacentersServersCdromsDeleteExecute(req)
+	req := ss.client.ServersApi.DatacentersServersCdromsDelete(ss.context, datacenterId, serverId, cdromId)
+	_, res, err := ss.client.ServersApi.DatacentersServersCdromsDeleteExecute(req)
 	return &Response{*res}, err
 }

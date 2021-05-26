@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -37,7 +37,7 @@ var (
 		},
 	}
 	testRequestVar     = "test-request"
-	testRequestPathVar = fmt.Sprintf("https://api.ionos.com/cloudapi/v5/requests/%s", testRequestVar)
+	testRequestPathVar = fmt.Sprintf("https://api.ionos.com/cloudapi/v6/requests/%s", testRequestVar)
 	testRequestErr     = errors.New("request test: error occurred")
 )
 

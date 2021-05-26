@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type S3Key struct {
@@ -38,31 +38,31 @@ func NewS3KeyService(client *Client, ctx context.Context) S3KeysService {
 }
 
 func (s *s3KeysService) List(userId string) (S3Keys, *Response, error) {
-	req := s.client.UserManagementApi.UmUsersS3keysGet(s.context, userId)
-	keys, resp, err := s.client.UserManagementApi.UmUsersS3keysGetExecute(req)
+	req := s.client.UserS3KeysApi.UmUsersS3keysGet(s.context, userId)
+	keys, resp, err := s.client.UserS3KeysApi.UmUsersS3keysGetExecute(req)
 	return S3Keys{keys}, &Response{*resp}, err
 }
 
 func (s *s3KeysService) Get(userId, keyId string) (*S3Key, *Response, error) {
-	req := s.client.UserManagementApi.UmUsersS3keysFindByKeyId(s.context, userId, keyId)
-	key, resp, err := s.client.UserManagementApi.UmUsersS3keysFindByKeyIdExecute(req)
+	req := s.client.UserS3KeysApi.UmUsersS3keysFindByKeyId(s.context, userId, keyId)
+	key, resp, err := s.client.UserS3KeysApi.UmUsersS3keysFindByKeyIdExecute(req)
 	return &S3Key{key}, &Response{*resp}, err
 }
 
 func (s *s3KeysService) Create(userId string) (*S3Key, *Response, error) {
-	req := s.client.UserManagementApi.UmUsersS3keysPost(s.context, userId)
-	s3key, resp, err := s.client.UserManagementApi.UmUsersS3keysPostExecute(req)
+	req := s.client.UserS3KeysApi.UmUsersS3keysPost(s.context, userId)
+	s3key, resp, err := s.client.UserS3KeysApi.UmUsersS3keysPostExecute(req)
 	return &S3Key{s3key}, &Response{*resp}, err
 }
 
 func (s *s3KeysService) Update(userId, keyId string, key S3Key) (*S3Key, *Response, error) {
-	req := s.client.UserManagementApi.UmUsersS3keysPut(s.context, userId, keyId).S3Key(key.S3Key)
-	s3key, resp, err := s.client.UserManagementApi.UmUsersS3keysPutExecute(req)
+	req := s.client.UserS3KeysApi.UmUsersS3keysPut(s.context, userId, keyId).S3Key(key.S3Key)
+	s3key, resp, err := s.client.UserS3KeysApi.UmUsersS3keysPutExecute(req)
 	return &S3Key{s3key}, &Response{*resp}, err
 }
 
 func (s *s3KeysService) Delete(userId, keyId string) (*Response, error) {
-	req := s.client.UserManagementApi.UmUsersS3keysDelete(s.context, userId, keyId)
-	_, resp, err := s.client.UserManagementApi.UmUsersS3keysDeleteExecute(req)
+	req := s.client.UserS3KeysApi.UmUsersS3keysDelete(s.context, userId, keyId)
+	_, resp, err := s.client.UserS3KeysApi.UmUsersS3keysDeleteExecute(req)
 	return &Response{*resp}, err
 }

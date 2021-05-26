@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Datacenter struct {
@@ -46,14 +46,14 @@ func NewDataCenterService(client *Client, ctx context.Context) DatacentersServic
 }
 
 func (ds *dataCentersService) List() (Datacenters, *Response, error) {
-	req := ds.client.DataCenterApi.DatacentersGet(ds.context)
-	dcs, res, err := ds.client.DataCenterApi.DatacentersGetExecute(req)
+	req := ds.client.DataCentersApi.DatacentersGet(ds.context)
+	dcs, res, err := ds.client.DataCentersApi.DatacentersGetExecute(req)
 	return Datacenters{dcs}, &Response{*res}, err
 }
 
 func (ds *dataCentersService) Get(datacenterId string) (*Datacenter, *Response, error) {
-	req := ds.client.DataCenterApi.DatacentersFindById(ds.context, datacenterId)
-	datacenter, res, err := ds.client.DataCenterApi.DatacentersFindByIdExecute(req)
+	req := ds.client.DataCentersApi.DatacentersFindById(ds.context, datacenterId)
+	datacenter, res, err := ds.client.DataCentersApi.DatacentersFindByIdExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
@@ -65,19 +65,19 @@ func (ds *dataCentersService) Create(name, description, region string) (*Datacen
 			Location:    &region,
 		},
 	}
-	req := ds.client.DataCenterApi.DatacentersPost(ds.context).Datacenter(dc)
-	datacenter, res, err := ds.client.DataCenterApi.DatacentersPostExecute(req)
+	req := ds.client.DataCentersApi.DatacentersPost(ds.context).Datacenter(dc)
+	datacenter, res, err := ds.client.DataCentersApi.DatacentersPostExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
 func (ds *dataCentersService) Update(datacenterId string, input DatacenterProperties) (*Datacenter, *Response, error) {
-	req := ds.client.DataCenterApi.DatacentersPatch(ds.context, datacenterId).Datacenter(input.DatacenterProperties)
-	datacenter, res, err := ds.client.DataCenterApi.DatacentersPatchExecute(req)
+	req := ds.client.DataCentersApi.DatacentersPatch(ds.context, datacenterId).Datacenter(input.DatacenterProperties)
+	datacenter, res, err := ds.client.DataCentersApi.DatacentersPatchExecute(req)
 	return &Datacenter{datacenter}, &Response{*res}, err
 }
 
 func (ds *dataCentersService) Delete(datacenterId string) (*Response, error) {
-	req := ds.client.DataCenterApi.DatacentersDelete(context.Background(), datacenterId)
-	_, res, err := ds.client.DataCenterApi.DatacentersDeleteExecute(req)
+	req := ds.client.DataCentersApi.DatacentersDelete(context.Background(), datacenterId)
+	_, res, err := ds.client.DataCentersApi.DatacentersDeleteExecute(req)
 	return &Response{*res}, err
 }

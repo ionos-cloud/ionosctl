@@ -3,7 +3,7 @@ package resources
 import (
 	"context"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Image struct {
@@ -41,25 +41,25 @@ func NewImageService(client *Client, ctx context.Context) ImagesService {
 }
 
 func (s *imagesService) List() (Images, *Response, error) {
-	req := s.client.ImageApi.ImagesGet(s.context)
-	images, resp, err := s.client.ImageApi.ImagesGetExecute(req)
+	req := s.client.ImagesApi.ImagesGet(s.context)
+	images, resp, err := s.client.ImagesApi.ImagesGetExecute(req)
 	return Images{images}, &Response{*resp}, err
 }
 
 func (s *imagesService) Get(imageId string) (*Image, *Response, error) {
-	req := s.client.ImageApi.ImagesFindById(s.context, imageId)
-	image, resp, err := s.client.ImageApi.ImagesFindByIdExecute(req)
+	req := s.client.ImagesApi.ImagesFindById(s.context, imageId)
+	image, resp, err := s.client.ImagesApi.ImagesFindByIdExecute(req)
 	return &Image{image}, &Response{*resp}, err
 }
 
 func (s *imagesService) Update(imageId string, imgProp ImageProperties) (*Image, *Response, error) {
-	req := s.client.ImageApi.ImagesPatch(s.context, imageId).Image(imgProp.ImageProperties)
-	image, resp, err := s.client.ImageApi.ImagesPatchExecute(req)
+	req := s.client.ImagesApi.ImagesPatch(s.context, imageId).Image(imgProp.ImageProperties)
+	image, resp, err := s.client.ImagesApi.ImagesPatchExecute(req)
 	return &Image{image}, &Response{*resp}, err
 }
 
 func (s *imagesService) Delete(imageId string) (*Response, error) {
-	req := s.client.ImageApi.ImagesDelete(s.context, imageId)
-	_, resp, err := s.client.ImageApi.ImagesDeleteExecute(req)
+	req := s.client.ImagesApi.ImagesDelete(s.context, imageId)
+	_, resp, err := s.client.ImagesApi.ImagesDeleteExecute(req)
 	return &Response{*resp}, err
 }
