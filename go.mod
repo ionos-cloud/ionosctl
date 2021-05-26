@@ -7,7 +7,7 @@ require (
 	github.com/fatih/color v1.10.0
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.4.4
-	github.com/ionos-cloud/sdk-go/v5 v5.0.4-0.20210511111852-cf125f5c5ac9
+	github.com/ionos-cloud/sdk-go/v6 v6.0.0-20210526100040-5ac5330068b5
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/pflag v1.0.5

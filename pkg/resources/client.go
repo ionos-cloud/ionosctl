@@ -3,7 +3,7 @@ package resources
 import (
 	"errors"
 
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
 type Client struct {

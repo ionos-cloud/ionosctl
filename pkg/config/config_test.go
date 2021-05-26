@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	sdk "github.com/ionos-cloud/sdk-go/v5"
+	sdk "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
