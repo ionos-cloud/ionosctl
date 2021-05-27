@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"io"
 	"os"
 
@@ -107,6 +108,11 @@ Required values to run command:
 	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgTemplateId, "", "", "The unique Template Id for creating a CUBE Server")
+	create.AddStringFlag(config.ArgType, "", "", "Type usages for the Server")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"ENTERPRISE", "CUBE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Server")
 	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "Cores option of the Server")
@@ -400,13 +406,14 @@ func RunServerGet(c *core.CommandConfig) error {
 }
 
 func RunServerCreate(c *core.CommandConfig) error {
-	svr, resp, err := c.Servers().Create(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)),
+	proper := getNewServerInfo(c)
+	svr, resp, err := c.Servers().CreateS(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize)),
+		resources.Server{
+			Server: ionoscloud.Server{
+				Properties: &proper.ServerProperties,
+			},
+		},
 	)
 	if err != nil {
 		return err
@@ -578,6 +585,37 @@ func RunServerResume(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
+}
+
+func getNewServerInfo(c *core.CommandConfig) *resources.ServerProperties {
+	input := ionoscloud.ServerProperties{}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCPUFamily)) {
+		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgAvailabilityZone)) {
+		input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
+		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamSize)) {
+		input.SetRam(viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgTemplateId)) {
+		input.SetTemplateUuid(viper.GetString(core.GetFlagName(c.NS, config.ArgTemplateId)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgTemplateId)) {
+		input.SetTemplateUuid(viper.GetString(core.GetFlagName(c.NS, config.ArgTemplateId)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgType)) {
+		input.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
+	}
+	return &resources.ServerProperties{
+		ServerProperties: input,
+	}
 }
 
 // Wait for State
