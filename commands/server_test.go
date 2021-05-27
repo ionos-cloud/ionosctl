@@ -18,12 +18,23 @@ import (
 )
 
 var (
-	cores    = int32(2)
-	coresNew = int32(4)
-	ram      = int32(256)
-	ramNew   = int32(256)
-	state    = "ACTIVE"
-	s        = ionoscloud.Server{
+	cores        = int32(2)
+	coresNew     = int32(4)
+	ram          = int32(256)
+	ramNew       = int32(256)
+	state        = "ACTIVE"
+	serverCreate = resources.Server{
+		Server: ionoscloud.Server{
+			Properties: &ionoscloud.ServerProperties{
+				Name:             &testServerVar,
+				Cores:            &cores,
+				Ram:              &ram,
+				CpuFamily:        &testServerVar,
+				AvailabilityZone: &testServerVar,
+			},
+		},
+	}
+	s = ionoscloud.Server{
 		Id: &testServerVar,
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &state,
@@ -65,17 +76,6 @@ var (
 				CpuFamily:        serverProperties.ServerProperties.CpuFamily,
 				AvailabilityZone: serverProperties.ServerProperties.AvailabilityZone,
 			},
-		},
-	}
-	dcServer = ionoscloud.Datacenter{
-		Id: &testServerVar,
-		Properties: &ionoscloud.DatacenterProperties{
-			Name:        &testServerVar,
-			Description: &testServerVar,
-			Location:    &testServerVar,
-		},
-		Entities: &ionoscloud.DataCenterEntities{
-			Servers: &ss.Servers,
 		},
 	}
 	testServerVar    = "test-server"
@@ -216,7 +216,7 @@ func TestRunServerCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -237,7 +237,7 @@ func TestRunServerCreateWaitState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
 		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
 		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
@@ -259,7 +259,7 @@ func TestRunServerCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, testServerErr)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, testServerErr)
 		err := RunServerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -279,7 +279,7 @@ func TestRunServerCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -704,6 +704,30 @@ func TestRunServerRebootAskForConfirmErr(t *testing.T) {
 		err := RunServerReboot(cfg)
 		assert.Error(t, err)
 	})
+}
+
+func TestGetMemorySizeMB(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
+	w := bufio.NewWriter(&b)
+	size, err := getMemorySize("256MB")
+	assert.NoError(t, err)
+	assert.True(t, size == 256)
+	size, err = getMemorySize("4GB")
+	assert.NoError(t, err)
+	assert.True(t, size == 4*1024)
+	size, err = getMemorySize("1TB")
+	assert.NoError(t, err)
+	assert.True(t, size == 1*1024*1024)
+	size, err = getMemorySize("2PB")
+	assert.NoError(t, err)
+	assert.True(t, size == 2*1024*1024*1024)
+	size, err = getMemorySize("2 PB")
+	assert.NoError(t, err)
+	assert.True(t, size == 2*1024*1024*1024)
+	err = w.Flush()
+	assert.NoError(t, err)
 }
 
 func TestGetServersCols(t *testing.T) {
