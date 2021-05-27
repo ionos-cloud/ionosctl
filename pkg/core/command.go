@@ -102,7 +102,7 @@ func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc st
 func CheckRequiredGlobalFlags(cmdName string, globalFlagsName ...string) error {
 	var multiErr error
 	for _, flagName := range globalFlagsName {
-		if viper.GetString(GetGlobalFlagName(cmdName, flagName)) == "" {
+		if !viper.IsSet(GetGlobalFlagName(cmdName, flagName)) {
 			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
 		}
 	}
@@ -115,7 +115,7 @@ func CheckRequiredGlobalFlags(cmdName string, globalFlagsName ...string) error {
 func CheckRequiredFlags(ns string, localFlagsName ...string) error {
 	var multiErr error
 	for _, flagName := range localFlagsName {
-		if viper.GetString(GetFlagName(ns, flagName)) == "" {
+		if !viper.IsSet(GetFlagName(ns, flagName)) {
 			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
 		}
 	}

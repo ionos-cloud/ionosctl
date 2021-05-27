@@ -84,7 +84,6 @@ func TestPreRunPccIdErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), "")
 		err := PreRunPccId(cfg)
 		assert.Error(t, err)
 	})

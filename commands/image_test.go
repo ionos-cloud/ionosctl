@@ -65,7 +65,6 @@ func TestPreImageIdErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), "")
 		err := PreRunImageId(cfg)
 		assert.Error(t, err)
 	})

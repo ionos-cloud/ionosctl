@@ -75,8 +75,6 @@ func TestPreRunUserKeyIdsErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserId), "")
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3KeyId), "")
 		err := PreRunUserKeyIds(cfg)
 		assert.Error(t, err)
 	})

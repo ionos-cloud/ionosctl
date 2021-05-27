@@ -60,7 +60,6 @@ func TestPreRunRequestIdRequiredFlagErr(t *testing.T) {
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), "")
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunRequestId(cfg)
 		assert.Error(t, err)
