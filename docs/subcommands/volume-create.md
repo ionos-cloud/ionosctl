@@ -34,6 +34,7 @@ Required values to run command:
 
 * Data Center Id
 * Licence Type/Image Id or Image Alias
+* Size
 
 ## Options
 
@@ -41,7 +42,7 @@ Required values to run command:
   -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
   -z, --availability-zone string   Availability zone of the Volume. Storage zone can only be selected prior provisioning (default "AUTO")
       --backupunit-id string       The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property
-      --bus string                 Bus for the Volume (default "VIRTIO")
+      --bus string                 The bus type of the Volume (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId SshKeys ImageAlias DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
@@ -61,7 +62,7 @@ Required values to run command:
   -p, --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output
       --ram-hot-plug               It is capable of memory hot plug (no reboot required)
-      --size float32               Size in GB of the Volume (default 10)
+      --size string                The size of the Volume in GB (required) (default "10")
       --ssh-keys strings           SSH Keys of the Volume
   -t, --timeout int                Timeout option for Request for Volume creation [seconds] (default 60)
       --type string                Type of the Volume (default "HDD")
