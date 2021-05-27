@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"io"
 	"os"
 
@@ -15,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -110,6 +110,9 @@ Required values to run command:
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgTemplateId, "", "", "The unique Template Id for creating a CUBE Server")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getTemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(config.ArgType, "", "", "Type usages for the Server")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ENTERPRISE", "CUBE"}, cobra.ShellCompDirectiveNoFileComp
@@ -407,7 +410,7 @@ func RunServerGet(c *core.CommandConfig) error {
 
 func RunServerCreate(c *core.CommandConfig) error {
 	proper := getNewServerInfo(c)
-	svr, resp, err := c.Servers().CreateS(
+	svr, resp, err := c.Servers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		resources.Server{
 			Server: ionoscloud.Server{

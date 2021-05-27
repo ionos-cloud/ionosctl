@@ -697,4 +697,16 @@ Status: Command cdrom attach & wait have been successfully executed`
 15s Waiting for request. DONE                                                                                                                                                                              
 RequestId: f6eb5b4a-7eb9-4515-872a-dd5acc296968
 Status: Command cdrom detach & wait have been successfully executed`
+
+	/*
+		Template Example
+	*/
+	listTemplateExample = `ionosctl template list 
+TemplateId                             Name             Cores   Ram     StorageSize
+7f8dfdb3-594b-4ae2-ae2e-a9dfcbf05f74   BETA CUBES M     2       4096    80
+5e98b425-1887-44e4-b782-a654bfbe7eaa   BETA CUBES XL    6       16384   320
+99d022bd-55ea-4af1-9ba7-6d4174d9fc22   BETA CUBES L     4       8192    160`
+	getTemplateExample = `ionosctl template get -i 7f8dfdb3-594b-4ae2-ae2e-a9dfcbf05f74 
+TemplateId                             Name           Cores   Ram    StorageSize
+7f8dfdb3-594b-4ae2-ae2e-a9dfcbf05f74   BETA CUBES M   2       4096   80`
 )

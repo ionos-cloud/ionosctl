@@ -18,12 +18,21 @@ import (
 )
 
 var (
-	cores    = int32(2)
-	coresNew = int32(4)
-	ram      = int32(256)
-	ramNew   = int32(256)
-	state    = "ACTIVE"
-	s        = ionoscloud.Server{
+	cores        = int32(2)
+	coresNew     = int32(4)
+	ram          = int32(256)
+	ramNew       = int32(256)
+	state        = "ACTIVE"
+	serverCreate = ionoscloud.Server{
+		Properties: &ionoscloud.ServerProperties{
+			Name:             &testServerVar,
+			Cores:            &cores,
+			Ram:              &ram,
+			CpuFamily:        &testServerVar,
+			AvailabilityZone: &testServerVar,
+		},
+	}
+	s = ionoscloud.Server{
 		Id: &testServerVar,
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &state,
@@ -216,7 +225,7 @@ func TestRunServerCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, resources.Server{Server: serverCreate}).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -237,7 +246,7 @@ func TestRunServerCreateWaitState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, resources.Server{Server: serverCreate}).Return(&resources.Server{Server: s}, nil, nil)
 		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
 		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
@@ -259,7 +268,7 @@ func TestRunServerCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, testServerErr)
+		rm.Server.EXPECT().Create(testServerVar, resources.Server{Server: serverCreate}).Return(&resources.Server{Server: s}, nil, testServerErr)
 		err := RunServerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -279,7 +288,7 @@ func TestRunServerCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Server.EXPECT().Create(testServerVar, testServerVar, testServerVar, testServerVar, cores, ram).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, resources.Server{Server: serverCreate}).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.Error(t, err)
 	})
