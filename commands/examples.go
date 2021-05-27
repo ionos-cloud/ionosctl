@@ -104,7 +104,8 @@ Status: Command server delete has been successfully executed
 ionosctl server delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 35201d04-0ea2-43e7-abc4-56f92737bb9d --force 
 RequestId: f596caba-78b7-4c99-8c9d-56198d3754b6
 Status: Command server delete has been successfully executed`
-	startServerExample = `ionosctl server start --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa
+	suspendServerExample = ``
+	startServerExample   = `ionosctl server start --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa
 Warning: Are you sure you want to start server (y/N) ? y
 RequestId: 9f03a764-5f6c-4740-87e2-d9e9589265dc
 Status: Command server start has been successfully executed`
@@ -112,10 +113,11 @@ Status: Command server start has been successfully executed`
 Warning: Are you sure you want to stop server (y/N) ? y
 RequestId: 8c06523d-8838-4409-aee3-68c042f5a256
 Status: Command server stop has been successfully executed`
-	resetServerExample = `ionosctl server reset --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa
+	rebootServerExample = `ionosctl server reboot --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa
 Warning: Are you sure you want to reboot server (y/N) ? y
 RequestId: e6720605-2fa4-46d9-be74-42b733eb1128
 Status: Command server reset has been successfully executed`
+	resumeServerExample       = ``
 	attachVolumeServerExample = `ionosctl server volume attach --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa --volume-id 101291d1-2227-432a-9773-97b5ace7b8d3 
 VolumeId                               Name   Size   Type   LicenceType   State   Image
 101291d1-2227-432a-9773-97b5ace7b8d3   test   10GB   HDD    LINUX         BUSY    

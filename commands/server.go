@@ -204,6 +204,38 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
 
 	/*
+		Suspend Command
+	*/
+	suspend := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace: "server",
+		Resource:  "server",
+		Verb:      "suspend",
+		ShortDesc: "Suspend a Cube Server",
+		LongDesc: `Use this command to suspend a Cube Server. The operation can only be applied to Cube Servers. Note: The virtual machine will not be deleted.
+
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+
+Required values to run command:
+
+* Data Center Id
+* Server Id`,
+		Example:    suspendServerExample,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerSuspend,
+		InitClient: true,
+	})
+	suspend.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = suspend.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	suspend.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	_ = suspend.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(suspend.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	suspend.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server reboot to be executed")
+	suspend.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
+
+	/*
 		Start Command
 	*/
 	start := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
@@ -286,7 +318,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id`,
-		Example:    resetServerExample,
+		Example:    rebootServerExample,
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerReboot,
 		InitClient: true,
@@ -301,6 +333,39 @@ Required values to run command:
 	})
 	reboot.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server reboot to be executed")
 	reboot.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
+
+	/*
+		Resume Command
+	*/
+	resume := core.NewCommand(ctx, serverCmd, core.CommandBuilder{
+		Namespace: "server",
+		Resource:  "server",
+		Verb:      "resume",
+		Aliases:   []string{"res"},
+		ShortDesc: "Resume a Cube Server",
+		LongDesc: `Use this command to resume a Cube Server. The operation can only be applied to suspended Cube Servers.
+
+You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
+
+Required values to run command:
+
+* Data Center Id
+* Server Id`,
+		Example:    resumeServerExample,
+		PreCmdRun:  PreRunDcServerIds,
+		CmdRun:     RunServerResume,
+		InitClient: true,
+	})
+	resume.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = resume.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	resume.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	_ = resume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(resume.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	resume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server reboot to be executed")
+	resume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
 
 	serverCmd.AddCommand(serverVolume())
 	serverCmd.AddCommand(serverCdrom())
@@ -461,11 +526,47 @@ func RunServerStop(c *core.CommandConfig) error {
 	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
+func RunServerSuspend(c *core.CommandConfig) error {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "suspend cube server"); err != nil {
+		return err
+	}
+	resp, err := c.Servers().Suspend(
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
+	)
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+		return err
+	}
+	return c.Printer.Print(getServerPrint(resp, c, nil))
+}
+
 func RunServerReboot(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
 		return err
 	}
 	resp, err := c.Servers().Reboot(
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
+	)
+	if err != nil {
+		return err
+	}
+
+	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+		return err
+	}
+	return c.Printer.Print(getServerPrint(resp, c, nil))
+}
+
+func RunServerResume(c *core.CommandConfig) error {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "resume cube server"); err != nil {
+		return err
+	}
+	resp, err := c.Servers().Resume(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)

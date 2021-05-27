@@ -125,6 +125,30 @@ func (ss *serversService) Reboot(datacenterId, serverId string) (*Response, erro
 	return &Response{*res}, err
 }
 
+func (ss *serversService) Suspend(datacenterId, serverId string) (*Response, error) {
+	req := ss.client.ServersApi.DatacentersServersSuspendPost(ss.context, datacenterId, serverId)
+	_, res, err := ss.client.ServersApi.DatacentersServersSuspendPostExecute(req)
+	return &Response{*res}, err
+}
+
+func (ss *serversService) Resume(datacenterId, serverId string) (*Response, error) {
+	req := ss.client.ServersApi.DatacentersServersResumePost(ss.context, datacenterId, serverId)
+	_, res, err := ss.client.ServersApi.DatacentersServersResumePostExecute(req)
+	return &Response{*res}, err
+}
+
+func (ss *serversService) GetToken(datacenterId, serverId string) (Token, *Response, error) {
+	req := ss.client.ServersApi.DatacentersServersTokenGet(ss.context, datacenterId, serverId)
+	token, res, err := ss.client.ServersApi.DatacentersServersTokenGetExecute(req)
+	return Token{token}, &Response{*res}, err
+}
+
+func (ss *serversService) GetRemoteConsoleUrl(datacenterId, serverId string) (RemoteConsoleUrl, *Response, error) {
+	req := ss.client.ServersApi.DatacentersServersRemoteConsoleGet(ss.context, datacenterId, serverId)
+	url, res, err := ss.client.ServersApi.DatacentersServersRemoteConsoleGetExecute(req)
+	return RemoteConsoleUrl{url}, &Response{*res}, err
+}
+
 func (ss *serversService) ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersVolumesGet(ss.context, datacenterId, serverId)
 	vols, res, err := ss.client.ServersApi.DatacentersServersVolumesGetExecute(req)
@@ -172,28 +196,4 @@ func (ss *serversService) DetachCdrom(datacenterId, serverId, cdromId string) (*
 	req := ss.client.ServersApi.DatacentersServersCdromsDelete(ss.context, datacenterId, serverId, cdromId)
 	_, res, err := ss.client.ServersApi.DatacentersServersCdromsDeleteExecute(req)
 	return &Response{*res}, err
-}
-
-func (ss *serversService) Suspend(datacenterId, serverId string) (*Response, error) {
-	req := ss.client.ServersApi.DatacentersServersSuspendPost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServersApi.DatacentersServersSuspendPostExecute(req)
-	return &Response{*res}, err
-}
-
-func (ss *serversService) Resume(datacenterId, serverId string) (*Response, error) {
-	req := ss.client.ServersApi.DatacentersServersResumePost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServersApi.DatacentersServersResumePostExecute(req)
-	return &Response{*res}, err
-}
-
-func (ss *serversService) GetToken(datacenterId, serverId string) (Token, *Response, error) {
-	req := ss.client.ServersApi.DatacentersServersTokenGet(ss.context, datacenterId, serverId)
-	token, res, err := ss.client.ServersApi.DatacentersServersTokenGetExecute(req)
-	return Token{token}, &Response{*res}, err
-}
-
-func (ss *serversService) GetRemoteConsoleUrl(datacenterId, serverId string) (RemoteConsoleUrl, *Response, error) {
-	req := ss.client.ServersApi.DatacentersServersRemoteConsoleGet(ss.context, datacenterId, serverId)
-	url, res, err := ss.client.ServersApi.DatacentersServersRemoteConsoleGetExecute(req)
-	return RemoteConsoleUrl{url}, &Response{*res}, err
 }
