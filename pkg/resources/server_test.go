@@ -68,6 +68,30 @@ func TestNewServerService(t *testing.T) {
 		_, err := backupUnitSvc.Reboot(testServerResourceVar, testServerResourceVar)
 		assert.Error(t, err)
 	})
+	t.Run("suspend_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		backupUnitSvc := NewServerService(svc.Get(), ctx)
+		_, err := backupUnitSvc.Suspend(testServerResourceVar, testServerResourceVar)
+		assert.Error(t, err)
+	})
+	t.Run("resume_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		backupUnitSvc := NewServerService(svc.Get(), ctx)
+		_, err := backupUnitSvc.Resume(testServerResourceVar, testServerResourceVar)
+		assert.Error(t, err)
+	})
+	t.Run("get_token_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		backupUnitSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := backupUnitSvc.GetToken(testServerResourceVar, testServerResourceVar)
+		assert.Error(t, err)
+	})
+	t.Run("get_remote_console_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		backupUnitSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := backupUnitSvc.GetRemoteConsoleUrl(testServerResourceVar, testServerResourceVar)
+		assert.Error(t, err)
+	})
 	t.Run("attach_volume_server_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		backupUnitSvc := NewServerService(svc.Get(), ctx)
