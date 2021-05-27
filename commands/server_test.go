@@ -704,30 +704,6 @@ func TestRunServerRebootAskForConfirmErr(t *testing.T) {
 	})
 }
 
-func TestGetMemorySizeMB(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	size, err := getMemorySize("256MB")
-	assert.NoError(t, err)
-	assert.True(t, size == 256)
-	size, err = getMemorySize("4GB")
-	assert.NoError(t, err)
-	assert.True(t, size == 4*1024)
-	size, err = getMemorySize("1TB")
-	assert.NoError(t, err)
-	assert.True(t, size == 1*1024*1024)
-	size, err = getMemorySize("2PB")
-	assert.NoError(t, err)
-	assert.True(t, size == 2*1024*1024*1024)
-	size, err = getMemorySize("2 PB")
-	assert.NoError(t, err)
-	assert.True(t, size == 2*1024*1024*1024)
-	err = w.Flush()
-	assert.NoError(t, err)
-}
-
 func TestGetServersCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer

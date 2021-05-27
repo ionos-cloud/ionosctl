@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -98,15 +99,19 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id
-* Licence Type/Image Id or Image Alias`,
+* Licence Type/Image Id or Image Alias
+* Size`,
 		Example:    createVolumeExample,
 		PreCmdRun:  PreRunGlobalDcIdVolumeProperties,
 		CmdRun:     RunVolumeCreate,
 		InitClient: true,
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Volume")
-	create.AddFloat32Flag(config.ArgSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
-	create.AddStringFlag(config.ArgBus, "", "VIRTIO", "Bus for the Volume")
+	create.AddStringFlag(config.ArgSize, "", strconv.Itoa(config.DefaultVolumeSize), "The size of the Volume in GB "+config.RequiredFlag)
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgBus, "", "VIRTIO", "The bus type of the Volume")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -172,7 +177,10 @@ Required values to run command:
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Volume")
-	update.AddFloat32Flag(config.ArgSize, "", config.DefaultVolumeSize, "Size in GB of the Volume")
+	update.AddStringFlag(config.ArgSize, "", strconv.Itoa(config.DefaultVolumeSize), "The size of the Volume in GB "+config.RequiredFlag)
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	update.AddStringFlag(config.ArgBus, "", "VIRTIO", "Bus of the Volume")
 	update.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
 	update.AddBoolFlag(config.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
@@ -218,6 +226,9 @@ Required values to run command:
 func PreRunGlobalDcIdVolumeProperties(c *core.PreCommandConfig) error {
 	var result error
 	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId); err != nil {
+		result = multierror.Append(result, err)
+	}
+	if err := core.CheckRequiredFlags(c.Resource, config.ArgSize); err != nil {
 		result = multierror.Append(result, err)
 	}
 	// Check required flags
@@ -272,7 +283,14 @@ func RunVolumeGet(c *core.CommandConfig) error {
 }
 
 func RunVolumeCreate(c *core.CommandConfig) error {
-	vol, resp, err := c.Volumes().Create(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)), getNewVolume(c))
+	input, err := getNewVolume(c)
+	if err != nil {
+		return err
+	}
+	vol, resp, err := c.Volumes().Create(
+		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		*input,
+	)
 	if err != nil {
 		return err
 	}
@@ -283,10 +301,14 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 }
 
 func RunVolumeUpdate(c *core.CommandConfig) error {
+	input, err := getVolumeInfo(c)
+	if err != nil {
+		return err
+	}
 	vol, resp, err := c.Volumes().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
-		getVolumeInfo(c),
+		*input,
 	)
 	if err != nil {
 		return err
@@ -315,15 +337,23 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getVolumePrint(resp, c, nil))
 }
 
-func getNewVolume(c *core.CommandConfig) resources.Volume {
+func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	proper := resources.VolumeProperties{}
 	// It will get the default values, if flags not set
 	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	proper.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
 	proper.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
 	proper.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
-	proper.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgSize))))
-
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSize)) {
+		size, err := utils.ConvertSize(
+			viper.GetString(core.GetFlagName(c.NS, config.ArgSize)),
+			utils.GigaBytes,
+		)
+		if err != nil {
+			return nil, err
+		}
+		proper.SetSize(float32(size))
+	}
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitId)) {
 		proper.SetBackupunitId(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
@@ -364,14 +394,14 @@ func getNewVolume(c *core.CommandConfig) resources.Volume {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)) {
 		proper.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)))
 	}
-	return resources.Volume{
+	return &resources.Volume{
 		Volume: ionoscloud.Volume{
 			Properties: &proper.VolumeProperties,
 		},
-	}
+	}, nil
 }
 
-func getVolumeInfo(c *core.CommandConfig) resources.VolumeProperties {
+func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 	input := resources.VolumeProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
@@ -380,7 +410,14 @@ func getVolumeInfo(c *core.CommandConfig) resources.VolumeProperties {
 		input.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSize)) {
-		input.SetSize(float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgSize))))
+		size, err := utils.ConvertSize(
+			viper.GetString(core.GetFlagName(c.NS, config.ArgSize)),
+			utils.GigaBytes,
+		)
+		if err != nil {
+			return nil, err
+		}
+		input.SetSize(float32(size))
 	}
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotPlug)) {
@@ -401,7 +438,7 @@ func getVolumeInfo(c *core.CommandConfig) resources.VolumeProperties {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)) {
 		input.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)))
 	}
-	return input
+	return &input, nil
 }
 
 // Server Volume Commands

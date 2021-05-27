@@ -4,11 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"os"
-	"strconv"
-	"strings"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -19,6 +14,9 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"io"
+	"os"
+	"strconv"
 )
 
 func server() *core.Command {
@@ -513,7 +511,10 @@ func getNewServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error
 		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
-		size, err := getMemorySize(viper.GetString(core.GetFlagName(c.NS, config.ArgRam)))
+		size, err := utils.ConvertSize(
+			viper.GetString(core.GetFlagName(c.NS, config.ArgRam)),
+			utils.MegaBytes,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -522,49 +523,6 @@ func getNewServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error
 	return &resources.ServerProperties{
 		ServerProperties: input,
 	}, nil
-}
-
-func getMemorySize(size string) (int, error) {
-	for _, unit := range []string{"MB", "GB", "PB", "TB"} {
-		if strings.HasSuffix(size, unit) {
-			if strings.Contains(size, " ") {
-				size = strings.ReplaceAll(size, " ", "")
-			}
-			return convertToMB(size, unit)
-		}
-	}
-	return strconv.Atoi(size)
-}
-
-func convertToMB(size, unit string) (int, error) {
-	switch unit {
-	case "MB":
-		s := strings.ReplaceAll(size, unit, "")
-		return strconv.Atoi(s)
-	case "GB":
-		s := strings.ReplaceAll(size, unit, "")
-		gb, err := strconv.Atoi(s)
-		if err != nil {
-			return 0, err
-		}
-		return gb * 1024, nil
-	case "TB":
-		s := strings.ReplaceAll(size, unit, "")
-		tb, err := strconv.Atoi(s)
-		if err != nil {
-			return 0, err
-		}
-		return tb * 1024 * 1024, nil
-	case "PB":
-		s := strings.ReplaceAll(size, unit, "")
-		pb, err := strconv.Atoi(s)
-		if err != nil {
-			return 0, err
-		}
-		return pb * 1024 * 1024 * 1024, nil
-	default:
-		return 0, errors.New("error converting in MB, no suffix: MB, GB, TB, PB matched")
-	}
 }
 
 // Wait for State

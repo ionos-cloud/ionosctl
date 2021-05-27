@@ -335,7 +335,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sNodeCount))
 	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily))
 	coresCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
-	ramSize, err := getMemorySize(viper.GetString(core.GetFlagName(c.NS, config.ArgRam)))
+	ramSize, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, config.ArgRam)), utils.MegaBytes)
 	if err != nil {
 		return nil, err
 	}
