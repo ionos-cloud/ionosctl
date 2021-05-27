@@ -4,8 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"io"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -92,13 +95,20 @@ func server() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a Server",
-		LongDesc: `Use this command to create a Server in a specified Virtual Data Center. The name, cores, ram, cpu-family and availability zone options can be set.
+		LongDesc: `Use this command to create a Server in a specified Virtual Data Center. It is required that the number of cores for the Server and the amount of memory for the Server to be set.
+
+The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. You can set the RAM size in the following ways: 
+
+* providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
+* providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.
 
 Required values to run command:
 
-* Data Center Id`,
+* Data Center Id
+* Cores
+* RAM`,
 		Example:    createServerExample,
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunServerCreate,
@@ -109,8 +119,11 @@ Required values to run command:
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Server")
-	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "Cores option of the Server")
-	create.AddIntFlag(config.ArgRamSize, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
+	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4")
+	create.AddStringFlag(config.ArgRam, "", strconv.Itoa(config.DefaultServerRAM), "The amount of memory for the Server. Size must be specified in multiples of 256. By default, the unit is MB. Minimum: 256MB. Maximum: depends on contract resource limits")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(config.ArgCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family for the Server")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
@@ -163,7 +176,7 @@ Required values to run command:
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "Cores option of the Server")
-	update.AddIntFlag(config.ArgRamSize, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
+	update.AddIntFlag(config.ArgRam, "", config.DefaultServerRAM, "RAM[GB] option for the Server")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server update to be executed")
 	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the updated Server to be in AVAILABLE state")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds]")
@@ -335,13 +348,17 @@ func RunServerGet(c *core.CommandConfig) error {
 }
 
 func RunServerCreate(c *core.CommandConfig) error {
+	proper, err := getNewServerInfo(c)
+	if err != nil {
+		return err
+	}
 	svr, resp, err := c.Servers().Create(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize)),
+		resources.Server{
+			Server: ionoscloud.Server{
+				Properties: &proper.ServerProperties,
+			},
+		},
 	)
 	if err != nil {
 		return err
@@ -380,8 +397,8 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
 		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamSize)) {
-		input.SetRam(viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
+		input.SetRam(viper.GetInt32(core.GetFlagName(c.NS, config.ArgRam)))
 	}
 	svr, resp, err := c.Servers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
@@ -477,6 +494,72 @@ func RunServerReboot(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
+}
+
+func getNewServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
+	input := ionoscloud.ServerProperties{}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
+		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCPUFamily)) {
+		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgAvailabilityZone)) {
+		input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
+		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
+		size, err := getServerSize(viper.GetString(core.GetFlagName(c.NS, config.ArgRam)))
+		if err != nil {
+			return nil, err
+		}
+		input.SetRam(int32(size))
+	}
+	return &resources.ServerProperties{
+		ServerProperties: input,
+	}, nil
+}
+
+func getServerSize(size string) (int, error) {
+	for _, unit := range []string{"MB", "GB", "PB", "TB"} {
+		if strings.HasSuffix(size, unit) {
+			return convertToMB(size, unit)
+		}
+	}
+	return strconv.Atoi(size)
+}
+
+func convertToMB(size, unit string) (int, error) {
+	switch unit {
+	case "MB":
+		s := strings.ReplaceAll(size, unit, "")
+		return strconv.Atoi(s)
+	case "GB":
+		s := strings.ReplaceAll(size, unit, "")
+		gb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return gb * 1024, nil
+	case "TB":
+		s := strings.ReplaceAll(size, unit, "")
+		tb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return tb * 1024 * 1024, nil
+	case "PB":
+		s := strings.ReplaceAll(size, unit, "")
+		pb, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, err
+		}
+		return pb * 1024 * 1024 * 1024, nil
+	default:
+		return 0, errors.New("error converting in MB, no suffix: MB, GB, TB, PB matched")
+	}
 }
 
 // Wait for State

@@ -78,18 +78,12 @@ f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               AVAILABLE
 	getServerExample = `ionosctl server get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff 
 ServerId                               Name         AvailabilityZone   State       Cores   Ram     CpuFamily
 f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               AVAILABLE   4       256MB   AMD_OPTERON`
-	createServerExample = `ionosctl server create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --name demoServer
-ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily
-f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    2       256MB   AMD_OPTERON
-RequestId: 07fd3682-8642-4a5e-a57a-056e909a2af8
-Status: Command server create has been successfully executed
-
-ionosctl server create --datacenter-id 3087bf8b-3c84-405f-8b22-1978a36aa933 --name testing --wait-for-request --wait-for-state 
-6.2s Waiting for request... DONE                                                                                                                                                                           
-100ms Waiting for state. DONE                                                                                                                                                                              
-ServerId                               Name      AvailabilityZone   State       Cores   Ram     CpuFamily
-af960bf3-1585-4040-9c14-343a368339ac   testing   AUTO               AVAILABLE   2       256MB   AMD_OPTERON
-RequestId: 9e6db134-284b-41a4-b581-c567c744b874
+	createServerExample = `ionosctl server create --datacenter-id 5d5dfefe-32cd-4f07-aa0f-4da7d503d8dd --name test --cores 2 --ram 1024MB -w -W
+7.1s Waiting for request.... DONE                                                                                                                                                                          
+200ms Waiting for state. DONE                                                                                                                                                                              
+ServerId                               Name   AvailabilityZone   Cores   Ram      CpuFamily    VmState   State
+77538d4e-1772-4b3b-a9a5-550fa118b0bd   test   AUTO               2       1024MB   INTEL_XEON   RUNNING   AVAILABLE
+RequestId: b0fadc81-b4c2-41a1-b98e-4e048a2e41cf
 Status: Command server create & wait have been successfully executed`
 	updateServerExample = `ionosctl server update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff --cores 4
 ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily

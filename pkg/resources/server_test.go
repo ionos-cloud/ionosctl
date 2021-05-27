@@ -30,11 +30,7 @@ func TestNewServerService(t *testing.T) {
 		backupUnitSvc := NewServerService(svc.Get(), ctx)
 		_, _, err := backupUnitSvc.Create(
 			testServerResourceVar,
-			testServerResourceVar,
-			testServerResourceVar,
-			testServerResourceVar,
-			int32(1),
-			int32(1),
+			Server{},
 		)
 		assert.Error(t, err)
 	})

@@ -119,7 +119,7 @@ Required values to run a command:
 	})
 	create.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
 	create.AddIntFlag(config.ArgCores, "", 2, "The total number of cores for the Node")
-	create.AddIntFlag(config.ArgRamSize, "", 2048, "The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB")
+	create.AddIntFlag(config.ArgRam, "", 2048, "The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB")
 	create.AddStringFlag(config.ArgCpuFamily, "", config.DefaultServerCPUFamily, "CPU Type")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
@@ -331,7 +331,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sNodeCount))
 	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily))
 	coresCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
-	ramSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize))
+	ramSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgRam))
 	nodeZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
 	storageSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgStorageSize))
 	storageType := viper.GetString(core.GetFlagName(c.NS, config.ArgStorageType))
