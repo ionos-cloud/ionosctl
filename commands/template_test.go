@@ -58,7 +58,6 @@ func TestPreTemplateIdErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgTemplateId), "")
 		err := PreRunTemplateId(cfg)
 		assert.Error(t, err)
 	})

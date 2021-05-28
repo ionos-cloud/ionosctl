@@ -23,13 +23,15 @@ var (
 	ram          = int32(256)
 	ramNew       = int32(256)
 	state        = "ACTIVE"
-	serverCreate = ionoscloud.Server{
-		Properties: &ionoscloud.ServerProperties{
-			Name:             &testServerVar,
-			Cores:            &cores,
-			Ram:              &ram,
-			CpuFamily:        &testServerVar,
-			AvailabilityZone: &testServerVar,
+	serverCreate = resources.Server{
+		Server: ionoscloud.Server{
+			Properties: &ionoscloud.ServerProperties{
+				Name:             &testServerVar,
+				Cores:            &cores,
+				Ram:              &ram,
+				CpuFamily:        &testServerVar,
+				AvailabilityZone: &testServerVar,
+			},
 		},
 	}
 	s = ionoscloud.Server{
@@ -76,17 +78,6 @@ var (
 			},
 		},
 	}
-	dcServer = ionoscloud.Datacenter{
-		Id: &testServerVar,
-		Properties: &ionoscloud.DatacenterProperties{
-			Name:        &testServerVar,
-			Description: &testServerVar,
-			Location:    &testServerVar,
-		},
-		Entities: &ionoscloud.DataCenterEntities{
-			Servers: &ss.Servers,
-		},
-	}
 	testServerVar    = "test-server"
 	testServerNewVar = "test-new-server"
 	testServerErr    = errors.New("server test: error occurred")
@@ -113,9 +104,34 @@ func TestPreRunDcServerIdsRequiredFlagErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), "")
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), "")
 		err := PreRunDcServerIds(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunDcIdCoresRam(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), testServerVar)
+		err := PreRunDcIdCoresRam(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunDcIdCoresRamRequiredFlagErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunDcIdCoresRam(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -223,9 +239,9 @@ func TestRunServerCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ram)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Create(testServerVar, resources.Server{Server: serverCreate}).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -243,10 +259,10 @@ func TestRunServerCreateWaitState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ram)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		rm.Server.EXPECT().Create(testServerVar, resources.Server{Server: serverCreate}).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
 		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
 		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
@@ -266,9 +282,9 @@ func TestRunServerCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ram)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Create(testServerVar, resources.Server{Server: serverCreate}).Return(&resources.Server{Server: s}, nil, testServerErr)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, testServerErr)
 		err := RunServerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -286,9 +302,9 @@ func TestRunServerCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ram)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Server.EXPECT().Create(testServerVar, resources.Server{Server: serverCreate}).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -305,7 +321,7 @@ func TestRunServerUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), coresNew)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ramNew)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
@@ -326,7 +342,7 @@ func TestRunServerUpdateWaitStateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), coresNew)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ramNew)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
@@ -349,7 +365,7 @@ func TestRunServerUpdateWaitState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), coresNew)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ramNew)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
@@ -373,7 +389,7 @@ func TestRunServerUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), coresNew)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ramNew)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
@@ -394,7 +410,7 @@ func TestRunServerUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), coresNew)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ramNew)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
@@ -415,7 +431,7 @@ func TestRunServerUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), coresNew)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRamSize), ramNew)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)

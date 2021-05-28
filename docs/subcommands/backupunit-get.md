@@ -47,8 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl backupunit get --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17 
-BackupUnitId                           Name          Email
-9fa48167-6375-4d93-b33c-e1ba3f461c17   test1234567   testrandom20@ionos.com
+ionosctl backupunit get --backupunit-id BACKUPUNIT_ID
 ```
 

@@ -42,9 +42,6 @@ Use this command to get a list of existing Kubernetes Clusters.
 ## Examples
 
 ```text
-ionosctl k8s cluster list 
-ClusterId                              Name    K8sVersion   State
-01d870e6-4118-4396-90bd-917fda3e948d   test    1.19.8       ACTIVE
-cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       ACTIVE
+ionosctl k8s cluster list
 ```
 

@@ -89,7 +89,6 @@ func TestPreRunIpBlockIdErr(t *testing.T) {
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), "")
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunIpBlockId(cfg)
 		assert.Error(t, err)
@@ -115,7 +114,6 @@ func TestPreRunIpBlockLocationErr(t *testing.T) {
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), "")
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunIpBlockLocation(cfg)
 		assert.Error(t, err)

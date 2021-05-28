@@ -51,14 +51,8 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl datacenter delete --datacenter-id 8e543958-04f5-4872-bbf3-b28d46393ac7
-Warning: Are you sure you want to delete data center (y/N) ? y
-RequestId: 12547a71-9768-483b-8a8e-e03e58df6dc3
-Status: Command datacenter delete has been successfully executed
+ionosctl datacenter delete --datacenter-id DATACENTER_ID
 
-ionosctl datacenter delete --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774 --force --wait-for-request
-1.2s Waiting for request... DONE
-RequestId: a2f71ef3-f81c-4b15-8f8f-5dfd1bdb3c26
-Status: Command datacenter delete & wait have been successfully executed
+ionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-request
 ```
 

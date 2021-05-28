@@ -60,10 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server volume detach --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --volume-id 1ceb4b02-ed41-4651-a90b-9a30bc284e74 
-Warning: Are you sure you want to detach volume from server (y/N) ? 
-y
-RequestId: 0fd9d6eb-25a1-496c-b0c9-bbe18a989f18
-Status: Command volume detach has been successfully executed
+ionosctl server volume detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID
 ```
 

@@ -49,6 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipfailover list --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --lan-id 1
+ionosctl ipfailover list --datacenter-id DATACENTER_ID --lan-id LAN_ID
 ```
 

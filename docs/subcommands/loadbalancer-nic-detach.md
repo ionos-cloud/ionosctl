@@ -60,10 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer nic detach --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --loadbalancer-id de044efe-cfe1-41b8-9a21-966a9c03d240 --nic-id ba36c888-e966-480d-800c-77c93ec31083 
-Warning: Are you sure you want to detach nic from loadbalancer (y/N) ? 
-y
-RequestId: 91065943-d4af-4427-aff6-ddf6a0f4ec80
-Status: Command nic detach has been successfully executed
+ionosctl loadbalancer nic detach --datacenter-id DATACENTER_ID--loadbalancer-id LOADBALANCER_ID --nic-id NIC_ID
 ```
 

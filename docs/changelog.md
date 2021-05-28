@@ -1,5 +1,11 @@
 # Changelog
 
+## \[5.0.6\]
+
+* Add support for `--ram` option for Server, NodePool resources. e.g. `--ram 256` or `--ram 256MB`
+* Add options for auto-completion for `--ram` option
+* Renamed `--ram-size` flag to `--ram`
+
 ## \[5.0.5\]
 
 * Added commands aliases

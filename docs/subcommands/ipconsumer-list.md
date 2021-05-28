@@ -47,6 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipconsumer list --ipblock-id 564f4984-8349-40c1-bcd8-ba177ebf2fb6
+ionosctl ipconsumer list --ipblock-id IPBLOCK_ID
 ```
 

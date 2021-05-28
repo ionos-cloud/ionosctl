@@ -47,8 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipblock get --ipblock-id 3bb77993-dd2a-4845-8115-5001ae87d5e4 
-IpBlockId                              Name   Location   Size   Ips                 State
-3bb77993-dd2a-4845-8115-5001ae87d5e4   test   us/las     2      [x.x.x.x x.x.x.x]   AVAILABLE
+ionosctl ipblock get --ipblock-id IPBLOCK_ID
 ```
 

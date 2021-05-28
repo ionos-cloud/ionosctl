@@ -61,10 +61,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group update --group-id e99f4cdb-746d-4c3c-b38c-b749ca23f917 --reserve-ip 
-GroupId                                Name         CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
-e99f4cdb-746d-4c3c-b38c-b749ca23f917   testUpdate   true               true             true        false               false       false         false              false                  true
-RequestId: 2bfe43a4-ea09-48fc-bb53-136c7f7d061f
-Status: Command group update has been successfully executed
+ionosctl group update --group-id GROUP_ID --reserve-ip
 ```
 

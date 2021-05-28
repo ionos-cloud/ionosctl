@@ -42,12 +42,8 @@ Use this command to retrieve a complete list of Virtual Data Centers provisioned
 ## Examples
 
 ```text
-ionosctl datacenter list 
-DatacenterId                           Name             Location
-ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las
+ionosctl datacenter list
 
 ionosctl datacenter list --cols "DatacenterId,Name,Location,Version"
-DatacenterId                           Name             Location   Version
-ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las     1
 ```
 

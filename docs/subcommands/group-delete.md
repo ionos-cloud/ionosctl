@@ -49,10 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group delete --group-id 1d500d7a-43af-488a-a656-79e902433767 
-Warning: Are you sure you want to delete group (y/N) ? 
-y
-RequestId: e20d2851-0d20-453d-b752-ed1c34a83625
-Status: Command group delete has been successfully executed
+ionosctl group delete --group-id GROUP_ID
 ```
 

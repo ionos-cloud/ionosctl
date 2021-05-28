@@ -47,8 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot get --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c 
-SnapshotId                             Name           LicenceType   Size
-dc688daf-8e54-4db8-ac4a-487ad5a34e9c   testSNapshot   LINUX         10
+ionosctl snapshot get --snapshot-id SNAPSHOT_ID
 ```
 

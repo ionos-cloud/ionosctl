@@ -48,10 +48,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl share create --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e
-ShareId                                EditPrivilege   SharePrivilege
-cefc2175-001f-4b94-8693-6263d731fe8e   false           false
-RequestId: ffb8e7ba-4a49-4ea5-a97e-e3a61e55c277
-Status: Command group add-share has been successfully executed
+ionosctl share create --group-id GROUP_ID --resource-id RESOURCE_ID
 ```
 

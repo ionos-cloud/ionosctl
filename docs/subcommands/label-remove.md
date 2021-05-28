@@ -50,6 +50,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl label remove --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --label-key secondtest
+ionosctl label remove --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY
 ```
 

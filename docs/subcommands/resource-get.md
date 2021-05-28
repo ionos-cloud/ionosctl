@@ -49,7 +49,5 @@ Required values to run command:
 
 ```text
 ionosctl resource get --resource-type ipblock
-ResourceId                             Name                            SecAuthProtection   Type
-d8922413-05f1-48bb-90ed-c2d407e05b1d   IP_BLOCK_2021-04-20T11:02:52Z   false               ipblock
 ```
 

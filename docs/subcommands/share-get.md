@@ -44,8 +44,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl share get --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e 
-ShareId                                EditPrivilege   SharePrivilege
-cefc2175-001f-4b94-8693-6263d731fe8e   false           true
+ionosctl share get --group-id GROUP_ID --resource-id RESOURCE_ID
 ```
 

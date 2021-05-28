@@ -51,10 +51,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl backupunit update --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17 --email testrandom22@ionos.com
-BackupUnitId                           Name          Email
-9fa48167-6375-4d93-b33c-e1ba3f461c17   test1234567   testrandom22@ionos.com
-RequestId: a91fbce0-bb98-4be1-9d7f-90d3f6da8ffe
-Status: Command backupunit update has been successfully executed
+ionosctl backupunit update --backupunit-id BACKUPUNIT_ID --email EMAIL
 ```
 

@@ -58,10 +58,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user s3key create --user-id 013188d4-af9a-4207-b495-de36cb2dc344 
-S3KeyId                Active
-75f4319cbf3f6d538da7   true
-RequestId: 869fc059-165d-480b-a913-a410d38d20e0
-Status: Command s3key create has been successfully executed
+ionosctl user s3key create --user-id USER_ID
 ```
 

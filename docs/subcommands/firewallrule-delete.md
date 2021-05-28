@@ -57,10 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl firewallrule delete --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --firewallrule-id e7c4e91a-d3e3-42db-bfb1-2d5e9ebc952b 
-Warning: Are you sure you want to delete firewall rule (y/N) ? 
-y
-RequestId: 481b6e7c-0c31-4395-81e4-36fad877b77b
-Status: Command firewallrule delete has been successfully executed
+ionosctl firewallrule delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID
 ```
 

@@ -41,8 +41,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl label get-by-urn --label-urn "urn:label:server:27dde318-f0d4-4f97-a04d-9dafe4a89637:test"
-Key    Value        ResourceType   ResourceId
-test   testserver   server         27dde318-f0d4-4f97-a04d-9dafe4a89637
+ionosctl label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"
 ```
 

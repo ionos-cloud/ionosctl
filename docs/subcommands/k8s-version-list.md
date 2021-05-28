@@ -40,7 +40,6 @@ Use this command to retrieve all available Kubernetes versions.
 ## Examples
 
 ```text
-ionosctl k8s version list 
-[1.18.16 1.18.15 1.18.12 1.18.5 1.18.9 1.19.8]
+ionosctl k8s version list
 ```
 

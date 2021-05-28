@@ -42,8 +42,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl backupunit get-sso-url --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17 
-BackupUnitSsoUrl
-https://backup.ionos.com?etc.etc.etc
+ionosctl backupunit get-sso-url --backupunit-id BACKUPUNIT_ID
 ```
 

@@ -41,10 +41,6 @@ Use this command to create a Private Cross-Connect. You can specify the name and
 ## Examples
 
 ```text
-ionosctl pcc create --name test --description "test test" --wait-for-request 
-PccId                                  Name   Description
-e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test
-RequestId: 64720266-c6e8-4e78-8e31-6754f006dcb1
-Status: Command pcc create & wait have been successfully executed
+ionosctl pcc create --name NAME --description DESCRIPTION --wait-for-request
 ```
 

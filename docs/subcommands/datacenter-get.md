@@ -47,8 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl datacenter get --datacenter-id ff279ffd-ac61-4e5d-ba5e-058296c77774
-DatacenterId                           Name             Location
-ff279ffd-ac61-4e5d-ba5e-058296c77774   demoDatacenter   us/las
+ionosctl datacenter get --datacenter-id DATACENTER_ID
 ```
 

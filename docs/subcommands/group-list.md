@@ -43,7 +43,5 @@ Use this command to get a list of available Groups available on your account.
 
 ```text
 ionosctl group list
-GroupId                                Name   CreateDataCenter   CreateSnapshot   ReserveIp   AccessActivityLog   CreatePcc   S3Privilege   CreateBackupUnit   CreateInternetAccess   CreateK8s
-1d500d7a-43af-488a-a656-79e902433767   test   false              false            false       false               false       false         false              false                  false
 ```
 
