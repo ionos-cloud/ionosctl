@@ -55,7 +55,7 @@ Required values to run command:
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --ram-hot-plug             It is capable of memory hot plug (no reboot required)
-      --size string              The size of the Volume in GB. The maximum volume size is determined by your contract limit (required) (default "10")
+      --size string              The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit (required) (default "10")
   -t, --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
   -i, --volume-id string         The unique Volume Id (required)
   -w, --wait-for-request         Wait for the Request for Volume update to be executed

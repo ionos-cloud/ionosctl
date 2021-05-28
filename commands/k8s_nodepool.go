@@ -120,9 +120,9 @@ Required values to run a command:
 	})
 	create.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
 	create.AddIntFlag(config.ArgCores, "", 2, "The total number of cores for the Node")
-	create.AddStringFlag(config.ArgRam, "", strconv.Itoa(2048), "The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB")
+	create.AddStringFlag(config.ArgRam, "", strconv.Itoa(2048), "The amount of memory for the node in MB, e.g. 2048 or 2048MB. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"2048MB", "3GB", "4GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgCpuFamily, "", config.DefaultServerCPUFamily, "CPU Type")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

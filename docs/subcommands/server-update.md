@@ -31,7 +31,7 @@ You can set the RAM size in the following ways:
 * providing only the value, e.g.`--ram 256` equals 256MB.
 * providing both the value and the unit, e.g.`--ram 1GB`.
 
-Note: The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. 
+Note: The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
 
@@ -56,7 +56,7 @@ Required values to run command:
   -n, --name string                Name of the Server
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
-      --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. By default, the unit is MB. Minimum: 256MB. Maximum: depends on contract resource limits (default "256")
+      --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. 256 or 256MB (default "256")
   -i, --server-id string           The unique Server Id (required)
   -t, --timeout int                Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds] (default 60)
   -w, --wait-for-request           Wait for the Request for Server update to be executed
