@@ -139,7 +139,7 @@ func (s *k8sService) UpdateCluster(clusterId string, input K8sClusterForPut) (*K
 
 func (s *k8sService) DeleteCluster(clusterId string) (*Response, error) {
 	req := s.client.KubernetesApi.K8sDelete(s.context, clusterId)
-	_, res, err := s.client.KubernetesApi.K8sDeleteExecute(req)
+	res, err := s.client.KubernetesApi.K8sDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -175,19 +175,19 @@ func (s *k8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNo
 
 func (s *k8sService) DeleteNodePool(clusterId, nodepoolId string) (*Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsDelete(s.context, clusterId, nodepoolId)
-	_, res, err := s.client.KubernetesApi.K8sNodepoolsDeleteExecute(req)
+	res, err := s.client.KubernetesApi.K8sNodepoolsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (s *k8sService) DeleteNode(clusterId, nodepoolId, nodeId string) (*Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesDelete(s.context, clusterId, nodepoolId, nodeId)
-	_, res, err := s.client.KubernetesApi.K8sNodepoolsNodesDeleteExecute(req)
+	res, err := s.client.KubernetesApi.K8sNodepoolsNodesDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (s *k8sService) RecreateNode(clusterId, nodepoolId, nodeId string) (*Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesReplacePost(s.context, clusterId, nodepoolId, nodeId)
-	_, res, err := s.client.KubernetesApi.K8sNodepoolsNodesReplacePostExecute(req)
+	res, err := s.client.KubernetesApi.K8sNodepoolsNodesReplacePostExecute(req)
 	return &Response{*res}, err
 }
 

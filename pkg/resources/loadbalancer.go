@@ -77,7 +77,7 @@ func (ls *loadbalancersService) Update(datacenterId, loadbalancerId string, inpu
 
 func (ls *loadbalancersService) Delete(datacenterId, loadbalancerId string) (*Response, error) {
 	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersDelete(ls.context, datacenterId, loadbalancerId)
-	_, res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersDeleteExecute(req)
+	res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -102,6 +102,6 @@ func (ns *loadbalancersService) GetNic(datacenterId, loadbalancerId, nicId strin
 
 func (ns *loadbalancersService) DetachNic(datacenterId, loadbalancerId, nicId string) (*Response, error) {
 	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsDelete(ns.context, datacenterId, loadbalancerId, nicId)
-	_, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsDeleteExecute(req)
+	resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsDeleteExecute(req)
 	return &Response{*resp}, err
 }

@@ -75,6 +75,6 @@ func (ls *lansService) Update(datacenterId, lanId string, input LanProperties) (
 
 func (ls *lansService) Delete(datacenterId, lanId string) (*Response, error) {
 	req := ls.client.LansApi.DatacentersLansDelete(ls.context, datacenterId, lanId)
-	_, resp, err := ls.client.LansApi.DatacentersLansDeleteExecute(req)
+	resp, err := ls.client.LansApi.DatacentersLansDeleteExecute(req)
 	return &Response{*resp}, err
 }

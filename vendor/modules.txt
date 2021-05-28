@@ -32,7 +32,7 @@ github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
-# github.com/ionos-cloud/sdk-go/v6 v6.0.0-20210526100040-5ac5330068b5
+# github.com/ionos-cloud/sdk-go/v6 v6.0.0-beta.1
 ## explicit
 github.com/ionos-cloud/sdk-go/v6
 # github.com/magiconair/properties v1.8.1

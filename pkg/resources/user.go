@@ -94,7 +94,7 @@ func (s *usersService) Update(userId string, input UserPut) (*User, *Response, e
 
 func (s *usersService) Delete(userId string) (*Response, error) {
 	req := s.client.UserManagementApi.UmUsersDelete(s.context, userId)
-	_, res, err := s.client.UserManagementApi.UmUsersDeleteExecute(req)
+	res, err := s.client.UserManagementApi.UmUsersDeleteExecute(req)
 	return &Response{*res}, err
 }
 

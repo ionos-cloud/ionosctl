@@ -70,6 +70,6 @@ func (vs *volumesService) Update(datacenterId, volumeId string, input VolumeProp
 
 func (vs *volumesService) Delete(datacenterId, volumeId string) (*Response, error) {
 	req := vs.client.VolumesApi.DatacentersVolumesDelete(vs.context, datacenterId, volumeId)
-	_, res, err := vs.client.VolumesApi.DatacentersVolumesDeleteExecute(req)
+	res, err := vs.client.VolumesApi.DatacentersVolumesDeleteExecute(req)
 	return &Response{*res}, err
 }

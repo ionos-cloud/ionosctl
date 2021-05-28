@@ -89,6 +89,6 @@ func (s *pccsService) Update(pccId string, input PrivateCrossConnectProperties) 
 
 func (s *pccsService) Delete(pccId string) (*Response, error) {
 	req := s.client.PrivateCrossConnectsApi.PccsDelete(s.context, pccId)
-	_, res, err := s.client.PrivateCrossConnectsApi.PccsDeleteExecute(req)
+	res, err := s.client.PrivateCrossConnectsApi.PccsDeleteExecute(req)
 	return &Response{*res}, err
 }

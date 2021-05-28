@@ -68,12 +68,12 @@ func (s *snapshotsService) Update(snapshotId string, snapshotProp SnapshotProper
 
 func (s *snapshotsService) Restore(datacenterId, volumeId, snapshotId string) (*Response, error) {
 	req := s.client.VolumesApi.DatacentersVolumesRestoreSnapshotPost(s.context, datacenterId, volumeId).SnapshotId(snapshotId)
-	_, resp, err := s.client.VolumesApi.DatacentersVolumesRestoreSnapshotPostExecute(req)
+	resp, err := s.client.VolumesApi.DatacentersVolumesRestoreSnapshotPostExecute(req)
 	return &Response{*resp}, err
 }
 
 func (s *snapshotsService) Delete(snapshotId string) (*Response, error) {
 	req := s.client.SnapshotsApi.SnapshotsDelete(s.context, snapshotId)
-	_, resp, err := s.client.SnapshotsApi.SnapshotsDeleteExecute(req)
+	resp, err := s.client.SnapshotsApi.SnapshotsDeleteExecute(req)
 	return &Response{*resp}, err
 }

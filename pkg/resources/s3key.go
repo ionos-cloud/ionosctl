@@ -63,6 +63,6 @@ func (s *s3KeysService) Update(userId, keyId string, key S3Key) (*S3Key, *Respon
 
 func (s *s3KeysService) Delete(userId, keyId string) (*Response, error) {
 	req := s.client.UserS3KeysApi.UmUsersS3keysDelete(s.context, userId, keyId)
-	_, resp, err := s.client.UserS3KeysApi.UmUsersS3keysDeleteExecute(req)
+	resp, err := s.client.UserS3KeysApi.UmUsersS3keysDeleteExecute(req)
 	return &Response{*resp}, err
 }
