@@ -228,7 +228,7 @@ func PreRunGlobalDcIdVolumeProperties(c *core.PreCommandConfig) error {
 	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId); err != nil {
 		result = multierror.Append(result, err)
 	}
-	if err := core.CheckRequiredFlags(c.Resource, config.ArgSize); err != nil {
+	if err := core.CheckRequiredFlags(c.NS, config.ArgSize); err != nil {
 		result = multierror.Append(result, err)
 	}
 	// Check required flags
