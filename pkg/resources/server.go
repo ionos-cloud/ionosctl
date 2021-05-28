@@ -118,13 +118,13 @@ func (ss *serversService) Reboot(datacenterId, serverId string) (*Response, erro
 
 func (ss *serversService) Suspend(datacenterId, serverId string) (*Response, error) {
 	req := ss.client.ServersApi.DatacentersServersSuspendPost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServersApi.DatacentersServersSuspendPostExecute(req)
+	res, err := ss.client.ServersApi.DatacentersServersSuspendPostExecute(req)
 	return &Response{*res}, err
 }
 
 func (ss *serversService) Resume(datacenterId, serverId string) (*Response, error) {
 	req := ss.client.ServersApi.DatacentersServersResumePost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServersApi.DatacentersServersResumePostExecute(req)
+	res, err := ss.client.ServersApi.DatacentersServersResumePostExecute(req)
 	return &Response{*res}, err
 }
 

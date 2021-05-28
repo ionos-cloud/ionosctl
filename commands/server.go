@@ -446,28 +446,29 @@ func RunServerCreate(c *core.CommandConfig) error {
 	if !proper.ServerProperties.HasCpuFamily() {
 		proper.ServerProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily)))
 	}
-	volType := "DAS"
-	licenceType := "UNKNOWN"
-	name := "testDAS"
-	bus := "VIRTIO"
 	input := resources.Server{
 		Server: ionoscloud.Server{
 			Properties: &proper.ServerProperties,
-			Entities: &ionoscloud.ServerEntities{
-				Volumes: &ionoscloud.AttachedVolumes{
-					Items: &[]ionoscloud.Volume{
-						{
-							Properties: &ionoscloud.VolumeProperties{
-								Name:        &name,
-								Type:        &volType,
-								Bus:         &bus,
-								LicenceType: &licenceType,
-							},
+		},
+	}
+	// If Server is of type CUBE, it will create an attached Volume
+	// with the properties from the template set
+	if viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == "CUBE" {
+		volType := "DAS"
+		licenceType := "UNKNOWN"
+		input.SetEntities(ionoscloud.ServerEntities{
+			Volumes: &ionoscloud.AttachedVolumes{
+				Items: &[]ionoscloud.Volume{
+					{
+						Properties: &ionoscloud.VolumeProperties{
+							Type:        &volType,
+							LicenceType: &licenceType,
 						},
 					},
 				},
 			},
 		},
+		)
 	}
 	svr, resp, err := c.Servers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
