@@ -56,7 +56,7 @@ Required values to run command:
   -n, --name string                Name of the Server
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
-      --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. 256 or 256MB (default "256")
+      --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (default "256")
   -i, --server-id string           The unique Server Id (required)
   -t, --timeout int                Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds] (default 60)
   -w, --wait-for-request           Wait for the Request for Server update to be executed

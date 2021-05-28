@@ -152,7 +152,7 @@ ionosctl image list --location us/las --type HDD --licence-type LINUX`
 	listLabelsExample = `ionosctl label list
 
 ionosctl label list --resource-type datacenter --datacenter-id DATACENTER_ID`
-	getLabelByUrnExample = `ionosctl label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"7`
+	getLabelByUrnExample = `ionosctl label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"`
 	getLabelExample      = `ionosctl label get --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY`
 	addLabelExample      = `ionosctl label add --resource-type server --datacenter-id DATACENTER_ID --server-id SERVER_ID  --label-key LABEL_KEY --label-value LABEL_VALUE
 

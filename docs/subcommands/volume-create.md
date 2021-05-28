@@ -62,7 +62,7 @@ Required values to run command:
   -p, --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output
       --ram-hot-plug               It is capable of memory hot plug (no reboot required)
-      --size string                The size of the Volume in GB. e.g.: 10 or 10GB. The maximum Volume size is determined by your contract limit (required) (default "10")
+      --size string                The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (required) (default "10")
       --ssh-keys strings           SSH Keys of the Volume
   -t, --timeout int                Timeout option for Request for Volume creation [seconds] (default 60)
       --type string                Type of the Volume (default "HDD")
