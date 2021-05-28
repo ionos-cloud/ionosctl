@@ -54,8 +54,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server volume list --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa 
-VolumeId                               Name   Size   Type   LicenceType   State       Image
-101291d1-2227-432a-9773-97b5ace7b8d3   test   10GB   HDD    LINUX         AVAILABLE
+ionosctl server volume list --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

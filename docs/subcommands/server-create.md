@@ -64,12 +64,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server create --datacenter-id 5d5dfefe-32cd-4f07-aa0f-4da7d503d8dd --name test --cores 2 --ram 1024MB -w -W
-7.1s Waiting for request.... DONE                                                                                                                                                                          
-200ms Waiting for state. DONE                                                                                                                                                                              
-ServerId                               Name   AvailabilityZone   Cores   Ram      CpuFamily    VmState   State
-77538d4e-1772-4b3b-a9a5-550fa118b0bd   test   AUTO               2       1024MB   INTEL_XEON   RUNNING   AVAILABLE
-RequestId: b0fadc81-b4c2-41a1-b98e-4e048a2e41cf
-Status: Command server create & wait have been successfully executed
+ionosctl server create --datacenter-id DATACENTER_ID --name NAME --cores 2 --ram 512MB -w -W
 ```
 

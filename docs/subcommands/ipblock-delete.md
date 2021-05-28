@@ -51,11 +51,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipblock delete --ipblock-id bf932826-d71b-4759-a7d0-0028261c1e8d --wait-for-request 
-Warning: Are you sure you want to delete ipblock (y/N) ? 
-y
-1.2s Waiting for request... DONE
-RequestId: 6b1aa258-799f-4712-9f90-ba4494d84026
-Status: Command ipblock delete & wait have been successfully executed
+ionosctl ipblock delete --ipblock-id IPBLOCK_ID --wait-for-request
 ```
 

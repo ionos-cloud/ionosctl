@@ -49,10 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot delete --snapshot-id 8e0bc509-87ee-47f4-a382-302e4f7e103d --wait-for-request 
-Warning: Are you sure you want to delete snapshot (y/N) ? 
-y
-RequestId: 6e029eb6-47e6-4dcd-a333-d620b49c01e5
-Status: Command snapshot delete & wait have been successfully executed
+ionosctl snapshot delete --snapshot-id SNAPSHOT_ID --wait-for-request
 ```
 

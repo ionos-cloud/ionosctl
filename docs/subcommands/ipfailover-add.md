@@ -63,8 +63,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipfailover add --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --server-id 11c8ac02-224b-4bd0-833c-196719860fc1 --lan-id 1 --nic-id 5662f39c-b7cb-4840-b6ab-ae43cd0202cc --ip "x.x.x.x"
-NicId                                  Ip
-5662f39c-b7cb-4840-b6ab-ae43cd0202cc   x.x.x.x
+ionosctl ipfailover add --datacenter-id DATACENTER_ID --server-id SERVER_ID --lan-id LAN_ID --nic-id NIC_ID --ip "x.x.x.x"
 ```
 

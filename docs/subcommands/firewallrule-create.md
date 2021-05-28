@@ -67,10 +67,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl firewallrule create --datacenter-id f2d82ba9-7dc4-4945-89b6-3d194f6be29b --server-id d776e064-a3f9-4fbd-8729-93818b7459bb --nic-id 029c05a4-f5f7-4398-9469-2eb3d6db3460 --protocol TCP --name demo --port-range-start 2476 --port-range-end 2476
-FirewallRuleId                         Name   Protocol   PortRangeStart   PortRangeEnd   State
-4221e2c8-0316-447c-aeed-69ac92e585be   demo   TCP        2476             2476           BUSY
-RequestId: 09a47137-e377-4a79-b2b9-16744e298ad5
-Status: Command firewallrule create has been successfully executed
+ionosctl firewallrule create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --protocol PROTOCOL --name NAME --port-range-start PORT_START --port-range-end PORT_END
 ```
 

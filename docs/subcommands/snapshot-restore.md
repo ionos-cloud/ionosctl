@@ -53,10 +53,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot restore --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --datacenter-id 451cc0c1-883a-44aa-9ae4-336c0c3eaa5d --volume-id 4acddd40-959f-4517-b628-dc24e37df942 --wait-for-request 
-Warning: Are you sure you want to restore snapshot (y/N) ? 
-y
-RequestId: 21ca5546-9314-4cd5-8832-6029638b1237
-Status: Command snapshot restore & wait have been successfully executed
+ionosctl snapshot restore --snapshot-id SNAPSHOT_ID --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --wait-for-request
 ```
 

@@ -57,10 +57,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl nic create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --name demoNic
-NicId                                  Name      Dhcp   LanId   Ips
-2978400e-da90-405f-905e-8200d4f48158   demoNic   true   1       []
-RequestId: 67bdb2fb-b1ee-419a-9bcf-f8ea4b800653
-Status: Command nic create has been successfully executed
+ionosctl nic create --datacenter-id DATACENTER_ID --server-id SERVER_ID --name NAME
 ```
 

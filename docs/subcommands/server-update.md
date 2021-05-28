@@ -66,10 +66,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id f45f435e-8d6c-4170-ab90-858b59dab9ff --cores 4
-ServerId                               Name         AvailabilityZone   State   Cores   Ram     CpuFamily
-f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               BUSY    4       256MB   AMD_OPTERON
-RequestId: 571a1bbb-26b3-449d-9885-a20e50dc3b95
-Status: Command server update has been successfully executed
+ionosctl server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4
 ```
 

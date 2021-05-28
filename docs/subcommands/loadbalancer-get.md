@@ -49,8 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --loadbalancer-id 3f9f14a9-5fa8-4786-ba86-a91f9daded2c 
-LoadbalancerId                         Name               Dhcp
-3f9f14a9-5fa8-4786-ba86-a91f9daded2c   demoLoadBalancer   false
+ionosctl loadbalancer get --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID
 ```
 

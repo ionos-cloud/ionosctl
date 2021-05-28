@@ -52,12 +52,8 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl label add --resource-type server --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa  --label-key test --label-value testserver
-Key    Value
-test   testserver
+ionosctl label add --resource-type server --datacenter-id DATACENTER_ID --server-id SERVER_ID  --label-key LABEL_KEY --label-value LABEL_VALUE
 
-ionosctl label add --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --label-key secondtest --label-value testdatacenter
-Key          Value
-secondtest   testdatacenter
+ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --label-key LABEL_KEY --label-value LABEL_VALUE
 ```
 

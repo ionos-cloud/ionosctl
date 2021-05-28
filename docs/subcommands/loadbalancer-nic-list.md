@@ -54,8 +54,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer nic list --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
-NicId                                  Name   Dhcp   LanId   Ips
-6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   2       []
+ionosctl loadbalancer nic list --datacenter-id DATACENTER_ID --loadbalancer-id LOADBALANCER_ID
 ```
 

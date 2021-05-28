@@ -54,8 +54,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user s3key get --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 00a29d110b48daa3a18b 
-S3KeyId                Active
-00a29d110b48daa3a18b   false
+ionosctl user s3key get --user-id USER_ID --s3key-id S3KEY_ID
 ```
 

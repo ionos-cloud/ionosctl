@@ -42,9 +42,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pcc peers list --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 
-LanId   LanName     DatacenterId                           DatacenterName   Location
-1       testlan2    1ef56b51-98be-487e-925a-c9f3dfa4a076   test2            us/las
-1       testlan1    95b7f7f0-a6f3-4fc9-8d06-018d2c1efc89   test1            us/las
+ionosctl pcc peers list --pcc-id PCC_ID
 ```
 

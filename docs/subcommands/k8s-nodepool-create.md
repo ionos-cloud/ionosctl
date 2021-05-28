@@ -63,8 +63,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool create --datacenter-id 3af92af6-c2eb-41e0-b946-6e7ba321abf2 --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --name test1234
-NodePoolId                             Name       K8sVersion   NodeCount   DatacenterId                           State
-a274bc0e-efa5-41c0-828d-39e38f4ad361   test1234   1.19.8       2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   DEPLOYING
+ionosctl k8s nodepool create --datacenter-id DATACENTER_ID --cluster-id CLUSTER_ID --name NAME
 ```
 

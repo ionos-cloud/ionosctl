@@ -49,9 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s node list --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
-NodeId                                 Name                   K8sVersion   PublicIP         State
-a0e5d4c4-6b09-4965-8e98-59a749301d20   test12345-n3q55ggmap   1.19.8       x.x.x.x          REBUILDING
-41955320-014f-432b-8546-e724a1e3f8b6   test12345-da7swdibki   1.19.8       x.x.x.x          PROVISIONED
+ionosctl k8s node list --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID
 ```
 

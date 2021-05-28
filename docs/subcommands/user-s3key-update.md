@@ -60,10 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user s3key update --user-id 013188d4-af9a-4207-b495-de36cb2dc344 --s3key-id 75f4319cbf3f6d538da7 --s3key-active=false
-S3KeyId                Active
-75f4319cbf3f6d538da7   false
-RequestId: 4cda4b65-f58b-492a-bf45-6f1d8fb42928
-Status: Command s3key update has been successfully executed
+ionosctl user s3key update --user-id USER_ID --s3key-id S3KEY_ID --s3key-active=false
 ```
 
