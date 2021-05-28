@@ -364,6 +364,10 @@ func RunServerCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	// If CPU Family has not been set, take the default value
+	if !proper.ServerProperties.HasCpuFamily() {
+		proper.ServerProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily)))
+	}
 	svr, resp, err := c.Servers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		resources.Server{
