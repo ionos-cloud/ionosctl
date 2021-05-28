@@ -109,7 +109,7 @@ Required values to run command:
 * Cores
 * RAM`,
 		Example:    createServerExample,
-		PreCmdRun:  PreRunDcIdCoresRam,
+		PreCmdRun:  noPreRun,
 		CmdRun:     RunServerCreate,
 		InitClient: true,
 	})
@@ -120,6 +120,10 @@ Required values to run command:
 	create.AddStringFlag(config.ArgTemplateId, "", "", "The unique Template Id for creating a CUBE Server")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getTemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgVolumeId, "", "", "The unique Template Id for creating a CUBE Server")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgType, "", "", "Type usages for the Server")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -442,13 +446,32 @@ func RunServerCreate(c *core.CommandConfig) error {
 	if !proper.ServerProperties.HasCpuFamily() {
 		proper.ServerProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily)))
 	}
-	svr, resp, err := c.Servers().Create(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		resources.Server{
-			Server: ionoscloud.Server{
-				Properties: &proper.ServerProperties,
+	volType := "DAS"
+	licenceType := "UNKNOWN"
+	name := "testDAS"
+	bus := "VIRTIO"
+	input := resources.Server{
+		Server: ionoscloud.Server{
+			Properties: &proper.ServerProperties,
+			Entities: &ionoscloud.ServerEntities{
+				Volumes: &ionoscloud.AttachedVolumes{
+					Items: &[]ionoscloud.Volume{
+						{
+							Properties: &ionoscloud.VolumeProperties{
+								Name:        &name,
+								Type:        &volType,
+								Bus:         &bus,
+								LicenceType: &licenceType,
+							},
+						},
+					},
+				},
 			},
 		},
+	}
+	svr, resp, err := c.Servers().Create(
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		input,
 	)
 	if err != nil {
 		return err
