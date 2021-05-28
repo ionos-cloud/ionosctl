@@ -55,8 +55,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s cluster update --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d --name testCluster
-ClusterId                              Name          K8sVersion   State
-cb47b98f-b8dd-4108-8ac0-b636e36a161d   testCluster   1.19.8       UPDATING
+ionosctl k8s cluster update --cluster-id CLUSTER_ID --name NAME
 ```
 

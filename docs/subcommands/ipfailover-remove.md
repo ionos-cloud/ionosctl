@@ -57,10 +57,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl ipfailover remove --datacenter-id 2c08a329-dbe3-427a-8ef9-897e620fef3d --server-id 11c8ac02-224b-4bd0-833c-196719860fc1 --nic-id 5662f39c-b7cb-4840-b6ab-ae43cd0202cc --lan-id 1 --ip "x.x.x.x"
-Warning: Are you sure you want to remove ip failover group from lan (y/N) ? 
-y
-RequestId: 0643462d-22c7-4396-b8e8-dd3c42fce83a
-Status: Command ipfailover remove has been successfully executed
+ionosctl ipfailover remove --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --ip "x.x.x.x"
 ```
 

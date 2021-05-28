@@ -62,11 +62,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nic update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 --lan-id 2 --wait-for-request
-1.2s Waiting for request... DONE
-NicId                                  Name      Dhcp   LanId   Ips
-2978400e-da90-405f-905e-8200d4f48158   demoNic   true   2       []
-RequestId: b0361cf3-06b2-4cca-ae13-4035ace9f265
-Status: Command nic update & wait have been successfully executed
+ionosctl nic update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --lan-id LAN_ID --wait-for-request
 ```
 

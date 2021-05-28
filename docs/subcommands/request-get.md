@@ -47,8 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl request get --request-id 20333e60-d65c-4a95-846b-08c48b871186 
-RequestId                              Status   Message
-20333e60-d65c-4a95-846b-08c48b871186   DONE     Request has been successfully executed
+ionosctl request get --request-id REQUEST_ID
 ```
 

@@ -51,10 +51,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s cluster delete --cluster-id 01d870e6-4118-4396-90bd-917fda3e948d 
-Warning: Are you sure you want to delete K8s cluster (y/N) ? 
-y
-RequestId: ea736d72-9c49-4c1e-88a5-a15c05329f40
-Status: Command k8s cluster delete has been successfully executed
+ionosctl k8s cluster delete --cluster-id CLUSTER_ID
 ```
 

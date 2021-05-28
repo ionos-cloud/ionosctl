@@ -50,10 +50,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl share update --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --share-privilege 
-ShareId                                EditPrivilege   SharePrivilege
-cefc2175-001f-4b94-8693-6263d731fe8e   false           true
-RequestId: 0dfccab0-c148-40c8-9794-067d23f79f0e
-Status: Command group update-share has been successfully executed
+ionosctl share update --group-id GROUP_ID --resource-id RESOURCE_ID --share-privilege
 ```
 

@@ -42,8 +42,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pcc get --pcc-id e2337b40-52d9-48d2-bcbc-41c5abc29d11 
-PccId                                  Name   Description
-e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test
+ionosctl pcc get --pcc-id PCC_ID
 ```
 

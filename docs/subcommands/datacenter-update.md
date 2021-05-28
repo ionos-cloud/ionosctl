@@ -53,10 +53,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl datacenter update --datacenter-id 8e543958-04f5-4872-bbf3-b28d46393ac7 --description demoDescription --cols "DatacenterId,Description"
-DatacenterId                           Description
-8e543958-04f5-4872-bbf3-b28d46393ac7   demoDescription
-RequestId: 46af6915-9003-4f11-a1fe-bab1eac9bccc
-Status: Command datacenter update has been successfully executed
+ionosctl datacenter update --datacenter-id DATACENTER_ID --description DESCRIPTION --cols "DatacenterId,Description"
 ```
 

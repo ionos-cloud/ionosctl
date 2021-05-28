@@ -72,10 +72,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl volume create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --name demoVolume
-VolumeId                               Name         Size   Type   LicenceType   State   Image
-ce510144-9bc6-4115-bd3d-b9cd232dd422   demoVolume   10GB   HDD    LINUX         BUSY    
-RequestId: a2da3bb7-3851-4e80-a5e9-6e98a66cebab
-Status: Command volume create has been successfully executed
+ionosctl volume create --datacenter-id DATACENTER_ID --name NAME
 ```
 

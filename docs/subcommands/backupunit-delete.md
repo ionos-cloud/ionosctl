@@ -49,10 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl backupunit delete --backupunit-id 9fa48167-6375-4d93-b33c-e1ba3f461c17
-Warning: Are you sure you want to delete backup unit (y/N) ? 
-y
-RequestId: fa00ba7e-426d-4460-9ec4-8b480bf5b17f
-Status: Command backupunit delete has been successfully executed
+ionosctl backupunit delete --backupunit-id BACKUPUNIT_ID
 ```
 

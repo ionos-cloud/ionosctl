@@ -175,7 +175,7 @@ ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --la
 	*/
 	listUserExample   = `ionosctl user list`
 	getUserExample    = `ionosctl user get --user-id USER_ID`
-	createUserExample = `ionosctl user create --first-name NAME --last-name NAME --email testrandom16@gmail.com --password test12345`
+	createUserExample = `ionosctl user create --first-name NAME --last-name NAME --email EMAIL --password PASSWORD`
 	updateUserExample = `ionosctl user update --user-id USER_ID --admin=true`
 	deleteUserExample = `ionosctl user delete --user-id USER_ID --force`
 

@@ -60,10 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server volume attach --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c --server-id 1dc7c6a8-5ab3-4fa8-83e7-9d989bd52ffa --volume-id 101291d1-2227-432a-9773-97b5ace7b8d3 
-VolumeId                               Name   Size   Type   LicenceType   State   Image
-101291d1-2227-432a-9773-97b5ace7b8d3   test   10GB   HDD    LINUX         BUSY    
-RequestId: e8ad392c-006a-487a-8852-c38b6e7f7ad7
-Status: Command volume attach has been successfully executed
+ionosctl server volume attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID
 ```
 

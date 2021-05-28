@@ -46,11 +46,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl share delete --group-id 83ad9b77-7598-44d7-a817-d3f12f92387f --resource-id cefc2175-001f-4b94-8693-6263d731fe8e --wait-for-request 
-Warning: Are you sure you want to remove share from group (y/N) ? 
-y
-1.2s Waiting for request... DONE
-RequestId: 9ff7e57f-b568-4257-b27f-13a4cf11a7fc
-Status: Command group remove-share & wait have been successfully executed
+ionosctl share delete --group-id GROUP_ID --resource-id RESOURCE_ID --wait-for-request
 ```
 

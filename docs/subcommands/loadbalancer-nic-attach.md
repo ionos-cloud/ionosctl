@@ -61,10 +61,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl loadbalancer nic attach --datacenter-id 154360e9-3930-46f1-a29e-a7704ea7abc2 --server-id 2bf04e0d-86e4-4f13-b405-442363b25e28 --nic-id 6e8faa79-1e7e-4e99-be76-f3b3179ed3c3 --loadbalancer-id 4450e35a-e89d-4769-af60-4957c3deaf33 
-NicId                                  Name   Dhcp   LanId   Ips
-6e8faa79-1e7e-4e99-be76-f3b3179ed3c3   test   true   1       []
-RequestId: 01b8468f-b489-40af-a4fd-3606d06da8d7
-Status: Command nic attach has been successfully executed
+ionosctl loadbalancer nic attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --loadbalancer-id LOADBALANCER_ID
 ```
 
