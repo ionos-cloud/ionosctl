@@ -60,15 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server cdrom attach --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 99d43e40-49a0-11ea-94e0-525400f64d8d --wait-for-request 
-1.4s Waiting for request... FAILED                                                                                                                                                                         
-Error: FAILED [VDC-5-622] Image 99d43e40-49a0-11ea-94e0-525400f64d8d is from location us/ewr but Virtual Data Center is from another location us/las
-
-ionosctl server cdrom attach --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 80c63662-49a0-11ea-94e0-525400f64d8d --wait-for-request 
-13s Waiting for request..  DONE                                                                                                                                                                            
-ImageId                                Name                              ImageAliases                       Location   LicenceType   ImageType   CloudInit
-80c63662-49a0-11ea-94e0-525400f64d8d   CentOS-8.1.1911-x86_64-boot.iso   [centos:latest_iso centos:8_iso]   us/las     LINUX         CDROM       NONE
-RequestId: 3f63b766-b27c-42a4-b421-6e2cfb57a877
-Status: Command cdrom attach & wait have been successfully executed
+ionosctl server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request
 ```
 

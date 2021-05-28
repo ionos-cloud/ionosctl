@@ -56,10 +56,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan update --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --name demoLAN --public=true
-LanId   Name      Public    PccId
-3       demoLAN   true
-RequestId: 0a174dca-62b1-4360-aef8-89fd31c196f2
-Status: Command lan update has been successfully executed
+ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=true
 ```
 

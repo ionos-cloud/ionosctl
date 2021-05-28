@@ -53,9 +53,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server start --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa
-Warning: Are you sure you want to start server (y/N) ? y
-RequestId: 9f03a764-5f6c-4740-87e2-d9e9589265dc
-Status: Command server start has been successfully executed
+ionosctl server start --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 

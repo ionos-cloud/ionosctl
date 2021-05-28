@@ -56,8 +56,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server cdrom get --datacenter-id 4fd7996d-2b08-4c04-9c47-d9d884ee179a --server-id f7438b0c-2f36-4bec-892f-af027930b81e --cdrom-id 80c63662-49a0-11ea-94e0-525400f64d8d 
-ImageId                                Name                              ImageAliases                       Location   LicenceType   ImageType   CloudInit
-80c63662-49a0-11ea-94e0-525400f64d8d   CentOS-8.1.1911-x86_64-boot.iso   [centos:latest_iso centos:8_iso]   us/las     LINUX         CDROM       NONE
+ionosctl server cdrom get --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID
 ```
 

@@ -53,9 +53,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s node recreate --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id a274bc0e-efa5-41c0-828d-39e38f4ad361 --node-id 60ef2bd6-0f63-4006-b448-e8e060edba7d 
-Warning: Are you sure you want to recreate k8s node (y/N) ? 
-y
-Status: Command node recreate has been successfully executed
+ionosctl k8s node recreate --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID
 ```
 

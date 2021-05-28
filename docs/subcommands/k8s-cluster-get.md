@@ -49,8 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s cluster get --cluster-id cb47b98f-b8dd-4108-8ac0-b636e36a161d 
-ClusterId                              Name    K8sVersion   State
-cb47b98f-b8dd-4108-8ac0-b636e36a161d   test3   1.19.8       ACTIVE
+ionosctl k8s cluster get --cluster-id CLUSTER_ID
 ```
 

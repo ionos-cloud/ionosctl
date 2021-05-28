@@ -65,10 +65,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl snapshot update --snapshot-id dc688daf-8e54-4db8-ac4a-487ad5a34e9c --name test
-SnapshotId                             Name   LicenceType   Size
-dc688daf-8e54-4db8-ac4a-487ad5a34e9c   test   LINUX         10
-RequestId: 3540e9be-ed35-41c0-83d9-923882bfa9bd
-Status: Command snapshot update has been successfully executed
+ionosctl snapshot update --snapshot-id SNAPSHOT_ID --name NAME
 ```
 

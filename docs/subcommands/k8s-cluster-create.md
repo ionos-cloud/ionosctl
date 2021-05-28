@@ -55,10 +55,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl k8s cluster create --name demoTest
-ClusterId                              Name       K8sVersion  State
-29d9b0c4-351d-4c9e-87e1-201cc0d49afb   demoTest   1.19.8      DEPLOYING
-RequestId: 583ba6ae-dd0b-4c68-8fb2-41b3d7bc471b
-Status: Command k8s cluster create has been successfully executed
+ionosctl k8s cluster create --name NAME
 ```
 

@@ -52,8 +52,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group resource list --group-id 45ba215b-6897-40b6-879c-cbadb527cefd 
-ResourceId                             Name   SecAuthProtection   Type
-aa8e07a2-287a-4b45-b5e9-94761750a53c   test   false               datacenter
+ionosctl group resource list --group-id GROUP_ID
 ```
 

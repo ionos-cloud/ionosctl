@@ -54,10 +54,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group user remove --group-id 45ba215b-6897-40b6-879c-cbadb527cefd --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d 
-Warning: Are you sure you want to remove user from group (y/N) ? 
-y
-RequestId: 07e1eb6a-2618-42dd-b614-6b34359a79b3
-Status: Command user remove has been successfully executed
+ionosctl group user remove --group-id GROUP_ID --user-id USER_ID
 ```
 

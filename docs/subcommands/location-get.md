@@ -47,8 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl location get --location-id us/las 
-LocationId   Name       Features
-us/las       lasvegas   [SSD_STORAGE_ZONING SSD]
+ionosctl location get --location-id LOCATION_ID
 ```
 
