@@ -67,13 +67,6 @@ func convertToMB(size, unit string) (int, error) {
 
 func convertToGB(size, unit string) (int, error) {
 	switch unit {
-	case MegaBytes:
-		s := strings.ReplaceAll(size, unit, "")
-		mb, err := strconv.Atoi(s)
-		if err != nil {
-			return 0, err
-		}
-		return mb / 1024, nil
 	case GigaBytes:
 		s := strings.ReplaceAll(size, unit, "")
 		return strconv.Atoi(s)

@@ -33,10 +33,7 @@ func TestConvertSizeMB(t *testing.T) {
 func TestConvertSizeGB(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	size, err := ConvertSize("256MB", GigaBytes)
-	assert.NoError(t, err)
-	assert.True(t, size == 256/1024)
-	size, err = ConvertSize("4GB", GigaBytes)
+	size, err := ConvertSize("4GB", GigaBytes)
 	assert.NoError(t, err)
 	assert.True(t, size == 4)
 	size, err = ConvertSize("1TB", GigaBytes)
