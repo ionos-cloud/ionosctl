@@ -46,10 +46,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pcc update --pcc-id 4b9c6a43-a338-11eb-b70c-7ade62b52cc0 --description test
-PccId                                  Name   Description
-4b9c6a43-a338-11eb-b70c-7ade62b52cc0   test   test
-RequestId: 81525f2d-cc91-4c55-84b8-07fac9a47e35
-Status: Command pcc update has been successfully executed
+ionosctl pcc update --pcc-id PCC_ID --description DESCRIPTION
 ```
 

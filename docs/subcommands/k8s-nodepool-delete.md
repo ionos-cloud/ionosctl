@@ -49,9 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool delete --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id 939811fe-cc13-41e2-8a49-87db58c7a812 
-Warning: Are you sure you want to delete k8s node pool (y/N) ? 
-y
-Status: Command node pool delete has been successfully executed
+ionosctl k8s nodepool delete --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID
 ```
 

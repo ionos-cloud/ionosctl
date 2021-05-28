@@ -57,10 +57,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl user create --user-first-name test1 --user-last-name test1 --user-email testrandom16@gmail.com --user-password test123
-UserId                                 Firstname   Lastname   Email                    Administrator   ForceSecAuth   SecAuthActive   S3CanonicalUserId   Active
-99499053-059e-4ee6-b56f-66b0df93262d   test1       test1      testrandom16@ionos.com   false           false          false                               true
-RequestId: ca349e08-5820-41ba-8252-ee4c8dd2ccdb
-Status: Command user create has been successfully executed
+ionosctl user create --first-name NAME --last-name NAME --email EMAIL --password PASSWORD
 ```
 

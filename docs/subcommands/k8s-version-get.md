@@ -40,7 +40,6 @@ Use this command to retrieve the current default Kubernetes version for Clusters
 ## Examples
 
 ```text
-ionosctl k8s version get 
-1.19.8
+ionosctl k8s version get
 ```
 

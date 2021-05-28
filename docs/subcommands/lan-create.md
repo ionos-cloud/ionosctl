@@ -56,10 +56,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan create --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --name demoLan
-LanId   Name      Public   PccId
-4       demoLan   false
-RequestId: da824a69-a12a-4153-b302-a797b3581c2b
-Status: Command lan create has been successfully executed
+ionosctl lan create --datacenter-id DATACENTER_ID --name NAMEd
 ```
 

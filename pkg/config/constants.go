@@ -47,7 +47,7 @@ const (
 	ArgAvailabilityZone      = "availability-zone"
 	ArgAvailabilityZoneShort = "z"
 	ArgCores                 = "cores"
-	ArgRamSize               = "ram-size"
+	ArgRam                   = "ram"
 	ArgCPUFamily             = "cpu-family"
 	ArgSize                  = "size"
 	ArgBus                   = "bus"

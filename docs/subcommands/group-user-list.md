@@ -52,8 +52,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl group user list --group-id 45ba215b-6897-40b6-879c-cbadb527cefd 
-UserId                                 Firstname   Lastname   Email                    S3CanonicalUserId                  Administrator   ForceSecAuth   SecAuthActive   Active
-62599641-aa2d-4ecc-bdc4-118f5f39f23d   test        test       testrandom53@gmail.com   f670112b3e74038b51db78d5836d7854   false           false          false           true
+ionosctl group user list --group-id GROUP_ID
 ```
 

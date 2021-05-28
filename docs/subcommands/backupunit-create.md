@@ -60,11 +60,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl backupunit create --name test1234test --email testrandom18@ionos.com --password ********
-NOTE: To login with backup agent use: https://backup.ionos.com, with CONTRACT_NUMBER-BACKUP_UNIT_NAME and BACKUP_UNIT_PASSWORD!
-BackupUnitId                           Name           Email
-271a0627-70eb-4e36-8ff5-2e190f88cd2b   test1234test   testrandom18@ionos.com
-RequestId: 2cd34841-f0b1-4ac7-9741-89a2575a9962
-Status: Command backupunit create has been successfully executed
+ionosctl backupunit create --name NAME --email EMAIL --password PASSWORD
 ```
 

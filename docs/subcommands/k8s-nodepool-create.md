@@ -53,7 +53,7 @@ Required values to run a command:
       --node-count int             The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
-      --ram-size int               The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB (default 2048)
+      --ram string                 RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB (default "2048")
       --storage-size int           The total allocated storage capacity of a Node (default 10)
       --storage-type string        Storage Type (default "HDD")
   -t, --timeout int                Timeout option for waiting for NodePool/Request [seconds] (default 600)
@@ -63,8 +63,6 @@ Required values to run a command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool create --datacenter-id 3af92af6-c2eb-41e0-b946-6e7ba321abf2 --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --name test1234
-NodePoolId                             Name       K8sVersion   NodeCount   DatacenterId                           State
-a274bc0e-efa5-41c0-828d-39e38f4ad361   test1234   1.19.8       2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   DEPLOYING
+ionosctl k8s nodepool create --datacenter-id DATACENTER_ID --cluster-id CLUSTER_ID --name NAME
 ```
 

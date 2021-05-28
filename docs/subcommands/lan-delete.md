@@ -53,15 +53,8 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 4
-Warning: Are you sure you want to delete lan (y/N) ? y
-RequestId: bd5ffcf4-1b05-4cb2-917b-a0140d5f7a2b
-Status: Command lan delete has been successfully executed
+ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID
 
-ionosctl lan delete --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 3 --wait-for-request 
-Warning: Are you sure you want to delete lan (y/N) ? y
-1.2s Waiting for request... DONE
-RequestId: e65fc2fe-8005-48a5-9d06-f1a4f8bc9ef1
-Status: Command lan delete & wait have been successfully executed
+ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-request
 ```
 

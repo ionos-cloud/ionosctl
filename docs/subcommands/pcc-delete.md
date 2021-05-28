@@ -44,10 +44,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pcc delete --pcc-id e2337b40-52d9-48d2-bcbc-41c5abc29d11 --wait-for-request
-Warning: Are you sure you want to delete private cross-connect (y/N) ? 
-y
-RequestId: 7fa56e7f-1d63-4c5f-a7ea-eec6a015282a
-Status: Command pcc delete & wait have been successfully executed
+ionosctl pcc delete --pcc-id PCC_ID --wait-for-request
 ```
 

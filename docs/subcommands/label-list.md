@@ -43,12 +43,8 @@ Use this command to list all Labels from all Resources under your account. If yo
 ## Examples
 
 ```text
-ionosctl label list 
-Key    Value     ResourceType   ResourceId
-test   testing   datacenter     aa8e07a2-287a-4b45-b5e9-94761750a53c
+ionosctl label list
 
-ionosctl label list --resource-type datacenter --datacenter-id aa8e07a2-287a-4b45-b5e9-94761750a53c 
-Key    Value
-test   testing
+ionosctl label list --resource-type datacenter --datacenter-id DATACENTER_ID
 ```
 

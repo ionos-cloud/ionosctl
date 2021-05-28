@@ -43,11 +43,5 @@ Use this command to get a list of available locations to create objects on.
 
 ```text
 ionosctl location list
-LocationId   Name        Features
-de/fra       frankfurt   [SSD]
-us/las       lasvegas    [SSD]
-us/ewr       newark      [SSD]
-de/txl       berlin      [SSD]
-gb/lhr       london      [SSD]
 ```
 

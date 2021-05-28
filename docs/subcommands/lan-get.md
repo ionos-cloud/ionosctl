@@ -49,8 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --lan-id 4
-LanId   Name      Public    PccId
-4       demoLan   false
+ionosctl lan get --datacenter-id DATACENTER_ID --lan-id LAN_ID
 ```
 

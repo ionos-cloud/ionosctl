@@ -65,7 +65,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool update --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 --nodepool-id f01f4d6c-41a9-47c3-a5a5-f3667cc25265 --node-count=1
-Status: Command k8s nodepool update has been successfully executed
+ionosctl k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-count NODE_COUNT
 ```
 

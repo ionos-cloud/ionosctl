@@ -56,8 +56,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl user s3key delete --user-id 62599641-aa2d-4ecc-bdc4-118f5f39f23d --s3key-id 00a577ce65c708e87368 --force 
-RequestId: d41a6973-e9b1-4b6f-a153-9b30718eafe2
-Status: Command s3key delete has been successfully executed
+ionosctl user s3key delete --user-id USER_ID --s3key-id S3KEY_ID --force
 ```
 

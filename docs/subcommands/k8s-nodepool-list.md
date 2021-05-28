@@ -47,8 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool list --cluster-id ba5e2960-4068-4aee-b972-092c254769a8 
-NodePoolId                             Name        K8sVersion  NodeCount   DatacenterId                           State
-939811fe-cc13-41e2-8a49-87db58c7a812   test12345   1.19.8      2           3af92af6-c2eb-41e0-b946-6e7ba321abf2   UPDATING
+ionosctl k8s nodepool list --cluster-id CLUSTER_ID
 ```
 

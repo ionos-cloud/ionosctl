@@ -47,8 +47,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl server list --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d 
-ServerId                               Name         AvailabilityZone   State       Cores   Ram     CpuFamily
-f45f435e-8d6c-4170-ab90-858b59dab9ff   demoServer   AUTO               AVAILABLE   4       256MB   AMD_OPTERON
+ionosctl server list --datacenter-id DATACENTER_ID
 ```
 

@@ -37,9 +37,6 @@ Use this command to get a list of existing Private Cross-Connects available on y
 ## Examples
 
 ```text
-ionosctl pcc list 
-PccId                                  Name   Description
-e2337b40-52d9-48d2-bcbc-41c5abc29d11   test   test test
-4b9c6a43-a338-11eb-b70c-7ade62b52cc0   test   test
+ionosctl pcc list
 ```
 

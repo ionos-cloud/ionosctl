@@ -51,8 +51,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl nic get --datacenter-id f28c0edd-d5ef-48f2-b8a3-aa8f6b55da3d --server-id 25baee29-d79a-4b5e-aae6-080feea977aa --nic-id 2978400e-da90-405f-905e-8200d4f48158 
-NicId                                  Name      Dhcp   LanId   Ips
-2978400e-da90-405f-905e-8200d4f48158   demoNic   true   2       []
+ionosctl nic get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID
 ```
 

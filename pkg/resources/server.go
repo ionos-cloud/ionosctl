@@ -26,7 +26,7 @@ type Cdroms struct {
 type ServersService interface {
 	List(datacenterId string) (Servers, *Response, error)
 	Get(datacenterId, serverId string) (*Server, *Response, error)
-	Create(name, cpufamily, datacenterId, zone string, cores, ram int32) (*Server, *Response, error)
+	Create(datacenterId string, input Server) (*Server, *Response, error)
 	Update(datacenterId, serverId string, input ServerProperties) (*Server, *Response, error)
 	Delete(datacenterId, serverId string) (*Response, error)
 	Start(datacenterId, serverId string) (*Response, error)
@@ -68,17 +68,8 @@ func (ss *serversService) Get(datacenterId, serverId string) (*Server, *Response
 	return &Server{s}, &Response{*res}, err
 }
 
-func (ss *serversService) Create(name, cpufamily, datacenterId, zone string, cores, ram int32) (*Server, *Response, error) {
-	s := ionoscloud.Server{
-		Properties: &ionoscloud.ServerProperties{
-			Name:             &name,
-			AvailabilityZone: &zone,
-			Cores:            &cores,
-			Ram:              &ram,
-			CpuFamily:        &cpufamily,
-		},
-	}
-	req := ss.client.ServersApi.DatacentersServersPost(ss.context, datacenterId).Server(s)
+func (ss *serversService) Create(datacenterId string, input Server) (*Server, *Response, error) {
+	req := ss.client.ServersApi.DatacentersServersPost(ss.context, datacenterId).Server(input.Server)
 	server, res, err := ss.client.ServersApi.DatacentersServersPostExecute(req)
 	return &Server{server}, &Response{*res}, err
 }

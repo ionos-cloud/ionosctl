@@ -42,8 +42,6 @@ Use this command to get a list of existing BackupUnits available on your account
 ## Examples
 
 ```text
-ionosctl backupunit list 
-BackupUnitId                           Name          Email
-9fa48167-6375-4d93-b33c-e1ba3f461c17   test1234567   testrandom20@ionos.com
+ionosctl backupunit list
 ```
 
