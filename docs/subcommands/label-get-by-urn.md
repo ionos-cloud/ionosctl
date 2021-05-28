@@ -41,6 +41,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"7
+ionosctl label get-by-urn --label-urn "urn:label:server:SERVER_ID:test"
 ```
 

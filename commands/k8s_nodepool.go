@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -119,7 +120,10 @@ Required values to run a command:
 	})
 	create.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
 	create.AddIntFlag(config.ArgCores, "", 2, "The total number of cores for the Node")
-	create.AddIntFlag(config.ArgRamSize, "", 2048, "The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB")
+	create.AddStringFlag(config.ArgRam, "", strconv.Itoa(2048), "RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB", "50GB", "100GB"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(config.ArgCpuFamily, "", config.DefaultServerCPUFamily, "CPU Type")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
@@ -331,7 +335,11 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sNodeCount))
 	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily))
 	coresCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
-	ramSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgRamSize))
+	ramSize, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, config.ArgRam)), utils.MegaBytes)
+	if err != nil {
+		return nil, err
+	}
+	ram := int32(ramSize)
 	nodeZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
 	storageSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgStorageSize))
 	storageType := viper.GetString(core.GetFlagName(c.NS, config.ArgStorageType))
@@ -344,7 +352,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 				NodeCount:        &nodeCount,
 				CpuFamily:        &cpuFamily,
 				CoresCount:       &coresCount,
-				RamSize:          &ramSize,
+				RamSize:          &ram,
 				AvailabilityZone: &nodeZone,
 				StorageType:      &storageType,
 				StorageSize:      &storageSize,
@@ -553,6 +561,9 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 			}
 			if v, ok := properties.GetCpuFamilyOk(); ok && v != nil {
 				uPrint.CpuFamily = *v
+			}
+			if v, ok := properties.GetRamSizeOk(); ok && v != nil {
+				uPrint.RamSize = *v
 			}
 			if v, ok := properties.GetStorageTypeOk(); ok && v != nil {
 				uPrint.StorageType = *v

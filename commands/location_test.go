@@ -58,7 +58,6 @@ func TestPreLocationIdErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocationId), "")
 		err := PreRunLocationId(cfg)
 		assert.Error(t, err)
 	})

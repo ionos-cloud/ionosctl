@@ -53,7 +53,7 @@ Required values to run a command:
       --node-count int             The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
-      --ram-size int               The amount of memory for the node in MB, e.g. 2048. Size must be specified in multiples of 1024 MB (1 GB) with a minimum of 2048 MB (default 2048)
+      --ram string                 RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB (default "2048")
       --storage-size int           The total allocated storage capacity of a Node (default 10)
       --storage-type string        Storage Type (default "HDD")
   -t, --timeout int                Timeout option for waiting for NodePool/Request [seconds] (default 600)
