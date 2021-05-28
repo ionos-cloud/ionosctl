@@ -94,25 +94,25 @@ func (ss *serversService) Update(datacenterId, serverId string, input ServerProp
 
 func (ss *serversService) Delete(datacenterId, serverId string) (*Response, error) {
 	req := ss.client.ServersApi.DatacentersServersDelete(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServersApi.DatacentersServersDeleteExecute(req)
+	res, err := ss.client.ServersApi.DatacentersServersDeleteExecute(req)
 	return &Response{*res}, err
 }
 
 func (ss *serversService) Start(datacenterId, serverId string) (*Response, error) {
 	req := ss.client.ServersApi.DatacentersServersStartPost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServersApi.DatacentersServersStartPostExecute(req)
+	res, err := ss.client.ServersApi.DatacentersServersStartPostExecute(req)
 	return &Response{*res}, err
 }
 
 func (ss *serversService) Stop(datacenterId, serverId string) (*Response, error) {
 	req := ss.client.ServersApi.DatacentersServersStopPost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServersApi.DatacentersServersStopPostExecute(req)
+	res, err := ss.client.ServersApi.DatacentersServersStopPostExecute(req)
 	return &Response{*res}, err
 }
 
 func (ss *serversService) Reboot(datacenterId, serverId string) (*Response, error) {
 	req := ss.client.ServersApi.DatacentersServersRebootPost(ss.context, datacenterId, serverId)
-	_, res, err := ss.client.ServersApi.DatacentersServersRebootPostExecute(req)
+	res, err := ss.client.ServersApi.DatacentersServersRebootPostExecute(req)
 	return &Response{*res}, err
 }
 
@@ -161,7 +161,7 @@ func (ss *serversService) GetVolume(datacenterId, serverId, volumeId string) (*V
 
 func (ss *serversService) DetachVolume(datacenterId, serverId, volumeId string) (*Response, error) {
 	req := ss.client.ServersApi.DatacentersServersVolumesDelete(ss.context, datacenterId, serverId, volumeId)
-	_, res, err := ss.client.ServersApi.DatacentersServersVolumesDeleteExecute(req)
+	res, err := ss.client.ServersApi.DatacentersServersVolumesDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -185,6 +185,6 @@ func (ss *serversService) GetCdrom(datacenterId, serverId, cdromId string) (*Ima
 
 func (ss *serversService) DetachCdrom(datacenterId, serverId, cdromId string) (*Response, error) {
 	req := ss.client.ServersApi.DatacentersServersCdromsDelete(ss.context, datacenterId, serverId, cdromId)
-	_, res, err := ss.client.ServersApi.DatacentersServersCdromsDeleteExecute(req)
+	res, err := ss.client.ServersApi.DatacentersServersCdromsDeleteExecute(req)
 	return &Response{*res}, err
 }

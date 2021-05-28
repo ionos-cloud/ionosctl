@@ -67,6 +67,6 @@ func (svc *firewallRulesService) Update(datacenterId, serverId, nicId, firewallR
 
 func (svc *firewallRulesService) Delete(datacenterId, serverId, nicId, firewallRuleId string) (*Response, error) {
 	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesDelete(svc.context, datacenterId, serverId, nicId, firewallRuleId)
-	_, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesDeleteExecute(req)
+	resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesDeleteExecute(req)
 	return &Response{*resp}, err
 }

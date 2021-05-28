@@ -96,7 +96,7 @@ func (s *groupsService) Update(groupId string, input Group) (*Group, *Response, 
 
 func (s *groupsService) Delete(groupId string) (*Response, error) {
 	req := s.client.UserManagementApi.UmGroupsDelete(s.context, groupId)
-	_, res, err := s.client.UserManagementApi.UmGroupsDeleteExecute(req)
+	res, err := s.client.UserManagementApi.UmGroupsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -116,7 +116,7 @@ func (s *groupsService) AddUser(groupId string, input User) (*User, *Response, e
 
 func (s *groupsService) RemoveUser(groupId, userId string) (*Response, error) {
 	req := s.client.UserManagementApi.UmGroupsUsersDelete(s.context, groupId, userId)
-	_, res, err := s.client.UserManagementApi.UmGroupsUsersDeleteExecute(req)
+	res, err := s.client.UserManagementApi.UmGroupsUsersDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -148,7 +148,7 @@ func (s *groupsService) UpdateShare(groupId, resourceId string, input GroupShare
 
 func (s *groupsService) RemoveShare(groupId, resourceId string) (*Response, error) {
 	req := s.client.UserManagementApi.UmGroupsSharesDelete(s.context, groupId, resourceId)
-	_, res, err := s.client.UserManagementApi.UmGroupsSharesDeleteExecute(req)
+	res, err := s.client.UserManagementApi.UmGroupsSharesDeleteExecute(req)
 	return &Response{*res}, err
 }
 

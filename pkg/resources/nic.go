@@ -83,6 +83,6 @@ func (ns *nicsService) Update(datacenterId, serverId, nicId string, input NicPro
 
 func (ns *nicsService) Delete(datacenterId, serverId, nicId string) (*Response, error) {
 	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsDelete(ns.context, datacenterId, serverId, nicId)
-	_, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsDeleteExecute(req)
+	resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsDeleteExecute(req)
 	return &Response{*resp}, err
 }

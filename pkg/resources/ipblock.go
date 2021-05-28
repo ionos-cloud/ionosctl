@@ -80,6 +80,6 @@ func (svc *ipBlocksService) Update(ipBlockId string, input IpBlockProperties) (*
 
 func (svc *ipBlocksService) Delete(ipBlockId string) (*Response, error) {
 	req := svc.client.IPBlocksApi.IpblocksDelete(svc.context, ipBlockId)
-	_, res, err := svc.client.IPBlocksApi.IpblocksDeleteExecute(req)
+	res, err := svc.client.IPBlocksApi.IpblocksDeleteExecute(req)
 	return &Response{*res}, err
 }

@@ -60,6 +60,6 @@ func (s *imagesService) Update(imageId string, imgProp ImageProperties) (*Image,
 
 func (s *imagesService) Delete(imageId string) (*Response, error) {
 	req := s.client.ImagesApi.ImagesDelete(s.context, imageId)
-	_, resp, err := s.client.ImagesApi.ImagesDeleteExecute(req)
+	resp, err := s.client.ImagesApi.ImagesDeleteExecute(req)
 	return &Response{*resp}, err
 }

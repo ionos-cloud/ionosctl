@@ -100,7 +100,7 @@ func (svc *labelResourcesService) DatacenterCreate(datacenterId, key, value stri
 
 func (svc *labelResourcesService) DatacenterDelete(datacenterId, key string) (*Response, error) {
 	req := svc.client.LabelsApi.DatacentersLabelsDelete(svc.context, datacenterId, key)
-	_, res, err := svc.client.LabelsApi.DatacentersLabelsDeleteExecute(req)
+	res, err := svc.client.LabelsApi.DatacentersLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -130,7 +130,7 @@ func (svc *labelResourcesService) ServerCreate(datacenterId, serverId, key, valu
 
 func (svc *labelResourcesService) ServerDelete(datacenterId, serverId, key string) (*Response, error) {
 	req := svc.client.LabelsApi.DatacentersServersLabelsDelete(svc.context, datacenterId, serverId, key)
-	_, res, err := svc.client.LabelsApi.DatacentersServersLabelsDeleteExecute(req)
+	res, err := svc.client.LabelsApi.DatacentersServersLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -160,7 +160,7 @@ func (svc *labelResourcesService) VolumeCreate(datacenterId, volumeId, key, valu
 
 func (svc *labelResourcesService) VolumeDelete(datacenterId, volumeId, key string) (*Response, error) {
 	req := svc.client.LabelsApi.DatacentersVolumesLabelsDelete(svc.context, datacenterId, volumeId, key)
-	_, res, err := svc.client.LabelsApi.DatacentersVolumesLabelsDeleteExecute(req)
+	res, err := svc.client.LabelsApi.DatacentersVolumesLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -190,7 +190,7 @@ func (svc *labelResourcesService) IpBlockCreate(ipblockId, key, value string) (*
 
 func (svc *labelResourcesService) IpBlockDelete(ipblockId, key string) (*Response, error) {
 	req := svc.client.LabelsApi.IpblocksLabelsDelete(svc.context, ipblockId, key)
-	_, res, err := svc.client.LabelsApi.IpblocksLabelsDeleteExecute(req)
+	res, err := svc.client.LabelsApi.IpblocksLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }
 
@@ -220,6 +220,6 @@ func (svc *labelResourcesService) SnapshotCreate(snapshotId, key, value string) 
 
 func (svc *labelResourcesService) SnapshotDelete(snapshotId, key string) (*Response, error) {
 	req := svc.client.LabelsApi.SnapshotsLabelsDelete(svc.context, snapshotId, key)
-	_, res, err := svc.client.LabelsApi.SnapshotsLabelsDeleteExecute(req)
+	res, err := svc.client.LabelsApi.SnapshotsLabelsDeleteExecute(req)
 	return &Response{*res}, err
 }

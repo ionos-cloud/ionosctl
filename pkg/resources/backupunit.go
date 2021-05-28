@@ -78,6 +78,6 @@ func (s *backupUnitsService) Update(backupUnitId string, input BackupUnitPropert
 
 func (s *backupUnitsService) Delete(backupUnitId string) (*Response, error) {
 	req := s.client.BackupUnitsApi.BackupunitsDelete(s.context, backupUnitId)
-	_, res, err := s.client.BackupUnitsApi.BackupunitsDeleteExecute(req)
+	res, err := s.client.BackupUnitsApi.BackupunitsDeleteExecute(req)
 	return &Response{*res}, err
 }
