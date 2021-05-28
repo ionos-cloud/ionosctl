@@ -95,7 +95,7 @@ func server() *core.Command {
 		ShortDesc: "Create a Server",
 		LongDesc: `Use this command to create a Server in a specified Virtual Data Center. It is required that the number of cores for the Server and the amount of memory for the Server to be set.
 
-The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. You can set the RAM size in the following ways: 
+The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways: 
 
 * providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
 * providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
@@ -118,7 +118,7 @@ Required values to run command:
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Server")
 	create.AddIntFlag(config.ArgCores, "", 0, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. By default, the unit is MB. Minimum: 256MB. Maximum: depends on contract resource limits "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256 "+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
