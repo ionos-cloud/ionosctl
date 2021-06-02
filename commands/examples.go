@@ -55,6 +55,8 @@ ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --for
 	detachVolumeServerExample = `ionosctl server volume detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID`
 	suspendServerExample      = ``
 	resumeServerExample       = ``
+	getTokenServerExample     = `ionosctl server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
+	getConsoleServerExample   = `ionosctl server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 
 	/*
 		Volume Examples

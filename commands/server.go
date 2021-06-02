@@ -33,10 +33,10 @@ func server() *core.Command {
 	}
 	globalFlags := serverCmd.GlobalFlags()
 	globalFlags.StringSliceP(config.ArgCols, "", defaultServerCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultServerCols))
+		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allServerCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultServerCols, cobra.ShellCompDirectiveNoFileComp
+		return allServerCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -109,7 +109,7 @@ Required values to run command:
 * Cores
 * RAM`,
 		Example:    createServerExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  PreRunServerCreate,
 		CmdRun:     RunServerCreate,
 		InitClient: true,
 	})
@@ -401,14 +401,23 @@ Required values to run command:
 	resume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server reboot to be executed")
 	resume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server reboot [seconds]")
 
+	serverCmd.AddCommand(serverToken())
+	serverCmd.AddCommand(serverConsole())
 	serverCmd.AddCommand(serverVolume())
 	serverCmd.AddCommand(serverCdrom())
 
 	return serverCmd
 }
 
-func PreRunDcIdCoresRam(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgCores, config.ArgRam)
+func PreRunServerCreate(c *core.PreCommandConfig) error {
+	if !viper.IsSet(core.GetFlagName(c.NS, config.ArgType)) || viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == "ENTERPRISE" {
+		return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgCores, config.ArgRam)
+	} else {
+		if viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == "CUBE" {
+			return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgTemplateId, config.ArgCPUFamily)
+		}
+	}
+	return nil
 }
 
 func PreRunDcServerIds(c *core.PreCommandConfig) error {
@@ -446,6 +455,13 @@ func RunServerCreate(c *core.CommandConfig) error {
 	if !proper.ServerProperties.HasCpuFamily() {
 		proper.ServerProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily)))
 	}
+	if !proper.ServerProperties.HasName() {
+		if viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == "CUBE" {
+			proper.ServerProperties.SetName("Unnamed Cube")
+		} else {
+			proper.ServerProperties.SetName("Unnamed Server")
+		}
+	}
 	input := resources.Server{
 		Server: ionoscloud.Server{
 			Properties: &proper.ServerProperties,
@@ -454,14 +470,18 @@ func RunServerCreate(c *core.CommandConfig) error {
 	// If Server is of type CUBE, it will create an attached Volume
 	// with the properties from the template set
 	if viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == "CUBE" {
-		volType := "DAS"
+		// Volume Properties
+		volumeType := "DAS"
+		volumeName := "Unnamed Direct Attached Storage"
 		licenceType := "UNKNOWN"
+		// Attach Storage
 		input.SetEntities(ionoscloud.ServerEntities{
 			Volumes: &ionoscloud.AttachedVolumes{
 				Items: &[]ionoscloud.Volume{
 					{
 						Properties: &ionoscloud.VolumeProperties{
-							Type:        &volType,
+							Name:        &volumeName,
+							Type:        &volumeType,
 							LicenceType: &licenceType,
 						},
 					},
@@ -686,7 +706,10 @@ func GetStateServer(c *core.CommandConfig, objId string) (*string, error) {
 
 // Output Printing
 
-var defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
+var (
+	defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
+	allServerCols     = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type"}
+)
 
 type ServerPrint struct {
 	ServerId         string `json:"ServerId,omitempty"`
@@ -697,6 +720,8 @@ type ServerPrint struct {
 	Ram              string `json:"Ram,omitempty"`
 	CpuFamily        string `json:"CpuFamily,omitempty"`
 	VmState          string `json:"VmState,omitempty"`
+	TemplateId       string `json:"TemplateId,omitempty"`
+	Type             string `json:"Type,omitempty"`
 }
 
 func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.Server) printer.Result {
@@ -735,6 +760,8 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 		"Cores":            "Cores",
 		"Ram":              "Ram",
 		"CpuFamily":        "CpuFamily",
+		"TemplateId":       "TemplateId",
+		"Type":             "Type",
 	}
 	var serverCols []string
 	for _, k := range cols {
@@ -781,6 +808,12 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 			}
 			if vmState, ok := properties.GetVmStateOk(); ok && vmState != nil {
 				serverPrint.VmState = *vmState
+			}
+			if templateId, ok := properties.GetTemplateUuidOk(); ok && templateId != nil {
+				serverPrint.TemplateId = *templateId
+			}
+			if t, ok := properties.GetTypeOk(); ok && t != nil {
+				serverPrint.Type = *t
 			}
 		}
 		if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
