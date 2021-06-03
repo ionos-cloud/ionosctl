@@ -137,6 +137,7 @@ type CommandConfig struct {
 	Snapshots     func() resources.SnapshotsService
 	IpBlocks      func() resources.IpBlocksService
 	FirewallRules func() resources.FirewallRulesService
+	FlowLogs      func() resources.FlowLogsService
 	Labels        func() resources.LabelResourcesService
 	Contracts     func() resources.ContractsService
 	Users         func() resources.UsersService
@@ -181,6 +182,7 @@ func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.Images = func() resources.ImagesService { return resources.NewImageService(client, c.Context) }
 	c.Snapshots = func() resources.SnapshotsService { return resources.NewSnapshotService(client, c.Context) }
 	c.FirewallRules = func() resources.FirewallRulesService { return resources.NewFirewallRuleService(client, c.Context) }
+	c.FlowLogs = func() resources.FlowLogsService { return resources.NewFlowLogService(client, c.Context) }
 	c.Labels = func() resources.LabelResourcesService { return resources.NewLabelResourceService(client, c.Context) }
 	c.Contracts = func() resources.ContractsService { return resources.NewContractService(client, c.Context) }
 	c.Users = func() resources.UsersService { return resources.NewUserService(client, c.Context) }
