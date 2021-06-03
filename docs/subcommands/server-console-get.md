@@ -1,13 +1,13 @@
 ---
-description: Delete a Server
+description: Get the Remote Console URL to access a Server
 ---
 
-# ServerDelete
+# ServerConsoleGet
 
 ## Usage
 
 ```text
-ionosctl server delete [flags]
+ionosctl server console get [flags]
 ```
 
 ## Aliases
@@ -17,18 +17,19 @@ For `server` command:
 [s svr]
 ```
 
-For `delete` command:
+For `console` command:
 ```text
-[d]
+[url]
+```
+
+For `get` command:
+```text
+[g]
 ```
 
 ## Description
 
-Use this command to delete a specified Server from a Virtual Data Center.
-
-NOTE: This will not automatically remove the storage Volume(s) attached to a Server.
-
-You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
+Use this command to get the Server Remote Console link.
 
 Required values to run command:
 
@@ -44,19 +45,15 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for delete
+  -h, --help                   help for get
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -i, --server-id string       The unique Server Id (required)
-  -t, --timeout int            Timeout option for Request for Server deletion [seconds] (default 60)
-  -w, --wait-for-request       Wait for the Request for Server deletion to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID
-
-ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --force
+ionosctl server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID
 ```
 
