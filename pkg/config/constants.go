@@ -63,6 +63,8 @@ const (
 	ArgIps                   = "ips"
 	ArgIp                    = "ip"
 	ArgDhcp                  = "dhcp"
+	ArgFirewallActive        = "firewall-active"
+	ArgFirewallType          = "firewall-type"
 	ArgCpuHotPlug            = "cpu-hot-plug"
 	ArgCpuHotUnplug          = "cpu-hot-unplug"
 	ArgRamHotPlug            = "ram-hot-plug"

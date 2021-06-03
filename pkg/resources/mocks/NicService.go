@@ -35,9 +35,9 @@ func (m *MockNicsService) EXPECT() *MockNicsServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockNicsService) Create(datacenterId, serverId, name string, ips []string, dhcp bool, lan int32) (*resources.Nic, *resources.Response, error) {
+func (m *MockNicsService) Create(datacenterId, serverId string, input resources.Nic) (*resources.Nic, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", datacenterId, serverId, name, ips, dhcp, lan)
+	ret := m.ctrl.Call(m, "Create", datacenterId, serverId, input)
 	ret0, _ := ret[0].(*resources.Nic)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,9 +45,9 @@ func (m *MockNicsService) Create(datacenterId, serverId, name string, ips []stri
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockNicsServiceMockRecorder) Create(datacenterId, serverId, name, ips, dhcp, lan interface{}) *gomock.Call {
+func (mr *MockNicsServiceMockRecorder) Create(datacenterId, serverId, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockNicsService)(nil).Create), datacenterId, serverId, name, ips, dhcp, lan)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockNicsService)(nil).Create), datacenterId, serverId, input)
 }
 
 // Delete mocks base method.

@@ -14,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	multierror "go.uber.org/multierr"
@@ -109,6 +110,11 @@ Required values to run a command:
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name of the NIC")
 	create.AddStringSliceFlag(config.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
 	create.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC")
+	create.AddBoolFlag(config.ArgFirewallActive, "", config.DefaultDhcp, "Activate or deactivate the Firewall")
+	create.AddStringFlag(config.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddIntFlag(config.ArgLanId, "", config.DefaultNicLanId, "The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
@@ -150,6 +156,11 @@ Required values to run command:
 	update.AddIntFlag(config.ArgLanId, "", config.DefaultNicLanId, "The LAN ID the NIC sits on")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddBoolFlag(config.ArgFirewallActive, "", config.DefaultDhcp, "Activate or deactivate the Firewall")
+	update.AddStringFlag(config.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC update to be executed")
@@ -214,12 +225,7 @@ func RunNicList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	ss := getNics(nics)
-	return c.Printer.Print(printer.Result{
-		OutputJSON: nics,
-		KeyValue:   getNicsKVMaps(ss),
-		Columns:    getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
-	})
+	return c.Printer.Print(getNicPrint(nil, c, getNics(nics)))
 }
 
 func RunNicGet(c *core.CommandConfig) error {
@@ -235,13 +241,22 @@ func RunNicGet(c *core.CommandConfig) error {
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
+	inputProper := resources.NicProperties{}
+	inputProper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	inputProper.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
+	inputProper.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)))
+	inputProper.SetLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)))
+	inputProper.SetFirewallActive(viper.GetBool(core.GetFlagName(c.NS, config.ArgFirewallActive)))
+	inputProper.SetFirewallType(viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallType)))
+	input := resources.Nic{
+		Nic: ionoscloud.Nic{
+			Properties: &inputProper.NicProperties,
+		},
+	}
 	nic, resp, err := c.Nics().Create(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
-		viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)),
-		viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)),
+		input,
 	)
 	if err != nil {
 		return err
@@ -266,6 +281,12 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIps)) {
 		input.NicProperties.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallActive)) {
+		input.NicProperties.SetFirewallActive(viper.GetBool(core.GetFlagName(c.NS, config.ArgFirewallActive)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallType)) {
+		input.NicProperties.SetFirewallType(viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallType)))
 	}
 	nicUpd, resp, err := c.Nics().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
@@ -530,7 +551,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 
 var (
 	defaultNicCols = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State"}
-	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State", "FirewallActive", "Mac"}
+	allNicCols     = []string{"NicId", "Name", "Dhcp", "LanId", "Ips", "State", "FirewallActive", "FirewallType", "DeviceNumber", "PciSlot", "Mac"}
 )
 
 type NicPrint struct {
@@ -540,8 +561,11 @@ type NicPrint struct {
 	LanId          int32    `json:"LanId,omitempty"`
 	Ips            []string `json:"Ips,omitempty"`
 	FirewallActive bool     `json:"FirewallActive,omitempty"`
+	FirewallType   string   `json:"FirewallType,omitempty"`
 	Mac            string   `json:"Mac,omitempty"`
 	State          string   `json:"State,omitempty"`
+	DeviceNumber   int32    `json:"DeviceNumber,omitempty"`
+	PciSlot        int32    `json:"PciSlot,omitempty"`
 }
 
 func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resources.Nic) printer.Result {
@@ -577,8 +601,11 @@ func getNicsCols(flagName string, outErr io.Writer) []string {
 		"LanId":          "LanId",
 		"Ips":            "Ips",
 		"FirewallActive": "FirewallActive",
+		"FirewallType":   "FirewallType",
 		"Mac":            "Mac",
 		"State":          "State",
+		"DeviceNumber":   "DeviceNumber",
+		"PciSlot":        "PciSlot",
 	}
 	var nicCols []string
 	for _, k := range cols {
@@ -635,6 +662,15 @@ func getNicsKVMaps(ns []resources.Nic) []map[string]interface{} {
 			}
 			if factive, ok := properties.GetFirewallActiveOk(); ok && factive != nil {
 				nicprint.FirewallActive = *factive
+			}
+			if ftype, ok := properties.GetFirewallTypeOk(); ok && ftype != nil {
+				nicprint.FirewallType = *ftype
+			}
+			if no, ok := properties.GetDeviceNumberOk(); ok && no != nil {
+				nicprint.DeviceNumber = *no
+			}
+			if slot, ok := properties.GetPciSlotOk(); ok && slot != nil {
+				nicprint.PciSlot = *slot
 			}
 			if mac, ok := properties.GetMacOk(); ok && mac != nil {
 				nicprint.Mac = *mac
