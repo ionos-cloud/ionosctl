@@ -38,7 +38,7 @@ ionosctl help
 For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this \[official guide\]\([https://msdn.microsoft.com/en-us/library/office/ee537574\(v=office.14\).aspx](https://msdn.microsoft.com/en-us/library/office/ee537574%28v=office.14%29.aspx)\) that explains how to add tools to your `PATH`.
 The path that you need to add is the path to the folder where you unzipped the ionosctl release.
 
-#### Building a local version(on a linux machine)
+#### Building a local version(on a Linux machine)
 
 If you have a Go environment (Go 1.14, Go 1.15, Go 1.16) configured, you can build and install the development version of `ionosctl` with:
 
@@ -62,7 +62,7 @@ Note that the development version is a work-in-progress of a future stable relea
 
 Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Modules) with vendoring.
 
-On windows, you just need to run the command 
+On Windows, you just need to run the command 
 ```text
 go install
 ```
