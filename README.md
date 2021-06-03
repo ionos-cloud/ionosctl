@@ -47,9 +47,10 @@ sudo mv ~/ionosctl /usr/local/bin
 ionosctl help
 ```
 
-For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this [official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`. 
+For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this [official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`.
+The path that you need to add is the path to the folder where you unzipped the ionosctl release.
 
-#### Building a local version
+#### Building a local version(on a linux machine)
 
 If you have a Go environment (Go 1.14, Go 1.15, Go 1.16) configured, you can build and install the development version of `ionosctl` with:
 
@@ -69,6 +70,12 @@ make install
 Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable. Check the latest releases in the [Release Page](https://github.com/ionos-cloud/ionosctl/releases).
 
 Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Modules) with vendoring.
+
+On windows, you just need to run the command
+```text
+go install
+```
+from the folder where you cloned the ionosctl git.
 
 ### Authenticating with Ionos Cloud
 
