@@ -178,7 +178,7 @@ func PreRunFlowLogCreate(c *core.PreCommandConfig) error {
 	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)
 	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgFlowLogId, config.ArgName, config.ArgAction, config.ArgDirection, config.ArgBucketName); err != nil {
+	if err := core.CheckRequiredFlags(c.NS, config.ArgName, config.ArgAction, config.ArgDirection, config.ArgBucketName); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if result != nil {
