@@ -88,11 +88,11 @@ func RunTemplateList(c *core.CommandConfig) error {
 }
 
 func RunTemplateGet(c *core.CommandConfig) error {
-	img, _, err := c.Templates().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgTemplateId)))
+	tpl, _, err := c.Templates().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgTemplateId)))
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTemplatePrint(c, getTemplate(img)))
+	return c.Printer.Print(getTemplatePrint(c, getTemplate(tpl)))
 }
 
 // Output Printing
@@ -107,12 +107,12 @@ type TemplatePrint struct {
 	StorageSize float32 `json:"StorageSize,omitempty"`
 }
 
-func getTemplatePrint(c *core.CommandConfig, imgs []resources.Template) printer.Result {
+func getTemplatePrint(c *core.CommandConfig, tpls []resources.Template) printer.Result {
 	r := printer.Result{}
 	if c != nil {
-		if imgs != nil {
-			r.OutputJSON = imgs
-			r.KeyValue = getTemplatesKVMaps(imgs)
+		if tpls != nil {
+			r.OutputJSON = tpls
+			r.KeyValue = getTemplatesKVMaps(tpls)
 			r.Columns = getTemplateCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
 		}
 	}
@@ -147,52 +147,52 @@ func getTemplateCols(flagName string, outErr io.Writer) []string {
 }
 
 func getTemplates(templates resources.Templates) []resources.Template {
-	imgs := make([]resources.Template, 0)
+	tpls := make([]resources.Template, 0)
 	if items, ok := templates.GetItemsOk(); ok && items != nil {
 		for _, d := range *items {
-			imgs = append(imgs, resources.Template{Template: d})
+			tpls = append(tpls, resources.Template{Template: d})
 		}
 	}
-	return imgs
+	return tpls
 }
 
 func getTemplate(template *resources.Template) []resources.Template {
-	imgs := make([]resources.Template, 0)
+	tpls := make([]resources.Template, 0)
 	if template != nil {
-		imgs = append(imgs, resources.Template{Template: template.Template})
+		tpls = append(tpls, resources.Template{Template: template.Template})
 	}
-	return imgs
+	return tpls
 }
 
-func getTemplatesKVMaps(imgs []resources.Template) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(imgs))
-	for _, img := range imgs {
-		o := getTemplateKVMap(img)
+func getTemplatesKVMaps(tpls []resources.Template) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(tpls))
+	for _, tpl := range tpls {
+		o := getTemplateKVMap(tpl)
 		out = append(out, o)
 	}
 	return out
 }
 
-func getTemplateKVMap(img resources.Template) map[string]interface{} {
-	var imgPrint TemplatePrint
-	if imgId, ok := img.GetIdOk(); ok && imgId != nil {
-		imgPrint.TemplateId = *imgId
+func getTemplateKVMap(tpl resources.Template) map[string]interface{} {
+	var tplPrint TemplatePrint
+	if tplId, ok := tpl.GetIdOk(); ok && tplId != nil {
+		tplPrint.TemplateId = *tplId
 	}
-	if properties, ok := img.GetPropertiesOk(); ok && properties != nil {
+	if properties, ok := tpl.GetPropertiesOk(); ok && properties != nil {
 		if name, ok := properties.GetNameOk(); ok && name != nil {
-			imgPrint.Name = *name
+			tplPrint.Name = *name
 		}
 		if c, ok := properties.GetCoresOk(); ok && c != nil {
-			imgPrint.Cores = *c
+			tplPrint.Cores = *c
 		}
 		if r, ok := properties.GetRamOk(); ok && r != nil {
-			imgPrint.Ram = *r
+			tplPrint.Ram = *r
 		}
 		if storageSize, ok := properties.GetStorageSizeOk(); ok && storageSize != nil {
-			imgPrint.StorageSize = *storageSize
+			tplPrint.StorageSize = *storageSize
 		}
 	}
-	return structs.Map(imgPrint)
+	return structs.Map(tplPrint)
 }
 
 func getTemplatesIds(outErr io.Writer) []string {
