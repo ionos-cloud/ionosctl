@@ -46,6 +46,11 @@ const (
 	ArgLocationShort         = "l"
 	ArgAvailabilityZone      = "availability-zone"
 	ArgAvailabilityZoneShort = "z"
+	ArgDirection             = "direction"
+	ArgDirectionShort        = "d"
+	ArgAction                = "action"
+	ArgActionShort           = "a"
+	ArgBucketName            = "bucket-name"
 	ArgCores                 = "cores"
 	ArgRam                   = "ram"
 	ArgCPUFamily             = "cpu-family"
@@ -127,6 +132,7 @@ const (
 	ArgImageId        = "image-id"
 	ArgIpBlockId      = "ipblock-id"
 	ArgFirewallRuleId = "firewallrule-id"
+	ArgFlowLogId      = "flowlog-id"
 	ArgUserId         = "user-id"
 	ArgGroupId        = "group-id"
 	ArgResourceId     = "resource-id"
@@ -166,6 +172,7 @@ const (
 	RequiredFlagK8sNodePoolId  = "The unique K8s Node Pool Id " + RequiredFlag
 	RequiredFlagK8sNodeId      = "The unique K8s Node Id " + RequiredFlag
 	RequiredFlagCdromId        = "The unique Cdrom Id " + RequiredFlag
+	RequiredFlagFlowLogId      = "The unique FlowLog Id " + RequiredFlag
 )
 
 // Default values

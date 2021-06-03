@@ -10,10 +10,6 @@ type FlowLog struct {
 	ionoscloud.FlowLog
 }
 
-type FlowLogPut struct {
-	ionoscloud.FlowLogPut
-}
-
 type FlowLogProperties struct {
 	ionoscloud.FlowLogProperties
 }
@@ -27,7 +23,6 @@ type FlowLogsService interface {
 	List(datacenterId, serverId, nicId string) (FlowLogs, *Response, error)
 	Get(datacenterId, serverId, nicId, flowLogId string) (*FlowLog, *Response, error)
 	Create(datacenterId, serverId, nicId string, input FlowLog) (*FlowLog, *Response, error)
-	Update(datacenterId, serverId, nicId, flowLogId string, input FlowLogPut) (*FlowLog, *Response, error)
 	Delete(datacenterId, serverId, nicId, flowLogId string) (*Response, error)
 }
 
@@ -60,12 +55,6 @@ func (svc *flowLogsService) Get(datacenterId, serverId, nicId, flowLogId string)
 func (svc *flowLogsService) Create(datacenterId, serverId, nicId string, input FlowLog) (*FlowLog, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPost(svc.context, datacenterId, serverId, nicId).Flowlog(input.FlowLog)
 	rule, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPostExecute(req)
-	return &FlowLog{rule}, &Response{*resp}, err
-}
-
-func (svc *flowLogsService) Update(datacenterId, serverId, nicId, flowLogId string, input FlowLogPut) (*FlowLog, *Response, error) {
-	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPut(svc.context, datacenterId, serverId, nicId, flowLogId).Flowlog(input.FlowLogPut)
-	rule, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPutExecute(req)
 	return &FlowLog{rule}, &Response{*resp}, err
 }
 
