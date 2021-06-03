@@ -39,6 +39,7 @@ const (
 	ArgPasswordShort         = "p"
 	ArgAdmin                 = "admin"
 	ArgName                  = "name"
+	ArgVolumeName            = "volume-name"
 	ArgNameShort             = "n"
 	ArgDescription           = "description"
 	ArgDescriptionShort      = "d"

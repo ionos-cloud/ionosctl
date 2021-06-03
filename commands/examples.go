@@ -41,7 +41,11 @@ ionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-requ
 	*/
 	listServerExample   = `ionosctl server list --datacenter-id DATACENTER_ID`
 	getServerExample    = `ionosctl server get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
-	createServerExample = `ionosctl server create --datacenter-id DATACENTER_ID --name NAME --cores 2 --ram 512MB -w -W`
+	createServerExample = `ionosctl server create --datacenter-id DATACENTER_ID --name NAME --cores 2 --ram 512MB -w -W
+
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --licence-type LICENCE_TYPE -w -W
+
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password PASSWORD -w -W`
 	updateServerExample = `ionosctl server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4`
 	deleteServerExample = `ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID
 
@@ -53,8 +57,8 @@ ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --for
 	listVolumesServerExample  = `ionosctl server volume list --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 	getVolumeServerExample    = `ionosctl server volume get --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID`
 	detachVolumeServerExample = `ionosctl server volume detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID`
-	suspendServerExample      = ``
-	resumeServerExample       = ``
+	suspendServerExample      = `ionosctl server suspend --datacenter-id DATACENTER_ID -i SERVER_ID`
+	resumeServerExample       = `ionosctl server resume --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 	getTokenServerExample     = `ionosctl server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 	getConsoleServerExample   = `ionosctl server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 
