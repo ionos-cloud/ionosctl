@@ -198,7 +198,9 @@ You can set the RAM size in the following ways:
 * providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
 * providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
 
-Note: The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit.
+The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit.
+
+Note: For CUBE Servers, only Name attribute can be updated.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.
 
