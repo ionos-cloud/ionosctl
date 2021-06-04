@@ -35,28 +35,28 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocks)
 
 type ResourcesMocks struct {
-	BackupUnit   *mocks.MockBackupUnitsService
 	Client       *mocks.MockClientService
-	Contract     *mocks.MockContractsService
-	Datacenter   *mocks.MockDatacentersService
-	FirewallRule *mocks.MockFirewallRulesService
-	Group        *mocks.MockGroupsService
-	Image        *mocks.MockImagesService
-	IpBlocks     *mocks.MockIpBlocksService
-	K8s          *mocks.MockK8sService
-	Label        *mocks.MockLabelResourcesService
-	Lan          *mocks.MockLansService
-	Loadbalancer *mocks.MockLoadbalancersService
 	Location     *mocks.MockLocationsService
-	Nic          *mocks.MockNicsService
-	Pcc          *mocks.MockPccsService
-	Request      *mocks.MockRequestsService
-	S3Key        *mocks.MockS3KeysService
+	Datacenter   *mocks.MockDatacentersService
 	Server       *mocks.MockServersService
-	Snapshot     *mocks.MockSnapshotsService
-	Template     *mocks.MockTemplatesService
-	User         *mocks.MockUsersService
 	Volume       *mocks.MockVolumesService
+	Lan          *mocks.MockLansService
+	Nic          *mocks.MockNicsService
+	Loadbalancer *mocks.MockLoadbalancersService
+	IpBlocks     *mocks.MockIpBlocksService
+	Request      *mocks.MockRequestsService
+	Image        *mocks.MockImagesService
+	Snapshot     *mocks.MockSnapshotsService
+	FirewallRule *mocks.MockFirewallRulesService
+	Label        *mocks.MockLabelResourcesService
+	Contract     *mocks.MockContractsService
+	User         *mocks.MockUsersService
+	Group        *mocks.MockGroupsService
+	S3Key        *mocks.MockS3KeysService
+	BackupUnit   *mocks.MockBackupUnitsService
+	Pcc          *mocks.MockPccsService
+	K8s          *mocks.MockK8sService
+	Template     *mocks.MockTemplatesService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -82,28 +82,28 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 // Init Mock Resources for Test
 func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 	return &ResourcesMocks{
-		BackupUnit:   mocks.NewMockBackupUnitsService(ctrl),
 		Client:       mocks.NewMockClientService(ctrl),
-		Contract:     mocks.NewMockContractsService(ctrl),
-		Datacenter:   mocks.NewMockDatacentersService(ctrl),
-		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
-		Group:        mocks.NewMockGroupsService(ctrl),
-		Image:        mocks.NewMockImagesService(ctrl),
-		IpBlocks:     mocks.NewMockIpBlocksService(ctrl),
-		K8s:          mocks.NewMockK8sService(ctrl),
-		Label:        mocks.NewMockLabelResourcesService(ctrl),
-		Lan:          mocks.NewMockLansService(ctrl),
-		Loadbalancer: mocks.NewMockLoadbalancersService(ctrl),
 		Location:     mocks.NewMockLocationsService(ctrl),
-		Nic:          mocks.NewMockNicsService(ctrl),
-		Pcc:          mocks.NewMockPccsService(ctrl),
-		Request:      mocks.NewMockRequestsService(ctrl),
-		S3Key:        mocks.NewMockS3KeysService(ctrl),
+		Datacenter:   mocks.NewMockDatacentersService(ctrl),
 		Server:       mocks.NewMockServersService(ctrl),
-		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
-		Template:     mocks.NewMockTemplatesService(ctrl),
-		User:         mocks.NewMockUsersService(ctrl),
+		Lan:          mocks.NewMockLansService(ctrl),
 		Volume:       mocks.NewMockVolumesService(ctrl),
+		Nic:          mocks.NewMockNicsService(ctrl),
+		Loadbalancer: mocks.NewMockLoadbalancersService(ctrl),
+		IpBlocks:     mocks.NewMockIpBlocksService(ctrl),
+		Request:      mocks.NewMockRequestsService(ctrl),
+		Image:        mocks.NewMockImagesService(ctrl),
+		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
+		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
+		Label:        mocks.NewMockLabelResourcesService(ctrl),
+		Contract:     mocks.NewMockContractsService(ctrl),
+		User:         mocks.NewMockUsersService(ctrl),
+		Group:        mocks.NewMockGroupsService(ctrl),
+		S3Key:        mocks.NewMockS3KeysService(ctrl),
+		BackupUnit:   mocks.NewMockBackupUnitsService(ctrl),
+		Pcc:          mocks.NewMockPccsService(ctrl),
+		K8s:          mocks.NewMockK8sService(ctrl),
+		Template:     mocks.NewMockTemplatesService(ctrl),
 	}
 }
 
