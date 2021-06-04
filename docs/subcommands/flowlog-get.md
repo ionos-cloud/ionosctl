@@ -1,20 +1,20 @@
 ---
-description: Get a NIC
+description: Get a FlowLog
 ---
 
-# NicGet
+# FlowlogGet
 
 ## Usage
 
 ```text
-ionosctl nic get [flags]
+ionosctl flowlog get [flags]
 ```
 
 ## Aliases
 
-For `nic` command:
+For `flowlog` command:
 ```text
-[n]
+[fl]
 ```
 
 For `get` command:
@@ -24,33 +24,35 @@ For `get` command:
 
 ## Description
 
-Use this command to get information about a specified NIC from specified Data Center and Server.
+Use this command to retrieve information of a specified FlowLog.
 
 Required values to run command:
 
 * Data Center Id
 * Server Id
-* NIC Id
+*Nic Id
+* FlowLog Id
 
 ## Options
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [NicId Name Dhcp LanId Ips State FirewallActive FirewallType DeviceNumber PciSlot Mac] (default [NicId,Name,Dhcp,LanId,Ips,State])
+                               Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
+  -i, --flowlog-id string      The unique FlowLog Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for get
-  -i, --nic-id string          The unique NIC Id (required)
+      --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --server-id string       The unique Server Id
+      --server-id string       The unique Server Id (required)
 ```
 
 ## Examples
 
 ```text
-ionosctl nic get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID
+ionosctl flowlog get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID
 ```
 
