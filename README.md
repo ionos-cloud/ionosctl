@@ -215,6 +215,19 @@ PS> ionosctl completion powershell > ionosctl.ps1
 
 and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file. 
 
+Regarding the PowerShell profile, you can follow the next steps:
+
+- You need to find the PowerShell Profile path using the command ```$PROFILE``` and verify it is created with  ```Test-Path $PROFILE```.
+
+- If the result of the previous command is false, the profile doesn’t exist you need to create one, so you can use the command ```New-Item -Type File -Force $PROFILE```.
+
+- Now, you created the profile and you can oopen file with a text editor and add the following line: ```. $PATH\ionosctl.ps1```, where $PATH is absolute path to ionosctl.ps1 (for example . D:\ionoscloud\ionosctl.ps1) 
+
+In case you want more details, the profile creating steps are detailed in this link: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.1
+
+- If you get the following error:"path\Microsoft.PowerShell_profile.ps1" cannot be loaded because running scripts is disabled on this system, you can run the command ```Set-ExecutionPolicy RemoteSigned``` and restart the terminal.
+After you finish your work with ionoscloud, you can run ```Set-ExecutionPolicy Restricted``` to disable running scripts.
+
 You will need to start a new PowerShell for this setup to take effect.
 
 Note: PowerShell completions require version 5.0 or above, which comes with Windows 10 and can be downloaded separately for Windows 7 or 8.1. 
