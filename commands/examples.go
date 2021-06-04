@@ -277,4 +277,13 @@ ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --la
 	getFlowLogExample    = `ionosctl flowlog get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID`
 	createFlowLogExample = `ionosctl flowlog create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --name NAME --action ACTION --direction DIRECTION --bucket-name BUCKET_NAME`
 	deleteFlowLogExample = `ionosctl flowlog delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --flowlog-id FLOWLOG_ID -f -w`
+
+	/*
+		NatGateway Example
+	*/
+	listNatGatewayExample   = ``
+	getNatGatewayExample    = ``
+	createNatGatewayExample = ``
+	updateNatGatewayExample = ``
+	deleteNatGatewayExample = ``
 )

@@ -124,6 +124,7 @@ const (
 	ArgIdShort        = "i"
 	ArgDataCenterId   = "datacenter-id"
 	ArgServerId       = "server-id"
+	ArgNatGatewayId   = "natgateway-id"
 	ArgNicId          = "nic-id"
 	ArgLanId          = "lan-id"
 	ArgLocationId     = "location-id"
@@ -175,6 +176,7 @@ const (
 	RequiredFlagK8sNodeId      = "The unique K8s Node Id " + RequiredFlag
 	RequiredFlagCdromId        = "The unique Cdrom Id " + RequiredFlag
 	RequiredFlagFlowLogId      = "The unique FlowLog Id " + RequiredFlag
+	RequiredFlagNatGatewayId   = "The unique NatGateway Id " + RequiredFlag
 )
 
 // Default values
