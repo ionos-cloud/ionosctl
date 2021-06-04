@@ -159,6 +159,38 @@ func (mr *MockServersServiceMockRecorder) GetCdrom(datacenterId, serverId, cdrom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCdrom", reflect.TypeOf((*MockServersService)(nil).GetCdrom), datacenterId, serverId, cdromId)
 }
 
+// GetRemoteConsoleUrl mocks base method.
+func (m *MockServersService) GetRemoteConsoleUrl(datacenterId, serverId string) (resources.RemoteConsoleUrl, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRemoteConsoleUrl", datacenterId, serverId)
+	ret0, _ := ret[0].(resources.RemoteConsoleUrl)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetRemoteConsoleUrl indicates an expected call of GetRemoteConsoleUrl.
+func (mr *MockServersServiceMockRecorder) GetRemoteConsoleUrl(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRemoteConsoleUrl", reflect.TypeOf((*MockServersService)(nil).GetRemoteConsoleUrl), datacenterId, serverId)
+}
+
+// GetToken mocks base method.
+func (m *MockServersService) GetToken(datacenterId, serverId string) (resources.Token, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetToken", datacenterId, serverId)
+	ret0, _ := ret[0].(resources.Token)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetToken indicates an expected call of GetToken.
+func (mr *MockServersServiceMockRecorder) GetToken(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetToken", reflect.TypeOf((*MockServersService)(nil).GetToken), datacenterId, serverId)
+}
+
 // GetVolume mocks base method.
 func (m *MockServersService) GetVolume(datacenterId, serverId, volumeId string) (*resources.Volume, *resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -238,6 +270,21 @@ func (mr *MockServersServiceMockRecorder) Reboot(datacenterId, serverId interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reboot", reflect.TypeOf((*MockServersService)(nil).Reboot), datacenterId, serverId)
 }
 
+// Resume mocks base method.
+func (m *MockServersService) Resume(datacenterId, serverId string) (*resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Resume", datacenterId, serverId)
+	ret0, _ := ret[0].(*resources.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Resume indicates an expected call of Resume.
+func (mr *MockServersServiceMockRecorder) Resume(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Resume", reflect.TypeOf((*MockServersService)(nil).Resume), datacenterId, serverId)
+}
+
 // Start mocks base method.
 func (m *MockServersService) Start(datacenterId, serverId string) (*resources.Response, error) {
 	m.ctrl.T.Helper()
@@ -266,6 +313,21 @@ func (m *MockServersService) Stop(datacenterId, serverId string) (*resources.Res
 func (mr *MockServersServiceMockRecorder) Stop(datacenterId, serverId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Stop", reflect.TypeOf((*MockServersService)(nil).Stop), datacenterId, serverId)
+}
+
+// Suspend mocks base method.
+func (m *MockServersService) Suspend(datacenterId, serverId string) (*resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Suspend", datacenterId, serverId)
+	ret0, _ := ret[0].(*resources.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Suspend indicates an expected call of Suspend.
+func (mr *MockServersServiceMockRecorder) Suspend(datacenterId, serverId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Suspend", reflect.TypeOf((*MockServersService)(nil).Suspend), datacenterId, serverId)
 }
 
 // Update mocks base method.

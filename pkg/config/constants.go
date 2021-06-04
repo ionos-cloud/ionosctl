@@ -39,6 +39,7 @@ const (
 	ArgPasswordShort         = "p"
 	ArgAdmin                 = "admin"
 	ArgName                  = "name"
+	ArgVolumeName            = "volume-name"
 	ArgNameShort             = "n"
 	ArgDescription           = "description"
 	ArgDescriptionShort      = "d"
@@ -137,6 +138,7 @@ const (
 	ArgK8sNodePoolId  = "nodepool-id"
 	ArgK8sNodeId      = "node-id"
 	ArgCdromId        = "cdrom-id"
+	ArgTemplateId     = "template-id"
 )
 
 // Required Flags
@@ -166,6 +168,7 @@ const (
 	RequiredFlagK8sNodePoolId  = "The unique K8s Node Pool Id " + RequiredFlag
 	RequiredFlagK8sNodeId      = "The unique K8s Node Id " + RequiredFlag
 	RequiredFlagCdromId        = "The unique Cdrom Id " + RequiredFlag
+	RequiredFlagTemplateId     = "The unique Template Id " + RequiredFlag
 )
 
 // Default values

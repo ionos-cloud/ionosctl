@@ -41,18 +41,26 @@ ionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-requ
 	*/
 	listServerExample   = `ionosctl server list --datacenter-id DATACENTER_ID`
 	getServerExample    = `ionosctl server get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
-	createServerExample = `ionosctl server create --datacenter-id DATACENTER_ID --name NAME --cores 2 --ram 512MB -w -W`
+	createServerExample = `ionosctl server create --datacenter-id DATACENTER_ID --name NAME --cores 2 --ram 512MB -w -W
+
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --licence-type LICENCE_TYPE -w -W
+
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password PASSWORD -w -W`
 	updateServerExample = `ionosctl server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4`
 	deleteServerExample = `ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID
 
 ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --force`
 	startServerExample        = `ionosctl server start --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 	stopServerExample         = `ionosctl server stop --datacenter-id DATACENTER_ID --server-id SERVER_ID`
-	resetServerExample        = `ionosctl server reset --datacenter-id DATACENTER_ID --server-id SERVER_ID`
+	rebootServerExample       = `ionosctl server reboot --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 	attachVolumeServerExample = `ionosctl server volume attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID`
 	listVolumesServerExample  = `ionosctl server volume list --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 	getVolumeServerExample    = `ionosctl server volume get --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID`
 	detachVolumeServerExample = `ionosctl server volume detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --volume-id VOLUME_ID`
+	suspendServerExample      = `ionosctl server suspend --datacenter-id DATACENTER_ID -i SERVER_ID`
+	resumeServerExample       = `ionosctl server resume --datacenter-id DATACENTER_ID --server-id SERVER_ID`
+	getTokenServerExample     = `ionosctl server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
+	getConsoleServerExample   = `ionosctl server console get --datacenter-id DATACENTER_ID --server-id SERVER_ID`
 
 	/*
 		Volume Examples
@@ -269,4 +277,10 @@ ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --la
 	getCdromServerExample    = `ionosctl server cdrom get --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID`
 	attachCdromServerExample = `ionosctl server cdrom attach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request`
 	detachCdromServerExample = `ionosctl server cdrom detach --datacenter-id DATACENTER_ID --server-id SERVER_ID --cdrom-id CDROM_ID --wait-for-request --force`
+
+	/*
+		Template Example
+	*/
+	listTemplateExample = `ionosctl template list`
+	getTemplateExample  = `ionosctl template get -i TEMPLATE_ID`
 )
