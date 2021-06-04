@@ -315,13 +315,6 @@ func loadBalancerNic() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := loadbalancerNicCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultNicCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(loadbalancerNicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = loadbalancerNicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allNicCols, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	/*
 		Attach Nic Command
@@ -345,6 +338,10 @@ Required values to run command:
 		PreCmdRun:  PreRunDcNicLoadBalancerIds,
 		CmdRun:     RunLoadBalancerNicAttach,
 		InitClient: true,
+	})
+	attachNic.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
+	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	attachNic.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -382,6 +379,10 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicList,
 		InitClient: true,
 	})
+	listNics.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
+	_ = listNics.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNicCols, cobra.ShellCompDirectiveNoFileComp
+	})
 	listNics.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = listNics.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -406,7 +407,10 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicGet,
 		InitClient: true,
 	})
-
+	getNicCmd.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
+	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNicCols, cobra.ShellCompDirectiveNoFileComp
+	})
 	getNicCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -446,6 +450,10 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicDetach,
 		InitClient: true,
 	})
+	detachNic.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
+	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allNicCols, cobra.ShellCompDirectiveNoFileComp
+	})
 	detachNic.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -477,7 +485,6 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
@@ -556,7 +563,11 @@ func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resourc
 		if nics != nil {
 			r.OutputJSON = nics
 			r.KeyValue = getNicsKVMaps(nics)
-			r.Columns = getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			if c.Resource != c.Namespace {
+				r.Columns = getNicsCols(core.GetFlagName(c.NS, config.ArgCols), c.Printer.GetStderr())
+			} else {
+				r.Columns = getNicsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			}
 		}
 	}
 	return r
