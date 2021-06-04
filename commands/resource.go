@@ -123,13 +123,6 @@ func groupResource() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultResourceCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultResourceCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	/*
 		List Resources Command
@@ -145,6 +138,10 @@ func groupResource() *core.Command {
 		PreCmdRun:  PreRunGroupId,
 		CmdRun:     RunGroupResourceList,
 		InitClient: true,
+	})
+	listResources.AddStringSliceFlag(config.ArgCols, "", defaultResourceCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultResourceCols))
+	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -180,7 +177,11 @@ func getResourcePrint(c *core.CommandConfig, groups []resources.Resource) printe
 		if groups != nil {
 			r.OutputJSON = groups
 			r.KeyValue = getResourcesKVMaps(groups)
-			r.Columns = getResourceCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			if c.Resource != c.Namespace {
+				r.Columns = getResourceCols(core.GetFlagName(c.NS, config.ArgCols), c.Printer.GetStderr())
+			} else {
+				r.Columns = getResourceCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			}
 		}
 	}
 	return r
