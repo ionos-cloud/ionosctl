@@ -15,14 +15,14 @@ func TestNewTemplateService(t *testing.T) {
 	ctx := context.Background()
 	t.Run("list_templates_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewTemplateService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.List()
+		templateSvc := NewTemplateService(svc.Get(), ctx)
+		_, _, err := templateSvc.List()
 		assert.Error(t, err)
 	})
 	t.Run("get_template_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewTemplateService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Get(testTemplateResourceVar)
+		templateSvc := NewTemplateService(svc.Get(), ctx)
+		_, _, err := templateSvc.Get(testTemplateResourceVar)
 		assert.Error(t, err)
 	})
 }
