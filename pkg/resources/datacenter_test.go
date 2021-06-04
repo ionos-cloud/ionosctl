@@ -15,20 +15,20 @@ func TestNewDataCenterService(t *testing.T) {
 	ctx := context.Background()
 	t.Run("list_datacenters_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewDataCenterService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.List()
+		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
+		_, _, err := datacenterSvc.List()
 		assert.Error(t, err)
 	})
 	t.Run("get_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewDataCenterService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Get(testDatacenterResourceVar)
+		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
+		_, _, err := datacenterSvc.Get(testDatacenterResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("create_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewDataCenterService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Create(
+		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
+		_, _, err := datacenterSvc.Create(
 			testDatacenterResourceVar,
 			testDatacenterResourceVar,
 			testDatacenterResourceVar,
@@ -37,14 +37,14 @@ func TestNewDataCenterService(t *testing.T) {
 	})
 	t.Run("update_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewDataCenterService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Update(testDatacenterResourceVar, DatacenterProperties{})
+		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
+		_, _, err := datacenterSvc.Update(testDatacenterResourceVar, DatacenterProperties{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewDataCenterService(svc.Get(), ctx)
-		_, err := backupUnitSvc.Delete(testDatacenterResourceVar)
+		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
+		_, err := datacenterSvc.Delete(testDatacenterResourceVar)
 		assert.Error(t, err)
 	})
 }

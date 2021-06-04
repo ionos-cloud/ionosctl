@@ -146,6 +146,7 @@ type CommandConfig struct {
 	BackupUnit    func() resources.BackupUnitsService
 	Pccs          func() resources.PccsService
 	K8s           func() resources.K8sService
+	Templates     func() resources.TemplatesService
 	// Context
 	Context context.Context
 }
@@ -191,6 +192,7 @@ func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.BackupUnit = func() resources.BackupUnitsService { return resources.NewBackupUnitService(client, c.Context) }
 	c.Pccs = func() resources.PccsService { return resources.NewPrivateCrossConnectService(client, c.Context) }
 	c.K8s = func() resources.K8sService { return resources.NewK8sService(client, c.Context) }
+	c.Templates = func() resources.TemplatesService { return resources.NewTemplateService(client, c.Context) }
 	return nil
 }
 

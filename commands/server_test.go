@@ -18,11 +18,7 @@ import (
 )
 
 var (
-	cores        = int32(2)
-	coresNew     = int32(4)
-	ram          = int32(256)
-	ramNew       = int32(256)
-	state        = "ACTIVE"
+	// Resources
 	serverCreate = resources.Server{
 		Server: ionoscloud.Server{
 			Properties: &ionoscloud.ServerProperties{
@@ -31,6 +27,32 @@ var (
 				Ram:              &ram,
 				CpuFamily:        &testServerVar,
 				AvailabilityZone: &testServerVar,
+				Type:             &testServerEnterpriseType,
+			},
+		},
+	}
+	serverCubeCreate = resources.Server{
+		Server: ionoscloud.Server{
+			Properties: &ionoscloud.ServerProperties{
+				Name:             &testServerVar,
+				Type:             &testServerCubeType,
+				TemplateUuid:     &testServerVar,
+				CpuFamily:        &testCpuFamilyType,
+				AvailabilityZone: &testServerVar,
+			},
+			Entities: &ionoscloud.ServerEntities{
+				Volumes: &ionoscloud.AttachedVolumes{
+					Items: &[]ionoscloud.Volume{
+						{
+							Properties: &ionoscloud.VolumeProperties{
+								Name:        &testServerVar,
+								Bus:         &testServerVar,
+								Type:        &testVolumeType,
+								LicenceType: &testLicenceType,
+							},
+						},
+					},
+				},
 			},
 		},
 	}
@@ -68,19 +90,24 @@ var (
 			Metadata: &ionoscloud.DatacenterElementMetadata{
 				State: &state,
 			},
-			Id: &testServerVar,
-			Properties: &ionoscloud.ServerProperties{
-				Name:             serverProperties.ServerProperties.Name,
-				Cores:            serverProperties.ServerProperties.Cores,
-				Ram:              serverProperties.ServerProperties.Ram,
-				CpuFamily:        serverProperties.ServerProperties.CpuFamily,
-				AvailabilityZone: serverProperties.ServerProperties.AvailabilityZone,
-			},
+			Id:         &testServerVar,
+			Properties: &serverProperties.ServerProperties,
 		},
 	}
-	testServerVar    = "test-server"
-	testServerNewVar = "test-new-server"
-	testServerErr    = errors.New("server test: error occurred")
+	// Resources Attributes
+	cores                    = int32(2)
+	coresNew                 = int32(4)
+	ram                      = int32(256)
+	ramNew                   = int32(256)
+	state                    = "ACTIVE"
+	testServerVar            = "test-server"
+	testServerNewVar         = "test-new-server"
+	testVolumeType           = "DAS"
+	testLicenceType          = "UNKNOWN"
+	testCpuFamilyType        = "INTEL_SKYLAKE"
+	testServerCubeType       = serverCubeType
+	testServerEnterpriseType = serverEnterpriseType
+	testServerErr            = errors.New("server test: error occurred")
 )
 
 func TestPreRunDcServerIds(t *testing.T) {
@@ -109,7 +136,7 @@ func TestPreRunDcServerIdsRequiredFlagErr(t *testing.T) {
 	})
 }
 
-func TestPreRunDcIdCoresRam(t *testing.T) {
+func TestPreRunServerCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -119,19 +146,81 @@ func TestPreRunDcIdCoresRam(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), testServerVar)
-		err := PreRunDcIdCoresRam(cfg)
+		err := PreRunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunDcIdCoresRamRequiredFlagErr(t *testing.T) {
+func TestPreRunServerCreateCube(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunDcIdCoresRam(cfg)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerCubeType)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgTemplateId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testLicenceType)
+		err := PreRunServerCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerCreateCubeErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerCubeType)
+		err := PreRunServerCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunServerCreateCubeImg(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerCubeType)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgTemplateId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testServerVar)
+		err := PreRunServerCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerCreateCubeImgErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerCubeType)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgTemplateId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testServerVar)
+		err := PreRunServerCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunServerCreateRequiredFlagErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunServerCreate(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -237,11 +326,34 @@ func TestRunServerCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerEnterpriseType)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
+		err := RunServerCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerCreateCube(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeName), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerCubeType)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgBus), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgTemplateId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testLicenceType)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.Server.EXPECT().Create(testServerVar, serverCubeCreate).Return(&resources.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -258,6 +370,7 @@ func TestRunServerCreateWaitState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerEnterpriseType)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
@@ -281,6 +394,7 @@ func TestRunServerCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerEnterpriseType)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
@@ -301,6 +415,7 @@ func TestRunServerCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerEnterpriseType)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
@@ -527,6 +642,74 @@ func TestRunServerDeleteAskForConfirmErr(t *testing.T) {
 	})
 }
 
+func TestRunServerSuspend(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.Server.EXPECT().Suspend(testServerVar, testServerVar).Return(nil, nil)
+		err := RunServerSuspend(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerSuspendErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.Server.EXPECT().Suspend(testServerVar, testServerVar).Return(nil, testServerErr)
+		err := RunServerSuspend(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerSuspendWaitErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
+		rm.Server.EXPECT().Suspend(testServerVar, testServerVar).Return(nil, nil)
+		err := RunServerSuspend(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerSuspendAskForConfirmErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, false)
+		cfg.Stdin = os.Stdin
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		err := RunServerSuspend(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunServerStart(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -731,6 +914,74 @@ func TestRunServerRebootAskForConfirmErr(t *testing.T) {
 	})
 }
 
+func TestRunServerResume(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.Server.EXPECT().Resume(testServerVar, testServerVar).Return(nil, nil)
+		err := RunServerResume(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerResumeErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.Server.EXPECT().Resume(testServerVar, testServerVar).Return(nil, testServerErr)
+		err := RunServerResume(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerResumeWaitErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
+		rm.Server.EXPECT().Resume(testServerVar, testServerVar).Return(nil, nil)
+		err := RunServerResume(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerResumeAskForConfirmErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, false)
+		cfg.Stdin = os.Stdin
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		err := RunServerResume(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestGetServersCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
@@ -762,6 +1013,19 @@ func TestGetServersIds(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
 	getServersIds(w, testServerVar)
+	err := w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestGetCubeServersIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
+	w := bufio.NewWriter(&b)
+	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
+	getCubeServersIds(w, testServerVar)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)

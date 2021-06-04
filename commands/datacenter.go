@@ -237,8 +237,8 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "Features", "State"}
-	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version", "Features", "SecAuthProtection"}
+	defaultDatacenterCols = []string{"DatacenterId", "Name", "Location", "CpuFamily", "State"}
+	allDatacenterCols     = []string{"DatacenterId", "Name", "Location", "State", "Description", "Version", "Features", "CpuFamily", "SecAuthProtection"}
 )
 
 type DatacenterPrint struct {
@@ -249,6 +249,7 @@ type DatacenterPrint struct {
 	Version           int32    `json:"Version,omitempty"`
 	State             string   `json:"State,omitempty"`
 	Features          []string `json:"Features,omitempty"`
+	CpuFamily         []string `json:"CpuFamily,omitempty"`
 	SecAuthProtection bool     `json:"SecAuthProtection,omitempty"`
 }
 
@@ -286,6 +287,7 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 		"Description":       "Description",
 		"State":             "State",
 		"Features":          "Features",
+		"CpuFamily":         "CpuFamily",
 		"SecAuthProtection": "SecAuthProtection",
 	}
 	var datacenterCols []string
@@ -333,6 +335,15 @@ func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
 			}
 			if secAuth, ok := properties.GetSecAuthProtectionOk(); ok && secAuth != nil {
 				dcPrint.SecAuthProtection = *secAuth
+			}
+			if cpuArhis, ok := properties.GetCpuArchitectureOk(); ok && cpuArhis != nil {
+				cpufamilies := make([]string, 0)
+				for _, cpuArhi := range *cpuArhis {
+					if cpuName, ok := cpuArhi.GetCpuFamilyOk(); ok && cpuName != nil {
+						cpufamilies = append(cpufamilies, *cpuName)
+					}
+				}
+				dcPrint.CpuFamily = cpufamilies
 			}
 		}
 		if metadata, ok := dc.GetMetadataOk(); ok && metadata != nil {

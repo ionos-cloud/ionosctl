@@ -15,20 +15,20 @@ func TestNewSnapshotService(t *testing.T) {
 	ctx := context.Background()
 	t.Run("list_snapshots_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewSnapshotService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.List()
+		snapshotSvc := NewSnapshotService(svc.Get(), ctx)
+		_, _, err := snapshotSvc.List()
 		assert.Error(t, err)
 	})
 	t.Run("get_snapshot_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewSnapshotService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Get(testSnapshotResourceVar)
+		snapshotSvc := NewSnapshotService(svc.Get(), ctx)
+		_, _, err := snapshotSvc.Get(testSnapshotResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("create_snapshot_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewSnapshotService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Create(
+		snapshotSvc := NewSnapshotService(svc.Get(), ctx)
+		_, _, err := snapshotSvc.Create(
 			testSnapshotResourceVar,
 			testSnapshotResourceVar,
 			testSnapshotResourceVar,
@@ -40,20 +40,20 @@ func TestNewSnapshotService(t *testing.T) {
 	})
 	t.Run("update_snapshot_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewSnapshotService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Update(testSnapshotResourceVar, SnapshotProperties{})
+		snapshotSvc := NewSnapshotService(svc.Get(), ctx)
+		_, _, err := snapshotSvc.Update(testSnapshotResourceVar, SnapshotProperties{})
 		assert.Error(t, err)
 	})
 	t.Run("restore_snapshot_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewSnapshotService(svc.Get(), ctx)
-		_, err := backupUnitSvc.Restore(testSnapshotResourceVar, testSnapshotResourceVar, testSnapshotResourceVar)
+		snapshotSvc := NewSnapshotService(svc.Get(), ctx)
+		_, err := snapshotSvc.Restore(testSnapshotResourceVar, testSnapshotResourceVar, testSnapshotResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("delete_snapshot_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewSnapshotService(svc.Get(), ctx)
-		_, err := backupUnitSvc.Delete(testSnapshotResourceVar)
+		snapshotSvc := NewSnapshotService(svc.Get(), ctx)
+		_, err := snapshotSvc.Delete(testSnapshotResourceVar)
 		assert.Error(t, err)
 	})
 }

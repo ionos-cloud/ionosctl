@@ -22,6 +22,14 @@ type Cdroms struct {
 	ionoscloud.Cdroms
 }
 
+type Token struct {
+	ionoscloud.Token
+}
+
+type RemoteConsoleUrl struct {
+	ionoscloud.RemoteConsoleUrl
+}
+
 // ServersService is a wrapper around ionoscloud.Server
 type ServersService interface {
 	List(datacenterId string) (Servers, *Response, error)
@@ -32,6 +40,10 @@ type ServersService interface {
 	Start(datacenterId, serverId string) (*Response, error)
 	Stop(datacenterId, serverId string) (*Response, error)
 	Reboot(datacenterId, serverId string) (*Response, error)
+	Suspend(datacenterId, serverId string) (*Response, error)
+	Resume(datacenterId, serverId string) (*Response, error)
+	GetToken(datacenterId, serverId string) (Token, *Response, error)
+	GetRemoteConsoleUrl(datacenterId, serverId string) (RemoteConsoleUrl, *Response, error)
 	AttachVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
 	DetachVolume(datacenterId, serverId, volumeId string) (*Response, error)
 	ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error)
@@ -102,6 +114,30 @@ func (ss *serversService) Reboot(datacenterId, serverId string) (*Response, erro
 	req := ss.client.ServersApi.DatacentersServersRebootPost(ss.context, datacenterId, serverId)
 	res, err := ss.client.ServersApi.DatacentersServersRebootPostExecute(req)
 	return &Response{*res}, err
+}
+
+func (ss *serversService) Suspend(datacenterId, serverId string) (*Response, error) {
+	req := ss.client.ServersApi.DatacentersServersSuspendPost(ss.context, datacenterId, serverId)
+	res, err := ss.client.ServersApi.DatacentersServersSuspendPostExecute(req)
+	return &Response{*res}, err
+}
+
+func (ss *serversService) Resume(datacenterId, serverId string) (*Response, error) {
+	req := ss.client.ServersApi.DatacentersServersResumePost(ss.context, datacenterId, serverId)
+	res, err := ss.client.ServersApi.DatacentersServersResumePostExecute(req)
+	return &Response{*res}, err
+}
+
+func (ss *serversService) GetToken(datacenterId, serverId string) (Token, *Response, error) {
+	req := ss.client.ServersApi.DatacentersServersTokenGet(ss.context, datacenterId, serverId)
+	token, res, err := ss.client.ServersApi.DatacentersServersTokenGetExecute(req)
+	return Token{token}, &Response{*res}, err
+}
+
+func (ss *serversService) GetRemoteConsoleUrl(datacenterId, serverId string) (RemoteConsoleUrl, *Response, error) {
+	req := ss.client.ServersApi.DatacentersServersRemoteConsoleGet(ss.context, datacenterId, serverId)
+	url, res, err := ss.client.ServersApi.DatacentersServersRemoteConsoleGetExecute(req)
+	return RemoteConsoleUrl{url}, &Response{*res}, err
 }
 
 func (ss *serversService) ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error) {

@@ -173,6 +173,7 @@ func addCommands() {
 	rootCmd.AddCommand(pcc())
 	rootCmd.AddCommand(share())
 	rootCmd.AddCommand(k8s())
+	rootCmd.AddCommand(template())
 }
 
 const usageTemplate = `USAGE: {{if .Runnable}}

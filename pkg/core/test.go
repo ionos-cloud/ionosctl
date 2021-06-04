@@ -57,6 +57,7 @@ type ResourcesMocks struct {
 	BackupUnit   *mocks.MockBackupUnitsService
 	Pcc          *mocks.MockPccsService
 	K8s          *mocks.MockK8sService
+	Template     *mocks.MockTemplatesService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -104,6 +105,7 @@ func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 		BackupUnit:   mocks.NewMockBackupUnitsService(ctrl),
 		Pcc:          mocks.NewMockPccsService(ctrl),
 		K8s:          mocks.NewMockK8sService(ctrl),
+		Template:     mocks.NewMockTemplatesService(ctrl),
 	}
 }
 
@@ -130,5 +132,6 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
 	c.BackupUnit = func() resources.BackupUnitsService { return tm.BackupUnit }
 	c.Pccs = func() resources.PccsService { return tm.Pcc }
 	c.K8s = func() resources.K8sService { return tm.K8s }
+	c.Templates = func() resources.TemplatesService { return tm.Template }
 	return c
 }
