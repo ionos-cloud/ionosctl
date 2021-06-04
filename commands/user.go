@@ -305,13 +305,6 @@ func groupUser() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := groupUserCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultUserCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultUserCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(groupUserCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = groupUserCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	/*
 		List Users Command
@@ -327,6 +320,10 @@ func groupUser() *core.Command {
 		PreCmdRun:  PreRunGroupId,
 		CmdRun:     RunGroupUserList,
 		InitClient: true,
+	})
+	listUsers.AddStringSliceFlag(config.ArgCols, "", defaultUserCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultUserCols))
+	_ = listUsers.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	listUsers.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = listUsers.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -347,6 +344,10 @@ func groupUser() *core.Command {
 		PreCmdRun:  PreRunGroupUserIds,
 		CmdRun:     RunGroupUserAdd,
 		InitClient: true,
+	})
+	addUser.AddStringSliceFlag(config.ArgCols, "", defaultUserCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultUserCols))
+	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	addUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -371,6 +372,10 @@ func groupUser() *core.Command {
 		PreCmdRun:  PreRunGroupUserIds,
 		CmdRun:     RunGroupUserRemove,
 		InitClient: true,
+	})
+	removeUser.AddStringSliceFlag(config.ArgCols, "", defaultUserCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultUserCols))
+	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -448,7 +453,11 @@ func getUserPrint(resp *resources.Response, c *core.CommandConfig, users []resou
 		if users != nil {
 			r.OutputJSON = users
 			r.KeyValue = getUsersKVMaps(users)
-			r.Columns = getUserCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			if c.Resource != c.Namespace {
+				r.Columns = getUserCols(core.GetFlagName(c.NS, config.ArgCols), c.Printer.GetStderr())
+			} else {
+				r.Columns = getUserCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			}
 		}
 	}
 	return r

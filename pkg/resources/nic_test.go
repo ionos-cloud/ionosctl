@@ -13,35 +13,35 @@ const (
 
 func TestNewNicService(t *testing.T) {
 	ctx := context.Background()
-	t.Run("list_ nics_error", func(t *testing.T) {
+	t.Run("list_nics_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewNicService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.List(testNicResourceVar, testNicResourceVar)
+		nicSvc := NewNicService(svc.Get(), ctx)
+		_, _, err := nicSvc.List(testNicResourceVar, testNicResourceVar)
 		assert.Error(t, err)
 	})
-	t.Run("get_ nic_error", func(t *testing.T) {
+	t.Run("get_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewNicService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Get(testNicResourceVar, testNicResourceVar, testNicResourceVar)
+		nicSvc := NewNicService(svc.Get(), ctx)
+		_, _, err := nicSvc.Get(testNicResourceVar, testNicResourceVar, testNicResourceVar)
 		assert.Error(t, err)
 	})
-	t.Run("create_ nic_error", func(t *testing.T) {
+	t.Run("create_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewNicService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Create(testNicResourceVar, testNicResourceVar, testNicResourceVar,
+		nicSvc := NewNicService(svc.Get(), ctx)
+		_, _, err := nicSvc.Create(testNicResourceVar, testNicResourceVar, testNicResourceVar,
 			[]string{testNicResourceVar}, false, int32(1))
 		assert.Error(t, err)
 	})
-	t.Run("update_ nic_error", func(t *testing.T) {
+	t.Run("update_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewNicService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Update(testNicResourceVar, testNicResourceVar, testNicResourceVar, NicProperties{})
+		nicSvc := NewNicService(svc.Get(), ctx)
+		_, _, err := nicSvc.Update(testNicResourceVar, testNicResourceVar, testNicResourceVar, NicProperties{})
 		assert.Error(t, err)
 	})
-	t.Run("delete_ nic_error", func(t *testing.T) {
+	t.Run("delete_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewNicService(svc.Get(), ctx)
-		_, err := backupUnitSvc.Delete(testNicResourceVar, testNicResourceVar, testNicResourceVar)
+		nicSvc := NewNicService(svc.Get(), ctx)
+		_, err := nicSvc.Delete(testNicResourceVar, testNicResourceVar, testNicResourceVar)
 		assert.Error(t, err)
 	})
 }
