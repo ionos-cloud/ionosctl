@@ -125,27 +125,27 @@ type CommandConfig struct {
 	Printer printer.PrintService
 	initCfg func(commandConfig *CommandConfig) error
 	// Resources Services
-	BackupUnit    func() resources.BackupUnitsService
-	Contracts     func() resources.ContractsService
-	DataCenters   func() resources.DatacentersService
-	FirewallRules func() resources.FirewallRulesService
-	Groups        func() resources.GroupsService
-	Images        func() resources.ImagesService
-	IpBlocks      func() resources.IpBlocksService
-	K8s           func() resources.K8sService
-	Labels        func() resources.LabelResourcesService
-	Lans          func() resources.LansService
-	Loadbalancers func() resources.LoadbalancersService
 	Locations     func() resources.LocationsService
-	Nics          func() resources.NicsService
-	Pccs          func() resources.PccsService
-	Requests      func() resources.RequestsService
-	S3Keys        func() resources.S3KeysService
+	DataCenters   func() resources.DatacentersService
 	Servers       func() resources.ServersService
-	Snapshots     func() resources.SnapshotsService
-	Templates     func() resources.TemplatesService
-	Users         func() resources.UsersService
 	Volumes       func() resources.VolumesService
+	Lans          func() resources.LansService
+	Nics          func() resources.NicsService
+	Loadbalancers func() resources.LoadbalancersService
+	Requests      func() resources.RequestsService
+	Images        func() resources.ImagesService
+	Snapshots     func() resources.SnapshotsService
+	IpBlocks      func() resources.IpBlocksService
+	FirewallRules func() resources.FirewallRulesService
+	Labels        func() resources.LabelResourcesService
+	Contracts     func() resources.ContractsService
+	Users         func() resources.UsersService
+	Groups        func() resources.GroupsService
+	S3Keys        func() resources.S3KeysService
+	BackupUnit    func() resources.BackupUnitsService
+	Pccs          func() resources.PccsService
+	K8s           func() resources.K8sService
+	Templates     func() resources.TemplatesService
 	// Context
 	Context context.Context
 }
