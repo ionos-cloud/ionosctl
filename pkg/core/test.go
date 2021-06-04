@@ -41,6 +41,7 @@ type ResourcesMocks struct {
 	Server       *mocks.MockServersService
 	Volume       *mocks.MockVolumesService
 	Lan          *mocks.MockLansService
+	NatGateway   *mocks.MockNatGatewaysService
 	Nic          *mocks.MockNicsService
 	Loadbalancer *mocks.MockLoadbalancersService
 	IpBlocks     *mocks.MockIpBlocksService
@@ -88,6 +89,7 @@ func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 		Server:       mocks.NewMockServersService(ctrl),
 		Lan:          mocks.NewMockLansService(ctrl),
 		Volume:       mocks.NewMockVolumesService(ctrl),
+		NatGateway:   mocks.NewMockNatGatewaysService(ctrl),
 		Nic:          mocks.NewMockNicsService(ctrl),
 		Loadbalancer: mocks.NewMockLoadbalancersService(ctrl),
 		IpBlocks:     mocks.NewMockIpBlocksService(ctrl),
@@ -114,6 +116,7 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
 	c.Servers = func() resources.ServersService { return tm.Server }
 	c.Volumes = func() resources.VolumesService { return tm.Volume }
 	c.Lans = func() resources.LansService { return tm.Lan }
+	c.NatGateways = func() resources.NatGatewaysService { return tm.NatGateway }
 	c.Nics = func() resources.NicsService { return tm.Nic }
 	c.Loadbalancers = func() resources.LoadbalancersService { return tm.Loadbalancer }
 	c.IpBlocks = func() resources.IpBlocksService { return tm.IpBlocks }

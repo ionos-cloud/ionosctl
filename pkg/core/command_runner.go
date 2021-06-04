@@ -130,6 +130,7 @@ type CommandConfig struct {
 	Servers       func() resources.ServersService
 	Volumes       func() resources.VolumesService
 	Lans          func() resources.LansService
+	NatGateways   func() resources.NatGatewaysService
 	Nics          func() resources.NicsService
 	Loadbalancers func() resources.LoadbalancersService
 	Requests      func() resources.RequestsService
@@ -175,6 +176,7 @@ func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.Servers = func() resources.ServersService { return resources.NewServerService(client, c.Context) }
 	c.Volumes = func() resources.VolumesService { return resources.NewVolumeService(client, c.Context) }
 	c.Lans = func() resources.LansService { return resources.NewLanService(client, c.Context) }
+	c.NatGateways = func() resources.NatGatewaysService { return resources.NewNatGatewayService(client, c.Context) }
 	c.Nics = func() resources.NicsService { return resources.NewNicService(client, c.Context) }
 	c.Loadbalancers = func() resources.LoadbalancersService { return resources.NewLoadbalancerService(client, c.Context) }
 	c.IpBlocks = func() resources.IpBlocksService { return resources.NewIpBlockService(client, c.Context) }

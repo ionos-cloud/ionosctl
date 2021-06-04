@@ -37,6 +37,15 @@ type NatGatewaysService interface {
 	Create(datacenterId string, input NatGateway) (*NatGateway, *Response, error)
 	Update(datacenterId, natGatewayId string, input NatGatewayProperties) (*NatGateway, *Response, error)
 	Delete(datacenterId, natGatewayId string) (*Response, error)
+	ListRules(datacenterId, natGatewayId string) (NatGatewayRules, *Response, error)
+	GetRule(datacenterId, natGatewayId, ruleId string) (*NatGatewayRule, *Response, error)
+	CreateRule(datacenterId, natGatewayId string, input NatGatewayRule) (*NatGatewayRule, *Response, error)
+	UpdateRule(datacenterId, natGatewayId, ruleId string, input NatGatewayRuleProperties) (*NatGatewayRule, *Response, error)
+	DeleteRule(datacenterId, natGatewayId, ruleId string) (*Response, error)
+	ListFlowLogs(datacenterId, natGatewayId string) (FlowLogs, *Response, error)
+	GetFlowLog(datacenterId, natGatewayId, flowlogId string) (*FlowLog, *Response, error)
+	CreateFlowLog(datacenterId, natGatewayId string, input FlowLog) (*FlowLog, *Response, error)
+	DeleteFlowLog(datacenterId, natGatewayId, flowlogId string) (*Response, error)
 }
 
 type natGatewaysService struct {
@@ -55,8 +64,8 @@ func NewNatGatewayService(client *Client, ctx context.Context) NatGatewaysServic
 
 func (ds *natGatewaysService) List(datacenterId string) (NatGateways, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysGet(ds.context, datacenterId)
-	dcs, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysGetExecute(req)
-	return NatGateways{dcs}, &Response{*res}, err
+	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysGetExecute(req)
+	return NatGateways{s}, &Response{*res}, err
 }
 
 func (ds *natGatewaysService) Get(datacenterId, natGatewayId string) (*NatGateway, *Response, error) {
@@ -85,30 +94,54 @@ func (ds *natGatewaysService) Delete(datacenterId, natGatewayId string) (*Respon
 
 func (ds *natGatewaysService) ListRules(datacenterId, natGatewayId string) (NatGatewayRules, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesGet(ds.context, datacenterId, natGatewayId)
-	dcs, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesGetExecute(req)
-	return NatGatewayRules{dcs}, &Response{*res}, err
+	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesGetExecute(req)
+	return NatGatewayRules{s}, &Response{*res}, err
 }
 
 func (ds *natGatewaysService) GetRule(datacenterId, natGatewayId, ruleId string) (*NatGatewayRule, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesFindByNatGatewayRuleId(ds.context, datacenterId, natGatewayId, ruleId)
-	dcs, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesFindByNatGatewayRuleIdExecute(req)
-	return &NatGatewayRule{dcs}, &Response{*res}, err
+	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesFindByNatGatewayRuleIdExecute(req)
+	return &NatGatewayRule{s}, &Response{*res}, err
 }
 
 func (ds *natGatewaysService) CreateRule(datacenterId, natGatewayId string, input NatGatewayRule) (*NatGatewayRule, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPost(ds.context, datacenterId, natGatewayId).NatGatewayRule(input.NatGatewayRule)
-	dcs, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPostExecute(req)
-	return &NatGatewayRule{dcs}, &Response{*res}, err
+	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPostExecute(req)
+	return &NatGatewayRule{s}, &Response{*res}, err
 }
 
 func (ds *natGatewaysService) UpdateRule(datacenterId, natGatewayId, ruleId string, input NatGatewayRuleProperties) (*NatGatewayRule, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPatch(ds.context, datacenterId, natGatewayId, ruleId).NatGatewayRuleProperties(input.NatGatewayRuleProperties)
-	dcs, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPatchExecute(req)
-	return &NatGatewayRule{dcs}, &Response{*res}, err
+	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesPatchExecute(req)
+	return &NatGatewayRule{s}, &Response{*res}, err
 }
 
 func (ds *natGatewaysService) DeleteRule(datacenterId, natGatewayId, ruleId string) (*Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesDelete(ds.context, datacenterId, natGatewayId, ruleId)
 	res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesDeleteExecute(req)
+	return &Response{*res}, err
+}
+
+func (ds *natGatewaysService) ListFlowLogs(datacenterId, natGatewayId string) (FlowLogs, *Response, error) {
+	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsGet(ds.context, datacenterId, natGatewayId)
+	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsGetExecute(req)
+	return FlowLogs{s}, &Response{*res}, err
+}
+
+func (ds *natGatewaysService) GetFlowLog(datacenterId, natGatewayId, flowlogId string) (*FlowLog, *Response, error) {
+	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsFindByFlowLogId(ds.context, datacenterId, natGatewayId, flowlogId)
+	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsFindByFlowLogIdExecute(req)
+	return &FlowLog{s}, &Response{*res}, err
+}
+
+func (ds *natGatewaysService) CreateFlowLog(datacenterId, natGatewayId string, input FlowLog) (*FlowLog, *Response, error) {
+	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPost(ds.context, datacenterId, natGatewayId).NatGatewayFlowLog(input.FlowLog)
+	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPostExecute(req)
+	return &FlowLog{s}, &Response{*res}, err
+}
+
+func (ds *natGatewaysService) DeleteFlowLog(datacenterId, natGatewayId, flowlogId string) (*Response, error) {
+	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsDelete(ds.context, datacenterId, natGatewayId, flowlogId)
+	res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsDeleteExecute(req)
 	return &Response{*res}, err
 }
