@@ -451,13 +451,6 @@ func serverVolume() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := serverVolumeCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultVolumeCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allVolumeCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(serverVolumeCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = serverVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	/*
 		Attach Volume Command
@@ -481,6 +474,10 @@ Required values to run command:
 		PreCmdRun:  PreRunDcServerVolumeIds,
 		CmdRun:     RunServerVolumeAttach,
 		InitClient: true,
+	})
+	attachVolume.AddStringSliceFlag(config.ArgCols, "", defaultVolumeCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allVolumeCols))
+	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	attachVolume.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -512,6 +509,10 @@ Required values to run command:
 		CmdRun:     RunServerVolumesList,
 		InitClient: true,
 	})
+	listVolumes.AddStringSliceFlag(config.ArgCols, "", defaultVolumeCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allVolumeCols))
+	_ = listVolumes.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
+	})
 	listVolumes.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = listVolumes.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -535,6 +536,10 @@ Required values to run command:
 		InitClient: true,
 		PreCmdRun:  PreRunDcServerVolumeIds,
 		CmdRun:     RunServerVolumeGet,
+	})
+	getVolumeCmd.AddStringSliceFlag(config.ArgCols, "", defaultVolumeCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allVolumeCols))
+	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	getVolumeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -571,6 +576,10 @@ Required values to run command:
 		PreCmdRun:  PreRunDcServerVolumeIds,
 		CmdRun:     RunServerVolumeDetach,
 		InitClient: true,
+	})
+	detachVolume.AddStringSliceFlag(config.ArgCols, "", defaultVolumeCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allVolumeCols))
+	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
 	})
 	detachVolume.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -689,7 +698,11 @@ func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []reso
 		if vols != nil {
 			r.OutputJSON = vols
 			r.KeyValue = getVolumesKVMaps(vols)
-			r.Columns = getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			if c.Resource != c.Namespace {
+				r.Columns = getVolumesCols(core.GetFlagName(c.NS, config.ArgCols), c.Printer.GetStderr())
+			} else {
+				r.Columns = getVolumesCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			}
 		}
 	}
 	return r
