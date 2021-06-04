@@ -15,20 +15,20 @@ func TestNewLanService(t *testing.T) {
 	ctx := context.Background()
 	t.Run("list_lans_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewLanService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.List(testLanResourceVar)
+		lanSvc := NewLanService(svc.Get(), ctx)
+		_, _, err := lanSvc.List(testLanResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("get_lan_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewLanService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Get(testLanResourceVar, testLanResourceVar)
+		lanSvc := NewLanService(svc.Get(), ctx)
+		_, _, err := lanSvc.Get(testLanResourceVar, testLanResourceVar)
 		assert.Error(t, err)
 	})
 	t.Run("create_lan_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewLanService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Create(
+		lanSvc := NewLanService(svc.Get(), ctx)
+		_, _, err := lanSvc.Create(
 			testLanResourceVar,
 			LanPost{},
 		)
@@ -36,14 +36,14 @@ func TestNewLanService(t *testing.T) {
 	})
 	t.Run("update_lan_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewLanService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Update(testLanResourceVar, testLanResourceVar, LanProperties{})
+		lanSvc := NewLanService(svc.Get(), ctx)
+		_, _, err := lanSvc.Update(testLanResourceVar, testLanResourceVar, LanProperties{})
 		assert.Error(t, err)
 	})
 	t.Run("delete_lan_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewLanService(svc.Get(), ctx)
-		_, err := backupUnitSvc.Delete(testLanResourceVar, testLanResourceVar)
+		lanSvc := NewLanService(svc.Get(), ctx)
+		_, err := lanSvc.Delete(testLanResourceVar, testLanResourceVar)
 		assert.Error(t, err)
 	})
 }
