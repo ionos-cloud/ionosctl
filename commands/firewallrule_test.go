@@ -62,7 +62,7 @@ var (
 		APIResponse: ionoscloud.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
-					"location": {"https://api.ionos.com/cloudapi/v5/create/resource/status"},
+					"location": {"https://api.ionos.com/cloudapi/v6/create/resource/status"},
 				},
 			},
 		},

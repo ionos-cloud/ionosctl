@@ -281,9 +281,18 @@ ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --la
 	/*
 		NatGateway Example
 	*/
-	listNatGatewayExample   = ``
-	getNatGatewayExample    = ``
-	createNatGatewayExample = ``
-	updateNatGatewayExample = ``
-	deleteNatGatewayExample = ``
+	listNatGatewayExample   = `ionosctl natgateway list --datacenter-id DATACENTER_ID`
+	getNatGatewayExample    = `ionosctl natgateway get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID`
+	createNatGatewayExample = `ionosctl natgateway create --datacenter-id DATACENTER_ID --name NAME --ips IP_1,IP_2`
+	updateNatGatewayExample = `ionosctl natgateway update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME`
+	deleteNatGatewayExample = `ionosctl natgateway delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID`
+
+	/*
+		NatGateway Rule Example
+	*/
+	listNatGatewayRuleExample   = `ionosctl natgateway rule list --datacenter-id DATACENTER_ID`
+	getNatGatewayRuleExample    = `ionosctl natgateway rule get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID`
+	addNatGatewayRuleExample    = `ionosctl natgateway rule add --datacenter-id DATACENTER_ID --name NAME --ips IP_1,IP_2`
+	updateNatGatewayRuleExample = `ionosctl natgateway rule update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME`
+	removeNatGatewayRuleExample = `ionosctl natgateway rule remove --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID`
 )

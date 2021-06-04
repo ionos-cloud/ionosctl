@@ -139,6 +139,7 @@ const (
 	ArgUserId         = "user-id"
 	ArgGroupId        = "group-id"
 	ArgResourceId     = "resource-id"
+	ArgRuleId         = "rule-id"
 	ArgS3KeyId        = "s3key-id"
 	ArgBackupUnitId   = "backupunit-id"
 	ArgPccId          = "pcc-id"
@@ -177,6 +178,7 @@ const (
 	RequiredFlagCdromId        = "The unique Cdrom Id " + RequiredFlag
 	RequiredFlagFlowLogId      = "The unique FlowLog Id " + RequiredFlag
 	RequiredFlagNatGatewayId   = "The unique NatGateway Id " + RequiredFlag
+	RequiredFlagRuleId         = "The unique Rule Id " + RequiredFlag
 )
 
 // Default values

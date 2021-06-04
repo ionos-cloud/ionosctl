@@ -103,7 +103,7 @@ Required values to run command:
 * Name
 * IPs`,
 		Example:    createNatGatewayExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  PreRunDcIdsNatGatewayProperties,
 		CmdRun:     RunNatGatewayCreate,
 		InitClient: true,
 	})
@@ -111,8 +111,8 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway")
-	create.AddStringSliceFlag(config.ArgIps, "", []string{""}, "Collection of public reserved IP addresses of the NAT Gateway")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway "+config.RequiredFlag)
+	create.AddStringSliceFlag(config.ArgIps, "", []string{""}, "Collection of public reserved IP addresses of the NAT Gateway "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway creation [seconds]")
 
@@ -184,10 +184,14 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway deletion [seconds]")
 
-	//natgatewayCmd.AddCommand(natgatewayVolume())
+	natgatewayCmd.AddCommand(natGatewayRule())
 	//natgatewayCmd.AddCommand(natgatewayCdrom())
 
 	return natgatewayCmd
+}
+
+func PreRunDcIdsNatGatewayProperties(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgName, config.ArgIps)
 }
 
 func PreRunDcNatGatewayIds(c *core.PreCommandConfig) error {
