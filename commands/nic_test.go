@@ -31,6 +31,9 @@ var (
 			Dhcp:           &dhcpNic,
 			Ips:            &ipsNic,
 			FirewallActive: &dhcpNic,
+			FirewallType:   &testNicVar,
+			DeviceNumber:   &lanNicId,
+			PciSlot:        &lanNicId,
 			Mac:            &testNicVar,
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
@@ -51,6 +54,18 @@ var (
 				Dhcp:           nicProperties.NicProperties.Dhcp,
 				Ips:            &ipsNic,
 				FirewallActive: &dhcpNic,
+			},
+		},
+	}
+	testNicCreate = resources.Nic{
+		Nic: ionoscloud.Nic{
+			Properties: &ionoscloud.NicProperties{
+				Name:           &testNicVar,
+				Lan:            &lanNicId,
+				Dhcp:           &dhcpNic,
+				Ips:            &ipsNic,
+				FirewallActive: &dhcpNic,
+				FirewallType:   &testNicVar,
 			},
 		},
 	}
@@ -200,7 +215,8 @@ func TestRunNicCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIps), ipsNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), lanNicId)
-		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicVar, ipsNic, dhcpNic, lanNicId).Return(&resources.Nic{Nic: n}, nil, nil)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallType), testNicVar)
+		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicCreate).Return(&resources.Nic{Nic: n}, nil, nil)
 		err := RunNicCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -220,7 +236,8 @@ func TestRunNicCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIps), ipsNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), lanNicId)
-		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicVar, ipsNic, dhcpNic, lanNicId).Return(&resources.Nic{Nic: n}, nil, testNicErr)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallType), testNicVar)
+		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicCreate).Return(&resources.Nic{Nic: n}, nil, testNicErr)
 		err := RunNicCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -240,7 +257,8 @@ func TestRunNicCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIps), ipsNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), lanNicId)
-		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicVar, ipsNic, dhcpNic, lanNicId).Return(&resources.Nic{Nic: n}, nil, nil)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallType), testNicVar)
+		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicCreate).Return(&resources.Nic{Nic: n}, nil, nil)
 		err := RunNicCreate(cfg)
 		assert.Error(t, err)
 	})
