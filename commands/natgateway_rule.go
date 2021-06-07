@@ -71,7 +71,7 @@ func natGatewayRule() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a NAT Gateway Rule",
-		LongDesc:   "Use this command to get information about a specified NAT Gateway Rule from a NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id\n* Rule Id",
+		LongDesc:   "Use this command to get information about a specified NAT Gateway Rule from a NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id\n* NAT Gateway Rule Id",
 		Example:    getNatGatewayRuleExample,
 		PreCmdRun:  PreRunDcNatGatewayRuleIds,
 		CmdRun:     RunNatGatewayRuleGet,
@@ -92,15 +92,15 @@ func natGatewayRule() *core.Command {
 	})
 
 	/*
-		Add Command
+		Create Command
 	*/
-	add := core.NewCommand(ctx, natgatewayRuleCmd, core.CommandBuilder{
+	create := core.NewCommand(ctx, natgatewayRuleCmd, core.CommandBuilder{
 		Namespace: "natgateway",
 		Resource:  "rule",
-		Verb:      "add",
-		Aliases:   []string{"a"},
-		ShortDesc: "Add a NAT Gateway Rule",
-		LongDesc: `Use this command to add a NAT Gateway Rule in a specified NAT Gateway.
+		Verb:      "create",
+		Aliases:   []string{"c"},
+		ShortDesc: "Create a NAT Gateway Rule",
+		LongDesc: `Use this command to create a NAT Gateway Rule in a specified NAT Gateway.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
@@ -109,24 +109,34 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * Name
-* Public IP`,
-		Example:    addNatGatewayRuleExample,
-		PreCmdRun:  PreRunDcIdsNatGatewayProperties,
+* Public IP
+* Source Subnet
+* Target Subnet`,
+		Example:    createNatGatewayRuleExample,
+		PreCmdRun:  PreRunNatGatewayRuleCreate,
 		CmdRun:     RunNatGatewayRuleCreate,
 		InitClient: true,
 	})
-	add.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = add.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(config.ArgNatGatewayId, config.ArgIdShort, "", config.RequiredFlagNatGatewayId)
-	_ = add.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	create.AddStringFlag(config.ArgNatGatewayId, config.ArgIdShort, "", config.RequiredFlagNatGatewayId)
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway Rule "+config.RequiredFlag)
-	add.AddStringSliceFlag(config.ArgIps, "", []string{""}, "Collection of public reserved IP addresses of the NAT Gateway "+config.RequiredFlag)
-	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Rule creation to be executed")
-	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Rule creation [seconds]")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway Rule "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgProtocol, config.ArgProtocolShort, string(ionoscloud.ALL), "Protocol of the NAT Gateway Rule "+config.RequiredFlag)
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{string(ionoscloud.TCP), string(ionoscloud.UDP), string(ionoscloud.ICMP), string(ionoscloud.ALL)}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgIp, "", "", "Public IP address of the NAT Gateway Rule "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgSourceSubnet, "", "", "Source subnet of the NAT Gateway Rule "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgTargetSubnet, "", "", "Target subnet or destination subnet of the NAT Gateway Rule "+config.RequiredFlag)
+	create.AddIntFlag(config.ArgPortRangeStart, "", 1, "Target port range start associated with the NAT Gateway Rule")
+	create.AddIntFlag(config.ArgPortRangeEnd, "", 1, "Target port range end associated with the NAT Gateway Rule")
+	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Rule creation to be executed")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Rule creation [seconds]")
 
 	/*
 		Update Command
@@ -145,7 +155,7 @@ Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id
-* Rule Id`,
+* NAT Gateway Rule Id`,
 		Example:    updateNatGatewayRuleExample,
 		PreCmdRun:  PreRunDcNatGatewayRuleIds,
 		CmdRun:     RunNatGatewayRuleUpdate,
@@ -165,20 +175,27 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(update.NS, config.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway Rule")
-	update.AddStringSliceFlag(config.ArgIps, "", []string{""}, "Collection of public reserved IP addresses of the NAT Gateway. This will overwrite the current values")
+	update.AddStringFlag(config.ArgProtocol, config.ArgProtocolShort, "", "Protocol of the NAT Gateway Rule")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{string(ionoscloud.TCP), string(ionoscloud.UDP), string(ionoscloud.ICMP), string(ionoscloud.ALL)}, cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(config.ArgSourceSubnet, "", "", "Source subnet of the NAT Gateway Rule")
+	update.AddStringFlag(config.ArgTargetSubnet, "", "", "Target subnet or destination subnet of the NAT Gateway Rule")
+	update.AddIntFlag(config.ArgPortRangeStart, "", 1, "Target port range start associated with the NAT Gateway Rule")
+	update.AddIntFlag(config.ArgPortRangeEnd, "", 1, "Target port range end associated with the NAT Gateway Rule")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Rule update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Rule update [seconds]")
 
 	/*
-		Remove Command
+		Delete Command
 	*/
-	removeCmd := core.NewCommand(ctx, natgatewayRuleCmd, core.CommandBuilder{
+	deleteCmd := core.NewCommand(ctx, natgatewayRuleCmd, core.CommandBuilder{
 		Namespace: "natgateway",
 		Resource:  "rule",
-		Verb:      "remove",
-		Aliases:   []string{"r"},
-		ShortDesc: "Remove a NAT Gateway",
-		LongDesc: `Use this command to remove a specified NAT Gateway from a Virtual Data Center.
+		Verb:      "delete",
+		Aliases:   []string{"d"},
+		ShortDesc: "Delete a NAT Gateway Rule",
+		LongDesc: `Use this command to delete a specified NAT Gateway Rule from a NAT Gateway.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 
@@ -186,29 +203,33 @@ Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id
-* Rule Id`,
-		Example:    removeNatGatewayRuleExample,
+* NAT Gateway Rule Id`,
+		Example:    deleteNatGatewayRuleExample,
 		PreCmdRun:  PreRunDcNatGatewayRuleIds,
 		CmdRun:     RunNatGatewayRuleDelete,
 		InitClient: true,
 	})
-	removeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(config.ArgNatGatewayId, "", "", config.RequiredFlagNatGatewayId)
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	deleteCmd.AddStringFlag(config.ArgNatGatewayId, "", "", config.RequiredFlagNatGatewayId)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagRuleId)
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNatGatewayRulesIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, config.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(removeCmd.NS, config.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
+	deleteCmd.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagRuleId)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getNatGatewayRulesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway deletion to be executed")
-	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway deletion [seconds]")
+	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Rule deletion to be executed")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Rule deletion [seconds]")
 
 	return natgatewayRuleCmd
+}
+
+func PreRunNatGatewayRuleCreate(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgName, config.ArgIp, config.ArgSourceSubnet, config.ArgTargetSubnet)
 }
 
 func PreRunDcNatGatewayRuleIds(c *core.PreCommandConfig) error {
@@ -243,6 +264,9 @@ func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 
 func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 	proper := getNewNatGatewayRuleInfo(c)
+	if !proper.HasProtocol() {
+		proper.SetProtocol(ionoscloud.NatGatewayRuleProtocol(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol))))
+	}
 	ng, resp, err := c.NatGateways().CreateRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
@@ -303,6 +327,22 @@ func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRulePr
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIp)) {
 		input.SetPublicIp(viper.GetString(core.GetFlagName(c.NS, config.ArgIp)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgProtocol)) {
+		input.SetProtocol(ionoscloud.NatGatewayRuleProtocol(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol))))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSourceSubnet)) {
+		input.SetSourceSubnet(viper.GetString(core.GetFlagName(c.NS, config.ArgSourceSubnet)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgTargetSubnet)) {
+		input.SetTargetSubnet(viper.GetString(core.GetFlagName(c.NS, config.ArgTargetSubnet)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPortRangeStart)) &&
+		viper.IsSet(core.GetFlagName(c.NS, config.ArgPortRangeEnd)) {
+		inputPortRange := ionoscloud.TargetPortRange{}
+		inputPortRange.SetStart(viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeStart)))
+		inputPortRange.SetEnd(viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeEnd)))
+		input.SetTargetPortRange(inputPortRange)
 	}
 	return &resources.NatGatewayRuleProperties{
 		NatGatewayRuleProperties: input,

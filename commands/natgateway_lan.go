@@ -79,6 +79,8 @@ Required values to run command:
 		ShortDesc: "Add a NAT Gateway Lan",
 		LongDesc: `Use this command to add a NAT Gateway Lan in a specified NAT Gateway.
 
+If IPs are not set manually, using ` + "`" + `--ips` + "`" + ` option, an IP will be automatically assigned.
+
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
