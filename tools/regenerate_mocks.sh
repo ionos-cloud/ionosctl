@@ -29,5 +29,6 @@ mockgen -source s3key.go >mocks/S3KeyService.go
 mockgen -source backupunit.go >mocks/BackupUnitService.go
 mockgen -source pcc.go >mocks/PccService.go
 mockgen -source k8s.go >mocks/K8sService.go
+mockgen -source template.go >mocks/TemplateService.go
 
 pushd >/dev/null || exit
