@@ -186,7 +186,7 @@ Required values to run command:
 
 	natgatewayCmd.AddCommand(natGatewayRule())
 	natgatewayCmd.AddCommand(natgatewayLan())
-	//natgatewayCmd.AddCommand(natgatewayCdrom())
+	natgatewayCmd.AddCommand(natGatewayFlowLog())
 
 	return natgatewayCmd
 }

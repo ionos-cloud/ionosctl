@@ -52,6 +52,7 @@ const (
 	ArgAction                = "action"
 	ArgActionShort           = "a"
 	ArgBucketName            = "bucket-name"
+	ArgBucketNameShort       = "b"
 	ArgCores                 = "cores"
 	ArgRam                   = "ram"
 	ArgCPUFamily             = "cpu-family"

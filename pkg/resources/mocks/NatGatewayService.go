@@ -239,6 +239,22 @@ func (mr *MockNatGatewaysServiceMockRecorder) Update(datacenterId, natGatewayId,
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockNatGatewaysService)(nil).Update), datacenterId, natGatewayId, input)
 }
 
+// UpdateFlowLog mocks base method.
+func (m *MockNatGatewaysService) UpdateFlowLog(datacenterId, natGatewayId, flowlogId string, input *resources.FlowLogProperties) (*resources.FlowLog, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateFlowLog", datacenterId, natGatewayId, flowlogId, input)
+	ret0, _ := ret[0].(*resources.FlowLog)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// UpdateFlowLog indicates an expected call of UpdateFlowLog.
+func (mr *MockNatGatewaysServiceMockRecorder) UpdateFlowLog(datacenterId, natGatewayId, flowlogId, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateFlowLog", reflect.TypeOf((*MockNatGatewaysService)(nil).UpdateFlowLog), datacenterId, natGatewayId, flowlogId, input)
+}
+
 // UpdateRule mocks base method.
 func (m *MockNatGatewaysService) UpdateRule(datacenterId, natGatewayId, ruleId string, input resources.NatGatewayRuleProperties) (*resources.NatGatewayRule, *resources.Response, error) {
 	m.ctrl.T.Helper()

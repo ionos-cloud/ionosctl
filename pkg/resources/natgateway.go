@@ -49,6 +49,7 @@ type NatGatewaysService interface {
 	ListFlowLogs(datacenterId, natGatewayId string) (FlowLogs, *Response, error)
 	GetFlowLog(datacenterId, natGatewayId, flowlogId string) (*FlowLog, *Response, error)
 	CreateFlowLog(datacenterId, natGatewayId string, input FlowLog) (*FlowLog, *Response, error)
+	UpdateFlowLog(datacenterId, natGatewayId, flowlogId string, input *FlowLogProperties) (*FlowLog, *Response, error)
 	DeleteFlowLog(datacenterId, natGatewayId, flowlogId string) (*Response, error)
 }
 
@@ -141,6 +142,12 @@ func (ds *natGatewaysService) GetFlowLog(datacenterId, natGatewayId, flowlogId s
 func (ds *natGatewaysService) CreateFlowLog(datacenterId, natGatewayId string, input FlowLog) (*FlowLog, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPost(ds.context, datacenterId, natGatewayId).NatGatewayFlowLog(input.FlowLog)
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPostExecute(req)
+	return &FlowLog{s}, &Response{*res}, err
+}
+
+func (ds *natGatewaysService) UpdateFlowLog(datacenterId, natGatewayId, flowlogId string, input *FlowLogProperties) (*FlowLog, *Response, error) {
+	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPatch(ds.context, datacenterId, natGatewayId, flowlogId).NatGatewayFlowLogProperties(input.FlowLogProperties)
+	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsPatchExecute(req)
 	return &FlowLog{s}, &Response{*res}, err
 }
 
