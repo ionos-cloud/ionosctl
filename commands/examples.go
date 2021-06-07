@@ -302,6 +302,15 @@ ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --la
 	deleteNatGatewayExample = `ionosctl natgateway delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID`
 
 	/*
+		NatGateway Lan Example
+	*/
+	listNatGatewayLanExample = `ionosctl natgateway lan list --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID`
+	addNatGatewayLanExample  = `ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID
+
+ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID --ips IP_1,IP_2`
+	removeNatGatewayLanExample = `ionosctl natgateway lan remove --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID`
+
+	/*
 		NatGateway Rule Example
 	*/
 	listNatGatewayRuleExample   = `ionosctl natgateway rule list --datacenter-id DATACENTER_ID`

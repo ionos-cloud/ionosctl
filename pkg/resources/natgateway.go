@@ -14,6 +14,10 @@ type NatGatewayRule struct {
 	ionoscloud.NatGatewayRule
 }
 
+type NatGatewayLanProperties struct {
+	ionoscloud.NatGatewayLanProperties
+}
+
 type NatGatewayRuleProperties struct {
 	ionoscloud.NatGatewayRuleProperties
 }

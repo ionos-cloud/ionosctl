@@ -185,6 +185,7 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway deletion [seconds]")
 
 	natgatewayCmd.AddCommand(natGatewayRule())
+	natgatewayCmd.AddCommand(natgatewayLan())
 	//natgatewayCmd.AddCommand(natgatewayCdrom())
 
 	return natgatewayCmd
