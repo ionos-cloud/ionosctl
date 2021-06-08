@@ -110,7 +110,7 @@ Required values to run a command:
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name of the NIC")
 	create.AddStringSliceFlag(config.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
 	create.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC")
-	create.AddBoolFlag(config.ArgFirewallActive, "", config.DefaultDhcp, "Activate or deactivate the Firewall")
+	create.AddBoolFlag(config.ArgFirewallActive, "", config.DefaultFirewallActive, "Activate or deactivate the Firewall")
 	create.AddStringFlag(config.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
@@ -157,7 +157,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(config.ArgFirewallActive, "", config.DefaultDhcp, "Activate or deactivate the Firewall")
+	update.AddBoolFlag(config.ArgFirewallActive, "", config.DefaultFirewallActive, "Activate or deactivate the Firewall")
 	update.AddStringFlag(config.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp

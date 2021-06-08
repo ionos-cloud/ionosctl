@@ -109,6 +109,8 @@ func flowlog() *core.Command {
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
+NOTE: Please disable the Firewall Active using before deleting the existing Bucket, so that FlowLogs know to not upload to a non-existing Bucket. To disable the Firewall, you can use ` + "`" + `ionosctl nic update` + "`" + ` command with ` + "`" + `--firewall-active=false` + "`" + ` option set.
+
 Required values to run command:
 
 * Data Center Id

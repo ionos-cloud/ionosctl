@@ -42,7 +42,7 @@ Required values to run a command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
       --dhcp                   Set to false if you wish to disable DHCP on the NIC (default true)
-      --firewall-active        Activate or deactivate the Firewall (default true)
+      --firewall-active        Activate or deactivate the Firewall
       --firewall-type string   The type of Firewall Rules that will be allowed on the NIC (default "INGRESS")
   -f, --force                  Force command to execute without user input
   -h, --help                   help for create
