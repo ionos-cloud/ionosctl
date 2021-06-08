@@ -196,6 +196,7 @@ const (
 	DefaultWait            = false
 	DefaultPublic          = false
 	DefaultDhcp            = true
+	DefaultFirewallActive  = false
 	DefaultTimeoutSeconds  = int(60)
 	K8sTimeoutSeconds      = int(600)
 	DefaultServerCores     = 2

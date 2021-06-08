@@ -27,7 +27,7 @@ func flowlog() *core.Command {
 			Use:              "flowlog",
 			Aliases:          []string{"fl"},
 			Short:            "FlowLog Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl flowlog` + "`" + ` allow you to create, list, get, delete FlowLogs.`,
+			Long:             `The sub-commands of ` + "`" + `ionosctl flowlog` + "`" + ` allow you to create, list, get, delete FlowLogs on specific NICs.`,
 			TraverseChildren: true,
 		},
 	}
@@ -82,7 +82,7 @@ func flowlog() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a FlowLog",
-		LongDesc:   "Use this command to retrieve information of a specified FlowLog.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id\n* FlowLog Id",
+		LongDesc:   "Use this command to retrieve information of a specified FlowLog from a NIC.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n*Nic Id\n* FlowLog Id",
 		Example:    getFlowLogExample,
 		PreCmdRun:  PreRunGlobalDcServerNicIdsFlowLogId,
 		CmdRun:     RunFlowLogGet,
@@ -104,10 +104,12 @@ func flowlog() *core.Command {
 		Resource:  "flowlog",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create a FlowLog",
+		ShortDesc: "Create a FlowLog on a NIC",
 		LongDesc: `Use this command to create a new FlowLog to the specified NIC.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
+
+NOTE: Please disable the Firewall Active using before deleting the existing Bucket, so that FlowLogs know to not upload to a non-existing Bucket. To disable the Firewall, you can use ` + "`" + `ionosctl nic update` + "`" + ` command with ` + "`" + `--firewall-active=false` + "`" + ` option set.
 
 Required values to run command:
 
@@ -144,8 +146,8 @@ Required values to run command:
 		Resource:  "flowlog",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
-		ShortDesc: "Delete a FlowLog",
-		LongDesc: `Use this command to delete a specified FlowLog from a Virtual Data Center.
+		ShortDesc: "Delete a FlowLog from a NIC",
+		LongDesc: `Use this command to delete a specified FlowLog from a NIC.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 

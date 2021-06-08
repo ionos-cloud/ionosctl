@@ -1,5 +1,5 @@
 ---
-description: Create a FlowLog
+description: Create a FlowLog on a NIC
 ---
 
 # FlowlogCreate
@@ -27,6 +27,8 @@ For `create` command:
 Use this command to create a new FlowLog to the specified NIC.
 
 You can wait for the Request to be executed using `--wait-for-request` option.
+
+NOTE: Please disable the Firewall Active using before deleting the existing Bucket, so that FlowLogs know to not upload to a non-existing Bucket. To disable the Firewall, you can use `ionosctl nic update` command with `--firewall-active=false` option set.
 
 Required values to run command:
 
