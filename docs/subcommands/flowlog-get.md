@@ -24,7 +24,7 @@ For `get` command:
 
 ## Description
 
-Use this command to retrieve information of a specified FlowLog.
+Use this command to retrieve information of a specified FlowLog from a NIC.
 
 Required values to run command:
 

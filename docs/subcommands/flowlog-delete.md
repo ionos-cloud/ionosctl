@@ -1,5 +1,5 @@
 ---
-description: Delete a FlowLog
+description: Delete a FlowLog from a NIC
 ---
 
 # FlowlogDelete
@@ -24,7 +24,7 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified FlowLog from a Virtual Data Center.
+Use this command to delete a specified FlowLog from a NIC.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 

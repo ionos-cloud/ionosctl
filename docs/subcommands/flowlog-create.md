@@ -1,5 +1,5 @@
 ---
-description: Create a FlowLog
+description: Create a FlowLog on a NIC
 ---
 
 # FlowlogCreate
