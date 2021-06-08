@@ -162,7 +162,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	})
 
 	// Volume Properties - for DAS Volume associated with Cube Server
-	create.AddStringFlag(config.ArgVolumeName, "N", "[CUBE Server] Unnamed Direct Attached Storage", "Name of the Direct Attached Storage")
+	create.AddStringFlag(config.ArgVolumeName, "N", "Unnamed Direct Attached Storage", "[CUBE Server] Name of the Direct Attached Storage")
 	create.AddStringFlag(config.ArgBus, "", "VIRTIO", "[CUBE Server] The bus type of the Direct Attached Storage")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
@@ -797,7 +797,7 @@ func GetStateServer(c *core.CommandConfig, objId string) (*string, error) {
 // Output Printing
 
 var (
-	defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
+	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
 	allServerCols     = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type"}
 )
 

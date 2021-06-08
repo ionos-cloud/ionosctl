@@ -103,8 +103,8 @@ type TemplatePrint struct {
 	TemplateId  string  `json:"TemplateId,omitempty"`
 	Name        string  `json:"Name,omitempty"`
 	Cores       float32 `json:"Cores,omitempty"`
-	Ram         float32 `json:"Ram,omitempty"`
-	StorageSize float32 `json:"StorageSize,omitempty"`
+	Ram         string  `json:"Ram,omitempty"`
+	StorageSize string  `json:"StorageSize,omitempty"`
 }
 
 func getTemplatePrint(c *core.CommandConfig, tpls []resources.Template) printer.Result {
@@ -186,10 +186,10 @@ func getTemplateKVMap(tpl resources.Template) map[string]interface{} {
 			tplPrint.Cores = *c
 		}
 		if r, ok := properties.GetRamOk(); ok && r != nil {
-			tplPrint.Ram = *r
+			tplPrint.Ram = fmt.Sprintf("%vMB", *r)
 		}
 		if storageSize, ok := properties.GetStorageSizeOk(); ok && storageSize != nil {
-			tplPrint.StorageSize = *storageSize
+			tplPrint.StorageSize = fmt.Sprintf("%vGB", *storageSize)
 		}
 	}
 	return structs.Map(tplPrint)
