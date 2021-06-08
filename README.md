@@ -47,9 +47,10 @@ sudo mv ~/ionosctl /usr/local/bin
 ionosctl help
 ```
 
-For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this [official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`. 
+For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this [official guide](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) that explains how to add tools to your `PATH`.
+The path that you need to add is the path to the folder where you unzipped the ionosctl release.
 
-#### Building a local version
+#### Building a local version(on a Linux machine)
 
 If you have a Go environment (Go 1.14, Go 1.15, Go 1.16) configured, you can build and install the development version of `ionosctl` with:
 
@@ -69,6 +70,12 @@ make install
 Note that the development version is a work-in-progress of a future stable release and can include bugs. Officially released versions will generally be more stable. Check the latest releases in the [Release Page](https://github.com/ionos-cloud/ionosctl/releases).
 
 Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Modules) with vendoring.
+
+On Windows, you just need to run the command
+```text
+go install
+```
+from the folder where you cloned the ionosctl git.
 
 ### Authenticating with Ionos Cloud
 
@@ -207,6 +214,19 @@ PS> ionosctl completion powershell > ionosctl.ps1
 ```
 
 and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file. 
+
+Regarding the PowerShell profile, you can follow the next steps:
+
+* You need to find the PowerShell Profile path using the command ```$PROFILE``` and verify it is created with  ```Test-Path $PROFILE```.
+
+* If the result of the previous command is false, the profile doesn’t exist you need to create one, so you can use the command ```New-Item -Type File -Force $PROFILE```.
+
+* Now, you created the profile and you can oopen file with a text editor and add the following line: ```. $PATH\ionosctl.ps1```, where $PATH is absolute path to ionosctl.ps1 (for example . D:\ionoscloud\ionosctl.ps1) 
+
+In case you want more details, the profile creating steps are detailed in this link: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.1
+
+* If you get the following error:"path\Microsoft.PowerShell_profile.ps1" cannot be loaded because running scripts is disabled on this system, you can run the command ```Set-ExecutionPolicy RemoteSigned``` and restart the terminal.
+After you finish your work with ionosctl, you can run ```Set-ExecutionPolicy Restricted``` to disable running scripts.
 
 You will need to start a new PowerShell for this setup to take effect.
 
