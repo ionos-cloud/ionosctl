@@ -1,13 +1,13 @@
 ---
-description: Delete a Server
+description: Suspend a Cube Server
 ---
 
-# ServerDelete
+# ServerSuspend
 
 ## Usage
 
 ```text
-ionosctl server delete [flags]
+ionosctl server suspend [flags]
 ```
 
 ## Aliases
@@ -17,16 +17,9 @@ For `server` command:
 [s svr]
 ```
 
-For `delete` command:
-```text
-[d]
-```
-
 ## Description
 
-Use this command to delete a specified Server from a Virtual Data Center.
-
-NOTE: This will not automatically remove the storage Volume(s) attached to a Server.
+Use this command to suspend a Cube Server. The operation can only be applied to Cube Servers. Note: The virtual machine will not be deleted.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 
@@ -44,19 +37,17 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for delete
+  -h, --help                   help for suspend
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -i, --server-id string       The unique Server Id (required)
-  -t, --timeout int            Timeout option for Request for Server deletion [seconds] (default 60)
-  -w, --wait-for-request       Wait for the Request for Server deletion to be executed
+  -t, --timeout int            Timeout option for Request for Server suspend [seconds] (default 60)
+  -w, --wait-for-request       Wait for the Request for Server suspend to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID
-
-ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --force
+ionosctl server suspend --datacenter-id DATACENTER_ID -i SERVER_ID
 ```
 

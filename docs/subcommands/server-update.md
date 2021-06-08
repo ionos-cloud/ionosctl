@@ -31,7 +31,9 @@ You can set the RAM size in the following ways:
 * providing only the value, e.g.`--ram 256` equals 256MB.
 * providing both the value and the unit, e.g.`--ram 1GB`.
 
-Note: The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit.
+The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit.
+
+Note: For CUBE Servers, only Name attribute can be updated.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
 
@@ -46,7 +48,7 @@ Required values to run command:
   -u, --api-url string             Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
   -z, --availability-zone string   Availability zone of the Server
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (default 2)
       --cpu-family string          CPU Family of the Server (default "AMD_OPTERON")
