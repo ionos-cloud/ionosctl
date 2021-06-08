@@ -48,6 +48,7 @@ type ResourcesMocks struct {
 	Image        *mocks.MockImagesService
 	Snapshot     *mocks.MockSnapshotsService
 	FirewallRule *mocks.MockFirewallRulesService
+	FlowLog      *mocks.MockFlowLogsService
 	Label        *mocks.MockLabelResourcesService
 	Contract     *mocks.MockContractsService
 	User         *mocks.MockUsersService
@@ -95,6 +96,7 @@ func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 		Image:        mocks.NewMockImagesService(ctrl),
 		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
 		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
+		FlowLog:      mocks.NewMockFlowLogsService(ctrl),
 		Label:        mocks.NewMockLabelResourcesService(ctrl),
 		Contract:     mocks.NewMockContractsService(ctrl),
 		User:         mocks.NewMockUsersService(ctrl),
@@ -121,6 +123,7 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
 	c.Images = func() resources.ImagesService { return tm.Image }
 	c.Snapshots = func() resources.SnapshotsService { return tm.Snapshot }
 	c.FirewallRules = func() resources.FirewallRulesService { return tm.FirewallRule }
+	c.FlowLogs = func() resources.FlowLogsService { return tm.FlowLog }
 	c.Labels = func() resources.LabelResourcesService { return tm.Label }
 	c.Contracts = func() resources.ContractsService { return tm.Contract }
 	c.Users = func() resources.UsersService { return tm.User }

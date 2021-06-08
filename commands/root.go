@@ -163,6 +163,7 @@ func addCommands() {
 	rootCmd.AddCommand(snapshot())
 	rootCmd.AddCommand(image())
 	rootCmd.AddCommand(firewallrule())
+	rootCmd.AddCommand(flowlog())
 	rootCmd.AddCommand(label())
 	rootCmd.AddCommand(contract())
 	rootCmd.AddCommand(user())

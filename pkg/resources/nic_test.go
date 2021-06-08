@@ -28,8 +28,7 @@ func TestNewNicService(t *testing.T) {
 	t.Run("create_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		nicSvc := NewNicService(svc.Get(), ctx)
-		_, _, err := nicSvc.Create(testNicResourceVar, testNicResourceVar, testNicResourceVar,
-			[]string{testNicResourceVar}, false, int32(1))
+		_, _, err := nicSvc.Create(testNicResourceVar, testNicResourceVar, Nic{})
 		assert.Error(t, err)
 	})
 	t.Run("update_nic_error", func(t *testing.T) {

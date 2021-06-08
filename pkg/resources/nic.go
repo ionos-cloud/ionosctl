@@ -30,7 +30,7 @@ type BalancedNics struct {
 type NicsService interface {
 	List(datacenterId, serverId string) (Nics, *Response, error)
 	Get(datacenterId, serverId, nicId string) (*Nic, *Response, error)
-	Create(datacenterId, serverId, name string, ips []string, dhcp bool, lan int32) (*Nic, *Response, error)
+	Create(datacenterId, serverId string, input Nic) (*Nic, *Response, error)
 	Update(datacenterId, serverId, nicId string, input NicProperties) (*Nic, *Response, error)
 	Delete(datacenterId, serverId, nicId string) (*Response, error)
 }
@@ -61,16 +61,8 @@ func (ns *nicsService) Get(datacenterId, serverId, nicId string) (*Nic, *Respons
 	return &Nic{nic}, &Response{*resp}, err
 }
 
-func (ns *nicsService) Create(datacenterId, serverId, name string, ips []string, dhcp bool, lan int32) (*Nic, *Response, error) {
-	input := ionoscloud.Nic{
-		Properties: &ionoscloud.NicProperties{
-			Name: &name,
-			Ips:  &ips,
-			Dhcp: &dhcp,
-			Lan:  &lan,
-		},
-	}
-	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsPost(ns.context, datacenterId, serverId).Nic(input)
+func (ns *nicsService) Create(datacenterId, serverId string, input Nic) (*Nic, *Response, error) {
+	req := ns.client.NetworkInterfacesApi.DatacentersServersNicsPost(ns.context, datacenterId, serverId).Nic(input.Nic)
 	nic, resp, err := ns.client.NetworkInterfacesApi.DatacentersServersNicsPostExecute(req)
 	return &Nic{nic}, &Response{*resp}, err
 }
