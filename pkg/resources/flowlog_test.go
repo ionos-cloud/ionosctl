@@ -15,8 +15,8 @@ func TestNewFlowLogService(t *testing.T) {
 	ctx := context.Background()
 	t.Run("list_flowlogs_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewFlowLogService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.List(
+		flowlogSvc := NewFlowLogService(svc.Get(), ctx)
+		_, _, err := flowlogSvc.List(
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
@@ -25,8 +25,8 @@ func TestNewFlowLogService(t *testing.T) {
 	})
 	t.Run("get_flowlog_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewFlowLogService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Get(
+		flowlogSvc := NewFlowLogService(svc.Get(), ctx)
+		_, _, err := flowlogSvc.Get(
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
@@ -36,8 +36,8 @@ func TestNewFlowLogService(t *testing.T) {
 	})
 	t.Run("create_flowlog_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewFlowLogService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.Create(
+		flowlogSvc := NewFlowLogService(svc.Get(), ctx)
+		_, _, err := flowlogSvc.Create(
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
@@ -47,8 +47,8 @@ func TestNewFlowLogService(t *testing.T) {
 	})
 	t.Run("delete_flowlog_error", func(t *testing.T) {
 		svc := getTestClient(t)
-		backupUnitSvc := NewFlowLogService(svc.Get(), ctx)
-		_, err := backupUnitSvc.Delete(
+		flowlogSvc := NewFlowLogService(svc.Get(), ctx)
+		_, err := flowlogSvc.Delete(
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,

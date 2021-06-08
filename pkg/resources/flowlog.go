@@ -42,20 +42,20 @@ func NewFlowLogService(client *Client, ctx context.Context) FlowLogsService {
 
 func (svc *flowLogsService) List(datacenterId, serverId, nicId string) (FlowLogs, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGet(svc.context, datacenterId, serverId, nicId)
-	rules, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGetExecute(req)
-	return FlowLogs{rules}, &Response{*resp}, err
+	flowlogs, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGetExecute(req)
+	return FlowLogs{flowlogs}, &Response{*resp}, err
 }
 
 func (svc *flowLogsService) Get(datacenterId, serverId, nicId, flowLogId string) (*FlowLog, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsFindById(svc.context, datacenterId, serverId, nicId, flowLogId)
-	rule, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsFindByIdExecute(req)
-	return &FlowLog{rule}, &Response{*resp}, err
+	flowlog, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsFindByIdExecute(req)
+	return &FlowLog{flowlog}, &Response{*resp}, err
 }
 
 func (svc *flowLogsService) Create(datacenterId, serverId, nicId string, input FlowLog) (*FlowLog, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPost(svc.context, datacenterId, serverId, nicId).Flowlog(input.FlowLog)
-	rule, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPostExecute(req)
-	return &FlowLog{rule}, &Response{*resp}, err
+	flowlog, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsPostExecute(req)
+	return &FlowLog{flowlog}, &Response{*resp}, err
 }
 
 func (svc *flowLogsService) Delete(datacenterId, serverId, nicId, flowLogId string) (*Response, error) {
