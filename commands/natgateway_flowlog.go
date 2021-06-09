@@ -70,7 +70,7 @@ func natGatewayFlowLog() *core.Command {
 	*/
 	get := core.NewCommand(ctx, natgatewayFlowLogCmd, core.CommandBuilder{
 		Namespace:  "natgateway",
-		Resource:   "rule",
+		Resource:   "flowlog",
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a NAT Gateway FlowLog",
@@ -104,7 +104,7 @@ func natGatewayFlowLog() *core.Command {
 	*/
 	create := core.NewCommand(ctx, natgatewayFlowLogCmd, core.CommandBuilder{
 		Namespace: "natgateway",
-		Resource:  "rule",
+		Resource:  "flowlog",
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a NAT Gateway FlowLog",
@@ -156,7 +156,7 @@ Required values to run command:
 	*/
 	update := core.NewCommand(ctx, natgatewayFlowLogCmd, core.CommandBuilder{
 		Namespace: "natgateway",
-		Resource:  "rule",
+		Resource:  "flowlog",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a NAT Gateway FlowLog",
@@ -210,7 +210,7 @@ Required values to run command:
 	*/
 	deleteCmd := core.NewCommand(ctx, natgatewayFlowLogCmd, core.CommandBuilder{
 		Namespace: "natgateway",
-		Resource:  "rule",
+		Resource:  "flowlog",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a NAT Gateway FlowLog",
