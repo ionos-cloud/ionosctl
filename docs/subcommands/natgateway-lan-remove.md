@@ -1,58 +1,60 @@
 ---
-description: Start a Server
+description: Remove a NAT Gateway Lan
 ---
 
-# ServerStart
+# NatgatewayLanRemove
 
 ## Usage
 
 ```text
-ionosctl server start [flags]
+ionosctl natgateway lan remove [flags]
 ```
 
 ## Aliases
 
-For `server` command:
+For `natgateway` command:
 ```text
-[s svr]
+[nat ng]
 ```
 
-For `start` command:
+For `remove` command:
 ```text
-[on]
+[r]
 ```
 
 ## Description
 
-Use this command to start a Server from a Virtual Data Center. If the Server's public IP was deallocated then a new IP will be assigned.
+Use this command to remove a specified NAT Gateway Lan from a NAT Gateway.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 
 Required values to run command:
 
 * Data Center Id
-* Server Id
+* NAT Gateway Id
+* Lan Id
 
 ## Options
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+                               Available columns: [NatGatewayLanId GatewayIps] (default [NatGatewayLanId,GatewayIps])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for start
+  -h, --help                   help for remove
+  -i, --lan-id int             The unique LAN Id (required) (default 1)
+      --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-  -i, --server-id string       The unique Server Id (required)
-  -t, --timeout int            Timeout option for Request for Server start [seconds] (default 60)
-  -w, --wait-for-request       Wait for the Request for Server start to be executed
+  -t, --timeout int            Timeout option for Request for NAT Gateway Lan deletion [seconds] (default 60)
+  -w, --wait-for-request       Wait for the Request for NAT Gateway Lan deletion to be executed
 ```
 
 ## Examples
 
 ```text
-ionosctl server start --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl natgateway lan remove --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --lan-id LAN_ID
 ```
 

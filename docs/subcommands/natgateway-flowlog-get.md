@@ -1,25 +1,25 @@
 ---
-description: Get a Token from a Server
+description: Get a NAT Gateway FlowLog
 ---
 
-# ServerTokenGet
+# NatgatewayFlowlogGet
 
 ## Usage
 
 ```text
-ionosctl server token get [flags]
+ionosctl natgateway flowlog get [flags]
 ```
 
 ## Aliases
 
-For `server` command:
+For `natgateway` command:
 ```text
-[s svr]
+[nat ng]
 ```
 
-For `token` command:
+For `flowlog` command:
 ```text
-[t]
+[f]
 ```
 
 For `get` command:
@@ -29,31 +29,33 @@ For `get` command:
 
 ## Description
 
-Use this command to get the Server's jwToken.
+Use this command to get information about a specified NAT Gateway FlowLog from a NAT Gateway.
 
 Required values to run command:
 
 * Data Center Id
-* Server Id
+* NAT Gateway Id
+* NAT Gateway FlowLog Id
 
 ## Options
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+                               Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
+  -i, --flowlog-id string      The unique FlowLog Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for get
+      --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-  -i, --server-id string       The unique Server Id (required)
 ```
 
 ## Examples
 
 ```text
-ionosctl server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl natgateway flowlog get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID
 ```
 
