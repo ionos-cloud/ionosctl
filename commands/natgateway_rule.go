@@ -31,7 +31,7 @@ func natGatewayRule() *core.Command {
 		},
 	}
 	globalFlags := natgatewayRuleCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultNatGatewayCols,
+	globalFlags.StringSliceP(config.ArgCols, "", defaultNatGatewayRuleCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNatGatewayRuleCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(natgatewayRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = natgatewayRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -57,7 +57,7 @@ func natGatewayRule() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(config.ArgNatGatewayId, config.ArgIdShort, "", config.RequiredFlagNatGatewayId)
+	list.AddStringFlag(config.ArgNatGatewayId, "", "", config.RequiredFlagNatGatewayId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})

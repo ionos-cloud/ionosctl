@@ -58,10 +58,6 @@ Required values to run command:
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddIntFlag(config.ArgLanId, "", 1, config.RequiredFlagLanId)
-	_ = list.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
 	list.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols,
 		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultNatGatewayLanCols))
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
