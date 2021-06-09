@@ -267,9 +267,6 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
-	if err := utils.WaitForState(c, GetStateNatGateway, viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId))); err != nil {
-		return err
-	}
 	ng, _, err := c.NatGateways().GetFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),

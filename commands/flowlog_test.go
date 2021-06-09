@@ -37,15 +37,29 @@ var (
 			Properties: testFlowLog.FlowLog.Properties,
 		},
 	}
+	testFlowLogUpdated = resources.FlowLog{
+		FlowLog: ionoscloud.FlowLog{
+			Properties: &testFlowLogProperties.FlowLogProperties,
+		},
+	}
+	testFlowLogProperties = resources.FlowLogProperties{
+		FlowLogProperties: ionoscloud.FlowLogProperties{
+			Name:      &testFlowLogNewVar,
+			Action:    &testFlowLogNewVar,
+			Direction: &testFlowLogNewVar,
+			Bucket:    &testFlowLogNewVar,
+		},
+	}
 	testFlowLogs = resources.FlowLogs{
 		FlowLogs: ionoscloud.FlowLogs{
 			Id:    &testFlowLogVar,
 			Items: &[]ionoscloud.FlowLog{testFlowLog.FlowLog},
 		},
 	}
-	testFlowLogState = "AVAILABLE"
-	testFlowLogVar   = "test-flowlog"
-	testFlowLogErr   = errors.New("flowlog test error")
+	testFlowLogState  = "AVAILABLE"
+	testFlowLogVar    = "test-flowlog"
+	testFlowLogNewVar = "test-new-flowlog"
+	testFlowLogErr    = errors.New("flowlog test error")
 )
 
 func TestPreRunFlowLogCreate(t *testing.T) {
