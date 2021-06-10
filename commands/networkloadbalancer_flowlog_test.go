@@ -15,9 +15,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testNatGatewayFlowLogErr = errors.New("natgateway-rule test error")
+var testNetworkLoadBalancerFlowLogErr = errors.New("networkloadbalancer-rule test error")
 
-func TestPreRunNatGatewayFlowLogCreate(t *testing.T) {
+func TestPreRunNetworkLoadBalancerFlowLogCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -25,28 +25,28 @@ func TestPreRunNatGatewayFlowLogCreate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogVar)
-		err := PreRunNatGatewayFlowLogCreate(cfg)
+		err := PreRunNetworkLoadBalancerFlowLogCreate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunNatGatewayFlowLogCreateErr(t *testing.T) {
+func TestPreRunNetworkLoadBalancerFlowLogCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunNatGatewayFlowLogCreate(cfg)
+		err := PreRunNetworkLoadBalancerFlowLogCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestPreRunDcNatGatewayFlowLogIds(t *testing.T) {
+func TestPreRunDcNetworkLoadBalancerFlowLogIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -54,26 +54,26 @@ func TestPreRunDcNatGatewayFlowLogIds(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
-		err := PreRunDcNatGatewayFlowLogIds(cfg)
+		err := PreRunDcNetworkLoadBalancerFlowLogIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunDcNatGatewayFlowLogIdsErr(t *testing.T) {
+func TestPreRunDcNetworkLoadBalancerFlowLogIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunDcNatGatewayFlowLogIds(cfg)
+		err := PreRunDcNetworkLoadBalancerFlowLogIds(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogList(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -81,14 +81,14 @@ func TestRunNatGatewayFlowLogList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
-		rm.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, nil, nil)
-		err := RunNatGatewayFlowLogList(cfg)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
+		rm.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, nil, nil)
+		err := RunNetworkLoadBalancerFlowLogList(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogListErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogListErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -96,14 +96,14 @@ func TestRunNatGatewayFlowLogListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
-		rm.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, nil, testNatGatewayFlowLogErr)
-		err := RunNatGatewayFlowLogList(cfg)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
+		rm.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, nil, testNetworkLoadBalancerFlowLogErr)
+		err := RunNetworkLoadBalancerFlowLogList(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogGet(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -111,15 +111,15 @@ func TestRunNatGatewayFlowLogGet(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
-		rm.NatGateway.EXPECT().GetFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testFlowLog, nil, nil)
-		err := RunNatGatewayFlowLogGet(cfg)
+		rm.NetworkLoadBalancer.EXPECT().GetFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testFlowLog, nil, nil)
+		err := RunNetworkLoadBalancerFlowLogGet(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogGetErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogGetErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -127,15 +127,15 @@ func TestRunNatGatewayFlowLogGetErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
-		rm.NatGateway.EXPECT().GetFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testFlowLog, nil, testNatGatewayFlowLogErr)
-		err := RunNatGatewayFlowLogGet(cfg)
+		rm.NetworkLoadBalancer.EXPECT().GetFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testFlowLog, nil, testNetworkLoadBalancerFlowLogErr)
+		err := RunNetworkLoadBalancerFlowLogGet(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogCreate(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -143,18 +143,18 @@ func TestRunNatGatewayFlowLogCreate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAction), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogVar)
-		rm.NatGateway.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testFlowLog, nil, nil)
-		err := RunNatGatewayFlowLogCreate(cfg)
+		rm.NetworkLoadBalancer.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testFlowLog, nil, nil)
+		err := RunNetworkLoadBalancerFlowLogCreate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogCreateResponseErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogCreateResponseErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -162,18 +162,18 @@ func TestRunNatGatewayFlowLogCreateResponseErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAction), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogVar)
-		rm.NatGateway.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testFlowLog, &testResponse, nil)
-		err := RunNatGatewayFlowLogCreate(cfg)
+		rm.NetworkLoadBalancer.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testFlowLog, &testResponse, nil)
+		err := RunNetworkLoadBalancerFlowLogCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogCreateErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -181,18 +181,18 @@ func TestRunNatGatewayFlowLogCreateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAction), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogVar)
-		rm.NatGateway.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testFlowLog, nil, testNatGatewayFlowLogErr)
-		err := RunNatGatewayFlowLogCreate(cfg)
+		rm.NetworkLoadBalancer.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testFlowLog, nil, testNetworkLoadBalancerFlowLogErr)
+		err := RunNetworkLoadBalancerFlowLogCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogCreateWaitErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogCreateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -201,18 +201,18 @@ func TestRunNatGatewayFlowLogCreateWaitErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAction), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogVar)
-		rm.NatGateway.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testFlowLog, nil, nil)
-		err := RunNatGatewayFlowLogCreate(cfg)
+		rm.NetworkLoadBalancer.EXPECT().CreateFlowLog(testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testFlowLog, nil, nil)
+		err := RunNetworkLoadBalancerFlowLogCreate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogUpdate(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -220,19 +220,19 @@ func TestRunNatGatewayFlowLogUpdate(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAction), testFlowLogNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogNewVar)
-		rm.NatGateway.EXPECT().UpdateFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar, &testFlowLogProperties).Return(&testFlowLogUpdated, nil, nil)
-		err := RunNatGatewayFlowLogUpdate(cfg)
+		rm.NetworkLoadBalancer.EXPECT().UpdateFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar, &testFlowLogProperties).Return(&testFlowLogUpdated, nil, nil)
+		err := RunNetworkLoadBalancerFlowLogUpdate(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogUpdateErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogUpdateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -240,19 +240,19 @@ func TestRunNatGatewayFlowLogUpdateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAction), testFlowLogNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogNewVar)
-		rm.NatGateway.EXPECT().UpdateFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar, &testFlowLogProperties).Return(&testFlowLogUpdated, nil, testNatGatewayFlowLogErr)
-		err := RunNatGatewayFlowLogUpdate(cfg)
+		rm.NetworkLoadBalancer.EXPECT().UpdateFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar, &testFlowLogProperties).Return(&testFlowLogUpdated, nil, testNetworkLoadBalancerFlowLogErr)
+		err := RunNetworkLoadBalancerFlowLogUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogUpdateWaitErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogUpdateWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -261,19 +261,19 @@ func TestRunNatGatewayFlowLogUpdateWaitErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAction), testFlowLogNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogNewVar)
-		rm.NatGateway.EXPECT().UpdateFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar, &testFlowLogProperties).Return(&testFlowLogUpdated, nil, nil)
-		err := RunNatGatewayFlowLogUpdate(cfg)
+		rm.NetworkLoadBalancer.EXPECT().UpdateFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar, &testFlowLogProperties).Return(&testFlowLogUpdated, nil, nil)
+		err := RunNetworkLoadBalancerFlowLogUpdate(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogDelete(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogDelete(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -282,15 +282,15 @@ func TestRunNatGatewayFlowLogDelete(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
-		rm.NatGateway.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(nil, nil)
-		err := RunNatGatewayFlowLogDelete(cfg)
+		rm.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(nil, nil)
+		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogDeleteErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -299,15 +299,15 @@ func TestRunNatGatewayFlowLogDeleteErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
-		rm.NatGateway.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(nil, testNatGatewayFlowLogErr)
-		err := RunNatGatewayFlowLogDelete(cfg)
+		rm.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(nil, testNetworkLoadBalancerFlowLogErr)
+		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogDeleteWaitErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogDeleteWaitErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -316,16 +316,16 @@ func TestRunNatGatewayFlowLogDeleteWaitErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.NatGateway.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(nil, nil)
-		err := RunNatGatewayFlowLogDelete(cfg)
+		rm.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(nil, nil)
+		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogDeleteAskForConfirm(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogDeleteAskForConfirm(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -334,16 +334,16 @@ func TestRunNatGatewayFlowLogDeleteAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
-		rm.NatGateway.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(nil, nil)
-		err := RunNatGatewayFlowLogDelete(cfg)
+		rm.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(nil, nil)
+		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunNatGatewayFlowLogDeleteAskForConfirmErr(t *testing.T) {
+func TestRunNetworkLoadBalancerFlowLogDeleteAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
@@ -352,21 +352,21 @@ func TestRunNatGatewayFlowLogDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFlowLogId), testFlowLogVar)
 		cfg.Stdin = os.Stdin
-		err := RunNatGatewayFlowLogDelete(cfg)
+		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
 		assert.Error(t, err)
 	})
 }
 
-func TestGetNatGatewayFlowLogsIds(t *testing.T) {
+func TestGetNetworkLoadBalancerFlowLogsIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
-	getNatGatewayFlowLogsIds(w, testFlowLogVar, testFlowLogVar)
+	getNetworkLoadBalancerFlowLogsIds(w, testFlowLogVar, testFlowLogVar)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)
