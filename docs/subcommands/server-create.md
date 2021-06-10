@@ -52,7 +52,7 @@ Required values to run command:
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
   -h, --help                       help for create
-  -n, --name string                Name of the Server
+  -n, --name string                Name of the Server (default "Unnamed Server")
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)

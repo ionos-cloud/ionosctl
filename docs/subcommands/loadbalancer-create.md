@@ -43,7 +43,7 @@ Required values to run command:
       --dhcp                   Indicates if the Load Balancer will reserve an IP using DHCP (default true)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for create
-  -n, --name string            Name of the Load Balancer
+  -n, --name string            Name of the Load Balancer (default "Load Balancer")
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for Load Balancer creation [seconds] (default 60)

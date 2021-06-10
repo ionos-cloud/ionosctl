@@ -116,7 +116,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Server")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Server", "Name of the Server")
 	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB "+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -363,6 +363,9 @@ func RunServerCreate(c *core.CommandConfig) error {
 	proper, err := getNewServerInfo(c)
 	if err != nil {
 		return err
+	}
+	if !proper.HasName() {
+		proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
 	// If CPU Family has not been set, take the default value
 	if !proper.ServerProperties.HasCpuFamily() {
