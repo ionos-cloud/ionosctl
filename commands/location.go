@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
@@ -30,8 +30,7 @@ func location() *core.Command {
 		},
 	}
 	globalFlags := locationCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultLocationCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allLocationCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultLocationCols, utils.ColsMessage(allLocationCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(locationCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = locationCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allLocationCols, cobra.ShellCompDirectiveNoFileComp

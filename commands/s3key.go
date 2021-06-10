@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -31,8 +30,7 @@ func userS3key() *core.Command {
 		},
 	}
 	globalFlags := s3keyCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultS3KeyCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultS3KeyCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultS3KeyCols, utils.ColsMessage(defaultS3KeyCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(s3keyCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = s3keyCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultS3KeyCols, cobra.ShellCompDirectiveNoFileComp

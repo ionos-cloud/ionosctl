@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -42,8 +41,7 @@ func nic() *core.Command {
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgCols, "", defaultNicCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultNicCols, utils.ColsMessage(allNicCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
@@ -360,7 +358,7 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicAttach,
 		InitClient: true,
 	})
-	attachNic.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
+	attachNic.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, utils.ColsMessage(allNicCols))
 	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -400,7 +398,7 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicList,
 		InitClient: true,
 	})
-	listNics.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
+	listNics.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, utils.ColsMessage(allNicCols))
 	_ = listNics.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -428,7 +426,7 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicGet,
 		InitClient: true,
 	})
-	getNicCmd.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
+	getNicCmd.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, utils.ColsMessage(allNicCols))
 	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -471,7 +469,7 @@ Required values to run command:
 		CmdRun:     RunLoadBalancerNicDetach,
 		InitClient: true,
 	})
-	detachNic.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allNicCols))
+	detachNic.AddStringSliceFlag(config.ArgCols, "", defaultNicCols, utils.ColsMessage(allNicCols))
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})

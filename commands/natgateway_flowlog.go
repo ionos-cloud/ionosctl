@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 
@@ -29,8 +28,7 @@ func natGatewayFlowLog() *core.Command {
 		},
 	}
 	globalFlags := natgatewayFlowLogCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultNatGatewayCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultFlowLogCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultNatGatewayCols, utils.ColsMessage(defaultFlowLogCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(natgatewayFlowLogCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = natgatewayFlowLogCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
@@ -60,7 +58,7 @@ func natGatewayFlowLog() *core.Command {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultFlowLogCols))
+		utils.ColsMessage(defaultFlowLogCols))
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -94,7 +92,7 @@ func natGatewayFlowLog() *core.Command {
 			viper.GetString(core.GetFlagName(get.NS, config.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultFlowLogCols))
+		utils.ColsMessage(defaultFlowLogCols))
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -146,7 +144,7 @@ Required values to run command:
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway FlowLog creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway FlowLog creation [seconds]")
 	create.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultFlowLogCols))
+		utils.ColsMessage(defaultFlowLogCols))
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -200,7 +198,7 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway FlowLog update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway FlowLog update [seconds]")
 	update.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultFlowLogCols))
+		utils.ColsMessage(defaultFlowLogCols))
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
 	})

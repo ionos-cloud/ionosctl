@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -30,8 +30,7 @@ func image() *core.Command {
 		},
 	}
 	globalFlags := imageCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultImageCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", allImageCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultImageCols, utils.ColsMessage(allImageCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(imageCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = imageCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allImageCols, cobra.ShellCompDirectiveNoFileComp

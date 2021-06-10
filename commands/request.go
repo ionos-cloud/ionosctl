@@ -12,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
@@ -30,8 +31,7 @@ func request() *core.Command {
 		},
 	}
 	globalFlags := reqCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultRequestCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultRequestCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultRequestCols, utils.ColsMessage(defaultRequestCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(reqCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = reqCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultRequestCols, cobra.ShellCompDirectiveNoFileComp
