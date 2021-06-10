@@ -327,4 +327,13 @@ ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGAT
 	createNatGatewayFlowLogExample = `ionosctl natgateway flowlog create --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --name NAME --ip IP_1 --source-subnet SOURCE_SUBNET --target-subnet TARGET_SUBNET`
 	updateNatGatewayFlowLogExample = `ionosctl natgateway flowlog update --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID --name NAME`
 	deleteNatGatewayFlowLogExample = `ionosctl natgateway flowlog delete --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID --rule-id RULE_ID`
+
+	/*
+		Network Load Balancer Example
+	*/
+	listNetworkLoadBalancerExample   = `ionosctl networkloadbalancer list --datacenter-id DATACENTER_ID`
+	getNetworkLoadBalancerExample    = `ionosctl networkloadbalancer get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID`
+	createNetworkLoadBalancerExample = `ionosctl networkloadbalancer create --datacenter-id DATACENTER_ID`
+	updateNetworkLoadBalancerExample = `ionosctl networkloadbalancer update --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID --name NAME`
+	deleteNetworkLoadBalancerExample = `ionosctl networkloadbalancer delete --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID`
 )

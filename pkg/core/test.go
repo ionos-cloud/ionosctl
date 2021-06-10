@@ -121,7 +121,7 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
 	c.Volumes = func() resources.VolumesService { return tm.Volume }
 	c.Lans = func() resources.LansService { return tm.Lan }
 	c.NatGateways = func() resources.NatGatewaysService { return tm.NatGateway }
-	c.NetworkLoadBalancer = func() resources.NetworkLoadBalancersService { return tm.NetworkLoadBalancer }
+	c.NetworkLoadBalancers = func() resources.NetworkLoadBalancersService { return tm.NetworkLoadBalancer }
 	c.Nics = func() resources.NicsService { return tm.Nic }
 	c.Loadbalancers = func() resources.LoadbalancersService { return tm.Loadbalancer }
 	c.IpBlocks = func() resources.IpBlocksService { return tm.IpBlocks }
