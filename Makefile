@@ -4,8 +4,8 @@ export CGO_ENABLED = 0
 export GO111MODULE := on
 
 GOFILES_NOVENDOR=$(shell find . -type f -name '*.go' | grep -v vendor)
-GOOS=$(shell go env GOOS)
-GOARCH=$(shell go env GOARCH)
+GOOS=${GOOS:-$(shell go env GOOS)}
+GOARCH=${GOARCH:-$(shell go env GOARCH)}
 
 OUT_D=$${OUT_D:-$(shell pwd)/builds}
 DOCS_OUT=$${DOCS_OUT:-$(shell pwd)/docs/subcommands/}

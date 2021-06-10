@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -31,8 +30,7 @@ func natgateway() *core.Command {
 		},
 	}
 	globalFlags := natgatewayCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultNatGatewayCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultNatGatewayCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultNatGatewayCols, utils.ColsMessage(defaultNatGatewayCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(natgatewayCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = natgatewayCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayCols, cobra.ShellCompDirectiveNoFileComp

@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -31,8 +30,7 @@ func networkloadbalancer() *core.Command {
 		},
 	}
 	globalFlags := networkloadbalancerCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultNetworkLoadBalancerCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultNetworkLoadBalancerCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultNetworkLoadBalancerCols, utils.ColsMessage(defaultNetworkLoadBalancerCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(networkloadbalancerCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = networkloadbalancerCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNetworkLoadBalancerCols, cobra.ShellCompDirectiveNoFileComp

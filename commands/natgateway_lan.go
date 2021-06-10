@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -58,8 +57,7 @@ Required values to run command:
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultNatGatewayLanCols))
+	list.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols, utils.ColsMessage(defaultNatGatewayLanCols))
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -104,8 +102,7 @@ Required values to run command:
 	add.AddStringSliceFlag(config.ArgIps, "", []string{""}, "Collection of Gateway IPs. If not set, it will automatically reserve public IPs")
 	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Lan addition to be executed")
 	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Lan addition [seconds]")
-	add.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultNatGatewayLanCols))
+	add.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols, utils.ColsMessage(defaultNatGatewayLanCols))
 	_ = add.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -147,8 +144,7 @@ Required values to run command:
 	})
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Lan deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Lan deletion [seconds]")
-	removeCmd.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultNatGatewayLanCols))
+	removeCmd.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols, utils.ColsMessage(defaultNatGatewayLanCols))
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})

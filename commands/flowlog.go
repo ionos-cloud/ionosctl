@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -51,8 +50,7 @@ func flowlog() *core.Command {
 			viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringSliceP(config.ArgCols, "", defaultFlowLogCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultFlowLogCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultFlowLogCols, utils.ColsMessage(defaultFlowLogCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = flowLogCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
