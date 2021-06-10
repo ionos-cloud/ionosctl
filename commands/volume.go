@@ -105,7 +105,7 @@ Required values to run command:
 		CmdRun:     RunVolumeCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Volume")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Storage", "Name of the Volume")
 	create.AddStringFlag(config.ArgSize, "", strconv.Itoa(config.DefaultVolumeSize), "The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit "+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
