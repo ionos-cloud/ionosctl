@@ -16,9 +16,7 @@ import (
 )
 
 var (
-	testNatGatewayFlowLogIntVar    = int32(10000)
-	testNatGatewayFlowLogNewIntVar = int32(20000)
-	testNatGatewayFlowLogErr       = errors.New("natgateway-rule test error")
+	testNatGatewayFlowLogErr = errors.New("natgateway-rule test error")
 )
 
 func TestPreRunNatGatewayFlowLogCreate(t *testing.T) {
@@ -31,7 +29,6 @@ func TestPreRunNatGatewayFlowLogCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNatGatewayId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAction), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogVar)
 		err := PreRunNatGatewayFlowLogCreate(cfg)

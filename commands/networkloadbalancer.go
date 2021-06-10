@@ -188,6 +188,8 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Network Load Balancer deletion [seconds]")
 
+	networkloadbalancerCmd.AddCommand(networkloadbalancerFlowLog())
+
 	return networkloadbalancerCmd
 }
 

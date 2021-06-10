@@ -336,4 +336,13 @@ ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGAT
 	createNetworkLoadBalancerExample = `ionosctl networkloadbalancer create --datacenter-id DATACENTER_ID`
 	updateNetworkLoadBalancerExample = `ionosctl networkloadbalancer update --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID --name NAME`
 	deleteNetworkLoadBalancerExample = `ionosctl networkloadbalancer delete --datacenter-id DATACENTER_ID -i NETWORKLOADBALANCER_ID`
+
+	/*
+		Network Load Balancer FlowLog Example
+	*/
+	listNetworkLoadBalancerFlowLogExample   = `ionosctl networkloadbalancer flowlog list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID`
+	getNetworkLoadBalancerFlowLogExample    = `ionosctl networkloadbalancer flowlog get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID`
+	createNetworkLoadBalancerFlowLogExample = `ionosctl networkloadbalancer flowlog create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --action ACTION --name NAME --direction DIRECTION --bucket-name BUCKET_NAME`
+	updateNetworkLoadBalancerFlowLogExample = `ionosctl networkloadbalancer flowlog update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID --name NAME`
+	deleteNetworkLoadBalancerFlowLogExample = `ionosctl networkloadbalancer flowlog delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FLOWLOG_ID`
 )

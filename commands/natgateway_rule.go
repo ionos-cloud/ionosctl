@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func natGatewayRule() *core.Command {
+func natgatewayRule() *core.Command {
 	ctx := context.TODO()
 	natgatewayRuleCmd := &core.Command{
 		Command: &cobra.Command{

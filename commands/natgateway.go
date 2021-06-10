@@ -183,9 +183,9 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway deletion [seconds]")
 
-	natgatewayCmd.AddCommand(natGatewayRule())
+	natgatewayCmd.AddCommand(natgatewayRule())
 	natgatewayCmd.AddCommand(natgatewayLan())
-	natgatewayCmd.AddCommand(natGatewayFlowLog())
+	natgatewayCmd.AddCommand(natgatewayFlowLog())
 
 	return natgatewayCmd
 }
