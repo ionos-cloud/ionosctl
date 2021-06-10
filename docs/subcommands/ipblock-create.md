@@ -42,7 +42,7 @@ Required values to run command:
   -f, --force              Force command to execute without user input
   -h, --help               help for create
   -l, --location string    Location of the IpBlock (required)
-  -n, --name string        Name of the IpBlock
+  -n, --name string        Name of the IpBlock. If not set, it will automatically be set
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
       --size int           Size of the IpBlock (default 2)

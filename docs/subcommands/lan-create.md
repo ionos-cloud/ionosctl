@@ -44,7 +44,7 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for create
-  -n, --name string            The name of the LAN
+  -n, --name string            The name of the LAN (default "Unnamed LAN")
   -o, --output string          Desired output format [text|json] (default "text")
       --pcc-id string          The unique Id of the Private Cross-Connect the LAN will connect to
       --public                 Indicates if the LAN faces the public Internet (true) or not (false)

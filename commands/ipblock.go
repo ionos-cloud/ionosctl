@@ -92,7 +92,7 @@ Required values to run command:
 		CmdRun:     RunIpBlockCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the IpBlock")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the IpBlock. If not set, it will automatically be set")
 	create.AddStringFlag(config.ArgLocation, config.ArgLocationShort, "", "Location of the IpBlock "+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
