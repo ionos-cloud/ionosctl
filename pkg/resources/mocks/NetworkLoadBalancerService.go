@@ -240,7 +240,7 @@ func (mr *MockNetworkLoadBalancersServiceMockRecorder) Update(datacenterId, netw
 }
 
 // UpdateFlowLog mocks base method.
-func (m *MockNetworkLoadBalancersService) UpdateFlowLog(datacenterId, networkLoadBalancerId, flowLogId string, input resources.FlowLogProperties) (*resources.FlowLog, *resources.Response, error) {
+func (m *MockNetworkLoadBalancersService) UpdateFlowLog(datacenterId, networkLoadBalancerId, flowLogId string, input *resources.FlowLogProperties) (*resources.FlowLog, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateFlowLog", datacenterId, networkLoadBalancerId, flowLogId, input)
 	ret0, _ := ret[0].(*resources.FlowLog)

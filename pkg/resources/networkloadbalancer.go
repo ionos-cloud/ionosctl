@@ -49,7 +49,7 @@ type NetworkLoadBalancersService interface {
 	ListFlowLogs(datacenterId, networkLoadBalancerId string) (FlowLogs, *Response, error)
 	GetFlowLog(datacenterId, networkLoadBalancerId, flowLogId string) (*FlowLog, *Response, error)
 	CreateFlowLog(datacenterId, networkLoadBalancerId string, input FlowLog) (*FlowLog, *Response, error)
-	UpdateFlowLog(datacenterId, networkLoadBalancerId, flowLogId string, input FlowLogProperties) (*FlowLog, *Response, error)
+	UpdateFlowLog(datacenterId, networkLoadBalancerId, flowLogId string, input *FlowLogProperties) (*FlowLog, *Response, error)
 	DeleteFlowLog(datacenterId, networkLoadBalancerId, flowLogId string) (*Response, error)
 }
 
@@ -145,7 +145,7 @@ func (svc *networkLoadBalancersService) CreateFlowLog(datacenterId, networkLoadB
 	return &FlowLog{flowLog}, &Response{*resp}, err
 }
 
-func (svc *networkLoadBalancersService) UpdateFlowLog(datacenterId, networkLoadBalancerId, flowLogId string, input FlowLogProperties) (*FlowLog, *Response, error) {
+func (svc *networkLoadBalancersService) UpdateFlowLog(datacenterId, networkLoadBalancerId, flowLogId string, input *FlowLogProperties) (*FlowLog, *Response, error) {
 	req := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersFlowlogsPatch(svc.context, datacenterId, networkLoadBalancerId, flowLogId).NetworkLoadBalancerFlowLogProperties(input.FlowLogProperties)
 	flowLog, resp, err := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersFlowlogsPatchExecute(req)
 	return &FlowLog{flowLog}, &Response{*resp}, err
