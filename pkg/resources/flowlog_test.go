@@ -45,6 +45,18 @@ func TestNewFlowLogService(t *testing.T) {
 		)
 		assert.Error(t, err)
 	})
+	t.Run("update_flowlog_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		flowlogSvc := NewFlowLogService(svc.Get(), ctx)
+		_, _, err := flowlogSvc.Update(
+			testFlowLogResourceVar,
+			testFlowLogResourceVar,
+			testFlowLogResourceVar,
+			testFlowLogResourceVar,
+			FlowLogPut{},
+		)
+		assert.Error(t, err)
+	})
 	t.Run("delete_flowlog_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		flowlogSvc := NewFlowLogService(svc.Get(), ctx)

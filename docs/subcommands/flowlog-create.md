@@ -28,7 +28,7 @@ Use this command to create a new FlowLog to the specified NIC.
 
 You can wait for the Request to be executed using `--wait-for-request` option.
 
-NOTE: Please disable the Firewall Active using before deleting the existing Bucket, so that FlowLogs know to not upload to a non-existing Bucket. To disable the Firewall, you can use `ionosctl nic update` command with `--firewall-active=false` option set.
+NOTE: Please disable the FlowLog before deleting the existing Bucket.
 
 Required values to run command:
 
@@ -37,15 +37,14 @@ Required values to run command:
 * Nic Id 
 * Name
 * Direction
-* Action
 * Target S3 Bucket Name
 
 ## Options
 
 ```text
-  -a, --action string          Specifies the traffic Action pattern (required)
+  -a, --action string          Specifies the traffic Action pattern (default "ALL")
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
-      --bucket-name string     S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
+  -b, --bucket-name string     S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

@@ -76,7 +76,6 @@ func TestPreRunFlowLogCreate(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFlowLogVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testFlowLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAction), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgBucketName), testFlowLogVar)
 		err := PreRunFlowLogCreate(cfg)

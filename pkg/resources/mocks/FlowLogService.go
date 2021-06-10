@@ -96,3 +96,19 @@ func (mr *MockFlowLogsServiceMockRecorder) List(datacenterId, serverId, nicId in
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockFlowLogsService)(nil).List), datacenterId, serverId, nicId)
 }
+
+// Update mocks base method.
+func (m *MockFlowLogsService) Update(datacenterId, serverId, nicId, flowlogId string, input resources.FlowLogPut) (*resources.FlowLog, *resources.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", datacenterId, serverId, nicId, flowlogId, input)
+	ret0, _ := ret[0].(*resources.FlowLog)
+	ret1, _ := ret[1].(*resources.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockFlowLogsServiceMockRecorder) Update(datacenterId, serverId, nicId, flowlogId, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockFlowLogsService)(nil).Update), datacenterId, serverId, nicId, flowlogId, input)
+}
