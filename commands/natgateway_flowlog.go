@@ -316,7 +316,7 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway rule"); err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway flowlog"); err != nil {
 		return err
 	}
 	resp, err := c.NatGateways().DeleteFlowLog(

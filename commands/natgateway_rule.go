@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -110,8 +111,7 @@ Required values to run command:
 * NAT Gateway Id
 * Name
 * Public IP
-* Source Subnet
-* Target Subnet`,
+* Source Subnet`,
 		Example:    createNatGatewayRuleExample,
 		PreCmdRun:  PreRunNatGatewayRuleCreate,
 		CmdRun:     RunNatGatewayRuleCreate,
@@ -126,13 +126,13 @@ Required values to run command:
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway Rule "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgProtocol, config.ArgProtocolShort, string(ionoscloud.ALL), "Protocol of the NAT Gateway Rule "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgProtocol, config.ArgProtocolShort, string(ionoscloud.ALL), "Protocol of the NAT Gateway Rule. If protocol is 'ICMP' then targetPortRange start and end cannot be set "+config.RequiredFlag)
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{string(ionoscloud.TCP), string(ionoscloud.UDP), string(ionoscloud.ICMP), string(ionoscloud.ALL)}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgIp, "", "", "Public IP address of the NAT Gateway Rule "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgSourceSubnet, "", "", "Source subnet of the NAT Gateway Rule "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgTargetSubnet, "", "", "Target subnet or destination subnet of the NAT Gateway Rule "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgTargetSubnet, "", "", "Target subnet or destination subnet of the NAT Gateway Rule")
 	create.AddIntFlag(config.ArgPortRangeStart, "", 1, "Target port range start associated with the NAT Gateway Rule")
 	create.AddIntFlag(config.ArgPortRangeEnd, "", 1, "Target port range end associated with the NAT Gateway Rule")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Rule creation to be executed")
@@ -175,10 +175,11 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(update.NS, config.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway Rule")
-	update.AddStringFlag(config.ArgProtocol, config.ArgProtocolShort, "", "Protocol of the NAT Gateway Rule")
+	update.AddStringFlag(config.ArgProtocol, config.ArgProtocolShort, "", "Protocol of the NAT Gateway Rule. If protocol is 'ICMP' then targetPortRange start and end cannot be set")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{string(ionoscloud.TCP), string(ionoscloud.UDP), string(ionoscloud.ICMP), string(ionoscloud.ALL)}, cobra.ShellCompDirectiveNoFileComp
 	})
+	update.AddStringFlag(config.ArgIp, "", "", "Public IP address of the NAT Gateway Rule")
 	update.AddStringFlag(config.ArgSourceSubnet, "", "", "Source subnet of the NAT Gateway Rule")
 	update.AddStringFlag(config.ArgTargetSubnet, "", "", "Target subnet or destination subnet of the NAT Gateway Rule")
 	update.AddIntFlag(config.ArgPortRangeStart, "", 1, "Target port range start associated with the NAT Gateway Rule")
@@ -229,7 +230,7 @@ Required values to run command:
 }
 
 func PreRunNatGatewayRuleCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgName, config.ArgIp, config.ArgSourceSubnet, config.ArgTargetSubnet)
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgName, config.ArgIp, config.ArgSourceSubnet)
 }
 
 func PreRunDcNatGatewayRuleIds(c *core.PreCommandConfig) error {
@@ -326,7 +327,8 @@ func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRulePr
 		input.SetPublicIp(viper.GetString(core.GetFlagName(c.NS, config.ArgIp)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgProtocol)) {
-		input.SetProtocol(ionoscloud.NatGatewayRuleProtocol(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol))))
+		protocol := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol)))
+		input.SetProtocol(ionoscloud.NatGatewayRuleProtocol(protocol))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSourceSubnet)) {
 		input.SetSourceSubnet(viper.GetString(core.GetFlagName(c.NS, config.ArgSourceSubnet)))

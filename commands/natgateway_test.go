@@ -63,9 +63,8 @@ func TestPreRunDcIdsNatGatewayProperties(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testNatGatewayVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testNatGatewayVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgIps), []string{testNatGatewayVar})
-		err := PreRunDcIdsNatGatewayProperties(cfg)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIps), testNatGatewayVar)
+		err := PreRunDcIdsNatGatewayIps(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -77,7 +76,7 @@ func TestPreRunDcIdsNatGatewayPropertiesErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunDcIdsNatGatewayProperties(cfg)
+		err := PreRunDcIdsNatGatewayIps(cfg)
 		assert.Error(t, err)
 	})
 }

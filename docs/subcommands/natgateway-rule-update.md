@@ -49,12 +49,13 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for update
+      --ip string              Public IP address of the NAT Gateway Rule
   -n, --name string            Name of the NAT Gateway Rule
       --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
       --port-range-end int     Target port range end associated with the NAT Gateway Rule (default 1)
       --port-range-start int   Target port range start associated with the NAT Gateway Rule (default 1)
-  -p, --protocol string        Protocol of the NAT Gateway Rule
+  -p, --protocol string        Protocol of the NAT Gateway Rule. If protocol is 'ICMP' then targetPortRange start and end cannot be set
   -q, --quiet                  Quiet output
   -i, --rule-id string         The unique Rule Id (required)
       --source-subnet string   Source subnet of the NAT Gateway Rule

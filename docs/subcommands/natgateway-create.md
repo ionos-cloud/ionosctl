@@ -31,7 +31,6 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 Required values to run command:
 
 * Data Center Id
-* Name
 * IPs
 
 ## Options
@@ -45,7 +44,7 @@ Required values to run command:
   -f, --force                  Force command to execute without user input
   -h, --help                   help for create
       --ips strings            Collection of public reserved IP addresses of the NAT Gateway (required)
-  -n, --name string            Name of the NAT Gateway (required)
+  -n, --name string            Name of the NAT Gateway (default "NAT Gateway")
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for NAT Gateway creation [seconds] (default 60)

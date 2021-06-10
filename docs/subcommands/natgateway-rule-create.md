@@ -40,7 +40,6 @@ Required values to run command:
 * Name
 * Public IP
 * Source Subnet
-* Target Subnet
 
 ## Options
 
@@ -58,10 +57,10 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
       --port-range-end int     Target port range end associated with the NAT Gateway Rule (default 1)
       --port-range-start int   Target port range start associated with the NAT Gateway Rule (default 1)
-  -p, --protocol string        Protocol of the NAT Gateway Rule (required) (default "ALL")
+  -p, --protocol string        Protocol of the NAT Gateway Rule. If protocol is 'ICMP' then targetPortRange start and end cannot be set (required) (default "ALL")
   -q, --quiet                  Quiet output
       --source-subnet string   Source subnet of the NAT Gateway Rule (required)
-      --target-subnet string   Target subnet or destination subnet of the NAT Gateway Rule (required)
+      --target-subnet string   Target subnet or destination subnet of the NAT Gateway Rule
   -t, --timeout int            Timeout option for Request for NAT Gateway Rule creation [seconds] (default 60)
   -w, --wait-for-request       Wait for the Request for NAT Gateway Rule creation to be executed
 ```

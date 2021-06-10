@@ -86,7 +86,6 @@ func TestPreRunNatGatewayRuleCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSourceSubnet), testNatGatewayRuleVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgTargetSubnet), testNatGatewayRuleVar)
 		err := PreRunNatGatewayRuleCreate(cfg)
 		assert.NoError(t, err)
 	})

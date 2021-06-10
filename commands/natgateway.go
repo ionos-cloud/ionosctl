@@ -100,10 +100,9 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id
-* Name
 * IPs`,
 		Example:    createNatGatewayExample,
-		PreCmdRun:  PreRunDcIdsNatGatewayProperties,
+		PreCmdRun:  PreRunDcIdsNatGatewayIps,
 		CmdRun:     RunNatGatewayCreate,
 		InitClient: true,
 	})
@@ -111,7 +110,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "NAT Gateway", "Name of the NAT Gateway")
 	create.AddStringSliceFlag(config.ArgIps, "", []string{""}, "Collection of public reserved IP addresses of the NAT Gateway "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway creation [seconds]")
@@ -191,8 +190,8 @@ Required values to run command:
 	return natgatewayCmd
 }
 
-func PreRunDcIdsNatGatewayProperties(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgName, config.ArgIps)
+func PreRunDcIdsNatGatewayIps(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgIps)
 }
 
 func PreRunDcNatGatewayIds(c *core.PreCommandConfig) error {
@@ -223,6 +222,9 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 
 func RunNatGatewayCreate(c *core.CommandConfig) error {
 	proper := getNewNatGatewayInfo(c)
+	if !proper.HasName() {
+		proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	}
 	ng, resp, err := c.NatGateways().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		resources.NatGateway{
