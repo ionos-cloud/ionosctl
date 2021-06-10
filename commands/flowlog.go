@@ -110,7 +110,7 @@ func flowlog() *core.Command {
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
-NOTE: Please disable the Firewall Active using before deleting the existing Bucket, so that FlowLogs know to not upload to a non-existing Bucket. To disable the Firewall, you can use ` + "`" + `ionosctl nic update` + "`" + ` command with ` + "`" + `--firewall-active=false` + "`" + ` option set.
+NOTE: Please disable the FlowLog before deleting the existing Bucket.
 
 Required values to run command:
 
@@ -119,7 +119,6 @@ Required values to run command:
 * Nic Id 
 * Name
 * Direction
-* Action
 * Target S3 Bucket Name`,
 		Example:    createFlowLogExample,
 		PreCmdRun:  PreRunFlowLogCreate,
@@ -127,7 +126,7 @@ Required values to run command:
 		InitClient: true,
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the FlowLog "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgAction, config.ArgActionShort, "", "Specifies the traffic Action pattern "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgAction, config.ArgActionShort, "ALL", "Specifies the traffic Action pattern")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -135,7 +134,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgBucketName, "", "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgBucketName, config.ArgBucketNameShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for FlowLog creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for FlowLog creation [seconds]")
 
@@ -181,7 +180,7 @@ func PreRunFlowLogCreate(c *core.PreCommandConfig) error {
 	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)
 	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgName, config.ArgAction, config.ArgDirection, config.ArgBucketName); err != nil {
+	if err := core.CheckRequiredFlags(c.NS, config.ArgName, config.ArgDirection, config.ArgBucketName); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if result != nil {
@@ -231,6 +230,9 @@ func RunFlowLogGet(c *core.CommandConfig) error {
 
 func RunFlowLogCreate(c *core.CommandConfig) error {
 	properties := getFlowLogPropertiesSet(c)
+	if !properties.HasAction() {
+		properties.SetAction(viper.GetString(core.GetFlagName(c.NS, config.ArgAction)))
+	}
 	input := resources.FlowLog{
 		FlowLog: ionoscloud.FlowLog{
 			Properties: &properties.FlowLogProperties,
