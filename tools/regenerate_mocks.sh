@@ -12,6 +12,7 @@ mockgen -source lan.go >mocks/LanService.go
 mockgen -source loadbalancer.go >mocks/LoadBalancerService.go
 mockgen -source location.go >mocks/LocationService.go
 mockgen -source natgateway.go >mocks/NatGatewayService.go
+mockgen -source networkloadbalancer.go >mocks/NetworkLoadBalancerService.go
 mockgen -source nic.go >mocks/NicService.go
 mockgen -source request.go >mocks/RequestService.go
 mockgen -source server.go >mocks/ServerService.go

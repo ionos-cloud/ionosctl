@@ -35,30 +35,31 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocks)
 
 type ResourcesMocks struct {
-	Client       *mocks.MockClientService
-	Location     *mocks.MockLocationsService
-	Datacenter   *mocks.MockDatacentersService
-	Server       *mocks.MockServersService
-	Volume       *mocks.MockVolumesService
-	Lan          *mocks.MockLansService
-	NatGateway   *mocks.MockNatGatewaysService
-	Nic          *mocks.MockNicsService
-	Loadbalancer *mocks.MockLoadbalancersService
-	IpBlocks     *mocks.MockIpBlocksService
-	Request      *mocks.MockRequestsService
-	Image        *mocks.MockImagesService
-	Snapshot     *mocks.MockSnapshotsService
-	FirewallRule *mocks.MockFirewallRulesService
-	FlowLog      *mocks.MockFlowLogsService
-	Label        *mocks.MockLabelResourcesService
-	Contract     *mocks.MockContractsService
-	User         *mocks.MockUsersService
-	Group        *mocks.MockGroupsService
-	S3Key        *mocks.MockS3KeysService
-	BackupUnit   *mocks.MockBackupUnitsService
-	Pcc          *mocks.MockPccsService
-	K8s          *mocks.MockK8sService
-	Template     *mocks.MockTemplatesService
+	Client              *mocks.MockClientService
+	Location            *mocks.MockLocationsService
+	Datacenter          *mocks.MockDatacentersService
+	Server              *mocks.MockServersService
+	Volume              *mocks.MockVolumesService
+	Lan                 *mocks.MockLansService
+	NatGateway          *mocks.MockNatGatewaysService
+	NetworkLoadBalancer *mocks.MockNetworkLoadBalancersService
+	Nic                 *mocks.MockNicsService
+	Loadbalancer        *mocks.MockLoadbalancersService
+	IpBlocks            *mocks.MockIpBlocksService
+	Request             *mocks.MockRequestsService
+	Image               *mocks.MockImagesService
+	Snapshot            *mocks.MockSnapshotsService
+	FirewallRule        *mocks.MockFirewallRulesService
+	FlowLog             *mocks.MockFlowLogsService
+	Label               *mocks.MockLabelResourcesService
+	Contract            *mocks.MockContractsService
+	User                *mocks.MockUsersService
+	Group               *mocks.MockGroupsService
+	S3Key               *mocks.MockS3KeysService
+	BackupUnit          *mocks.MockBackupUnitsService
+	Pcc                 *mocks.MockPccsService
+	K8s                 *mocks.MockK8sService
+	Template            *mocks.MockTemplatesService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -84,30 +85,31 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 // Init Mock Resources for Test
 func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 	return &ResourcesMocks{
-		Client:       mocks.NewMockClientService(ctrl),
-		Location:     mocks.NewMockLocationsService(ctrl),
-		Datacenter:   mocks.NewMockDatacentersService(ctrl),
-		Server:       mocks.NewMockServersService(ctrl),
-		Lan:          mocks.NewMockLansService(ctrl),
-		Volume:       mocks.NewMockVolumesService(ctrl),
-		NatGateway:   mocks.NewMockNatGatewaysService(ctrl),
-		Nic:          mocks.NewMockNicsService(ctrl),
-		Loadbalancer: mocks.NewMockLoadbalancersService(ctrl),
-		IpBlocks:     mocks.NewMockIpBlocksService(ctrl),
-		Request:      mocks.NewMockRequestsService(ctrl),
-		Image:        mocks.NewMockImagesService(ctrl),
-		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
-		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
-		FlowLog:      mocks.NewMockFlowLogsService(ctrl),
-		Label:        mocks.NewMockLabelResourcesService(ctrl),
-		Contract:     mocks.NewMockContractsService(ctrl),
-		User:         mocks.NewMockUsersService(ctrl),
-		Group:        mocks.NewMockGroupsService(ctrl),
-		S3Key:        mocks.NewMockS3KeysService(ctrl),
-		BackupUnit:   mocks.NewMockBackupUnitsService(ctrl),
-		Pcc:          mocks.NewMockPccsService(ctrl),
-		K8s:          mocks.NewMockK8sService(ctrl),
-		Template:     mocks.NewMockTemplatesService(ctrl),
+		Client:              mocks.NewMockClientService(ctrl),
+		Location:            mocks.NewMockLocationsService(ctrl),
+		Datacenter:          mocks.NewMockDatacentersService(ctrl),
+		Server:              mocks.NewMockServersService(ctrl),
+		Lan:                 mocks.NewMockLansService(ctrl),
+		Volume:              mocks.NewMockVolumesService(ctrl),
+		NatGateway:          mocks.NewMockNatGatewaysService(ctrl),
+		NetworkLoadBalancer: mocks.NewMockNetworkLoadBalancersService(ctrl),
+		Nic:                 mocks.NewMockNicsService(ctrl),
+		Loadbalancer:        mocks.NewMockLoadbalancersService(ctrl),
+		IpBlocks:            mocks.NewMockIpBlocksService(ctrl),
+		Request:             mocks.NewMockRequestsService(ctrl),
+		Image:               mocks.NewMockImagesService(ctrl),
+		Snapshot:            mocks.NewMockSnapshotsService(ctrl),
+		FirewallRule:        mocks.NewMockFirewallRulesService(ctrl),
+		FlowLog:             mocks.NewMockFlowLogsService(ctrl),
+		Label:               mocks.NewMockLabelResourcesService(ctrl),
+		Contract:            mocks.NewMockContractsService(ctrl),
+		User:                mocks.NewMockUsersService(ctrl),
+		Group:               mocks.NewMockGroupsService(ctrl),
+		S3Key:               mocks.NewMockS3KeysService(ctrl),
+		BackupUnit:          mocks.NewMockBackupUnitsService(ctrl),
+		Pcc:                 mocks.NewMockPccsService(ctrl),
+		K8s:                 mocks.NewMockK8sService(ctrl),
+		Template:            mocks.NewMockTemplatesService(ctrl),
 	}
 }
 
@@ -119,6 +121,7 @@ func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
 	c.Volumes = func() resources.VolumesService { return tm.Volume }
 	c.Lans = func() resources.LansService { return tm.Lan }
 	c.NatGateways = func() resources.NatGatewaysService { return tm.NatGateway }
+	c.NetworkLoadBalancer = func() resources.NetworkLoadBalancersService { return tm.NetworkLoadBalancer }
 	c.Nics = func() resources.NicsService { return tm.Nic }
 	c.Loadbalancers = func() resources.LoadbalancersService { return tm.Loadbalancer }
 	c.IpBlocks = func() resources.IpBlocksService { return tm.IpBlocks }
