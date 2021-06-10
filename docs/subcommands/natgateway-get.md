@@ -1,25 +1,20 @@
 ---
-description: Get a Token from a Server
+description: Get a NAT Gateway
 ---
 
-# ServerTokenGet
+# NatgatewayGet
 
 ## Usage
 
 ```text
-ionosctl server token get [flags]
+ionosctl natgateway get [flags]
 ```
 
 ## Aliases
 
-For `server` command:
+For `natgateway` command:
 ```text
-[s svr]
-```
-
-For `token` command:
-```text
-[t]
+[nat ng]
 ```
 
 For `get` command:
@@ -29,31 +24,33 @@ For `get` command:
 
 ## Description
 
-Use this command to get the Server's jwToken.
+Use this command to get information about a specified NAT Gateway from a Virtual Data Center. You can also wait for NAT Gateway to get in AVAILABLE state using `--wait-for-state` option.
 
 Required values to run command:
 
 * Data Center Id
-* Server Id
+* NAT Gateway Id
 
 ## Options
 
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+                               Available columns: [NatGatewayId Name PublicIps State] (default [NatGatewayId,Name,PublicIps,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
   -h, --help                   help for get
+  -i, --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-  -i, --server-id string       The unique Server Id (required)
+  -t, --timeout int            Timeout option for waiting for NAT Gateway to be in AVAILABLE state [seconds] (default 60)
+  -W, --wait-for-state         Wait for specified NAT Gateway to be in AVAILABLE state
 ```
 
 ## Examples
 
 ```text
-ionosctl server token get --datacenter-id DATACENTER_ID --server-id SERVER_ID
+ionosctl natgateway get --datacenter-id DATACENTER_ID --natgateway-id NATGATEWAY_ID
 ```
 

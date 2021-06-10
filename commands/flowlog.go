@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -278,10 +279,10 @@ func getFlowLogPropertiesSet(c *core.CommandConfig) resources.FlowLogProperties 
 		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgAction)) {
-		properties.SetAction(viper.GetString(core.GetFlagName(c.NS, config.ArgAction)))
+		properties.SetAction(strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgAction))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDirection)) {
-		properties.SetDirection(viper.GetString(core.GetFlagName(c.NS, config.ArgDirection)))
+		properties.SetDirection(strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgDirection))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBucketName)) {
 		properties.SetBucket(viper.GetString(core.GetFlagName(c.NS, config.ArgBucketName)))

@@ -61,7 +61,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
   -z, --availability-zone string   Availability zone of the Server (default "AUTO")
       --bus string                 [CUBE Server] The bus type of the Direct Attached Storage (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
       --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE (default "AMD_OPTERON")
@@ -79,7 +79,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --template-id string         [CUBE Server] The unique Template Id (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
       --type string                Type usages for the Server (default "ENTERPRISE")
-  -N, --volume-name string         Name of the Direct Attached Storage (default "[CUBE Server] Unnamed Direct Attached Storage")
+  -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
   -w, --wait-for-request           Wait for the Request for Server creation to be executed
   -W, --wait-for-state             Wait for new Server to be in AVAILABLE state
 ```

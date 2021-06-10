@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -23,8 +24,8 @@ var (
 			Id: &testFlowLogVar,
 			Properties: &ionoscloud.FlowLogProperties{
 				Name:      &testFlowLogVar,
-				Action:    &testFlowLogVar,
-				Direction: &testFlowLogVar,
+				Action:    &testFlowLogUpperVar,
+				Direction: &testFlowLogUpperVar,
 				Bucket:    &testFlowLogVar,
 			},
 			Metadata: &ionoscloud.DatacenterElementMetadata{
@@ -37,15 +38,31 @@ var (
 			Properties: testFlowLog.FlowLog.Properties,
 		},
 	}
+	testFlowLogUpdated = resources.FlowLog{
+		FlowLog: ionoscloud.FlowLog{
+			Properties: &testFlowLogProperties.FlowLogProperties,
+		},
+	}
+	testFlowLogProperties = resources.FlowLogProperties{
+		FlowLogProperties: ionoscloud.FlowLogProperties{
+			Name:      &testFlowLogNewVar,
+			Action:    &testFlowLogNewUpperVar,
+			Direction: &testFlowLogNewUpperVar,
+			Bucket:    &testFlowLogNewVar,
+		},
+	}
 	testFlowLogs = resources.FlowLogs{
 		FlowLogs: ionoscloud.FlowLogs{
 			Id:    &testFlowLogVar,
 			Items: &[]ionoscloud.FlowLog{testFlowLog.FlowLog},
 		},
 	}
-	testFlowLogState = "AVAILABLE"
-	testFlowLogVar   = "test-flowlog"
-	testFlowLogErr   = errors.New("flowlog test error")
+	testFlowLogState       = "AVAILABLE"
+	testFlowLogVar         = "test-flowlog"
+	testFlowLogUpperVar    = strings.ToUpper(testFlowLogVar)
+	testFlowLogNewVar      = "test-new-flowlog"
+	testFlowLogNewUpperVar = strings.ToUpper(testFlowLogNewVar)
+	testFlowLogErr         = errors.New("flowlog test error")
 )
 
 func TestPreRunFlowLogCreate(t *testing.T) {

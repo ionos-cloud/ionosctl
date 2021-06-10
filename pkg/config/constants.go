@@ -52,6 +52,7 @@ const (
 	ArgAction                = "action"
 	ArgActionShort           = "a"
 	ArgBucketName            = "bucket-name"
+	ArgBucketNameShort       = "b"
 	ArgCores                 = "cores"
 	ArgRam                   = "ram"
 	ArgCPUFamily             = "cpu-family"
@@ -79,13 +80,16 @@ const (
 	ArgSecAuthProtection     = "sec-auth-protection"
 	ArgImageAlias            = "image-alias"
 	ArgProtocol              = "protocol"
+	ArgProtocolShort         = "p"
+	ArgSourceSubnet          = "source-subnet"
+	ArgTargetSubnet          = "target-subnet"
 	ArgSourceMac             = "source-mac"
 	ArgSourceIp              = "source-ip"
 	ArgTargetIp              = "target-ip"
 	ArgIcmpCode              = "icmp-code"
 	ArgIcmpType              = "icmp-type"
 	ArgPortRangeStart        = "port-range-start"
-	ArgPortRangeStop         = "port-range-end"
+	ArgPortRangeEnd          = "port-range-end"
 	ArgLabelUrn              = "label-urn"
 	ArgLabelKey              = "label-key"
 	ArgLabelValue            = "label-value"
@@ -125,6 +129,7 @@ const (
 	ArgIdShort        = "i"
 	ArgDataCenterId   = "datacenter-id"
 	ArgServerId       = "server-id"
+	ArgNatGatewayId   = "natgateway-id"
 	ArgNicId          = "nic-id"
 	ArgLanId          = "lan-id"
 	ArgLocationId     = "location-id"
@@ -139,6 +144,7 @@ const (
 	ArgUserId         = "user-id"
 	ArgGroupId        = "group-id"
 	ArgResourceId     = "resource-id"
+	ArgRuleId         = "rule-id"
 	ArgS3KeyId        = "s3key-id"
 	ArgBackupUnitId   = "backupunit-id"
 	ArgPccId          = "pcc-id"
@@ -178,6 +184,8 @@ const (
 	RequiredFlagCdromId        = "The unique Cdrom Id " + RequiredFlag
 	RequiredFlagTemplateId     = "The unique Template Id " + RequiredFlag
 	RequiredFlagFlowLogId      = "The unique FlowLog Id " + RequiredFlag
+	RequiredFlagNatGatewayId   = "The unique NatGateway Id " + RequiredFlag
+	RequiredFlagRuleId         = "The unique Rule Id " + RequiredFlag
 )
 
 // Default values
