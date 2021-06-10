@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -30,8 +29,7 @@ func pcc() *core.Command {
 		},
 	}
 	globalFlags := pccCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultPccCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultPccCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultPccCols, utils.ColsMessage(defaultPccCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(pccCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = pccCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPccCols, cobra.ShellCompDirectiveNoFileComp
@@ -264,7 +262,7 @@ func peers() *core.Command {
 	}
 	globalFlags := peerCmd.GlobalFlags()
 	globalFlags.StringSliceP(config.ArgCols, "", defaultPccPeersCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultPccPeersCols))
+		utils.ColsMessage(defaultPccPeersCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(peerCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = peerCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultPccPeersCols, cobra.ShellCompDirectiveNoFileComp

@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -30,8 +29,7 @@ func k8sNode() *core.Command {
 		},
 	}
 	globalFlags := k8sCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultK8sNodeCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultK8sNodeCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultK8sNodeCols, utils.ColsMessage(defaultK8sNodeCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(k8sCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = k8sCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodeCols, cobra.ShellCompDirectiveNoFileComp

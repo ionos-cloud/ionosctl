@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -33,8 +32,7 @@ func backupunit() *core.Command {
 		},
 	}
 	globalFlags := backupUnitCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultBackupUnitCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultBackupUnitCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultBackupUnitCols, utils.ColsMessage(defaultBackupUnitCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(backupUnitCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = backupUnitCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultBackupUnitCols, cobra.ShellCompDirectiveNoFileComp

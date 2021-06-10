@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -30,8 +29,7 @@ func ipblock() *core.Command {
 		},
 	}
 	globalFlags := ipblockCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultIpBlockCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultIpBlockCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultIpBlockCols, utils.ColsMessage(defaultIpBlockCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(ipblockCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = ipblockCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultIpBlockCols, cobra.ShellCompDirectiveNoFileComp

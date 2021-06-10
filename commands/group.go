@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -31,8 +30,7 @@ func group() *core.Command {
 		},
 	}
 	globalFlags := groupCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultGroupCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupCols, utils.ColsMessage(defaultGroupCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = groupCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp
