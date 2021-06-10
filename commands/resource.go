@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
@@ -29,8 +29,7 @@ func resource() *core.Command {
 		},
 	}
 	globalFlags := resourceCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultResourceCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultResourceCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultResourceCols, utils.ColsMessage(defaultResourceCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(resourceCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = resourceCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
@@ -139,7 +138,7 @@ func groupResource() *core.Command {
 		CmdRun:     RunGroupResourceList,
 		InitClient: true,
 	})
-	listResources.AddStringSliceFlag(config.ArgCols, "", defaultResourceCols, fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultResourceCols))
+	listResources.AddStringSliceFlag(config.ArgCols, "", defaultResourceCols, utils.ColsMessage(defaultResourceCols))
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})

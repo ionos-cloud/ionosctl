@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -30,8 +29,7 @@ func snapshot() *core.Command {
 		},
 	}
 	globalFlags := snapshotCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultSnapshotCols,
-		fmt.Sprintf("Set of columns to be printed on output \nAvailable columns: %v", defaultSnapshotCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultSnapshotCols, utils.ColsMessage(defaultSnapshotCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(snapshotCmd.NS, config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = snapshotCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultSnapshotCols, cobra.ShellCompDirectiveNoFileComp
