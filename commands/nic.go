@@ -105,7 +105,7 @@ Required values to run a command:
 		CmdRun:     RunNicCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name of the NIC")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Internet Access", "The name of the NIC")
 	create.AddStringSliceFlag(config.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
 	create.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC")
 	create.AddBoolFlag(config.ArgFirewallActive, "", config.DefaultFirewallActive, "Activate or deactivate the Firewall")

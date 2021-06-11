@@ -120,7 +120,7 @@ Required values to run command:
 		CmdRun:     RunFirewallRuleCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Firewall Rule")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Rule", "The name for the Firewall Rule")
 	create.AddStringFlag(config.ArgProtocol, "", "", "The Protocol for Firewall Rule: TCP, UDP, ICMP, ANY "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses.")
 	create.AddStringFlag(config.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.")
@@ -270,6 +270,9 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 
 func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	properties := getFirewallRulePropertiesSet(c)
+	if !properties.HasName() {
+		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	}
 	input := resources.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
 			Properties: &properties.FirewallruleProperties,

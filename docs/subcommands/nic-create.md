@@ -48,7 +48,7 @@ Required values to run a command:
   -h, --help                   help for create
       --ips strings            IPs assigned to the NIC. This can be a collection
       --lan-id int             The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created (default 1)
-  -n, --name string            The name of the NIC
+  -n, --name string            The name of the NIC (default "Internet Access")
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
