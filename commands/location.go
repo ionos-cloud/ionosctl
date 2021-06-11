@@ -111,14 +111,15 @@ func RunLocationGet(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultLocationCols = []string{"LocationId", "Name", "Features"}
-	allLocationCols     = []string{"LocationId", "Name", "Features", "ImageAliases"}
+	defaultLocationCols = []string{"LocationId", "Name", "CpuFamily"}
+	allLocationCols     = []string{"LocationId", "Name", "Features", "ImageAliases", "CpuFamily"}
 )
 
 type LocationPrint struct {
 	LocationId   string   `json:"LocationId,omitempty"`
 	Name         string   `json:"Name,omitempty"`
 	Features     []string `json:"Features,omitempty"`
+	CpuFamily    []string `json:"CpuFamily,omitempty"`
 	ImageAliases []string `json:"ImageAliases,omitempty"`
 }
 
@@ -134,6 +135,7 @@ func getLocationCols(flagName string, outErr io.Writer) []string {
 		"LocationId":   "LocationId",
 		"Name":         "Name",
 		"Features":     "Features",
+		"CpuFamily":    "CpuFamily",
 		"ImageAliases": "ImageAliases",
 	}
 	var locationsCols []string
@@ -180,6 +182,15 @@ func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {
 		}
 		if aliases, ok := properties.GetImageAliasesOk(); ok && aliases != nil {
 			dcPrint.ImageAliases = *aliases
+		}
+		if cpus, ok := properties.GetCpuArchitectureOk(); ok && cpus != nil {
+			cpuFamilies := make([]string, 0)
+			for _, cpu := range *cpus {
+				if cpuFamily, ok := cpu.GetCpuFamilyOk(); ok && cpuFamily != nil {
+					cpuFamilies = append(cpuFamilies, *cpuFamily)
+				}
+			}
+			dcPrint.CpuFamily = cpuFamilies
 		}
 		o := structs.Map(dcPrint)
 		out = append(out, o)
