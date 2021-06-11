@@ -31,7 +31,7 @@ Use this command to create a Private Cross-Connect. You can specify the name and
   -d, --description string   The description for the Private Cross-Connect
   -f, --force                Force command to execute without user input
   -h, --help                 help for create
-  -n, --name string          The name for the Private Cross-Connect
+  -n, --name string          The name for the Private Cross-Connect (default "Cross Connect")
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for Request for Private Cross-Connect creation [seconds] (default 60)

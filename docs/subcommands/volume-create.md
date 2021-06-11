@@ -55,7 +55,7 @@ Required values to run command:
       --image-alias string         The Image Alias to set instead of Image Id
       --image-id string            The Image Id or snapshot Id to be used as template for the new Volume
       --licence-type string        Licence Type of the Volume
-  -n, --name string                Name of the Volume
+  -n, --name string                Name of the Volume (default "Unnamed Storage")
       --nic-hot-plug               It is capable of nic hot plug (no reboot required)
       --nic-hot-unplug             It is capable of nic hot unplug (no reboot required)
   -o, --output string              Desired output format [text|json] (default "text")

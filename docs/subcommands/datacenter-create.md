@@ -41,7 +41,7 @@ You can wait for the Request to be executed using `--wait-for-request` option.
   -f, --force                Force command to execute without user input
   -h, --help                 help for create
   -l, --location string      Location for the Data Center (default "de/txl")
-  -n, --name string          Name of the Data Center
+  -n, --name string          Name of the Data Center (default "Unnamed Data Center")
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for Request for Data Center creation [seconds] (default 60)
