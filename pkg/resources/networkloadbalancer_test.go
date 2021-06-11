@@ -65,7 +65,7 @@ func TestNewNetworkLoadBalancerService(t *testing.T) {
 		svc := getTestClient(t)
 		networkloadbalancerSvc := NewNetworkLoadBalancerService(svc.Get(), ctx)
 		_, _, err := networkloadbalancerSvc.UpdateForwardingRule(testNetworkLoadBalancerResourceVar, testNetworkLoadBalancerResourceVar,
-			testNetworkLoadBalancerResourceVar, NetworkLoadBalancerForwardingRuleProperties{})
+			testNetworkLoadBalancerResourceVar, &NetworkLoadBalancerForwardingRuleProperties{})
 		assert.Error(t, err)
 	})
 	t.Run("deleterule_networkloadbalancer_error", func(t *testing.T) {

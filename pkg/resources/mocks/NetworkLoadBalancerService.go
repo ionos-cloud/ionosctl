@@ -256,7 +256,7 @@ func (mr *MockNetworkLoadBalancersServiceMockRecorder) UpdateFlowLog(datacenterI
 }
 
 // UpdateForwardingRule mocks base method.
-func (m *MockNetworkLoadBalancersService) UpdateForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string, input resources.NetworkLoadBalancerForwardingRuleProperties) (*resources.NetworkLoadBalancerForwardingRule, *resources.Response, error) {
+func (m *MockNetworkLoadBalancersService) UpdateForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string, input *resources.NetworkLoadBalancerForwardingRuleProperties) (*resources.NetworkLoadBalancerForwardingRule, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateForwardingRule", datacenterId, networkLoadBalancerId, forwardingRuleId, input)
 	ret0, _ := ret[0].(*resources.NetworkLoadBalancerForwardingRule)

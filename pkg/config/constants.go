@@ -66,7 +66,14 @@ const (
 	ArgIp                    = "ip"
 	ArgDhcp                  = "dhcp"
 	ArgListenerLan           = "listener-lan"
+	ArgListenerIp            = "listener-ip"
+	ArgListenerPort          = "listener-port"
+	ArgAlgorithm             = "algorithm"
 	ArgTargetLan             = "target-lan"
+	ArgRetries               = "retries"
+	ArgClientTimeout         = "client-timeout"
+	ArgConnectionTimeout     = "connection-timeout"
+	ArgTargetTimeout         = "target-timeout"
 	ArgFirewallActive        = "firewall-active"
 	ArgFirewallType          = "firewall-type"
 	ArgCpuHotPlug            = "cpu-hot-plug"
@@ -144,6 +151,7 @@ const (
 	ArgImageId               = "image-id"
 	ArgIpBlockId             = "ipblock-id"
 	ArgFirewallRuleId        = "firewallrule-id"
+	ArgForwardingRuleId      = "forwardingrule-id"
 	ArgFlowLogId             = "flowlog-id"
 	ArgUserId                = "user-id"
 	ArgGroupId               = "group-id"
@@ -191,6 +199,7 @@ const (
 	RequiredFlagNatGatewayId          = "The unique NatGateway Id " + RequiredFlag
 	RequiredFlagRuleId                = "The unique Rule Id " + RequiredFlag
 	RequiredFlagNetworkLoadBalancerId = "The unique NetworkLoadBalancer Id " + RequiredFlag
+	RequiredFlagForwardingRuleId      = "The unique ForwardingRule Id " + RequiredFlag
 )
 
 // Default values

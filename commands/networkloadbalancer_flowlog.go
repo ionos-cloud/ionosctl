@@ -37,7 +37,7 @@ func networkloadbalancerFlowLog() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Network Load Balancer FlowLogs",
-		LongDesc:   "Use this command to list Network Load Balancer FlowLogs from a specified NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
+		LongDesc:   "Use this command to list Network Load Balancer FlowLogs from a specified Network Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
 		Example:    listNetworkLoadBalancerFlowLogExample,
 		PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
 		CmdRun:     RunNetworkLoadBalancerFlowLogList,
@@ -201,7 +201,7 @@ Required values to run command:
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Network Load Balancer FlowLog",
-		LongDesc: `Use this command to delete a specified Network Load Balancer FlowLog from a NAT Gateway.
+		LongDesc: `Use this command to delete a specified Network Load Balancer FlowLog from a Network Load Balancer.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 

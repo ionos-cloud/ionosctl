@@ -30,6 +30,10 @@ type NetworkLoadBalancerForwardingRuleProperties struct {
 	ionoscloud.NetworkLoadBalancerForwardingRuleProperties
 }
 
+type NetworkLoadBalancerForwardingRuleHealthCheck struct {
+	ionoscloud.NetworkLoadBalancerForwardingRuleHealthCheck
+}
+
 type NetworkLoadBalancerForwardingRules struct {
 	ionoscloud.NetworkLoadBalancerForwardingRules
 }
@@ -44,7 +48,7 @@ type NetworkLoadBalancersService interface {
 	ListForwardingRules(datacenterId, networkLoadBalancerId string) (NetworkLoadBalancerForwardingRules, *Response, error)
 	GetForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string) (*NetworkLoadBalancerForwardingRule, *Response, error)
 	CreateForwardingRule(datacenterId, networkLoadBalancerId string, input NetworkLoadBalancerForwardingRule) (*NetworkLoadBalancerForwardingRule, *Response, error)
-	UpdateForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string, input NetworkLoadBalancerForwardingRuleProperties) (*NetworkLoadBalancerForwardingRule, *Response, error)
+	UpdateForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string, input *NetworkLoadBalancerForwardingRuleProperties) (*NetworkLoadBalancerForwardingRule, *Response, error)
 	DeleteForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string) (*Response, error)
 	ListFlowLogs(datacenterId, networkLoadBalancerId string) (FlowLogs, *Response, error)
 	GetFlowLog(datacenterId, networkLoadBalancerId, flowLogId string) (*FlowLog, *Response, error)
@@ -115,7 +119,7 @@ func (svc *networkLoadBalancersService) CreateForwardingRule(datacenterId, netwo
 	return &NetworkLoadBalancerForwardingRule{networkLoadBalancerRule}, &Response{*resp}, err
 }
 
-func (svc *networkLoadBalancersService) UpdateForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string, input NetworkLoadBalancerForwardingRuleProperties) (*NetworkLoadBalancerForwardingRule, *Response, error) {
+func (svc *networkLoadBalancersService) UpdateForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string, input *NetworkLoadBalancerForwardingRuleProperties) (*NetworkLoadBalancerForwardingRule, *Response, error) {
 	req := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersForwardingrulesPatch(svc.context, datacenterId, networkLoadBalancerId, forwardingRuleId).NetworkLoadBalancerForwardingRuleProperties(input.NetworkLoadBalancerForwardingRuleProperties)
 	networkLoadBalancerRule, resp, err := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersForwardingrulesPatchExecute(req)
 	return &NetworkLoadBalancerForwardingRule{networkLoadBalancerRule}, &Response{*resp}, err
