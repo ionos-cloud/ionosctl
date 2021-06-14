@@ -41,7 +41,7 @@ func nlbRuleTarget() *core.Command {
 		List Command
 	*/
 	list := core.NewCommand(ctx, nlbRuleTargetCmd, core.CommandBuilder{
-		Namespace:  "forwardingrule",
+		Namespace:  "nlb-rule",
 		Resource:   "target",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
@@ -72,7 +72,7 @@ func nlbRuleTarget() *core.Command {
 		Add Command
 	*/
 	add := core.NewCommand(ctx, nlbRuleTargetCmd, core.CommandBuilder{
-		Namespace: "forwardingrule",
+		Namespace: "nlb-rule",
 		Resource:  "target",
 		Verb:      "add",
 		Aliases:   []string{"a"},
@@ -123,7 +123,7 @@ Required values to run command:
 		Remove Command
 	*/
 	removeCmd := core.NewCommand(ctx, nlbRuleTargetCmd, core.CommandBuilder{
-		Namespace: "forwardingrule",
+		Namespace: "nlb-rule",
 		Resource:  "target",
 		Verb:      "remove",
 		Aliases:   []string{"r"},
@@ -362,16 +362,16 @@ func getRuleTargetsCols(flagName string, outErr io.Writer) []string {
 		"CheckInterval": "CheckInterval",
 		"Maintenance":   "Maintenance",
 	}
-	var forwardingRuleCols []string
+	var ruleTargetCols []string
 	for _, k := range cols {
 		col := columnsMap[k]
 		if col != "" {
-			forwardingRuleCols = append(forwardingRuleCols, col)
+			ruleTargetCols = append(ruleTargetCols, col)
 		} else {
 			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
-	return forwardingRuleCols
+	return ruleTargetCols
 }
 
 func getRuleTargets(targets *[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget) []resources.NetworkLoadBalancerForwardingRuleTarget {

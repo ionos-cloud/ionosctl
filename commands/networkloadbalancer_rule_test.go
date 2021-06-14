@@ -51,6 +51,9 @@ var (
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbForwardingRuleVar,
 			Properties: testInputForwardingRule.Properties,
+			Metadata: &ionoscloud.DatacenterElementMetadata{
+				State: &testStateVar,
+			},
 		},
 	}
 	testNlbForwardingRuleUpdated = resources.NetworkLoadBalancerForwardingRule{
