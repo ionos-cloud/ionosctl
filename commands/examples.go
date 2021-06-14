@@ -18,8 +18,9 @@ Status: Authentication successful!`
 	/*
 		Location Examples
 	*/
-	listLocationExample = `ionosctl location list`
-	getLocationExample  = `ionosctl location get --location-id LOCATION_ID`
+	listLocationExample    = `ionosctl location list`
+	getLocationExample     = `ionosctl location get --location-id LOCATION_ID`
+	listLocationCpuExample = `ionosctl location cpu list -i LOCATION_ID`
 
 	/*
 		Data Center Examples

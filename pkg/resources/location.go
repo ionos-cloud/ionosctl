@@ -10,6 +10,10 @@ type Location struct {
 	ionoscloud.Location
 }
 
+type CpuArchitectureProperties struct {
+	ionoscloud.CpuArchitectureProperties
+}
+
 type Locations struct {
 	ionoscloud.Locations
 }

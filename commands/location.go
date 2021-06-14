@@ -72,6 +72,8 @@ func location() *core.Command {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
+	locationCmd.AddCommand(cpu())
+
 	return locationCmd
 }
 

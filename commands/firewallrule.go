@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -26,7 +27,7 @@ func firewallrule() *core.Command {
 			Use:              "firewallrule",
 			Aliases:          []string{"f", "fr", "firewall"},
 			Short:            "Firewall Rule Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl firewallrule` + "`" + ` allow you to create, list, get, update, delete Firewall Rules.`,
+			Long:             "The sub-commands of `ionosctl firewallrule` allow you to create, list, get, update, delete Firewall Rules.",
 			TraverseChildren: true,
 		},
 	}
@@ -122,13 +123,20 @@ Required values to run command:
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Rule", "The name for the Firewall Rule")
 	create.AddStringFlag(config.ArgProtocol, "", "", "The Protocol for Firewall Rule: TCP, UDP, ICMP, ANY "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses.")
-	create.AddStringFlag(config.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.")
-	create.AddStringFlag(config.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.")
-	create.AddIntFlag(config.ArgIcmpType, "", 0, "Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types.")
-	create.AddIntFlag(config.ArgIcmpCode, "", 0, "Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.")
-	create.AddIntFlag(config.ArgPortRangeStart, "", 1, "Define the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
-	create.AddIntFlag(config.ArgPortRangeEnd, "", 1, "Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"TCP", "UDP", "ICMP", "ANY"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses")
+	create.AddStringFlag(config.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs")
+	create.AddStringFlag(config.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs")
+	create.AddIntFlag(config.ArgIcmpType, "", 0, "Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types")
+	create.AddIntFlag(config.ArgIcmpCode, "", 0, "Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes")
+	create.AddIntFlag(config.ArgPortRangeStart, "", 1, "Define the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
+	create.AddIntFlag(config.ArgPortRangeEnd, "", 1, "Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
+	create.AddStringFlag(config.ArgType, "", "INGRESS", "The type of Firewall Rule")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule creation [seconds]")
 
@@ -157,13 +165,17 @@ Required values to run command:
 		InitClient: true,
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Firewall Rule")
-	update.AddStringFlag(config.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses.")
-	update.AddStringFlag(config.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.")
-	update.AddStringFlag(config.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.")
-	update.AddIntFlag(config.ArgIcmpType, "", 0, "Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types.")
-	update.AddIntFlag(config.ArgIcmpCode, "", 0, "Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.")
-	update.AddIntFlag(config.ArgPortRangeStart, "", 1, "Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
-	update.AddIntFlag(config.ArgPortRangeEnd, "", 1, "Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
+	update.AddStringFlag(config.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses")
+	update.AddStringFlag(config.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs")
+	update.AddStringFlag(config.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs")
+	update.AddIntFlag(config.ArgIcmpType, "", 0, "Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types")
+	update.AddIntFlag(config.ArgIcmpCode, "", 0, "Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes")
+	update.AddIntFlag(config.ArgPortRangeStart, "", 1, "Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
+	update.AddIntFlag(config.ArgPortRangeEnd, "", 1, "Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
+	update.AddStringFlag(config.ArgType, "", "", "The type of Firewall Rule")
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	update.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.RequiredFlagFirewallRuleId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
@@ -273,6 +285,9 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	if !properties.HasName() {
 		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
+	if !properties.HasType() {
+		properties.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
+	}
 	input := resources.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
 			Properties: &properties.FirewallruleProperties,
@@ -339,7 +354,7 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgProtocol)) {
-		properties.SetProtocol(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol)))
+		properties.SetProtocol(strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSourceIp)) {
 		properties.SetSourceIp(viper.GetString(core.GetFlagName(c.NS, config.ArgSourceIp)))
@@ -362,14 +377,18 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPortRangeEnd)) {
 		properties.SetPortRangeEnd(viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeEnd)))
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgType)) {
+		properties.SetType(strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgType))))
+	}
 	return properties
 }
 
 // Output Printing
 
 var (
-	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "State"}
-	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "TargetIP", "PortRangeStart", "PortRangeEnd", "State"}
+	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Type", "State"}
+	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "TargetIP", "PortRangeStart", "PortRangeEnd",
+		"IcmpCode", "IcmpType", "Type", "State"}
 )
 
 type FirewallRulePrint struct {
@@ -381,6 +400,9 @@ type FirewallRulePrint struct {
 	TargetIP       string `json:"TargetIP,omitempty"`
 	PortRangeStart int32  `json:"PortRangeStart,omitempty"`
 	PortRangeEnd   int32  `json:"PortRangeEnd,omitempty"`
+	IcmpCode       int32  `json:"IcmpCode,omitempty"`
+	IcmpType       int32  `json:"IcmpType,omitempty"`
+	Type           string `json:"Type,omitempty"`
 	State          string `json:"State,omitempty"`
 }
 
@@ -414,6 +436,9 @@ func getFirewallRulesCols(flagName string, outErr io.Writer) []string {
 			"TargetIP":       "TargetIP",
 			"PortRangeStart": "PortRangeStart",
 			"PortRangeEnd":   "PortRangeEnd",
+			"IcmpCode":       "IcmpCode",
+			"IcmpType":       "IcmpType",
+			"Type":           "Type",
 			"State":          "State",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
@@ -485,6 +510,15 @@ func getFirewallRuleKVMap(l resources.FirewallRule) map[string]interface{} {
 		}
 		if targetIp, ok := properties.GetTargetIpOk(); ok && targetIp != nil {
 			firewallRulePrint.TargetIP = *targetIp
+		}
+		if icmpType, ok := properties.GetIcmpTypeOk(); ok && icmpType != nil {
+			firewallRulePrint.IcmpType = *icmpType
+		}
+		if icmpCode, ok := properties.GetIcmpCodeOk(); ok && icmpCode != nil {
+			firewallRulePrint.IcmpCode = *icmpCode
+		}
+		if ruleType, ok := properties.GetTypeOk(); ok && ruleType != nil {
+			firewallRulePrint.Type = *ruleType
 		}
 	}
 	if metadata, ok := l.GetMetadataOk(); ok && metadata != nil {
