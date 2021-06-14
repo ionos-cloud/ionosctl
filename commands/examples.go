@@ -349,9 +349,16 @@ ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGAT
 	/*
 		Network Load Balancer ForwardingRule Example
 	*/
-	listNetworkLoadBalancerForwardingRuleExample   = `ionosctl networkloadbalancer forwardingrule list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID`
-	getNetworkLoadBalancerForwardingRuleExample    = `ionosctl networkloadbalancer forwardingrule get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID`
-	createNetworkLoadBalancerForwardingRuleExample = `ionosctl networkloadbalancer forwardingrule create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT`
-	updateNetworkLoadBalancerForwardingRuleExample = `ionosctl networkloadbalancer forwardingrule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME`
-	deleteNetworkLoadBalancerForwardingRuleExample = `ionosctl networkloadbalancer forwardingrule delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID`
+	listNetworkLoadBalancerForwardingRuleExample   = `ionosctl networkloadbalancer rule list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID`
+	getNetworkLoadBalancerForwardingRuleExample    = `ionosctl nlb rule get --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID`
+	createNetworkLoadBalancerForwardingRuleExample = `ionosctl networkloadbalancer rule create --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT`
+	updateNetworkLoadBalancerForwardingRuleExample = `ionosctl nlb rule update --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME`
+	deleteNetworkLoadBalancerForwardingRuleExample = `ionosctl networkloadbalancer rule delete --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID -i FORWARDINGRULE_ID`
+
+	/*
+		Network Load Balancer ForwardingRule Target Example
+	*/
+	listNetworkLoadBalancerRuleTargetExample   = `ionosctl networkloadbalancer rule target list --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID`
+	addNetworkLoadBalancerRuleTargetExample    = `ionosctl networkloadbalancer rule target add --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --target-ip TARGET_IP --target-port TARGET_PORT -w`
+	removeNetworkLoadBalancerRuleTargetExample = `ionosctl nlb rule target remove --datacenter-id DATACENTER_ID --networkloadbalancer-id NETWORKLOADBALANCER_ID --rule-id FORWARDINGRULE_ID --target-ip TARGET_IP --target-port TARGET_PORT -w`
 )

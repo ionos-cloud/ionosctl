@@ -20,30 +20,30 @@ import (
 	"github.com/spf13/viper"
 )
 
-func networkloadbalancerForwardingRule() *core.Command {
+func networkloadbalancerRule() *core.Command {
 	ctx := context.TODO()
-	nlbForwardingRuleCmd := &core.Command{
+	nlbRuleCmd := &core.Command{
 		Command: &cobra.Command{
-			Use:              "forwardingrule",
-			Aliases:          []string{"fr", "rule"},
+			Use:              "rule",
+			Aliases:          []string{"r", "rule", "forwarding"},
 			Short:            "Network Load Balancer Forwarding Rule Operations",
 			Long:             `The sub-commands of ` + "`" + `ionosctl nlb rule` + "`" + ` allow you to create, list, get, update, delete Network Load Balancer Forwarding Rules.`,
 			TraverseChildren: true,
 		},
 	}
-	globalFlags := nlbForwardingRuleCmd.GlobalFlags()
+	globalFlags := nlbRuleCmd.GlobalFlags()
 	globalFlags.StringSliceP(config.ArgCols, "", defaultForwardingRuleCols, utils.ColsMessage(allForwardingRuleCols))
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nlbForwardingRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
-	_ = nlbForwardingRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = viper.BindPFlag(core.GetGlobalFlagName(nlbRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
+	_ = nlbRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
 		List Command
 	*/
-	list := core.NewCommand(ctx, nlbForwardingRuleCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, nlbRuleCmd, core.CommandBuilder{
 		Namespace:  "networkloadbalancer",
-		Resource:   "forwardingrule",
+		Resource:   "rule",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Network Load Balancer Forwarding Rules",
@@ -65,9 +65,9 @@ func networkloadbalancerForwardingRule() *core.Command {
 	/*
 		Get Command
 	*/
-	get := core.NewCommand(ctx, nlbForwardingRuleCmd, core.CommandBuilder{
+	get := core.NewCommand(ctx, nlbRuleCmd, core.CommandBuilder{
 		Namespace:  "networkloadbalancer",
-		Resource:   "forwardingrule",
+		Resource:   "rule",
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Network Load Balancer Forwarding Rule",
@@ -85,8 +85,8 @@ func networkloadbalancerForwardingRule() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgForwardingRuleId, config.ArgIdShort, "", config.RequiredFlagForwardingRuleId)
-	_ = get.Command.RegisterFlagCompletionFunc(config.ArgForwardingRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagForwardingRuleId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(get.NS, config.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -94,9 +94,9 @@ func networkloadbalancerForwardingRule() *core.Command {
 	/*
 		Create Command
 	*/
-	create := core.NewCommand(ctx, nlbForwardingRuleCmd, core.CommandBuilder{
+	create := core.NewCommand(ctx, nlbRuleCmd, core.CommandBuilder{
 		Namespace: "networkloadbalancer",
-		Resource:  "forwardingrule",
+		Resource:  "rule",
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a Network Load Balancer Forwarding Rule",
@@ -140,9 +140,9 @@ Required values to run command:
 	/*
 		Update Command
 	*/
-	update := core.NewCommand(ctx, nlbForwardingRuleCmd, core.CommandBuilder{
+	update := core.NewCommand(ctx, nlbRuleCmd, core.CommandBuilder{
 		Namespace: "networkloadbalancer",
-		Resource:  "forwardingrule",
+		Resource:  "rule",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
 		ShortDesc: "Update a Network Load Balancer Forwarding Rule",
@@ -168,8 +168,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgForwardingRuleId, config.ArgIdShort, "", config.RequiredFlagForwardingRuleId)
-	_ = update.Command.RegisterFlagCompletionFunc(config.ArgForwardingRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagForwardingRuleId)
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(update.NS, config.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -190,9 +190,9 @@ Required values to run command:
 	/*
 		Delete Command
 	*/
-	deleteCmd := core.NewCommand(ctx, nlbForwardingRuleCmd, core.CommandBuilder{
+	deleteCmd := core.NewCommand(ctx, nlbRuleCmd, core.CommandBuilder{
 		Namespace: "networkloadbalancer",
-		Resource:  "forwardingrule",
+		Resource:  "rule",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Network Load Balancer Forwarding Rule",
@@ -218,15 +218,17 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgForwardingRuleId, config.ArgIdShort, "", config.RequiredFlagForwardingRuleId)
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgForwardingRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagForwardingRuleId)
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Forwarding Rule deletion [seconds]")
 
-	return nlbForwardingRuleCmd
+	nlbRuleCmd.AddCommand(nlbRuleTarget())
+
+	return nlbRuleCmd
 }
 
 func PreRunNetworkLoadBalancerForwardingRuleCreate(c *core.PreCommandConfig) error {
@@ -234,7 +236,7 @@ func PreRunNetworkLoadBalancerForwardingRuleCreate(c *core.PreCommandConfig) err
 }
 
 func PreRunDcNetworkLoadBalancerForwardingRuleIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNetworkLoadBalancerId, config.ArgForwardingRuleId)
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNetworkLoadBalancerId, config.ArgRuleId)
 }
 
 func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
@@ -252,7 +254,7 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 	ng, _, err := c.NetworkLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgForwardingRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 	)
 	if err != nil {
 		return err
@@ -302,7 +304,7 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 	ng, resp, err := c.NetworkLoadBalancers().UpdateForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgForwardingRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 		input,
 	)
 	if err != nil {
@@ -321,7 +323,7 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 	resp, err := c.NetworkLoadBalancers().DeleteForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgForwardingRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 	)
 	if err != nil {
 		return err

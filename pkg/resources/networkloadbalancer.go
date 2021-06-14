@@ -34,6 +34,14 @@ type NetworkLoadBalancerForwardingRuleHealthCheck struct {
 	ionoscloud.NetworkLoadBalancerForwardingRuleHealthCheck
 }
 
+type NetworkLoadBalancerForwardingRuleTarget struct {
+	ionoscloud.NetworkLoadBalancerForwardingRuleTarget
+}
+
+type NetworkLoadBalancerForwardingRuleTargetHealthCheck struct {
+	ionoscloud.NetworkLoadBalancerForwardingRuleTargetHealthCheck
+}
+
 type NetworkLoadBalancerForwardingRules struct {
 	ionoscloud.NetworkLoadBalancerForwardingRules
 }
