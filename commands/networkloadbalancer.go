@@ -25,7 +25,7 @@ func networkloadbalancer() *core.Command {
 			Use:              "networkloadbalancer",
 			Aliases:          []string{"nlb"},
 			Short:            "Network Load Balancer Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl networkloadbalancer` + "`" + ` allow you to create, list, get, update, delete Network Load Balancers.`,
+			Long:             "The sub-commands of `ionosctl networkloadbalancer` allow you to create, list, get, update, delete Network Load Balancers.",
 			TraverseChildren: true,
 		},
 	}

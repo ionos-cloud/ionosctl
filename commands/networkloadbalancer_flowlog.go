@@ -23,7 +23,7 @@ func networkloadbalancerFlowLog() *core.Command {
 			Use:              "flowlog",
 			Aliases:          []string{"f", "fl"},
 			Short:            "Network Load Balancer FlowLog Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl networkloadbalancer flowlog` + "`" + ` allow you to create, list, get, update, delete Network Load Balancer FlowLogs.`,
+			Long:             "The sub-commands of `ionosctl networkloadbalancer flowlog` allow you to create, list, get, update, delete Network Load Balancer FlowLogs.",
 			TraverseChildren: true,
 		},
 	}
