@@ -24,7 +24,7 @@ func ipblock() *core.Command {
 			Use:              "ipblock",
 			Aliases:          []string{"ipb"},
 			Short:            "IpBlock Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl ipblock` + "`" + ` allow you to create/reserve, list, get, update, delete IpBlocks.`,
+			Long:             "The sub-commands of `ionosctl ipblock` allow you to create/reserve, list, get, update, delete IpBlocks.",
 			TraverseChildren: true,
 		},
 	}

@@ -25,7 +25,7 @@ func group() *core.Command {
 			Use:              "group",
 			Aliases:          []string{"g"},
 			Short:            "Group Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl group` + "`" + ` allow you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User from the Group.`,
+			Long:             "The sub-commands of `ionosctl group` allow you to list, get, create, update, delete Groups, but also operations: add/remove/list/update User from the Group.",
 			TraverseChildren: true,
 		},
 	}

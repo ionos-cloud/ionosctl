@@ -25,7 +25,7 @@ func nic() *core.Command {
 			Use:              "nic",
 			Aliases:          []string{"n"},
 			Short:            "Network Interfaces Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl nic` + "`" + ` allow you to create, list, get, update, delete NICs. To attach a NIC to a Load Balancer, use the Load Balancer command ` + "`" + `ionosctl loadbalancer nic attach` + "`" + `.`,
+			Long:             "The sub-commands of `ionosctl nic` allow you to create, list, get, update, delete NICs. To attach a NIC to a Load Balancer, use the Load Balancer command `ionosctl loadbalancer nic attach`.",
 			TraverseChildren: true,
 		},
 	}
@@ -309,7 +309,7 @@ func loadBalancerNic() *core.Command {
 			Use:              "nic",
 			Aliases:          []string{"n"},
 			Short:            "Load Balancer Nic Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl loadbalancer nic` + "`" + ` allow you to manage NICs on Load Balancers on your account.`,
+			Long:             "The sub-commands of `ionosctl loadbalancer nic` allow you to manage NICs on Load Balancers on your account.",
 			TraverseChildren: true,
 		},
 	}

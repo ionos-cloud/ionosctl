@@ -25,7 +25,7 @@ func location() *core.Command {
 			Use:              "location",
 			Aliases:          []string{"loc"},
 			Short:            "Location Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl location` + "`" + ` allows you to see information about locations available to create objects.`,
+			Long:             "The sub-command of `ionosctl location` allows you to see information about locations available to create objects.",
 			TraverseChildren: true,
 		},
 	}
