@@ -30,11 +30,16 @@ var (
 		SsdLimitPerVolume:      &testContractInt64,
 		SsdLimitPerContract:    &testContractInt64,
 		SsdVolumeProvisioned:   &testContractInt64,
+		DasVolumeProvisioned:   &testContractInt64,
 		ReservableIps:          &testContractInt32,
 		ReservedIpsOnContract:  &testContractInt32,
 		ReservedIpsInUse:       &testContractInt32,
 		K8sClusterLimitTotal:   &testContractInt32,
 		K8sClustersProvisioned: &testContractInt32,
+		NatGatewayProvisioned:  &testContractInt32,
+		NatGatewayLimitTotal:   &testContractInt32,
+		NlbProvisioned:         &testContractInt32,
+		NlbLimitTotal:          &testContractInt32,
 	}
 	testContract = resources.Contract{
 		Contract: ionoscloud.Contract{
