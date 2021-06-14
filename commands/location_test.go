@@ -25,6 +25,14 @@ var (
 				Name:         &testLocationVar,
 				Features:     &[]string{testLocationVar},
 				ImageAliases: &[]string{testLocationVar},
+				CpuArchitecture: &[]ionoscloud.CpuArchitectureProperties{
+					{
+						CpuFamily: &testLocationVar,
+						MaxRam:    &testLocationIntVar,
+						MaxCores:  &testLocationIntVar,
+						Vendor:    &testLocationVar,
+					},
+				},
 			},
 		},
 	}
@@ -34,8 +42,9 @@ var (
 			Items: &[]ionoscloud.Location{loc.Location},
 		},
 	}
-	testLocationVar = "test/location"
-	testLocationErr = errors.New("location test error occurred")
+	testLocationIntVar = int32(1)
+	testLocationVar    = "test/location"
+	testLocationErr    = errors.New("location test error occurred")
 )
 
 func TestPreLocationId(t *testing.T) {

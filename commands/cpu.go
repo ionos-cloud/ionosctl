@@ -26,7 +26,7 @@ func cpu() *core.Command {
 		Command: &cobra.Command{
 			Use:              "cpu",
 			Short:            "Location CPU Architecture Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl location cpu` + "`" + ` allows you to see information about available CPU Architectures in different Locations.`,
+			Long:             "The sub-command of `ionosctl location cpu` allows you to see information about available CPU Architectures in different Locations.",
 			TraverseChildren: true,
 		},
 	}
@@ -64,7 +64,7 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 	locId := viper.GetString(core.GetFlagName(c.NS, config.ArgLocationId))
 	ids := strings.Split(locId, "/")
 	if len(ids) != 2 {
-		return errors.New("error getting cpu id & region id")
+		return errors.New("error getting location id & region id")
 	}
 	loc, _, err := c.Locations().GetByRegionAndLocationId(ids[0], ids[1])
 	if err != nil {
