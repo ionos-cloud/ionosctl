@@ -262,6 +262,10 @@ ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --la
 	updateK8sNodePoolExample = `ionosctl k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-count NODE_COUNT`
 	deleteK8sNodePoolExample = `ionosctl k8s nodepool delete --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID`
 
+	listK8sNodePoolLanExample   = `ionosctl k8s nodepool lan list --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID`
+	addK8sNodePoolLanExample    = `ionosctl k8s nodepool lan add --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID`
+	removeK8sNodePoolLanExample = `ionosctl k8s nodepool lan remove --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID`
+
 	deleteK8sNodeExample   = `ionosctl k8s node delete --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID`
 	recreateK8sNodeExample = `ionosctl k8s node recreate --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID`
 	getK8sNodeExample      = `ionosctl k8s node get --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID`

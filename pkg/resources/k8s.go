@@ -38,6 +38,10 @@ type K8sNodePool struct {
 	ionoscloud.KubernetesNodePool
 }
 
+type K8sNodePoolLan struct {
+	ionoscloud.KubernetesNodePoolLan
+}
+
 type K8sNodePoolProperties struct {
 	ionoscloud.KubernetesNodePoolProperties
 }
