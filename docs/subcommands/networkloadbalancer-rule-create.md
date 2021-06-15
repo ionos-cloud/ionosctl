@@ -19,7 +19,7 @@ For `networkloadbalancer` command:
 
 For `rule` command:
 ```text
-[r forwarding]
+[r forwardingrule]
 ```
 
 For `create` command:

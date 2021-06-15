@@ -7,9 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	testNetworkLoadBalancerResourceVar = "test-networkloadbalancer-resource"
-)
+const testNetworkLoadBalancerResourceVar = "test-networkloadbalancer-resource"
 
 func TestNewNetworkLoadBalancerService(t *testing.T) {
 	ctx := context.Background()

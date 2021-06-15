@@ -19,7 +19,7 @@ For `networkloadbalancer` command:
 
 For `rule` command:
 ```text
-[r forwarding]
+[r forwardingrule]
 ```
 
 For `update` command:
@@ -54,7 +54,7 @@ Required values to run command:
   -h, --help                            help for update
       --listener-ip string              Listening IP (required)
       --listener-port string            Listening port number. Range: 1 to 65535 (required)
-  -n, --name string                     The name for the Forwarding Rule (default "Unnamed Forwarding Rule")
+  -n, --name string                     The name for the Forwarding Rule
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output

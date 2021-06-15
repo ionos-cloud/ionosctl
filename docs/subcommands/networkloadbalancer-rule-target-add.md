@@ -14,7 +14,7 @@ ionosctl networkloadbalancer rule target add [flags]
 
 For `rule` command:
 ```text
-[r forwarding]
+[r forwardingrule]
 ```
 
 For `target` command:
@@ -39,7 +39,7 @@ Required values to run command:
 
 * Data Center Id
 * Network Load Balancer Id
-* Rule Id
+* Forwarding Rule Id
 * Target Ip
 * Target Port
 

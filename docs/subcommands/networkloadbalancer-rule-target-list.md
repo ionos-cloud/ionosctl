@@ -14,7 +14,7 @@ ionosctl networkloadbalancer rule target list [flags]
 
 For `rule` command:
 ```text
-[r forwarding]
+[r forwardingrule]
 ```
 
 For `target` command:

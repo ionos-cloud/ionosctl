@@ -41,7 +41,7 @@ func nlbRuleTarget() *core.Command {
 		List Command
 	*/
 	list := core.NewCommand(ctx, nlbRuleTargetCmd, core.CommandBuilder{
-		Namespace:  "nlb-rule",
+		Namespace:  "forwardingrule",
 		Resource:   "target",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
@@ -72,7 +72,7 @@ func nlbRuleTarget() *core.Command {
 		Add Command
 	*/
 	add := core.NewCommand(ctx, nlbRuleTargetCmd, core.CommandBuilder{
-		Namespace: "nlb-rule",
+		Namespace: "forwardingrule",
 		Resource:  "target",
 		Verb:      "add",
 		Aliases:   []string{"a"},
@@ -87,7 +87,7 @@ Required values to run command:
 
 * Data Center Id
 * Network Load Balancer Id
-* Rule Id
+* Forwarding Rule Id
 * Target Ip
 * Target Port`,
 		Example:    addNetworkLoadBalancerRuleTargetExample,
@@ -123,7 +123,7 @@ Required values to run command:
 		Remove Command
 	*/
 	removeCmd := core.NewCommand(ctx, nlbRuleTargetCmd, core.CommandBuilder{
-		Namespace: "nlb-rule",
+		Namespace: "forwardingrule",
 		Resource:  "target",
 		Verb:      "remove",
 		Aliases:   []string{"r"},

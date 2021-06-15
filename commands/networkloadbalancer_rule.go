@@ -25,9 +25,9 @@ func networkloadbalancerRule() *core.Command {
 	nlbRuleCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "rule",
-			Aliases:          []string{"r", "forwarding"},
+			Aliases:          []string{"r", "forwardingrule"},
 			Short:            "Network Load Balancer Forwarding Rule Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl nlb rule` + "`" + ` allow you to create, list, get, update, delete Network Load Balancer Forwarding Rules.`,
+			Long:             "The sub-commands of `ionosctl nlb rule` allow you to create, list, get, update, delete Network Load Balancer Forwarding Rules.",
 			TraverseChildren: true,
 		},
 	}
@@ -173,7 +173,7 @@ Required values to run command:
 		return getForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(update.NS, config.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Forwarding Rule", "The name for the Forwarding Rule")
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Forwarding Rule")
 	update.AddStringFlag(config.ArgListenerIp, "", "", "Listening IP "+config.RequiredFlag)
 	update.AddStringFlag(config.ArgListenerPort, "", "", "Listening port number. Range: 1 to 65535 "+config.RequiredFlag)
 	update.AddStringFlag(config.ArgAlgorithm, "", "ROUND_ROBIN", "Algorithm for the balancing")

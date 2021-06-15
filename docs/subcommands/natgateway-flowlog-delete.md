@@ -44,7 +44,7 @@ Required values to run command:
 ```text
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings           Set of columns to be printed on output 
-                               Available columns: [NatGatewayId Name PublicIps State] (default [NatGatewayId,Name,PublicIps,State])
+                               Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -i, --flowlog-id string      The unique FlowLog Id (required)
