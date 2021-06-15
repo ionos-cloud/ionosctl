@@ -33,7 +33,7 @@ var (
 	Major string
 	Minor string
 	Patch string
-	// Label - If label is not set, it will append -dev to latest version
+	// Label - If label is not set, the version will be: DEV
 	// If label is set as `release`, it will show the version released
 	Label string
 
@@ -123,7 +123,7 @@ func initVersion() {
 		IonosctlVersion.patch = i
 	}
 	if Label == "" {
-		IonosctlVersion.label = "dev"
+		IonosctlVersion.label = "DEV"
 	} else {
 		IonosctlVersion.label = Label
 	}
@@ -138,7 +138,7 @@ type cliVersion struct {
 
 func (v cliVersion) GetVersion() string {
 	if v.label != "release" {
-		return fmt.Sprintf("%d.%d.%d-%s", v.major, v.minor, v.patch, v.label)
+		return fmt.Sprintf("%s", v.label)
 	} else {
 		return fmt.Sprintf("%d.%d.%d", v.major, v.minor, v.patch)
 	}

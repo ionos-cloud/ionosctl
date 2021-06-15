@@ -15,7 +15,7 @@ func k8sVersion() *core.Command {
 			Use:              "version",
 			Aliases:          []string{"v"},
 			Short:            "Kubernetes Version Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s version` + "`" + ` allow you to get information about available Kubernetes versions.`,
+			Long:             "The sub-commands of `ionosctl k8s version` allow you to get information about available Kubernetes versions.",
 			TraverseChildren: true,
 		},
 	}

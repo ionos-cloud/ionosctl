@@ -23,7 +23,7 @@ func natgatewayFlowLog() *core.Command {
 			Use:              "flowlog",
 			Aliases:          []string{"f", "fl"},
 			Short:            "NAT Gateway FlowLog Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl natgateway flowlog` + "`" + ` allow you to create, list, get, update, delete NAT Gateway FlowLogs.`,
+			Long:             "The sub-commands of `ionosctl natgateway flowlog` allow you to create, list, get, update, delete NAT Gateway FlowLogs.",
 			TraverseChildren: true,
 		},
 	}

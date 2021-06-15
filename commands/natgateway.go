@@ -25,7 +25,7 @@ func natgateway() *core.Command {
 			Use:              "natgateway",
 			Aliases:          []string{"nat", "ng"},
 			Short:            "NAT Gateway Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl natgateway` + "`" + ` allow you to create, list, get, update, delete NAT Gateways.`,
+			Long:             "The sub-commands of `ionosctl natgateway` allow you to create, list, get, update, delete NAT Gateways.",
 			TraverseChildren: true,
 		},
 	}
