@@ -19,7 +19,7 @@ For `natgateway` command:
 
 For `flowlog` command:
 ```text
-[f]
+[f fl]
 ```
 
 For `create` command:
@@ -38,14 +38,13 @@ Required values to run command:
 * Data Center Id
 * NAT Gateway Id
 * Name
-* Action
 * Direction
 * Bucket Name
 
 ## Options
 
 ```text
-  -a, --action string          Specifies the traffic Action pattern (required)
+  -a, --action string          Specifies the traffic Action pattern (default "ALL")
   -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
   -b, --bucket-name string     S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
       --cols strings           Set of columns to be printed on output 
