@@ -37,7 +37,7 @@ func version() *core.Command {
 }
 
 func RunVersion(c *core.CommandConfig) error {
-	err := c.Printer.Print("You are currently using ionosctl version: " + rootCmd.Command.Version)
+	err := c.Printer.Print("You are currently using ionosctl the " + rootCmd.Command.Version + " version.")
 	if err != nil {
 		return err
 	}

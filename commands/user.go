@@ -25,7 +25,7 @@ func user() *core.Command {
 			Use:              "user",
 			Aliases:          []string{"u"},
 			Short:            "User Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl user` + "`" + ` allow you to list, get, create, update, delete Users under your account. To add Users to a Group, check the ` + "`" + `ionosctl group user` + "`" + ` commands. To add S3Keys to a User, check the ` + "`" + `ionosctl user s3key` + "`" + ` commands.`,
+			Long:             "The sub-commands of `ionosctl user` allow you to list, get, create, update, delete Users under your account. To add Users to a Group, check the `ionosctl group user` commands. To add S3Keys to a User, check the `ionosctl user s3key` commands.",
 			TraverseChildren: true,
 		},
 	}
@@ -299,7 +299,7 @@ func groupUser() *core.Command {
 			Use:              "user",
 			Aliases:          []string{"u"},
 			Short:            "Group User Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl group user` + "`" + ` allow you to list, add, remove Users from a Group.`,
+			Long:             "The sub-commands of `ionosctl group user` allow you to list, add, remove Users from a Group.",
 			TraverseChildren: true,
 		},
 	}

@@ -18,7 +18,7 @@ func k8sKubeconfig() *core.Command {
 			Use:              "kubeconfig",
 			Aliases:          []string{"cfg", "config"},
 			Short:            "Kubernetes Kubeconfig Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl k8s kubeconfig` + "`" + ` allows you to get the configuration file of a Kubernetes Cluster.`,
+			Long:             "The sub-command of `ionosctl k8s kubeconfig` allows you to get the configuration file of a Kubernetes Cluster.",
 			TraverseChildren: true,
 		},
 	}

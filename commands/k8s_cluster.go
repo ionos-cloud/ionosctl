@@ -24,7 +24,7 @@ func k8s() *core.Command {
 		Command: &cobra.Command{
 			Use:              "k8s",
 			Short:            "Kubernetes Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s` + "`" + ` allow you to list, get, create, update, delete Kubernetes Clusters.`,
+			Long:             "The sub-commands of `ionosctl k8s` allow you to list, get, create, update, delete Kubernetes Clusters.",
 			TraverseChildren: true,
 		},
 	}
@@ -44,7 +44,7 @@ func k8sCluster() *core.Command {
 			Use:              "cluster",
 			Aliases:          []string{"c"},
 			Short:            "Kubernetes Cluster Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl k8s cluster` + "`" + ` allow you to list, get, create, update, delete Kubernetes Clusters.`,
+			Long:             "The sub-commands of `ionosctl k8s cluster` allow you to list, get, create, update, delete Kubernetes Clusters.",
 			TraverseChildren: true,
 		},
 	}

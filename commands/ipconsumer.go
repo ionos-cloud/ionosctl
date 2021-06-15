@@ -24,7 +24,7 @@ func ipconsumer() *core.Command {
 			Use:              "ipconsumer",
 			Aliases:          []string{"ipc"},
 			Short:            "Ip Consumer Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl ipconsumer` + "`" + ` allows you to list information about where each IP address from an IpBlock is being used.`,
+			Long:             "The sub-command of `ionosctl ipconsumer` allows you to list information about where each IP address from an IpBlock is being used.",
 			TraverseChildren: true,
 		},
 	}

@@ -27,7 +27,7 @@ func backupunit() *core.Command {
 			Use:              "backupunit",
 			Aliases:          []string{"b", "backup"},
 			Short:            "BackupUnit Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl backupunit` + "`" + ` allow you to list, get, create, update, delete BackupUnits under your account.`,
+			Long:             "The sub-commands of `ionosctl backupunit` allow you to list, get, create, update, delete BackupUnits under your account.",
 			TraverseChildren: true,
 		},
 	}

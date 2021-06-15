@@ -24,7 +24,7 @@ func resource() *core.Command {
 			Use:              "resource",
 			Aliases:          []string{"res"},
 			Short:            "Resource Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl resource` + "`" + ` allow you to list, get Resources.`,
+			Long:             "The sub-commands of `ionosctl resource` allow you to list, get Resources.",
 			TraverseChildren: true,
 		},
 	}
@@ -118,7 +118,7 @@ func groupResource() *core.Command {
 			Use:              "resource",
 			Aliases:          []string{"res"},
 			Short:            "Group Resource Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl group resource` + "`" + ` allows you to list Resources from a Group.`,
+			Long:             "The sub-command of `ionosctl group resource` allows you to list Resources from a Group.",
 			TraverseChildren: true,
 		},
 	}
