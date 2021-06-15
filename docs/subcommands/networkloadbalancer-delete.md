@@ -46,7 +46,7 @@ Required values to run command:
   -i, --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
-  -t, --timeout int                     Timeout option for Request for Network Load Balancer deletion [seconds] (default 60)
+  -t, --timeout int                     Timeout option for Request for Network Load Balancer deletion [seconds] (default 300)
   -w, --wait-for-request                Wait for the Request for Network Load Balancer deletion to be executed
 ```
 

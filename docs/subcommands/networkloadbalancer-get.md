@@ -44,7 +44,7 @@ Required values to run command:
   -i, --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
-  -t, --timeout int                     Timeout option for waiting for Network Load Balancer to be in AVAILABLE state [seconds] (default 60)
+  -t, --timeout int                     Timeout option for waiting for Network Load Balancer to be in AVAILABLE state [seconds] (default 300)
   -W, --wait-for-state                  Wait for specified Network Load Balancer to be in AVAILABLE state
 ```
 

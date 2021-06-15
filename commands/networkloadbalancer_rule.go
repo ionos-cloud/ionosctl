@@ -135,7 +135,7 @@ Required values to run command:
 		return []string{"ROUND_ROBIN", "RANDOM", "SOURCE_IP", "LEAST_CONNECTION"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Forwarding Rule creation [seconds]")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule creation [seconds]")
 
 	/*
 		Update Command
@@ -185,7 +185,7 @@ Required values to run command:
 	update.AddIntFlag(config.ArgConnectionTimeout, "", 5000, "[Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed")
 	update.AddIntFlag(config.ArgTargetTimeout, "", 5000, "[Health Check] TargetTimeout specifies the maximum inactivity time (in milliseconds) on the target VM side")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule update to be executed")
-	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Forwarding Rule update [seconds]")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule update [seconds]")
 
 	/*
 		Delete Command
@@ -224,7 +224,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Forwarding Rule deletion [seconds]")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule deletion [seconds]")
 
 	nlbRuleCmd.AddCommand(nlbRuleTarget())
 

@@ -57,7 +57,7 @@ Required values to run command:
       --rule-id string                  The unique ForwardingRule Id (required)
       --target-ip string                IP of a balanced target VM (required)
       --target-port string              Port of the balanced target service. Range: 1 to 65535 (required)
-  -t, --timeout int                     Timeout option for Request for Forwarding Rule Target deletion [seconds] (default 60)
+  -t, --timeout int                     Timeout option for Request for Forwarding Rule Target deletion [seconds] (default 300)
   -w, --wait-for-request                Wait for the Request for Forwarding Rule Target deletion to be executed
 ```
 

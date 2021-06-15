@@ -133,7 +133,7 @@ Required values to run command:
 	})
 	create.AddStringFlag(config.ArgBucketName, config.ArgBucketNameShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer FlowLog creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Network Load Balancer FlowLog creation [seconds]")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer FlowLog creation [seconds]")
 	create.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols, utils.ColsMessage(defaultFlowLogCols))
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
@@ -186,7 +186,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgBucketName, config.ArgBucketNameShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer FlowLog update to be executed")
-	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Network Load Balancer FlowLog update [seconds]")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer FlowLog update [seconds]")
 	update.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols, utils.ColsMessage(defaultFlowLogCols))
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultFlowLogCols, cobra.ShellCompDirectiveNoFileComp
@@ -229,7 +229,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer FlowLog deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Network Load Balancer FlowLog deletion [seconds]")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer FlowLog deletion [seconds]")
 
 	return networkloadbalancerFlowLogCmd
 }

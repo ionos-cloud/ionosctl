@@ -216,6 +216,7 @@ const (
 	DefaultDhcp            = true
 	DefaultFirewallActive  = false
 	DefaultTimeoutSeconds  = int(60)
+	NlbTimeoutSeconds      = int(300)
 	K8sTimeoutSeconds      = int(600)
 	DefaultServerCores     = 2
 	DefaultServerRAM       = 256

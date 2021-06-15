@@ -117,7 +117,7 @@ Required values to run command:
 	add.AddBoolFlag(config.ArgCheck, "", true, "[Health Check] Check specifies whether the target VM's health is checked")
 	add.AddBoolFlag(config.ArgMaintenance, "", false, "[Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not")
 	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Target creation to be executed")
-	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target creation [seconds]")
+	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target creation [seconds]")
 
 	/*
 		Remove Command
@@ -160,7 +160,7 @@ Required values to run command:
 	removeCmd.AddStringFlag(config.ArgTargetIp, "", "", "IP of a balanced target VM "+config.RequiredFlag)
 	removeCmd.AddStringFlag(config.ArgTargetPort, "", "", "Port of the balanced target service. Range: 1 to 65535 "+config.RequiredFlag)
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Target deletion to be executed")
-	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target deletion [seconds]")
+	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target deletion [seconds]")
 
 	return nlbRuleTargetCmd
 }

@@ -51,7 +51,7 @@ Required values to run command:
       --private-ips strings             Collection of private IP addresses with subnet mask of the Network Load Balancer
   -q, --quiet                           Quiet output
       --target-lan int                  Id of the balanced private target LAN (default 1)
-  -t, --timeout int                     Timeout option for Request for Network Load Balancer update [seconds] (default 60)
+  -t, --timeout int                     Timeout option for Request for Network Load Balancer update [seconds] (default 300)
   -w, --wait-for-request                Wait for the Request for Network Load Balancer update to be executed
 ```
 

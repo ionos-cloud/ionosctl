@@ -53,7 +53,7 @@ Required values to run command:
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
   -i, --rule-id string                  The unique ForwardingRule Id (required)
-  -t, --timeout int                     Timeout option for Request for Forwarding Rule deletion [seconds] (default 60)
+  -t, --timeout int                     Timeout option for Request for Forwarding Rule deletion [seconds] (default 300)
   -w, --wait-for-request                Wait for the Request for Forwarding Rule deletion to be executed
 ```
 

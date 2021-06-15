@@ -80,7 +80,7 @@ func networkloadbalancer() *core.Command {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified Network Load Balancer to be in AVAILABLE state")
-	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for waiting for Network Load Balancer to be in AVAILABLE state [seconds]")
+	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for waiting for Network Load Balancer to be in AVAILABLE state [seconds]")
 
 	/*
 		Create Command
@@ -113,7 +113,7 @@ Required values to run command:
 	create.AddStringSliceFlag(config.ArgIps, "", []string{""}, "Collection of IP addresses of the Network Load Balancer")
 	create.AddStringSliceFlag(config.ArgPrivateIps, "", []string{""}, "Collection of private IP addresses with subnet mask of the Network Load Balancer")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer creation to be executed")
-	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Network Load Balancer creation [seconds]")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer creation [seconds]")
 
 	/*
 		Update Command
@@ -151,7 +151,7 @@ Required values to run command:
 	update.AddStringSliceFlag(config.ArgIps, "", []string{""}, "Collection of IP addresses of the Network Load Balancer")
 	update.AddStringSliceFlag(config.ArgPrivateIps, "", []string{""}, "Collection of private IP addresses with subnet mask of the Network Load Balancer")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer update to be executed")
-	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Network Load Balancer update [seconds]")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer update [seconds]")
 
 	/*
 		Delete Command
@@ -184,7 +184,7 @@ Required values to run command:
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer deletion to be executed")
-	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Network Load Balancer deletion [seconds]")
+	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer deletion [seconds]")
 
 	networkloadbalancerCmd.AddCommand(networkloadbalancerFlowLog())
 	networkloadbalancerCmd.AddCommand(networkloadbalancerRule())
