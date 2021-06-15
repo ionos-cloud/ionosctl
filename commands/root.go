@@ -155,6 +155,7 @@ func addCommands() {
 	rootCmd.AddCommand(volume())
 	rootCmd.AddCommand(lan())
 	rootCmd.AddCommand(natgateway())
+	rootCmd.AddCommand(networkloadbalancer())
 	rootCmd.AddCommand(nic())
 	rootCmd.AddCommand(loadBalancer())
 	rootCmd.AddCommand(ipblock())

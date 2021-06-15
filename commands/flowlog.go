@@ -315,7 +315,11 @@ func getFlowLogPrint(resp *resources.Response, c *core.CommandConfig, rule []res
 		if rule != nil {
 			r.OutputJSON = rule
 			r.KeyValue = getFlowLogsKVMaps(rule)
-			r.Columns = getFlowLogsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			if c.Resource != c.Namespace {
+				r.Columns = getFlowLogsCols(core.GetFlagName(c.NS, config.ArgCols), c.Printer.GetStderr())
+			} else {
+				r.Columns = getFlowLogsCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			}
 		}
 	}
 	return r

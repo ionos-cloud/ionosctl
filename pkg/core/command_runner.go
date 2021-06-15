@@ -125,29 +125,30 @@ type CommandConfig struct {
 	Printer printer.PrintService
 	initCfg func(commandConfig *CommandConfig) error
 	// Resources Services
-	Locations     func() resources.LocationsService
-	DataCenters   func() resources.DatacentersService
-	Servers       func() resources.ServersService
-	Volumes       func() resources.VolumesService
-	Lans          func() resources.LansService
-	NatGateways   func() resources.NatGatewaysService
-	Nics          func() resources.NicsService
-	Loadbalancers func() resources.LoadbalancersService
-	Requests      func() resources.RequestsService
-	Images        func() resources.ImagesService
-	Snapshots     func() resources.SnapshotsService
-	IpBlocks      func() resources.IpBlocksService
-	FirewallRules func() resources.FirewallRulesService
-	FlowLogs      func() resources.FlowLogsService
-	Labels        func() resources.LabelResourcesService
-	Contracts     func() resources.ContractsService
-	Users         func() resources.UsersService
-	Groups        func() resources.GroupsService
-	S3Keys        func() resources.S3KeysService
-	BackupUnit    func() resources.BackupUnitsService
-	Pccs          func() resources.PccsService
-	K8s           func() resources.K8sService
-	Templates     func() resources.TemplatesService
+	Locations            func() resources.LocationsService
+	DataCenters          func() resources.DatacentersService
+	Servers              func() resources.ServersService
+	Volumes              func() resources.VolumesService
+	Lans                 func() resources.LansService
+	NatGateways          func() resources.NatGatewaysService
+	NetworkLoadBalancers func() resources.NetworkLoadBalancersService
+	Nics                 func() resources.NicsService
+	Loadbalancers        func() resources.LoadbalancersService
+	Requests             func() resources.RequestsService
+	Images               func() resources.ImagesService
+	Snapshots            func() resources.SnapshotsService
+	IpBlocks             func() resources.IpBlocksService
+	FirewallRules        func() resources.FirewallRulesService
+	FlowLogs             func() resources.FlowLogsService
+	Labels               func() resources.LabelResourcesService
+	Contracts            func() resources.ContractsService
+	Users                func() resources.UsersService
+	Groups               func() resources.GroupsService
+	S3Keys               func() resources.S3KeysService
+	BackupUnit           func() resources.BackupUnitsService
+	Pccs                 func() resources.PccsService
+	K8s                  func() resources.K8sService
+	Templates            func() resources.TemplatesService
 	// Context
 	Context context.Context
 }
@@ -178,6 +179,9 @@ func (c *CommandConfig) InitServices(client *resources.Client) error {
 	c.Volumes = func() resources.VolumesService { return resources.NewVolumeService(client, c.Context) }
 	c.Lans = func() resources.LansService { return resources.NewLanService(client, c.Context) }
 	c.NatGateways = func() resources.NatGatewaysService { return resources.NewNatGatewayService(client, c.Context) }
+	c.NetworkLoadBalancers = func() resources.NetworkLoadBalancersService {
+		return resources.NewNetworkLoadBalancerService(client, c.Context)
+	}
 	c.Nics = func() resources.NicsService { return resources.NewNicService(client, c.Context) }
 	c.Loadbalancers = func() resources.LoadbalancersService { return resources.NewLoadbalancerService(client, c.Context) }
 	c.IpBlocks = func() resources.IpBlocksService { return resources.NewIpBlockService(client, c.Context) }

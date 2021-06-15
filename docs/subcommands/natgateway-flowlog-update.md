@@ -19,7 +19,7 @@ For `natgateway` command:
 
 For `flowlog` command:
 ```text
-[f]
+[f fl]
 ```
 
 For `update` command:
