@@ -24,7 +24,7 @@ func datacenter() *core.Command {
 			Use:              "datacenter",
 			Aliases:          []string{"d", "dc"},
 			Short:            "Data Center Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl datacenter` + "`" + ` allow you to create, list, get, update and delete Data Centers.`,
+			Long:             "The sub-commands of `ionosctl datacenter` allow you to create, list, get, update and delete Data Centers.",
 			TraverseChildren: true,
 		},
 	}

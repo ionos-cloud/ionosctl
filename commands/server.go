@@ -33,7 +33,7 @@ func server() *core.Command {
 			Use:              "server",
 			Aliases:          []string{"s", "svr"},
 			Short:            "Server Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl server` + "`" + ` allow you to create, list, get, update, delete, start, stop, reboot, suspend, resume Servers.`,
+			Long:             "The sub-commands of `ionosctl server` allow you to create, list, get, update, delete, start, stop, reboot, suspend, resume Servers.",
 			TraverseChildren: true,
 		},
 	}
