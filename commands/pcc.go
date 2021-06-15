@@ -24,7 +24,7 @@ func pcc() *core.Command {
 		Command: &cobra.Command{
 			Use:              "pcc",
 			Short:            "Private Cross-Connect Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl pcc` + "`" + ` allow you to list, get, create, update, delete Private Cross-Connect. To add Private Cross-Connect to a Lan, check the ` + "`" + `ionosctl lan update` + "`" + ` command.`,
+			Long:             "The sub-commands of `ionosctl pcc` allow you to list, get, create, update, delete Private Cross-Connect. To add Private Cross-Connect to a Lan, check the `ionosctl lan update` command.",
 			TraverseChildren: true,
 		},
 	}
@@ -256,7 +256,7 @@ func peers() *core.Command {
 		Command: &cobra.Command{
 			Use:              "peers",
 			Short:            "Private Cross-Connect Peers Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl pcc peers` + "`" + ` allows you to get a list of Peers from a Private Cross-Connect.`,
+			Long:             "The sub-command of `ionosctl pcc peers` allows you to get a list of Peers from a Private Cross-Connect.",
 			TraverseChildren: true,
 		},
 	}

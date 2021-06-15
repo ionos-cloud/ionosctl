@@ -25,7 +25,7 @@ func contract() *core.Command {
 			Use:              "contract",
 			Aliases:          []string{"c"},
 			Short:            "Contract Resources Operations",
-			Long:             `The sub-command of ` + "`" + `ionosctl contract` + "`" + ` allows you to see information about Contract Resources for your account.`,
+			Long:             "The sub-command of `ionosctl contract` allows you to see information about Contract Resources for your account.",
 			TraverseChildren: true,
 		},
 	}

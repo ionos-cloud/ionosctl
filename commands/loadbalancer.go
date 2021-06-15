@@ -24,7 +24,7 @@ func loadBalancer() *core.Command {
 			Use:              "loadbalancer",
 			Aliases:          []string{"lb"},
 			Short:            "Load Balancer Operations",
-			Long:             `The sub-commands of ` + "`" + `ionosctl loadbalancer` + "`" + ` manage your Load Balancers on your account. With the ` + "`" + `ionosctl loadbalancer` + "`" + ` command, you can list, create, delete Load Balancers and manage their configuration details.`,
+			Long:             "The sub-commands of `ionosctl loadbalancer` manage your Load Balancers on your account. With the `ionosctl loadbalancer` command, you can list, create, delete Load Balancers and manage their configuration details.",
 			TraverseChildren: true,
 		},
 	}
