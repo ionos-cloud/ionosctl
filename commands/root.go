@@ -33,7 +33,7 @@ var (
 	Major string
 	Minor string
 	Patch string
-	// Label - If label is not set, it will append -dev to latest version
+	// Label - If label is not set, the version will be: DEV
 	// If label is set as `release`, it will show the version released
 	Label string
 
