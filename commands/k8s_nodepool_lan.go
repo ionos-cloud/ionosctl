@@ -115,7 +115,7 @@ Required values to run command:
 * Lan Id`,
 		Example:    removeK8sNodePoolLanExample,
 		PreCmdRun:  PreRunK8sClusterNodePoolLanIds,
-		CmdRun:     RunK8sNodePoolLanLanRemove,
+		CmdRun:     RunK8sNodePoolLanRemove,
 		InitClient: true,
 	})
 	removeCmd.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
@@ -146,9 +146,12 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 	if properties, ok := k8ss.GetPropertiesOk(); ok && properties != nil {
 		if lans, ok := properties.GetLansOk(); ok && lans != nil {
 			return c.Printer.Print(getK8sNodePoolLanPrint(c, getK8sNodePoolLans(lans)))
+		} else {
+			return errors.New("error getting node pool lans")
 		}
+	} else {
+		return errors.New("error getting node pool properties")
 	}
-	return nil
 }
 
 func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
@@ -171,7 +174,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 	return c.Printer.Print(getK8sNodePoolLanPrint(c, getK8sNodePoolLansForPut(ngNew)))
 }
 
-func RunK8sNodePoolLanLanRemove(c *core.CommandConfig) error {
+func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove node pool lan"); err != nil {
 		return err
 	}
