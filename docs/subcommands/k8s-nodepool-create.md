@@ -54,9 +54,9 @@ Required values to run a command:
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
       --ram string                 RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB (default "2048")
-      --storage-size int           The total allocated storage capacity of a Node (default 10)
+      --storage-size string        The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
       --storage-type string        Storage Type (default "HDD")
-  -t, --timeout int                Timeout option for waiting for NodePool/Request [seconds] (default 600)
+  -t, --timeout int                Timeout option for waiting for NodePool to be in ACTIVE state[seconds] (default 600)
   -W, --wait-for-state             Wait for the new NodePool to be in ACTIVE state
 ```
 

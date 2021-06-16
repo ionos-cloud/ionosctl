@@ -119,6 +119,7 @@ const (
 	ArgServerId       = "server-id"
 	ArgNicId          = "nic-id"
 	ArgLanId          = "lan-id"
+	ArgLanIds         = "lan-ids"
 	ArgLocationId     = "location-id"
 	ArgVolumeId       = "volume-id"
 	ArgLoadBalancerId = "loadbalancer-id"
