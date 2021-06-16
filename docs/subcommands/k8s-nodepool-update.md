@@ -43,7 +43,7 @@ Required values to run command:
   -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cluster-id string         The unique K8s Cluster Id (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
+                                  Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --dhcp                      Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP (default true)
   -f, --force                     Force command to execute without user input
@@ -61,7 +61,7 @@ Required values to run command:
   -o, --output string             Desired output format [text|json] (default "text")
       --public-ips strings        Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2
   -q, --quiet                     Quiet output
-  -t, --timeout int               Timeout option for waiting for NodePool/Request [seconds] (default 600)
+  -t, --timeout int               Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
   -W, --wait-for-state            Wait for the new NodePool to be in ACTIVE state
 ```
 

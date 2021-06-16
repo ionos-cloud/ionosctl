@@ -142,9 +142,12 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(config.ArgStorageSize, "", 10, "The total allocated storage capacity of a Node")
+	create.AddStringFlag(config.ArgStorageSize, "", strconv.Itoa(config.DefaultVolumeSize), "The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state[seconds]")
 
 	/*
 		Update Command
@@ -195,7 +198,7 @@ Required values to run command:
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
 
 	/*
 		Delete Command
@@ -480,7 +483,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 
 var defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 
-var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State",
+var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
 	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "PublicIps", "AvailableUpgradeVersions"}
 
 type K8sNodePoolPrint struct {
@@ -492,6 +495,7 @@ type K8sNodePoolPrint struct {
 	CpuFamily                string   `json:"CpuFamily,omitempty"`
 	StorageType              string   `json:"StorageType,omitempty"`
 	State                    string   `json:"State,omitempty"`
+	LanIds                   []int32  `json:"LanIds,omitempty"`
 	CoresCount               int32    `json:"CoresCount,omitempty"`
 	RamSize                  int32    `json:"RamSize,omitempty"`
 	AvailabilityZone         string   `json:"AvailabilityZone,omitempty"`
@@ -526,6 +530,7 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 			"CpuFamily":                "CpuFamily",
 			"StorageType":              "StorageType",
 			"State":                    "State",
+			"LanIds":                   "LanIds",
 			"CoresCount":               "CoresCount",
 			"RamSize":                  "RamSize",
 			"AvailabilityZone":         "AvailabilityZone",
@@ -626,6 +631,15 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 				if max, ok := autoScaling.GetMaxNodeCountOk(); ok && max != nil {
 					uPrint.AutoScaling = fmt.Sprintf("%s Max: %v", uPrint.AutoScaling, *max)
 				}
+			}
+			if lans, ok := properties.GetLansOk(); ok && lans != nil {
+				lanIds := make([]int32, 0)
+				for _, lanItem := range *lans {
+					if lanId, ok := lanItem.GetIdOk(); ok && lanId != nil {
+						lanIds = append(lanIds, *lanId)
+					}
+				}
+				uPrint.LanIds = lanIds
 			}
 		}
 		if meta, ok := u.GetMetadataOk(); ok && meta != nil {
