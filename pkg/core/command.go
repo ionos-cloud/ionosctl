@@ -69,6 +69,16 @@ func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []stri
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
 }
 
+func (c *Command) AddIntSliceFlag(name, shorthand string, defaultValue []int, desc string) {
+	flags := c.Command.Flags()
+	if shorthand != "" {
+		flags.IntSliceP(name, shorthand, defaultValue, desc)
+	} else {
+		flags.IntSlice(name, defaultValue, desc)
+	}
+	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+}
+
 func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc string) {
 	flags := c.Command.Flags()
 	if shorthand != "" {

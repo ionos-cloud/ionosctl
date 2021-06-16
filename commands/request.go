@@ -47,7 +47,7 @@ func request() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Requests",
 		LongDesc:   "Use this command to list all Requests on your account",
-		Example:    "",
+		Example:    listRequestExample,
 		PreCmdRun:  noPreRun,
 		CmdRun:     RunRequestList,
 		InitClient: true,

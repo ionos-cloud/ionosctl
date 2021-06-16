@@ -39,3 +39,9 @@ Use this command to list all Requests on your account
   -q, --quiet            Quiet output
 ```
 
+## Examples
+
+```text
+ionosctl request list
+```
+

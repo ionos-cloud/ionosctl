@@ -47,6 +47,11 @@ var (
 				StorageType:      &testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
 				CoresCount:       &testNodepoolIntVar,
+				Lans: &[]ionoscloud.KubernetesNodePoolLan{
+					{
+						Id: &testNodepoolIntNewVar,
+					},
+				},
 			},
 		},
 	}
@@ -246,6 +251,7 @@ func TestRunK8sNodePoolList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testNodepoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCols), allK8sNodePoolCols)
 		rm.K8s.EXPECT().ListNodePools(testNodepoolVar).Return(nodepools, nil, nil)
 		err := RunK8sNodePoolList(cfg)
 		assert.NoError(t, err)
@@ -503,7 +509,7 @@ func TestRunK8sNodePoolUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testNodepoolIntNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanIds), []int{int(testNodepoolIntNewVar)})
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodePoolId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublicIps), []string{testNodepoolNewVar, testNodepoolNewVar})
@@ -532,7 +538,7 @@ func TestRunK8sNodePoolUpdateWait(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testNodepoolIntNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanIds), []int{int(testNodepoolIntNewVar)})
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodePoolId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublicIps), []string{testNodepoolNewVar, testNodepoolNewVar})
@@ -562,7 +568,7 @@ func TestRunK8sNodePoolUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testNodepoolIntNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanIds), []int{int(testNodepoolIntNewVar)})
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodePoolId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublicIps), []string{testNodepoolNewVar, testNodepoolNewVar})
@@ -608,7 +614,7 @@ func TestRunK8sNodePoolUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testNodepoolIntNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanIds), []int{int(testNodepoolIntNewVar)})
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodePoolId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublicIps), []string{testNodepoolNewVar, testNodepoolNewVar})
@@ -637,7 +643,7 @@ func TestRunK8sNodePoolUpdateGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodeCount), testNodepoolIntNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testNodepoolIntNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanIds), []int{int(testNodepoolIntNewVar)})
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodePoolId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublicIps), []string{testNodepoolNewVar, testNodepoolNewVar})
