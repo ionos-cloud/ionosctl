@@ -456,7 +456,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 
 var defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 
-var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State",
+var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
 	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "PublicIps", "AvailableUpgradeVersions"}
 
 type K8sNodePoolPrint struct {
@@ -468,6 +468,7 @@ type K8sNodePoolPrint struct {
 	CpuFamily                string   `json:"CpuFamily,omitempty"`
 	StorageType              string   `json:"StorageType,omitempty"`
 	State                    string   `json:"State,omitempty"`
+	LanIds                   []int32  `json:"LanIds,omitempty"`
 	CoresCount               int32    `json:"CoresCount,omitempty"`
 	RamSize                  int32    `json:"RamSize,omitempty"`
 	AvailabilityZone         string   `json:"AvailabilityZone,omitempty"`
@@ -502,6 +503,7 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 			"CpuFamily":                "CpuFamily",
 			"StorageType":              "StorageType",
 			"State":                    "State",
+			"LanIds":                   "LanIds",
 			"CoresCount":               "CoresCount",
 			"RamSize":                  "RamSize",
 			"AvailabilityZone":         "AvailabilityZone",
@@ -602,6 +604,15 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 				if max, ok := autoScaling.GetMaxNodeCountOk(); ok && max != nil {
 					uPrint.AutoScaling = fmt.Sprintf("%s Max: %v", uPrint.AutoScaling, *max)
 				}
+			}
+			if lans, ok := properties.GetLansOk(); ok && lans != nil {
+				lanIds := make([]int32, 0)
+				for _, lanItem := range *lans {
+					if lanId, ok := lanItem.GetIdOk(); ok && lanId != nil {
+						lanIds = append(lanIds, *lanId)
+					}
+				}
+				uPrint.LanIds = lanIds
 			}
 		}
 		if meta, ok := u.GetMetadataOk(); ok && meta != nil {
