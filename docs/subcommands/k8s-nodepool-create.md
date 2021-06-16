@@ -28,6 +28,8 @@ Use this command to create a Node Pool into an existing Kubernetes Cluster. The 
 
 You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
 
+Note: If you want to attach multiple LANs to Node Pool, use `--lan-ids=LAN_ID1,LAN_ID2` flag. If you want to also set a Route Network, Route GatewayIp for LAN use `ionosctl k8s nodepool lan add` command for each LAN you want to add.
+
 Required values to run a command:
 
 * K8s Cluster Id
@@ -46,9 +48,11 @@ Required values to run a command:
       --cores int                  The total number of cores for the Node (default 2)
       --cpu-family string          CPU Type (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
+      --dhcp                       Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP (default true)
   -f, --force                      Force command to execute without user input
   -h, --help                       help for create
       --k8s-version string         The K8s version for the NodePool. If not set, it will be used the default one
+      --lan-ids ints               Collection of LAN Ids of existing LANs to be attached to worker Nodes
   -n, --name string                The name for the K8s NodePool (required)
       --node-count int             The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
   -o, --output string              Desired output format [text|json] (default "text")
