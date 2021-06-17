@@ -52,7 +52,7 @@ func cpu() *core.Command {
 		CmdRun:     RunLocationCpuList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgLocationId, config.ArgIdShort, "", config.RequiredFlagLocationId)
+	list.AddStringFlag(config.ArgLocationId, "", "", config.RequiredFlagLocationId)
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
