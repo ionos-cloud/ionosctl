@@ -28,7 +28,7 @@ var (
 					Message: &testRequestVar,
 				},
 			},
-			CreatedDate: &testRequestDate,
+			CreatedDate: &testIonosTime,
 			CreatedBy:   &testRequestVar,
 		},
 		Href: &testRequestPathVar,
@@ -43,7 +43,7 @@ var (
 			Method: &testRequestMethodPut,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
-			CreatedDate: &testRequestDate,
+			CreatedDate: &testIonosTime,
 		},
 	}
 	testRequestUpdatedPatch = ionoscloud.Request{
@@ -51,7 +51,7 @@ var (
 			Method: &testRequestMethodPatch,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
-			CreatedDate: &testRequestDate,
+			CreatedDate: &testIonosTime,
 		},
 	}
 	testRequestDeleted = ionoscloud.Request{
@@ -59,7 +59,7 @@ var (
 			Method: &testRequestMethodDelete,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
-			CreatedDate: &testRequestDate,
+			CreatedDate: &testIonosTime,
 		},
 	}
 	testRequestCreated = ionoscloud.Request{
@@ -67,7 +67,7 @@ var (
 			Method: &testRequestMethodPost,
 		},
 		Metadata: &ionoscloud.RequestMetadata{
-			CreatedDate: &testRequestDate,
+			CreatedDate: &testIonosTime,
 		},
 	}
 	testRequests = resources.Requests{
@@ -76,7 +76,7 @@ var (
 			Items: &[]ionoscloud.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
 		},
 	}
-	testRequestDate         = ionoscloud.IonosTime{Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.Now().Location())}
+	testIonosTime           = ionoscloud.IonosTime{Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.Now().Location())}
 	testRequestVar          = "test-request"
 	testRequestMethodPut    = "PUT"
 	testRequestMethodPatch  = "PATCH"
