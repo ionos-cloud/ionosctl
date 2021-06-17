@@ -27,7 +27,7 @@ func image() *core.Command {
 	imageCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "image",
-			Aliases:          []string{"testImage"},
+			Aliases:          []string{"img"},
 			Short:            "Image Operations",
 			Long:             "The sub-commands of `ionosctl image` allow you to see information about the Images available.",
 			TraverseChildren: true,
@@ -51,14 +51,14 @@ func image() *core.Command {
 		ShortDesc: "List Images",
 		LongDesc: `Use this command to get a full list of available public Images. 
 
-Use flags to retrieve a sorted list of Images:
+Use flags to retrieve a list of Images:
 
-* by location, using ` + "`" + `ionosctl image list --location LOCATION_ID` + "`" + `
-* by licence type, using ` + "`" + `ionosctl image list --licence-type LICENCE_TYPE` + "`" + `
-* by Image type, using ` + "`" + `ionosctl image list --type IMAGE_TYPE` + "`" + `
-* by Image alias, using ` + "`" + `ionosctl image list --image-alias IMAGE_ALIAS` + "`" + `; IMAGE_ALIAS can be either the Image Alias ` + "`" + `--image-alias ubuntu:latest` + "`" + ` or part of Image Alias e.g. ` + "`" + `--image-alias latest` + "`" + `
-* by the time the Image was created, take the first N Image, using ` + "`" + `ionosctl image list --latest N` + "`" + `
-* by multiple of above options, using ` + "`" + `ionosctl image list --type IMAGE_TYPE --location LOCATION_ID --latest N` + "`" + ``,
+* sorting by location, using ` + "`" + `ionosctl image list --location LOCATION_ID` + "`" + `
+* sorting by licence type, using ` + "`" + `ionosctl image list --licence-type LICENCE_TYPE` + "`" + `
+* sorting by Image type, using ` + "`" + `ionosctl image list --type IMAGE_TYPE` + "`" + `
+* sorting by Image alias, using ` + "`" + `ionosctl image list --image-alias IMAGE_ALIAS` + "`" + `; IMAGE_ALIAS can be either the Image alias ` + "`" + `--image-alias ubuntu:latest` + "`" + ` or part of Image alias e.g. ` + "`" + `--image-alias latest` + "`" + `
+* sorting by the time the Image was created, starting from now in descending order, take the first N Images, using ` + "`" + `ionosctl image list --latest N` + "`" + `
+* sorting by multiple of above options, using ` + "`" + `ionosctl image list --type IMAGE_TYPE --location LOCATION_ID --latest N` + "`" + ``,
 		Example:    listImagesExample,
 		PreCmdRun:  noPreRun,
 		CmdRun:     RunImageList,
@@ -77,7 +77,7 @@ Use flags to retrieve a sorted list of Images:
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(config.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by")
-	list.AddIntFlag(config.ArgLatest, "", 0, "Show the latest N Images, based on creation date. If not set, all Images will be printed")
+	list.AddIntFlag(config.ArgLatest, "", 0, "Show the latest N Images, based on creation date, in descending order. If not set, all Images will be printed")
 
 	/*
 		Get Command
@@ -145,7 +145,7 @@ func RunImageGet(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "Size"}
+	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "CreatedDate"}
 	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit", "CreatedDate", "CreatedBy", "CreatedByUserId"}
 )
 
@@ -391,14 +391,12 @@ func sortImagesByTime(images resources.Images, n int) resources.Images {
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		imageItems := *items
 		if len(imageItems) > 0 {
-			// Sort Requests using time.Time
-			// The most recent Request will be printed first
+			// Sort Requests using time.Time, in descending order
 			sort.SliceStable(imageItems, func(i, j int) bool {
 				return imageItems[i].Metadata.CreatedDate.Time.After(imageItems[j].Metadata.CreatedDate.Time)
 			})
 		}
 		if len(imageItems) >= n {
-			// Take the first N Requests
 			imageItems = imageItems[:n]
 		}
 		images.Items = &imageItems
