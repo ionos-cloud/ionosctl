@@ -21,32 +21,38 @@ var (
 	groupTest = resources.Group{
 		Group: ionoscloud.Group{
 			Properties: &ionoscloud.GroupProperties{
-				Name:                 &testGroupVar,
-				CreateDataCenter:     &testGroupBoolVar,
-				CreateSnapshot:       &testGroupBoolVar,
-				ReserveIp:            &testGroupBoolVar,
-				AccessActivityLog:    &testGroupBoolVar,
-				CreatePcc:            &testGroupBoolVar,
-				S3Privilege:          &testGroupBoolVar,
-				CreateBackupUnit:     &testGroupBoolVar,
-				CreateInternetAccess: &testGroupBoolVar,
-				CreateK8sCluster:     &testGroupBoolVar,
+				Name:                        &testGroupVar,
+				CreateDataCenter:            &testGroupBoolVar,
+				CreateSnapshot:              &testGroupBoolVar,
+				ReserveIp:                   &testGroupBoolVar,
+				AccessActivityLog:           &testGroupBoolVar,
+				CreatePcc:                   &testGroupBoolVar,
+				S3Privilege:                 &testGroupBoolVar,
+				CreateBackupUnit:            &testGroupBoolVar,
+				CreateInternetAccess:        &testGroupBoolVar,
+				CreateK8sCluster:            &testGroupBoolVar,
+				CreateFlowLog:               &testGroupBoolVar,
+				AccessAndManageMonitoring:   &testGroupBoolVar,
+				AccessAndManageCertificates: &testGroupBoolVar,
 			},
 		},
 	}
 	groupTestNew = resources.Group{
 		Group: ionoscloud.Group{
 			Properties: &ionoscloud.GroupProperties{
-				Name:                 &testGroupNewVar,
-				CreateDataCenter:     &testGroupBoolNewVar,
-				CreateSnapshot:       &testGroupBoolNewVar,
-				ReserveIp:            &testGroupBoolNewVar,
-				AccessActivityLog:    &testGroupBoolNewVar,
-				CreatePcc:            &testGroupBoolNewVar,
-				S3Privilege:          &testGroupBoolNewVar,
-				CreateBackupUnit:     &testGroupBoolNewVar,
-				CreateInternetAccess: &testGroupBoolNewVar,
-				CreateK8sCluster:     &testGroupBoolNewVar,
+				Name:                        &testGroupNewVar,
+				CreateDataCenter:            &testGroupBoolNewVar,
+				CreateSnapshot:              &testGroupBoolNewVar,
+				ReserveIp:                   &testGroupBoolNewVar,
+				AccessActivityLog:           &testGroupBoolNewVar,
+				CreatePcc:                   &testGroupBoolNewVar,
+				S3Privilege:                 &testGroupBoolNewVar,
+				CreateBackupUnit:            &testGroupBoolNewVar,
+				CreateInternetAccess:        &testGroupBoolNewVar,
+				CreateK8sCluster:            &testGroupBoolNewVar,
+				CreateFlowLog:               &testGroupBoolNewVar,
+				AccessAndManageMonitoring:   &testGroupBoolNewVar,
+				AccessAndManageCertificates: &testGroupBoolNewVar,
 			},
 		},
 	}
@@ -238,6 +244,9 @@ func TestRunGroupCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgReserveIp), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessLog), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Privilege), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateFlowLog), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessMonitoring), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessCerts), testGroupBoolVar)
 		rm.Group.EXPECT().Create(groupTest).Return(&groupTest, nil, nil)
 		err := RunGroupCreate(cfg)
 		assert.NoError(t, err)
@@ -261,6 +270,9 @@ func TestRunGroupCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgReserveIp), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessLog), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Privilege), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateFlowLog), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessMonitoring), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessCerts), testGroupBoolVar)
 		rm.Group.EXPECT().Create(groupTest).Return(&groupTestGet, &testResponse, nil)
 		err := RunGroupCreate(cfg)
 		assert.NoError(t, err)
@@ -284,6 +296,9 @@ func TestRunGroupCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgReserveIp), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessLog), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Privilege), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateFlowLog), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessMonitoring), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessCerts), testGroupBoolVar)
 		rm.Group.EXPECT().Create(groupTest).Return(&groupTestGet, nil, testGroupErr)
 		err := RunGroupCreate(cfg)
 		assert.Error(t, err)
@@ -308,6 +323,9 @@ func TestRunGroupCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgReserveIp), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessLog), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Privilege), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateFlowLog), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessMonitoring), testGroupBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessCerts), testGroupBoolVar)
 		rm.Group.EXPECT().Create(groupTest).Return(&groupTestGet, nil, nil)
 		err := RunGroupCreate(cfg)
 		assert.Error(t, err)
@@ -332,6 +350,9 @@ func TestRunGroupUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgReserveIp), testGroupBoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessLog), testGroupBoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Privilege), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateFlowLog), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessMonitoring), testGroupBoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessCerts), testGroupBoolNewVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestNew, nil, nil)
 		rm.Group.EXPECT().Update(testGroupVar, groupTestNew).Return(&groupNew, nil, nil)
 		err := RunGroupUpdate(cfg)
@@ -496,8 +517,8 @@ func TestGetGroupsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Name"})
-	getGroupCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("group", config.ArgCols), []string{"Name"})
+	getGroupCols(core.GetGlobalFlagName("group", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 }
@@ -507,8 +528,8 @@ func TestGetGroupsColsErr(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("resource", config.ArgCols), []string{"Unknown"})
-	getGroupCols(core.GetGlobalFlagName("resource", config.ArgCols), w)
+	viper.Set(core.GetGlobalFlagName("group", config.ArgCols), []string{"Unknown"})
+	getGroupCols(core.GetGlobalFlagName("group", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)

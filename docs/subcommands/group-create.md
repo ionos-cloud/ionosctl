@@ -33,26 +33,29 @@ Required values to run a command:
 ## Options
 
 ```text
-      --access-logs        The group will be allowed to access the activity log
-  -u, --api-url string     Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
-      --cols strings       Set of columns to be printed on output 
-                           Available columns: [GroupId Name CreateDataCenter CreateSnapshot ReserveIp AccessActivityLog CreatePcc S3Privilege CreateBackupUnit CreateInternetAccess CreateK8s] (default [GroupId,Name,CreateDataCenter,CreateSnapshot,ReserveIp,AccessActivityLog,CreatePcc,S3Privilege,CreateBackupUnit,CreateInternetAccess,CreateK8s])
-  -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --create-backup      The group will be able to manage Backup Units
-      --create-dc          The group will be allowed to create Data Centers
-      --create-k8s         The group will be allowed to create K8s Clusters
-      --create-nic         The group will be allowed to create NICs
-      --create-pcc         The group will be allowed to create PCCs
-      --create-snapshot    The group will be allowed to create Snapshots
-  -f, --force              Force command to execute without user input
-  -h, --help               help for create
-  -n, --name string        Name for the Group (required)
-  -o, --output string      Desired output format [text|json] (default "text")
-  -q, --quiet              Quiet output
-      --reserve-ip         The group will be allowed to reserve IP addresses
-      --s3privilege        The group will be allowed to manage S3
-  -t, --timeout int        Timeout option for Request for Group creation [seconds] (default 60)
-  -w, --wait-for-request   Wait for Request for Group creation to be executed
+      --access-certs        Privilege for a group to access and manage certificates
+      --access-logs         The group will be allowed to access the activity log
+      --access-monitoring   Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service
+  -u, --api-url string      Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
+      --cols strings        Set of columns to be printed on output 
+                            Available columns: [GroupId Name CreateDataCenter CreateSnapshot ReserveIp AccessActivityLog CreatePcc S3Privilege CreateBackupUnit CreateInternetAccess CreateK8s CreateFlowLog AccessAndManageMonitoring AccessAndManageCertificates] (default [GroupId,Name,CreateDataCenter,CreateSnapshot,CreatePcc,CreateBackupUnit,CreateInternetAccess,CreateK8s,ReserveIp])
+  -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --create-backup       The group will be able to manage Backup Units
+      --create-dc           The group will be allowed to create Data Centers
+      --create-flowlog      The group will be allowed to create Flow Logs
+      --create-k8s          The group will be allowed to create K8s Clusters
+      --create-nic          The group will be allowed to create NICs
+      --create-pcc          The group will be allowed to create PCCs
+      --create-snapshot     The group will be allowed to create Snapshots
+  -f, --force               Force command to execute without user input
+  -h, --help                help for create
+  -n, --name string         Name for the Group (required)
+  -o, --output string       Desired output format [text|json] (default "text")
+  -q, --quiet               Quiet output
+      --reserve-ip          The group will be allowed to reserve IP addresses
+      --s3privilege         The group will be allowed to manage S3
+  -t, --timeout int         Timeout option for Request for Group creation [seconds] (default 60)
+  -w, --wait-for-request    Wait for Request for Group creation to be executed
 ```
 
 ## Examples

@@ -97,6 +97,8 @@ func k8sNodePool() *core.Command {
 
 You can wait for the Node Pool to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
 
+Note: If you want to attach multiple LANs to Node Pool, use ` + "`" + `--lan-ids=LAN_ID1,LAN_ID2` + "`" + ` flag. If you want to also set a Route Network, Route GatewayIp for LAN use ` + "`" + `ionosctl k8s nodepool lan add` + "`" + ` command for each LAN you want to add.
+
 Required values to run a command:
 
 * K8s Cluster Id
@@ -117,6 +119,11 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddIntSliceFlag(config.ArgLanIds, "", []int{}, "Collection of LAN Ids of existing LANs to be attached to worker Nodes")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLanIds, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddBoolFlag(config.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP")
 	create.AddIntFlag(config.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
 	create.AddIntFlag(config.ArgCores, "", 2, "The total number of cores for the Node")
 	create.AddStringFlag(config.ArgRam, "", strconv.Itoa(2048), "RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB")
@@ -135,9 +142,12 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(config.ArgStorageSize, "", 10, "The total allocated storage capacity of a Node")
+	create.AddStringFlag(config.ArgStorageSize, "", strconv.Itoa(config.DefaultVolumeSize), "The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state[seconds]")
 
 	/*
 		Update Command
@@ -151,6 +161,8 @@ Required values to run a command:
 		LongDesc: `Use this command to update the number of worker Nodes, the minimum and maximum number of worker Nodes, the add labels, annotations, to update the maintenance day and time, to attach private LANs to a Node Pool within an existing Kubernetes Cluster. You can also add reserved public IP addresses to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. The array must contain one extra IP than maximum number of Nodes could be. (nodeCount+1 if fixed node amount or maxNodeCount+1 if auto scaling is used) The extra provided IP Will be used during rebuilding of Nodes.
 
 You can wait for the Node Pool to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
+
+Note: If you want to attach multiple LANs to Node Pool, use ` + "`" + `--lan-ids=LAN_ID1,LAN_ID2` + "`" + ` flag. If you want to also set a Route Network, Route GatewayIp for LAN use ` + "`" + `ionosctl k8s nodepool lan add` + "`" + ` command for each LAN you want to add.
 
 Required values to run command:
 
@@ -175,7 +187,8 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
 	update.AddStringSliceFlag(config.ArgPublicIps, "", []string{""}, "Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2")
-	update.AddIntFlag(config.ArgLanId, "", 0, "The unique LAN Id of existing LANs to be attached to worker Nodes")
+	update.AddIntSliceFlag(config.ArgLanIds, "", []int{}, "Collection of LAN Ids of existing LANs to be attached to worker Nodes. It will be added to the existing LANs attached")
+	update.AddBoolFlag(config.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP")
 	update.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -185,7 +198,7 @@ Required values to run command:
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
-	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool/Request [seconds]")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state [seconds]")
 
 	/*
 		Delete Command
@@ -215,6 +228,8 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+
+	k8sCmd.AddCommand(k8sNodePoolLan())
 
 	return k8sCmd
 }
@@ -286,8 +301,9 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))); err != nil {
 		return err
 	}
-	//return c.Printer.Print(getK8sNodePoolPrint(c, getK8sNodePool(newNodePoolUpdated))) (TO BE UPDATED)
-	return c.Printer.Print(getK8sNodePoolPrint(c, nil))
+	newNodePoolUpdated, _, err := c.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	return c.Printer.Print(getK8sNodePoolPrint(c, getK8sNodePool(newNodePoolUpdated)))
 }
 
 func RunK8sNodePoolDelete(c *core.CommandConfig) error {
@@ -323,7 +339,6 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePool, error) {
 		k8sversion string
 		err        error
 	)
-	n := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 	} else {
@@ -331,32 +346,39 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePool, error) {
 			return nil, err
 		}
 	}
-	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
-	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sNodeCount))
-	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily))
-	coresCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
 	ramSize, err := utils.ConvertSize(viper.GetString(core.GetFlagName(c.NS, config.ArgRam)), utils.MegaBytes)
 	if err != nil {
 		return nil, err
 	}
-	ram := int32(ramSize)
-	nodeZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
-	storageSize := viper.GetInt32(core.GetFlagName(c.NS, config.ArgStorageSize))
-	storageType := viper.GetString(core.GetFlagName(c.NS, config.ArgStorageType))
+	// Set Properties
+	nodePoolProperties := ionoscloud.KubernetesNodePoolProperties{}
+	nodePoolProperties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	nodePoolProperties.SetK8sVersion(k8sversion)
+	nodePoolProperties.SetNodeCount(viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sNodeCount)))
+	nodePoolProperties.SetDatacenterId(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	nodePoolProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily)))
+	nodePoolProperties.SetCoresCount(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
+	nodePoolProperties.SetRamSize(int32(ramSize))
+	nodePoolProperties.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
+	nodePoolProperties.SetStorageSize(viper.GetInt32(core.GetFlagName(c.NS, config.ArgStorageSize)))
+	nodePoolProperties.SetStorageType(viper.GetString(core.GetFlagName(c.NS, config.ArgStorageType)))
+	// Add LANs
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanIds)) {
+		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
+		lanIds := viper.GetIntSlice(core.GetFlagName(c.NS, config.ArgLanIds))
+		dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
+		for _, lanId := range lanIds {
+			id := int32(lanId)
+			newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{
+				Id:   &id,
+				Dhcp: &dhcp,
+			})
+		}
+		nodePoolProperties.SetLans(newLans)
+	}
 	return &resources.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
-				Name:             &n,
-				K8sVersion:       &k8sversion,
-				DatacenterId:     &dcId,
-				NodeCount:        &nodeCount,
-				CpuFamily:        &cpuFamily,
-				CoresCount:       &coresCount,
-				RamSize:          &ram,
-				AvailabilityZone: &nodeZone,
-				StorageType:      &storageType,
-				StorageSize:      &storageSize,
-			},
+			Properties: &nodePoolProperties,
 		},
 	}, nil
 }
@@ -426,14 +448,23 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 				key: value,
 			})
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanId)) {
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanIds)) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
-			lanId := viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId))
-			newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{Id: &lanId})
+			// Append existing LANs
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
 				for _, existingLan := range *existingLans {
 					newLans = append(newLans, existingLan)
 				}
+			}
+			// Add new LANs
+			lanIds := viper.GetIntSlice(core.GetFlagName(c.NS, config.ArgLanIds))
+			dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
+			for _, lanId := range lanIds {
+				id := int32(lanId)
+				newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{
+					Id:   &id,
+					Dhcp: &dhcp,
+				})
 			}
 			propertiesUpdated.SetLans(newLans)
 		}
@@ -452,7 +483,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 
 var defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 
-var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State",
+var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
 	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "PublicIps", "AvailableUpgradeVersions"}
 
 type K8sNodePoolPrint struct {
@@ -464,6 +495,7 @@ type K8sNodePoolPrint struct {
 	CpuFamily                string   `json:"CpuFamily,omitempty"`
 	StorageType              string   `json:"StorageType,omitempty"`
 	State                    string   `json:"State,omitempty"`
+	LanIds                   []int32  `json:"LanIds,omitempty"`
 	CoresCount               int32    `json:"CoresCount,omitempty"`
 	RamSize                  int32    `json:"RamSize,omitempty"`
 	AvailabilityZone         string   `json:"AvailabilityZone,omitempty"`
@@ -498,6 +530,7 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 			"CpuFamily":                "CpuFamily",
 			"StorageType":              "StorageType",
 			"State":                    "State",
+			"LanIds":                   "LanIds",
 			"CoresCount":               "CoresCount",
 			"RamSize":                  "RamSize",
 			"AvailabilityZone":         "AvailabilityZone",
@@ -598,6 +631,15 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 				if max, ok := autoScaling.GetMaxNodeCountOk(); ok && max != nil {
 					uPrint.AutoScaling = fmt.Sprintf("%s Max: %v", uPrint.AutoScaling, *max)
 				}
+			}
+			if lans, ok := properties.GetLansOk(); ok && lans != nil {
+				lanIds := make([]int32, 0)
+				for _, lanItem := range *lans {
+					if lanId, ok := lanItem.GetIdOk(); ok && lanId != nil {
+						lanIds = append(lanIds, *lanId)
+					}
+				}
+				uPrint.LanIds = lanIds
 			}
 		}
 		if meta, ok := u.GetMetadataOk(); ok && meta != nil {

@@ -30,10 +30,10 @@ func group() *core.Command {
 		},
 	}
 	globalFlags := groupCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupCols, utils.ColsMessage(defaultGroupCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultGroupCols, utils.ColsMessage(allGroupCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(groupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = groupCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultGroupCols, cobra.ShellCompDirectiveNoFileComp
+		return allGroupCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -101,6 +101,9 @@ Required values to run a command:
 	create.AddBoolFlag(config.ArgCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
 	create.AddBoolFlag(config.ArgCreateNic, "", false, "The group will be allowed to create NICs")
 	create.AddBoolFlag(config.ArgCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
+	create.AddBoolFlag(config.ArgCreateFlowLog, "", false, "The group will be allowed to create Flow Logs")
+	create.AddBoolFlag(config.ArgAccessMonitoring, "", false, "Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service")
+	create.AddBoolFlag(config.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
 
@@ -139,6 +142,9 @@ Required values to run command:
 	update.AddBoolFlag(config.ArgCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
 	update.AddBoolFlag(config.ArgCreateNic, "", false, "The group will be allowed to create NICs")
 	update.AddBoolFlag(config.ArgCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
+	update.AddBoolFlag(config.ArgCreateFlowLog, "", false, "The group will be allowed to create Flow Logs")
+	update.AddBoolFlag(config.ArgAccessMonitoring, "", false, "Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service")
+	update.AddBoolFlag(config.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group update [seconds]")
 
@@ -264,18 +270,24 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 	createNic := viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateNic))
 	createK8s := viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateK8s))
 	s3 := viper.GetBool(core.GetFlagName(c.NS, config.ArgS3Privilege))
+	createFlowLog := viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateFlowLog))
+	monitoring := viper.GetBool(core.GetFlagName(c.NS, config.ArgAccessMonitoring))
+	certs := viper.GetBool(core.GetFlagName(c.NS, config.ArgAccessCerts))
 	return &resources.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
-			Name:                 &name,
-			CreateDataCenter:     &createDc,
-			CreateSnapshot:       &createSnap,
-			ReserveIp:            &reserveIp,
-			AccessActivityLog:    &accessLog,
-			CreatePcc:            &createPcc,
-			S3Privilege:          &s3,
-			CreateBackupUnit:     &createBackUp,
-			CreateInternetAccess: &createNic,
-			CreateK8sCluster:     &createK8s,
+			Name:                        &name,
+			CreateDataCenter:            &createDc,
+			CreateSnapshot:              &createSnap,
+			ReserveIp:                   &reserveIp,
+			AccessActivityLog:           &accessLog,
+			CreatePcc:                   &createPcc,
+			S3Privilege:                 &s3,
+			CreateBackupUnit:            &createBackUp,
+			CreateInternetAccess:        &createNic,
+			CreateK8sCluster:            &createK8s,
+			CreateFlowLog:               &createFlowLog,
+			AccessAndManageMonitoring:   &monitoring,
+			AccessAndManageCertificates: &certs,
 		},
 	}
 }
@@ -284,7 +296,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 	var (
 		groupName                                                           string
 		createDc, createSnap, createPcc, createBackUp, createNic, createK8s bool
-		reserveIp, accessLog, s3                                            bool
+		reserveIp, accessLog, s3, createFlowLog, monitoring, certs          bool
 	)
 	if properties, ok := oldGroup.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
@@ -357,39 +369,70 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 				s3 = *s
 			}
 		}
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCreateFlowLog)) {
+			createFlowLog = viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateFlowLog))
+		} else {
+			if f, ok := properties.GetCreateFlowLogOk(); ok && f != nil {
+				createFlowLog = *f
+			}
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgAccessMonitoring)) {
+			monitoring = viper.GetBool(core.GetFlagName(c.NS, config.ArgAccessMonitoring))
+		} else {
+			if m, ok := properties.GetAccessAndManageMonitoringOk(); ok && m != nil {
+				monitoring = *m
+			}
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgAccessCerts)) {
+			certs = viper.GetBool(core.GetFlagName(c.NS, config.ArgAccessCerts))
+		} else {
+			if accessCerts, ok := properties.GetAccessAndManageCertificatesOk(); ok && accessCerts != nil {
+				certs = *accessCerts
+			}
+		}
 	}
 	return &resources.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
-			Name:                 &groupName,
-			CreateDataCenter:     &createDc,
-			CreateSnapshot:       &createSnap,
-			ReserveIp:            &reserveIp,
-			AccessActivityLog:    &accessLog,
-			CreatePcc:            &createPcc,
-			S3Privilege:          &s3,
-			CreateBackupUnit:     &createBackUp,
-			CreateInternetAccess: &createNic,
-			CreateK8sCluster:     &createK8s,
+			Name:                        &groupName,
+			CreateDataCenter:            &createDc,
+			CreateSnapshot:              &createSnap,
+			ReserveIp:                   &reserveIp,
+			AccessActivityLog:           &accessLog,
+			CreatePcc:                   &createPcc,
+			S3Privilege:                 &s3,
+			CreateBackupUnit:            &createBackUp,
+			CreateInternetAccess:        &createNic,
+			CreateK8sCluster:            &createK8s,
+			CreateFlowLog:               &createFlowLog,
+			AccessAndManageMonitoring:   &monitoring,
+			AccessAndManageCertificates: &certs,
 		},
 	}
 }
 
 // Output Printing
 
-var defaultGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "ReserveIp", "AccessActivityLog", "CreatePcc", "S3Privilege", "CreateBackupUnit", "CreateInternetAccess", "CreateK8s"}
+var (
+	defaultGroupCols = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "CreatePcc", "CreateBackupUnit", "CreateInternetAccess", "CreateK8s", "ReserveIp"}
+	allGroupCols     = []string{"GroupId", "Name", "CreateDataCenter", "CreateSnapshot", "ReserveIp", "AccessActivityLog", "CreatePcc", "S3Privilege", "CreateBackupUnit",
+		"CreateInternetAccess", "CreateK8s", "CreateFlowLog", "AccessAndManageMonitoring", "AccessAndManageCertificates"}
+)
 
 type groupPrint struct {
-	GroupId              string `json:"GroupId,omitempty"`
-	Name                 string `json:"Name,omitempty"`
-	CreateDataCenter     bool   `json:"CreateDataCenter,omitempty"`
-	CreateSnapshot       bool   `json:"CreateSnapshot,omitempty"`
-	ReserveIp            bool   `json:"ReserveIp,omitempty"`
-	AccessActivityLog    bool   `json:"AccessActivityLog,omitempty"`
-	CreatePcc            bool   `json:"CreatePcc,omitempty"`
-	S3Privilege          bool   `json:"S3Privilege,omitempty"`
-	CreateBackupUnit     bool   `json:"CreateBackupUnit,omitempty"`
-	CreateInternetAccess bool   `json:"CreateInternetAccess,omitempty"`
-	CreateK8s            bool   `json:"CreateK8s,omitempty"`
+	GroupId                     string `json:"GroupId,omitempty"`
+	Name                        string `json:"Name,omitempty"`
+	CreateDataCenter            bool   `json:"CreateDataCenter,omitempty"`
+	CreateSnapshot              bool   `json:"CreateSnapshot,omitempty"`
+	ReserveIp                   bool   `json:"ReserveIp,omitempty"`
+	AccessActivityLog           bool   `json:"AccessActivityLog,omitempty"`
+	CreatePcc                   bool   `json:"CreatePcc,omitempty"`
+	S3Privilege                 bool   `json:"S3Privilege,omitempty"`
+	CreateBackupUnit            bool   `json:"CreateBackupUnit,omitempty"`
+	CreateInternetAccess        bool   `json:"CreateInternetAccess,omitempty"`
+	CreateK8s                   bool   `json:"CreateK8s,omitempty"`
+	CreateFlowLog               bool   `json:"CreateFlowLog,omitempty"`
+	AccessAndManageMonitoring   bool   `json:"AccessAndManageMonitoring,omitempty"`
+	AccessAndManageCertificates bool   `json:"AccessAndManageCertificates,omitempty"`
 }
 
 func getGroupPrint(resp *resources.Response, c *core.CommandConfig, groups []resources.Group) printer.Result {
@@ -414,17 +457,20 @@ func getGroupCols(flagName string, outErr io.Writer) []string {
 	if viper.IsSet(flagName) {
 		var groupCols []string
 		columnsMap := map[string]string{
-			"GroupId":              "GroupId",
-			"Name":                 "Name",
-			"CreateDataCenter":     "CreateDataCenter",
-			"CreateSnapshot":       "CreateSnapshot",
-			"ReserveIp":            "ReserveIp",
-			"AccessActivityLog":    "AccessActivityLog",
-			"CreatePcc":            "CreatePcc",
-			"S3Privilege":          "S3Privilege",
-			"CreateBackupUnit":     "CreateBackupUnit",
-			"CreateInternetAccess": "CreateInternetAccess",
-			"CreateK8s":            "CreateK8s",
+			"GroupId":                     "GroupId",
+			"Name":                        "Name",
+			"CreateDataCenter":            "CreateDataCenter",
+			"CreateSnapshot":              "CreateSnapshot",
+			"ReserveIp":                   "ReserveIp",
+			"AccessActivityLog":           "AccessActivityLog",
+			"CreatePcc":                   "CreatePcc",
+			"S3Privilege":                 "S3Privilege",
+			"CreateBackupUnit":            "CreateBackupUnit",
+			"CreateInternetAccess":        "CreateInternetAccess",
+			"CreateK8s":                   "CreateK8s",
+			"CreateFlowLog":               "CreateFlowLog",
+			"AccessAndManageMonitoring":   "AccessAndManageMonitoring",
+			"AccessAndManageCertificates": "AccessAndManageCertificates",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -495,6 +541,15 @@ func getGroupsKVMaps(gs []resources.Group) []map[string]interface{} {
 			}
 			if createK8s, ok := properties.GetCreateK8sClusterOk(); ok && createK8s != nil {
 				gPrint.CreateK8s = *createK8s
+			}
+			if createFlowLogs, ok := properties.GetCreateFlowLogOk(); ok && createFlowLogs != nil {
+				gPrint.CreateFlowLog = *createFlowLogs
+			}
+			if accessMonitoring, ok := properties.GetAccessAndManageMonitoringOk(); ok && accessMonitoring != nil {
+				gPrint.AccessAndManageMonitoring = *accessMonitoring
+			}
+			if accessCerts, ok := properties.GetAccessAndManageCertificatesOk(); ok && accessCerts != nil {
+				gPrint.AccessAndManageCertificates = *accessCerts
 			}
 		}
 		o := structs.Map(gPrint)

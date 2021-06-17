@@ -40,7 +40,7 @@ Required values to run command:
 ```text
   -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings             Set of columns to be printed on output 
-                                 Available columns: [FirewallRuleId Name Protocol SourceMac SourceIP TargetIP PortRangeStart PortRangeEnd State] (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,State])
+                                 Available columns: [FirewallRuleId Name Protocol SourceMac SourceIP TargetIP PortRangeStart PortRangeEnd IcmpCode IcmpType Type State] (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,Type,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
   -i, --firewallrule-id string   The unique FirewallRule Id (required)

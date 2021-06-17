@@ -1,13 +1,13 @@
 ---
-description: Get a Kubernetes NodePool
+description: Remove a Kubernetes NodePool LAN
 ---
 
-# K8sNodepoolGet
+# K8sNodepoolLanRemove
 
 ## Usage
 
 ```text
-ionosctl k8s nodepool get [flags]
+ionosctl k8s nodepool lan remove [flags]
 ```
 
 ## Aliases
@@ -17,19 +17,20 @@ For `nodepool` command:
 [np]
 ```
 
-For `get` command:
+For `remove` command:
 ```text
-[g]
+[r]
 ```
 
 ## Description
 
-Use this command to retrieve details about a specific NodePool from an existing Kubernetes Cluster. You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
+This command removes a Kubernetes Node Pool LAN from a Node Pool.
 
 Required values to run command:
 
 * K8s Cluster Id
 * K8s NodePool Id
+* Lan Id
 
 ## Options
 
@@ -40,17 +41,16 @@ Required values to run command:
                              Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
-  -h, --help                 help for get
-  -i, --nodepool-id string   The unique K8s Node Pool Id (required)
+  -h, --help                 help for remove
+  -i, --lan-id int           The unique LAN Id of existing LANs to be detached from worker Nodes (required)
+      --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-  -t, --timeout int          Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
-  -W, --wait-for-state       Wait for specified NodePool to be in ACTIVE state
 ```
 
 ## Examples
 
 ```text
-ionosctl k8s nodepool get --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID
+ionosctl k8s nodepool lan remove --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID
 ```
 

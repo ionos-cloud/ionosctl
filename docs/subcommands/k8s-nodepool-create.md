@@ -28,6 +28,8 @@ Use this command to create a Node Pool into an existing Kubernetes Cluster. The 
 
 You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
 
+Note: If you want to attach multiple LANs to Node Pool, use `--lan-ids=LAN_ID1,LAN_ID2` flag. If you want to also set a Route Network, Route GatewayIp for LAN use `ionosctl k8s nodepool lan add` command for each LAN you want to add.
+
 Required values to run a command:
 
 * K8s Cluster Id
@@ -41,22 +43,24 @@ Required values to run a command:
   -z, --availability-zone string   The compute Availability Zone in which the Node should exist (default "AUTO")
       --cluster-id string          The unique K8s Cluster Id (required)
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
+                                   Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  The total number of cores for the Node (default 2)
       --cpu-family string          CPU Type (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
+      --dhcp                       Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP (default true)
   -f, --force                      Force command to execute without user input
   -h, --help                       help for create
       --k8s-version string         The K8s version for the NodePool. If not set, it will be used the default one
+      --lan-ids ints               Collection of LAN Ids of existing LANs to be attached to worker Nodes
   -n, --name string                The name for the K8s NodePool (required)
       --node-count int             The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
       --ram string                 RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB (default "2048")
-      --storage-size int           The total allocated storage capacity of a Node (default 10)
+      --storage-size string        The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
       --storage-type string        Storage Type (default "HDD")
-  -t, --timeout int                Timeout option for waiting for NodePool/Request [seconds] (default 600)
+  -t, --timeout int                Timeout option for waiting for NodePool to be in ACTIVE state[seconds] (default 600)
   -W, --wait-for-state             Wait for the new NodePool to be in ACTIVE state
 ```
 

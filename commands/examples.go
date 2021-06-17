@@ -18,8 +18,9 @@ Status: Authentication successful!`
 	/*
 		Location Examples
 	*/
-	listLocationExample = `ionosctl location list`
-	getLocationExample  = `ionosctl location get --location-id LOCATION_ID`
+	listLocationExample    = `ionosctl location list`
+	getLocationExample     = `ionosctl location get --location-id LOCATION_ID`
+	listLocationCpuExample = `ionosctl location cpu list --location-id LOCATION_ID`
 
 	/*
 		Data Center Examples
@@ -114,6 +115,7 @@ ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-req
 	/*
 		Request Examples
 	*/
+	listRequestExample = `ionosctl request list`
 	getRequestExample  = `ionosctl request get --request-id REQUEST_ID`
 	waitRequestExample = `ionosctl request wait --request-id REQUEST_ID`
 
@@ -260,6 +262,10 @@ ionosctl label add --resource-type datacenter --datacenter-id DATACENTER_ID --la
 	createK8sNodePoolExample = `ionosctl k8s nodepool create --datacenter-id DATACENTER_ID --cluster-id CLUSTER_ID --name NAME`
 	updateK8sNodePoolExample = `ionosctl k8s nodepool update --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-count NODE_COUNT`
 	deleteK8sNodePoolExample = `ionosctl k8s nodepool delete --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID`
+
+	listK8sNodePoolLanExample   = `ionosctl k8s nodepool lan list --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID`
+	addK8sNodePoolLanExample    = `ionosctl k8s nodepool lan add --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID`
+	removeK8sNodePoolLanExample = `ionosctl k8s nodepool lan remove --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --lan-id LAN_ID`
 
 	deleteK8sNodeExample   = `ionosctl k8s node delete --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID`
 	recreateK8sNodeExample = `ionosctl k8s node recreate --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID --node-id NODE_ID`

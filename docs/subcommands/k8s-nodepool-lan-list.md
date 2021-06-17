@@ -1,13 +1,13 @@
 ---
-description: Delete a Kubernetes NodePool
+description: List Kubernetes NodePool LANs
 ---
 
-# K8sNodepoolDelete
+# K8sNodepoolLanList
 
 ## Usage
 
 ```text
-ionosctl k8s nodepool delete [flags]
+ionosctl k8s nodepool lan list [flags]
 ```
 
 ## Aliases
@@ -17,14 +17,14 @@ For `nodepool` command:
 [np]
 ```
 
-For `delete` command:
+For `list` command:
 ```text
-[d]
+[l ls]
 ```
 
 ## Description
 
-This command deletes a Kubernetes Node Pool within an existing Kubernetes Cluster.
+Use this command to get a list of all contained NodePool LANs in a selected Kubernetes Cluster.
 
 Required values to run command:
 
@@ -37,11 +37,11 @@ Required values to run command:
   -u, --api-url string       Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cluster-id string    The unique K8s Cluster Id (required)
       --cols strings         Set of columns to be printed on output 
-                             Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
+                             Available columns: [LanId Dhcp RoutesNetwork RoutesGatewayIp] (default [LanId,Dhcp,RoutesNetwork,RoutesGatewayIp])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
-  -h, --help                 help for delete
-  -i, --nodepool-id string   The unique K8s Node Pool Id (required)
+  -h, --help                 help for list
+      --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
 ```
@@ -49,6 +49,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl k8s nodepool delete --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID
+ionosctl k8s nodepool lan list --cluster-id CLUSTER_ID --nodepool-id NODEPOOL_ID
 ```
 
