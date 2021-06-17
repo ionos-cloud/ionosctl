@@ -1,5 +1,5 @@
 ---
-description: Show the current version
+description: Show the current version of CLI and SDK
 ---
 
 # Version
@@ -12,7 +12,7 @@ ionosctl version [flags]
 
 ## Description
 
-The `ionosctl version` command displays the current version of the ionosctl software and the latest Github release.
+The `ionosctl version` command displays the current version of the ionosctl software, the SDK GO version and the latest Github release.
 
 ## Options
 
