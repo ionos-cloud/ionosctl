@@ -45,7 +45,7 @@ Use flags to retrieve a list of Images:
   -f, --force                 Force command to execute without user input
   -h, --help                  help for list
       --image-alias string    Image Alias or part of Image Alias to sort Images by
-      --latest int            Show the latest N Images, based on creation date, in descending order. If not set, all Images will be printed
+      --latest int            Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed
       --licence-type string   The licence type of the Image
   -l, --location string       The location of the Image
   -o, --output string         Desired output format [text|json] (default "text")

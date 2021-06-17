@@ -61,7 +61,7 @@ Use flags to retrieve a list of Requests:
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
-	list.AddIntFlag(config.ArgLatest, "", 0, "Show latest N Requests. If `--latest` is not set, all Requests will be printed")
+	list.AddIntFlag(config.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed")
 	list.AddStringFlag(config.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE")
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"POST", "PUT", "DELETE", "PATCH", "CREATE", "UPDATE"}, cobra.ShellCompDirectiveNoFileComp
