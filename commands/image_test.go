@@ -5,7 +5,9 @@ import (
 	"bytes"
 	"errors"
 	"regexp"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -17,7 +19,7 @@ import (
 )
 
 var (
-	img = resources.Image{
+	testImage = resources.Image{
 		Image: ionoscloud.Image{
 			Id: &testImageVar,
 			Properties: &ionoscloud.ImageProperties{
@@ -25,24 +27,31 @@ var (
 				Location:     &testImageVar,
 				Description:  &testImageVar,
 				Size:         &testImageSize,
-				LicenceType:  &testImageVar,
-				ImageType:    &testImageVar,
+				LicenceType:  &testImageUpperVar,
+				ImageType:    &testImageUpperVar,
 				Public:       &testImagePublic,
 				ImageAliases: &[]string{testImageVar},
 				CloudInit:    &testImageVar,
 			},
+			Metadata: &ionoscloud.DatacenterElementMetadata{
+				CreatedDate:     &testImageCreatedDate,
+				CreatedBy:       &testImageVar,
+				CreatedByUserId: &testImageVar,
+			},
 		},
 	}
-	images = resources.Images{
+	testImages = resources.Images{
 		Images: ionoscloud.Images{
 			Id:    &testImageVar,
-			Items: &[]ionoscloud.Image{img.Image},
+			Items: &[]ionoscloud.Image{testImage.Image, testImage.Image},
 		},
 	}
-	testImageSize   = float32(2)
-	testImagePublic = true
-	testImageVar    = "test-image"
-	testImageErr    = errors.New("image test error")
+	testImageSize        = float32(2)
+	testImageCreatedDate = ionoscloud.IonosTime{Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.Now().Location())}
+	testImagePublic      = true
+	testImageVar         = "test-image"
+	testImageUpperVar    = strings.ToUpper(testImageVar)
+	testImageErr         = errors.New("image test error")
 )
 
 func TestPreImageId(t *testing.T) {
@@ -77,7 +86,8 @@ func TestRunImageList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.Image.EXPECT().List().Return(images, nil, nil)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCols), allImageCols)
+		rm.Image.EXPECT().List().Return(testImages, nil, nil)
 		err := RunImageList(cfg)
 		assert.NoError(t, err)
 	})
@@ -90,7 +100,7 @@ func TestRunImageListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.Image.EXPECT().List().Return(images, nil, testImageErr)
+		rm.Image.EXPECT().List().Return(testImages, nil, testImageErr)
 		err := RunImageList(cfg)
 		assert.Error(t, err)
 	})
@@ -106,10 +116,29 @@ func TestRunImageListSort(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), testImageSize)
-		rm.Image.EXPECT().List().Return(images, nil, nil)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLatest), 1)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), testImageVar)
+		rm.Image.EXPECT().List().Return(testImages, nil, nil)
 		err := RunImageList(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunImageListSortOptionErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLatest), 1)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), "no alias")
+		rm.Image.EXPECT().List().Return(testImages, nil, nil)
+		err := RunImageList(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -123,8 +152,9 @@ func TestRunImageListSortErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), testImageSize)
-		rm.Image.EXPECT().List().Return(images, nil, testImageErr)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLatest), 1)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), testImageVar)
+		rm.Image.EXPECT().List().Return(testImages, nil, testImageErr)
 		err := RunImageList(cfg)
 		assert.Error(t, err)
 	})
@@ -138,7 +168,7 @@ func TestRunImageGet(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testImageVar)
-		rm.Image.EXPECT().Get(testImageVar).Return(&img, nil, nil)
+		rm.Image.EXPECT().Get(testImageVar).Return(&testImage, nil, nil)
 		err := RunImageGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -152,7 +182,7 @@ func TestRunImageGetErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testImageVar)
-		rm.Image.EXPECT().Get(testImageVar).Return(&img, nil, testImageErr)
+		rm.Image.EXPECT().Get(testImageVar).Return(&testImage, nil, testImageErr)
 		err := RunImageGet(cfg)
 		assert.Error(t, err)
 	})

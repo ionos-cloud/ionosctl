@@ -3,8 +3,12 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
+	"sort"
+	"strings"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -40,18 +44,26 @@ func image() *core.Command {
 		List Command
 	*/
 	list := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
-		Namespace:  "image",
-		Resource:   "image",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Images",
-		LongDesc:   "Use this command to get a list of available public Images. Use flags to retrieve a list of sorted images by location, licence type, type or size.",
+		Namespace: "image",
+		Resource:  "image",
+		Verb:      "list",
+		Aliases:   []string{"l", "ls"},
+		ShortDesc: "List Images",
+		LongDesc: `Use this command to get a full list of available public Images. 
+
+Use flags to retrieve a list of Images:
+
+* sorting by location, using ` + "`" + `ionosctl image list --location LOCATION_ID` + "`" + `
+* sorting by licence type, using ` + "`" + `ionosctl image list --licence-type LICENCE_TYPE` + "`" + `
+* sorting by Image type, using ` + "`" + `ionosctl image list --type IMAGE_TYPE` + "`" + `
+* sorting by Image alias, using ` + "`" + `ionosctl image list --image-alias IMAGE_ALIAS` + "`" + `; IMAGE_ALIAS can be either the Image alias ` + "`" + `--image-alias ubuntu:latest` + "`" + ` or part of Image alias e.g. ` + "`" + `--image-alias latest` + "`" + `
+* sorting by the time the Image was created, starting from now in descending order, take the first N Images, using ` + "`" + `ionosctl image list --latest N` + "`" + `
+* sorting by multiple of above options, using ` + "`" + `ionosctl image list --type IMAGE_TYPE --location LOCATION_ID --latest N` + "`" + ``,
 		Example:    listImagesExample,
 		PreCmdRun:  noPreRun,
 		CmdRun:     RunImageList,
 		InitClient: true,
 	})
-	list.AddFloat32Flag(config.ArgSize, "", 0, "The size of the Image")
 	list.AddStringFlag(config.ArgType, "", "", "The type of the Image")
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CDROM", "HDD"}, cobra.ShellCompDirectiveNoFileComp
@@ -64,6 +76,8 @@ func image() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddStringFlag(config.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by")
+	list.AddIntFlag(config.ArgLatest, "", 0, "Show the latest N Images, based on creation date, in descending order. If not set, all Images will be printed")
 
 	/*
 		Get Command
@@ -101,13 +115,21 @@ func RunImageList(c *core.CommandConfig) error {
 		images = sortImagesByLocation(images, viper.GetString(core.GetFlagName(c.NS, config.ArgLocation)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
-		images = sortImagesByLicenceType(images, viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)))
+		images = sortImagesByLicenceType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType))))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgType)) {
-		images = sortImagesByType(images, viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
+		images = sortImagesByType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgType))))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSize)) {
-		images = sortImagesBySize(images, float32(viper.GetFloat64(core.GetFlagName(c.NS, config.ArgSize))))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
+		images = sortImagesByAlias(images, viper.GetString(core.GetFlagName(c.NS, config.ArgImageAlias)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLatest)) {
+		images = sortImagesByTime(images, viper.GetInt(core.GetFlagName(c.NS, config.ArgLatest)))
+	}
+	if itemsOk, ok := images.GetItemsOk(); ok && itemsOk != nil {
+		if len(*itemsOk) == 0 {
+			return errors.New("error getting images based on given criteria")
+		}
 	}
 	return c.Printer.Print(getImagePrint(nil, c, getImages(images)))
 }
@@ -123,21 +145,24 @@ func RunImageGet(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit"}
-	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit"}
+	defaultImageCols = []string{"ImageId", "Name", "ImageAliases", "Location", "LicenceType", "ImageType", "CloudInit", "CreatedDate"}
+	allImageCols     = []string{"ImageId", "Name", "ImageAliases", "Location", "Size", "LicenceType", "ImageType", "Description", "Public", "CloudInit", "CreatedDate", "CreatedBy", "CreatedByUserId"}
 )
 
 type ImagePrint struct {
-	ImageId      string   `json:"ImageId,omitempty"`
-	Name         string   `json:"Name,omitempty"`
-	Description  string   `json:"Description,omitempty"`
-	Location     string   `json:"Location,omitempty"`
-	Size         float32  `json:"Size,omitempty"`
-	LicenceType  string   `json:"LicenceType,omitempty"`
-	ImageType    string   `json:"ImageType,omitempty"`
-	Public       bool     `json:"Public,omitempty"`
-	ImageAliases []string `json:"ImageAliases,omitempty"`
-	CloudInit    string   `json:"CloudInit,omitempty"`
+	ImageId         string    `json:"ImageId,omitempty"`
+	Name            string    `json:"Name,omitempty"`
+	Description     string    `json:"Description,omitempty"`
+	Location        string    `json:"Location,omitempty"`
+	Size            string    `json:"Size,omitempty"`
+	LicenceType     string    `json:"LicenceType,omitempty"`
+	ImageType       string    `json:"ImageType,omitempty"`
+	Public          bool      `json:"Public,omitempty"`
+	ImageAliases    []string  `json:"ImageAliases,omitempty"`
+	CloudInit       string    `json:"CloudInit,omitempty"`
+	CreatedBy       string    `json:"CreatedBy,omitempty"`
+	CreatedByUserId string    `json:"CreatedByUserId,omitempty"`
+	CreatedDate     time.Time `json:"CreatedDate,omitempty"`
 }
 
 func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []resources.Image) printer.Result {
@@ -167,16 +192,19 @@ func getImageCols(flagName string, outErr io.Writer) []string {
 	}
 
 	columnsMap := map[string]string{
-		"ImageId":      "ImageId",
-		"Name":         "Name",
-		"Description":  "Description",
-		"Location":     "Location",
-		"Size":         "Size",
-		"LicenceType":  "LicenceType",
-		"ImageType":    "ImageType",
-		"Public":       "Public",
-		"ImageAliases": "ImageAliases",
-		"CloudInit":    "CloudInit",
+		"ImageId":         "ImageId",
+		"Name":            "Name",
+		"Description":     "Description",
+		"Location":        "Location",
+		"Size":            "Size",
+		"LicenceType":     "LicenceType",
+		"ImageType":       "ImageType",
+		"Public":          "Public",
+		"ImageAliases":    "ImageAliases",
+		"CloudInit":       "CloudInit",
+		"CreatedDate":     "CreatedDate",
+		"CreatedBy":       "CreatedBy",
+		"CreatedByUserId": "CreatedByUserId",
 	}
 	var datacenterCols []string
 	for _, k := range cols {
@@ -219,36 +247,47 @@ func getImagesKVMaps(imgs []resources.Image) []map[string]interface{} {
 
 func getImageKVMap(img resources.Image) map[string]interface{} {
 	var imgPrint ImagePrint
-	if imgId, ok := img.GetIdOk(); ok && imgId != nil {
-		imgPrint.ImageId = *imgId
+	if idOk, ok := img.GetIdOk(); ok && idOk != nil {
+		imgPrint.ImageId = *idOk
 	}
-	if properties, ok := img.GetPropertiesOk(); ok && properties != nil {
-		if name, ok := properties.GetNameOk(); ok && name != nil {
+	if propertiesOk, ok := img.GetPropertiesOk(); ok && propertiesOk != nil {
+		if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
 			imgPrint.Name = *name
 		}
-		if description, ok := properties.GetDescriptionOk(); ok && description != nil {
+		if description, ok := propertiesOk.GetDescriptionOk(); ok && description != nil {
 			imgPrint.Description = *description
 		}
-		if loc, ok := properties.GetLocationOk(); ok && loc != nil {
+		if loc, ok := propertiesOk.GetLocationOk(); ok && loc != nil {
 			imgPrint.Location = *loc
 		}
-		if size, ok := properties.GetSizeOk(); ok && size != nil {
-			imgPrint.Size = *size
+		if size, ok := propertiesOk.GetSizeOk(); ok && size != nil {
+			imgPrint.Size = fmt.Sprintf("%vGB", *size)
 		}
-		if licType, ok := properties.GetLicenceTypeOk(); ok && licType != nil {
+		if licType, ok := propertiesOk.GetLicenceTypeOk(); ok && licType != nil {
 			imgPrint.LicenceType = *licType
 		}
-		if imgType, ok := properties.GetImageTypeOk(); ok && imgType != nil {
+		if imgType, ok := propertiesOk.GetImageTypeOk(); ok && imgType != nil {
 			imgPrint.ImageType = *imgType
 		}
-		if public, ok := properties.GetPublicOk(); ok && public != nil {
+		if public, ok := propertiesOk.GetPublicOk(); ok && public != nil {
 			imgPrint.Public = *public
 		}
-		if aliases, ok := properties.GetImageAliasesOk(); ok && aliases != nil {
+		if aliases, ok := propertiesOk.GetImageAliasesOk(); ok && aliases != nil {
 			imgPrint.ImageAliases = *aliases
 		}
-		if cloudInit, ok := properties.GetCloudInitOk(); ok && cloudInit != nil {
+		if cloudInit, ok := propertiesOk.GetCloudInitOk(); ok && cloudInit != nil {
 			imgPrint.CloudInit = *cloudInit
+		}
+	}
+	if metadataOk, ok := img.GetMetadataOk(); ok && metadataOk != nil {
+		if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
+			imgPrint.CreatedDate = *createdDateOk
+		}
+		if createdByOk, ok := metadataOk.GetCreatedByOk(); ok && createdByOk != nil {
+			imgPrint.CreatedBy = *createdByOk
+		}
+		if createdByUserIdOk, ok := metadataOk.GetCreatedByUserIdOk(); ok && createdByUserIdOk != nil {
+			imgPrint.CreatedByUserId = *createdByUserIdOk
 		}
 	}
 	return structs.Map(imgPrint)
@@ -283,9 +322,9 @@ func getImageIds(outErr io.Writer) []string {
 // Output Columns Sorting
 
 func sortImagesByLocation(images resources.Images, location string) resources.Images {
-	var imgLocationItems []ionoscloud.Image
+	imgLocationItems := make([]ionoscloud.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *images.Items {
+		for _, img := range *items {
 			properties := img.GetProperties()
 			if loc, ok := properties.GetLocationOk(); ok && loc != nil {
 				if *loc == location {
@@ -299,9 +338,9 @@ func sortImagesByLocation(images resources.Images, location string) resources.Im
 }
 
 func sortImagesByLicenceType(images resources.Images, licenceType string) resources.Images {
-	var imgLicenceTypeItems []ionoscloud.Image
+	imgLicenceTypeItems := make([]ionoscloud.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *images.Items {
+		for _, img := range *items {
 			properties := img.GetProperties()
 			if imgLicenceType, ok := properties.GetLicenceTypeOk(); ok && imgLicenceType != nil {
 				if *imgLicenceType == licenceType {
@@ -315,9 +354,9 @@ func sortImagesByLicenceType(images resources.Images, licenceType string) resour
 }
 
 func sortImagesByType(images resources.Images, imgType string) resources.Images {
-	var imgTypeItems []ionoscloud.Image
+	imgTypeItems := make([]ionoscloud.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *images.Items {
+		for _, img := range *items {
 			properties := img.GetProperties()
 			if t, ok := properties.GetImageTypeOk(); ok && t != nil {
 				if *t == imgType {
@@ -330,18 +369,37 @@ func sortImagesByType(images resources.Images, imgType string) resources.Images 
 	return images
 }
 
-func sortImagesBySize(images resources.Images, size float32) resources.Images {
-	var imgTypeItems []ionoscloud.Image
+func sortImagesByAlias(images resources.Images, alias string) resources.Images {
+	imgTypeItems := make([]ionoscloud.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
-		for _, img := range *images.Items {
+		for _, img := range *items {
 			properties := img.GetProperties()
-			if imgSize, ok := properties.GetSizeOk(); ok && imgSize != nil {
-				if *imgSize == size {
-					imgTypeItems = append(imgTypeItems, img)
+			if imageAliasesOk, ok := properties.GetImageAliasesOk(); ok && imageAliasesOk != nil {
+				for _, imageAliaseOk := range *imageAliasesOk {
+					if strings.Contains(imageAliaseOk, alias) {
+						imgTypeItems = append(imgTypeItems, img)
+					}
 				}
 			}
 		}
 	}
 	images.Items = &imgTypeItems
+	return images
+}
+
+func sortImagesByTime(images resources.Images, n int) resources.Images {
+	if items, ok := images.GetItemsOk(); ok && items != nil {
+		imageItems := *items
+		if len(imageItems) > 0 {
+			// Sort Requests using time.Time, in descending order
+			sort.SliceStable(imageItems, func(i, j int) bool {
+				return imageItems[i].Metadata.CreatedDate.Time.After(imageItems[j].Metadata.CreatedDate.Time)
+			})
+		}
+		if len(imageItems) >= n {
+			imageItems = imageItems[:n]
+		}
+		images.Items = &imageItems
+	}
 	return images
 }

@@ -20,7 +20,7 @@ import (
 var (
 	testCdroms = resources.Cdroms{
 		Cdroms: ionoscloud.Cdroms{
-			Items: &[]ionoscloud.Image{img.Image},
+			Items: &[]ionoscloud.Image{testImage.Image},
 		},
 	}
 	testCdromVar = "test-cdrom"
@@ -38,7 +38,7 @@ func TestRunServerCdromAttach(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().AttachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&img, nil, nil)
+		rm.Server.EXPECT().AttachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, nil, nil)
 		err := RunServerCdromAttach(cfg)
 		assert.NoError(t, err)
 	})
@@ -55,7 +55,7 @@ func TestRunServerCdromAttachErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().AttachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&img, nil, testCdromErr)
+		rm.Server.EXPECT().AttachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, nil, testCdromErr)
 		err := RunServerCdromAttach(cfg)
 		assert.Error(t, err)
 	})
@@ -72,7 +72,7 @@ func TestRunServerCdromAttachWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Server.EXPECT().AttachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&img, nil, nil)
+		rm.Server.EXPECT().AttachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, nil, nil)
 		err := RunServerCdromAttach(cfg)
 		assert.Error(t, err)
 	})
@@ -118,7 +118,7 @@ func TestRunServerCdromGet(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
-		rm.Server.EXPECT().GetCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&img, nil, nil)
+		rm.Server.EXPECT().GetCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, nil, nil)
 		err := RunServerCdromGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -134,7 +134,7 @@ func TestRunServerCdromGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
-		rm.Server.EXPECT().GetCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&img, nil, testCdromErr)
+		rm.Server.EXPECT().GetCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, nil, testCdromErr)
 		err := RunServerCdromGet(cfg)
 		assert.Error(t, err)
 	})
