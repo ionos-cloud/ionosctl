@@ -110,6 +110,7 @@ const (
 	ArgPublicIps             = "public-ips"
 	ArgGatewayIp             = "gateway-ip"
 	ArgUpdates               = "updates"
+	ArgLatest                = "latest"
 )
 
 // IDs Flags
