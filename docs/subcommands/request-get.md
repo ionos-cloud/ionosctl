@@ -35,7 +35,7 @@ Required values to run command:
 ```text
   -u, --api-url string      Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [RequestId Status Message] (default [RequestId,Status,Message])
+                            Available columns: [RequestId CreatedDate CreatedBy Method Status Message Url Body] (default [RequestId,CreatedDate,Method,Status,Message])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
   -h, --help                help for get

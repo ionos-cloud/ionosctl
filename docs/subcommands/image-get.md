@@ -35,7 +35,7 @@ Required values to run command:
 ```text
   -u, --api-url string    Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings      Set of columns to be printed on output 
-                          Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit])
+                          Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit CreatedDate CreatedBy CreatedByUserId] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit,CreatedDate])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force             Force command to execute without user input
   -h, --help              help for get

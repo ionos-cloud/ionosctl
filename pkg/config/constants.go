@@ -141,6 +141,8 @@ const (
 	ArgPrivateIps            = "private-ips"
 	ArgGatewayIp             = "gateway-ip"
 	ArgUpdates               = "updates"
+	ArgLatest                = "latest"
+	ArgMethod                = "method"
 )
 
 // IDs Flags
