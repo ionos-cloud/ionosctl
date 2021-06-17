@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -34,7 +33,7 @@ var (
 				CloudInit:    &testImageVar,
 			},
 			Metadata: &ionoscloud.DatacenterElementMetadata{
-				CreatedDate:     &testImageCreatedDate,
+				CreatedDate:     &testIonosTime,
 				CreatedBy:       &testImageVar,
 				CreatedByUserId: &testImageVar,
 			},
@@ -46,12 +45,11 @@ var (
 			Items: &[]ionoscloud.Image{testImage.Image, testImage.Image},
 		},
 	}
-	testImageSize        = float32(2)
-	testImageCreatedDate = ionoscloud.IonosTime{Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.Now().Location())}
-	testImagePublic      = true
-	testImageVar         = "test-image"
-	testImageUpperVar    = strings.ToUpper(testImageVar)
-	testImageErr         = errors.New("image test error")
+	testImageSize     = float32(2)
+	testImagePublic   = true
+	testImageVar      = "test-image"
+	testImageUpperVar = strings.ToUpper(testImageVar)
+	testImageErr      = errors.New("image test error")
 )
 
 func TestPreImageId(t *testing.T) {

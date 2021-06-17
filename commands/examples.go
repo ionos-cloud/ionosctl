@@ -106,9 +106,9 @@ ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID --wait-for-req
 	/*
 		Request Examples
 	*/
-	listRequestExample = `ionosctl request list`
-	getRequestExample  = `ionosctl request get --request-id REQUEST_ID`
-	waitRequestExample = `ionosctl request wait --request-id REQUEST_ID`
+	listRequestsExample = `ionosctl request list --latest N`
+	getRequestExample   = `ionosctl request get --request-id REQUEST_ID`
+	waitRequestExample  = `ionosctl request wait --request-id REQUEST_ID`
 
 	/*
 		Image Examples

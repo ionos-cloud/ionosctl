@@ -170,12 +170,12 @@ type ResourcePrint struct {
 	State             string `json:"State,omitempty"`
 }
 
-func getResourcePrint(c *core.CommandConfig, groups []resources.Resource) printer.Result {
+func getResourcePrint(c *core.CommandConfig, res []resources.Resource) printer.Result {
 	r := printer.Result{}
 	if c != nil {
-		if groups != nil {
-			r.OutputJSON = groups
-			r.KeyValue = getResourcesKVMaps(groups)
+		if res != nil {
+			r.OutputJSON = res
+			r.KeyValue = getResourcesKVMaps(res)
 			if c.Resource != c.Namespace {
 				r.Columns = getResourceCols(core.GetFlagName(c.NS, config.ArgCols), c.Printer.GetStderr())
 			} else {
