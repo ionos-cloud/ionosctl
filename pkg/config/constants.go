@@ -111,6 +111,7 @@ const (
 	ArgGatewayIp             = "gateway-ip"
 	ArgUpdates               = "updates"
 	ArgLatest                = "latest"
+	ArgMethod                = "method"
 )
 
 // IDs Flags

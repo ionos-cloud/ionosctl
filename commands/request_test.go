@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -27,18 +28,62 @@ var (
 					Message: &testRequestVar,
 				},
 			},
+			CreatedDate: &testRequestDate,
+			CreatedBy:   &testRequestVar,
 		},
 		Href: &testRequestPathVar,
-	}
-	rqs = resources.Requests{
-		Requests: ionoscloud.Requests{
-			Id:    &testRequestVar,
-			Items: &[]ionoscloud.Request{rq},
+		Properties: &ionoscloud.RequestProperties{
+			Url:    &testRequestVar,
+			Body:   &testRequestVar,
+			Method: &testRequestVar,
 		},
 	}
-	testRequestVar     = "test-request"
-	testRequestPathVar = fmt.Sprintf("https://api.ionos.com/cloudapi/v5/requests/%s", testRequestVar)
-	testRequestErr     = errors.New("request test: error occurred")
+	testRequestUpdated = ionoscloud.Request{
+		Properties: &ionoscloud.RequestProperties{
+			Method: &testRequestMethodPut,
+		},
+		Metadata: &ionoscloud.RequestMetadata{
+			CreatedDate: &testRequestDate,
+		},
+	}
+	testRequestUpdatedPatch = ionoscloud.Request{
+		Properties: &ionoscloud.RequestProperties{
+			Method: &testRequestMethodPatch,
+		},
+		Metadata: &ionoscloud.RequestMetadata{
+			CreatedDate: &testRequestDate,
+		},
+	}
+	testRequestDeleted = ionoscloud.Request{
+		Properties: &ionoscloud.RequestProperties{
+			Method: &testRequestMethodDelete,
+		},
+		Metadata: &ionoscloud.RequestMetadata{
+			CreatedDate: &testRequestDate,
+		},
+	}
+	testRequestCreated = ionoscloud.Request{
+		Properties: &ionoscloud.RequestProperties{
+			Method: &testRequestMethodPost,
+		},
+		Metadata: &ionoscloud.RequestMetadata{
+			CreatedDate: &testRequestDate,
+		},
+	}
+	testRequests = resources.Requests{
+		Requests: ionoscloud.Requests{
+			Id:    &testRequestVar,
+			Items: &[]ionoscloud.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
+		},
+	}
+	testRequestDate         = ionoscloud.IonosTime{Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.Now().Location())}
+	testRequestVar          = "test-request"
+	testRequestMethodPut    = "PUT"
+	testRequestMethodPatch  = "PATCH"
+	testRequestMethodDelete = "DELETE"
+	testRequestMethodPost   = "POST"
+	testRequestPathVar      = fmt.Sprintf("https://api.ionos.com/cloudapi/v5/requests/%s", testRequestVar)
+	testRequestErr          = errors.New("request test: error occurred")
 )
 
 func TestPreRunRequestId(t *testing.T) {
@@ -73,9 +118,70 @@ func TestRunRequestList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.Request.EXPECT().List().Return(rqs, nil, nil)
+		viper.Set(core.GetGlobalFlagName(cfg.Namespace, config.ArgCols), allRequestCols)
+		rm.Request.EXPECT().List().Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunRequestListSortedUpdate(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLatest), 10)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgMethod), "UPDATE")
+		rm.Request.EXPECT().List().Return(testRequests, nil, nil)
+		err := RunRequestList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunRequestListSortedCreate(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLatest), 10)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgMethod), "CREATE")
+		rm.Request.EXPECT().List().Return(testRequests, nil, nil)
+		err := RunRequestList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunRequestListSortedDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLatest), 1)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgMethod), "DELETE")
+		rm.Request.EXPECT().List().Return(testRequests, nil, nil)
+		err := RunRequestList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunRequestListSortedErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgLatest), 10)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgMethod), "no method")
+		rm.Request.EXPECT().List().Return(testRequests, nil, nil)
+		err := RunRequestList(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -86,7 +192,7 @@ func TestRunRequestListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.Request.EXPECT().List().Return(rqs, nil, testRequestErr)
+		rm.Request.EXPECT().List().Return(testRequests, nil, testRequestErr)
 		err := RunRequestList(cfg)
 		assert.Error(t, err)
 		assert.True(t, err == testRequestErr)
@@ -101,7 +207,7 @@ func TestRunRequestGet(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
-		req := resources.Request{rq}
+		req := resources.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		err := RunRequestGet(cfg)
 		assert.NoError(t, err)
@@ -116,7 +222,7 @@ func TestRunRequestGetErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
-		req := resources.Request{rq}
+		req := resources.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, testRequestErr)
 		err := RunRequestGet(cfg)
 		assert.Error(t, err)
@@ -132,7 +238,7 @@ func TestRunRequestWait(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
-		req := resources.Request{rq}
+		req := resources.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, nil)
 		err := RunRequestWait(cfg)
@@ -148,7 +254,7 @@ func TestRunRequestWaitErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
-		req := resources.Request{rq}
+		req := resources.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, testRequestErr)
 		err := RunRequestWait(cfg)
