@@ -77,7 +77,7 @@ Use flags to retrieve a list of Images:
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(config.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by")
-	list.AddIntFlag(config.ArgLatest, "", 0, "Show the latest N Images, based on creation date, in descending order. If not set, all Images will be printed")
+	list.AddIntFlag(config.ArgLatest, "", 0, "Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed")
 
 	/*
 		Get Command
