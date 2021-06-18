@@ -13,6 +13,7 @@ ionosctl share update [flags]
 ## Aliases
 
 For `update` command:
+
 ```text
 [u up]
 ```

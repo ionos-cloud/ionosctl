@@ -13,16 +13,19 @@ ionosctl networkloadbalancer rule target list [flags]
 ## Aliases
 
 For `rule` command:
+
 ```text
 [r forwardingrule]
 ```
 
 For `target` command:
+
 ```text
 [t]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

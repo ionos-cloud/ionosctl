@@ -13,11 +13,13 @@ ionosctl nic update [flags]
 ## Aliases
 
 For `nic` command:
+
 ```text
 [n]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

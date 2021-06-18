@@ -13,16 +13,19 @@ ionosctl networkloadbalancer rule delete [flags]
 ## Aliases
 
 For `networkloadbalancer` command:
+
 ```text
 [nlb]
 ```
 
 For `rule` command:
+
 ```text
 [r forwardingrule]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

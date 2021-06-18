@@ -13,11 +13,13 @@ ionosctl flowlog get [flags]
 ## Aliases
 
 For `flowlog` command:
+
 ```text
 [fl]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```
@@ -30,7 +32,9 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-*Nic Id
+
+  \*Nic Id
+
 * FlowLog Id
 
 ## Options

@@ -13,11 +13,13 @@ ionosctl flowlog delete [flags]
 ## Aliases
 
 For `flowlog` command:
+
 ```text
 [fl]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

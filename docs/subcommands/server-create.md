@@ -13,22 +13,24 @@ ionosctl server create [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```
 
 ## Description
 
-Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center. 
+Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center.
 
 * For ENTERPRISE Servers:
 
-It is required that the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways: 
+It is required that the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
 * providing only the value, e.g.`--ram 256` equals 256MB.
 * providing both the value and the unit, e.g.`--ram 1GB`.
@@ -40,10 +42,9 @@ Required values to create a Server of type ENTERPRISE:
 * Data Center Id
 * Cores
 * RAM
+* For CUBE Servers:
 
-* For CUBE Servers: 
-
-Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl template` commands. 
+Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl template` commands.
 
 Required values to create a Server of type CUBE:
 

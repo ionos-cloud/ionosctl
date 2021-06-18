@@ -13,11 +13,13 @@ ionosctl natgateway get [flags]
 ## Aliases
 
 For `natgateway` command:
+
 ```text
 [nat ng]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

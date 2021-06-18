@@ -13,11 +13,13 @@ ionosctl loadbalancer list [flags]
 ## Aliases
 
 For `loadbalancer` command:
+
 ```text
 [lb]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

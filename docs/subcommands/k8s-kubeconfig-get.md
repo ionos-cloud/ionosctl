@@ -13,11 +13,13 @@ ionosctl k8s kubeconfig get [flags]
 ## Aliases
 
 For `kubeconfig` command:
+
 ```text
 [cfg config]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

@@ -13,16 +13,19 @@ ionosctl networkloadbalancer flowlog delete [flags]
 ## Aliases
 
 For `networkloadbalancer` command:
+
 ```text
 [nlb]
 ```
 
 For `flowlog` command:
+
 ```text
 [f fl]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

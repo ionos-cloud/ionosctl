@@ -13,11 +13,13 @@ ionosctl nic get [flags]
 ## Aliases
 
 For `nic` command:
+
 ```text
 [n]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

@@ -13,16 +13,19 @@ ionosctl natgateway flowlog list [flags]
 ## Aliases
 
 For `natgateway` command:
+
 ```text
 [nat ng]
 ```
 
 For `flowlog` command:
+
 ```text
 [f fl]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

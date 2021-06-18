@@ -13,11 +13,13 @@ ionosctl image get [flags]
 ## Aliases
 
 For `image` command:
+
 ```text
 [img]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

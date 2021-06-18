@@ -13,11 +13,13 @@ ionosctl location list [flags]
 ## Aliases
 
 For `location` command:
+
 ```text
 [loc]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

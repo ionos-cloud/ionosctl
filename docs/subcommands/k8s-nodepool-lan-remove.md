@@ -13,11 +13,13 @@ ionosctl k8s nodepool lan remove [flags]
 ## Aliases
 
 For `nodepool` command:
+
 ```text
 [np]
 ```
 
 For `remove` command:
+
 ```text
 [r]
 ```

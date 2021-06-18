@@ -13,11 +13,13 @@ ionosctl completion bash [flags]
 ## Aliases
 
 For `completion` command:
+
 ```text
 [comp]
 ```
 
 For `bash` command:
+
 ```text
 [b]
 ```

@@ -13,16 +13,19 @@ ionosctl server cdrom attach [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `cdrom` command:
+
 ```text
 [cd]
 ```
 
 For `attach` command:
+
 ```text
 [a]
 ```

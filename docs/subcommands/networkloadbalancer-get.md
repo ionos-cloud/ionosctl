@@ -13,11 +13,13 @@ ionosctl networkloadbalancer get [flags]
 ## Aliases
 
 For `networkloadbalancer` command:
+
 ```text
 [nlb]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

@@ -13,6 +13,7 @@ ionosctl server suspend [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```

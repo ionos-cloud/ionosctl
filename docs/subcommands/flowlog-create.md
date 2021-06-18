@@ -13,11 +13,13 @@ ionosctl flowlog create [flags]
 ## Aliases
 
 For `flowlog` command:
+
 ```text
 [fl]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

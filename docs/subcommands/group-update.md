@@ -13,11 +13,13 @@ ionosctl group update [flags]
 ## Aliases
 
 For `group` command:
+
 ```text
 [g]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

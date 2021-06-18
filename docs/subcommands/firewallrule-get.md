@@ -13,11 +13,13 @@ ionosctl firewallrule get [flags]
 ## Aliases
 
 For `firewallrule` command:
+
 ```text
 [f fr firewall]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```
@@ -30,7 +32,9 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-*Nic Id
+
+  \*Nic Id
+
 * FirewallRule Id
 
 ## Options

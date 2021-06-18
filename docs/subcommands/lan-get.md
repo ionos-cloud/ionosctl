@@ -13,11 +13,13 @@ ionosctl lan get [flags]
 ## Aliases
 
 For `lan` command:
+
 ```text
 [l]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

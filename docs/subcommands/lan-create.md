@@ -13,11 +13,13 @@ ionosctl lan create [flags]
 ## Aliases
 
 For `lan` command:
+
 ```text
 [l]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

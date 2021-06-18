@@ -13,11 +13,13 @@ ionosctl lan list [flags]
 ## Aliases
 
 For `lan` command:
+
 ```text
 [l]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

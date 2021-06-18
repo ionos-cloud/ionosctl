@@ -13,11 +13,13 @@ ionosctl server resume [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `resume` command:
+
 ```text
 [res]
 ```

@@ -13,11 +13,13 @@ ionosctl server reboot [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `reboot` command:
+
 ```text
 [r]
 ```

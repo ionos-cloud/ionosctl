@@ -13,11 +13,13 @@ ionosctl ipblock delete [flags]
 ## Aliases
 
 For `ipblock` command:
+
 ```text
 [ipb]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

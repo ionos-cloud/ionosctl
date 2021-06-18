@@ -13,11 +13,13 @@ ionosctl k8s node get [flags]
 ## Aliases
 
 For `node` command:
+
 ```text
 [n]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

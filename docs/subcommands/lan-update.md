@@ -13,11 +13,13 @@ ionosctl lan update [flags]
 ## Aliases
 
 For `lan` command:
+
 ```text
 [l]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

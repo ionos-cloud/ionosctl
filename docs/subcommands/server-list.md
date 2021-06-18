@@ -13,11 +13,13 @@ ionosctl server list [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

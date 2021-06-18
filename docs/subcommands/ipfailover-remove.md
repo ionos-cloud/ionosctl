@@ -13,11 +13,13 @@ ionosctl ipfailover remove [flags]
 ## Aliases
 
 For `ipfailover` command:
+
 ```text
 [ipf]
 ```
 
 For `remove` command:
+
 ```text
 [r]
 ```

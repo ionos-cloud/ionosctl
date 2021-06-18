@@ -13,11 +13,13 @@ ionosctl k8s nodepool lan list [flags]
 ## Aliases
 
 For `nodepool` command:
+
 ```text
 [np]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

@@ -13,11 +13,13 @@ ionosctl natgateway lan remove [flags]
 ## Aliases
 
 For `natgateway` command:
+
 ```text
 [nat ng]
 ```
 
 For `remove` command:
+
 ```text
 [r]
 ```

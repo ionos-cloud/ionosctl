@@ -13,11 +13,13 @@ ionosctl user list [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

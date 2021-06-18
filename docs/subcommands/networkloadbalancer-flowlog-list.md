@@ -13,16 +13,19 @@ ionosctl networkloadbalancer flowlog list [flags]
 ## Aliases
 
 For `networkloadbalancer` command:
+
 ```text
 [nlb]
 ```
 
 For `flowlog` command:
+
 ```text
 [f fl]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

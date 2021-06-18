@@ -13,11 +13,13 @@ ionosctl networkloadbalancer create [flags]
 ## Aliases
 
 For `networkloadbalancer` command:
+
 ```text
 [nlb]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

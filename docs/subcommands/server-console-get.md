@@ -13,16 +13,19 @@ ionosctl server console get [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `console` command:
+
 ```text
 [url]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

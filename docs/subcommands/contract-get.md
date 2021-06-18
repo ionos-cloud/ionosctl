@@ -13,11 +13,13 @@ ionosctl contract get [flags]
 ## Aliases
 
 For `contract` command:
+
 ```text
 [c]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

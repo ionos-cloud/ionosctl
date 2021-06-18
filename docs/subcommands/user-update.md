@@ -13,11 +13,13 @@ ionosctl user update [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

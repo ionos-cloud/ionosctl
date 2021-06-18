@@ -13,11 +13,13 @@ ionosctl user get [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

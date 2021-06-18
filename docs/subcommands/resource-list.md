@@ -13,11 +13,13 @@ ionosctl resource list [flags]
 ## Aliases
 
 For `resource` command:
+
 ```text
 [res]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

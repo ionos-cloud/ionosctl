@@ -13,11 +13,13 @@ ionosctl networkloadbalancer delete [flags]
 ## Aliases
 
 For `networkloadbalancer` command:
+
 ```text
 [nlb]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

@@ -13,11 +13,13 @@ ionosctl natgateway update [flags]
 ## Aliases
 
 For `natgateway` command:
+
 ```text
 [nat ng]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

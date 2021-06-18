@@ -13,16 +13,19 @@ ionosctl server volume attach [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `volume` command:
+
 ```text
 [v vol]
 ```
 
 For `attach` command:
+
 ```text
 [a]
 ```

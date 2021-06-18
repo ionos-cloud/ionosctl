@@ -13,11 +13,13 @@ ionosctl firewallrule delete [flags]
 ## Aliases
 
 For `firewallrule` command:
+
 ```text
 [f fr firewall]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

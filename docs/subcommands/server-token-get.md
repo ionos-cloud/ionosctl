@@ -13,16 +13,19 @@ ionosctl server token get [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `token` command:
+
 ```text
 [t]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

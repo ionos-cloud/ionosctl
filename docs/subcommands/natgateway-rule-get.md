@@ -13,16 +13,19 @@ ionosctl natgateway rule get [flags]
 ## Aliases
 
 For `natgateway` command:
+
 ```text
 [nat ng]
 ```
 
 For `rule` command:
+
 ```text
 [r]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

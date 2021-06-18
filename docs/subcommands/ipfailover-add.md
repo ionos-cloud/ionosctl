@@ -13,18 +13,20 @@ ionosctl ipfailover add [flags]
 ## Aliases
 
 For `ipfailover` command:
+
 ```text
 [ipf]
 ```
 
 For `add` command:
+
 ```text
 [a]
 ```
 
 ## Description
 
-Use this command to add an IP Failover group to a LAN. 
+Use this command to add an IP Failover group to a LAN.
 
 Successfully setting up an IP Failover group requires three steps:
 

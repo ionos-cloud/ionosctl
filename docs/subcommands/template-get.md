@@ -13,11 +13,13 @@ ionosctl template get [flags]
 ## Aliases
 
 For `template` command:
+
 ```text
 [tpl]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

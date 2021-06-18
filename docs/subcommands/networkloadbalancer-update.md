@@ -13,11 +13,13 @@ ionosctl networkloadbalancer update [flags]
 ## Aliases
 
 For `networkloadbalancer` command:
+
 ```text
 [nlb]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

@@ -13,11 +13,13 @@ ionosctl natgateway lan list [flags]
 ## Aliases
 
 For `natgateway` command:
+
 ```text
 [nat ng]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

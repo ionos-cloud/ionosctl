@@ -13,11 +13,13 @@ ionosctl k8s cluster delete [flags]
 ## Aliases
 
 For `cluster` command:
+
 ```text
 [c]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

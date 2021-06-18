@@ -13,16 +13,19 @@ ionosctl server cdrom list [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `cdrom` command:
+
 ```text
 [cd]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

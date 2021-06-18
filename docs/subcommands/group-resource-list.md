@@ -13,16 +13,19 @@ ionosctl group resource list [flags]
 ## Aliases
 
 For `group` command:
+
 ```text
 [g]
 ```
 
 For `resource` command:
+
 ```text
 [res]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

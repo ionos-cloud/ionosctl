@@ -13,11 +13,13 @@ ionosctl template list [flags]
 ## Aliases
 
 For `template` command:
+
 ```text
 [tpl]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

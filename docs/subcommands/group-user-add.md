@@ -13,16 +13,19 @@ ionosctl group user add [flags]
 ## Aliases
 
 For `group` command:
+
 ```text
 [g]
 ```
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `add` command:
+
 ```text
 [a]
 ```

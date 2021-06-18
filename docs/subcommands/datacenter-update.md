@@ -13,11 +13,13 @@ ionosctl datacenter update [flags]
 ## Aliases
 
 For `datacenter` command:
+
 ```text
 [d dc]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

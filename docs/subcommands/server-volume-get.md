@@ -13,16 +13,19 @@ ionosctl server volume get [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `volume` command:
+
 ```text
 [v vol]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

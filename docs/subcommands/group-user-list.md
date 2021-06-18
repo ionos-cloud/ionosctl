@@ -13,16 +13,19 @@ ionosctl group user list [flags]
 ## Aliases
 
 For `group` command:
+
 ```text
 [g]
 ```
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

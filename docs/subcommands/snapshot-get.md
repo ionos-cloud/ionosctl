@@ -13,11 +13,13 @@ ionosctl snapshot get [flags]
 ## Aliases
 
 For `snapshot` command:
+
 ```text
 [ss snap]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

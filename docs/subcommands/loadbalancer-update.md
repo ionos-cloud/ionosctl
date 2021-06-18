@@ -13,11 +13,13 @@ ionosctl loadbalancer update [flags]
 ## Aliases
 
 For `loadbalancer` command:
+
 ```text
 [lb]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

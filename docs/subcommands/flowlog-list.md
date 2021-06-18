@@ -13,11 +13,13 @@ ionosctl flowlog list [flags]
 ## Aliases
 
 For `flowlog` command:
+
 ```text
 [fl]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```
@@ -30,7 +32,8 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-*Nic Id
+
+  \*Nic Id
 
 ## Options
 

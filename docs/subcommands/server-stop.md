@@ -13,11 +13,13 @@ ionosctl server stop [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `stop` command:
+
 ```text
 [off]
 ```

@@ -13,6 +13,7 @@ ionosctl label remove [flags]
 ## Aliases
 
 For `remove` command:
+
 ```text
 [r]
 ```

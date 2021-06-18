@@ -13,16 +13,19 @@ ionosctl networkloadbalancer rule create [flags]
 ## Aliases
 
 For `networkloadbalancer` command:
+
 ```text
 [nlb]
 ```
 
 For `rule` command:
+
 ```text
 [r forwardingrule]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

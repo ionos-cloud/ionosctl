@@ -13,11 +13,13 @@ ionosctl nic delete [flags]
 ## Aliases
 
 For `nic` command:
+
 ```text
 [n]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

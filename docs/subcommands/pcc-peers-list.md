@@ -13,6 +13,7 @@ ionosctl pcc peers list [flags]
 ## Aliases
 
 For `list` command:
+
 ```text
 [l ls]
 ```

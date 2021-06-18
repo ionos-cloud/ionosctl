@@ -13,11 +13,13 @@ ionosctl datacenter list [flags]
 ## Aliases
 
 For `datacenter` command:
+
 ```text
 [d dc]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

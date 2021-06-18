@@ -2,7 +2,7 @@
 description: Create a S3Key for a User
 ---
 
-# UserS3keyCreate
+# UserS3KeyCreate
 
 ## Usage
 
@@ -13,16 +13,19 @@ ionosctl user s3key create [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `s3key` command:
+
 ```text
 [k s3k]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

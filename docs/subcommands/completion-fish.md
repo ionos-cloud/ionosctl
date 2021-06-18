@@ -13,11 +13,13 @@ ionosctl completion fish [flags]
 ## Aliases
 
 For `completion` command:
+
 ```text
 [comp]
 ```
 
 For `fish` command:
+
 ```text
 [f]
 ```

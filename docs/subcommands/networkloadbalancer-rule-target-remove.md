@@ -13,16 +13,19 @@ ionosctl networkloadbalancer rule target remove [flags]
 ## Aliases
 
 For `rule` command:
+
 ```text
 [r forwardingrule]
 ```
 
 For `target` command:
+
 ```text
 [t]
 ```
 
 For `remove` command:
+
 ```text
 [r]
 ```

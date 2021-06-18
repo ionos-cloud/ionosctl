@@ -13,6 +13,7 @@ ionosctl label add [flags]
 ## Aliases
 
 For `add` command:
+
 ```text
 [a]
 ```

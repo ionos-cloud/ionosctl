@@ -13,11 +13,13 @@ ionosctl group create [flags]
 ## Aliases
 
 For `group` command:
+
 ```text
 [g]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

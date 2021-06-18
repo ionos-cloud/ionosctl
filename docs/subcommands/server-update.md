@@ -13,11 +13,13 @@ ionosctl server update [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```
@@ -26,7 +28,7 @@ For `update` command:
 
 Use this command to update a specified Server from a Virtual Data Center.
 
-You can set the RAM size in the following ways: 
+You can set the RAM size in the following ways:
 
 * providing only the value, e.g.`--ram 256` equals 256MB.
 * providing both the value and the unit, e.g.`--ram 1GB`.

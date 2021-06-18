@@ -13,11 +13,13 @@ ionosctl firewallrule update [flags]
 ## Aliases
 
 For `firewallrule` command:
+
 ```text
 [f fr firewall]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```
