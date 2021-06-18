@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Introduction-remove](README.md)
+* [Introduction](README.md)
 * [Introduction](readme.md)
 * [Changelog](changelog.md)
 
