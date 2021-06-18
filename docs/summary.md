@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Introduction](readme.md)
+* [Introduction](README.md)
 * [Changelog](changelog.md)
 
 ## Subcommands
