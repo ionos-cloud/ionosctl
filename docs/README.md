@@ -288,7 +288,7 @@ For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] 
 
 #### Local version
 
-To uninstall a local version built with the steps from [Installing Ionosctl](readme.md#building-a-local-version), use:
+To uninstall a local version built with the steps from [Installing Ionosctl](README.md#building-a-local-version), use:
 
 ```text
 make clean
