@@ -119,8 +119,7 @@ func initVersion() {
 		IonosctlVersion.minor = i
 	}
 	if Patch != "" {
-		i, _ := strconv.Atoi(Patch)
-		IonosctlVersion.patch = i
+		IonosctlVersion.patch = Patch
 	}
 	if Label == "" {
 		IonosctlVersion.label = "DEV"
@@ -132,7 +131,7 @@ func initVersion() {
 type cliVersion struct {
 	major int
 	minor int
-	patch int
+	patch string
 	label string
 }
 
@@ -140,7 +139,7 @@ func (v cliVersion) GetVersion() string {
 	if v.label != "release" {
 		return fmt.Sprintf("%s", v.label)
 	} else {
-		return fmt.Sprintf("%d.%d.%d", v.major, v.minor, v.patch)
+		return fmt.Sprintf("%d.%d.%s", v.major, v.minor, v.patch)
 	}
 }
 

@@ -12,6 +12,7 @@ package ionoscloud
 
 import (
 	_context "context"
+	"fmt"
 	_ioutil "io/ioutil"
 	_nethttp "net/http"
 	_neturl "net/url"
@@ -168,8 +169,9 @@ func (a *ServerApiService) DatacentersServersCdromsDeleteExecute(r ApiDatacenter
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -184,6 +186,7 @@ func (a *ServerApiService) DatacentersServersCdromsDeleteExecute(r ApiDatacenter
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -335,8 +338,9 @@ func (a *ServerApiService) DatacentersServersCdromsFindByIdExecute(r ApiDatacent
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -351,6 +355,7 @@ func (a *ServerApiService) DatacentersServersCdromsFindByIdExecute(r ApiDatacent
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -514,8 +519,9 @@ func (a *ServerApiService) DatacentersServersCdromsGetExecute(r ApiDatacentersSe
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -530,6 +536,7 @@ func (a *ServerApiService) DatacentersServersCdromsGetExecute(r ApiDatacentersSe
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -687,8 +694,9 @@ func (a *ServerApiService) DatacentersServersCdromsPostExecute(r ApiDatacentersS
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -703,6 +711,7 @@ func (a *ServerApiService) DatacentersServersCdromsPostExecute(r ApiDatacentersS
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -850,8 +859,9 @@ func (a *ServerApiService) DatacentersServersDeleteExecute(r ApiDatacentersServe
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -866,6 +876,7 @@ func (a *ServerApiService) DatacentersServersDeleteExecute(r ApiDatacentersServe
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1013,8 +1024,9 @@ func (a *ServerApiService) DatacentersServersFindByIdExecute(r ApiDatacentersSer
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1029,6 +1041,7 @@ func (a *ServerApiService) DatacentersServersFindByIdExecute(r ApiDatacentersSer
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1196,8 +1209,9 @@ func (a *ServerApiService) DatacentersServersGetExecute(r ApiDatacentersServersG
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1212,6 +1226,7 @@ func (a *ServerApiService) DatacentersServersGetExecute(r ApiDatacentersServersG
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1369,8 +1384,9 @@ func (a *ServerApiService) DatacentersServersPatchExecute(r ApiDatacentersServer
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1385,6 +1401,7 @@ func (a *ServerApiService) DatacentersServersPatchExecute(r ApiDatacentersServer
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1538,8 +1555,9 @@ func (a *ServerApiService) DatacentersServersPostExecute(r ApiDatacentersServers
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1554,6 +1572,7 @@ func (a *ServerApiService) DatacentersServersPostExecute(r ApiDatacentersServers
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1711,8 +1730,9 @@ func (a *ServerApiService) DatacentersServersPutExecute(r ApiDatacentersServersP
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1727,6 +1747,7 @@ func (a *ServerApiService) DatacentersServersPutExecute(r ApiDatacentersServersP
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1874,8 +1895,9 @@ func (a *ServerApiService) DatacentersServersRebootPostExecute(r ApiDatacentersS
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1890,6 +1912,7 @@ func (a *ServerApiService) DatacentersServersRebootPostExecute(r ApiDatacentersS
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -2037,8 +2060,9 @@ func (a *ServerApiService) DatacentersServersStartPostExecute(r ApiDatacentersSe
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2053,6 +2077,7 @@ func (a *ServerApiService) DatacentersServersStartPostExecute(r ApiDatacentersSe
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -2200,8 +2225,9 @@ func (a *ServerApiService) DatacentersServersStopPostExecute(r ApiDatacentersSer
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2216,6 +2242,7 @@ func (a *ServerApiService) DatacentersServersStopPostExecute(r ApiDatacentersSer
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -2363,8 +2390,9 @@ func (a *ServerApiService) DatacentersServersUpgradePostExecute(r ApiDatacenters
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2379,6 +2407,7 @@ func (a *ServerApiService) DatacentersServersUpgradePostExecute(r ApiDatacenters
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -2530,8 +2559,9 @@ func (a *ServerApiService) DatacentersServersVolumesDeleteExecute(r ApiDatacente
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2546,6 +2576,7 @@ func (a *ServerApiService) DatacentersServersVolumesDeleteExecute(r ApiDatacente
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -2697,8 +2728,9 @@ func (a *ServerApiService) DatacentersServersVolumesFindByIdExecute(r ApiDatacen
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2713,6 +2745,7 @@ func (a *ServerApiService) DatacentersServersVolumesFindByIdExecute(r ApiDatacen
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -2862,8 +2895,9 @@ func (a *ServerApiService) DatacentersServersVolumesGetExecute(r ApiDatacentersS
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2878,6 +2912,7 @@ func (a *ServerApiService) DatacentersServersVolumesGetExecute(r ApiDatacentersS
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -3021,8 +3056,9 @@ func (a *ServerApiService) DatacentersServersVolumesPostExecute(r ApiDatacenters
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3037,6 +3073,7 @@ func (a *ServerApiService) DatacentersServersVolumesPostExecute(r ApiDatacenters
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}

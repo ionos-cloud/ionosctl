@@ -25,7 +25,6 @@ func TestRunLoginUserBufferUserErr(t *testing.T) {
 		cfg.Stdin = bytes.NewReader([]byte(testUsername + "\n"))
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == "401 Unauthorized")
 	})
 }
 
@@ -49,7 +48,6 @@ func TestRunLoginUserUnauthorizedErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == "401 Unauthorized")
 	})
 }
 

@@ -10,6 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 )
 
@@ -24,8 +25,8 @@ func version() *core.Command {
 		Namespace:  "version",
 		Resource:   "version",
 		Verb:       "version",
-		ShortDesc:  "Show the current version",
-		LongDesc:   "The `ionosctl version` command displays the current version of the ionosctl software and the latest Github release.",
+		ShortDesc:  "Show the current version of CLI and SDK",
+		LongDesc:   "The `ionosctl version` command displays the current version of the ionosctl software, the SDK GO version and the latest Github release.",
 		Example:    "ionosctl version",
 		PreCmdRun:  noPreRun,
 		CmdRun:     RunVersion,
@@ -37,7 +38,11 @@ func version() *core.Command {
 }
 
 func RunVersion(c *core.CommandConfig) error {
-	err := c.Printer.Print("You are currently using ionosctl the " + rootCmd.Command.Version + " version.")
+	err := c.Printer.Print("IONOS Cloud CLI version: " + rootCmd.Command.Version)
+	if err != nil {
+		return err
+	}
+	err = c.Printer.Print("SDK GO version: " + ionoscloud.Version)
 	if err != nil {
 		return err
 	}
