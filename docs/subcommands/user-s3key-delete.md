@@ -2,7 +2,7 @@
 description: Delete a S3Key
 ---
 
-# UserS3keyDelete
+# UserS3KeyDelete
 
 ## Usage
 
@@ -13,16 +13,19 @@ ionosctl user s3key delete [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `s3key` command:
+
 ```text
 [k s3k]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

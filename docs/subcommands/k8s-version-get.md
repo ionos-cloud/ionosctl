@@ -13,11 +13,13 @@ ionosctl k8s version get [flags]
 ## Aliases
 
 For `version` command:
+
 ```text
 [v]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

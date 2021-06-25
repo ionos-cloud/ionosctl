@@ -13,11 +13,13 @@ ionosctl nic create [flags]
 ## Aliases
 
 For `nic` command:
+
 ```text
 [n]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

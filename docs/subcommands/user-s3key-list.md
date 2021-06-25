@@ -2,7 +2,7 @@
 description: List User S3Keys
 ---
 
-# UserS3keyList
+# UserS3KeyList
 
 ## Usage
 
@@ -13,16 +13,19 @@ ionosctl user s3key list [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `s3key` command:
+
 ```text
 [k s3k]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

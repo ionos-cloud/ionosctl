@@ -13,11 +13,13 @@ ionosctl request wait [flags]
 ## Aliases
 
 For `request` command:
+
 ```text
 [req]
 ```
 
 For `wait` command:
+
 ```text
 [w]
 ```

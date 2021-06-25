@@ -13,11 +13,13 @@ ionosctl server create [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```
@@ -26,7 +28,7 @@ For `create` command:
 
 Use this command to create a Server in a specified Virtual Data Center. It is required that the number of cores for the Server and the amount of memory for the Server to be set.
 
-The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways: 
+The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
 * providing only the value, e.g.`--ram 256` equals 256MB.
 * providing both the value and the unit, e.g.`--ram 1GB`.

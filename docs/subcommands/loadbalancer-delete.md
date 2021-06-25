@@ -13,11 +13,13 @@ ionosctl loadbalancer delete [flags]
 ## Aliases
 
 For `loadbalancer` command:
+
 ```text
 [lb]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

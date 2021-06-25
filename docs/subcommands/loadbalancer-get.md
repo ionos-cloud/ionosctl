@@ -13,11 +13,13 @@ ionosctl loadbalancer get [flags]
 ## Aliases
 
 For `loadbalancer` command:
+
 ```text
 [lb]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

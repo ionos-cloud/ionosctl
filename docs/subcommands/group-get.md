@@ -13,11 +13,13 @@ ionosctl group get [flags]
 ## Aliases
 
 For `group` command:
+
 ```text
 [g]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

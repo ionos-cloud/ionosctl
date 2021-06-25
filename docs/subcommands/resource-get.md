@@ -13,11 +13,13 @@ ionosctl resource get [flags]
 ## Aliases
 
 For `resource` command:
+
 ```text
 [res]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

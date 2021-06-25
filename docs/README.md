@@ -1,15 +1,15 @@
 ---
 description: >-
-  IonosCTL CLI is currently under development. We are working on adding new
-  commands and use-cases in order to support all the operations available in the
-  Cloud API.
+  IonosCTL command line interface (CLI) utility is currently under development.
+  We are working on adding new commands and use-cases in order to support all
+  the operations available in the Cloud API.
 ---
 
-# Introduction
+# IonosCTL CLI
 
 ## Overview
 
-IonosCTL is a tool to help you manage your IONOS Cloud resources directly from your terminal. 
+IonosCTL is a tool to help you manage your IONOS Cloud resources directly from your terminal.
 
 ## Getting started
 
@@ -35,12 +35,11 @@ sudo mv ~/ionosctl /usr/local/bin
 ionosctl help
 ```
 
-For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this \[official guide\]\([https://msdn.microsoft.com/en-us/library/office/ee537574\(v=office.14\).aspx](https://msdn.microsoft.com/en-us/library/office/ee537574%28v=office.14%29.aspx)\) that explains how to add tools to your `PATH`.
-The path that you need to add is the path to the folder where you unzipped the ionosctl release.
+For Windows users, you can download the latest release available on [Release Page](https://github.com/ionos-cloud/ionosctl/releases), unzip it and follow this \[official guide\]\([https://msdn.microsoft.com/en-us/library/office/ee537574\(v=office.14\).aspx](https://msdn.microsoft.com/en-us/library/office/ee537574%28v=office.14%29.aspx)\) that explains how to add tools to your `PATH`. The path that you need to add is the path to the folder where you unzipped the ionosctl release.
 
-#### Building a local version(on a Linux machine)
+#### Building a local version\(on a Linux machine\)
 
-If you have a Go environment (Go 1.14, Go 1.15, Go 1.16) configured, you can build and install the development version of `ionosctl` with:
+If you have a Go environment \(Go 1.14, Go 1.15, Go 1.16\) configured, you can build and install the development version of `ionosctl` with:
 
 ```text
 git clone https://github.com/ionos-cloud/ionosctl.git
@@ -62,10 +61,12 @@ Note that the development version is a work-in-progress of a future stable relea
 
 Dependencies: `ionosctl` uses [Go Modules](https://github.com/golang/go/wiki/Modules) with vendoring.
 
-On Windows, you just need to run the command 
+On Windows, you just need to run the command
+
 ```text
 go install
 ```
+
 from the folder where you cloned the ionosctl git.
 
 ### Authenticating with Ionos Cloud
@@ -109,7 +110,7 @@ If you want to use a different configuration file, use `--config` option.
 
 * Using environment variables
 
-For authentication with IONOS Cloud, you can also set the environment variables: `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`. 
+For authentication with IONOS Cloud, you can also set the environment variables: `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`.
 
 ### Enabling Shell Auto-Completion
 
@@ -215,16 +216,15 @@ and source this file from your PowerShell profile or you can append the above li
 
 Regarding the PowerShell profile, you can follow the next steps:
 
-* You need to find the PowerShell Profile path using the command ```$PROFILE``` and verify it is created with  ```Test-Path $PROFILE```.
+* You need to find the PowerShell Profile path using the command `$PROFILE` and verify it is created with `Test-Path $PROFILE`.
+* If the result of the previous command is false, the profile doesn’t exist you need to create one, so you can use the command `New-Item -Type File -Force $PROFILE`.
+* Now, you created the profile and you can oopen file with a text editor and add the following line: `. $PATH\ionosctl.ps1`, where $PATH is absolute path to ionosctl.ps1 \(for example . D:\ionoscloud\ionosctl.ps1\)
 
-* If the result of the previous command is false, the profile doesn’t exist you need to create one, so you can use the command ```New-Item -Type File -Force $PROFILE```.
+In case you want more details, the profile creating steps are detailed in this link: [https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about\_profiles?view=powershell-7.1](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.1)
 
-* Now, you created the profile and you can oopen file with a text editor and add the following line: ```. $PATH\ionosctl.ps1```, where $PATH is absolute path to ionosctl.ps1 (for example . D:\ionoscloud\ionosctl.ps1)
+* If you get the following error:"path\Microsoft.PowerShell\_profile.ps1" cannot be loaded because running scripts is disabled on this system, you can run the command `Set-ExecutionPolicy RemoteSigned` and restart the terminal.
 
-In case you want more details, the profile creating steps are detailed in this link: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.1
-
-* If you get the following error:"path\Microsoft.PowerShell_profile.ps1" cannot be loaded because running scripts is disabled on this system, you can run the command ```Set-ExecutionPolicy RemoteSigned``` and restart the terminal.
-  After you finish your work with ionosctl, you can run ```Set-ExecutionPolicy Restricted``` to disable running scripts.
+  After you finish your work with ionosctl, you can run `Set-ExecutionPolicy Restricted` to disable running scripts.
 
 You will need to start a new PowerShell for this setup to take effect.
 
@@ -282,13 +282,13 @@ make test
 
 ### Examples
 
-For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h`  or `ionosctl help [command]` or see the [full reference documentation](subcommands) to see examples.
+For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] -h` or `ionosctl help [command]` or see the [full reference documentation](https://github.com/ionos-cloud/ionosctl/tree/0215108766d1490c53c871c6b0b71f50ee3454d9/docs/subcommands/README.md) to see examples.
 
 ### Uninstalling `ionosctl`
 
 #### Local version
 
-To uninstall a local version built with the steps from [Installing Ionosctl](README.md#building-a-local-version), use:
+To uninstall a local version built with the steps from [Installing Ionosctl](./#building-a-local-version), use:
 
 ```text
 make clean

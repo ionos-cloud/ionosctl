@@ -13,16 +13,19 @@ ionosctl server volume detach [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `volume` command:
+
 ```text
 [v vol]
 ```
 
 For `detach` command:
+
 ```text
 [d]
 ```

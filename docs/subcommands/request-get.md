@@ -13,11 +13,13 @@ ionosctl request get [flags]
 ## Aliases
 
 For `request` command:
+
 ```text
 [req]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

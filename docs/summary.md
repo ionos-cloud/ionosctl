@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Introduction](README.md)
+* [IonosCTL CLI](README.md)
 * [Changelog](changelog.md)
 
 ## Subcommands

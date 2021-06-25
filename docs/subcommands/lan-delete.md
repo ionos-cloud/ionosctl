@@ -13,11 +13,13 @@ ionosctl lan delete [flags]
 ## Aliases
 
 For `lan` command:
+
 ```text
 [l]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

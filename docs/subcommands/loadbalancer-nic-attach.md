@@ -13,16 +13,19 @@ ionosctl loadbalancer nic attach [flags]
 ## Aliases
 
 For `loadbalancer` command:
+
 ```text
 [lb]
 ```
 
 For `nic` command:
+
 ```text
 [n]
 ```
 
 For `attach` command:
+
 ```text
 [a]
 ```

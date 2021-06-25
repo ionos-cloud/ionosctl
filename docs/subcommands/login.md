@@ -13,6 +13,7 @@ ionosctl login [flags]
 ## Aliases
 
 For `login` command:
+
 ```text
 [log auth]
 ```

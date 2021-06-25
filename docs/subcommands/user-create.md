@@ -13,11 +13,13 @@ ionosctl user create [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

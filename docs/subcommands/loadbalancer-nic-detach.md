@@ -13,16 +13,19 @@ ionosctl loadbalancer nic detach [flags]
 ## Aliases
 
 For `loadbalancer` command:
+
 ```text
 [lb]
 ```
 
 For `nic` command:
+
 ```text
 [n]
 ```
 
 For `detach` command:
+
 ```text
 [d]
 ```

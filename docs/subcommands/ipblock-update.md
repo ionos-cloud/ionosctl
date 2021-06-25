@@ -13,11 +13,13 @@ ionosctl ipblock update [flags]
 ## Aliases
 
 For `ipblock` command:
+
 ```text
 [ipb]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

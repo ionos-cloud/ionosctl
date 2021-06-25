@@ -13,11 +13,13 @@ ionosctl completion zsh [flags]
 ## Aliases
 
 For `completion` command:
+
 ```text
 [comp]
 ```
 
 For `zsh` command:
+
 ```text
 [z]
 ```

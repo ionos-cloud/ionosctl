@@ -13,16 +13,19 @@ ionosctl group user remove [flags]
 ## Aliases
 
 For `group` command:
+
 ```text
 [g]
 ```
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `remove` command:
+
 ```text
 [r]
 ```

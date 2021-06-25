@@ -13,11 +13,13 @@ ionosctl group delete [flags]
 ## Aliases
 
 For `group` command:
+
 ```text
 [g]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

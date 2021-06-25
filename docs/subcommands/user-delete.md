@@ -1,5 +1,5 @@
 ---
-description: Blacklists the User, disabling them
+description: 'Blacklists the User, disabling them'
 ---
 
 # UserDelete
@@ -13,11 +13,13 @@ ionosctl user delete [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

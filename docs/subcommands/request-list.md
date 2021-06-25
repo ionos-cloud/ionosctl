@@ -13,11 +13,13 @@ ionosctl request list [flags]
 ## Aliases
 
 For `request` command:
+
 ```text
 [req]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```
@@ -29,7 +31,7 @@ Use this command to list all Requests on your account.
 Use flags to retrieve a list of Requests:
 
 * sorting by the time the Request was created, starting from now in descending order, take the first N Requests: `ionosctl request list --latest N`
-* sorting by method: `ionosctl request list --method REQUEST_METHOD`, where REQUEST_METHOD can be CREATE or POST, UPDATE or PATCH, PUT and DELETE
+* sorting by method: `ionosctl request list --method REQUEST_METHOD`, where REQUEST\_METHOD can be CREATE or POST, UPDATE or PATCH, PUT and DELETE
 * sorting by both of the above options: `ionosctl request list --method REQUEST_METHOD --latest N`
 
 ## Options

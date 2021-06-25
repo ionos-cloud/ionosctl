@@ -2,7 +2,7 @@
 description: Update a S3Key
 ---
 
-# UserS3keyUpdate
+# UserS3KeyUpdate
 
 ## Usage
 
@@ -13,16 +13,19 @@ ionosctl user s3key update [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `s3key` command:
+
 ```text
 [k s3k]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

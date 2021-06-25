@@ -13,11 +13,13 @@ ionosctl nic list [flags]
 ## Aliases
 
 For `nic` command:
+
 ```text
 [n]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```
