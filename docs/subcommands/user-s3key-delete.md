@@ -2,7 +2,7 @@
 description: Delete a S3Key
 ---
 
-# UserS3KeyDelete
+# UserS3keyDelete
 
 ## Usage
 

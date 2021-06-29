@@ -82,7 +82,7 @@ func datacenter() *core.Command {
 		ShortDesc: "Create a Data Center",
 		LongDesc: `Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
 
-Virtual Data Centers (VDCs) are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
+Virtual Data Centers are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
 		Example:    createDatacenterExample,
@@ -138,7 +138,7 @@ Required values to run command:
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Data Center",
-		LongDesc: `Use this command to delete a specified Virtual Data Center (VDC) from your account. This will remove all objects within the VDC and remove the VDC object itself. 
+		LongDesc: `Use this command to delete a specified Virtual Data Center from your account. This will remove all objects within the VDC and remove the VDC object itself.
 
 NOTE: This is a highly destructive operation which should be used with extreme caution!
 

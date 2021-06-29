@@ -2,7 +2,7 @@
 description: Get a User S3Key
 ---
 
-# UserS3KeyGet
+# UserS3keyGet
 
 ## Usage
 
