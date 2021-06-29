@@ -32,8 +32,7 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-
-  \*Nic Id
+* Nic Id
 
 ## Options
 

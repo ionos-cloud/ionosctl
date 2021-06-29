@@ -49,14 +49,14 @@ func image() *core.Command {
 		Verb:      "list",
 		Aliases:   []string{"l", "ls"},
 		ShortDesc: "List Images",
-		LongDesc: `Use this command to get a full list of available public Images. 
+		LongDesc: `Use this command to get a full list of available public Images.
 
 Use flags to retrieve a list of Images:
 
 * sorting by location, using ` + "`" + `ionosctl image list --location LOCATION_ID` + "`" + `
 * sorting by licence type, using ` + "`" + `ionosctl image list --licence-type LICENCE_TYPE` + "`" + `
 * sorting by Image type, using ` + "`" + `ionosctl image list --type IMAGE_TYPE` + "`" + `
-* sorting by Image alias, using ` + "`" + `ionosctl image list --image-alias IMAGE_ALIAS` + "`" + `; IMAGE_ALIAS can be either the Image alias ` + "`" + `--image-alias ubuntu:latest` + "`" + ` or part of Image alias e.g. ` + "`" + `--image-alias latest` + "`" + `
+* sorting by Image alias, using ` + "`" + `ionosctl image list --image-alias IMAGE_ALIAS` + "`" + `; image alias can be either the Image alias ` + "`" + `--image-alias ubuntu:latest` + "`" + ` or part of Image alias e.g. ` + "`" + `--image-alias latest` + "`" + `
 * sorting by the time the Image was created, starting from now in descending order, take the first N Images, using ` + "`" + `ionosctl image list --latest N` + "`" + `
 * sorting by multiple of above options, using ` + "`" + `ionosctl image list --type IMAGE_TYPE --location LOCATION_ID --latest N` + "`" + ``,
 		Example:    listImagesExample,

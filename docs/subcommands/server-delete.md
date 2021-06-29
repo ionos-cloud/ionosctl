@@ -28,7 +28,7 @@ For `delete` command:
 
 Use this command to delete a specified Server from a Virtual Data Center.
 
-NOTE: This will not automatically remove the storage Volume\(s\) attached to a Server.
+NOTE: This will not automatically remove the storage Volumes attached to a Server.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can force the command to execute without user input using `--force` option.
 

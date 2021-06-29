@@ -95,7 +95,7 @@ func server() *core.Command {
 		ShortDesc: "Create a Server",
 		LongDesc: `Use this command to create a Server in a specified Virtual Data Center. It is required that the number of cores for the Server and the amount of memory for the Server to be set.
 
-The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways: 
+The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
 * providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
 * providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
@@ -145,7 +145,7 @@ Required values to run command:
 		ShortDesc: "Update a Server",
 		LongDesc: `Use this command to update a specified Server from a Virtual Data Center.
 
-You can set the RAM size in the following ways: 
+You can set the RAM size in the following ways:
 
 * providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
 * providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
@@ -200,7 +200,7 @@ Required values to run command:
 		ShortDesc: "Delete a Server",
 		LongDesc: `Use this command to delete a specified Server from a Virtual Data Center.
 
-NOTE: This will not automatically remove the storage Volume(s) attached to a Server.
+NOTE: This will not automatically remove the storage Volumes attached to a Server.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 

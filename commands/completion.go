@@ -203,7 +203,7 @@ To load completions for every new session, run:
 PS> ionosctl completion powershell > ionosctl.ps1
 ` + "```" + `
 
-and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file. 
+and source this file from your PowerShell profile or you can append the above line to your PowerShell profile file.
 
 You will need to start a new PowerShell for this setup to take effect.
 
