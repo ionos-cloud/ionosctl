@@ -34,7 +34,6 @@ func getConfigHomeDir() string {
 }
 
 func LoadFile() error {
-	// todo verifica daca are permisiunea 600 pe config ceva gen linia 93, dal ala seteaza, et trebuie sa verific
 	path := viper.GetString(ArgConfig)
 	fmt.Println("path: " + path)
 	fileInfo, statErr := os.Stat(path)
