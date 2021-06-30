@@ -26,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center.
+Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual Data Center. 
 
 * For ENTERPRISE Servers:
 
@@ -42,6 +42,7 @@ Required values to create a Server of type ENTERPRISE:
 * Data Center Id
 * Cores
 * RAM
+
 * For CUBE Servers:
 
 Servers of type CUBE will be created with a Direct Attached Storage with the size set from the Template. To see more details about the available Templates, use `ionosctl template` commands.

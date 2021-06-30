@@ -2,7 +2,7 @@
 description: Update a S3Key
 ---
 
-# UserS3KeyUpdate
+# UserS3keyUpdate
 
 ## Usage
 

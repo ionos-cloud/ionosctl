@@ -26,7 +26,7 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified Virtual Data Center \(VDC\) from your account. This will remove all objects within the VDC and remove the VDC object itself.
+Use this command to delete a specified Virtual Data Center from your account. This will remove all objects within the VDC and remove the VDC object itself.
 
 NOTE: This is a highly destructive operation which should be used with extreme caution!
 

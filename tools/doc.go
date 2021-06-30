@@ -185,7 +185,7 @@ func writeDoc(cmd *core.Command, w io.Writer) error {
 func writeCmdAliases(cmd *core.Command, buf *bytes.Buffer) {
 	if cmd != nil {
 		if len(cmd.Command.Aliases) > 0 {
-			buf.WriteString(fmt.Sprintf("For `%s` command:\n", cmd.Command.Name()))
+			buf.WriteString(fmt.Sprintf("For `%s` command:\n\n", cmd.Command.Name()))
 			buf.WriteString(fmt.Sprintf("```text\n%s\n```\n\n", cmd.Command.Aliases))
 		}
 	}
