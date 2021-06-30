@@ -2,7 +2,7 @@
 description: Create a S3Key for a User
 ---
 
-# UserS3KeyCreate
+# UserS3keyCreate
 
 ## Usage
 

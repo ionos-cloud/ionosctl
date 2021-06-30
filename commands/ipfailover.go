@@ -69,7 +69,7 @@ func ipfailover() *core.Command {
 		Verb:      "add",
 		Aliases:   []string{"a"},
 		ShortDesc: "Add IP Failover group to a LAN",
-		LongDesc: `Use this command to add an IP Failover group to a LAN. 
+		LongDesc: `Use this command to add an IP Failover group to a LAN.
 
 Successfully setting up an IP Failover group requires three steps:
 
