@@ -106,7 +106,6 @@ func initConfig() {
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
-	_ = viper.ReadInConfig()
 }
 
 func initVersion() {
