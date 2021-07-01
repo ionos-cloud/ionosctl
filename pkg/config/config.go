@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -35,10 +34,13 @@ func getConfigHomeDir() string {
 
 func LoadFile() error {
 	path := viper.GetString(ArgConfig)
-	fmt.Println("path: " + path)
+	if !filepath.IsAbs(path) {
+		path, _ = filepath.Abs(path)
+	}
+	//fmt.Println("path: " + path)
 	fileInfo, statErr := os.Stat(path)
 	if statErr != nil {
-		// todo eroare
+		return statErr
 	}
 
 	perm := fileInfo.Mode().Perm()
@@ -47,15 +49,15 @@ func LoadFile() error {
 	permNumber, _ := strconv.Atoi(strBase10)
 
 	if permNumber == int(600) {
-		fmt.Printf("uraaaa + %d", permNumber)
+		viper.SetConfigFile(viper.GetString(ArgConfig))
+		err := viper.ReadInConfig()
+		if err != nil {
+			return err
+		}
+		return nil
+	} else {
+		return errors.New("no permission for the config file, expected 600")
 	}
-
-	viper.SetConfigFile(viper.GetString(ArgConfig))
-	err := viper.ReadInConfig()
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // Load collects config data from the config file, using environment variables as fallback.
