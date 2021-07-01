@@ -13,16 +13,19 @@ ionosctl user s3key get [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `s3key` command:
+
 ```text
 [k s3k]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

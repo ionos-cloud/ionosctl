@@ -13,11 +13,13 @@ ionosctl user delete [flags]
 ## Aliases
 
 For `user` command:
+
 ```text
 [u]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

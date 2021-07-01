@@ -13,11 +13,13 @@ ionosctl server start [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `start` command:
+
 ```text
 [on]
 ```

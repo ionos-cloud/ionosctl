@@ -13,11 +13,13 @@ ionosctl ipfailover list [flags]
 ## Aliases
 
 For `ipfailover` command:
+
 ```text
 [ipf]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

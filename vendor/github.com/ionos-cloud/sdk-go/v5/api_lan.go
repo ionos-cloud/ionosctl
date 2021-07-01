@@ -12,6 +12,7 @@ package ionoscloud
 
 import (
 	_context "context"
+	"fmt"
 	_ioutil "io/ioutil"
 	_nethttp "net/http"
 	_neturl "net/url"
@@ -164,8 +165,9 @@ func (a *LanApiService) DatacentersLansDeleteExecute(r ApiDatacentersLansDeleteR
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -180,6 +182,7 @@ func (a *LanApiService) DatacentersLansDeleteExecute(r ApiDatacentersLansDeleteR
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -327,8 +330,9 @@ func (a *LanApiService) DatacentersLansFindByIdExecute(r ApiDatacentersLansFindB
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -343,6 +347,7 @@ func (a *LanApiService) DatacentersLansFindByIdExecute(r ApiDatacentersLansFindB
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -502,8 +507,9 @@ func (a *LanApiService) DatacentersLansGetExecute(r ApiDatacentersLansGetRequest
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -518,6 +524,7 @@ func (a *LanApiService) DatacentersLansGetExecute(r ApiDatacentersLansGetRequest
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -669,8 +676,9 @@ func (a *LanApiService) DatacentersLansNicsFindByIdExecute(r ApiDatacentersLansN
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -685,6 +693,7 @@ func (a *LanApiService) DatacentersLansNicsFindByIdExecute(r ApiDatacentersLansN
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -848,8 +857,9 @@ func (a *LanApiService) DatacentersLansNicsGetExecute(r ApiDatacentersLansNicsGe
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -864,6 +874,7 @@ func (a *LanApiService) DatacentersLansNicsGetExecute(r ApiDatacentersLansNicsGe
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1021,8 +1032,9 @@ func (a *LanApiService) DatacentersLansNicsPostExecute(r ApiDatacentersLansNicsP
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1037,6 +1049,7 @@ func (a *LanApiService) DatacentersLansNicsPostExecute(r ApiDatacentersLansNicsP
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1194,8 +1207,9 @@ func (a *LanApiService) DatacentersLansPatchExecute(r ApiDatacentersLansPatchReq
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1210,6 +1224,7 @@ func (a *LanApiService) DatacentersLansPatchExecute(r ApiDatacentersLansPatchReq
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1363,8 +1378,9 @@ func (a *LanApiService) DatacentersLansPostExecute(r ApiDatacentersLansPostReque
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1379,6 +1395,7 @@ func (a *LanApiService) DatacentersLansPostExecute(r ApiDatacentersLansPostReque
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1536,8 +1553,9 @@ func (a *LanApiService) DatacentersLansPutExecute(r ApiDatacentersLansPutRequest
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1552,6 +1570,7 @@ func (a *LanApiService) DatacentersLansPutExecute(r ApiDatacentersLansPutRequest
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}

@@ -13,11 +13,13 @@ ionosctl snapshot restore [flags]
 ## Aliases
 
 For `snapshot` command:
+
 ```text
 [ss snap]
 ```
 
 For `restore` command:
+
 ```text
 [r]
 ```

@@ -13,11 +13,13 @@ ionosctl snapshot update [flags]
 ## Aliases
 
 For `snapshot` command:
+
 ```text
 [ss snap]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

@@ -13,11 +13,13 @@ ionosctl k8s cluster update [flags]
 ## Aliases
 
 For `cluster` command:
+
 ```text
 [c]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

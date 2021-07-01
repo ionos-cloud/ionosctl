@@ -13,11 +13,13 @@ ionosctl k8s nodepool get [flags]
 ## Aliases
 
 For `nodepool` command:
+
 ```text
 [np]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

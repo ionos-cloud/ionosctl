@@ -13,11 +13,13 @@ ionosctl firewallrule create [flags]
 ## Aliases
 
 For `firewallrule` command:
+
 ```text
 [f fr firewall]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

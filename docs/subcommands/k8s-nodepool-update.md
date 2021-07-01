@@ -13,11 +13,13 @@ ionosctl k8s nodepool update [flags]
 ## Aliases
 
 For `nodepool` command:
+
 ```text
 [np]
 ```
 
 For `update` command:
+
 ```text
 [u up]
 ```

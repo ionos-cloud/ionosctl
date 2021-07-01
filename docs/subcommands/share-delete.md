@@ -13,6 +13,7 @@ ionosctl share delete [flags]
 ## Aliases
 
 For `delete` command:
+
 ```text
 [d]
 ```

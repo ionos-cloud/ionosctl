@@ -13,11 +13,13 @@ ionosctl backupunit get [flags]
 ## Aliases
 
 For `backupunit` command:
+
 ```text
 [b backup]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

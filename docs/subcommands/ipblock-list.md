@@ -13,11 +13,13 @@ ionosctl ipblock list [flags]
 ## Aliases
 
 For `ipblock` command:
+
 ```text
 [ipb]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

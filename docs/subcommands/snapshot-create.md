@@ -13,11 +13,13 @@ ionosctl snapshot create [flags]
 ## Aliases
 
 For `snapshot` command:
+
 ```text
 [ss snap]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

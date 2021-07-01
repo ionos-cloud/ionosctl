@@ -13,11 +13,13 @@ ionosctl group list [flags]
 ## Aliases
 
 For `group` command:
+
 ```text
 [g]
 ```
 
 For `list` command:
+
 ```text
 [l ls]
 ```

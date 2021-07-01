@@ -54,14 +54,14 @@ func request() *core.Command {
 Use flags to retrieve a list of Requests:
 
 * sorting by the time the Request was created, starting from now in descending order, take the first N Requests: ` + "`" + `ionosctl request list --latest N` + "`" + `
-* sorting by method: ` + "`" + `ionosctl request list --method REQUEST_METHOD` + "`" + `, where REQUEST_METHOD can be CREATE or POST, UPDATE or PATCH, PUT and DELETE
+* sorting by method: ` + "`" + `ionosctl request list --method REQUEST_METHOD` + "`" + `, where request method can be CREATE or POST, UPDATE or PATCH, PUT and DELETE
 * sorting by both of the above options: ` + "`" + `ionosctl request list --method REQUEST_METHOD --latest N` + "`" + ``,
 		Example:    listRequestsExample,
 		PreCmdRun:  noPreRun,
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
-	list.AddIntFlag(config.ArgLatest, "", 0, "Show latest N Requests. If `--latest` is not set, all Requests will be printed")
+	list.AddIntFlag(config.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed")
 	list.AddStringFlag(config.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE")
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"POST", "PUT", "DELETE", "PATCH", "CREATE", "UPDATE"}, cobra.ShellCompDirectiveNoFileComp

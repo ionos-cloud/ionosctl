@@ -12,6 +12,7 @@ package ionoscloud
 
 import (
 	_context "context"
+	"fmt"
 	_ioutil "io/ioutil"
 	_nethttp "net/http"
 	_neturl "net/url"
@@ -160,8 +161,9 @@ func (a *BackupUnitApiService) BackupunitsDeleteExecute(r ApiBackupunitsDeleteRe
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -176,6 +178,7 @@ func (a *BackupUnitApiService) BackupunitsDeleteExecute(r ApiBackupunitsDeleteRe
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -319,8 +322,9 @@ func (a *BackupUnitApiService) BackupunitsFindByIdExecute(r ApiBackupunitsFindBy
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -335,6 +339,7 @@ func (a *BackupUnitApiService) BackupunitsFindByIdExecute(r ApiBackupunitsFindBy
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -474,8 +479,9 @@ func (a *BackupUnitApiService) BackupunitsGetExecute(r ApiBackupunitsGetRequest)
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -490,6 +496,7 @@ func (a *BackupUnitApiService) BackupunitsGetExecute(r ApiBackupunitsGetRequest)
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -643,8 +650,9 @@ func (a *BackupUnitApiService) BackupunitsPatchExecute(r ApiBackupunitsPatchRequ
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -659,6 +667,7 @@ func (a *BackupUnitApiService) BackupunitsPatchExecute(r ApiBackupunitsPatchRequ
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -808,8 +817,9 @@ func (a *BackupUnitApiService) BackupunitsPostExecute(r ApiBackupunitsPostReques
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -824,6 +834,7 @@ func (a *BackupUnitApiService) BackupunitsPostExecute(r ApiBackupunitsPostReques
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -977,8 +988,9 @@ func (a *BackupUnitApiService) BackupunitsPutExecute(r ApiBackupunitsPutRequest)
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -993,6 +1005,7 @@ func (a *BackupUnitApiService) BackupunitsPutExecute(r ApiBackupunitsPutRequest)
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}
@@ -1128,8 +1141,9 @@ func (a *BackupUnitApiService) BackupunitsSsourlGetExecute(r ApiBackupunitsSsour
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
+			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
 			var v Error
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1144,6 +1158,7 @@ func (a *BackupUnitApiService) BackupunitsSsourlGetExecute(r ApiBackupunitsSsour
 	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 	if err != nil {
 		newErr := GenericOpenAPIError{
+			statusCode: localVarHTTPResponse.StatusCode,
 			body:  localVarBody,
 			error: err.Error(),
 		}

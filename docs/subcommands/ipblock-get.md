@@ -13,11 +13,13 @@ ionosctl ipblock get [flags]
 ## Aliases
 
 For `ipblock` command:
+
 ```text
 [ipb]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

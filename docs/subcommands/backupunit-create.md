@@ -13,11 +13,13 @@ ionosctl backupunit create [flags]
 ## Aliases
 
 For `backupunit` command:
+
 ```text
 [b backup]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```
@@ -31,7 +33,7 @@ Notes:
 * The name assigned to the BackupUnit will be concatenated with the contract number to create the login name for the backup system. The name may NOT be changed after creation.
 * The password set here is used along with the login name described above to register the backup agent with the backup system. When setting the password, please make a note of it, as the value cannot be retrieved using the Cloud API.
 * The e-mail address supplied here does NOT have to be the same as your Cloud API username. This e-mail address will receive service reports from the backup system.
-* To login to backup agent, please use https://dcd.ionos.com/latest/ and access BackupUnit Console or use https://backup.ionos.com
+* To login to backup agent, please use [https://dcd.ionos.com/latest/](https://dcd.ionos.com/latest/) and access BackupUnit Console or use [https://backup.ionos.com](https://backup.ionos.com)
 
 Required values to run a command:
 

@@ -13,11 +13,13 @@ ionosctl snapshot delete [flags]
 ## Aliases
 
 For `snapshot` command:
+
 ```text
 [ss snap]
 ```
 
 For `delete` command:
+
 ```text
 [d]
 ```

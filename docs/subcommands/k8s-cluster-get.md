@@ -13,11 +13,13 @@ ionosctl k8s cluster get [flags]
 ## Aliases
 
 For `cluster` command:
+
 ```text
 [c]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```

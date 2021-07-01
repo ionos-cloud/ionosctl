@@ -13,6 +13,7 @@ ionosctl label list [flags]
 ## Aliases
 
 For `list` command:
+
 ```text
 [l ls]
 ```

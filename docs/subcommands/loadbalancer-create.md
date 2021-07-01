@@ -13,11 +13,13 @@ ionosctl loadbalancer create [flags]
 ## Aliases
 
 For `loadbalancer` command:
+
 ```text
 [lb]
 ```
 
 For `create` command:
+
 ```text
 [c]
 ```

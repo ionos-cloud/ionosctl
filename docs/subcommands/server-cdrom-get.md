@@ -13,16 +13,19 @@ ionosctl server cdrom get [flags]
 ## Aliases
 
 For `server` command:
+
 ```text
 [s svr]
 ```
 
 For `cdrom` command:
+
 ```text
 [cd]
 ```
 
 For `get` command:
+
 ```text
 [g]
 ```
