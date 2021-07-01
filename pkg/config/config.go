@@ -3,9 +3,11 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -13,10 +15,9 @@ import (
 
 func GetUserData() map[string]string {
 	return map[string]string{
-		Username:     viper.GetString(Username),
-		Password:     viper.GetString(Password),
-		Token:        viper.GetString(Token),
-		ArgServerUrl: viper.GetString(ArgServerUrl),
+		Username: viper.GetString(Username),
+		Password: viper.GetString(Password),
+		Token:    viper.GetString(Token),
 	}
 }
 
@@ -33,6 +34,22 @@ func getConfigHomeDir() string {
 }
 
 func LoadFile() error {
+	path := viper.GetString(ArgConfig)
+	fmt.Println("path: " + path)
+	fileInfo, statErr := os.Stat(path)
+	if statErr != nil {
+		// todo eroare
+	}
+
+	perm := fileInfo.Mode().Perm()
+	permNumberBase10 := int64(perm)
+	strBase10 := strconv.FormatInt(permNumberBase10, 8)
+	permNumber, _ := strconv.Atoi(strBase10)
+
+	if permNumber == int(600) {
+		fmt.Printf("uraaaa + %d", permNumber)
+	}
+
 	viper.SetConfigFile(viper.GetString(ArgConfig))
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -43,15 +60,16 @@ func LoadFile() error {
 
 // Load collects config data from the config file, using environment variables as fallback.
 func Load() (err error) {
-	if err = LoadFile(); err != nil {
-		pathErr := &os.PathError{}
-		if errors.As(err, &viper.ConfigFileNotFoundError{}) || errors.As(err, &pathErr) {
-			_ = viper.BindEnv(Username, ionoscloud.IonosUsernameEnvVar)
-			_ = viper.BindEnv(Password, ionoscloud.IonosPasswordEnvVar)
-			_ = viper.BindEnv(Token, ionoscloud.IonosTokenEnvVar)
-			return nil
+	_ = viper.BindEnv(Username, ionoscloud.IonosUsernameEnvVar)
+	_ = viper.BindEnv(Password, ionoscloud.IonosPasswordEnvVar)
+	_ = viper.BindEnv(Token, ionoscloud.IonosTokenEnvVar)
+
+	if viper.GetString(Username) == "" || viper.GetString(Password) == "" || viper.GetString(Token) == "" {
+		if err = LoadFile(); err != nil {
+			return err
 		}
 	}
+
 	return err
 }
 

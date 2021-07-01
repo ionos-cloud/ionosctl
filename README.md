@@ -79,6 +79,15 @@ from the folder where you cloned the ionosctl git.
 
 ### Authenticating with Ionos Cloud
 
+* Using environment variables
+  If you have set the enviroment credentials, skip this section, if not, you can set them or follow the steps below for using config a config file:
+
+You can set the enviroment variables using the next commands:
+```
+export IONOS_USERNAME="ionos username"
+export IONOS_PASSWORD="ionos password"
+```
+
 * Using `login` command
 
 Before using `ionosctl` to perform any operations, you will need to set your credentials for Ionos Cloud account:
