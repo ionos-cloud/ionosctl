@@ -13,7 +13,8 @@ import (
 func TestLoadFile(t *testing.T) {
 	viper.Reset()
 	viper.SetConfigFile(filepath.Join("..", "testdata", "config.json"))
-	assert.NoError(t, Load())
+	viper.Set(ArgConfig, filepath.Join("..", "testdata", "config.json"))
+	assert.NoError(t, LoadFile())
 	assert.Equal(t, "test@ionos.com", viper.GetString(Username))
 	assert.Equal(t, "test", viper.GetString(Password))
 	assert.Equal(t, "jwt-token", viper.GetString(Token))

@@ -420,6 +420,7 @@ func TestGetBackupUnitIds(t *testing.T) {
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
 	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getBackupUnitsIds(w)
 	err := w.Flush()
 	assert.NoError(t, err)
