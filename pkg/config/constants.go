@@ -40,6 +40,8 @@ const (
 	ArgAdmin                 = "admin"
 	ArgName                  = "name"
 	ArgNameShort             = "n"
+	ArgBucketNames           = "bucket-names"
+	ArgSubnets               = "subnets"
 	ArgDescription           = "description"
 	ArgDescriptionShort      = "d"
 	ArgLocation              = "location"
