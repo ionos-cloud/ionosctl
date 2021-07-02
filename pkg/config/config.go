@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	sdk "github.com/ionos-cloud/sdk-go/v5"
 	"io"
 	"os"
@@ -56,6 +57,7 @@ func LoadFile() error {
 		}
 		return nil
 	} else {
+		fmt.Printf("perm: %v", permNumber)
 		return errors.New("no permission for the config file, expected 600")
 	}
 
