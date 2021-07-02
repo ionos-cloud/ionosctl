@@ -14,6 +14,7 @@ func TestLoadFile(t *testing.T) {
 	viper.Reset()
 	viper.SetConfigFile(filepath.Join("..", "testdata", "config.json"))
 	viper.Set(ArgConfig, filepath.Join("..", "testdata", "config.json"))
+	os.Chmod(filepath.Join("..", "testdata", "config.json"), 0600)
 	assert.NoError(t, LoadFile())
 	assert.Equal(t, "test@ionos.com", viper.GetString(Username))
 	assert.Equal(t, "test", viper.GetString(Password))
