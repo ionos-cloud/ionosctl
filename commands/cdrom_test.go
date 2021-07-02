@@ -258,7 +258,7 @@ func TestGetAttachedCdromsIds(t *testing.T) {
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
 	assert.NoError(t, err)
-	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getAttachedCdromsIds(w, testVolumeVar, testVolumeVar)
 	err = w.Flush()
 	assert.NoError(t, err)
