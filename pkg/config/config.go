@@ -55,6 +55,7 @@ func LoadFile() error {
 	strBase10 := strconv.FormatInt(permNumberBase10, 8)
 	permNumber, _ := strconv.Atoi(strBase10)
 
+	//TODO: Recheck if keeping implementation below
 	if system == "windows" {
 		// are permisie 666
 		if permNumber == int(666) {
