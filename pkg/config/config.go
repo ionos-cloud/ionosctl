@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	sdk "github.com/ionos-cloud/sdk-go/v5"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
 
+	sdk "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 )
 

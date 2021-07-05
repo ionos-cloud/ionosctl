@@ -3,12 +3,12 @@ package commands
 import (
 	"bufio"
 	"bytes"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"os"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
