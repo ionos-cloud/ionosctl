@@ -39,12 +39,6 @@ func LoadFile() error {
 	if !filepath.IsAbs(path) {
 		path, _ = filepath.Abs(path)
 	}
-	system := runtime.GOOS
-	if system == "windows" {
-		// are permisie 666
-	}
-	fmt.Printf("SYSTEEEEEEEEEEMMMMMMMMM: %v", system)
-	//fmt.Println("path: " + path)
 	fileInfo, statErr := os.Stat(path)
 	if statErr != nil {
 		return statErr
@@ -56,8 +50,8 @@ func LoadFile() error {
 	permNumber, _ := strconv.Atoi(strBase10)
 
 	//TODO: Recheck if keeping implementation below
+	system := runtime.GOOS
 	if system == "windows" {
-		// are permisie 666
 		if permNumber == int(666) {
 			viper.SetConfigFile(viper.GetString(ArgConfig))
 			err := viper.ReadInConfig()
