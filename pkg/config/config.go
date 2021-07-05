@@ -40,6 +40,9 @@ func LoadFile() error {
 		path, _ = filepath.Abs(path)
 	}
 	system := runtime.GOOS
+	if system == "windows" {
+		// are permisie 666
+	}
 	fmt.Printf("SYSTEEEEEEEEEEMMMMMMMMM: %v", system)
 	//fmt.Println("path: " + path)
 	fileInfo, statErr := os.Stat(path)
@@ -52,16 +55,31 @@ func LoadFile() error {
 	strBase10 := strconv.FormatInt(permNumberBase10, 8)
 	permNumber, _ := strconv.Atoi(strBase10)
 
-	if permNumber == int(600) {
-		viper.SetConfigFile(viper.GetString(ArgConfig))
-		err := viper.ReadInConfig()
-		if err != nil {
-			return err
+	if system == "windows" {
+		// are permisie 666
+		if permNumber == int(666) {
+			viper.SetConfigFile(viper.GetString(ArgConfig))
+			err := viper.ReadInConfig()
+			if err != nil {
+				return err
+			}
+			return nil
+		} else {
+			fmt.Printf("perm: %v", permNumber)
+			return errors.New("no permission for the config file, expected 600")
 		}
-		return nil
 	} else {
-		fmt.Printf("perm: %v", permNumber)
-		return errors.New("no permission for the config file, expected 600")
+		if permNumber == int(600) {
+			viper.SetConfigFile(viper.GetString(ArgConfig))
+			err := viper.ReadInConfig()
+			if err != nil {
+				return err
+			}
+			return nil
+		} else {
+			fmt.Printf("perm: %v", permNumber)
+			return errors.New("no permission for the config file, expected 600")
+		}
 	}
 
 }
