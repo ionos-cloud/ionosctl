@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 
 	"github.com/spf13/viper"
@@ -38,6 +39,8 @@ func LoadFile() error {
 	if !filepath.IsAbs(path) {
 		path, _ = filepath.Abs(path)
 	}
+	system := runtime.GOOS
+	fmt.Printf("SYSTEEEEEEEEEEMMMMMMMMM: %v", system)
 	//fmt.Println("path: " + path)
 	fileInfo, statErr := os.Stat(path)
 	if statErr != nil {
