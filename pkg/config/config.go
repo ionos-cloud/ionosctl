@@ -85,7 +85,7 @@ func Load() (err error) {
 	_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
 	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
 
-	if viper.GetString(Username) == "" || viper.GetString(Password) == "" || viper.GetString(Token) == "" {
+	if viper.GetString(Username) == "" || viper.GetString(Password) == "" {
 		if err = LoadFile(); err != nil {
 			return err
 		}
