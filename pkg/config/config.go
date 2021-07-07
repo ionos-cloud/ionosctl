@@ -3,9 +3,12 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strconv"
 
 	sdk "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -13,10 +16,9 @@ import (
 
 func GetUserData() map[string]string {
 	return map[string]string{
-		Username:     viper.GetString(Username),
-		Password:     viper.GetString(Password),
-		Token:        viper.GetString(Token),
-		ArgServerUrl: viper.GetString(ArgServerUrl),
+		Username: viper.GetString(Username),
+		Password: viper.GetString(Password),
+		Token:    viper.GetString(Token),
 	}
 }
 
@@ -33,25 +35,61 @@ func getConfigHomeDir() string {
 }
 
 func LoadFile() error {
-	viper.SetConfigFile(viper.GetString(ArgConfig))
-	err := viper.ReadInConfig()
-	if err != nil {
-		return err
+	path := viper.GetString(ArgConfig)
+	if !filepath.IsAbs(path) {
+		path, _ = filepath.Abs(path)
 	}
-	return nil
+	fileInfo, statErr := os.Stat(path)
+	if statErr != nil {
+		return statErr
+	}
+
+	perm := fileInfo.Mode().Perm()
+	permNumberBase10 := int64(perm)
+	strBase10 := strconv.FormatInt(permNumberBase10, 8)
+	permNumber, _ := strconv.Atoi(strBase10)
+
+	//TODO: Recheck if keeping implementation below
+	system := runtime.GOOS
+	if system == "windows" {
+		if permNumber == int(666) {
+			viper.SetConfigFile(viper.GetString(ArgConfig))
+			err := viper.ReadInConfig()
+			if err != nil {
+				return err
+			}
+			return nil
+		} else {
+			return errors.New("no permission for the config file, expected 600")
+		}
+	} else {
+		if permNumber == int(600) {
+			viper.SetConfigFile(viper.GetString(ArgConfig))
+			err := viper.ReadInConfig()
+			if err != nil {
+				return err
+			}
+			return nil
+		} else {
+			fmt.Printf("perm: %v", permNumber)
+			return errors.New("no permission for the config file, expected 600")
+		}
+	}
+
 }
 
 // Load collects config data from the config file, using environment variables as fallback.
 func Load() (err error) {
-	if err = LoadFile(); err != nil {
-		pathErr := &os.PathError{}
-		if errors.As(err, &viper.ConfigFileNotFoundError{}) || errors.As(err, &pathErr) {
-			_ = viper.BindEnv(Username, sdk.IonosUsernameEnvVar)
-			_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
-			_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
-			return nil
+	_ = viper.BindEnv(Username, sdk.IonosUsernameEnvVar)
+	_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
+	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
+
+	if viper.GetString(Username) == "" || viper.GetString(Password) == "" {
+		if err = LoadFile(); err != nil {
+			return err
 		}
 	}
+
 	return err
 }
 
