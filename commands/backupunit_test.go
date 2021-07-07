@@ -419,9 +419,13 @@ func TestGetBackupUnitIds(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(config.ArgConfig, "../pkg/testdata/config.json")
+	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getBackupUnitsIds(w)
-	err := w.Flush()
+	err = w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
