@@ -454,7 +454,7 @@ func getSnapshotKVMap(s resources.Snapshot) map[string]interface{} {
 }
 
 func getSnapshotIds(outErr io.Writer) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
