@@ -73,7 +73,6 @@ func LoadFile() error {
 			}
 			return nil
 		} else {
-			fmt.Printf("perm: %v", permNumber)
 			return errors.New("no permission for the config file, expected 600")
 		}
 	}
