@@ -342,7 +342,7 @@ func getS3KeyKVMap(s resources.S3Key) map[string]interface{} {
 }
 
 func getS3KeyIds(outErr io.Writer, userId string) []string {
-	err := config.LoadFile()
+	err := config.Load()
 	clierror.CheckError(err, outErr)
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
