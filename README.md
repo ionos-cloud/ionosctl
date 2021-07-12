@@ -79,21 +79,21 @@ from the folder where you cloned the ionosctl git.
 
 ### Authenticating with Ionos Cloud
 
-The authenticating mechanism is first checking the environment variables and, if these are not set, is checking if a configuration file exists and if the user has  the right permissions for it
+Before using `ionosctl` to perform any operations, you will need to set your credentials for IONOS Cloud account. The authenticating mechanism is first checking the environment variables and if these are not set, it is checking if a configuration file exists and if the user has the right permissions for it.
+
+You can provide your credentials:
 
 * Using environment variables
-  
-If you have set the environment credentials, skip this section, if not, you can set them or follow the steps below for using config a config file:
 
 You can set the environment variables using the next commands:
-```
+
+```text
 export IONOS_USERNAME="ionos username"
 export IONOS_PASSWORD="ionos password"
+export IONOS_TOKEN="ionos token"
 ```
 
 * Using `login` command
-
-Before using `ionosctl` to perform any operations, you will need to set your credentials for Ionos Cloud account:
 
 ```text
 ionosctl login --user username --password password
@@ -125,12 +125,6 @@ After a successful authentication, you will no longer need to provide credential
 * Windows: `%APPDATA%\ionosctl\config.json`
 
   and retrieved every time you will perform an action on your account.
-
-If you want to use a different configuration file, use `--config` option.
-
-* Using environment variables
-
-For authentication with IONOS Cloud, you can also set the environment variables: `IONOS_USERNAME`, `IONOS_PASSWORD`, `IONOS_TOKEN`.
 
 ### Enabling Shell Auto-Completion
 
