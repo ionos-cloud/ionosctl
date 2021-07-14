@@ -39,7 +39,7 @@ Use flags to retrieve a list of Requests:
 ```text
   -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
       --cols strings     Set of columns to be printed on output 
-                         Available columns: [RequestId CreatedDate CreatedBy Method Status Message Url Body] (default [RequestId,CreatedDate,Method,Status,Message])
+                         Available columns: [RequestId CreatedDate CreatedBy Method Status Message Url Body Targets] (default [RequestId,CreatedDate,Method,Status,Message,Targets])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
   -h, --help             help for list
