@@ -365,7 +365,6 @@ Class | Method | HTTP request | Description
  - [ResourceReference](docs/ResourceReference.md)
  - [Resources](docs/Resources.md)
  - [ResourcesUsers](docs/ResourcesUsers.md)
- - [S3Bucket](docs/S3Bucket.md)
  - [S3Key](docs/S3Key.md)
  - [S3KeyMetadata](docs/S3KeyMetadata.md)
  - [S3KeyProperties](docs/S3KeyProperties.md)
