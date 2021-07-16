@@ -17,7 +17,7 @@ import (
 // KubernetesNodePoolLan struct for KubernetesNodePoolLan
 type KubernetesNodePoolLan struct {
 	// The LAN ID of an existing LAN at the related datacenter
-	Id *int32 `json:"id,omitempty"`
+	Id *int32 `json:"id"`
 }
 
 
