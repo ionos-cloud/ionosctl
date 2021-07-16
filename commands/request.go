@@ -194,8 +194,8 @@ func RunRequestWait(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultRequestCols = []string{"RequestId", "CreatedDate", "Method", "Status", "Message"}
-	allRequestCols     = []string{"RequestId", "CreatedDate", "CreatedBy", "Method", "Status", "Message", "Url", "Body"}
+	defaultRequestCols = []string{"RequestId", "CreatedDate", "Method", "Status", "Message", "Targets"}
+	allRequestCols     = []string{"RequestId", "CreatedDate", "CreatedBy", "Method", "Status", "Message", "Url", "Body", "Targets"}
 )
 
 type RequestPrint struct {
@@ -207,6 +207,7 @@ type RequestPrint struct {
 	Body        string    `json:"Body,omitempty"`
 	CreatedBy   string    `json:"CreatedBy,omitempty"`
 	CreatedDate time.Time `json:"CreatedDate,omitempty"`
+	Targets     []string  `json:"Targets,omitempty"`
 }
 
 func getRequestPrint(c *core.CommandConfig, reqs []resources.Request) printer.Result {
@@ -238,6 +239,7 @@ func getRequestsCols(flagName string, outErr io.Writer) []string {
 		"Body":        "Body",
 		"CreatedDate": "CreatedDate",
 		"CreatedBy":   "CreatedBy",
+		"Targets":     "Targets",
 	}
 	var requestCols []string
 	for _, k := range cols {
@@ -327,6 +329,20 @@ func getRequestsKVMaps(requests []resources.Request) []map[string]interface{} {
 					}
 					if messageOk, ok := statusMetadata.GetMessageOk(); ok && messageOk != nil {
 						reqPrint.Message = *messageOk
+					}
+					if targetsOk, ok := statusMetadata.GetTargetsOk(); ok && targetsOk != nil {
+						for _, target := range *targetsOk {
+							if targetOk, ok := target.GetTargetOk(); ok && targetOk != nil {
+								if typeOk, ok := targetOk.GetTypeOk(); ok && typeOk != nil {
+									reqPrint.Targets = append(reqPrint.Targets, string(*typeOk))
+									reqPrint.Targets = append(reqPrint.Targets, " ")
+								}
+								if idOk, ok := targetOk.GetIdOk(); ok && idOk != nil {
+									reqPrint.Targets = append(reqPrint.Targets, *idOk)
+									reqPrint.Targets = append(reqPrint.Targets, " ")
+								}
+							}
+						}
 					}
 				}
 			}

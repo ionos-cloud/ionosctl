@@ -27,6 +27,14 @@ var (
 				Metadata: &ionoscloud.RequestStatusMetadata{
 					Status:  &testRequestVar,
 					Message: &testRequestVar,
+					Targets: &[]ionoscloud.RequestTarget{
+						{
+							Target: &ionoscloud.ResourceReference{
+								Id:   &testRequestVar,
+								Type: &testTypeRequestVar,
+							},
+						},
+					},
 				},
 			},
 			CreatedDate: &testIonosTime,
@@ -85,6 +93,7 @@ var (
 	testRequestMethodPatch  = "PATCH"
 	testRequestMethodDelete = "DELETE"
 	testRequestMethodPost   = "POST"
+	testTypeRequestVar      = ionoscloud.Type("datacenter")
 )
 
 func TestPreRunRequestId(t *testing.T) {
