@@ -27,6 +27,14 @@ var (
 				Metadata: &ionoscloud.RequestStatusMetadata{
 					Status:  &testRequestVar,
 					Message: &testRequestVar,
+					Targets: &[]ionoscloud.RequestTarget{
+						{
+							Target: &ionoscloud.ResourceReference{
+								Id:   &testRequestVar,
+								Type: &testTypeRequestVar,
+							},
+						},
+					},
 				},
 			},
 			CreatedDate: &testIonosTime,
@@ -85,6 +93,7 @@ var (
 	testRequestMethodPost   = "POST"
 	testRequestPathVar      = fmt.Sprintf("https://api.ionos.com/cloudapi/v5/requests/%s", testRequestVar)
 	testRequestErr          = errors.New("request test: error occurred")
+	testTypeRequestVar      = ionoscloud.Type("datacenter")
 )
 
 func TestPreRunRequestId(t *testing.T) {
