@@ -38,9 +38,10 @@ Required values to run command:
 
 ```text
   -u, --api-url string            Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+      --bucket-names strings      List of S3 bucket configured for K8s usage. This will overwrite the existing ones
   -i, --cluster-id string         The unique K8s Cluster Id (required)
       --cols strings              Set of columns to be printed on output 
-                                  Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions Public GatewayIp] (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
+                                  Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions Public GatewayIp BucketNames ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                     Force command to execute without user input
   -h, --help                      help for update
@@ -50,6 +51,7 @@ Required values to run command:
   -n, --name string               The name for the K8s Cluster
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
+      --subnets strings           Access to the K8s API server is restricted to these CIDRs. Cluster-internal traffic is not affected by this restriction. If no allowlist is specified, access is not restricted. If an IP without subnet mask is provided, the default value will be used: 32 for IPv4 and 128 for IPv6. This will overwrite the existing ones
   -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)
   -W, --wait-for-state            Wait for specified Cluster to be in ACTIVE state after updating
 ```
