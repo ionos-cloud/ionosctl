@@ -86,6 +86,7 @@ func TestRunResourceList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		rm.User.EXPECT().ListResources().Return(rs, nil, nil)
 		err := RunResourceList(cfg)
@@ -99,6 +100,7 @@ func TestRunResourceListErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		rm.User.EXPECT().ListResources().Return(rs, nil, testResourceErr)
 		err := RunResourceList(cfg)
@@ -112,6 +114,7 @@ func TestRunResourceGetByType(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testResourceVar)
 		rm.User.EXPECT().GetResourcesByType(testResourceVar).Return(rs, nil, nil)
@@ -126,6 +129,7 @@ func TestRunResourceGetByTypeAndId(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testResourceVar)
@@ -141,6 +145,7 @@ func TestRunResourceGetByTypeAndIdErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testResourceVar)
@@ -156,6 +161,7 @@ func TestRunResourceGetByTypeErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testResourceVar)
 		rm.User.EXPECT().GetResourcesByType(testResourceVar).Return(rs, nil, testResourceErr)
@@ -172,6 +178,7 @@ func TestRunGroupResourceList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testResourceVar)
 		rm.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, nil, nil)
@@ -187,6 +194,7 @@ func TestRunGroupResourceListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testResourceVar)
 		rm.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, nil, testResourceErr)
 		err := RunGroupResourceList(cfg)

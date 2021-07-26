@@ -247,6 +247,7 @@ func TestRunRequestWait(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
 		req := v5.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
@@ -263,6 +264,7 @@ func TestRunRequestWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
 		req := v5.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)

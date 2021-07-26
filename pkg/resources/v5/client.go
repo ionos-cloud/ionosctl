@@ -2,7 +2,9 @@ package v5
 
 import (
 	"errors"
+	"fmt"
 
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 
@@ -26,9 +28,9 @@ type clientService struct {
 
 var _ ClientService = &clientService{}
 
-func NewClientService(name, pwd, token, url string) (ClientService, error) {
-	if url == "" {
-		return nil, errors.New("server-url incorrect")
+func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
+	if hostUrl == "" {
+		return nil, errors.New("host-url incorrect")
 	}
 	if token == "" && (name == "" || pwd == "") {
 		return nil, errors.New("username, password or token incorrect")
@@ -39,7 +41,7 @@ func NewClientService(name, pwd, token, url string) (ClientService, error) {
 		Token:    token,
 		Servers: ionoscloud.ServerConfigurations{
 			ionoscloud.ServerConfiguration{
-				URL: url,
+				URL: fmt.Sprintf("%s%s", hostUrl, config.DefaultV5BasePath),
 			},
 		},
 	}

@@ -86,6 +86,7 @@ func TestWaitForRequestIdErr(t *testing.T) {
 		cfg.Printer = p
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, "text")
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		err := WaitForRequest(cfg, testVar)
 		assert.Error(t, err)

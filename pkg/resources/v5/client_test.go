@@ -10,7 +10,7 @@ func TestNewClientService(t *testing.T) {
 	t.Run("no credentials", func(t *testing.T) {
 		svc, err := NewClientService("", "", "", "")
 		assert.Nil(t, svc)
-		assert.EqualError(t, err, "server-url incorrect")
+		assert.EqualError(t, err, "host-url incorrect")
 
 		svc, err = NewClientService("needspassword", "", "", "url")
 		assert.Nil(t, svc)

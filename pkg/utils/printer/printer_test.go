@@ -49,6 +49,7 @@ func TestPrinterPrintResultJson(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -76,6 +77,7 @@ func TestPrinterPrintStandardResultJson(t *testing.T) {
 	)
 
 	viper.Set(config.ArgOutput, "json")
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
@@ -104,6 +106,7 @@ func TestPrinterPrintDefaultJson(t *testing.T) {
 	)
 
 	viper.Set(config.ArgOutput, "json")
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
@@ -125,6 +128,7 @@ func TestPrinterPrintDefaultQuietJson(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, true)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -150,6 +154,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -179,11 +184,12 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 	var (
 		b      bytes.Buffer
-		strErr = `path does not contain https://api.ionos.com/cloudapi/v5`
+		strErr = `path does not contain: https://api.ionos.com`
 	)
 
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -200,7 +206,7 @@ func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 			},
 		},
 	}
-	res.ApiResponse.Header.Add("location", "https://api.ionos.com/requests/123456/status")
+	res.ApiResponse.Header.Add("location", "https://api.ionos-cloud.com/requests/123456/status")
 
 	err = p.Print(res)
 	assert.Error(t, err)
@@ -242,6 +248,7 @@ func TestPrinterPrintResultText(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -265,6 +272,7 @@ func TestPrinterPrintResultTextRequestId(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -296,6 +304,7 @@ func TestPrinterPrintResultTextResource(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -320,6 +329,7 @@ func TestPrinterPrintResultTextWaitResource(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -344,6 +354,7 @@ func TestPrinterPrintResultTextWaitStateResource(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -373,6 +384,7 @@ func TestPrinterPrintResultTextKeyValue(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -404,6 +416,7 @@ func TestPrinterPrintDefaultText(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
@@ -437,6 +450,7 @@ func TestPrinterResultQuiet(t *testing.T) {
 
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, true)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)

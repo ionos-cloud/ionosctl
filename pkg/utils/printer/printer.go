@@ -282,8 +282,8 @@ func WriteJSON(item interface{}, writer io.Writer) error {
 }
 
 func GetRequestId(path string) (*string, error) {
-	if !strings.Contains(path, config.DefaultApiURL) {
-		return nil, errors.New("path does not contain " + config.DefaultApiURL)
+	if !strings.Contains(path, viper.GetString(config.ArgServerUrl)) {
+		return nil, errors.New("path does not contain: " + viper.GetString(config.ArgServerUrl))
 	}
 	str := strings.Split(path, "/")
 	return &str[len(str)-2], nil
