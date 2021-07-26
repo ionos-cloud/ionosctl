@@ -89,11 +89,11 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		Context:   ctx,
 		// Define init Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
-			client, err := c.InitClient()
+			client, err := c.InitV5Client()
 			if err != nil {
 				return err
 			}
-			if err = c.InitServices(client); err != nil {
+			if err = c.InitV5Services(client); err != nil {
 				return err
 			}
 			return nil
@@ -124,7 +124,7 @@ type CommandConfig struct {
 	Stdin   io.Reader
 	Printer printer.PrintService
 	initCfg func(commandConfig *CommandConfig) error
-	// Resources Services
+	// V5 Resources Services
 	Locations     func() v5.LocationsService
 	DataCenters   func() v5.DatacentersService
 	Servers       func() v5.ServersService
@@ -149,8 +149,8 @@ type CommandConfig struct {
 	Context context.Context
 }
 
-// InitClient for Commands
-func (c *CommandConfig) InitClient() (*v5.Client, error) {
+// InitV5Client for Commands
+func (c *CommandConfig) InitV5Client() (*v5.Client, error) {
 	err := config.Load()
 	if err != nil {
 		return nil, err
@@ -167,8 +167,8 @@ func (c *CommandConfig) InitClient() (*v5.Client, error) {
 	return clientSvc.Get(), nil
 }
 
-// InitServices for Commands
-func (c *CommandConfig) InitServices(client *v5.Client) error {
+// InitV5Services for Commands
+func (c *CommandConfig) InitV5Services(client *v5.Client) error {
 	c.Locations = func() v5.LocationsService { return v5.NewLocationService(client, c.Context) }
 	c.DataCenters = func() v5.DatacentersService { return v5.NewDataCenterService(client, c.Context) }
 	c.Servers = func() v5.ServersService { return v5.NewServerService(client, c.Context) }
