@@ -89,11 +89,11 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		Context:   ctx,
 		// Define init Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
-			client, err := c.InitV5Client()
+			v5Client, err := c.InitV5Client()
 			if err != nil {
 				return err
 			}
-			if err = c.InitV5Services(client); err != nil {
+			if err = c.InitV5Services(v5Client); err != nil {
 				return err
 			}
 			return nil
