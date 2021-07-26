@@ -11,7 +11,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -320,7 +320,7 @@ func GetStateK8sNodePool(c *core.CommandConfig, objId string) (*string, error) {
 	return nil, nil
 }
 
-func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, error) {
+func getNewK8sNodePool(c *core.CommandConfig) (*v5.K8sNodePoolForPost, error) {
 	var (
 		k8sversion string
 		err        error
@@ -352,15 +352,15 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	nodePoolProperties.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
 	nodePoolProperties.SetStorageSize(int32(storageSize))
 	nodePoolProperties.SetStorageType(viper.GetString(core.GetFlagName(c.NS, config.ArgStorageType)))
-	return &resources.K8sNodePoolForPost{
+	return &v5.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: ionoscloud.KubernetesNodePoolForPost{
 			Properties: &nodePoolProperties,
 		},
 	}, nil
 }
 
-func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandConfig) resources.K8sNodePoolForPut {
-	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
+func getNewK8sNodePoolUpdated(oldUser *v5.K8sNodePool, c *core.CommandConfig) v5.K8sNodePoolForPut {
+	propertiesUpdated := v5.K8sNodePoolPropertiesForPut{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 			propertiesUpdated.SetK8sVersion(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion)))
@@ -402,7 +402,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay)) ||
 			viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime)) {
 			if maintenance, ok := properties.GetMaintenanceWindowOk(); ok && maintenance != nil {
-				newMaintenanceWindow := getMaintenanceInfo(c, &resources.K8sMaintenanceWindow{
+				newMaintenanceWindow := getMaintenanceInfo(c, &v5.K8sMaintenanceWindow{
 					KubernetesMaintenanceWindow: *maintenance,
 				})
 				propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow.KubernetesMaintenanceWindow)
@@ -445,7 +445,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 			propertiesUpdated.SetPublicIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgPublicIps)))
 		}
 	}
-	return resources.K8sNodePoolForPut{
+	return v5.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
@@ -479,7 +479,7 @@ type K8sNodePoolPrint struct {
 	AvailableUpgradeVersions []string `json:"AvailableUpgradeVersions,omitempty"`
 }
 
-func getK8sNodePoolPrint(c *core.CommandConfig, k8ss []resources.K8sNodePool) printer.Result {
+func getK8sNodePoolPrint(c *core.CommandConfig, k8ss []v5.K8sNodePool) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if k8ss != nil {
@@ -527,25 +527,25 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getK8sNodePools(k8ss resources.K8sNodePools) []resources.K8sNodePool {
-	u := make([]resources.K8sNodePool, 0)
+func getK8sNodePools(k8ss v5.K8sNodePools) []v5.K8sNodePool {
+	u := make([]v5.K8sNodePool, 0)
 	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.K8sNodePool{KubernetesNodePool: item})
+			u = append(u, v5.K8sNodePool{KubernetesNodePool: item})
 		}
 	}
 	return u
 }
 
-func getK8sNodePool(u *resources.K8sNodePool) []resources.K8sNodePool {
-	k8ss := make([]resources.K8sNodePool, 0)
+func getK8sNodePool(u *v5.K8sNodePool) []v5.K8sNodePool {
+	k8ss := make([]v5.K8sNodePool, 0)
 	if u != nil {
-		k8ss = append(k8ss, resources.K8sNodePool{KubernetesNodePool: u.KubernetesNodePool})
+		k8ss = append(k8ss, v5.K8sNodePool{KubernetesNodePool: u.KubernetesNodePool})
 	}
 	return k8ss
 }
 
-func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} {
+func getK8sNodePoolsKVMaps(us []v5.K8sNodePool) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(us))
 	for _, u := range us {
 		var uPrint K8sNodePoolPrint
@@ -629,14 +629,14 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 func getK8sNodePoolsIds(outErr io.Writer, clusterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	k8sSvc := resources.NewK8sService(clientSvc.Get(), context.TODO())
+	k8sSvc := v5.NewK8sService(clientSvc.Get(), context.TODO())
 	k8ss, _, err := k8sSvc.ListNodePools(clusterId)
 	clierror.CheckError(err, outErr)
 	k8ssIds := make([]string, 0)

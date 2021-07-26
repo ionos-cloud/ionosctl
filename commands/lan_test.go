@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -40,14 +40,14 @@ var (
 			Pcc:  &testLanVar,
 		},
 	}
-	lanProperties = resources.LanProperties{
+	lanProperties = v5.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
 			Name:   &testLanNewVar,
 			Pcc:    &testLanNewVar,
 			Public: &publicNewLan,
 		},
 	}
-	lanNew = resources.Lan{
+	lanNew = v5.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testLanVar,
 			Properties: &ionoscloud.LanProperties{
@@ -58,7 +58,7 @@ var (
 			},
 		},
 	}
-	ls = resources.Lans{
+	ls = v5.Lans{
 		Lans: ionoscloud.Lans{
 			Id:    &testLanVar,
 			Items: &[]ionoscloud.Lan{l},
@@ -157,7 +157,7 @@ func TestRunLanGet(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
-		rm.Lan.EXPECT().Get(testLanVar, testLanVar).Return(&resources.Lan{Lan: l}, nil, nil)
+		rm.Lan.EXPECT().Get(testLanVar, testLanVar).Return(&v5.Lan{Lan: l}, nil, nil)
 		err := RunLanGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -172,7 +172,7 @@ func TestRunLanGet_Err(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
-		rm.Lan.EXPECT().Get(testLanVar, testLanVar).Return(&resources.Lan{Lan: l}, nil, testLanErr)
+		rm.Lan.EXPECT().Get(testLanVar, testLanVar).Return(&v5.Lan{Lan: l}, nil, testLanErr)
 		err := RunLanGet(cfg)
 		assert.Error(t, err)
 	})
@@ -190,7 +190,7 @@ func TestRunLanCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublic), publicLan)
-		rm.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, nil)
+		rm.Lan.EXPECT().Create(testLanVar, v5.LanPost{LanPost: lanPostTest}).Return(&v5.LanPost{LanPost: lp}, nil, nil)
 		err := RunLanCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -208,7 +208,7 @@ func TestRunLanCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testLanVar)
-		rm.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, testLanErr)
+		rm.Lan.EXPECT().Create(testLanVar, v5.LanPost{LanPost: lanPostTest}).Return(&v5.LanPost{LanPost: lp}, nil, testLanErr)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -227,7 +227,7 @@ func TestRunLanCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testLanVar)
-		rm.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, nil)
+		rm.Lan.EXPECT().Create(testLanVar, v5.LanPost{LanPost: lanPostTest}).Return(&v5.LanPost{LanPost: lp}, nil, nil)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})

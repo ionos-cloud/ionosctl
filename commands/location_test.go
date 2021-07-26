@@ -11,7 +11,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	loc = resources.Location{
+	loc = v5.Location{
 		Location: ionoscloud.Location{
 			Id: &testLocationVar,
 			Properties: &ionoscloud.LocationProperties{
@@ -29,7 +29,7 @@ var (
 			},
 		},
 	}
-	locations = resources.Locations{
+	locations = v5.Locations{
 		Locations: ionoscloud.Locations{
 			Id:    &testLocationVar,
 			Items: &[]ionoscloud.Location{loc.Location},

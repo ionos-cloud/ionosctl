@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	mockprinter "github.com/ionos-cloud/ionosctl/pkg/utils/printer/mocks"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -20,7 +20,7 @@ import (
 var (
 	pathRequest              = fmt.Sprintf("%s/%s/status/test/test", config.DefaultApiURL, testWaitForRequestVar)
 	testWaitForRequestVar    = "test-wait-for-action"
-	testRunningRequestStatus = &resources.RequestStatus{
+	testRunningRequestStatus = &v5.RequestStatus{
 		RequestStatus: ionoscloud.RequestStatus{
 			Id: &testVar,
 			Metadata: &ionoscloud.RequestStatusMetadata{
@@ -28,7 +28,7 @@ var (
 			},
 		},
 	}
-	testDoneRequestStatus = &resources.RequestStatus{
+	testDoneRequestStatus = &v5.RequestStatus{
 		RequestStatus: ionoscloud.RequestStatus{
 			Id: &testVar,
 			Metadata: &ionoscloud.RequestStatusMetadata{
@@ -36,7 +36,7 @@ var (
 			},
 		},
 	}
-	testQueuedRequestStatus = &resources.RequestStatus{
+	testQueuedRequestStatus = &v5.RequestStatus{
 		RequestStatus: ionoscloud.RequestStatus{
 			Id: &testVar,
 			Metadata: &ionoscloud.RequestStatusMetadata{
@@ -44,7 +44,7 @@ var (
 			},
 		},
 	}
-	testFailedRequestStatus = &resources.RequestStatus{
+	testFailedRequestStatus = &v5.RequestStatus{
 		RequestStatus: ionoscloud.RequestStatus{
 			Id: &testVar,
 			Metadata: &ionoscloud.RequestStatusMetadata{

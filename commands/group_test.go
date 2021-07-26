@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	groupTest = resources.Group{
+	groupTest = v5.Group{
 		Group: ionoscloud.Group{
 			Properties: &ionoscloud.GroupProperties{
 				Name:                 &testGroupVar,
@@ -34,7 +34,7 @@ var (
 			},
 		},
 	}
-	groupTestNew = resources.Group{
+	groupTestNew = v5.Group{
 		Group: ionoscloud.Group{
 			Properties: &ionoscloud.GroupProperties{
 				Name:                 &testGroupNewVar,
@@ -50,20 +50,20 @@ var (
 			},
 		},
 	}
-	groupNew = resources.Group{
+	groupNew = v5.Group{
 		Group: ionoscloud.Group{
 			Id:         &testGroupVar,
 			Properties: groupTestNew.Properties,
 		},
 	}
-	groupTestGet = resources.Group{
+	groupTestGet = v5.Group{
 		Group: ionoscloud.Group{
 			Id:         &testGroupVar,
 			Properties: groupTest.Properties,
 			Type:       &testGroupType,
 		},
 	}
-	groups = resources.Groups{
+	groups = v5.Groups{
 		Groups: ionoscloud.Groups{
 			Id:    &testGroupVar,
 			Items: &[]ionoscloud.Group{groupTest.Group},

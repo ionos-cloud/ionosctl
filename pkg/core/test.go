@@ -7,8 +7,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
-	mocks "github.com/ionos-cloud/ionosctl/pkg/resources/mocks"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
+	mockResourcesV5 "github.com/ionos-cloud/ionosctl/pkg/resources/v5/mocks"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
@@ -35,27 +35,27 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocks)
 
 type ResourcesMocks struct {
-	Client       *mocks.MockClientService
-	Location     *mocks.MockLocationsService
-	Datacenter   *mocks.MockDatacentersService
-	Server       *mocks.MockServersService
-	Volume       *mocks.MockVolumesService
-	Lan          *mocks.MockLansService
-	Nic          *mocks.MockNicsService
-	Loadbalancer *mocks.MockLoadbalancersService
-	IpBlocks     *mocks.MockIpBlocksService
-	Request      *mocks.MockRequestsService
-	Image        *mocks.MockImagesService
-	Snapshot     *mocks.MockSnapshotsService
-	FirewallRule *mocks.MockFirewallRulesService
-	Label        *mocks.MockLabelResourcesService
-	Contract     *mocks.MockContractsService
-	User         *mocks.MockUsersService
-	Group        *mocks.MockGroupsService
-	S3Key        *mocks.MockS3KeysService
-	BackupUnit   *mocks.MockBackupUnitsService
-	Pcc          *mocks.MockPccsService
-	K8s          *mocks.MockK8sService
+	Client       *mockResourcesV5.MockClientService
+	Location     *mockResourcesV5.MockLocationsService
+	Datacenter   *mockResourcesV5.MockDatacentersService
+	Server       *mockResourcesV5.MockServersService
+	Volume       *mockResourcesV5.MockVolumesService
+	Lan          *mockResourcesV5.MockLansService
+	Nic          *mockResourcesV5.MockNicsService
+	Loadbalancer *mockResourcesV5.MockLoadbalancersService
+	IpBlocks     *mockResourcesV5.MockIpBlocksService
+	Request      *mockResourcesV5.MockRequestsService
+	Image        *mockResourcesV5.MockImagesService
+	Snapshot     *mockResourcesV5.MockSnapshotsService
+	FirewallRule *mockResourcesV5.MockFirewallRulesService
+	Label        *mockResourcesV5.MockLabelResourcesService
+	Contract     *mockResourcesV5.MockContractsService
+	User         *mockResourcesV5.MockUsersService
+	Group        *mockResourcesV5.MockGroupsService
+	S3Key        *mockResourcesV5.MockS3KeysService
+	BackupUnit   *mockResourcesV5.MockBackupUnitsService
+	Pcc          *mockResourcesV5.MockPccsService
+	K8s          *mockResourcesV5.MockK8sService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -81,51 +81,51 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 // Init Mock Resources for Test
 func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 	return &ResourcesMocks{
-		Client:       mocks.NewMockClientService(ctrl),
-		Location:     mocks.NewMockLocationsService(ctrl),
-		Datacenter:   mocks.NewMockDatacentersService(ctrl),
-		Server:       mocks.NewMockServersService(ctrl),
-		Lan:          mocks.NewMockLansService(ctrl),
-		Volume:       mocks.NewMockVolumesService(ctrl),
-		Nic:          mocks.NewMockNicsService(ctrl),
-		Loadbalancer: mocks.NewMockLoadbalancersService(ctrl),
-		IpBlocks:     mocks.NewMockIpBlocksService(ctrl),
-		Request:      mocks.NewMockRequestsService(ctrl),
-		Image:        mocks.NewMockImagesService(ctrl),
-		Snapshot:     mocks.NewMockSnapshotsService(ctrl),
-		FirewallRule: mocks.NewMockFirewallRulesService(ctrl),
-		Label:        mocks.NewMockLabelResourcesService(ctrl),
-		Contract:     mocks.NewMockContractsService(ctrl),
-		User:         mocks.NewMockUsersService(ctrl),
-		Group:        mocks.NewMockGroupsService(ctrl),
-		S3Key:        mocks.NewMockS3KeysService(ctrl),
-		BackupUnit:   mocks.NewMockBackupUnitsService(ctrl),
-		Pcc:          mocks.NewMockPccsService(ctrl),
-		K8s:          mocks.NewMockK8sService(ctrl),
+		Client:       mockResourcesV5.NewMockClientService(ctrl),
+		Location:     mockResourcesV5.NewMockLocationsService(ctrl),
+		Datacenter:   mockResourcesV5.NewMockDatacentersService(ctrl),
+		Server:       mockResourcesV5.NewMockServersService(ctrl),
+		Lan:          mockResourcesV5.NewMockLansService(ctrl),
+		Volume:       mockResourcesV5.NewMockVolumesService(ctrl),
+		Nic:          mockResourcesV5.NewMockNicsService(ctrl),
+		Loadbalancer: mockResourcesV5.NewMockLoadbalancersService(ctrl),
+		IpBlocks:     mockResourcesV5.NewMockIpBlocksService(ctrl),
+		Request:      mockResourcesV5.NewMockRequestsService(ctrl),
+		Image:        mockResourcesV5.NewMockImagesService(ctrl),
+		Snapshot:     mockResourcesV5.NewMockSnapshotsService(ctrl),
+		FirewallRule: mockResourcesV5.NewMockFirewallRulesService(ctrl),
+		Label:        mockResourcesV5.NewMockLabelResourcesService(ctrl),
+		Contract:     mockResourcesV5.NewMockContractsService(ctrl),
+		User:         mockResourcesV5.NewMockUsersService(ctrl),
+		Group:        mockResourcesV5.NewMockGroupsService(ctrl),
+		S3Key:        mockResourcesV5.NewMockS3KeysService(ctrl),
+		BackupUnit:   mockResourcesV5.NewMockBackupUnitsService(ctrl),
+		Pcc:          mockResourcesV5.NewMockPccsService(ctrl),
+		K8s:          mockResourcesV5.NewMockK8sService(ctrl),
 	}
 }
 
 // Init Mock Services for Command Test
 func initMockServices(c *CommandConfig, tm *ResourcesMocks) *CommandConfig {
-	c.Locations = func() resources.LocationsService { return tm.Location }
-	c.DataCenters = func() resources.DatacentersService { return tm.Datacenter }
-	c.Servers = func() resources.ServersService { return tm.Server }
-	c.Volumes = func() resources.VolumesService { return tm.Volume }
-	c.Lans = func() resources.LansService { return tm.Lan }
-	c.Nics = func() resources.NicsService { return tm.Nic }
-	c.Loadbalancers = func() resources.LoadbalancersService { return tm.Loadbalancer }
-	c.IpBlocks = func() resources.IpBlocksService { return tm.IpBlocks }
-	c.Requests = func() resources.RequestsService { return tm.Request }
-	c.Images = func() resources.ImagesService { return tm.Image }
-	c.Snapshots = func() resources.SnapshotsService { return tm.Snapshot }
-	c.FirewallRules = func() resources.FirewallRulesService { return tm.FirewallRule }
-	c.Labels = func() resources.LabelResourcesService { return tm.Label }
-	c.Contracts = func() resources.ContractsService { return tm.Contract }
-	c.Users = func() resources.UsersService { return tm.User }
-	c.Groups = func() resources.GroupsService { return tm.Group }
-	c.S3Keys = func() resources.S3KeysService { return tm.S3Key }
-	c.BackupUnit = func() resources.BackupUnitsService { return tm.BackupUnit }
-	c.Pccs = func() resources.PccsService { return tm.Pcc }
-	c.K8s = func() resources.K8sService { return tm.K8s }
+	c.Locations = func() v5.LocationsService { return tm.Location }
+	c.DataCenters = func() v5.DatacentersService { return tm.Datacenter }
+	c.Servers = func() v5.ServersService { return tm.Server }
+	c.Volumes = func() v5.VolumesService { return tm.Volume }
+	c.Lans = func() v5.LansService { return tm.Lan }
+	c.Nics = func() v5.NicsService { return tm.Nic }
+	c.Loadbalancers = func() v5.LoadbalancersService { return tm.Loadbalancer }
+	c.IpBlocks = func() v5.IpBlocksService { return tm.IpBlocks }
+	c.Requests = func() v5.RequestsService { return tm.Request }
+	c.Images = func() v5.ImagesService { return tm.Image }
+	c.Snapshots = func() v5.SnapshotsService { return tm.Snapshot }
+	c.FirewallRules = func() v5.FirewallRulesService { return tm.FirewallRule }
+	c.Labels = func() v5.LabelResourcesService { return tm.Label }
+	c.Contracts = func() v5.ContractsService { return tm.Contract }
+	c.Users = func() v5.UsersService { return tm.User }
+	c.Groups = func() v5.GroupsService { return tm.Group }
+	c.S3Keys = func() v5.S3KeysService { return tm.S3Key }
+	c.BackupUnit = func() v5.BackupUnitsService { return tm.BackupUnit }
+	c.Pccs = func() v5.PccsService { return tm.Pcc }
+	c.K8s = func() v5.K8sService { return tm.K8s }
 	return c
 }

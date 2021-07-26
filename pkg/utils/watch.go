@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 
@@ -144,7 +144,7 @@ func WatchRequestProgress(ctx context.Context, c *core.CommandConfig, requestId 
 	return progressChan, errChan
 }
 
-func getRequestStatus(reqStatus *resources.RequestStatus) (string, string, error) {
+func getRequestStatus(reqStatus *v5.RequestStatus) (string, string, error) {
 	if reqStatus != nil {
 		if metadata, ok := reqStatus.GetMetadataOk(); ok && metadata != nil {
 			var status, message string

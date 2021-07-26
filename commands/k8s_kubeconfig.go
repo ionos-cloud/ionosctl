@@ -6,7 +6,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -54,7 +54,7 @@ func RunK8sKubeconfigGet(c *core.CommandConfig) error {
 	return c.Printer.Print(getKubeFile(u))
 }
 
-func getKubeFile(u resources.K8sKubeconfig) string {
+func getKubeFile(u v5.K8sKubeconfig) string {
 	if properties, ok := u.GetPropertiesOk(); ok && properties != nil {
 		if kubefile, ok := properties.GetKubeconfigOk(); ok && kubefile != nil {
 			return *kubefile

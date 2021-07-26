@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -28,20 +28,20 @@ var (
 			Ip:   &testLoadbalancerVar,
 		},
 	}
-	loadbs = resources.Loadbalancers{
+	loadbs = v5.Loadbalancers{
 		Loadbalancers: ionoscloud.Loadbalancers{
 			Id:    &testLoadbalancerVar,
 			Items: &[]ionoscloud.Loadbalancer{loadb},
 		},
 	}
-	loadbalancerProperties = resources.LoadbalancerProperties{
+	loadbalancerProperties = v5.LoadbalancerProperties{
 		LoadbalancerProperties: ionoscloud.LoadbalancerProperties{
 			Name: &testLoadbalancerNewVar,
 			Dhcp: &dhcpLoadbalancerNew,
 			Ip:   &testLoadbalancerNewVar,
 		},
 	}
-	loadbalancerNew = resources.Loadbalancer{
+	loadbalancerNew = v5.Loadbalancer{
 		Loadbalancer: ionoscloud.Loadbalancer{
 			Id:         &testLoadbalancerVar,
 			Properties: &loadbalancerProperties.LoadbalancerProperties,
@@ -116,7 +116,7 @@ func TestRunLoadBalancerGet(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
-		rm.Loadbalancer.EXPECT().Get(testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Loadbalancer{Loadbalancer: loadb}, nil, nil)
+		rm.Loadbalancer.EXPECT().Get(testLoadbalancerVar, testLoadbalancerVar).Return(&v5.Loadbalancer{Loadbalancer: loadb}, nil, nil)
 		err := RunLoadBalancerGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -131,7 +131,7 @@ func TestRunLoadBalancerGetErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
-		rm.Loadbalancer.EXPECT().Get(testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Loadbalancer{Loadbalancer: loadb}, nil, testLoadbalancerErr)
+		rm.Loadbalancer.EXPECT().Get(testLoadbalancerVar, testLoadbalancerVar).Return(&v5.Loadbalancer{Loadbalancer: loadb}, nil, testLoadbalancerErr)
 		err := RunLoadBalancerGet(cfg)
 		assert.Error(t, err)
 	})
@@ -148,7 +148,7 @@ func TestRunLoadBalancerCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpLoadbalancer)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Loadbalancer.EXPECT().Create(testLoadbalancerVar, testLoadbalancerVar, dhcpLoadbalancer).Return(&resources.Loadbalancer{Loadbalancer: loadb}, nil, nil)
+		rm.Loadbalancer.EXPECT().Create(testLoadbalancerVar, testLoadbalancerVar, dhcpLoadbalancer).Return(&v5.Loadbalancer{Loadbalancer: loadb}, nil, nil)
 		err := RunLoadBalancerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -166,7 +166,7 @@ func TestRunLoadBalancerCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpLoadbalancer)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Loadbalancer.EXPECT().Create(testLoadbalancerVar, testLoadbalancerVar, dhcpLoadbalancer).Return(&resources.Loadbalancer{Loadbalancer: loadb}, nil, testLoadbalancerErr)
+		rm.Loadbalancer.EXPECT().Create(testLoadbalancerVar, testLoadbalancerVar, dhcpLoadbalancer).Return(&v5.Loadbalancer{Loadbalancer: loadb}, nil, testLoadbalancerErr)
 		err := RunLoadBalancerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -184,7 +184,7 @@ func TestRunLoadBalancerCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpLoadbalancer)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Loadbalancer.EXPECT().Create(testLoadbalancerVar, testLoadbalancerVar, dhcpLoadbalancer).Return(&resources.Loadbalancer{Loadbalancer: loadb}, nil, nil)
+		rm.Loadbalancer.EXPECT().Create(testLoadbalancerVar, testLoadbalancerVar, dhcpLoadbalancer).Return(&v5.Loadbalancer{Loadbalancer: loadb}, nil, nil)
 		err := RunLoadBalancerCreate(cfg)
 		assert.Error(t, err)
 	})

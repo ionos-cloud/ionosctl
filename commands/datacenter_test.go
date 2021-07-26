@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -33,13 +33,13 @@ var (
 			State: &testStateVar,
 		},
 	}
-	dcProperties = resources.DatacenterProperties{
+	dcProperties = v5.DatacenterProperties{
 		DatacenterProperties: ionoscloud.DatacenterProperties{
 			Name:        &testDatacenterNewVar,
 			Description: &testDatacenterNewVar,
 		},
 	}
-	dcNew = resources.Datacenter{
+	dcNew = v5.Datacenter{
 		Datacenter: ionoscloud.Datacenter{
 			Id: &testDatacenterVar,
 			Properties: &ionoscloud.DatacenterProperties{
@@ -49,7 +49,7 @@ var (
 			},
 		},
 	}
-	dcs = resources.Datacenters{
+	dcs = v5.Datacenters{
 		Datacenters: ionoscloud.Datacenters{
 			Id:    &testDatacenterVar,
 			Items: &[]ionoscloud.Datacenter{dc, dc},
@@ -122,7 +122,7 @@ func TestRunDataCenterGet(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
-		res := resources.Datacenter{Datacenter: dc}
+		res := v5.Datacenter{Datacenter: dc}
 		rm.Datacenter.EXPECT().Get(testDatacenterVar).Return(&res, nil, nil)
 		err := RunDataCenterGet(cfg)
 		assert.NoError(t, err)
@@ -137,7 +137,7 @@ func TestRunDataCenterGetErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
-		res := resources.Datacenter{Datacenter: dc}
+		res := v5.Datacenter{Datacenter: dc}
 		rm.Datacenter.EXPECT().Get(testDatacenterVar).Return(&res, nil, testDatacenterErr)
 		err := RunDataCenterGet(cfg)
 		assert.Error(t, err)
@@ -155,7 +155,7 @@ func TestRunDataCenterCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, nil)
+		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&v5.Datacenter{dc}, nil, nil)
 		err := RunDataCenterCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -172,7 +172,7 @@ func TestRunDataCenterCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, nil)
+		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&v5.Datacenter{dc}, nil, nil)
 		err := RunDataCenterCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -189,7 +189,7 @@ func TestRunDataCenterCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, testDatacenterErr)
+		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&v5.Datacenter{dc}, nil, testDatacenterErr)
 		err := RunDataCenterCreate(cfg)
 		assert.Error(t, err)
 	})

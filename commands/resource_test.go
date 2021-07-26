@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	resourceTest = resources.Resource{
+	resourceTest = v5.Resource{
 		Resource: ionoscloud.Resource{
 			Properties: &ionoscloud.ResourceProperties{
 				Name:              &testResourceVar,
@@ -27,7 +27,7 @@ var (
 			Type: &testResourceType,
 		},
 	}
-	resourceTestGet = resources.Resource{
+	resourceTestGet = v5.Resource{
 		Resource: ionoscloud.Resource{
 			Id: &testResourceVar,
 			Properties: &ionoscloud.ResourceProperties{
@@ -37,13 +37,13 @@ var (
 			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
-	rs = resources.Resources{
+	rs = v5.Resources{
 		Resources: ionoscloud.Resources{
 			Id:    &testResourceVar,
 			Items: &[]ionoscloud.Resource{resourceTest.Resource},
 		},
 	}
-	resourceGroupTest = resources.ResourceGroups{
+	resourceGroupTest = v5.ResourceGroups{
 		ResourceGroups: ionoscloud.ResourceGroups{
 			Id:    &testResourceVar,
 			Items: &[]ionoscloud.Resource{resourceTest.Resource},

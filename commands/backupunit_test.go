@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	backupUnitTest = resources.BackupUnit{
+	backupUnitTest = v5.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Properties: &ionoscloud.BackupUnitProperties{
 				Email:    &testBackupUnitVar,
@@ -27,31 +27,31 @@ var (
 			},
 		},
 	}
-	backupUnitTestGet = resources.BackupUnit{
+	backupUnitTestGet = v5.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Id:         &testBackupUnitVar,
 			Properties: backupUnitTest.Properties,
 			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
-	backupUnitTestGetSSO = resources.BackupUnitSSO{
+	backupUnitTestGetSSO = v5.BackupUnitSSO{
 		BackupUnitSSO: ionoscloud.BackupUnitSSO{
 			SsoUrl: &testBackupUnitVar,
 		},
 	}
-	backupUnits = resources.BackupUnits{
+	backupUnits = v5.BackupUnits{
 		BackupUnits: ionoscloud.BackupUnits{
 			Id:    &testBackupUnitVar,
 			Items: &[]ionoscloud.BackupUnit{backupUnitTest.BackupUnit},
 		},
 	}
-	backupUnitProperties = resources.BackupUnitProperties{
+	backupUnitProperties = v5.BackupUnitProperties{
 		BackupUnitProperties: ionoscloud.BackupUnitProperties{
 			Email:    &testBackupUnitNewVar,
 			Password: &testBackupUnitNewVar,
 		},
 	}
-	backupUnitNew = resources.BackupUnit{
+	backupUnitNew = v5.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Properties: &ionoscloud.BackupUnitProperties{
 				Name:     &testBackupUnitVar,

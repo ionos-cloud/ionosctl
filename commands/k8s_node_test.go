@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	nodeTest = resources.K8sNode{
+	nodeTest = v5.K8sNode{
 		KubernetesNode: ionoscloud.KubernetesNode{
 			Properties: &ionoscloud.KubernetesNodeProperties{
 				Name:       &testNodeVar,
@@ -28,7 +28,7 @@ var (
 			},
 		},
 	}
-	nodeTestGet = resources.K8sNode{
+	nodeTestGet = v5.K8sNode{
 		KubernetesNode: ionoscloud.KubernetesNode{
 			Id:         &testNodeVar,
 			Properties: nodeTest.Properties,
@@ -37,7 +37,7 @@ var (
 			},
 		},
 	}
-	nodesTest = resources.K8sNodes{
+	nodesTest = v5.K8sNodes{
 		KubernetesNodes: ionoscloud.KubernetesNodes{
 			Id:    &testNodeVar,
 			Items: &[]ionoscloud.KubernetesNode{nodeTest.KubernetesNode},

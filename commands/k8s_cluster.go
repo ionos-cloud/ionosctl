@@ -10,7 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -296,12 +296,12 @@ func GetStateK8sCluster(c *core.CommandConfig, objId string) (*string, error) {
 	return nil, nil
 }
 
-func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, error) {
+func getNewK8sCluster(c *core.CommandConfig) (*v5.K8sClusterForPost, error) {
 	var (
 		k8sversion string
 		err        error
 	)
-	proper := resources.K8sClusterPropertiesForPost{}
+	proper := v5.K8sClusterPropertiesForPost{}
 	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
@@ -328,15 +328,15 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgApiSubnets)) {
 		proper.SetApiSubnetAllowList(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets)))
 	}
-	return &resources.K8sClusterForPost{
+	return &v5.K8sClusterForPost{
 		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
 			Properties: &proper.KubernetesClusterPropertiesForPost,
 		},
 	}, nil
 }
 
-func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) resources.K8sClusterForPut {
-	propertiesUpdated := resources.K8sClusterPropertiesForPut{}
+func getK8sClusterInfo(oldUser *v5.K8sCluster, c *core.CommandConfig) v5.K8sClusterForPut {
+	propertiesUpdated := v5.K8sClusterPropertiesForPut{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 			n := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
@@ -377,14 +377,14 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay)) ||
 			viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime)) {
 			if maintenance, ok := properties.GetMaintenanceWindowOk(); ok && maintenance != nil {
-				newMaintenanceWindow := getMaintenanceInfo(c, &resources.K8sMaintenanceWindow{
+				newMaintenanceWindow := getMaintenanceInfo(c, &v5.K8sMaintenanceWindow{
 					KubernetesMaintenanceWindow: *maintenance,
 				})
 				propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow.KubernetesMaintenanceWindow)
 			}
 		}
 	}
-	return resources.K8sClusterForPut{
+	return v5.K8sClusterForPut{
 		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
 			Properties: &propertiesUpdated.KubernetesClusterPropertiesForPut,
 		},
@@ -411,7 +411,7 @@ type K8sClusterPrint struct {
 	ApiSubnetAllowList       []string `json:"ApiSubnetAllowList,omitempty"`
 }
 
-func getK8sClusterPrint(resp *resources.Response, c *core.CommandConfig, k8ss []resources.K8sCluster) printer.Result {
+func getK8sClusterPrint(resp *v5.Response, c *core.CommandConfig, k8ss []v5.K8sCluster) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -459,25 +459,25 @@ func getK8sClusterCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getK8sClusters(k8ss resources.K8sClusters) []resources.K8sCluster {
-	u := make([]resources.K8sCluster, 0)
+func getK8sClusters(k8ss v5.K8sClusters) []v5.K8sCluster {
+	u := make([]v5.K8sCluster, 0)
 	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.K8sCluster{KubernetesCluster: item})
+			u = append(u, v5.K8sCluster{KubernetesCluster: item})
 		}
 	}
 	return u
 }
 
-func getK8sCluster(u *resources.K8sCluster) []resources.K8sCluster {
-	k8ss := make([]resources.K8sCluster, 0)
+func getK8sCluster(u *v5.K8sCluster) []v5.K8sCluster {
+	k8ss := make([]v5.K8sCluster, 0)
 	if u != nil {
-		k8ss = append(k8ss, resources.K8sCluster{KubernetesCluster: u.KubernetesCluster})
+		k8ss = append(k8ss, v5.K8sCluster{KubernetesCluster: u.KubernetesCluster})
 	}
 	return k8ss
 }
 
-func getK8sClustersKVMaps(us []resources.K8sCluster) []map[string]interface{} {
+func getK8sClustersKVMaps(us []v5.K8sCluster) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(us))
 	for _, u := range us {
 		var uPrint K8sClusterPrint
@@ -538,14 +538,14 @@ func getK8sClustersKVMaps(us []resources.K8sCluster) []map[string]interface{} {
 func getK8sClustersIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	k8sSvc := resources.NewK8sService(clientSvc.Get(), context.TODO())
+	k8sSvc := v5.NewK8sService(clientSvc.Get(), context.TODO())
 	k8ss, _, err := k8sSvc.ListClusters()
 	clierror.CheckError(err, outErr)
 	k8ssIds := make([]string, 0)
@@ -561,7 +561,7 @@ func getK8sClustersIds(outErr io.Writer) []string {
 	return k8ssIds
 }
 
-func getMaintenanceInfo(c *core.CommandConfig, maintenance *resources.K8sMaintenanceWindow) resources.K8sMaintenanceWindow {
+func getMaintenanceInfo(c *core.CommandConfig, maintenance *v5.K8sMaintenanceWindow) v5.K8sMaintenanceWindow {
 	var day, time string
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay)) {
 		day = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay))
@@ -577,7 +577,7 @@ func getMaintenanceInfo(c *core.CommandConfig, maintenance *resources.K8sMainten
 			time = *t
 		}
 	}
-	return resources.K8sMaintenanceWindow{
+	return v5.K8sMaintenanceWindow{
 		KubernetesMaintenanceWindow: ionoscloud.KubernetesMaintenanceWindow{
 			DayOfTheWeek: &day,
 			Time:         &time,

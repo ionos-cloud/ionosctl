@@ -9,7 +9,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -36,7 +36,7 @@ var (
 		K8sClusterLimitTotal:   &testContractInt32,
 		K8sClustersProvisioned: &testContractInt32,
 	}
-	testContract = resources.Contract{
+	testContract = v5.Contract{
 		Contract: ionoscloud.Contract{
 			Properties: &ionoscloud.ContractProperties{
 				ContractNumber: &testContractInt64,

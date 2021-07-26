@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	userTest = resources.UserPost{
+	userTest = v5.UserPost{
 		UserPost: ionoscloud.UserPost{
 			Properties: &ionoscloud.UserPropertiesPost{
 				Firstname:     &testUserVar,
@@ -30,7 +30,7 @@ var (
 			},
 		},
 	}
-	userTestGet = resources.User{
+	userTestGet = v5.User{
 		User: ionoscloud.User{
 			Id: &testUserVar,
 			Properties: &ionoscloud.UserProperties{
@@ -45,13 +45,13 @@ var (
 			},
 		},
 	}
-	users = resources.Users{
+	users = v5.Users{
 		Users: ionoscloud.Users{
 			Id:    &testUserVar,
 			Items: &[]ionoscloud.User{userTestGet.User},
 		},
 	}
-	userProperties = resources.UserProperties{
+	userProperties = v5.UserProperties{
 		UserProperties: ionoscloud.UserProperties{
 			Firstname:     &testUserNewVar,
 			Lastname:      &testUserNewVar,
@@ -60,12 +60,12 @@ var (
 			ForceSecAuth:  &testUserBoolVar,
 		},
 	}
-	userNew = resources.User{
+	userNew = v5.User{
 		User: ionoscloud.User{
 			Properties: &userProperties.UserProperties,
 		},
 	}
-	userNewPut = resources.UserPut{
+	userNewPut = v5.UserPut{
 		UserPut: ionoscloud.UserPut{
 			Properties: &ionoscloud.UserPropertiesPut{
 				Firstname:     &testUserNewVar,
@@ -374,12 +374,12 @@ func TestRunUserDeleteAskForConfirmErr(t *testing.T) {
 // Group Users Test
 
 var (
-	groupUsersTest = resources.GroupMembers{
+	groupUsersTest = v5.GroupMembers{
 		GroupMembers: ionoscloud.GroupMembers{
 			Items: &[]ionoscloud.User{userTestGet.User},
 		},
 	}
-	groupUserTest = resources.User{
+	groupUserTest = v5.User{
 		User: ionoscloud.User{
 			Id: &testUserVar,
 		},

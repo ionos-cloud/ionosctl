@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -23,7 +23,7 @@ var (
 	ram          = int32(256)
 	ramNew       = int32(256)
 	state        = "ACTIVE"
-	serverCreate = resources.Server{
+	serverCreate = v5.Server{
 		Server: ionoscloud.Server{
 			Properties: &ionoscloud.ServerProperties{
 				Name:             &testServerVar,
@@ -48,13 +48,13 @@ var (
 			VmState:          &state,
 		},
 	}
-	ss = resources.Servers{
+	ss = v5.Servers{
 		Servers: ionoscloud.Servers{
 			Id:    &testServerVar,
 			Items: &[]ionoscloud.Server{s},
 		},
 	}
-	serverProperties = resources.ServerProperties{
+	serverProperties = v5.ServerProperties{
 		ServerProperties: ionoscloud.ServerProperties{
 			Name:             &testServerNewVar,
 			Cores:            &coresNew,
@@ -63,7 +63,7 @@ var (
 			AvailabilityZone: &testServerNewVar,
 		},
 	}
-	serverNew = resources.Server{
+	serverNew = v5.Server{
 		Server: ionoscloud.Server{
 			Metadata: &ionoscloud.DatacenterElementMetadata{
 				State: &state,
@@ -173,7 +173,7 @@ func TestRunServerGet(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
-		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&v5.Server{Server: s}, nil, nil)
 		err := RunServerGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -189,8 +189,8 @@ func TestRunServerGetWait(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
-		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
-		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&v5.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&v5.Server{Server: s}, nil, nil)
 		err := RunServerGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -206,7 +206,7 @@ func TestRunServerGetWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
-		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, testServerErr)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&v5.Server{Server: s}, nil, testServerErr)
 		err := RunServerGet(cfg)
 		assert.Error(t, err)
 	})
@@ -221,7 +221,7 @@ func TestRunServerGetErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
-		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, testServerErr)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&v5.Server{Server: s}, nil, testServerErr)
 		err := RunServerGet(cfg)
 		assert.Error(t, err)
 	})
@@ -241,7 +241,7 @@ func TestRunServerCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&v5.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -262,9 +262,9 @@ func TestRunServerCreateWaitState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
-		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
-		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
-		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&v5.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&v5.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&v5.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -284,7 +284,7 @@ func TestRunServerCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, testServerErr)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&v5.Server{Server: s}, nil, testServerErr)
 		err := RunServerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -304,7 +304,7 @@ func TestRunServerCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&resources.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&v5.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)
 		assert.Error(t, err)
 	})

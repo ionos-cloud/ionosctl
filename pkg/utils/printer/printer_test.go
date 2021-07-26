@@ -3,12 +3,12 @@ package printer
 import (
 	"bufio"
 	"bytes"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"net/http"
 	"regexp"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -157,7 +157,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		ApiResponse: &resources.Response{
+		ApiResponse: &v5.Response{
 			APIResponse: ionoscloud.APIResponse{
 				Message: statusOkTestMsg,
 				Response: &http.Response{
@@ -191,7 +191,7 @@ func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		ApiResponse: &resources.Response{
+		ApiResponse: &v5.Response{
 			APIResponse: ionoscloud.APIResponse{
 				Message: statusOkTestMsg,
 				Response: &http.Response{
@@ -272,7 +272,7 @@ func TestPrinterPrintResultTextRequestId(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		ApiResponse: &resources.Response{
+		ApiResponse: &v5.Response{
 			APIResponse: ionoscloud.APIResponse{
 				Message: statusOkTestMsg,
 				Response: &http.Response{

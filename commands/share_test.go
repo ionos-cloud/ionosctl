@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	shareTest = resources.GroupShare{
+	shareTest = v5.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Properties: &ionoscloud.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
@@ -26,7 +26,7 @@ var (
 			},
 		},
 	}
-	shareTestGet = resources.GroupShare{
+	shareTestGet = v5.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Id: &testShareVar,
 			Properties: &ionoscloud.GroupShareProperties{
@@ -36,19 +36,19 @@ var (
 			Type: &testResourceType,
 		},
 	}
-	shares = resources.GroupShares{
+	shares = v5.GroupShares{
 		GroupShares: ionoscloud.GroupShares{
 			Id:    &testShareVar,
 			Items: &[]ionoscloud.GroupShare{shareTest.GroupShare},
 		},
 	}
-	shareProperties = resources.GroupShareProperties{
+	shareProperties = v5.GroupShareProperties{
 		GroupShareProperties: ionoscloud.GroupShareProperties{
 			EditPrivilege:  &testShareBoolNewVar,
 			SharePrivilege: &testShareBoolNewVar,
 		},
 	}
-	shareNew = resources.GroupShare{
+	shareNew = v5.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Properties: &shareProperties.GroupShareProperties,
 		},

@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -46,7 +46,7 @@ var (
 			State: &testVolumeVar,
 		},
 	}
-	testVolume = resources.Volume{
+	testVolume = v5.Volume{
 		Volume: ionoscloud.Volume{
 			Properties: &ionoscloud.VolumeProperties{
 				Name:                &testVolumeVar,
@@ -66,7 +66,7 @@ var (
 			},
 		},
 	}
-	testVolumeImg = resources.Volume{
+	testVolumeImg = v5.Volume{
 		Volume: ionoscloud.Volume{
 			Properties: &ionoscloud.VolumeProperties{
 				Name:                &testVolumeVar,
@@ -88,13 +88,13 @@ var (
 			},
 		},
 	}
-	vs = resources.Volumes{
+	vs = v5.Volumes{
 		Volumes: ionoscloud.Volumes{
 			Id:    &testVolumeVar,
 			Items: &[]ionoscloud.Volume{v},
 		},
 	}
-	volumeProperties = resources.VolumeProperties{
+	volumeProperties = v5.VolumeProperties{
 		VolumeProperties: ionoscloud.VolumeProperties{
 			Name:                &testVolumeNewVar,
 			Bus:                 &testVolumeNewVar,
@@ -107,7 +107,7 @@ var (
 			DiscVirtioHotUnplug: &testVolumeBoolVar,
 		},
 	}
-	volumeNew = resources.Volume{
+	volumeNew = v5.Volume{
 		Volume: ionoscloud.Volume{
 			Id: &testVolumeVar,
 			Properties: &ionoscloud.VolumeProperties{
@@ -126,7 +126,7 @@ var (
 			},
 		},
 	}
-	vsAttached = resources.AttachedVolumes{
+	vsAttached = v5.AttachedVolumes{
 		AttachedVolumes: ionoscloud.AttachedVolumes{
 			Id:    &testVolumeVar,
 			Items: &[]ionoscloud.Volume{v},
@@ -272,7 +272,7 @@ func TestRunVolumeGet(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
-		rm.Volume.EXPECT().Get(testVolumeVar, testVolumeVar).Return(&resources.Volume{Volume: v}, nil, nil)
+		rm.Volume.EXPECT().Get(testVolumeVar, testVolumeVar).Return(&v5.Volume{Volume: v}, nil, nil)
 		err := RunVolumeGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -287,7 +287,7 @@ func TestRunVolumeGetErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
-		rm.Volume.EXPECT().Get(testVolumeVar, testVolumeVar).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
+		rm.Volume.EXPECT().Get(testVolumeVar, testVolumeVar).Return(&v5.Volume{Volume: v}, nil, testVolumeErr)
 		err := RunVolumeGet(cfg)
 		assert.Error(t, err)
 	})
@@ -316,7 +316,7 @@ func TestRunVolumeCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&resources.Volume{Volume: v}, nil, nil)
+		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&v5.Volume{Volume: v}, nil, nil)
 		err := RunVolumeCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -347,7 +347,7 @@ func TestRunVolumeCreateImg(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Volume.EXPECT().Create(testVolumeVar, testVolumeImg).Return(&resources.Volume{Volume: v}, nil, nil)
+		rm.Volume.EXPECT().Create(testVolumeVar, testVolumeImg).Return(&v5.Volume{Volume: v}, nil, nil)
 		err := RunVolumeCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -376,7 +376,7 @@ func TestRunVolumeCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
+		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&v5.Volume{Volume: v}, nil, testVolumeErr)
 		err := RunVolumeCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -405,7 +405,7 @@ func TestRunVolumeCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&resources.Volume{Volume: v}, nil, nil)
+		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&v5.Volume{Volume: v}, nil, nil)
 		err := RunVolumeCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -682,7 +682,7 @@ func TestRunServerVolumeAttach(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, nil)
+		rm.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&v5.Volume{Volume: v}, nil, nil)
 		err := RunServerVolumeAttach(cfg)
 		assert.NoError(t, err)
 	})
@@ -699,7 +699,7 @@ func TestRunServerVolumeAttachErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
+		rm.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&v5.Volume{Volume: v}, nil, testVolumeErr)
 		err := RunServerVolumeAttach(cfg)
 		assert.Error(t, err)
 	})
@@ -716,7 +716,7 @@ func TestRunServerVolumeAttachWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, nil)
+		rm.Server.EXPECT().AttachVolume(testServerVar, testServerVar, testServerVar).Return(&v5.Volume{Volume: v}, nil, nil)
 		err := RunServerVolumeAttach(cfg)
 		assert.Error(t, err)
 	})
@@ -762,7 +762,7 @@ func TestRunServerVolumeGet(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testServerVar)
-		rm.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, nil)
+		rm.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar).Return(&v5.Volume{Volume: v}, nil, nil)
 		err := RunServerVolumeGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -778,7 +778,7 @@ func TestRunServerVolumeGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testServerVar)
-		rm.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
+		rm.Server.EXPECT().GetVolume(testServerVar, testServerVar, testServerVar).Return(&v5.Volume{Volume: v}, nil, testVolumeErr)
 		err := RunServerVolumeGet(cfg)
 		assert.Error(t, err)
 	})

@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -298,8 +298,8 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 
-func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotProperties {
-	input := resources.SnapshotProperties{}
+func getSnapshotPropertiesSet(c *core.CommandConfig) v5.SnapshotProperties {
+	input := v5.SnapshotProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
@@ -357,7 +357,7 @@ type SnapshotPrint struct {
 	State       string  `json:"State,omitempty"`
 }
 
-func getSnapshotPrint(resp *resources.Response, c *core.CommandConfig, s []resources.Snapshot) printer.Result {
+func getSnapshotPrint(resp *v5.Response, c *core.CommandConfig, s []v5.Snapshot) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -402,25 +402,25 @@ func getSnapshotCols(flagName string, outErr io.Writer) []string {
 	return datacenterCols
 }
 
-func getSnapshots(snapshots resources.Snapshots) []resources.Snapshot {
-	ss := make([]resources.Snapshot, 0)
+func getSnapshots(snapshots v5.Snapshots) []v5.Snapshot {
+	ss := make([]v5.Snapshot, 0)
 	if items, ok := snapshots.GetItemsOk(); ok && items != nil {
 		for _, s := range *items {
-			ss = append(ss, resources.Snapshot{Snapshot: s})
+			ss = append(ss, v5.Snapshot{Snapshot: s})
 		}
 	}
 	return ss
 }
 
-func getSnapshot(s *resources.Snapshot) []resources.Snapshot {
-	ss := make([]resources.Snapshot, 0)
+func getSnapshot(s *v5.Snapshot) []v5.Snapshot {
+	ss := make([]v5.Snapshot, 0)
 	if s != nil {
-		ss = append(ss, resources.Snapshot{Snapshot: s.Snapshot})
+		ss = append(ss, v5.Snapshot{Snapshot: s.Snapshot})
 	}
 	return ss
 }
 
-func getSnapshotsKVMaps(ss []resources.Snapshot) []map[string]interface{} {
+func getSnapshotsKVMaps(ss []v5.Snapshot) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		o := getSnapshotKVMap(s)
@@ -429,7 +429,7 @@ func getSnapshotsKVMaps(ss []resources.Snapshot) []map[string]interface{} {
 	return out
 }
 
-func getSnapshotKVMap(s resources.Snapshot) map[string]interface{} {
+func getSnapshotKVMap(s v5.Snapshot) map[string]interface{} {
 	var ssPrint SnapshotPrint
 	if ssId, ok := s.GetIdOk(); ok && ssId != nil {
 		ssPrint.SnapshotId = *ssId
@@ -456,14 +456,14 @@ func getSnapshotKVMap(s resources.Snapshot) map[string]interface{} {
 func getSnapshotIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	snapshotSvc := resources.NewSnapshotService(clientSvc.Get(), context.TODO())
+	snapshotSvc := v5.NewSnapshotService(clientSvc.Get(), context.TODO())
 	snapshots, _, err := snapshotSvc.List()
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
