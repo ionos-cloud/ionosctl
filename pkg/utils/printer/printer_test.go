@@ -166,7 +166,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 			},
 		},
 	}
-	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v6/requests/123456/status")
+	res.ApiResponse.Header.Add("location", "https://api.ionos.test.com/cloudapi/v6/requests/123456/status")
 
 	p.Print(res)
 	err = w.Flush()
@@ -179,7 +179,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 	var (
 		b      bytes.Buffer
-		strErr = `path does not contain https://api.ionos.com/cloudapi/v6`
+		strErr = `https://api.ionos.com/servers/123456 does not contain requestId`
 	)
 
 	viper.Set(config.ArgOutput, "json")
@@ -200,11 +200,11 @@ func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 			},
 		},
 	}
-	res.ApiResponse.Header.Add("location", "https://api.ionos.com/requests/123456/status")
+	res.ApiResponse.Header.Add("location", "https://api.ionos.com/servers/123456")
 
 	err = p.Print(res)
 	assert.Error(t, err)
-	assert.True(t, err.Error() == strErr)
+	assert.EqualError(t, err, strErr)
 }
 
 func TestPrinterGetStdoutJSON(t *testing.T) {
@@ -483,4 +483,13 @@ func TestPrinterGetStderrText(t *testing.T) {
 	err = w.Flush()
 	assert.NoError(t, err)
 	assert.True(t, out == w)
+}
+
+func TestGetRequestId(t *testing.T) {
+	id, err := GetRequestId(config.DefaultApiURL)
+	assert.Error(t, err)
+	assert.Empty(t, id)
+	id, err = GetRequestId("https://api.test.ionos.com/cloudapi/v6/requests/test/status")
+	assert.NoError(t, err)
+	assert.Equal(t, "test", id)
 }

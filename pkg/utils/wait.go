@@ -53,7 +53,7 @@ func WaitForRequest(c *core.CommandConfig, requestPath string) error {
 			progress.Start()
 			defer progress.Finish()
 
-			_, errCh := WatchRequestProgress(ctxTimeout, c, *requestId)
+			_, errCh := WatchRequestProgress(ctxTimeout, c, requestId)
 			if err := <-errCh; err != nil {
 				progress.SetTemplateString(requestProgressCircleTpl + " " + failed)
 				return err
@@ -61,7 +61,7 @@ func WaitForRequest(c *core.CommandConfig, requestPath string) error {
 			progress.SetTemplateString(requestProgressCircleTpl + " " + done)
 		} else {
 			c.Printer.Print(waitingForRequestMsg)
-			_, errCh := WatchRequestProgress(ctxTimeout, c, *requestId)
+			_, errCh := WatchRequestProgress(ctxTimeout, c, requestId)
 			if err := <-errCh; err != nil {
 				c.Printer.Print(failed)
 				return err
