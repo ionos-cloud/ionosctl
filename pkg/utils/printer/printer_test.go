@@ -3,12 +3,12 @@ package printer
 import (
 	"bufio"
 	"bytes"
-	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"net/http"
 	"regexp"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -171,7 +171,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 			},
 		},
 	}
-	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v5/requests/123456/status")
+	res.ApiResponse.Header.Add("location", "https://api.test.ionos.com/cloudapi/v5/requests/123456/status")
 
 	p.Print(res)
 	err = w.Flush()
@@ -184,7 +184,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 	var (
 		b      bytes.Buffer
-		strErr = `path does not contain: https://api.ionos.com`
+		strErr = `https://api.ionos.com/servers/123456 does not contain requestId`
 	)
 
 	viper.Set(config.ArgOutput, "json")
@@ -206,11 +206,11 @@ func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 			},
 		},
 	}
-	res.ApiResponse.Header.Add("location", "https://api.ionos-cloud.com/requests/123456/status")
+	res.ApiResponse.Header.Add("location", "https://api.ionos.com/servers/123456")
 
 	err = p.Print(res)
 	assert.Error(t, err)
-	assert.True(t, err.Error() == strErr)
+	assert.EqualError(t, err, strErr)
 }
 
 func TestPrinterGetStdoutJSON(t *testing.T) {
@@ -497,4 +497,13 @@ func TestPrinterGetStderrText(t *testing.T) {
 	err = w.Flush()
 	assert.NoError(t, err)
 	assert.True(t, out == w)
+}
+
+func TestGetRequestId(t *testing.T) {
+	id, err := GetRequestId(config.DefaultApiURL)
+	assert.Error(t, err)
+	assert.Empty(t, id)
+	id, err = GetRequestId("https://api.test.ionos.com/cloudapi/v5/requests/test/status")
+	assert.NoError(t, err)
+	assert.Equal(t, "test", id)
 }

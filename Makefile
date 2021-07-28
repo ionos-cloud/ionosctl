@@ -4,11 +4,11 @@ export CGO_ENABLED = 0
 export GO111MODULE := on
 
 GOFILES_NOVENDOR=$(shell find . -type f -name '*.go' | grep -v vendor)
-GOOS=${GOOS:-$(shell go env GOOS)}
-GOARCH=${GOARCH:-$(shell go env GOARCH)}
+GOOS?=$(shell go env GOOS)
+GOARCH?=$(shell go env GOARCH)
 
-OUT_D=$${OUT_D:-$(shell pwd)/builds}
-DOCS_OUT=$${DOCS_OUT:-$(shell pwd)/docs/subcommands/}
+OUT_D?=$(shell pwd)/builds
+DOCS_OUT?=$(shell pwd)/docs/subcommands/
 
 .PHONY: test_unit
 test_unit:
@@ -22,6 +22,7 @@ test: test_unit
 .PHONY: docs_update
 docs_update:
 	@echo "--- Generate Markdown documentation in ${DOCS_OUT} ---"
+	@mkdir -p ${DOCS_OUT}
 	@DOCS_OUT=${DOCS_OUT} go run tools/doc.go
 	@echo "DONE"
 

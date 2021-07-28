@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	pathRequest              = fmt.Sprintf("%s/%s/status/test/test", config.DefaultApiURL, testWaitForRequestVar)
+	pathRequest              = fmt.Sprintf("%s/%s/requests/test/status", config.DefaultApiURL, testWaitForRequestVar)
 	testWaitForRequestVar    = "test-wait-for-action"
 	testRunningRequestStatus = &v5.RequestStatus{
 		RequestStatus: ionoscloud.RequestStatus{

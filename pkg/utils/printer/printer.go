@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"io"
+	"regexp"
 	"strings"
 	"text/tabwriter"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/spf13/viper"
 )
 
@@ -78,9 +79,7 @@ func (p *JSONPrinter) Print(v interface{}) error {
 			if err != nil {
 				return err
 			}
-			if requestId != nil {
-				resultPrint.RequestId = *requestId
-			}
+			resultPrint.RequestId = requestId
 		}
 		resultPrint.Output = v.(Result).OutputJSON
 		if !structs.IsZero(resultPrint) {
@@ -136,9 +135,7 @@ func (p *TextPrinter) Print(v interface{}) error {
 			if err != nil {
 				return err
 			}
-			if requestId != nil {
-				resultPrint.RequestId = *requestId
-			}
+			resultPrint.RequestId = requestId
 		}
 		if v.(Result).KeyValue != nil && v.(Result).Columns != nil {
 			err := printText(p.Stdout, v.(Result).Columns, v.(Result).KeyValue)
@@ -281,12 +278,13 @@ func WriteJSON(item interface{}, writer io.Writer) error {
 	return nil
 }
 
-func GetRequestId(path string) (*string, error) {
-	if !strings.Contains(path, viper.GetString(config.ArgServerUrl)) {
-		return nil, errors.New("path does not contain: " + viper.GetString(config.ArgServerUrl))
+var requestPathRegex = regexp.MustCompile(`https?://[a-zA-Z0-9./-]+/requests/([a-z0-9-]+)/status`)
+
+func GetRequestId(path string) (string, error) {
+	if !requestPathRegex.MatchString(path) {
+		return "", fmt.Errorf("%s does not contain requestId", path)
 	}
-	str := strings.Split(path, "/")
-	return &str[len(str)-2], nil
+	return requestPathRegex.FindStringSubmatch(path)[1], nil
 }
 
 func GetRequestPath(r *v5.Response) string {
