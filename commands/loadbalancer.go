@@ -196,6 +196,7 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerGet(c *core.CommandConfig) error {
+	c.Printer.Infof("Load balancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)))
 	lb, _, err := c.Loadbalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
@@ -207,11 +208,12 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerCreate(c *core.CommandConfig) error {
-	lb, resp, err := c.Loadbalancers().Create(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
-		viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
+	c.Printer.Infof("Properties set for creating the load balancer: Name: %v, Dhcp: %v", name, dhcp)
+	lb, resp, err := c.Loadbalancers().Create(dcId, name, dhcp)
+	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
 	if err != nil {
 		return err
 	}
@@ -225,13 +227,19 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	input := resources.LoadbalancerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.SetName(name)
+		c.Printer.Infof("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIp)) {
-		input.SetIp(viper.GetString(core.GetFlagName(c.NS, config.ArgIp)))
+		ip := viper.GetString(core.GetFlagName(c.NS, config.ArgIp))
+		input.SetIp(ip)
+		c.Printer.Infof("Property Ip set: %v", ip)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDhcp)) {
-		input.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)))
+		dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
+		input.SetDhcp(dhcp)
+		c.Printer.Infof("Property Dhcp set: %v", dhcp)
 	}
 	lb, resp, err := c.Loadbalancers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
@@ -252,6 +260,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
 		return err
 	}
+	c.Printer.Infof("Load balancer with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)))
 	resp, err := c.Loadbalancers().Delete(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),

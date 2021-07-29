@@ -194,6 +194,7 @@ func RunGroupList(c *core.CommandConfig) error {
 }
 
 func RunGroupGet(c *core.CommandConfig) error {
+	c.Printer.Infof("Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	u, _, err := c.Groups().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if err != nil {
 		return err
@@ -209,6 +210,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 		},
 	}
 	u, resp, err := c.Groups().Create(newGroup)
+	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
 	if err != nil {
 		return err
 	}
@@ -243,6 +245,7 @@ func RunGroupDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
 		return err
 	}
+	c.Printer.Infof("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	resp, err := c.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if err != nil {
 		return err
@@ -264,6 +267,8 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 	createNic := viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateNic))
 	createK8s := viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateK8s))
 	s3 := viper.GetBool(core.GetFlagName(c.NS, config.ArgS3Privilege))
+	c.Printer.Infof("Properties set for creating the group: Name: %v, CreateDatacenter: %v, CreateSnapshot: %v, ReserveIp: %v, AccessActivityLog: %v, CreateBackupUnit: %v, CreatePcc: %v, CreateInternetAccess: %v, CreateK8sCluster: %v, S3Privilege: %v",
+		name, createDc, createSnap, reserveIp, accessLog, createBackUp, createPcc, createNic, createK8s, s3)
 	return &resources.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
 			Name:                 &name,
@@ -289,6 +294,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 	if properties, ok := oldGroup.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 			groupName = viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+			c.Printer.Infof("Property Name set: %v", groupName)
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				groupName = *name
@@ -296,6 +302,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCreateDc)) {
 			createDc = viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateDc))
+			c.Printer.Infof("Property CreateDataCenter set: %v", createDc)
 		} else {
 			if dc, ok := properties.GetCreateDataCenterOk(); ok && dc != nil {
 				createDc = *dc
@@ -303,6 +310,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCreateSnapshot)) {
 			createSnap = viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateSnapshot))
+			c.Printer.Infof("Property CreateSnapshot set: %v", createSnap)
 		} else {
 			if s, ok := properties.GetCreateSnapshotOk(); ok && s != nil {
 				createSnap = *s
@@ -310,6 +318,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCreatePcc)) {
 			createPcc = viper.GetBool(core.GetFlagName(c.NS, config.ArgCreatePcc))
+			c.Printer.Infof("Property CreatePcc set: %v", createPcc)
 		} else {
 			if s, ok := properties.GetCreatePccOk(); ok && s != nil {
 				createPcc = *s
@@ -317,6 +326,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCreateK8s)) {
 			createK8s = viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateK8s))
+			c.Printer.Infof("Property CreateK8sCluster set: %v", createK8s)
 		} else {
 			if s, ok := properties.GetCreateK8sClusterOk(); ok && s != nil {
 				createK8s = *s
@@ -324,6 +334,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCreateNic)) {
 			createNic = viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateNic))
+			c.Printer.Infof("Property CreateInternetAccess set: %v", createNic)
 		} else {
 			if s, ok := properties.GetCreateInternetAccessOk(); ok && s != nil {
 				createNic = *s
@@ -331,6 +342,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCreateBackUpUnit)) {
 			createBackUp = viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateBackUpUnit))
+			c.Printer.Infof("Property CreateBackupUnit set: %v", createBackUp)
 		} else {
 			if s, ok := properties.GetCreateBackupUnitOk(); ok && s != nil {
 				createBackUp = *s
@@ -338,6 +350,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgReserveIp)) {
 			reserveIp = viper.GetBool(core.GetFlagName(c.NS, config.ArgReserveIp))
+			c.Printer.Infof("Property ReserveIp set: %v", reserveIp)
 		} else {
 			if ip, ok := properties.GetReserveIpOk(); ok && ip != nil {
 				reserveIp = *ip
@@ -345,6 +358,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgAccessLog)) {
 			accessLog = viper.GetBool(core.GetFlagName(c.NS, config.ArgAccessLog))
+			c.Printer.Infof("Property AccessActivityLog set: %v", accessLog)
 		} else {
 			if log, ok := properties.GetAccessActivityLogOk(); ok && log != nil {
 				accessLog = *log
@@ -352,6 +366,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgS3Privilege)) {
 			s3 = viper.GetBool(core.GetFlagName(c.NS, config.ArgS3Privilege))
+			c.Printer.Infof("Property S3Privilege set: %v", s3)
 		} else {
 			if s, ok := properties.GetS3PrivilegeOk(); ok && s != nil {
 				s3 = *s

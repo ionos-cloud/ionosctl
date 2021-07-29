@@ -221,6 +221,7 @@ func RunNicList(c *core.CommandConfig) error {
 }
 
 func RunNicGet(c *core.CommandConfig) error {
+	c.Printer.Infof("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 	nic, _, err := c.Nics().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
@@ -233,14 +234,18 @@ func RunNicGet(c *core.CommandConfig) error {
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
-	nic, resp, err := c.Nics().Create(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgName)),
-		viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)),
-		viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)),
-		viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)),
-	)
+	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	ips := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps))
+	dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
+	lanId := viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId))
+
+	c.Printer.Infof("Properties set for creating the nic: DataCenterId: %v, ServerId: %v, Name: %v, Ips: %v, Dhcp: %v, Lan: %v",
+		dcId, serverId, name, ips, dhcp, lanId)
+	nic, resp, err := c.Nics().Create(dcId, serverId, name, ips, dhcp, lanId)
+	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+
 	if err != nil {
 		return err
 	}
@@ -254,16 +259,24 @@ func RunNicCreate(c *core.CommandConfig) error {
 func RunNicUpdate(c *core.CommandConfig) error {
 	input := resources.NicProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.NicProperties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.NicProperties.SetName(name)
+		c.Printer.Infof("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDhcp)) {
-		input.NicProperties.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)))
+		dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
+		input.NicProperties.SetDhcp(dhcp)
+		c.Printer.Infof("Property Dhcp set: %v", dhcp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanId)) {
-		input.NicProperties.SetLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)))
+		lan := viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId))
+		input.NicProperties.SetLan(lan)
+		c.Printer.Infof("Property Lan set: %v", lan)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIps)) {
-		input.NicProperties.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
+		ips := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps))
+		input.NicProperties.SetIps(ips)
+		c.Printer.Infof("Property Ips set: %v", ips)
 	}
 	nicUpd, resp, err := c.Nics().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
@@ -285,6 +298,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
 		return err
 	}
+	c.Printer.Infof("nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 	resp, err := c.Nics().Delete(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),

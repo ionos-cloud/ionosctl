@@ -256,6 +256,7 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleGet(c *core.CommandConfig) error {
+	c.Printer.Infof("Firewall Rule with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)))
 	firewallRule, _, err := c.FirewallRules().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
@@ -284,6 +285,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 		input,
 	)
+	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
 	if err != nil {
 		return err
 	}
@@ -316,6 +318,7 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
 		return err
 	}
+	c.Printer.Infof("Firewall Rule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)))
 	resp, err := c.FirewallRules().Delete(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
@@ -336,31 +339,49 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleProperties {
 	properties := resources.FirewallRuleProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		properties.SetName(name)
+		c.Printer.Infof("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgProtocol)) {
-		properties.SetProtocol(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol)))
+		protocol := viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol))
+		properties.SetProtocol(protocol)
+		c.Printer.Infof("Property Protocol set: %v", protocol)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSourceIp)) {
-		properties.SetSourceIp(viper.GetString(core.GetFlagName(c.NS, config.ArgSourceIp)))
+		sourceIp := viper.GetString(core.GetFlagName(c.NS, config.ArgSourceIp))
+		properties.SetSourceIp(sourceIp)
+		c.Printer.Infof("Property SourceIp set: %v", sourceIp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSourceMac)) {
-		properties.SetSourceMac(viper.GetString(core.GetFlagName(c.NS, config.ArgSourceMac)))
+		sourceMac := viper.GetString(core.GetFlagName(c.NS, config.ArgSourceMac))
+		properties.SetSourceMac(sourceMac)
+		c.Printer.Infof("Property SourceMac set: %v", sourceMac)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgTargetIp)) {
-		properties.SetTargetIp(viper.GetString(core.GetFlagName(c.NS, config.ArgTargetIp)))
+		targetIp := viper.GetString(core.GetFlagName(c.NS, config.ArgTargetIp))
+		properties.SetTargetIp(targetIp)
+		c.Printer.Infof("Property TargetIp set: %v", targetIp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIcmpCode)) {
-		properties.SetIcmpCode(viper.GetInt32(core.GetFlagName(c.NS, config.ArgIcmpCode)))
+		icmpCode := viper.GetInt32(core.GetFlagName(c.NS, config.ArgIcmpCode))
+		properties.SetIcmpCode(icmpCode)
+		c.Printer.Infof("Property IcmpCode set: %v", icmpCode)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIcmpType)) {
-		properties.SetIcmpType(viper.GetInt32(core.GetFlagName(c.NS, config.ArgIcmpType)))
+		icmpType := viper.GetInt32(core.GetFlagName(c.NS, config.ArgIcmpType))
+		properties.SetIcmpType(icmpType)
+		c.Printer.Infof("Property IcmpType set: %v", icmpType)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPortRangeStart)) {
-		properties.SetPortRangeStart(viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeStart)))
+		portRangeStart := viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeStart))
+		properties.SetPortRangeStart(portRangeStart)
+		c.Printer.Infof("Property PortRangeStart set: %v", portRangeStart)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPortRangeStop)) {
-		properties.SetPortRangeEnd(viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeStop)))
+		portRangeStop := viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeStop))
+		properties.SetPortRangeEnd(portRangeStop)
+		c.Printer.Infof("Property PortRangeEnd set: %v", portRangeStop)
 	}
 	return properties
 }

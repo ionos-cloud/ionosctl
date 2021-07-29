@@ -204,6 +204,7 @@ func RunLanList(c *core.CommandConfig) error {
 }
 
 func RunLanGet(c *core.CommandConfig) error {
+	c.Printer.Infof("Lan with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)))
 	l, _, err := c.Lans().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
@@ -221,8 +222,11 @@ func RunLanCreate(c *core.CommandConfig) error {
 		Name:   &name,
 		Public: &public,
 	}
+	c.Printer.Infof("Properties set for creating the Lan: Name: %v, Public: %v", name, public)
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPccId)) {
-		properties.SetPcc(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
+		pcc := viper.GetString(core.GetFlagName(c.NS, config.ArgPccId))
+		properties.SetPcc(pcc)
+		c.Printer.Infof("Property Pcc set: %v", pcc)
 	}
 	input := resources.LanPost{
 		LanPost: ionoscloud.LanPost{
@@ -230,6 +234,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 		},
 	}
 	l, resp, err := c.Lans().Create(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)), input)
+	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
 	if err != nil {
 		return err
 	}
@@ -251,13 +256,19 @@ func RunLanCreate(c *core.CommandConfig) error {
 func RunLanUpdate(c *core.CommandConfig) error {
 	input := resources.LanProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.SetName(name)
+		c.Printer.Infof("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPublic)) {
-		input.SetPublic(viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic)))
+		public := viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic))
+		input.SetPublic(public)
+		c.Printer.Infof("Property Public set: %v", public)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPccId)) {
-		input.SetPcc(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
+		pcc := viper.GetString(core.GetFlagName(c.NS, config.ArgPccId))
+		input.SetPcc(pcc)
+		c.Printer.Infof("Property Pcc set: %v", pcc)
 	}
 	lanUpdated, resp, err := c.Lans().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
@@ -278,6 +289,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
 		return err
 	}
+	c.Printer.Infof("Lan with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)))
 	resp, err := c.Lans().Delete(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),

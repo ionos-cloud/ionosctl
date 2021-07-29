@@ -51,6 +51,8 @@ func NewPrinterRegistry(out, outErr io.Writer) (Registry, error) {
 
 type PrintService interface {
 	Print(interface{}) error
+	Info(interface{})
+	Infof(format string, a ...interface{})
 
 	GetStdout() io.Writer
 	SetStdout(io.Writer)
@@ -98,6 +100,32 @@ func (p *JSONPrinter) Print(v interface{}) error {
 		}
 	}
 	return nil
+}
+
+func (p *JSONPrinter) Infof(format string, a ...interface{}) {
+	flag := viper.GetBool(config.ArgVerbose)
+	var toPrint = ToPrint{}
+	if flag {
+		str := fmt.Sprintf("[INFOF] "+format, a...)
+		toPrint.Message = str
+		err := WriteJSON(&toPrint, p.Stdout)
+		if err != nil {
+			return
+		}
+	}
+}
+
+func (p *JSONPrinter) Info(i interface{}) {
+	flag := viper.GetBool(config.ArgVerbose)
+	var toPrint = ToPrint{}
+	if flag {
+		str := fmt.Sprint(i)
+		toPrint.Message = str
+		err := WriteJSON(&toPrint, p.Stdout)
+		if err != nil {
+			return
+		}
+	}
 }
 
 func (p *JSONPrinter) GetStdout() io.Writer {
@@ -172,6 +200,22 @@ func (p *TextPrinter) Print(v interface{}) error {
 	return nil
 }
 
+func (p *TextPrinter) Info(i interface{}) {
+	flag := viper.GetBool(config.ArgVerbose)
+	if flag {
+		fmt.Print(i)
+	} else {
+		return
+	}
+}
+
+func (p *TextPrinter) Infof(format string, a ...interface{}) {
+	flag := viper.GetBool(config.ArgVerbose)
+	if flag {
+		fmt.Printf("[INFOF] "+format+"\n", a...)
+	}
+}
+
 func (p *TextPrinter) GetStdout() io.Writer {
 	return p.Stdout
 }
@@ -212,6 +256,10 @@ type DefaultMsgPrint struct {
 	Message interface{} `json:"Message,omitempty"`
 }
 
+type ToPrint struct {
+	Message string
+}
+
 var (
 	standardSuccessMessages     = "Command %s %s has been successfully executed"
 	waitStandardSuccessMessages = "Command %s %s & wait have been successfully executed"
@@ -226,11 +274,17 @@ func standardSuccessMsg(resource, verb string, waitRequest, waitState bool) stri
 }
 
 func requestIdMsg(writer io.Writer, msg string, args ...interface{}) {
-	fmt.Fprintf(writer, "RequestId: %s\n", fmt.Sprintf(msg, args...))
+	_, err := fmt.Fprintf(writer, "RequestId: %s\n", fmt.Sprintf(msg, args...))
+	if err != nil {
+		return
+	}
 }
 
 func statusMsg(writer io.Writer, msg string, args ...interface{}) {
-	fmt.Fprintf(writer, "Status: %s\n", fmt.Sprintf(msg, args...))
+	_, err := fmt.Fprintf(writer, "Status: %s\n", fmt.Sprintf(msg, args...))
+	if err != nil {
+		return
+	}
 }
 
 func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{}) error {
@@ -241,7 +295,10 @@ func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{
 	for _, col := range cols {
 		headers = append(headers, col)
 	}
-	fmt.Fprintln(w, strings.Join(headers, "\t"))
+	_, err := fmt.Fprintln(w, strings.Join(headers, "\t"))
+	if err != nil {
+		return err
+	}
 
 	for _, r := range keyValueMap {
 		values := []interface{}{}
@@ -266,7 +323,10 @@ func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{
 			}
 		}
 		format := strings.Join(formats, "\t")
-		fmt.Fprintf(w, format+"\n", values...)
+		_, err := fmt.Fprintf(w, format+"\n", values...)
+		if err != nil {
+			return err
+		}
 	}
 
 	return w.Flush()
@@ -277,7 +337,10 @@ func WriteJSON(item interface{}, writer io.Writer) error {
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(writer, "%s\n", string(j))
+	_, err = fmt.Fprintf(writer, "%s\n", string(j))
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

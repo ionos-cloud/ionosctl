@@ -190,6 +190,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
+	c.Printer.Infof("Adding an IP Failover group to a LAN...")
 	ipsFailovers := make([]resources.IpFailover, 0)
 	lanUpdated, resp, err := c.Lans().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
@@ -218,6 +219,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
+	c.Printer.Infof("Removing an IP Failover group to a LAN...")
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
 		return err
 	}

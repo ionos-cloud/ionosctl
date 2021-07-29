@@ -163,6 +163,7 @@ func RunPccList(c *core.CommandConfig) error {
 }
 
 func RunPccGet(c *core.CommandConfig) error {
+	c.Printer.Infof("Private cross connect with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	u, _, err := c.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	if err != nil {
 		return err
@@ -181,7 +182,9 @@ func RunPccCreate(c *core.CommandConfig) error {
 			},
 		},
 	}
+	c.Printer.Infof("Properties set for creating the private cross connect: Name: %v, Description: %v", name, description)
 	u, resp, err := c.Pccs().Create(newUser)
+	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
 	if err != nil {
 		return err
 	}
@@ -213,6 +216,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
 		return err
 	}
+	c.Printer.Infof("Private cross connect with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	resp, err := c.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	if err != nil {
 		return err
@@ -229,6 +233,7 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 			namePcc = viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+			c.Printer.Infof("Property Name set: %v", namePcc)
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				namePcc = *name
@@ -236,6 +241,7 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgDescription)) {
 			description = viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
+			c.Printer.Infof("Property Description set: %v", description)
 		} else {
 			if desc, ok := properties.GetDescriptionOk(); ok && desc != nil {
 				description = *desc

@@ -97,6 +97,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 	if len(ids) != 2 {
 		return errors.New("error getting location id & region id")
 	}
+	c.Printer.Infof("Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLocationId)))
 	loc, _, err := c.Locations().GetByRegionAndLocationId(ids[0], ids[1])
 	if err != nil {
 		return err

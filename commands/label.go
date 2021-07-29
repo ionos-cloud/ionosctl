@@ -211,6 +211,7 @@ func RunLabelList(c *core.CommandConfig) error {
 }
 
 func RunLabelGet(c *core.CommandConfig) error {
+	c.Printer.Info("Getting label...")
 	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
 	case config.DatacenterResource:
 		return RunDataCenterLabelGet(c)
@@ -228,6 +229,7 @@ func RunLabelGet(c *core.CommandConfig) error {
 }
 
 func RunLabelGetByUrn(c *core.CommandConfig) error {
+	c.Printer.Info("Getting label by urn...")
 	labelDc, _, err := c.Labels().GetByUrn(viper.GetString(core.GetFlagName(c.NS, config.ArgLabelUrn)))
 	if err != nil {
 		return err
@@ -253,6 +255,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunLabelRemove(c *core.CommandConfig) error {
+	c.Printer.Info("Label is removing...")
 	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
 	case config.DatacenterResource:
 		return RunDataCenterLabelRemove(c)

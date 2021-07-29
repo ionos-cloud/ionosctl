@@ -25,6 +25,8 @@ const (
 	ArgTimeoutShort          = "t"
 	ArgForce                 = "force"
 	ArgForceShort            = "f"
+	ArgVerbose               = "verbose"
+	ArgVerboseShort          = "v"
 	ArgServerUrl             = "api-url"
 	ArgServerUrlShort        = "u"
 	ArgCols                  = "cols"
