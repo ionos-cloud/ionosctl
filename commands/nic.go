@@ -244,7 +244,9 @@ func RunNicCreate(c *core.CommandConfig) error {
 	c.Printer.Infof("Properties set for creating the nic: DataCenterId: %v, ServerId: %v, Name: %v, Ips: %v, Dhcp: %v, Lan: %v",
 		dcId, serverId, name, ips, dhcp, lanId)
 	nic, resp, err := c.Nics().Create(dcId, serverId, name, ips, dhcp, lanId)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 
 	if err != nil {
 		return err

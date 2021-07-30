@@ -291,7 +291,9 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		*input,
 	)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

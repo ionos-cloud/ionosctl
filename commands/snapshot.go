@@ -259,7 +259,9 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		licenseType,
 		secAuthProtection,
 	)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

@@ -226,7 +226,9 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 	u, resp, err := c.K8s().CreateCluster(*newCluster)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

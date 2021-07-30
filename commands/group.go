@@ -210,7 +210,9 @@ func RunGroupCreate(c *core.CommandConfig) error {
 		},
 	}
 	u, resp, err := c.Groups().Create(newGroup)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

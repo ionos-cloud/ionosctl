@@ -184,7 +184,9 @@ func RunPccCreate(c *core.CommandConfig) error {
 	}
 	c.Printer.Infof("Properties set for creating the private cross connect: Name: %v, Description: %v", name, description)
 	u, resp, err := c.Pccs().Create(newUser)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

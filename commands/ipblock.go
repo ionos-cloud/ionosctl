@@ -196,7 +196,9 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 		location,
 		size,
 	)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

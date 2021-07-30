@@ -210,7 +210,9 @@ func RunUserCreate(c *core.CommandConfig) error {
 	c.Printer.Infof("Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
 		firstname, lastname, email, secureAuth, admin)
 	u, resp, err := c.Users().Create(newUser)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

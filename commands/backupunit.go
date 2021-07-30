@@ -233,7 +233,9 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	}
 	c.Printer.Infof("Properties set for creating the Backup Unit: Name: %v , Email: %v", name, email)
 	u, resp, err := c.BackupUnit().Create(newBackupUnit)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

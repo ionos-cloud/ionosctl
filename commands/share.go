@@ -222,7 +222,9 @@ func RunShareCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		input,
 	)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

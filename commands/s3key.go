@@ -201,7 +201,9 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	userId := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
 	c.Printer.Infof("Properties set for creating the S3key: UserId: %v", userId)
 	s, resp, err := c.S3Keys().Create(userId)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

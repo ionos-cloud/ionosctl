@@ -380,7 +380,9 @@ func RunServerCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

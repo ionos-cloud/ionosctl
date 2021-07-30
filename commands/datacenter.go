@@ -187,7 +187,9 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	location := viper.GetString(core.GetFlagName(c.NS, config.ArgLocation))
 	c.Printer.Infof("Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, location)
 	dc, resp, err := c.DataCenters().Create(name, description, location)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}

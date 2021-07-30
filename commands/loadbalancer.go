@@ -213,7 +213,9 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
 	c.Printer.Infof("Properties set for creating the load balancer: Name: %v, Dhcp: %v", name, dhcp)
 	lb, resp, err := c.Loadbalancers().Create(dcId, name, dhcp)
-	c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	if resp != nil {
+		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
