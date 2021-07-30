@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -211,7 +211,7 @@ func RunLanGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLanPrint(nil, c, []resources.Lan{*l}))
+	return c.Printer.Print(getLanPrint(nil, c, []v5.Lan{*l}))
 }
 
 func RunLanCreate(c *core.CommandConfig) error {
@@ -224,7 +224,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPccId)) {
 		properties.SetPcc(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	}
-	input := resources.LanPost{
+	input := v5.LanPost{
 		LanPost: ionoscloud.LanPost{
 			Properties: &properties,
 		},
@@ -239,7 +239,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	}
 	return c.Printer.Print(printer.Result{
 		OutputJSON:     l,
-		KeyValue:       getLanPostsKVMaps([]resources.LanPost{*l}),
+		KeyValue:       getLanPostsKVMaps([]v5.LanPost{*l}),
 		Columns:        getLansCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr()),
 		ApiResponse:    resp,
 		Resource:       "lan",
@@ -249,7 +249,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 }
 
 func RunLanUpdate(c *core.CommandConfig) error {
-	input := resources.LanProperties{}
+	input := v5.LanProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
@@ -271,7 +271,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getLanPrint(resp, c, []resources.Lan{*lanUpdated}))
+	return c.Printer.Print(getLanPrint(resp, c, []v5.Lan{*lanUpdated}))
 }
 
 func RunLanDelete(c *core.CommandConfig) error {
@@ -304,7 +304,7 @@ type LanPrint struct {
 	State  string `json:"State,omitempty"`
 }
 
-func getLanPrint(resp *resources.Response, c *core.CommandConfig, lans []resources.Lan) printer.Result {
+func getLanPrint(resp *v5.Response, c *core.CommandConfig, lans []v5.Lan) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -349,15 +349,15 @@ func getLansCols(flagName string, outErr io.Writer) []string {
 	return lanCols
 }
 
-func getLans(lans resources.Lans) []resources.Lan {
-	ls := make([]resources.Lan, 0)
+func getLans(lans v5.Lans) []v5.Lan {
+	ls := make([]v5.Lan, 0)
 	for _, s := range *lans.Items {
-		ls = append(ls, resources.Lan{Lan: s})
+		ls = append(ls, v5.Lan{Lan: s})
 	}
 	return ls
 }
 
-func getLansKVMaps(ls []resources.Lan) []map[string]interface{} {
+func getLansKVMaps(ls []v5.Lan) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ls))
 	for _, l := range ls {
 		var lanprint LanPrint
@@ -386,7 +386,7 @@ func getLansKVMaps(ls []resources.Lan) []map[string]interface{} {
 	return out
 }
 
-func getLanPostsKVMaps(ls []resources.LanPost) []map[string]interface{} {
+func getLanPostsKVMaps(ls []v5.LanPost) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ls))
 	for _, l := range ls {
 		properties := l.GetProperties()
@@ -412,14 +412,14 @@ func getLanPostsKVMaps(ls []resources.LanPost) []map[string]interface{} {
 func getLansIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	lanSvc := resources.NewLanService(clientSvc.Get(), context.TODO())
+	lanSvc := v5.NewLanService(clientSvc.Get(), context.TODO())
 	lans, _, err := lanSvc.List(datacenterId)
 	clierror.CheckError(err, outErr)
 	lansIds := make([]string, 0)

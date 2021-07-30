@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -40,14 +40,14 @@ var (
 			Pcc:  &testLanVar,
 		},
 	}
-	lanProperties = resources.LanProperties{
+	lanProperties = v5.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
 			Name:   &testLanNewVar,
 			Pcc:    &testLanNewVar,
 			Public: &publicNewLan,
 		},
 	}
-	lanNew = resources.Lan{
+	lanNew = v5.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testLanVar,
 			Properties: &ionoscloud.LanProperties{
@@ -58,7 +58,7 @@ var (
 			},
 		},
 	}
-	ls = resources.Lans{
+	ls = v5.Lans{
 		Lans: ionoscloud.Lans{
 			Id:    &testLanVar,
 			Items: &[]ionoscloud.Lan{l},
@@ -127,6 +127,7 @@ func TestRunLanList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		rm.Lan.EXPECT().List(testLanVar).Return(ls, nil, nil)
 		err := RunLanList(cfg)
@@ -141,6 +142,7 @@ func TestRunLanListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		rm.Lan.EXPECT().List(testLanVar).Return(ls, nil, testLanErr)
 		err := RunLanList(cfg)
@@ -155,9 +157,10 @@ func TestRunLanGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
-		rm.Lan.EXPECT().Get(testLanVar, testLanVar).Return(&resources.Lan{Lan: l}, nil, nil)
+		rm.Lan.EXPECT().Get(testLanVar, testLanVar).Return(&v5.Lan{Lan: l}, nil, nil)
 		err := RunLanGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -170,9 +173,10 @@ func TestRunLanGet_Err(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
-		rm.Lan.EXPECT().Get(testLanVar, testLanVar).Return(&resources.Lan{Lan: l}, nil, testLanErr)
+		rm.Lan.EXPECT().Get(testLanVar, testLanVar).Return(&v5.Lan{Lan: l}, nil, testLanErr)
 		err := RunLanGet(cfg)
 		assert.Error(t, err)
 	})
@@ -189,8 +193,9 @@ func TestRunLanCreate(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testLanVar)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublic), publicLan)
-		rm.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, nil)
+		rm.Lan.EXPECT().Create(testLanVar, v5.LanPost{LanPost: lanPostTest}).Return(&v5.LanPost{LanPost: lp}, nil, nil)
 		err := RunLanCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -207,8 +212,9 @@ func TestRunLanCreateErr(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublic), publicLan)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testLanVar)
-		rm.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, testLanErr)
+		rm.Lan.EXPECT().Create(testLanVar, v5.LanPost{LanPost: lanPostTest}).Return(&v5.LanPost{LanPost: lp}, nil, testLanErr)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -225,9 +231,10 @@ func TestRunLanCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLanVar)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testLanVar)
-		rm.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, nil)
+		rm.Lan.EXPECT().Create(testLanVar, v5.LanPost{LanPost: lanPostTest}).Return(&v5.LanPost{LanPost: lp}, nil, nil)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -240,6 +247,7 @@ func TestRunLanUpdate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
@@ -259,6 +267,7 @@ func TestRunLanUpdateErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testLanVar)
@@ -279,6 +288,7 @@ func TestRunLanUpdateResponseErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testLanVar)
@@ -299,6 +309,7 @@ func TestRunLanUpdateWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testLanVar)
@@ -320,6 +331,7 @@ func TestRunLanDelete(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
@@ -337,6 +349,7 @@ func TestRunLanDeleteErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
@@ -354,6 +367,7 @@ func TestRunLanDeleteWaitErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
@@ -371,6 +385,7 @@ func TestRunLanDeleteAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)
@@ -389,6 +404,7 @@ func TestRunLanDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		cfg.Stdin = os.Stdin
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testLanVar)

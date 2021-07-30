@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -202,7 +202,7 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 }
 
 func RunIpBlockUpdate(c *core.CommandConfig) error {
-	input := resources.IpBlockProperties{}
+	input := v5.IpBlockProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
@@ -248,7 +248,7 @@ type IpBlockPrint struct {
 	State     string   `json:"State,omitempty"`
 }
 
-func getIpBlockPrint(resp *resources.Response, c *core.CommandConfig, ipBlocks []resources.IpBlock) printer.Result {
+func getIpBlockPrint(resp *v5.Response, c *core.CommandConfig, ipBlocks []v5.IpBlock) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -293,25 +293,25 @@ func getIpBlocksCols(flagName string, outErr io.Writer) []string {
 	return ipBlockCols
 }
 
-func getIpBlocks(ipBlocks resources.IpBlocks) []resources.IpBlock {
-	ss := make([]resources.IpBlock, 0)
+func getIpBlocks(ipBlocks v5.IpBlocks) []v5.IpBlock {
+	ss := make([]v5.IpBlock, 0)
 	if items, ok := ipBlocks.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			ss = append(ss, resources.IpBlock{IpBlock: item})
+			ss = append(ss, v5.IpBlock{IpBlock: item})
 		}
 	}
 	return ss
 }
 
-func getIpBlock(ipBlock *resources.IpBlock) []resources.IpBlock {
-	ss := make([]resources.IpBlock, 0)
+func getIpBlock(ipBlock *v5.IpBlock) []v5.IpBlock {
+	ss := make([]v5.IpBlock, 0)
 	if ipBlock != nil {
-		ss = append(ss, resources.IpBlock{IpBlock: ipBlock.IpBlock})
+		ss = append(ss, v5.IpBlock{IpBlock: ipBlock.IpBlock})
 	}
 	return ss
 }
 
-func getIpBlocksKVMaps(ss []resources.IpBlock) []map[string]interface{} {
+func getIpBlocksKVMaps(ss []v5.IpBlock) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		o := getIpBlockKVMap(s)
@@ -320,7 +320,7 @@ func getIpBlocksKVMaps(ss []resources.IpBlock) []map[string]interface{} {
 	return out
 }
 
-func getIpBlockKVMap(s resources.IpBlock) map[string]interface{} {
+func getIpBlockKVMap(s v5.IpBlock) map[string]interface{} {
 	var ipblockPrint IpBlockPrint
 	if id, ok := s.GetIdOk(); ok && id != nil {
 		ipblockPrint.IpBlockId = *id
@@ -350,14 +350,14 @@ func getIpBlockKVMap(s resources.IpBlock) map[string]interface{} {
 func getIpBlocksIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	ipBlockSvc := resources.NewIpBlockService(clientSvc.Get(), context.TODO())
+	ipBlockSvc := v5.NewIpBlockService(clientSvc.Get(), context.TODO())
 	ipBlocks, _, err := ipBlockSvc.List()
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)

@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -166,7 +166,7 @@ func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
 }
 
 func RunIpFailoverList(c *core.CommandConfig) error {
-	ipsFailovers := make([]resources.IpFailover, 0)
+	ipsFailovers := make([]v5.IpFailover, 0)
 	obj, _, err := c.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
@@ -178,7 +178,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 	if properties, ok := obj.GetPropertiesOk(); ok && properties != nil {
 		if ipFailovers, ok := properties.GetIpFailoverOk(); ok && ipFailovers != nil {
 			for _, ip := range *ipFailovers {
-				ipsFailovers = append(ipsFailovers, resources.IpFailover{IPFailover: ip})
+				ipsFailovers = append(ipsFailovers, v5.IpFailover{IPFailover: ip})
 			}
 			return c.Printer.Print(getIpFailoverPrint(nil, c, ipsFailovers))
 		} else {
@@ -190,7 +190,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
-	ipsFailovers := make([]resources.IpFailover, 0)
+	ipsFailovers := make([]v5.IpFailover, 0)
 	lanUpdated, resp, err := c.Lans().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
@@ -206,7 +206,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 	if properties, ok := lanUpdated.GetPropertiesOk(); ok && properties != nil {
 		if ipFailovers, ok := properties.GetIpFailoverOk(); ok && ipFailovers != nil {
 			for _, ip := range *ipFailovers {
-				ipsFailovers = append(ipsFailovers, resources.IpFailover{IPFailover: ip})
+				ipsFailovers = append(ipsFailovers, v5.IpFailover{IPFailover: ip})
 			}
 			return c.Printer.Print(getIpFailoverPrint(nil, c, ipsFailovers))
 		} else {
@@ -251,10 +251,10 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	}
 }
 
-func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
+func getIpFailoverInfo(c *core.CommandConfig) v5.LanProperties {
 	ip := viper.GetString(core.GetFlagName(c.NS, config.ArgIp))
 	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
-	return resources.LanProperties{
+	return v5.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
 			IpFailover: &[]ionoscloud.IPFailover{
 				{
@@ -266,7 +266,7 @@ func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
 	}
 }
 
-func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]ionoscloud.IPFailover) resources.LanProperties {
+func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]ionoscloud.IPFailover) v5.LanProperties {
 	removeIp := viper.GetString(core.GetFlagName(c.NS, config.ArgIp))
 	removeNicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
 
@@ -278,7 +278,7 @@ func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]ionoscloud.IPFailo
 			}
 		}
 	}
-	return resources.LanProperties{
+	return v5.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
 			IpFailover: &newIpFailover,
 		},
@@ -294,7 +294,7 @@ type IpFailoverPrint struct {
 	Ip    string `json:"Ip,omitempty"`
 }
 
-func getIpFailoverPrint(resp *resources.Response, c *core.CommandConfig, ips []resources.IpFailover) printer.Result {
+func getIpFailoverPrint(resp *v5.Response, c *core.CommandConfig, ips []v5.IpFailover) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -333,7 +333,7 @@ func getIpFailoverCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getIpFailoverKVMaps(ls []resources.IpFailover) []map[string]interface{} {
+func getIpFailoverKVMaps(ls []v5.IpFailover) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ls))
 	for _, l := range ls {
 		var ipPrint IpFailoverPrint

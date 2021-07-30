@@ -67,7 +67,7 @@ func init() {
 	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, config.ArgConfigShort, config.GetConfigFile(), "Configuration file used for authentication")
 	_ = viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
 
-	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, config.ArgServerUrlShort, config.DefaultApiURL, "Override default API endpoint")
+	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, config.ArgServerUrlShort, config.DefaultApiURL, "Override default host url")
 	_ = viper.BindPFlag(config.ArgServerUrl, rootPFlagSet.Lookup(config.ArgServerUrl))
 
 	rootPFlagSet.StringVarP(&Output, config.ArgOutput, config.ArgOutputShort, config.DefaultOutputFormat, "Desired output format [text|json]")
@@ -144,9 +144,10 @@ func (v cliVersion) GetVersion() string {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
-	rootCmd.AddCommand(login())
-	rootCmd.AddCommand(version())
 	rootCmd.AddCommand(completion())
+	rootCmd.AddCommand(version())
+	// V5 Resources Commands
+	rootCmd.AddCommand(login())
 	rootCmd.AddCommand(location())
 	rootCmd.AddCommand(datacenter())
 	rootCmd.AddCommand(server())

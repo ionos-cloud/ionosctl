@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	pccTest = resources.PrivateCrossConnect{
+	pccTest = v5.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Properties: &ionoscloud.PrivateCrossConnectProperties{
 				Name:        &testPccVar,
@@ -26,14 +26,14 @@ var (
 			},
 		},
 	}
-	pccTestGet = resources.PrivateCrossConnect{
+	pccTestGet = v5.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Id:         &testPccVar,
 			Properties: pccTest.Properties,
 			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
-	pccPeerTest = resources.Peer{
+	pccPeerTest = v5.Peer{
 		Peer: ionoscloud.Peer{
 			Id:             &testPccVar,
 			Name:           &testPccVar,
@@ -42,19 +42,19 @@ var (
 			Location:       &testPccVar,
 		},
 	}
-	pccs = resources.PrivateCrossConnects{
+	pccs = v5.PrivateCrossConnects{
 		PrivateCrossConnects: ionoscloud.PrivateCrossConnects{
 			Id:    &testPccVar,
 			Items: &[]ionoscloud.PrivateCrossConnect{pccTest.PrivateCrossConnect},
 		},
 	}
-	pccProperties = resources.PrivateCrossConnectProperties{
+	pccProperties = v5.PrivateCrossConnectProperties{
 		PrivateCrossConnectProperties: ionoscloud.PrivateCrossConnectProperties{
 			Name:        &testPccNewVar,
 			Description: &testPccNewVar,
 		},
 	}
-	pccNew = resources.PrivateCrossConnect{
+	pccNew = v5.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Properties: &pccProperties.PrivateCrossConnectProperties,
 		},
@@ -95,6 +95,7 @@ func TestRunPccList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		rm.Pcc.EXPECT().List().Return(pccs, nil, nil)
 		err := RunPccList(cfg)
@@ -108,6 +109,7 @@ func TestRunPccListErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		rm.Pcc.EXPECT().List().Return(pccs, nil, testPccErr)
 		err := RunPccList(cfg)
@@ -121,6 +123,7 @@ func TestRunPccGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccTestGet, nil, nil)
@@ -135,6 +138,7 @@ func TestRunPccGetErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccTestGet, nil, testPccErr)
@@ -149,9 +153,10 @@ func TestRunPccPeersList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
-		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, nil)
+		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]v5.Peer{pccPeerTest}, nil, nil)
 		err := RunPccPeersList(cfg)
 		assert.NoError(t, err)
 	})
@@ -163,9 +168,10 @@ func TestRunPccPeersListErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
-		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, testPccErr)
+		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]v5.Peer{pccPeerTest}, nil, testPccErr)
 		err := RunPccPeersList(cfg)
 		assert.Error(t, err)
 	})
@@ -177,6 +183,7 @@ func TestRunPccCreate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testPccVar)
@@ -193,6 +200,7 @@ func TestRunPccCreateResponseErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testPccVar)
 		rm.Pcc.EXPECT().Create(pccTest).Return(&pccTest, &testResponse, nil)
@@ -207,6 +215,7 @@ func TestRunPccCreateErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testPccVar)
@@ -223,6 +232,7 @@ func TestRunPccCreateWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
@@ -239,6 +249,7 @@ func TestRunPccUpdate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testPccNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testPccNewVar)
@@ -255,6 +266,7 @@ func TestRunPccUpdateOldUser(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		rm.Pcc.EXPECT().Get(testPccVar).Return(&pccNew, nil, nil)
@@ -270,6 +282,7 @@ func TestRunPccUpdateErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testPccNewVar)
@@ -287,6 +300,7 @@ func TestRunPccUpdateWaitErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testPccNewVar)
@@ -305,6 +319,7 @@ func TestRunPccUpdateGetErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testPccVar)
@@ -321,6 +336,7 @@ func TestRunPccDelete(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
@@ -336,6 +352,7 @@ func TestRunPccDeleteErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
@@ -351,6 +368,7 @@ func TestRunPccDeleteWaitErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
@@ -367,6 +385,7 @@ func TestRunPccDeleteAskForConfirm(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
@@ -383,6 +402,7 @@ func TestRunPccDeleteAskForConfirmErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)

@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	groupTest = resources.Group{
+	groupTest = v5.Group{
 		Group: ionoscloud.Group{
 			Properties: &ionoscloud.GroupProperties{
 				Name:                 &testGroupVar,
@@ -34,7 +34,7 @@ var (
 			},
 		},
 	}
-	groupTestNew = resources.Group{
+	groupTestNew = v5.Group{
 		Group: ionoscloud.Group{
 			Properties: &ionoscloud.GroupProperties{
 				Name:                 &testGroupNewVar,
@@ -50,20 +50,20 @@ var (
 			},
 		},
 	}
-	groupNew = resources.Group{
+	groupNew = v5.Group{
 		Group: ionoscloud.Group{
 			Id:         &testGroupVar,
 			Properties: groupTestNew.Properties,
 		},
 	}
-	groupTestGet = resources.Group{
+	groupTestGet = v5.Group{
 		Group: ionoscloud.Group{
 			Id:         &testGroupVar,
 			Properties: groupTest.Properties,
 			Type:       &testGroupType,
 		},
 	}
-	groups = resources.Groups{
+	groups = v5.Groups{
 		Groups: ionoscloud.Groups{
 			Id:    &testGroupVar,
 			Items: &[]ionoscloud.Group{groupTest.Group},
@@ -160,6 +160,7 @@ func TestRunGroupList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Group.EXPECT().List().Return(groups, nil, nil)
 		err := RunGroupList(cfg)
 		assert.NoError(t, err)
@@ -173,6 +174,7 @@ func TestRunGroupListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Group.EXPECT().List().Return(groups, nil, testGroupErr)
 		err := RunGroupList(cfg)
 		assert.Error(t, err)
@@ -186,6 +188,7 @@ func TestRunGroupGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestGet, nil, nil)
 		err := RunGroupGet(cfg)
@@ -200,6 +203,7 @@ func TestRunGroupGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestGet, nil, testGroupErr)
 		err := RunGroupGet(cfg)
@@ -214,6 +218,7 @@ func TestRunGroupGetResponse(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestGet, &testResponse, nil)
 		err := RunGroupGet(cfg)
@@ -228,6 +233,7 @@ func TestRunGroupCreate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateNic), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateK8s), testGroupBoolVar)
@@ -251,6 +257,7 @@ func TestRunGroupCreateResponseErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateNic), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateK8s), testGroupBoolVar)
@@ -274,6 +281,7 @@ func TestRunGroupCreateErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateNic), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateK8s), testGroupBoolVar)
@@ -297,6 +305,7 @@ func TestRunGroupCreateWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateNic), testGroupBoolVar)
@@ -321,6 +330,7 @@ func TestRunGroupUpdate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testGroupNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCreateNic), testGroupBoolNewVar)
@@ -346,6 +356,7 @@ func TestRunGroupUpdateOld(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTest, nil, nil)
 		rm.Group.EXPECT().Update(testGroupVar, groupTest).Return(&groupTest, nil, nil)
@@ -361,6 +372,7 @@ func TestRunGroupUpdateErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTest, nil, nil)
 		rm.Group.EXPECT().Update(testGroupVar, groupTest).Return(&groupTest, nil, testGroupErr)
@@ -376,6 +388,7 @@ func TestRunGroupUpdateWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTest, nil, nil)
@@ -392,6 +405,7 @@ func TestRunGroupUpdateGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTest, nil, testGroupErr)
 		err := RunGroupUpdate(cfg)
@@ -406,6 +420,7 @@ func TestRunGroupDelete(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, nil)
@@ -421,6 +436,7 @@ func TestRunGroupDeleteResponseErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
@@ -436,6 +452,7 @@ func TestRunGroupDeleteWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
@@ -452,6 +469,7 @@ func TestRunGroupDeleteErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, testGroupErr)
@@ -466,6 +484,7 @@ func TestRunGroupDeleteAskForConfirm(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
@@ -483,6 +502,7 @@ func TestRunGroupRemoveGroupAskForConfirmErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
 		cfg.Stdin = os.Stdin

@@ -11,7 +11,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/spf13/viper"
 )
 
@@ -196,7 +196,7 @@ type Result struct {
 	KeyValue   []map[string]interface{}
 	OutputJSON interface{}
 
-	ApiResponse *resources.Response
+	ApiResponse *v5.Response
 }
 
 type ResultPrint struct {
@@ -287,7 +287,7 @@ func GetRequestId(path string) (string, error) {
 	return requestPathRegex.FindStringSubmatch(path)[1], nil
 }
 
-func GetRequestPath(r *resources.Response) string {
+func GetRequestPath(r *v5.Response) string {
 	if r != nil {
 		return r.Header.Get("location")
 	}

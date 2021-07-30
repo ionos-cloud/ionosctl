@@ -12,7 +12,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -79,7 +79,7 @@ var (
 			CreatedDate: &testIonosTime,
 		},
 	}
-	testRequests = resources.Requests{
+	testRequests = v5.Requests{
 		Requests: ionoscloud.Requests{
 			Id:    &testRequestVar,
 			Items: &[]ionoscloud.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
@@ -217,7 +217,7 @@ func TestRunRequestGet(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
-		req := resources.Request{Request: rq}
+		req := v5.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		err := RunRequestGet(cfg)
 		assert.NoError(t, err)
@@ -232,7 +232,7 @@ func TestRunRequestGetErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
-		req := resources.Request{Request: rq}
+		req := v5.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, testRequestErr)
 		err := RunRequestGet(cfg)
 		assert.Error(t, err)
@@ -247,8 +247,9 @@ func TestRunRequestWait(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
-		req := resources.Request{Request: rq}
+		req := v5.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, nil)
 		err := RunRequestWait(cfg)
@@ -263,8 +264,9 @@ func TestRunRequestWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRequestId), testRequestVar)
-		req := resources.Request{Request: rq}
+		req := v5.Request{Request: rq}
 		rm.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, testRequestErr)
 		err := RunRequestWait(cfg)

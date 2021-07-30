@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	shareTest = resources.GroupShare{
+	shareTest = v5.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Properties: &ionoscloud.GroupShareProperties{
 				EditPrivilege:  &testShareBoolVar,
@@ -26,7 +26,7 @@ var (
 			},
 		},
 	}
-	shareTestGet = resources.GroupShare{
+	shareTestGet = v5.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Id: &testShareVar,
 			Properties: &ionoscloud.GroupShareProperties{
@@ -36,19 +36,19 @@ var (
 			Type: &testResourceType,
 		},
 	}
-	shares = resources.GroupShares{
+	shares = v5.GroupShares{
 		GroupShares: ionoscloud.GroupShares{
 			Id:    &testShareVar,
 			Items: &[]ionoscloud.GroupShare{shareTest.GroupShare},
 		},
 	}
-	shareProperties = resources.GroupShareProperties{
+	shareProperties = v5.GroupShareProperties{
 		GroupShareProperties: ionoscloud.GroupShareProperties{
 			EditPrivilege:  &testShareBoolNewVar,
 			SharePrivilege: &testShareBoolNewVar,
 		},
 	}
-	shareNew = resources.GroupShare{
+	shareNew = v5.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Properties: &shareProperties.GroupShareProperties,
 		},
@@ -91,6 +91,7 @@ func TestRunShareList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		rm.Group.EXPECT().ListShares(testShareVar).Return(shares, nil, nil)
@@ -105,6 +106,7 @@ func TestRunShareListErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		rm.Group.EXPECT().ListShares(testShareVar).Return(shares, nil, testShareErr)
@@ -119,6 +121,7 @@ func TestRunShareGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -134,6 +137,7 @@ func TestRunShareGetErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -149,6 +153,7 @@ func TestRunShareCreate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -163,6 +168,7 @@ func TestRunShareCreateResponseErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
@@ -179,6 +185,7 @@ func TestRunShareCreateErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -194,6 +201,7 @@ func TestRunShareCreateWaitErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -210,6 +218,7 @@ func TestRunShareUpdate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -228,6 +237,7 @@ func TestRunShareUpdateOldShare(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -244,6 +254,7 @@ func TestRunShareUpdateErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -262,6 +273,7 @@ func TestRunShareUpdateWaitErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -281,6 +293,7 @@ func TestRunShareUpdateGetErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
@@ -298,6 +311,7 @@ func TestRunShareDelete(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
@@ -314,6 +328,7 @@ func TestRunShareDeleteWaitErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
@@ -331,6 +346,7 @@ func TestRunShareDeleteErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
@@ -347,6 +363,7 @@ func TestRunShareDeleteAskForConfirm(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
@@ -364,6 +381,7 @@ func TestRunShareDeleteAskForConfirmErr(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)

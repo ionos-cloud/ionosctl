@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -177,7 +177,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getDataCenterPrint(nil, c, []resources.Datacenter{*dc}))
+	return c.Printer.Print(getDataCenterPrint(nil, c, []v5.Datacenter{*dc}))
 }
 
 func RunDataCenterCreate(c *core.CommandConfig) error {
@@ -192,11 +192,11 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getDataCenterPrint(resp, c, []resources.Datacenter{*dc}))
+	return c.Printer.Print(getDataCenterPrint(resp, c, []v5.Datacenter{*dc}))
 }
 
 func RunDataCenterUpdate(c *core.CommandConfig) error {
-	input := resources.DatacenterProperties{}
+	input := v5.DatacenterProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
@@ -214,7 +214,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getDataCenterPrint(resp, c, []resources.Datacenter{*dc}))
+	return c.Printer.Print(getDataCenterPrint(resp, c, []v5.Datacenter{*dc}))
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
@@ -250,7 +250,7 @@ type DatacenterPrint struct {
 	SecAuthProtection bool     `json:"SecAuthProtection,omitempty"`
 }
 
-func getDataCenterPrint(resp *resources.Response, c *core.CommandConfig, dcs []resources.Datacenter) printer.Result {
+func getDataCenterPrint(resp *v5.Response, c *core.CommandConfig, dcs []v5.Datacenter) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -298,15 +298,15 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 	return datacenterCols
 }
 
-func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
-	dc := make([]resources.Datacenter, 0)
+func getDataCenters(datacenters v5.Datacenters) []v5.Datacenter {
+	dc := make([]v5.Datacenter, 0)
 	for _, d := range *datacenters.Items {
-		dc = append(dc, resources.Datacenter{Datacenter: d})
+		dc = append(dc, v5.Datacenter{Datacenter: d})
 	}
 	return dc
 }
 
-func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
+func getDataCentersKVMaps(dcs []v5.Datacenter) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(dcs))
 	for _, dc := range dcs {
 		var dcPrint DatacenterPrint
@@ -347,14 +347,14 @@ func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
 func getDataCentersIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	datacenterSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
+	datacenterSvc := v5.NewDataCenterService(clientSvc.Get(), context.TODO())
 	datacenters, _, err := datacenterSvc.List()
 	clierror.CheckError(err, outErr)
 	dcIds := make([]string, 0)

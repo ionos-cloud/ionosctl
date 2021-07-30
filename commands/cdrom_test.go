@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	testCdroms = resources.Cdroms{
+	testCdroms = v5.Cdroms{
 		Cdroms: ionoscloud.Cdroms{
 			Items: &[]ionoscloud.Image{testImage.Image},
 		},
@@ -71,6 +71,7 @@ func TestRunServerCdromAttachWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Server.EXPECT().AttachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, nil, nil)
 		err := RunServerCdromAttach(cfg)
@@ -187,6 +188,7 @@ func TestRunServerCdromDetachResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testResponse, nil)
 		err := RunServerCdromDetach(cfg)
@@ -206,6 +208,7 @@ func TestRunServerCdromDetachWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(nil, nil)
 		err := RunServerCdromDetach(cfg)
 		assert.Error(t, err)

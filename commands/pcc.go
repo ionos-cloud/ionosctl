@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -173,7 +173,7 @@ func RunPccGet(c *core.CommandConfig) error {
 func RunPccCreate(c *core.CommandConfig) error {
 	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	description := viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
-	newUser := resources.PrivateCrossConnect{
+	newUser := v5.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Properties: &ionoscloud.PrivateCrossConnectProperties{
 				Name:        &name,
@@ -224,7 +224,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getPccPrint(resp, c, nil))
 }
 
-func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *resources.PrivateCrossConnectProperties {
+func getPccInfo(oldUser *v5.PrivateCrossConnect, c *core.CommandConfig) *v5.PrivateCrossConnectProperties {
 	var namePcc, description string
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
@@ -242,7 +242,7 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 			}
 		}
 	}
-	return &resources.PrivateCrossConnectProperties{
+	return &v5.PrivateCrossConnectProperties{
 		PrivateCrossConnectProperties: ionoscloud.PrivateCrossConnectProperties{
 			Name:        &namePcc,
 			Description: &description,
@@ -310,7 +310,7 @@ type PccPrint struct {
 	State       string `json:"State,omitempty"`
 }
 
-func getPccPrint(resp *resources.Response, c *core.CommandConfig, pccs []resources.PrivateCrossConnect) printer.Result {
+func getPccPrint(resp *v5.Response, c *core.CommandConfig, pccs []v5.PrivateCrossConnect) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -338,7 +338,7 @@ type PccPeerPrint struct {
 	Location       string `json:"Location,omitempty"`
 }
 
-func getPccPeerPrint(c *core.CommandConfig, pccs []resources.Peer) printer.Result {
+func getPccPeerPrint(c *core.CommandConfig, pccs []v5.Peer) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if pccs != nil {
@@ -397,25 +397,25 @@ func getPccCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getPccs(pccs resources.PrivateCrossConnects) []resources.PrivateCrossConnect {
-	u := make([]resources.PrivateCrossConnect, 0)
+func getPccs(pccs v5.PrivateCrossConnects) []v5.PrivateCrossConnect {
+	u := make([]v5.PrivateCrossConnect, 0)
 	if items, ok := pccs.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.PrivateCrossConnect{PrivateCrossConnect: item})
+			u = append(u, v5.PrivateCrossConnect{PrivateCrossConnect: item})
 		}
 	}
 	return u
 }
 
-func getPcc(u *resources.PrivateCrossConnect) []resources.PrivateCrossConnect {
-	pccs := make([]resources.PrivateCrossConnect, 0)
+func getPcc(u *v5.PrivateCrossConnect) []v5.PrivateCrossConnect {
+	pccs := make([]v5.PrivateCrossConnect, 0)
 	if u != nil {
-		pccs = append(pccs, resources.PrivateCrossConnect{PrivateCrossConnect: u.PrivateCrossConnect})
+		pccs = append(pccs, v5.PrivateCrossConnect{PrivateCrossConnect: u.PrivateCrossConnect})
 	}
 	return pccs
 }
 
-func getPccsKVMaps(us []resources.PrivateCrossConnect) []map[string]interface{} {
+func getPccsKVMaps(us []v5.PrivateCrossConnect) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(us))
 	for _, u := range us {
 		var uPrint PccPrint
@@ -441,7 +441,7 @@ func getPccsKVMaps(us []resources.PrivateCrossConnect) []map[string]interface{} 
 	return out
 }
 
-func getPccPeersKVMaps(ps []resources.Peer) []map[string]interface{} {
+func getPccPeersKVMaps(ps []v5.Peer) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ps))
 	for _, p := range ps {
 		var uPrint PccPeerPrint
@@ -469,14 +469,14 @@ func getPccPeersKVMaps(ps []resources.Peer) []map[string]interface{} {
 func getPccsIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	pccSvc := resources.NewPrivateCrossConnectService(clientSvc.Get(), context.TODO())
+	pccSvc := v5.NewPrivateCrossConnectService(clientSvc.Get(), context.TODO())
 	pccs, _, err := pccSvc.List()
 	clierror.CheckError(err, outErr)
 	pccsIds := make([]string, 0)

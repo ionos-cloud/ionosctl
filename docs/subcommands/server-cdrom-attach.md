@@ -45,7 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string         Override default API endpoint (default "https://api.ionos.com/cloudapi/v5")
+  -u, --api-url string         Override default host url (default "https://api.ionos.com")
   -i, --cdrom-id string        The unique Cdrom Id (required)
       --cols strings           Set of columns to be printed on output 
                                Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit CreatedDate CreatedBy CreatedByUserId] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit,CreatedDate])

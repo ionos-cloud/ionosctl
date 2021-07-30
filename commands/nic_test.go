@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -35,14 +35,14 @@ var (
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 	}
-	nicProperties = resources.NicProperties{
+	nicProperties = v5.NicProperties{
 		NicProperties: ionoscloud.NicProperties{
 			Name: &testNicNewVar,
 			Dhcp: &dhcpNewNic,
 			Lan:  &lanNewNicId,
 		},
 	}
-	nicNew = resources.Nic{
+	nicNew = v5.Nic{
 		Nic: ionoscloud.Nic{
 			Id: &testNicVar,
 			Properties: &ionoscloud.NicProperties{
@@ -54,13 +54,13 @@ var (
 			},
 		},
 	}
-	ns = resources.Nics{
+	ns = v5.Nics{
 		Nics: ionoscloud.Nics{
 			Id:    &testNicVar,
 			Items: &[]ionoscloud.Nic{n},
 		},
 	}
-	balancedns = resources.BalancedNics{
+	balancedns = v5.BalancedNics{
 		BalancedNics: ionoscloud.BalancedNics{
 			Id:    &testNicVar,
 			Items: &[]ionoscloud.Nic{n},
@@ -131,6 +131,7 @@ func TestRunNicList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
 		rm.Nic.EXPECT().List(testNicVar, testNicVar).Return(ns, nil, nil)
@@ -146,6 +147,7 @@ func TestRunNicListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
 		rm.Nic.EXPECT().List(testNicVar, testNicVar).Return(ns, nil, testNicErr)
@@ -161,10 +163,11 @@ func TestRunNicGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testNicVar)
-		rm.Nic.EXPECT().Get(testNicVar, testNicVar, testNicVar).Return(&resources.Nic{Nic: n}, nil, nil)
+		rm.Nic.EXPECT().Get(testNicVar, testNicVar, testNicVar).Return(&v5.Nic{Nic: n}, nil, nil)
 		err := RunNicGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -177,10 +180,11 @@ func TestRunNicGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testNicVar)
-		rm.Nic.EXPECT().Get(testNicVar, testNicVar, testNicVar).Return(&resources.Nic{Nic: n}, nil, testNicErr)
+		rm.Nic.EXPECT().Get(testNicVar, testNicVar, testNicVar).Return(&v5.Nic{Nic: n}, nil, testNicErr)
 		err := RunNicGet(cfg)
 		assert.Error(t, err)
 	})
@@ -193,6 +197,7 @@ func TestRunNicCreate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -200,7 +205,7 @@ func TestRunNicCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIps), ipsNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), lanNicId)
-		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicVar, ipsNic, dhcpNic, lanNicId).Return(&resources.Nic{Nic: n}, nil, nil)
+		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicVar, ipsNic, dhcpNic, lanNicId).Return(&v5.Nic{Nic: n}, nil, nil)
 		err := RunNicCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -213,6 +218,7 @@ func TestRunNicCreateErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -220,7 +226,7 @@ func TestRunNicCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIps), ipsNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), lanNicId)
-		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicVar, ipsNic, dhcpNic, lanNicId).Return(&resources.Nic{Nic: n}, nil, testNicErr)
+		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicVar, ipsNic, dhcpNic, lanNicId).Return(&v5.Nic{Nic: n}, nil, testNicErr)
 		err := RunNicCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -233,6 +239,7 @@ func TestRunNicCreateWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -240,7 +247,7 @@ func TestRunNicCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIps), ipsNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpNic)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), lanNicId)
-		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicVar, ipsNic, dhcpNic, lanNicId).Return(&resources.Nic{Nic: n}, nil, nil)
+		rm.Nic.EXPECT().Create(testNicVar, testNicVar, testNicVar, ipsNic, dhcpNic, lanNicId).Return(&v5.Nic{Nic: n}, nil, nil)
 		err := RunNicCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -253,6 +260,7 @@ func TestRunNicUpdate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -273,6 +281,7 @@ func TestRunNicUpdateErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -293,6 +302,7 @@ func TestRunNicUpdateWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -313,6 +323,7 @@ func TestRunNicDelete(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -331,6 +342,7 @@ func TestRunNicDeleteErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -350,6 +362,7 @@ func TestRunNicDeleteWaitErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testNicVar)
@@ -368,6 +381,7 @@ func TestRunNicDeleteAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -387,6 +401,7 @@ func TestRunNicDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		cfg.Stdin = os.Stdin
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
@@ -440,25 +455,6 @@ func TestGetNicsIds(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestGetNicsIdsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
-	assert.NoError(t, err)
-	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	viper.Set(core.GetGlobalFlagName("nic", config.ArgDataCenterId), "")
-	viper.Set(core.GetGlobalFlagName("nic", config.ArgServerId), "")
-	getNicsIds(w, "", "")
-	err = w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`404 Not Found`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
 func TestGetAttachedNicsIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
@@ -475,23 +471,6 @@ func TestGetAttachedNicsIds(t *testing.T) {
 	err = w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestGetAttachedNicsIdsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
-	assert.NoError(t, err)
-	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	getAttachedNicsIds(w, "", "")
-	err = w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`404 Not Found`)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
@@ -531,11 +510,12 @@ func TestRunLoadBalancerNicAttach(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Loadbalancer.EXPECT().AttachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Nic{Nic: n}, nil, nil)
+		rm.Loadbalancer.EXPECT().AttachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&v5.Nic{Nic: n}, nil, nil)
 		err := RunLoadBalancerNicAttach(cfg)
 		assert.NoError(t, err)
 	})
@@ -548,11 +528,12 @@ func TestRunLoadBalancerNicAttachErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Loadbalancer.EXPECT().AttachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Nic{Nic: n}, nil, testLoadbalancerErr)
+		rm.Loadbalancer.EXPECT().AttachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&v5.Nic{Nic: n}, nil, testLoadbalancerErr)
 		err := RunLoadBalancerNicAttach(cfg)
 		assert.Error(t, err)
 	})
@@ -565,11 +546,12 @@ func TestRunLoadBalancerNicAttachWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Loadbalancer.EXPECT().AttachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Nic{Nic: n}, nil, nil)
+		rm.Loadbalancer.EXPECT().AttachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&v5.Nic{Nic: n}, nil, nil)
 		err := RunLoadBalancerNicAttach(cfg)
 		assert.Error(t, err)
 	})
@@ -582,6 +564,7 @@ func TestRunLoadBalancerNicList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		rm.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar).Return(balancedns, nil, nil)
@@ -597,6 +580,7 @@ func TestRunLoadBalancerNicListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		rm.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar).Return(balancedns, nil, testLoadbalancerErr)
@@ -612,10 +596,11 @@ func TestRunLoadBalancerNicGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testLoadbalancerVar)
-		rm.Loadbalancer.EXPECT().GetNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Nic{Nic: n}, nil, nil)
+		rm.Loadbalancer.EXPECT().GetNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&v5.Nic{Nic: n}, nil, nil)
 		err := RunLoadBalancerNicGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -628,10 +613,11 @@ func TestRunLoadBalancerNicGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testLoadbalancerVar)
-		rm.Loadbalancer.EXPECT().GetNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&resources.Nic{Nic: n}, nil, testLoadbalancerErr)
+		rm.Loadbalancer.EXPECT().GetNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&v5.Nic{Nic: n}, nil, testLoadbalancerErr)
 		err := RunLoadBalancerNicGet(cfg)
 		assert.Error(t, err)
 	})
@@ -645,6 +631,7 @@ func TestRunLoadBalancerNicDetach(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testLoadbalancerVar)
@@ -663,6 +650,7 @@ func TestRunLoadBalancerNicDetachErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testLoadbalancerVar)
@@ -681,6 +669,7 @@ func TestRunLoadBalancerNicDetachWaitErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testLoadbalancerVar)
@@ -699,6 +688,7 @@ func TestRunLoadBalancerNicDetachAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)
@@ -718,6 +708,7 @@ func TestRunLoadBalancerNicDetachAskForConfirmErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		cfg.Stdin = os.Stdin
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLoadBalancerId), testLoadbalancerVar)

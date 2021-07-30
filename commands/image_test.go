@@ -11,7 +11,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	testImage = resources.Image{
+	testImage = v5.Image{
 		Image: ionoscloud.Image{
 			Id: &testImageVar,
 			Properties: &ionoscloud.ImageProperties{
@@ -40,7 +40,7 @@ var (
 			},
 		},
 	}
-	testImages = resources.Images{
+	testImages = v5.Images{
 		Images: ionoscloud.Images{
 			Id:    &testImageVar,
 			Items: &[]ionoscloud.Image{testImage.Image, testImage.Image},
@@ -85,6 +85,7 @@ func TestRunImageList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCols), allImageCols)
 		rm.Image.EXPECT().List().Return(testImages, nil, nil)
 		err := RunImageList(cfg)
@@ -99,6 +100,7 @@ func TestRunImageListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Image.EXPECT().List().Return(testImages, nil, testImageErr)
 		err := RunImageList(cfg)
 		assert.Error(t, err)
@@ -112,6 +114,7 @@ func TestRunImageListSort(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testImageVar)
@@ -130,6 +133,7 @@ func TestRunImageListSortOptionErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testImageVar)
@@ -148,6 +152,7 @@ func TestRunImageListSortErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testImageVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testImageVar)
@@ -166,6 +171,7 @@ func TestRunImageGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testImageVar)
 		rm.Image.EXPECT().Get(testImageVar).Return(&testImage, nil, nil)
 		err := RunImageGet(cfg)
@@ -180,6 +186,7 @@ func TestRunImageGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testImageVar)
 		rm.Image.EXPECT().Get(testImageVar).Return(&testImage, nil, testImageErr)
 		err := RunImageGet(cfg)

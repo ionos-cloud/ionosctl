@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -229,7 +229,7 @@ func RunNicGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(nil, c, []resources.Nic{*nic}))
+	return c.Printer.Print(getNicPrint(nil, c, []v5.Nic{*nic}))
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
@@ -248,11 +248,11 @@ func RunNicCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(resp, c, []resources.Nic{*nic}))
+	return c.Printer.Print(getNicPrint(resp, c, []v5.Nic{*nic}))
 }
 
 func RunNicUpdate(c *core.CommandConfig) error {
-	input := resources.NicProperties{}
+	input := v5.NicProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.NicProperties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
@@ -278,7 +278,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(resp, c, []resources.Nic{*nicUpd}))
+	return c.Printer.Print(getNicPrint(resp, c, []v5.Nic{*nicUpd}))
 }
 
 func RunNicDelete(c *core.CommandConfig) error {
@@ -549,7 +549,7 @@ type NicPrint struct {
 	State          string   `json:"State,omitempty"`
 }
 
-func getNicPrint(resp *resources.Response, c *core.CommandConfig, nics []resources.Nic) printer.Result {
+func getNicPrint(resp *v5.Response, c *core.CommandConfig, nics []v5.Nic) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -601,31 +601,31 @@ func getNicsCols(flagName string, outErr io.Writer) []string {
 	return nicCols
 }
 
-func getNics(nics resources.Nics) []resources.Nic {
-	ns := make([]resources.Nic, 0)
+func getNics(nics v5.Nics) []v5.Nic {
+	ns := make([]v5.Nic, 0)
 	for _, s := range *nics.Items {
-		ns = append(ns, resources.Nic{Nic: s})
+		ns = append(ns, v5.Nic{Nic: s})
 	}
 	return ns
 }
 
-func getNic(n *resources.Nic) []resources.Nic {
-	nics := make([]resources.Nic, 0)
+func getNic(n *v5.Nic) []v5.Nic {
+	nics := make([]v5.Nic, 0)
 	if n != nil {
-		nics = append(nics, resources.Nic{Nic: n.Nic})
+		nics = append(nics, v5.Nic{Nic: n.Nic})
 	}
 	return nics
 }
 
-func getAttachedNics(nics resources.BalancedNics) []resources.Nic {
-	ns := make([]resources.Nic, 0)
+func getAttachedNics(nics v5.BalancedNics) []v5.Nic {
+	ns := make([]v5.Nic, 0)
 	for _, s := range *nics.BalancedNics.Items {
-		ns = append(ns, resources.Nic{Nic: s})
+		ns = append(ns, v5.Nic{Nic: s})
 	}
 	return ns
 }
 
-func getNicsKVMaps(ns []resources.Nic) []map[string]interface{} {
+func getNicsKVMaps(ns []v5.Nic) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ns))
 	for _, n := range ns {
 		var nicprint NicPrint
@@ -666,14 +666,14 @@ func getNicsKVMaps(ns []resources.Nic) []map[string]interface{} {
 func getNicsIds(outErr io.Writer, datacenterId, serverId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	nicSvc := resources.NewNicService(clientSvc.Get(), context.TODO())
+	nicSvc := v5.NewNicService(clientSvc.Get(), context.TODO())
 	nics, _, err := nicSvc.List(datacenterId, serverId)
 	clierror.CheckError(err, outErr)
 	nicsIds := make([]string, 0)
@@ -692,14 +692,14 @@ func getNicsIds(outErr io.Writer, datacenterId, serverId string) []string {
 func getAttachedNicsIds(outErr io.Writer, datacenterId, loadbalancerId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	nicSvc := resources.NewLoadbalancerService(clientSvc.Get(), context.TODO())
+	nicSvc := v5.NewLoadbalancerService(clientSvc.Get(), context.TODO())
 	nics, _, err := nicSvc.ListNics(datacenterId, loadbalancerId)
 	clierror.CheckError(err, outErr)
 	attachedNicsIds := make([]string, 0)

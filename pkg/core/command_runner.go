@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
@@ -89,11 +89,11 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		Context:   ctx,
 		// Define init Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
-			client, err := c.InitClient()
+			v5Client, err := c.InitV5Client()
 			if err != nil {
 				return err
 			}
-			if err = c.InitServices(client); err != nil {
+			if err = c.InitV5Services(v5Client); err != nil {
 				return err
 			}
 			return nil
@@ -124,38 +124,38 @@ type CommandConfig struct {
 	Stdin   io.Reader
 	Printer printer.PrintService
 	initCfg func(commandConfig *CommandConfig) error
-	// Resources Services
-	Locations     func() resources.LocationsService
-	DataCenters   func() resources.DatacentersService
-	Servers       func() resources.ServersService
-	Volumes       func() resources.VolumesService
-	Lans          func() resources.LansService
-	Nics          func() resources.NicsService
-	Loadbalancers func() resources.LoadbalancersService
-	Requests      func() resources.RequestsService
-	Images        func() resources.ImagesService
-	Snapshots     func() resources.SnapshotsService
-	IpBlocks      func() resources.IpBlocksService
-	FirewallRules func() resources.FirewallRulesService
-	Labels        func() resources.LabelResourcesService
-	Contracts     func() resources.ContractsService
-	Users         func() resources.UsersService
-	Groups        func() resources.GroupsService
-	S3Keys        func() resources.S3KeysService
-	BackupUnit    func() resources.BackupUnitsService
-	Pccs          func() resources.PccsService
-	K8s           func() resources.K8sService
+	// V5 Resources Services
+	Locations     func() v5.LocationsService
+	DataCenters   func() v5.DatacentersService
+	Servers       func() v5.ServersService
+	Volumes       func() v5.VolumesService
+	Lans          func() v5.LansService
+	Nics          func() v5.NicsService
+	Loadbalancers func() v5.LoadbalancersService
+	Requests      func() v5.RequestsService
+	Images        func() v5.ImagesService
+	Snapshots     func() v5.SnapshotsService
+	IpBlocks      func() v5.IpBlocksService
+	FirewallRules func() v5.FirewallRulesService
+	Labels        func() v5.LabelResourcesService
+	Contracts     func() v5.ContractsService
+	Users         func() v5.UsersService
+	Groups        func() v5.GroupsService
+	S3Keys        func() v5.S3KeysService
+	BackupUnit    func() v5.BackupUnitsService
+	Pccs          func() v5.PccsService
+	K8s           func() v5.K8sService
 	// Context
 	Context context.Context
 }
 
-// InitClient for Commands
-func (c *CommandConfig) InitClient() (*resources.Client, error) {
+// InitV5Client for Commands
+func (c *CommandConfig) InitV5Client() (*v5.Client, error) {
 	err := config.Load()
 	if err != nil {
 		return nil, err
 	}
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token), // Token support
@@ -167,28 +167,28 @@ func (c *CommandConfig) InitClient() (*resources.Client, error) {
 	return clientSvc.Get(), nil
 }
 
-// InitServices for Commands
-func (c *CommandConfig) InitServices(client *resources.Client) error {
-	c.Locations = func() resources.LocationsService { return resources.NewLocationService(client, c.Context) }
-	c.DataCenters = func() resources.DatacentersService { return resources.NewDataCenterService(client, c.Context) }
-	c.Servers = func() resources.ServersService { return resources.NewServerService(client, c.Context) }
-	c.Volumes = func() resources.VolumesService { return resources.NewVolumeService(client, c.Context) }
-	c.Lans = func() resources.LansService { return resources.NewLanService(client, c.Context) }
-	c.Nics = func() resources.NicsService { return resources.NewNicService(client, c.Context) }
-	c.Loadbalancers = func() resources.LoadbalancersService { return resources.NewLoadbalancerService(client, c.Context) }
-	c.IpBlocks = func() resources.IpBlocksService { return resources.NewIpBlockService(client, c.Context) }
-	c.Requests = func() resources.RequestsService { return resources.NewRequestService(client, c.Context) }
-	c.Images = func() resources.ImagesService { return resources.NewImageService(client, c.Context) }
-	c.Snapshots = func() resources.SnapshotsService { return resources.NewSnapshotService(client, c.Context) }
-	c.FirewallRules = func() resources.FirewallRulesService { return resources.NewFirewallRuleService(client, c.Context) }
-	c.Labels = func() resources.LabelResourcesService { return resources.NewLabelResourceService(client, c.Context) }
-	c.Contracts = func() resources.ContractsService { return resources.NewContractService(client, c.Context) }
-	c.Users = func() resources.UsersService { return resources.NewUserService(client, c.Context) }
-	c.Groups = func() resources.GroupsService { return resources.NewGroupService(client, c.Context) }
-	c.S3Keys = func() resources.S3KeysService { return resources.NewS3KeyService(client, c.Context) }
-	c.BackupUnit = func() resources.BackupUnitsService { return resources.NewBackupUnitService(client, c.Context) }
-	c.Pccs = func() resources.PccsService { return resources.NewPrivateCrossConnectService(client, c.Context) }
-	c.K8s = func() resources.K8sService { return resources.NewK8sService(client, c.Context) }
+// InitV5Services for Commands
+func (c *CommandConfig) InitV5Services(client *v5.Client) error {
+	c.Locations = func() v5.LocationsService { return v5.NewLocationService(client, c.Context) }
+	c.DataCenters = func() v5.DatacentersService { return v5.NewDataCenterService(client, c.Context) }
+	c.Servers = func() v5.ServersService { return v5.NewServerService(client, c.Context) }
+	c.Volumes = func() v5.VolumesService { return v5.NewVolumeService(client, c.Context) }
+	c.Lans = func() v5.LansService { return v5.NewLanService(client, c.Context) }
+	c.Nics = func() v5.NicsService { return v5.NewNicService(client, c.Context) }
+	c.Loadbalancers = func() v5.LoadbalancersService { return v5.NewLoadbalancerService(client, c.Context) }
+	c.IpBlocks = func() v5.IpBlocksService { return v5.NewIpBlockService(client, c.Context) }
+	c.Requests = func() v5.RequestsService { return v5.NewRequestService(client, c.Context) }
+	c.Images = func() v5.ImagesService { return v5.NewImageService(client, c.Context) }
+	c.Snapshots = func() v5.SnapshotsService { return v5.NewSnapshotService(client, c.Context) }
+	c.FirewallRules = func() v5.FirewallRulesService { return v5.NewFirewallRuleService(client, c.Context) }
+	c.Labels = func() v5.LabelResourcesService { return v5.NewLabelResourceService(client, c.Context) }
+	c.Contracts = func() v5.ContractsService { return v5.NewContractService(client, c.Context) }
+	c.Users = func() v5.UsersService { return v5.NewUserService(client, c.Context) }
+	c.Groups = func() v5.GroupsService { return v5.NewGroupService(client, c.Context) }
+	c.S3Keys = func() v5.S3KeysService { return v5.NewS3KeyService(client, c.Context) }
+	c.BackupUnit = func() v5.BackupUnitsService { return v5.NewBackupUnitService(client, c.Context) }
+	c.Pccs = func() v5.PccsService { return v5.NewPrivateCrossConnectService(client, c.Context) }
+	c.K8s = func() v5.K8sService { return v5.NewK8sService(client, c.Context) }
 	return nil
 }
 
