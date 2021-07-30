@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"time"
 
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 

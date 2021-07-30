@@ -455,25 +455,6 @@ func TestGetNicsIds(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
-func TestGetNicsIdsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
-	assert.NoError(t, err)
-	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	viper.Set(core.GetGlobalFlagName("nic", config.ArgDataCenterId), "")
-	viper.Set(core.GetGlobalFlagName("nic", config.ArgServerId), "")
-	getNicsIds(w, "", "")
-	err = w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`404 Not Found`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
 func TestGetAttachedNicsIds(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
@@ -490,23 +471,6 @@ func TestGetAttachedNicsIds(t *testing.T) {
 	err = w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestGetAttachedNicsIdsErr(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
-	assert.NoError(t, err)
-	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	getAttachedNicsIds(w, "", "")
-	err = w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`404 Not Found`)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
