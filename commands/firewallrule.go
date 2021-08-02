@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -256,6 +257,10 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleGet(c *core.CommandConfig) error {
+	fmt.Printf("ArgFirewallRuleId: %v ", viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)))
+	if c.Printer != nil {
+
+	}
 	c.Printer.Infof("Firewall Rule with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)))
 	firewallRule, _, err := c.FirewallRules().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),

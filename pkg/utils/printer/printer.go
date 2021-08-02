@@ -210,6 +210,8 @@ func (p *TextPrinter) Infof(format string, a ...interface{}) {
 	flag := viper.GetBool(config.ArgVerbose)
 	if flag {
 		fmt.Printf("[INFOF] "+format+"\n", a...)
+	} else {
+		return
 	}
 }
 
