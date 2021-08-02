@@ -13,7 +13,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -166,7 +166,7 @@ type ImagePrint struct {
 	CreatedDate     time.Time `json:"CreatedDate,omitempty"`
 }
 
-func getImagePrint(resp *resources.Response, c *core.CommandConfig, imgs []resources.Image) printer.Result {
+func getImagePrint(resp *v5.Response, c *core.CommandConfig, imgs []v5.Image) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -219,25 +219,25 @@ func getImageCols(flagName string, outErr io.Writer) []string {
 	return datacenterCols
 }
 
-func getImages(images resources.Images) []resources.Image {
-	imgs := make([]resources.Image, 0)
+func getImages(images v5.Images) []v5.Image {
+	imgs := make([]v5.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, d := range *items {
-			imgs = append(imgs, resources.Image{Image: d})
+			imgs = append(imgs, v5.Image{Image: d})
 		}
 	}
 	return imgs
 }
 
-func getImage(image *resources.Image) []resources.Image {
-	imgs := make([]resources.Image, 0)
+func getImage(image *v5.Image) []v5.Image {
+	imgs := make([]v5.Image, 0)
 	if image != nil {
-		imgs = append(imgs, resources.Image{Image: image.Image})
+		imgs = append(imgs, v5.Image{Image: image.Image})
 	}
 	return imgs
 }
 
-func getImagesKVMaps(imgs []resources.Image) []map[string]interface{} {
+func getImagesKVMaps(imgs []v5.Image) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(imgs))
 	for _, img := range imgs {
 		o := getImageKVMap(img)
@@ -246,7 +246,7 @@ func getImagesKVMaps(imgs []resources.Image) []map[string]interface{} {
 	return out
 }
 
-func getImageKVMap(img resources.Image) map[string]interface{} {
+func getImageKVMap(img v5.Image) map[string]interface{} {
 	var imgPrint ImagePrint
 	if idOk, ok := img.GetIdOk(); ok && idOk != nil {
 		imgPrint.ImageId = *idOk
@@ -297,14 +297,14 @@ func getImageKVMap(img resources.Image) map[string]interface{} {
 func getImageIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	imageSvc := resources.NewImageService(clientSvc.Get(), context.TODO())
+	imageSvc := v5.NewImageService(clientSvc.Get(), context.TODO())
 	images, _, err := imageSvc.List()
 	clierror.CheckError(err, outErr)
 	imgsIds := make([]string, 0)
@@ -322,7 +322,7 @@ func getImageIds(outErr io.Writer) []string {
 
 // Output Columns Sorting
 
-func sortImagesByLocation(images resources.Images, location string) resources.Images {
+func sortImagesByLocation(images v5.Images, location string) v5.Images {
 	imgLocationItems := make([]ionoscloud.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, img := range *items {
@@ -338,7 +338,7 @@ func sortImagesByLocation(images resources.Images, location string) resources.Im
 	return images
 }
 
-func sortImagesByLicenceType(images resources.Images, licenceType string) resources.Images {
+func sortImagesByLicenceType(images v5.Images, licenceType string) v5.Images {
 	imgLicenceTypeItems := make([]ionoscloud.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, img := range *items {
@@ -354,7 +354,7 @@ func sortImagesByLicenceType(images resources.Images, licenceType string) resour
 	return images
 }
 
-func sortImagesByType(images resources.Images, imgType string) resources.Images {
+func sortImagesByType(images v5.Images, imgType string) v5.Images {
 	imgTypeItems := make([]ionoscloud.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, img := range *items {
@@ -370,7 +370,7 @@ func sortImagesByType(images resources.Images, imgType string) resources.Images 
 	return images
 }
 
-func sortImagesByAlias(images resources.Images, alias string) resources.Images {
+func sortImagesByAlias(images v5.Images, alias string) v5.Images {
 	imgTypeItems := make([]ionoscloud.Image, 0)
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		for _, img := range *items {
@@ -388,7 +388,7 @@ func sortImagesByAlias(images resources.Images, alias string) resources.Images {
 	return images
 }
 
-func sortImagesByTime(images resources.Images, n int) resources.Images {
+func sortImagesByTime(images v5.Images, n int) v5.Images {
 	if items, ok := images.GetItemsOk(); ok && items != nil {
 		imageItems := *items
 		if len(imageItems) > 0 {

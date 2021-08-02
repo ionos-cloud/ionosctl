@@ -7,7 +7,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
@@ -300,7 +300,7 @@ type LabelPrint struct {
 	ResourceId   string `json:"ResourceId,omitempty"`
 }
 
-func getLabelPrint(c *core.CommandConfig, s []resources.Label) printer.Result {
+func getLabelPrint(c *core.CommandConfig, s []v5.Label) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if s != nil {
@@ -312,25 +312,25 @@ func getLabelPrint(c *core.CommandConfig, s []resources.Label) printer.Result {
 	return r
 }
 
-func getLabels(Labels resources.Labels) []resources.Label {
-	ss := make([]resources.Label, 0)
+func getLabels(Labels v5.Labels) []v5.Label {
+	ss := make([]v5.Label, 0)
 	if items, ok := Labels.GetItemsOk(); ok && items != nil {
 		for _, s := range *items {
-			ss = append(ss, resources.Label{Label: s})
+			ss = append(ss, v5.Label{Label: s})
 		}
 	}
 	return ss
 }
 
-func getLabel(s *resources.Label) []resources.Label {
-	ss := make([]resources.Label, 0)
+func getLabel(s *v5.Label) []v5.Label {
+	ss := make([]v5.Label, 0)
 	if s != nil {
-		ss = append(ss, resources.Label{Label: s.Label})
+		ss = append(ss, v5.Label{Label: s.Label})
 	}
 	return ss
 }
 
-func getLabelKVMaps(ss []resources.Label) []map[string]interface{} {
+func getLabelKVMaps(ss []v5.Label) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		o := getLabelKVMap(s)
@@ -339,7 +339,7 @@ func getLabelKVMaps(ss []resources.Label) []map[string]interface{} {
 	return out
 }
 
-func getLabelKVMap(s resources.Label) map[string]interface{} {
+func getLabelKVMap(s v5.Label) map[string]interface{} {
 	var ssPrint LabelPrint
 	if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
 		if key, ok := properties.GetKeyOk(); ok && key != nil {

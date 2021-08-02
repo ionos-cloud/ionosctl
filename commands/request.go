@@ -13,7 +13,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -168,7 +168,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getRequestPrint(c, []resources.Request{*req}))
+	return c.Printer.Print(getRequestPrint(c, []v5.Request{*req}))
 }
 
 func RunRequestWait(c *core.CommandConfig) error {
@@ -189,7 +189,7 @@ func RunRequestWait(c *core.CommandConfig) error {
 	if _, err = c.Requests().Wait(fmt.Sprintf("%s/status", *req.GetHref())); err != nil {
 		return err
 	}
-	return c.Printer.Print(getRequestPrint(c, []resources.Request{*req}))
+	return c.Printer.Print(getRequestPrint(c, []v5.Request{*req}))
 }
 
 // Output Printing
@@ -211,7 +211,7 @@ type RequestPrint struct {
 	Targets     []string  `json:"Targets,omitempty"`
 }
 
-func getRequestPrint(c *core.CommandConfig, reqs []resources.Request) printer.Result {
+func getRequestPrint(c *core.CommandConfig, reqs []v5.Request) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if reqs != nil {
@@ -254,16 +254,16 @@ func getRequestsCols(flagName string, outErr io.Writer) []string {
 	return requestCols
 }
 
-func getRequests(requests resources.Requests) []resources.Request {
-	req := make([]resources.Request, 0)
+func getRequests(requests v5.Requests) []v5.Request {
+	req := make([]v5.Request, 0)
 	for _, r := range *requests.Items {
-		req = append(req, resources.Request{Request: r})
+		req = append(req, v5.Request{Request: r})
 	}
 	return req
 }
 
-func sortRequestsByMethod(requests resources.Requests, method string) resources.Requests {
-	var sortedRequests resources.Requests
+func sortRequestsByMethod(requests v5.Requests, method string) v5.Requests {
+	var sortedRequests v5.Requests
 	if items, ok := requests.GetItemsOk(); ok && items != nil {
 		requestsItems := make([]ionoscloud.Request, 0)
 		for _, item := range *items {
@@ -279,8 +279,8 @@ func sortRequestsByMethod(requests resources.Requests, method string) resources.
 	return sortedRequests
 }
 
-func sortRequestsByTime(requests resources.Requests, n int) resources.Requests {
-	var sortedRequests resources.Requests
+func sortRequestsByTime(requests v5.Requests, n int) v5.Requests {
+	var sortedRequests v5.Requests
 	if items, ok := requests.GetItemsOk(); ok && items != nil {
 		reqItems := *items
 		if len(reqItems) > 0 {
@@ -298,7 +298,7 @@ func sortRequestsByTime(requests resources.Requests, n int) resources.Requests {
 	return sortedRequests
 }
 
-func getRequestsKVMaps(requests []resources.Request) []map[string]interface{} {
+func getRequestsKVMaps(requests []v5.Request) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(requests))
 	for _, req := range requests {
 		var reqPrint RequestPrint
@@ -357,14 +357,14 @@ func getRequestsKVMaps(requests []resources.Request) []map[string]interface{} {
 func getRequestsIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	reqSvc := resources.NewRequestService(clientSvc.Get(), context.TODO())
+	reqSvc := v5.NewRequestService(clientSvc.Get(), context.TODO())
 	requests, _, err := reqSvc.List()
 	clierror.CheckError(err, outErr)
 	reqIds := make([]string, 0)

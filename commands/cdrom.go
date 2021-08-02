@@ -7,7 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -234,11 +234,11 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 
 // Output Printing
 
-func getCdroms(cdroms resources.Cdroms) []resources.Image {
-	imgs := make([]resources.Image, 0)
+func getCdroms(cdroms v5.Cdroms) []v5.Image {
+	imgs := make([]v5.Image, 0)
 	if items, ok := cdroms.GetItemsOk(); ok && items != nil {
 		for _, d := range *items {
-			imgs = append(imgs, resources.Image{Image: d})
+			imgs = append(imgs, v5.Image{Image: d})
 		}
 	}
 	return imgs
@@ -247,14 +247,14 @@ func getCdroms(cdroms resources.Cdroms) []resources.Image {
 func getAttachedCdromsIds(outErr io.Writer, datacenterId, serverId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
+	serverSvc := v5.NewServerService(clientSvc.Get(), context.TODO())
 	cdroms, _, err := serverSvc.ListCdroms(datacenterId, serverId)
 	clierror.CheckError(err, outErr)
 	attachedCdromsIds := make([]string, 0)
@@ -273,14 +273,14 @@ func getAttachedCdromsIds(outErr io.Writer, datacenterId, serverId string) []str
 func getImagesCdromIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	imageSvc := resources.NewImageService(clientSvc.Get(), context.TODO())
+	imageSvc := v5.NewImageService(clientSvc.Get(), context.TODO())
 	images, _, err := imageSvc.List()
 	clierror.CheckError(err, outErr)
 	imgsIds := make([]string, 0)

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# regenerate generated mocks
+# Regenerate Mocks
 
-pushd "pkg/resources" >/dev/null || exit
+# For cloudapi/v5 resources
+pushd "pkg/resources/v5" >/dev/null || exit
 
 GO111MODULE=off go get -u github.com/golang/mock/mockgen
 

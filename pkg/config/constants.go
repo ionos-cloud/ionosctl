@@ -177,7 +177,8 @@ const (
 
 // Default values
 const (
-	DefaultApiURL          = "https://api.ionos.com/cloudapi/v5"
+	DefaultApiURL          = "https://api.ionos.com"
+	DefaultV5BasePath      = "/cloudapi/v5"
 	DefaultConfigFileName  = "/config.json"
 	DefaultOutputFormat    = "text"
 	DefaultWait            = false

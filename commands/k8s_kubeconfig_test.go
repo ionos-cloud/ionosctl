@@ -8,14 +8,14 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	kubeconfigTestGet = resources.K8sKubeconfig{
+	kubeconfigTestGet = v5.K8sKubeconfig{
 		KubernetesConfig: ionoscloud.KubernetesConfig{
 			Id: &testKubeconfigVar,
 			Properties: &ionoscloud.KubernetesConfigProperties{

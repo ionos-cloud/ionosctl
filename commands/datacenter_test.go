@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
@@ -33,13 +33,13 @@ var (
 			State: &testStateVar,
 		},
 	}
-	dcProperties = resources.DatacenterProperties{
+	dcProperties = v5.DatacenterProperties{
 		DatacenterProperties: ionoscloud.DatacenterProperties{
 			Name:        &testDatacenterNewVar,
 			Description: &testDatacenterNewVar,
 		},
 	}
-	dcNew = resources.Datacenter{
+	dcNew = v5.Datacenter{
 		Datacenter: ionoscloud.Datacenter{
 			Id: &testDatacenterVar,
 			Properties: &ionoscloud.DatacenterProperties{
@@ -49,7 +49,7 @@ var (
 			},
 		},
 	}
-	dcs = resources.Datacenters{
+	dcs = v5.Datacenters{
 		Datacenters: ionoscloud.Datacenters{
 			Id:    &testDatacenterVar,
 			Items: &[]ionoscloud.Datacenter{dc, dc},
@@ -93,6 +93,7 @@ func TestRunDataCenterList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Datacenter.EXPECT().List().Return(dcs, nil, nil)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), "")
 		err := RunDataCenterList(cfg)
@@ -107,6 +108,7 @@ func TestRunDataCenterListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), "")
 		rm.Datacenter.EXPECT().List().Return(dcs, nil, testDatacenterErr)
 		err := RunDataCenterList(cfg)
@@ -122,7 +124,8 @@ func TestRunDataCenterGet(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
-		res := resources.Datacenter{Datacenter: dc}
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		res := v5.Datacenter{Datacenter: dc}
 		rm.Datacenter.EXPECT().Get(testDatacenterVar).Return(&res, nil, nil)
 		err := RunDataCenterGet(cfg)
 		assert.NoError(t, err)
@@ -136,8 +139,9 @@ func TestRunDataCenterGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
-		res := resources.Datacenter{Datacenter: dc}
+		res := v5.Datacenter{Datacenter: dc}
 		rm.Datacenter.EXPECT().Get(testDatacenterVar).Return(&res, nil, testDatacenterErr)
 		err := RunDataCenterGet(cfg)
 		assert.Error(t, err)
@@ -151,11 +155,12 @@ func TestRunDataCenterCreate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, nil)
+		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&v5.Datacenter{dc}, nil, nil)
 		err := RunDataCenterCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -172,7 +177,8 @@ func TestRunDataCenterCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, nil)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&v5.Datacenter{dc}, nil, nil)
 		err := RunDataCenterCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -189,7 +195,8 @@ func TestRunDataCenterCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, testDatacenterErr)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		rm.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&v5.Datacenter{dc}, nil, testDatacenterErr)
 		err := RunDataCenterCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -206,6 +213,7 @@ func TestRunDataCenterUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties).Return(&dcNew, nil, nil)
 		err := RunDataCenterUpdate(cfg)
 		assert.NoError(t, err)
@@ -223,6 +231,7 @@ func TestRunDataCenterUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties).Return(&dcNew, nil, nil)
 		err := RunDataCenterUpdate(cfg)
 		assert.Error(t, err)
@@ -240,6 +249,7 @@ func TestRunDataCenterUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties).Return(&dcNew, nil, testDatacenterErr)
 		err := RunDataCenterUpdate(cfg)
 		assert.Error(t, err)
@@ -257,6 +267,7 @@ func TestRunDataCenterUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties).Return(&dcNew, &testResponse, nil)
 		err := RunDataCenterUpdate(cfg)
 		assert.Error(t, err)
@@ -273,6 +284,7 @@ func TestRunDataCenterDelete(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Datacenter.EXPECT().Delete(testDatacenterVar).Return(nil, nil)
 		err := RunDataCenterDelete(cfg)
 		assert.NoError(t, err)
@@ -289,6 +301,7 @@ func TestRunDataCenterDeleteErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Datacenter.EXPECT().Delete(testDatacenterVar).Return(nil, testDatacenterErr)
 		err := RunDataCenterDelete(cfg)
 		assert.Error(t, err)
@@ -305,6 +318,7 @@ func TestRunDataCenterDeleteWaitErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		rm.Datacenter.EXPECT().Delete(testDatacenterVar).Return(nil, nil)
 		err := RunDataCenterDelete(cfg)
 		assert.Error(t, err)
@@ -319,6 +333,7 @@ func TestRunDataCenterDeleteAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
@@ -336,6 +351,7 @@ func TestRunDataCenterDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		cfg.Stdin = os.Stdin

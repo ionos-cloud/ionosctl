@@ -11,7 +11,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -357,7 +357,7 @@ func RunServerGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getServerPrint(nil, c, []resources.Server{*svr}))
+	return c.Printer.Print(getServerPrint(nil, c, []v5.Server{*svr}))
 }
 
 func RunServerCreate(c *core.CommandConfig) error {
@@ -374,7 +374,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	}
 	svr, resp, err := c.Servers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		resources.Server{
+		v5.Server{
 			Server: ionoscloud.Server{
 				Properties: &proper.ServerProperties,
 			},
@@ -403,7 +403,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 			return errors.New("error getting new server id")
 		}
 	}
-	return c.Printer.Print(getServerPrint(resp, c, []resources.Server{*svr}))
+	return c.Printer.Print(getServerPrint(resp, c, []v5.Server{*svr}))
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
@@ -432,7 +432,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 			return err
 		}
 	}
-	return c.Printer.Print(getServerPrint(resp, c, []resources.Server{*svr}))
+	return c.Printer.Print(getServerPrint(resp, c, []v5.Server{*svr}))
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
@@ -511,7 +511,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
-func getNewServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
+func getNewServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
 	input := ionoscloud.ServerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
@@ -544,7 +544,7 @@ func getNewServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error
 		c.Printer.Infof("property Ram set: %v ", int32(size))
 		input.SetRam(int32(size))
 	}
-	return &resources.ServerProperties{
+	return &v5.ServerProperties{
 		ServerProperties: input,
 	}, nil
 }
@@ -579,7 +579,7 @@ type ServerPrint struct {
 	VmState          string `json:"VmState,omitempty"`
 }
 
-func getServerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.Server) printer.Result {
+func getServerPrint(resp *v5.Response, c *core.CommandConfig, ss []v5.Server) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -628,15 +628,15 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 	return serverCols
 }
 
-func getServers(servers resources.Servers) []resources.Server {
-	ss := make([]resources.Server, 0)
+func getServers(servers v5.Servers) []v5.Server {
+	ss := make([]v5.Server, 0)
 	for _, s := range *servers.Items {
-		ss = append(ss, resources.Server{Server: s})
+		ss = append(ss, v5.Server{Server: s})
 	}
 	return ss
 }
 
-func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
+func getServersKVMaps(ss []v5.Server) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var serverPrint ServerPrint
@@ -677,14 +677,14 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 func getServersIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
+	serverSvc := v5.NewServerService(clientSvc.Get(), context.TODO())
 	servers, _, err := serverSvc.List(datacenterId)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)

@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -66,9 +66,9 @@ func RunIpConsumersList(c *core.CommandConfig) error {
 
 	if properties, ok := ipBlock.GetPropertiesOk(); ok && properties != nil {
 		if ipCons, ok := properties.GetIpConsumersOk(); ok && ipCons != nil {
-			ipsConsumers := make([]resources.IpConsumer, 0)
+			ipsConsumers := make([]v5.IpConsumer, 0)
 			for _, ip := range *ipCons {
-				ipsConsumers = append(ipsConsumers, resources.IpConsumer{IpConsumer: ip})
+				ipsConsumers = append(ipsConsumers, v5.IpConsumer{IpConsumer: ip})
 			}
 			return c.Printer.Print(getIpConsumerPrint(c, ipsConsumers))
 		} else {
@@ -98,7 +98,7 @@ type IpConsumerPrint struct {
 	K8sClusterId   string `json:"K8sClusterId,omitempty"`
 }
 
-func getIpConsumerPrint(c *core.CommandConfig, groups []resources.IpConsumer) printer.Result {
+func getIpConsumerPrint(c *core.CommandConfig, groups []v5.IpConsumer) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if groups != nil {
@@ -138,7 +138,7 @@ func getIpConsumerCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getIpConsumersKVMaps(rs []resources.IpConsumer) []map[string]interface{} {
+func getIpConsumersKVMaps(rs []v5.IpConsumer) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(rs))
 	for _, r := range rs {
 		var rPrint IpConsumerPrint
