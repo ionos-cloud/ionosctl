@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	testLanIpFailover = resources.Lan{
+	testLanIpFailover = v6.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testIpFailoverVar,
 			Properties: &ionoscloud.LanProperties{
@@ -31,17 +31,17 @@ var (
 			},
 		},
 	}
-	testLanIpFailoverRemove = resources.Lan{
+	testLanIpFailoverRemove = v6.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testIpFailoverVar,
 		},
 	}
-	testLanIpFailoverProperties = resources.Lan{
+	testLanIpFailoverProperties = v6.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testIpFailoverVar,
 		},
 	}
-	testLanIpFailoverGet = resources.Lan{
+	testLanIpFailoverGet = v6.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testIpFailoverVar,
 			Properties: &ionoscloud.LanProperties{
@@ -49,7 +49,7 @@ var (
 			},
 		},
 	}
-	testLanPropertiesIpFailover = resources.LanProperties{
+	testLanPropertiesIpFailover = v6.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
 			IpFailover: &[]ionoscloud.IPFailover{
 				{
@@ -284,7 +284,7 @@ func TestRunIpFailoverRemove(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testIpFailoverVar)
 		rm.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, nil, nil)
-		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
+		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, v6.LanProperties{
 			LanProperties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{},
 			},
@@ -309,7 +309,7 @@ func TestRunIpFailoverRemoveResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testIpFailoverVar)
 		rm.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, nil, nil)
-		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
+		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, v6.LanProperties{
 			LanProperties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{},
 			},
@@ -374,7 +374,7 @@ func TestRunIpFailoverRemoveWaitReqErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testIpFailoverVar)
 		rm.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, nil, nil)
-		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
+		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, v6.LanProperties{
 			LanProperties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{},
 			},
@@ -419,7 +419,7 @@ func TestRunIpFailoverRemoveUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testIpFailoverVar)
 		rm.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, nil, nil)
-		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
+		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, v6.LanProperties{
 			LanProperties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{},
 			},
@@ -445,7 +445,7 @@ func TestRunIpFailoverRemoveAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testIpFailoverVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, nil, nil)
-		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
+		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, v6.LanProperties{
 			LanProperties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{},
 			},

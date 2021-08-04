@@ -8,7 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
@@ -76,7 +76,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	viper.Set(config.Password, pwd)
 	viper.Set(config.Token, token)
 
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
@@ -86,7 +86,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 		return err
 	}
 
-	dcsSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
+	dcsSvc := v6.NewDataCenterService(clientSvc.Get(), context.TODO())
 	_, _, err = dcsSvc.List()
 	if err != nil {
 		return err

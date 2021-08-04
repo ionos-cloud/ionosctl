@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -215,7 +215,7 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNetworkLoadBalancerPrint(nil, c, []resources.NetworkLoadBalancer{*ng}))
+	return c.Printer.Print(getNetworkLoadBalancerPrint(nil, c, []v6.NetworkLoadBalancer{*ng}))
 }
 
 func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
@@ -231,7 +231,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 	}
 	ng, resp, err := c.NetworkLoadBalancers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		resources.NetworkLoadBalancer{
+		v6.NetworkLoadBalancer{
 			NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
 				Properties: &proper.NetworkLoadBalancerProperties,
 			},
@@ -243,7 +243,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNetworkLoadBalancerPrint(resp, c, []resources.NetworkLoadBalancer{*ng}))
+	return c.Printer.Print(getNetworkLoadBalancerPrint(resp, c, []v6.NetworkLoadBalancer{*ng}))
 }
 
 func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
@@ -259,7 +259,7 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNetworkLoadBalancerPrint(resp, c, []resources.NetworkLoadBalancer{*ng}))
+	return c.Printer.Print(getNetworkLoadBalancerPrint(resp, c, []v6.NetworkLoadBalancer{*ng}))
 }
 
 func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
@@ -279,7 +279,7 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getNetworkLoadBalancerPrint(resp, c, nil))
 }
 
-func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoadBalancerProperties {
+func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *v6.NetworkLoadBalancerProperties {
 	input := ionoscloud.NetworkLoadBalancerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
@@ -296,7 +296,7 @@ func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoad
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPrivateIps)) {
 		input.SetLbPrivateIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgPrivateIps)))
 	}
-	return &resources.NetworkLoadBalancerProperties{
+	return &v6.NetworkLoadBalancerProperties{
 		NetworkLoadBalancerProperties: input,
 	}
 }
@@ -330,7 +330,7 @@ type NetworkLoadBalancerPrint struct {
 	State                 string   `json:"State,omitempty"`
 }
 
-func getNetworkLoadBalancerPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NetworkLoadBalancer) printer.Result {
+func getNetworkLoadBalancerPrint(resp *v6.Response, c *core.CommandConfig, ss []v6.NetworkLoadBalancer) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -378,15 +378,15 @@ func getNetworkLoadBalancersCols(flagName string, outErr io.Writer) []string {
 	return networkloadbalancerCols
 }
 
-func getNetworkLoadBalancers(networkloadbalancers resources.NetworkLoadBalancers) []resources.NetworkLoadBalancer {
-	ss := make([]resources.NetworkLoadBalancer, 0)
+func getNetworkLoadBalancers(networkloadbalancers v6.NetworkLoadBalancers) []v6.NetworkLoadBalancer {
+	ss := make([]v6.NetworkLoadBalancer, 0)
 	for _, s := range *networkloadbalancers.Items {
-		ss = append(ss, resources.NetworkLoadBalancer{NetworkLoadBalancer: s})
+		ss = append(ss, v6.NetworkLoadBalancer{NetworkLoadBalancer: s})
 	}
 	return ss
 }
 
-func getNetworkLoadBalancersKVMaps(ss []resources.NetworkLoadBalancer) []map[string]interface{} {
+func getNetworkLoadBalancersKVMaps(ss []v6.NetworkLoadBalancer) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var networkloadbalancerPrint NetworkLoadBalancerPrint
@@ -424,14 +424,14 @@ func getNetworkLoadBalancersKVMaps(ss []resources.NetworkLoadBalancer) []map[str
 func getNetworkLoadBalancersIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(clientSvc.Get(), context.TODO())
+	networkloadbalancerSvc := v6.NewNetworkLoadBalancerService(clientSvc.Get(), context.TODO())
 	networkloadbalancers, _, err := networkloadbalancerSvc.List(datacenterId)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)

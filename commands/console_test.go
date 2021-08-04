@@ -8,14 +8,14 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testConsole = resources.RemoteConsoleUrl{
+	testConsole = v6.RemoteConsoleUrl{
 		RemoteConsoleUrl: ionoscloud.RemoteConsoleUrl{
 			Url: &testConsoleVar,
 		},

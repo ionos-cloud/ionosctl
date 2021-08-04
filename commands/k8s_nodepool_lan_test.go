@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	k8sNodepoolLanTest = resources.K8sNodePool{
+	k8sNodepoolLanTest = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				NodeCount:  &testK8sNodePoolLanIntVar,
@@ -40,7 +40,7 @@ var (
 			},
 		},
 	}
-	inputK8sNodepoolLanTest = resources.K8sNodePool{
+	inputK8sNodepoolLanTest = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				NodeCount:  &testK8sNodePoolLanIntVar,
@@ -72,7 +72,7 @@ var (
 			},
 		},
 	}
-	inputK8sNodepoolLanTestRemove = resources.K8sNodePool{
+	inputK8sNodepoolLanTestRemove = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				NodeCount:  &testK8sNodePoolLanIntVar,
@@ -89,7 +89,7 @@ var (
 			},
 		},
 	}
-	k8sNodepoolLanTestUpdatedRemove = resources.K8sNodePoolForPut{
+	k8sNodepoolLanTestUpdatedRemove = v6.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Id: &testK8sNodePoolLanVar,
 			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
@@ -107,7 +107,7 @@ var (
 			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
-	k8sNodepoolLanTestUpdated = resources.K8sNodePoolForPut{
+	k8sNodepoolLanTestUpdated = v6.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Id: &testK8sNodePoolLanVar,
 			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
@@ -215,7 +215,7 @@ func TestRunK8sNodePoolLanListLansErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodePoolId), testK8sNodePoolLanVar)
-		rm.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar).Return(&resources.K8sNodePool{
+		rm.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar).Return(&v6.K8sNodePool{
 			KubernetesNodePool: ionoscloud.KubernetesNodePool{
 				Id:         &testK8sNodePoolLanVar,
 				Properties: &ionoscloud.KubernetesNodePoolProperties{},
@@ -235,7 +235,7 @@ func TestRunK8sNodePoolLanListPropertiesErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sNodePoolId), testK8sNodePoolLanVar)
-		rm.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar).Return(&resources.K8sNodePool{
+		rm.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar).Return(&v6.K8sNodePool{
 			KubernetesNodePool: ionoscloud.KubernetesNodePool{
 				Id: &testK8sNodePoolLanVar,
 			},

@@ -9,7 +9,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -41,7 +41,7 @@ var (
 		NlbProvisioned:         &testContractInt32,
 		NlbLimitTotal:          &testContractInt32,
 	}
-	testContract = resources.Contract{
+	testContract = v6.Contract{
 		Contract: ionoscloud.Contract{
 			Properties: &ionoscloud.ContractProperties{
 				ContractNumber: &testContractInt64,
@@ -52,7 +52,7 @@ var (
 			},
 		},
 	}
-	testContracts = resources.Contracts{
+	testContracts = v6.Contracts{
 		Contracts: ionoscloud.Contracts{
 			Items: &[]ionoscloud.Contract{testContract.Contract},
 		},

@@ -10,7 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -288,7 +288,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	if !properties.HasType() {
 		properties.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
 	}
-	input := resources.FirewallRule{
+	input := v6.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
 			Properties: &properties.FirewallruleProperties,
 		},
@@ -348,8 +348,8 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 }
 
 // Get Firewall Rule Properties set used for create and update commands
-func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleProperties {
-	properties := resources.FirewallRuleProperties{}
+func getFirewallRulePropertiesSet(c *core.CommandConfig) v6.FirewallRuleProperties {
+	properties := v6.FirewallRuleProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
@@ -406,7 +406,7 @@ type FirewallRulePrint struct {
 	State          string `json:"State,omitempty"`
 }
 
-func getFirewallRulePrint(resp *resources.Response, c *core.CommandConfig, rule []resources.FirewallRule) printer.Result {
+func getFirewallRulePrint(resp *v6.Response, c *core.CommandConfig, rule []v6.FirewallRule) printer.Result {
 	var r printer.Result
 	if c != nil {
 		if resp != nil {
@@ -455,25 +455,25 @@ func getFirewallRulesCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getFirewallRules(firewallRules resources.FirewallRules) []resources.FirewallRule {
-	ls := make([]resources.FirewallRule, 0)
+func getFirewallRules(firewallRules v6.FirewallRules) []v6.FirewallRule {
+	ls := make([]v6.FirewallRule, 0)
 	if items, ok := firewallRules.GetItemsOk(); ok && items != nil {
 		for _, s := range *items {
-			ls = append(ls, resources.FirewallRule{FirewallRule: s})
+			ls = append(ls, v6.FirewallRule{FirewallRule: s})
 		}
 	}
 	return ls
 }
 
-func getFirewallRule(firewallRule *resources.FirewallRule) []resources.FirewallRule {
-	ss := make([]resources.FirewallRule, 0)
+func getFirewallRule(firewallRule *v6.FirewallRule) []v6.FirewallRule {
+	ss := make([]v6.FirewallRule, 0)
 	if firewallRule != nil {
-		ss = append(ss, resources.FirewallRule{FirewallRule: firewallRule.FirewallRule})
+		ss = append(ss, v6.FirewallRule{FirewallRule: firewallRule.FirewallRule})
 	}
 	return ss
 }
 
-func getFirewallRulesKVMaps(ls []resources.FirewallRule) []map[string]interface{} {
+func getFirewallRulesKVMaps(ls []v6.FirewallRule) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ls))
 	if len(ls) > 0 {
 		for _, l := range ls {
@@ -484,7 +484,7 @@ func getFirewallRulesKVMaps(ls []resources.FirewallRule) []map[string]interface{
 	return out
 }
 
-func getFirewallRuleKVMap(l resources.FirewallRule) map[string]interface{} {
+func getFirewallRuleKVMap(l v6.FirewallRule) map[string]interface{} {
 	var firewallRulePrint FirewallRulePrint
 	if id, ok := l.GetIdOk(); ok && id != nil {
 		firewallRulePrint.FirewallRuleId = *id
@@ -532,14 +532,14 @@ func getFirewallRuleKVMap(l resources.FirewallRule) map[string]interface{} {
 func getFirewallRulesIds(outErr io.Writer, datacenterId, serverId, nicId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	firewallRuleSvc := resources.NewFirewallRuleService(clientSvc.Get(), context.TODO())
+	firewallRuleSvc := v6.NewFirewallRuleService(clientSvc.Get(), context.TODO())
 	firewallRules, _, err := firewallRuleSvc.List(datacenterId, serverId, nicId)
 	clierror.CheckError(err, outErr)
 	firewallRulesIds := make([]string, 0)

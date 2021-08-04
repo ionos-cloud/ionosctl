@@ -11,7 +11,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	testImage = resources.Image{
+	testImage = v6.Image{
 		Image: ionoscloud.Image{
 			Id: &testImageVar,
 			Properties: &ionoscloud.ImageProperties{
@@ -40,7 +40,7 @@ var (
 			},
 		},
 	}
-	testImages = resources.Images{
+	testImages = v6.Images{
 		Images: ionoscloud.Images{
 			Id:    &testImageVar,
 			Items: &[]ionoscloud.Image{testImage.Image, testImage.Image},

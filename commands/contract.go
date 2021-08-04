@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -137,7 +137,7 @@ type ContractPrint struct {
 	NatGatewayProvisioned  int32 `json:"NatGatewayProvisioned,omitempty"`
 }
 
-func getContractPrint(c *core.CommandConfig, cs []resources.Contract, cols []string) printer.Result {
+func getContractPrint(c *core.CommandConfig, cs []v6.Contract, cols []string) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if cs != nil {
@@ -194,17 +194,17 @@ func getContractCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getContract(c resources.Contracts) []resources.Contract {
-	cs := make([]resources.Contract, 0)
+func getContract(c v6.Contracts) []v6.Contract {
+	cs := make([]v6.Contract, 0)
 	if items, ok := c.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			cs = append(cs, resources.Contract{Contract: item})
+			cs = append(cs, v6.Contract{Contract: item})
 		}
 	}
 	return cs
 }
 
-func getContractsKVMaps(cs []resources.Contract) []map[string]interface{} {
+func getContractsKVMaps(cs []v6.Contract) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(cs))
 	for _, c := range cs {
 		o := getContractKVMap(c)
@@ -213,7 +213,7 @@ func getContractsKVMaps(cs []resources.Contract) []map[string]interface{} {
 	return out
 }
 
-func getContractKVMap(c resources.Contract) map[string]interface{} {
+func getContractKVMap(c v6.Contract) map[string]interface{} {
 	var cPrint ContractPrint
 	if properties, ok := c.GetPropertiesOk(); ok && properties != nil {
 		if no, ok := properties.GetContractNumberOk(); ok && no != nil {

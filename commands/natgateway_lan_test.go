@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	natgatewayLanTest = resources.NatGateway{
+	natgatewayLanTest = v6.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
 			Properties: &ionoscloud.NatGatewayProperties{
 				Name:      &testNatGatewayLanVar,
@@ -27,7 +27,7 @@ var (
 			},
 		},
 	}
-	natgatewayLanTestUpdated = resources.NatGateway{
+	natgatewayLanTestUpdated = v6.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
 			Id: &testNatGatewayLanVar,
 			Properties: &ionoscloud.NatGatewayProperties{
@@ -38,7 +38,7 @@ var (
 			Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
-	natgatewayLanTestProper = resources.NatGatewayProperties{
+	natgatewayLanTestProper = v6.NatGatewayProperties{
 		NatGatewayProperties: ionoscloud.NatGatewayProperties{
 			Lans: &[]ionoscloud.NatGatewayLanProperties{
 				natgatewayLanProperties.NatGatewayLanProperties,
@@ -47,20 +47,20 @@ var (
 		},
 	}
 	// Send empty struct to overwrite the existing one
-	natgatewayLanTestRemove = resources.NatGatewayProperties{
+	natgatewayLanTestRemove = v6.NatGatewayProperties{
 		NatGatewayProperties: ionoscloud.NatGatewayProperties{
 			Lans: &[]ionoscloud.NatGatewayLanProperties{
 				natgatewayLanProperties.NatGatewayLanProperties,
 			},
 		},
 	}
-	natgatewayLanProperties = resources.NatGatewayLanProperties{
+	natgatewayLanProperties = v6.NatGatewayLanProperties{
 		NatGatewayLanProperties: ionoscloud.NatGatewayLanProperties{
 			Id:         &testNatGatewayLanIntVar,
 			GatewayIps: &[]string{testNatGatewayLanVar},
 		},
 	}
-	natgatewayLanNewProperties = resources.NatGatewayLanProperties{
+	natgatewayLanNewProperties = v6.NatGatewayLanProperties{
 		NatGatewayLanProperties: ionoscloud.NatGatewayLanProperties{
 			Id:         &testNatGatewayLanNewIntVar,
 			GatewayIps: &[]string{testNatGatewayLanNewVar},

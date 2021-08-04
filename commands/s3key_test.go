@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,14 +18,14 @@ import (
 )
 
 var (
-	s3keyTest = resources.S3Key{
+	s3keyTest = v6.S3Key{
 		S3Key: ionoscloud.S3Key{
 			Properties: &ionoscloud.S3KeyProperties{
 				Active: &testS3keyBoolVar,
 			},
 		},
 	}
-	s3keyTestGet = resources.S3Key{
+	s3keyTestGet = v6.S3Key{
 		S3Key: ionoscloud.S3Key{
 			Id: &testS3keyVar,
 			Properties: &ionoscloud.S3KeyProperties{
@@ -34,7 +34,7 @@ var (
 			},
 		},
 	}
-	s3keys = resources.S3Keys{
+	s3keys = v6.S3Keys{
 		S3Keys: ionoscloud.S3Keys{
 			Id:    &testS3keyVar,
 			Items: &[]ionoscloud.S3Key{s3keyTest.S3Key},
@@ -43,7 +43,7 @@ var (
 	s3keyProperties = ionoscloud.S3KeyProperties{
 		Active: &testS3keyBoolNewVar,
 	}
-	s3keyNew = resources.S3Key{
+	s3keyNew = v6.S3Key{
 		S3Key: ionoscloud.S3Key{
 			Properties: &s3keyProperties,
 		},

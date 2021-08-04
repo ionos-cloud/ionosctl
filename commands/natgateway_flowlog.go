@@ -7,7 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -266,7 +266,7 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(nil, c, []resources.FlowLog{*ng}))
+	return c.Printer.Print(getFlowLogPrint(nil, c, []v6.FlowLog{*ng}))
 }
 
 func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
@@ -277,7 +277,7 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 	ng, resp, err := c.NatGateways().CreateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
-		resources.FlowLog{
+		v6.FlowLog{
 			FlowLog: ionoscloud.FlowLog{
 				Properties: &proper.FlowLogProperties,
 			},
@@ -289,7 +289,7 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(resp, c, []resources.FlowLog{*ng}))
+	return c.Printer.Print(getFlowLogPrint(resp, c, []v6.FlowLog{*ng}))
 }
 
 func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
@@ -306,7 +306,7 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(resp, c, []resources.FlowLog{*ng}))
+	return c.Printer.Print(getFlowLogPrint(resp, c, []v6.FlowLog{*ng}))
 }
 
 func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
@@ -330,14 +330,14 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 func getNatGatewayFlowLogsIds(outErr io.Writer, datacenterId, natgatewayId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	natgatewaySvc := resources.NewNatGatewayService(clientSvc.Get(), context.TODO())
+	natgatewaySvc := v6.NewNatGatewayService(clientSvc.Get(), context.TODO())
 	natFlowLogs, _, err := natgatewaySvc.ListFlowLogs(datacenterId, natgatewayId)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)

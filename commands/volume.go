@@ -11,7 +11,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -336,8 +336,8 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getVolumePrint(resp, c, nil))
 }
 
-func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
-	proper := resources.VolumeProperties{}
+func getNewVolume(c *core.CommandConfig) (*v6.Volume, error) {
+	proper := v6.VolumeProperties{}
 	// It will get the default values, if flags not set
 	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	proper.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
@@ -390,15 +390,15 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)) {
 		proper.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)))
 	}
-	return &resources.Volume{
+	return &v6.Volume{
 		Volume: ionoscloud.Volume{
 			Properties: &proper.VolumeProperties,
 		},
 	}, nil
 }
 
-func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
-	input := resources.VolumeProperties{}
+func getVolumeInfo(c *core.CommandConfig) (*v6.VolumeProperties, error) {
+	input := v6.VolumeProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
@@ -685,7 +685,7 @@ type VolumePrint struct {
 	UserData         string   `json:"UserData,omitempty"`
 }
 
-func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []resources.Volume) printer.Result {
+func getVolumePrint(resp *v6.Response, c *core.CommandConfig, vols []v6.Volume) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -743,31 +743,31 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 	return volumeCols
 }
 
-func getVolumes(volumes resources.Volumes) []resources.Volume {
-	vs := make([]resources.Volume, 0)
+func getVolumes(volumes v6.Volumes) []v6.Volume {
+	vs := make([]v6.Volume, 0)
 	for _, s := range *volumes.Items {
-		vs = append(vs, resources.Volume{Volume: s})
+		vs = append(vs, v6.Volume{Volume: s})
 	}
 	return vs
 }
 
-func getVolume(vol *resources.Volume) []resources.Volume {
-	vols := make([]resources.Volume, 0)
+func getVolume(vol *v6.Volume) []v6.Volume {
+	vols := make([]v6.Volume, 0)
 	if vol != nil {
-		vols = append(vols, resources.Volume{Volume: vol.Volume})
+		vols = append(vols, v6.Volume{Volume: vol.Volume})
 	}
 	return vols
 }
 
-func getAttachedVolumes(volumes resources.AttachedVolumes) []resources.Volume {
-	vs := make([]resources.Volume, 0)
+func getAttachedVolumes(volumes v6.AttachedVolumes) []v6.Volume {
+	vs := make([]v6.Volume, 0)
 	for _, s := range *volumes.AttachedVolumes.Items {
-		vs = append(vs, resources.Volume{Volume: s})
+		vs = append(vs, v6.Volume{Volume: s})
 	}
 	return vs
 }
 
-func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
+func getVolumesKVMaps(vs []v6.Volume) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(vs))
 	for _, v := range vs {
 		properties := v.GetProperties()
@@ -821,14 +821,14 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 func getVolumesIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	volumeSvc := resources.NewVolumeService(clientSvc.Get(), context.TODO())
+	volumeSvc := v6.NewVolumeService(clientSvc.Get(), context.TODO())
 	volumes, _, err := volumeSvc.List(datacenterId)
 	clierror.CheckError(err, outErr)
 	volumesIds := make([]string, 0)
@@ -847,14 +847,14 @@ func getVolumesIds(outErr io.Writer, datacenterId string) []string {
 func getAttachedVolumesIds(outErr io.Writer, datacenterId, serverId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
+	serverSvc := v6.NewServerService(clientSvc.Get(), context.TODO())
 	volumes, _, err := serverSvc.ListVolumes(datacenterId, serverId)
 	clierror.CheckError(err, outErr)
 	attachedVolumesIds := make([]string, 0)

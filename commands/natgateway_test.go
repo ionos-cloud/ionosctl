@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	natgatewayTest = resources.NatGateway{
+	natgatewayTest = v6.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
 			Properties: &ionoscloud.NatGatewayProperties{
 				Name:      &testNatGatewayVar,
@@ -26,26 +26,26 @@ var (
 			},
 		},
 	}
-	natgatewayTestGet = resources.NatGateway{
+	natgatewayTestGet = v6.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
 			Id:         &testNatGatewayVar,
 			Properties: natgatewayTest.Properties,
 			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
-	natgateways = resources.NatGateways{
+	natgateways = v6.NatGateways{
 		NatGateways: ionoscloud.NatGateways{
 			Id:    &testNatGatewayVar,
 			Items: &[]ionoscloud.NatGateway{natgatewayTest.NatGateway},
 		},
 	}
-	natgatewayProperties = resources.NatGatewayProperties{
+	natgatewayProperties = v6.NatGatewayProperties{
 		NatGatewayProperties: ionoscloud.NatGatewayProperties{
 			Name:      &testNatGatewayNewVar,
 			PublicIps: &[]string{testNatGatewayNewVar},
 		},
 	}
-	natgatewayNew = resources.NatGateway{
+	natgatewayNew = v6.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
 			Properties: &natgatewayProperties.NatGatewayProperties,
 		},

@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -170,7 +170,7 @@ type ResourcePrint struct {
 	State             string `json:"State,omitempty"`
 }
 
-func getResourcePrint(c *core.CommandConfig, res []resources.Resource) printer.Result {
+func getResourcePrint(c *core.CommandConfig, res []v6.Resource) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if res != nil {
@@ -210,35 +210,35 @@ func getResourceCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getResource(res *resources.Resource) []resources.Resource {
-	ress := make([]resources.Resource, 0)
+func getResource(res *v6.Resource) []v6.Resource {
+	ress := make([]v6.Resource, 0)
 	if res != nil {
-		ress = append(ress, resources.Resource{Resource: res.Resource})
+		ress = append(ress, v6.Resource{Resource: res.Resource})
 	}
 	return ress
 }
 
-func getResources(groups resources.Resources) []resources.Resource {
-	u := make([]resources.Resource, 0)
+func getResources(groups v6.Resources) []v6.Resource {
+	u := make([]v6.Resource, 0)
 	if items, ok := groups.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.Resource{Resource: item})
+			u = append(u, v6.Resource{Resource: item})
 		}
 	}
 	return u
 }
 
-func getResourceGroups(groups resources.ResourceGroups) []resources.Resource {
-	u := make([]resources.Resource, 0)
+func getResourceGroups(groups v6.ResourceGroups) []v6.Resource {
+	u := make([]v6.Resource, 0)
 	if items, ok := groups.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.Resource{Resource: item})
+			u = append(u, v6.Resource{Resource: item})
 		}
 	}
 	return u
 }
 
-func getResourcesKVMaps(rs []resources.Resource) []map[string]interface{} {
+func getResourcesKVMaps(rs []v6.Resource) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(rs))
 	for _, r := range rs {
 		var rPrint ResourcePrint
@@ -270,14 +270,14 @@ func getResourcesKVMaps(rs []resources.Resource) []map[string]interface{} {
 func getResourcesIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	userSvc := resources.NewUserService(clientSvc.Get(), context.TODO())
+	userSvc := v6.NewUserService(clientSvc.Get(), context.TODO())
 	res, _, err := userSvc.ListResources()
 	clierror.CheckError(err, outErr)
 	resIds := make([]string, 0)

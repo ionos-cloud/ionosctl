@@ -11,7 +11,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -122,17 +122,17 @@ func getCpuCols(flagName string, outErr io.Writer) []string {
 	return cpusCols
 }
 
-func getCpus(cpus *[]ionoscloud.CpuArchitectureProperties) []resources.CpuArchitectureProperties {
-	cs := make([]resources.CpuArchitectureProperties, 0)
+func getCpus(cpus *[]ionoscloud.CpuArchitectureProperties) []v6.CpuArchitectureProperties {
+	cs := make([]v6.CpuArchitectureProperties, 0)
 	if cpus != nil {
 		for _, cpuItem := range *cpus {
-			cs = append(cs, resources.CpuArchitectureProperties{CpuArchitectureProperties: cpuItem})
+			cs = append(cs, v6.CpuArchitectureProperties{CpuArchitectureProperties: cpuItem})
 		}
 	}
 	return cs
 }
 
-func getCpusKVMaps(cs []resources.CpuArchitectureProperties) []map[string]interface{} {
+func getCpusKVMaps(cs []v6.CpuArchitectureProperties) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(cs))
 	for _, cpuItem := range cs {
 		var cpuPrint CpuPrint

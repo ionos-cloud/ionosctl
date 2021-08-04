@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	networkloadbalancerTest = resources.NetworkLoadBalancer{
+	networkloadbalancerTest = v6.NetworkLoadBalancer{
 		NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
 			Properties: &ionoscloud.NetworkLoadBalancerProperties{
 				Name:         &testNetworkLoadBalancerVar,
@@ -29,20 +29,20 @@ var (
 			},
 		},
 	}
-	networkloadbalancerTestGet = resources.NetworkLoadBalancer{
+	networkloadbalancerTestGet = v6.NetworkLoadBalancer{
 		NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
 			Id:         &testNetworkLoadBalancerVar,
 			Properties: networkloadbalancerTest.Properties,
 			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
-	networkloadbalancers = resources.NetworkLoadBalancers{
+	networkloadbalancers = v6.NetworkLoadBalancers{
 		NetworkLoadBalancers: ionoscloud.NetworkLoadBalancers{
 			Id:    &testNetworkLoadBalancerVar,
 			Items: &[]ionoscloud.NetworkLoadBalancer{networkloadbalancerTest.NetworkLoadBalancer},
 		},
 	}
-	networkloadbalancerProperties = resources.NetworkLoadBalancerProperties{
+	networkloadbalancerProperties = v6.NetworkLoadBalancerProperties{
 		NetworkLoadBalancerProperties: ionoscloud.NetworkLoadBalancerProperties{
 			Name:         &testNetworkLoadBalancerNewVar,
 			Ips:          &[]string{testNetworkLoadBalancerNewVar},
@@ -51,7 +51,7 @@ var (
 			LbPrivateIps: &[]string{testNetworkLoadBalancerNewVar},
 		},
 	}
-	networkloadbalancerNew = resources.NetworkLoadBalancer{
+	networkloadbalancerNew = v6.NetworkLoadBalancer{
 		NetworkLoadBalancer: ionoscloud.NetworkLoadBalancer{
 			Properties: &networkloadbalancerProperties.NetworkLoadBalancerProperties,
 		},

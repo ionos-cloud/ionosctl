@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -194,7 +194,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 	secureAuth := viper.GetBool(core.GetFlagName(c.NS, config.ArgForceSecAuth))
 	admin := viper.GetBool(core.GetFlagName(c.NS, config.ArgAdmin))
-	newUser := resources.UserPost{
+	newUser := v6.UserPost{
 		UserPost: ionoscloud.UserPost{
 			Properties: &ionoscloud.UserPropertiesPost{
 				Firstname:     &firstname,
@@ -237,7 +237,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getUserPrint(resp, c, nil))
 }
 
-func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.UserPut {
+func getUserInfo(oldUser *v6.User, c *core.CommandConfig) *v6.UserPut {
 	var (
 		firstName, lastName, email string
 		forceSecureAuth, admin     bool
@@ -279,7 +279,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 			}
 		}
 	}
-	return &resources.UserPut{
+	return &v6.UserPut{
 		UserPut: ionoscloud.UserPut{
 			Properties: &ionoscloud.UserPropertiesPut{
 				Firstname:     &firstName,
@@ -397,7 +397,7 @@ func RunGroupUserList(c *core.CommandConfig) error {
 
 func RunGroupUserAdd(c *core.CommandConfig) error {
 	id := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
-	u := resources.User{
+	u := v6.User{
 		User: ionoscloud.User{
 			Id: &id,
 		},
@@ -439,7 +439,7 @@ type UserPrint struct {
 	Active            bool   `json:"Active,omitempty"`
 }
 
-func getUserPrint(resp *resources.Response, c *core.CommandConfig, users []resources.User) printer.Result {
+func getUserPrint(resp *v6.Response, c *core.CommandConfig, users []v6.User) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -489,35 +489,35 @@ func getUserCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getUsers(users resources.Users) []resources.User {
-	u := make([]resources.User, 0)
+func getUsers(users v6.Users) []v6.User {
+	u := make([]v6.User, 0)
 	if items, ok := users.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.User{User: item})
+			u = append(u, v6.User{User: item})
 		}
 	}
 	return u
 }
 
-func getGroupUsers(users resources.GroupMembers) []resources.User {
-	u := make([]resources.User, 0)
+func getGroupUsers(users v6.GroupMembers) []v6.User {
+	u := make([]v6.User, 0)
 	if items, ok := users.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.User{User: item})
+			u = append(u, v6.User{User: item})
 		}
 	}
 	return u
 }
 
-func getUser(u *resources.User) []resources.User {
-	users := make([]resources.User, 0)
+func getUser(u *v6.User) []v6.User {
+	users := make([]v6.User, 0)
 	if u != nil {
-		users = append(users, resources.User{User: u.User})
+		users = append(users, v6.User{User: u.User})
 	}
 	return users
 }
 
-func getUsersKVMaps(us []resources.User) []map[string]interface{} {
+func getUsersKVMaps(us []v6.User) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(us))
 	for _, u := range us {
 		var uPrint UserPrint
@@ -559,14 +559,14 @@ func getUsersKVMaps(us []resources.User) []map[string]interface{} {
 func getUsersIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	userSvc := resources.NewUserService(clientSvc.Get(), context.TODO())
+	userSvc := v6.NewUserService(clientSvc.Get(), context.TODO())
 	users, _, err := userSvc.List()
 	clierror.CheckError(err, outErr)
 	usersIds := make([]string, 0)
@@ -585,14 +585,14 @@ func getUsersIds(outErr io.Writer) []string {
 func getGroupUsersIds(outErr io.Writer, groupId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	groupSvc := resources.NewGroupService(clientSvc.Get(), context.TODO())
+	groupSvc := v6.NewGroupService(clientSvc.Get(), context.TODO())
 	users, _, err := groupSvc.ListUsers(groupId)
 	clierror.CheckError(err, outErr)
 	usersIds := make([]string, 0)

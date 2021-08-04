@@ -7,7 +7,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -60,7 +60,7 @@ func RunServerConsoleGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getConsolePrint(c, []resources.RemoteConsoleUrl{t}))
+	return c.Printer.Print(getConsolePrint(c, []v6.RemoteConsoleUrl{t}))
 }
 
 // Output Printing
@@ -71,7 +71,7 @@ type RemoteConsolePrint struct {
 	RemoteConsoleUrl string `json:"RemoteConsoleUrl,omitempty"`
 }
 
-func getConsolePrint(c *core.CommandConfig, ss []resources.RemoteConsoleUrl) printer.Result {
+func getConsolePrint(c *core.CommandConfig, ss []v6.RemoteConsoleUrl) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if ss != nil {
@@ -83,7 +83,7 @@ func getConsolePrint(c *core.CommandConfig, ss []resources.RemoteConsoleUrl) pri
 	return r
 }
 
-func getConsoleKVMaps(ss []resources.RemoteConsoleUrl) []map[string]interface{} {
+func getConsoleKVMaps(ss []v6.RemoteConsoleUrl) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var consolePrint RemoteConsolePrint

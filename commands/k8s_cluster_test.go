@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	clusterTestPost = resources.K8sClusterForPost{
+	clusterTestPost = v6.K8sClusterForPost{
 		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
 			Properties: &ionoscloud.KubernetesClusterPropertiesForPost{
 				Name:       &testClusterVar,
@@ -28,7 +28,7 @@ var (
 			},
 		},
 	}
-	clusterTestPut = resources.K8sClusterForPut{
+	clusterTestPut = v6.K8sClusterForPut{
 		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
 			Properties: &ionoscloud.KubernetesClusterPropertiesForPut{
 				Name:       &testClusterVar,
@@ -36,7 +36,7 @@ var (
 			},
 		},
 	}
-	clusterNewTestPut = resources.K8sClusterForPut{
+	clusterNewTestPut = v6.K8sClusterForPut{
 		KubernetesClusterForPut: ionoscloud.KubernetesClusterForPut{
 			Properties: &ionoscloud.KubernetesClusterPropertiesForPut{
 				Name:       &testClusterNewVar,
@@ -48,7 +48,7 @@ var (
 			},
 		},
 	}
-	clusterTest = resources.K8sCluster{
+	clusterTest = v6.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Properties: &ionoscloud.KubernetesClusterProperties{
 				Name:       &testClusterVar,
@@ -58,7 +58,7 @@ var (
 			},
 		},
 	}
-	clusterTestId = resources.K8sCluster{
+	clusterTestId = v6.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Id: &testClusterVar,
 			Properties: &ionoscloud.KubernetesClusterProperties{
@@ -69,7 +69,7 @@ var (
 			},
 		},
 	}
-	clusterTestGet = resources.K8sCluster{
+	clusterTestGet = v6.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Id: &testClusterVar,
 			Properties: &ionoscloud.KubernetesClusterProperties{
@@ -89,13 +89,13 @@ var (
 			},
 		},
 	}
-	clusters = resources.K8sClusters{
+	clusters = v6.K8sClusters{
 		KubernetesClusters: ionoscloud.KubernetesClusters{
 			Id:    &testClusterVar,
 			Items: &[]ionoscloud.KubernetesCluster{clusterTest.KubernetesCluster},
 		},
 	}
-	clusterProperties = resources.K8sClusterProperties{
+	clusterProperties = v6.K8sClusterProperties{
 		KubernetesClusterProperties: ionoscloud.KubernetesClusterProperties{
 			Name:       &testClusterNewVar,
 			K8sVersion: &testClusterNewVar,
@@ -105,7 +105,7 @@ var (
 			},
 		},
 	}
-	clusterNew = resources.K8sCluster{
+	clusterNew = v6.K8sCluster{
 		KubernetesCluster: ionoscloud.KubernetesCluster{
 			Properties: &clusterProperties.KubernetesClusterProperties,
 		},

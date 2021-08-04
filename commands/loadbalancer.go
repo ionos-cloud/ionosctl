@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -203,7 +203,7 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getLoadbalancerPrint(nil, c, []resources.Loadbalancer{*lb}))
+	return c.Printer.Print(getLoadbalancerPrint(nil, c, []v6.Loadbalancer{*lb}))
 }
 
 func RunLoadBalancerCreate(c *core.CommandConfig) error {
@@ -219,11 +219,11 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getLoadbalancerPrint(resp, c, []resources.Loadbalancer{*lb}))
+	return c.Printer.Print(getLoadbalancerPrint(resp, c, []v6.Loadbalancer{*lb}))
 }
 
 func RunLoadBalancerUpdate(c *core.CommandConfig) error {
-	input := resources.LoadbalancerProperties{}
+	input := v6.LoadbalancerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
@@ -245,7 +245,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getLoadbalancerPrint(resp, c, []resources.Loadbalancer{*lb}))
+	return c.Printer.Print(getLoadbalancerPrint(resp, c, []v6.Loadbalancer{*lb}))
 }
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
@@ -281,7 +281,7 @@ type LoadbalancerPrint struct {
 	State          string `json:"State,omitempty"`
 }
 
-func getLoadbalancerPrint(resp *resources.Response, c *core.CommandConfig, lbs []resources.Loadbalancer) printer.Result {
+func getLoadbalancerPrint(resp *v6.Response, c *core.CommandConfig, lbs []v6.Loadbalancer) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -326,15 +326,15 @@ func getLoadbalancersCols(flagName string, outErr io.Writer) []string {
 	return loadbalancerCols
 }
 
-func getLoadbalancers(loadbalancers resources.Loadbalancers) []resources.Loadbalancer {
-	vs := make([]resources.Loadbalancer, 0)
+func getLoadbalancers(loadbalancers v6.Loadbalancers) []v6.Loadbalancer {
+	vs := make([]v6.Loadbalancer, 0)
 	for _, s := range *loadbalancers.Items {
-		vs = append(vs, resources.Loadbalancer{Loadbalancer: s})
+		vs = append(vs, v6.Loadbalancer{Loadbalancer: s})
 	}
 	return vs
 }
 
-func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{} {
+func getLoadbalancersKVMaps(vs []v6.Loadbalancer) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(vs))
 	for _, v := range vs {
 		var loadbalancerPrint LoadbalancerPrint
@@ -366,14 +366,14 @@ func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{
 func getLoadbalancersIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		viper.GetString(config.ArgServerUrl),
 	)
 	clierror.CheckError(err, outErr)
-	loadbalancerSvc := resources.NewLoadbalancerService(clientSvc.Get(), context.TODO())
+	loadbalancerSvc := v6.NewLoadbalancerService(clientSvc.Get(), context.TODO())
 	loadbalancers, _, err := loadbalancerSvc.List(datacenterId)
 	clierror.CheckError(err, outErr)
 	loadbalancersIds := make([]string, 0)
