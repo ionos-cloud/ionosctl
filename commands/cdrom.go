@@ -199,7 +199,7 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 }
 
 func RunServerCdromGet(c *core.CommandConfig) error {
-	c.Printer.Infof("Cd rom with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)))
+	c.Printer.Verbose("CD-ROM with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)))
 	attachedCdrom, _, err := c.Servers().GetCdrom(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -215,7 +215,7 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach cdrom from server"); err != nil {
 		return err
 	}
-	c.Printer.Infof("Cd rom with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)))
+	c.Printer.Verbose("CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)))
 	resp, err := c.Servers().DetachCdrom(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),

@@ -242,7 +242,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 	if err := utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))); err != nil {
 		return err
 	}
-	c.Printer.Infof("K8s node pool with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	c.Printer.Verbose("K8s node pool with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
 	u, _, err := c.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
 	if err != nil {
@@ -258,7 +258,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	}
 	u, resp, err := c.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)), *newNodePool)
 	if resp != nil {
-		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
 	if err != nil {
 		return err
@@ -301,7 +301,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Infof("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	c.Printer.Verbose("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
 	_, err = c.K8s().DeleteNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
 	if err != nil {
@@ -365,7 +365,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*v5.K8sNodePoolForPost, error) {
 	nodePoolProperties.SetStorageSize(int32(storageSize))
 	nodePoolProperties.SetStorageType(storageType)
 
-	c.Printer.Infof("Properties set for creating the node pool: Name: %v, K8sVersion: %v, NodeCount: %v, DatacenterId: %v, CpuFamily: %v, CoresCount: %v, RamSize: %v, AvailabilityZone: %v, StorageSize: %v, StorageType: %v",
+	c.Printer.Verbose("Properties set for creating the node pool: Name: %v, K8sVersion: %v, NodeCount: %v, DatacenterId: %v, CpuFamily: %v, CoresCount: %v, RamSize: %vMB, AvailabilityZone: %v, StorageSize: %v, StorageType: %v",
 		name, k8sversion, nodeCount, dcId, cpiFamily, cores, int32(ramSize), availabilityZone, int32(storageSize), storageType)
 
 	return &v5.K8sNodePoolForPost{
@@ -381,7 +381,7 @@ func getNewK8sNodePoolUpdated(oldUser *v5.K8sNodePool, c *core.CommandConfig) v5
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 			version := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 			propertiesUpdated.SetK8sVersion(version)
-			c.Printer.Infof("Property K8sVersion set: %v", version)
+			c.Printer.Verbose("Property K8sVersion set: %v", version)
 		} else {
 			if vers, ok := properties.GetK8sVersionOk(); ok && vers != nil {
 				propertiesUpdated.SetK8sVersion(*vers)
@@ -390,7 +390,7 @@ func getNewK8sNodePoolUpdated(oldUser *v5.K8sNodePool, c *core.CommandConfig) v5
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sNodeCount)) {
 			nodeCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sNodeCount))
 			propertiesUpdated.SetNodeCount(nodeCount)
-			c.Printer.Infof("Property NodeCount set: %v", nodeCount)
+			c.Printer.Verbose("Property NodeCount set: %v", nodeCount)
 		} else {
 			if n, ok := properties.GetNodeCountOk(); ok && n != nil {
 				propertiesUpdated.SetNodeCount(*n)
@@ -402,7 +402,7 @@ func getNewK8sNodePoolUpdated(oldUser *v5.K8sNodePool, c *core.CommandConfig) v5
 			autoScaling := properties.GetAutoScaling()
 			if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMinNodeCount)) {
 				minCount = viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sMinNodeCount))
-				c.Printer.Infof("Property MinNodeCount set: %v", minCount)
+				c.Printer.Verbose("Property MinNodeCount set: %v", minCount)
 			} else {
 				if m, ok := autoScaling.GetMinNodeCountOk(); ok && m != nil {
 					minCount = *m
@@ -410,7 +410,7 @@ func getNewK8sNodePoolUpdated(oldUser *v5.K8sNodePool, c *core.CommandConfig) v5
 			}
 			if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaxNodeCount)) {
 				maxCount = viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sMaxNodeCount))
-				c.Printer.Infof("Property MaxNodeCount set: %v", maxCount)
+				c.Printer.Verbose("Property MaxNodeCount set: %v", maxCount)
 			} else {
 				if m, ok := autoScaling.GetMaxNodeCountOk(); ok && m != nil {
 					maxCount = *m
@@ -428,7 +428,7 @@ func getNewK8sNodePoolUpdated(oldUser *v5.K8sNodePool, c *core.CommandConfig) v5
 					KubernetesMaintenanceWindow: *maintenance,
 				})
 				propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow.KubernetesMaintenanceWindow)
-				c.Printer.Infof("Property MaintenanceWindow set: %v", newMaintenanceWindow.KubernetesMaintenanceWindow)
+				c.Printer.Verbose("Property MaintenanceWindow set: %v", newMaintenanceWindow.KubernetesMaintenanceWindow)
 			}
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sAnnotationKey)) &&
@@ -438,7 +438,7 @@ func getNewK8sNodePoolUpdated(oldUser *v5.K8sNodePool, c *core.CommandConfig) v5
 			propertiesUpdated.SetAnnotations(map[string]string{
 				key: value,
 			})
-			c.Printer.Infof("Property Annotations set: key: %v, value: %v", key, value)
+			c.Printer.Verbose("Property Annotations set: key: %v, value: %v", key, value)
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLabelKey)) &&
 			viper.IsSet(core.GetFlagName(c.NS, config.ArgLabelValue)) {
@@ -447,7 +447,7 @@ func getNewK8sNodePoolUpdated(oldUser *v5.K8sNodePool, c *core.CommandConfig) v5
 			propertiesUpdated.SetLabels(map[string]string{
 				key: value,
 			})
-			c.Printer.Infof("Property Labels set: key: %v, value: %v", key, value)
+			c.Printer.Verbose("Property Labels set: key: %v, value: %v", key, value)
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanIds)) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
@@ -463,14 +463,14 @@ func getNewK8sNodePoolUpdated(oldUser *v5.K8sNodePool, c *core.CommandConfig) v5
 				newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{
 					Id: &id,
 				})
-				c.Printer.Infof("Property Lans set: %v", id)
+				c.Printer.Verbose("Property Lans set: %v", id)
 			}
 			propertiesUpdated.SetLans(newLans)
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgPublicIps)) {
 			publicIps := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgPublicIps))
 			propertiesUpdated.SetPublicIps(publicIps)
-			c.Printer.Infof("Property PublicIps set: %v", publicIps)
+			c.Printer.Verbose("Property PublicIps set: %v", publicIps)
 		}
 	}
 	return v5.K8sNodePoolForPut{

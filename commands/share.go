@@ -194,7 +194,7 @@ func RunShareList(c *core.CommandConfig) error {
 }
 
 func RunShareGet(c *core.CommandConfig) error {
-	c.Printer.Infof("Share with resource id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
+	c.Printer.Verbose("Share with resource id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
 	s, _, err := c.Groups().GetShare(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
@@ -216,14 +216,14 @@ func RunShareCreate(c *core.CommandConfig) error {
 			},
 		},
 	}
-	c.Printer.Infof("Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege, sharePrivilege)
+	c.Printer.Verbose("Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege, sharePrivilege)
 	shareAdded, resp, err := c.Groups().AddShare(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		input,
 	)
 	if resp != nil {
-		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
 	if err != nil {
 		return err
@@ -263,7 +263,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
 		return err
 	}
-	c.Printer.Infof("Share with resource id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
+	c.Printer.Verbose("Share with resource id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
 	resp, err := c.Groups().RemoveShare(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
@@ -282,7 +282,7 @@ func getShareUpdateInfo(oldShare *v5.GroupShare, c *core.CommandConfig) *v5.Grou
 	if properties, ok := oldShare.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgEditPrivilege)) {
 			editPrivilege = viper.GetBool(core.GetFlagName(c.NS, config.ArgEditPrivilege))
-			c.Printer.Infof("Property EditPrivilege set: %v", editPrivilege)
+			c.Printer.Verbose("Property EditPrivilege set: %v", editPrivilege)
 		} else {
 			if e, ok := properties.GetEditPrivilegeOk(); ok && e != nil {
 				editPrivilege = *e
@@ -290,7 +290,7 @@ func getShareUpdateInfo(oldShare *v5.GroupShare, c *core.CommandConfig) *v5.Grou
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgSharePrivilege)) {
 			sharePrivilege = viper.GetBool(core.GetFlagName(c.NS, config.ArgSharePrivilege))
-			c.Printer.Infof("Property SharePrivilege set: %v", sharePrivilege)
+			c.Printer.Verbose("Property SharePrivilege set: %v", sharePrivilege)
 		} else {
 			if e, ok := properties.GetSharePrivilegeOk(); ok && e != nil {
 				sharePrivilege = *e

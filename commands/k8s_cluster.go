@@ -212,7 +212,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 	if err := utils.WaitForState(c, GetStateK8sCluster, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))); err != nil {
 		return err
 	}
-	c.Printer.Infof("K8s with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+	c.Printer.Verbose("K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	u, _, err := c.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
@@ -227,7 +227,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 	}
 	u, resp, err := c.K8s().CreateCluster(*newCluster)
 	if resp != nil {
-		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
 	if err != nil {
 		return err
@@ -275,7 +275,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
 		return err
 	}
-	c.Printer.Infof("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+	c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	resp, err := c.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
@@ -310,7 +310,7 @@ func getNewK8sCluster(c *core.CommandConfig) (*v5.K8sClusterForPost, error) {
 	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
-		c.Printer.Infof("Property K8sVersion set: %v", k8sversion)
+		c.Printer.Verbose("Property K8sVersion set: %v", k8sversion)
 	} else {
 		if k8sversion, err = getK8sVersion(c); err != nil {
 			return nil, err
@@ -320,12 +320,12 @@ func getNewK8sCluster(c *core.CommandConfig) (*v5.K8sClusterForPost, error) {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPublic)) {
 		public := viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic))
 		proper.SetPublic(public)
-		c.Printer.Infof("Property Public set: %v", public)
+		c.Printer.Verbose("Property Public set: %v", public)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgGatewayIp)) {
 		gatewayIp := viper.GetString(core.GetFlagName(c.NS, config.ArgGatewayIp))
 		proper.SetGatewayIp(gatewayIp)
-		c.Printer.Infof("Property GatewayIp set: %v", gatewayIp)
+		c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgS3Bucket)) {
 		s3buckets := make([]ionoscloud.S3Bucket, 0)
@@ -334,12 +334,12 @@ func getNewK8sCluster(c *core.CommandConfig) (*v5.K8sClusterForPost, error) {
 			Name: &name,
 		})
 		proper.SetS3Buckets(s3buckets)
-		c.Printer.Infof("Property S3Buckets set: %v", name)
+		c.Printer.Verbose("Property S3Buckets set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgApiSubnets)) {
 		apiSubnets := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets))
 		proper.SetApiSubnetAllowList(apiSubnets)
-		c.Printer.Infof("Property ApiSubnetAllowList set: %v", apiSubnets)
+		c.Printer.Verbose("Property ApiSubnetAllowList set: %v", apiSubnets)
 	}
 	return &v5.K8sClusterForPost{
 		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
@@ -354,7 +354,7 @@ func getK8sClusterInfo(oldUser *v5.K8sCluster, c *core.CommandConfig) v5.K8sClus
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 			n := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 			propertiesUpdated.SetName(n)
-			c.Printer.Infof("Property Name set: %v", n)
+			c.Printer.Verbose("Property Name set: %v", n)
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				propertiesUpdated.SetName(*name)
@@ -363,7 +363,7 @@ func getK8sClusterInfo(oldUser *v5.K8sCluster, c *core.CommandConfig) v5.K8sClus
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 			v := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 			propertiesUpdated.SetK8sVersion(v)
-			c.Printer.Infof("Property K8sVersion set: %v", v)
+			c.Printer.Verbose("Property K8sVersion set: %v", v)
 		} else {
 			if vers, ok := properties.GetK8sVersionOk(); ok && vers != nil {
 				propertiesUpdated.SetK8sVersion(*vers)
@@ -375,7 +375,7 @@ func getK8sClusterInfo(oldUser *v5.K8sCluster, c *core.CommandConfig) v5.K8sClus
 				s3buckets = append(s3buckets, ionoscloud.S3Bucket{
 					Name: &name,
 				})
-				c.Printer.Infof("Property S3Buckets set: %v", name)
+				c.Printer.Verbose("Property S3Buckets set: %v", name)
 			}
 			propertiesUpdated.SetS3Buckets(s3buckets)
 		} else {
@@ -386,7 +386,7 @@ func getK8sClusterInfo(oldUser *v5.K8sCluster, c *core.CommandConfig) v5.K8sClus
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgApiSubnets)) {
 			apiSubnets := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets))
 			propertiesUpdated.SetApiSubnetAllowList(apiSubnets)
-			c.Printer.Infof("Property ApiSubnetAllowList set: %v", apiSubnets)
+			c.Printer.Verbose("Property ApiSubnetAllowList set: %v", apiSubnets)
 		} else {
 			if subnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && subnetAllowListOk != nil {
 				propertiesUpdated.SetApiSubnetAllowList(*subnetAllowListOk)
@@ -399,7 +399,7 @@ func getK8sClusterInfo(oldUser *v5.K8sCluster, c *core.CommandConfig) v5.K8sClus
 					KubernetesMaintenanceWindow: *maintenance,
 				})
 				propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow.KubernetesMaintenanceWindow)
-				c.Printer.Infof("Property MaintenanceWindow set: %v", newMaintenanceWindow.KubernetesMaintenanceWindow)
+				c.Printer.Verbose("Property MaintenanceWindow set: %v", newMaintenanceWindow.KubernetesMaintenanceWindow)
 			}
 		}
 	}

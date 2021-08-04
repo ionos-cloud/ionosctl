@@ -234,7 +234,7 @@ func RunSnapshotList(c *core.CommandConfig) error {
 }
 
 func RunSnapshotGet(c *core.CommandConfig) error {
-	c.Printer.Infof("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
+	c.Printer.Verbose("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	s, _, err := c.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	if err != nil {
 		return err
@@ -249,7 +249,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	description := viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
 	licenseType := viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType))
 	secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, config.ArgSecAuthProtection))
-	c.Printer.Infof("Properties set for creating the Snapshot: DatacenterId: %v, VolumeId: %v, Name: %v, Description: %v, LicenseType: %v, SecAuthProtection: %v",
+	c.Printer.Verbose("Properties set for creating the Snapshot: DatacenterId: %v, VolumeId: %v, Name: %v, Description: %v, LicenseType: %v, SecAuthProtection: %v",
 		dcId, volumeId, name, description, licenseType, secAuthProtection)
 	s, resp, err := c.Snapshots().Create(
 		dcId,
@@ -260,7 +260,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		secAuthProtection,
 	)
 	if resp != nil {
-		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
 	if err != nil {
 		return err
@@ -288,7 +288,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot"); err != nil {
 		return err
 	}
-	c.Printer.Infof("Snapshot with id: %v is restoring...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
+	c.Printer.Verbose("Snapshot with id: %v is restoring...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	resp, err := c.Snapshots().Restore(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
@@ -304,7 +304,7 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
 		return err
 	}
-	c.Printer.Infof("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
+	c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	resp, err := c.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	if err != nil {
 		return err
@@ -317,72 +317,72 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) v5.SnapshotProperties {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 		input.SetName(name)
-		c.Printer.Infof("Property Name set: %v", name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDescription)) {
 		description := viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
 		input.SetDescription(description)
-		c.Printer.Infof("Property Description set: %v", description)
+		c.Printer.Verbose("Property Description set: %v", description)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
 		licenceType := viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType))
 		input.SetLicenceType(licenceType)
-		c.Printer.Infof("Property LicenceType set: %v", licenceType)
+		c.Printer.Verbose("Property LicenceType set: %v", licenceType)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotPlug)) {
 		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotPlug))
 		input.SetCpuHotPlug(cpuHotPlug)
-		c.Printer.Infof("Property CpuHotPlug set: %v", cpuHotPlug)
+		c.Printer.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotUnplug)) {
 		cpuHotUnplug := viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotUnplug))
 		input.SetCpuHotUnplug(cpuHotUnplug)
-		c.Printer.Infof("Property CpuHotUnplug set: %v", cpuHotUnplug)
+		c.Printer.Verbose("Property CpuHotUnplug set: %v", cpuHotUnplug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamHotPlug)) {
 		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotPlug))
 		input.SetRamHotPlug(ramHotPlug)
-		c.Printer.Infof("Property RamHotPlug set: %v", ramHotPlug)
+		c.Printer.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamHotUnplug)) {
 		ramHotUnplug := viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotUnplug))
 		input.SetRamHotUnplug(ramHotUnplug)
-		c.Printer.Infof("Property RamHotUnplug set: %v", ramHotUnplug)
+		c.Printer.Verbose("Property RamHotUnplug set: %v", ramHotUnplug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotPlug)) {
 		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotPlug))
 		input.SetNicHotPlug(nicHotPlug)
-		c.Printer.Infof("Property NicHotPlug set: %v", nicHotPlug)
+		c.Printer.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotUnplug)) {
 		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotUnplug))
 		input.SetNicHotUnplug(nicHotUnplug)
-		c.Printer.Infof("Property nicHotUnplug set: %v", nicHotUnplug)
+		c.Printer.Verbose("Property nicHotUnplug set: %v", nicHotUnplug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)) {
 		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug))
 		input.SetDiscVirtioHotPlug(discVirtioHotPlug)
-		c.Printer.Infof("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
+		c.Printer.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)) {
 		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug))
 		input.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
-		c.Printer.Infof("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
+		c.Printer.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscScsiHotPlug)) {
 		discScsiHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscScsiHotPlug))
 		input.SetDiscScsiHotPlug(discScsiHotPlug)
-		c.Printer.Infof("Property DiscScsiHotPlug set: %v", discScsiHotPlug)
+		c.Printer.Verbose("Property DiscScsiHotPlug set: %v", discScsiHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscScsiHotUnplug)) {
 		discScsiHotUnplug := viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscScsiHotUnplug))
 		input.SetDiscScsiHotUnplug(discScsiHotUnplug)
-		c.Printer.Infof("Property DiscScsiHotUnplug set: %v", discScsiHotUnplug)
+		c.Printer.Verbose("Property DiscScsiHotUnplug set: %v", discScsiHotUnplug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSecAuthProtection)) {
 		secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, config.ArgSecAuthProtection))
 		input.SetSecAuthProtection(secAuthProtection)
-		c.Printer.Infof("Property SecAuthProtection set: %v", secAuthProtection)
+		c.Printer.Verbose("Property SecAuthProtection set: %v", secAuthProtection)
 	}
 	return input
 }

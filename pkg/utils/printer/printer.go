@@ -52,8 +52,7 @@ func NewPrinterRegistry(out, outErr io.Writer) (Registry, error) {
 
 type PrintService interface {
 	Print(interface{}) error
-	Info(interface{})
-	Infof(format string, a ...interface{})
+	Verbose(format string, a ...interface{})
 
 	GetStdout() io.Writer
 	SetStdout(io.Writer)
@@ -101,26 +100,13 @@ func (p *JSONPrinter) Print(v interface{}) error {
 	return nil
 }
 
-func (p *JSONPrinter) Infof(format string, a ...interface{}) {
+func (p *JSONPrinter) Verbose(format string, a ...interface{}) {
 	flag := viper.GetBool(config.ArgVerbose)
 	var toPrint = ToPrint{}
 	if flag {
-		str := fmt.Sprintf("[INFOF] "+format, a...)
+		str := fmt.Sprintf("[INFO] "+format, a...)
 		toPrint.Message = str
-		err := WriteJSON(&toPrint, p.Stdout)
-		if err != nil {
-			return
-		}
-	}
-}
-
-func (p *JSONPrinter) Info(i interface{}) {
-	flag := viper.GetBool(config.ArgVerbose)
-	var toPrint = ToPrint{}
-	if flag {
-		str := fmt.Sprint(i)
-		toPrint.Message = str
-		err := WriteJSON(&toPrint, p.Stdout)
+		err := WriteJSON(&toPrint, p.Stderr)
 		if err != nil {
 			return
 		}
@@ -197,19 +183,10 @@ func (p *TextPrinter) Print(v interface{}) error {
 	return nil
 }
 
-func (p *TextPrinter) Info(i interface{}) {
+func (p *TextPrinter) Verbose(format string, a ...interface{}) {
 	flag := viper.GetBool(config.ArgVerbose)
 	if flag {
-		fmt.Print(i)
-	} else {
-		return
-	}
-}
-
-func (p *TextPrinter) Infof(format string, a ...interface{}) {
-	flag := viper.GetBool(config.ArgVerbose)
-	if flag {
-		fmt.Printf("[INFOF] "+format+"\n", a...)
+		fmt.Printf("[INFO] "+format+"\n", a...)
 	} else {
 		return
 	}

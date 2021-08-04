@@ -201,7 +201,7 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGet(c *core.CommandConfig) error {
-	c.Printer.Infof("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	u, _, err := c.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	if err != nil {
 		return err
@@ -210,7 +210,7 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
-	c.Printer.Infof("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	u, _, err := c.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	if err != nil {
 		return err
@@ -231,10 +231,10 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 			},
 		},
 	}
-	c.Printer.Infof("Properties set for creating the Backup Unit: Name: %v , Email: %v", name, email)
+	c.Printer.Verbose("Properties set for creating the Backup Unit: Name: %v , Email: %v", name, email)
 	u, resp, err := c.BackupUnit().Create(newBackupUnit)
 	if resp != nil {
-		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
 	if err != nil {
 		return err
@@ -265,7 +265,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
 		return err
 	}
-	c.Printer.Infof("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+	c.Printer.Verbose("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	resp, err := c.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	if err != nil {
 		return err
@@ -281,12 +281,12 @@ func getBackupUnitInfo(c *core.CommandConfig) *v5.BackupUnitProperties {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
 		pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 		properties.SetPassword(pwd)
-		c.Printer.Infof("Property Password set")
+		c.Printer.Verbose("Property Password set")
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgEmail)) {
 		email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
 		properties.SetEmail(email)
-		c.Printer.Infof("Property Email set: %v", email)
+		c.Printer.Verbose("Property Email set: %v", email)
 	}
 	return &properties
 }

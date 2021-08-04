@@ -187,7 +187,7 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyGet(c *core.CommandConfig) error {
-	c.Printer.Infof("S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
+	c.Printer.Verbose("S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
 	s, _, err := c.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
 	)
@@ -199,10 +199,10 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 
 func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	userId := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
-	c.Printer.Infof("Properties set for creating the S3key: UserId: %v", userId)
+	c.Printer.Verbose("Properties set for creating the S3key: UserId: %v", userId)
 	s, resp, err := c.S3Keys().Create(userId)
 	if resp != nil {
-		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
 	if err != nil {
 		return err
@@ -216,7 +216,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 
 func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	active := viper.GetBool(core.GetFlagName(c.NS, config.ArgS3KeyActive))
-	c.Printer.Infof("Property Active set: %v", active)
+	c.Printer.Verbose("Property Active set: %v", active)
 	newKey := v5.S3Key{
 		S3Key: ionoscloud.S3Key{
 			Properties: &ionoscloud.S3KeyProperties{
@@ -242,7 +242,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
 		return err
 	}
-	c.Printer.Infof("S3 keys with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
+	c.Printer.Verbose("S3 keys with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
 	resp, err := c.S3Keys().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
 	)

@@ -62,35 +62,6 @@ func (mr *MockPrintServiceMockRecorder) GetStdout() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStdout", reflect.TypeOf((*MockPrintService)(nil).GetStdout))
 }
 
-// Info mocks base method.
-func (m *MockPrintService) Info(arg0 interface{}) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Info", arg0)
-}
-
-// Info indicates an expected call of Info.
-func (mr *MockPrintServiceMockRecorder) Info(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Info", reflect.TypeOf((*MockPrintService)(nil).Info), arg0)
-}
-
-// Infof mocks base method.
-func (m *MockPrintService) Infof(format string, a ...interface{}) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{format}
-	for _, a_2 := range a {
-		varargs = append(varargs, a_2)
-	}
-	m.ctrl.Call(m, "Infof", varargs...)
-}
-
-// Infof indicates an expected call of Infof.
-func (mr *MockPrintServiceMockRecorder) Infof(format interface{}, a ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{format}, a...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Infof", reflect.TypeOf((*MockPrintService)(nil).Infof), varargs...)
-}
-
 // Print mocks base method.
 func (m *MockPrintService) Print(arg0 interface{}) error {
 	m.ctrl.T.Helper()
@@ -127,4 +98,21 @@ func (m *MockPrintService) SetStdout(arg0 io.Writer) {
 func (mr *MockPrintServiceMockRecorder) SetStdout(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetStdout", reflect.TypeOf((*MockPrintService)(nil).SetStdout), arg0)
+}
+
+// Verbose mocks base method.
+func (m *MockPrintService) Verbose(format string, a ...interface{}) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{format}
+	for _, a_2 := range a {
+		varargs = append(varargs, a_2)
+	}
+	m.ctrl.Call(m, "Verbose", varargs...)
+}
+
+// Verbose indicates an expected call of Verbose.
+func (mr *MockPrintServiceMockRecorder) Verbose(format interface{}, a ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{format}, a...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Verbose", reflect.TypeOf((*MockPrintService)(nil).Verbose), varargs...)
 }

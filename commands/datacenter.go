@@ -173,7 +173,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 }
 
 func RunDataCenterGet(c *core.CommandConfig) error {
-	c.Printer.Infof("Datacenter with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Datacenter with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	dc, _, err := c.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err
@@ -185,10 +185,10 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	description := viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
 	location := viper.GetString(core.GetFlagName(c.NS, config.ArgLocation))
-	c.Printer.Infof("Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, location)
+	c.Printer.Verbose("Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, location)
 	dc, resp, err := c.DataCenters().Create(name, description, location)
 	if resp != nil {
-		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
 	if err != nil {
 		return err
@@ -205,12 +205,12 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 		input.SetName(name)
-		c.Printer.Infof("Property Name set: %v", name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDescription)) {
 		description := viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
 		input.SetDescription(description)
-		c.Printer.Infof("Property Description set: %v", description)
+		c.Printer.Verbose("Property Description set: %v", description)
 	}
 	dc, resp, err := c.DataCenters().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
@@ -230,7 +230,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
 		return err
 	}
-	c.Printer.Infof("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	resp, err := c.DataCenters().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err

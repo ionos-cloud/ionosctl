@@ -178,7 +178,7 @@ func RunIpBlockList(c *core.CommandConfig) error {
 }
 
 func RunIpBlockGet(c *core.CommandConfig) error {
-	c.Printer.Infof("Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
+	c.Printer.Verbose("Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
 	i, _, err := c.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
 	if err != nil {
 		return err
@@ -190,14 +190,14 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	location := viper.GetString(core.GetFlagName(c.NS, config.ArgLocation))
 	size := viper.GetInt32(core.GetFlagName(c.NS, config.ArgSize))
-	c.Printer.Infof("Properties set for creating the Ip block: Name: %v, Description: %v, Size: %v", name, location, size)
+	c.Printer.Verbose("Properties set for creating the Ip block: Name: %v, Location: %v, Size: %v", name, location, size)
 	i, resp, err := c.IpBlocks().Create(
 		name,
 		location,
 		size,
 	)
 	if resp != nil {
-		c.Printer.Infof("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
 	if err != nil {
 		return err
@@ -214,7 +214,7 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 		input.SetName(name)
-		c.Printer.Infof("Property Name set: %v", name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	i, resp, err := c.IpBlocks().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)),
@@ -234,7 +234,7 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
 		return err
 	}
-	c.Printer.Infof("Ip block with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
+	c.Printer.Verbose("Ip block with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
 	resp, err := c.IpBlocks().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
 	if err != nil {
 		return err

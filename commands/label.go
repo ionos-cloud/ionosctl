@@ -211,8 +211,11 @@ func RunLabelList(c *core.CommandConfig) error {
 }
 
 func RunLabelGet(c *core.CommandConfig) error {
-	c.Printer.Info("Getting label...")
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
+	resourceType := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType))
+	labelKey := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgLabelKey))
+	labelValue := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgLabelValue))
+	c.Printer.Verbose("Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType)
+	switch resourceType {
 	case config.DatacenterResource:
 		return RunDataCenterLabelGet(c)
 	case config.ServerResource:
@@ -229,8 +232,9 @@ func RunLabelGet(c *core.CommandConfig) error {
 }
 
 func RunLabelGetByUrn(c *core.CommandConfig) error {
-	c.Printer.Info("Getting label by urn...")
-	labelDc, _, err := c.Labels().GetByUrn(viper.GetString(core.GetFlagName(c.NS, config.ArgLabelUrn)))
+	urn := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelUrn))
+	c.Printer.Verbose("Getting label with urn: %v", urn)
+	labelDc, _, err := c.Labels().GetByUrn(urn)
 	if err != nil {
 		return err
 	}
@@ -255,8 +259,9 @@ func RunLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunLabelRemove(c *core.CommandConfig) error {
-	c.Printer.Info("Label is removing...")
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
+	resourceType := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType))
+	c.Printer.Verbose("Label is removing from %v...", resourceType)
+	switch resourceType {
 	case config.DatacenterResource:
 		return RunDataCenterLabelRemove(c)
 	case config.ServerResource:

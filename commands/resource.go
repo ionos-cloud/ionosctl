@@ -91,7 +91,7 @@ func RunResourceList(c *core.CommandConfig) error {
 }
 
 func RunResourceGet(c *core.CommandConfig) error {
-	c.Printer.Infof("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
+	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgResourceId)) {
 		resourceListed, _, err := c.Users().GetResourceByTypeAndId(
 			viper.GetString(core.GetFlagName(c.NS, config.ArgType)),

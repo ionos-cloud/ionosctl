@@ -163,7 +163,7 @@ func RunRequestList(c *core.CommandConfig) error {
 }
 
 func RunRequestGet(c *core.CommandConfig) error {
-	c.Printer.Infof("Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgRequestId)))
+	c.Printer.Verbose("Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgRequestId)))
 	req, _, err := c.Requests().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgRequestId)))
 	if err != nil {
 		return err
