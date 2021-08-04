@@ -92,6 +92,7 @@ You can set the environment variables using the next commands:
 export IONOS_USERNAME="ionos username"
 export IONOS_PASSWORD="ionos password"
 export IONOS_TOKEN="ionos token"
+export IONOS_API_URL="ionos api url"
 ```
 
 * Using `login` command
@@ -118,6 +119,8 @@ Status: Authentication successful!
 ```text
 Error: 401 Unauthorized
 ```
+
+Setting `--api-url` will overwrite the default value of `https://api.ionos.com` for subsequent requests.
 
 After a successful authentication with the `login` command, you will no longer need to provide credentials unless you want to change them. By default, they will be stored in
 
