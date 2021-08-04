@@ -351,7 +351,7 @@ func getK8sNodesIds(outErr io.Writer, clusterId, nodepoolId string) []string {
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	k8sSvc := v5.NewK8sService(clientSvc.Get(), context.TODO())

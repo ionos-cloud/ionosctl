@@ -15,10 +15,28 @@ import (
 
 func GetUserData() map[string]string {
 	return map[string]string{
-		Username: viper.GetString(Username),
-		Password: viper.GetString(Password),
-		Token:    viper.GetString(Token),
+		Username:  viper.GetString(Username),
+		Password:  viper.GetString(Password),
+		Token:     viper.GetString(Token),
+		ServerUrl: viper.GetString(ServerUrl),
 	}
+}
+
+// GetServerUrl returns the API URL from flags, config or env in order of priority.
+// The caller must ensure to load config or env vars beforehand, so they can be included.
+//
+// Priority:
+// 1. Explicit flag
+// 2. Env/config file
+// 3. Flag default value
+func GetServerUrl() string {
+	if viper.IsSet(ArgServerUrl) {
+		return viper.GetString(ArgServerUrl)
+	}
+	if url := viper.GetString(ServerUrl); url != "" {
+		return url
+	}
+	return viper.GetString(ArgServerUrl)
 }
 
 func GetConfigFile() string {
@@ -81,8 +99,9 @@ func Load() (err error) {
 	_ = viper.BindEnv(Username, sdk.IonosUsernameEnvVar)
 	_ = viper.BindEnv(Password, sdk.IonosPasswordEnvVar)
 	_ = viper.BindEnv(Token, sdk.IonosTokenEnvVar)
+	_ = viper.BindEnv(ServerUrl, IonosServerUrlEnvVar)
 
-	if viper.GetString(Username) == "" || viper.GetString(Password) == "" {
+	if viper.GetString(Username) == "" && viper.GetString(Token) == "" {
 		if err = LoadFile(); err != nil {
 			return err
 		}
