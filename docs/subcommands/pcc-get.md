@@ -29,7 +29,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
+  -u, --api-url string   Override default host url (default "https://api.ionos.com")
       --cols strings     Set of columns to be printed on output 
                          Available columns: [PccId Name Description State] (default [PccId,Name,Description,State])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
