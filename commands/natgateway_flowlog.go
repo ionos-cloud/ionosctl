@@ -334,7 +334,7 @@ func getNatGatewayFlowLogsIds(outErr io.Writer, datacenterId, natgatewayId strin
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	natgatewaySvc := v6.NewNatGatewayService(clientSvc.Get(), context.TODO())

@@ -706,7 +706,7 @@ func getNicsIds(outErr io.Writer, datacenterId, serverId string) []string {
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	nicSvc := v6.NewNicService(clientSvc.Get(), context.TODO())
@@ -732,7 +732,7 @@ func getAttachedNicsIds(outErr io.Writer, datacenterId, loadbalancerId string) [
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	nicSvc := v6.NewLoadbalancerService(clientSvc.Get(), context.TODO())
