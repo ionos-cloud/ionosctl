@@ -47,6 +47,7 @@ Required values to run command:
   -p, --password string        Alphanumeric password you want to update for the BackupUnit
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for BackupUnit update [seconds] (default 60)
+  -v, --verbose                see step by step process when running a command
   -w, --wait-for-request       Wait for the Request for BackupUnit update to be executed
 ```
 

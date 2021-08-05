@@ -56,6 +56,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for Volume detachment [seconds] (default 60)
+  -v, --verbose                see step by step process when running a command
   -i, --volume-id string       The unique Volume Id (required)
   -w, --wait-for-request       Wait for the Request for Volume detachment to be executed
 ```

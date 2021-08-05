@@ -38,6 +38,7 @@ Required values to run command:
   -o, --output string    Desired output format [text|json] (default "text")
   -i, --pcc-id string    The unique Private Cross-Connect Id (required)
   -q, --quiet            Quiet output
+  -v, --verbose          see step by step process when running a command
 ```
 
 ## Examples

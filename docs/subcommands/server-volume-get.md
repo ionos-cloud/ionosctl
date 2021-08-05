@@ -53,6 +53,7 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
+  -v, --verbose                see step by step process when running a command
   -i, --volume-id string       The unique Volume Id (required)
 ```
 

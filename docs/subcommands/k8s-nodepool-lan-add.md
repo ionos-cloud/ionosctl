@@ -53,6 +53,7 @@ Required values to run a command:
       --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
+  -v, --verbose              see step by step process when running a command
 ```
 
 ## Examples

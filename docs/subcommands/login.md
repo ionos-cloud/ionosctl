@@ -42,6 +42,7 @@ Note: The command can also be used without `--user` and `--password` flags. For 
   -q, --quiet             Quiet output
       --token string      Token to authenticate
       --user string       Username to authenticate
+  -v, --verbose           see step by step process when running a command
 ```
 
 ## Examples

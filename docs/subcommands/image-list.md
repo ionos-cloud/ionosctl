@@ -53,6 +53,7 @@ Use flags to retrieve a list of Images:
   -o, --output string         Desired output format [text|json] (default "text")
   -q, --quiet                 Quiet output
       --type string           The type of the Image
+  -v, --verbose               see step by step process when running a command
 ```
 
 ## Examples

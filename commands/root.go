@@ -27,6 +27,7 @@ var (
 	Output    string
 	Quiet     bool
 	Force     bool
+	Verbose   bool
 
 	cfgFile string
 
@@ -81,6 +82,9 @@ func init() {
 
 	rootPFlagSet.BoolVarP(&Force, config.ArgForce, config.ArgForceShort, false, "Force command to execute without user input")
 	_ = viper.BindPFlag(config.ArgForce, rootPFlagSet.Lookup(config.ArgForce))
+
+	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, config.ArgVerboseShort, false, "see step by step process when running a command")
+	_ = viper.BindPFlag(config.ArgVerbose, rootPFlagSet.Lookup(config.ArgVerbose))
 
 	addCommands()
 

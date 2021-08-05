@@ -47,6 +47,7 @@ Required values to run command:
       --resource-type string   Resource Type
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
+  -v, --verbose                see step by step process when running a command
       --volume-id string       The unique Volume Id
 ```
 

@@ -60,6 +60,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for FlowLog creation [seconds] (default 60)
+  -v, --verbose                see step by step process when running a command
   -w, --wait-for-request       Wait for Request for FlowLog creation to be executed
 ```
 

@@ -54,6 +54,7 @@ Required values to run a command:
   -o, --output string       Desired output format [text|json] (default "text")
   -p, --password string     The password for the User (must be at least 5 characters long) (required)
   -q, --quiet               Quiet output
+  -v, --verbose             see step by step process when running a command
 ```
 
 ## Examples

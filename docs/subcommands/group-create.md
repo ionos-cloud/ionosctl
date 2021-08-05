@@ -57,6 +57,7 @@ Required values to run a command:
       --reserve-ip          The group will be allowed to reserve IP addresses
       --s3privilege         The group will be allowed to manage S3
   -t, --timeout int         Timeout option for Request for Group creation [seconds] (default 60)
+  -v, --verbose             see step by step process when running a command
   -w, --wait-for-request    Wait for Request for Group creation to be executed
 ```
 

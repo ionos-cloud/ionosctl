@@ -49,6 +49,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
   -i, --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for Server resume [seconds] (default 60)
+  -v, --verbose                see step by step process when running a command
   -w, --wait-for-request       Wait for the Request for Server resume to be executed
 ```
 

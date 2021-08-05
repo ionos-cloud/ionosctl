@@ -47,6 +47,7 @@ Required values to run command:
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for waiting for NAT Gateway to be in AVAILABLE state [seconds] (default 60)
+  -v, --verbose                see step by step process when running a command
   -W, --wait-for-state         Wait for specified NAT Gateway to be in AVAILABLE state
 ```
 

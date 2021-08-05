@@ -48,6 +48,7 @@ Required values to run command:
   -q, --quiet                  Quiet output
   -i, --snapshot-id string     The unique Snapshot Id (required)
   -t, --timeout int            Timeout option for Request for Snapshot restore [seconds] (default 60)
+  -v, --verbose                see step by step process when running a command
       --volume-id string       The unique Volume Id (required)
   -w, --wait-for-request       Wait for the Request for Snapshot restore to be executed
 ```

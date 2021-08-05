@@ -61,6 +61,7 @@ Required values to run command:
       --target-ip string                IP of a balanced target VM (required)
       --target-port string              Port of the balanced target service. Range: 1 to 65535 (required)
   -t, --timeout int                     Timeout option for Request for Forwarding Rule Target deletion [seconds] (default 300)
+  -v, --verbose                         see step by step process when running a command
   -w, --wait-for-request                Wait for the Request for Forwarding Rule Target deletion to be executed
 ```
 

@@ -40,6 +40,7 @@ Required values to run command:
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -i, --resource-id string   The unique Resource Id (required)
+  -v, --verbose              see step by step process when running a command
 ```
 
 ## Examples

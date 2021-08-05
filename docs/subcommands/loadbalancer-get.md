@@ -46,6 +46,7 @@ Required values to run command:
   -i, --loadbalancer-id string   The unique Load Balancer Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
+  -v, --verbose                  see step by step process when running a command
 ```
 
 ## Examples

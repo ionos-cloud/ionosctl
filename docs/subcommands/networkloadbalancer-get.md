@@ -47,6 +47,7 @@ Required values to run command:
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
   -t, --timeout int                     Timeout option for waiting for Network Load Balancer to be in AVAILABLE state [seconds] (default 300)
+  -v, --verbose                         see step by step process when running a command
   -W, --wait-for-state                  Wait for specified Network Load Balancer to be in AVAILABLE state
 ```
 
