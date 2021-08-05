@@ -75,12 +75,13 @@ func RunLoginUser(c *core.CommandConfig) error {
 	viper.Set(config.Username, username)
 	viper.Set(config.Password, pwd)
 	viper.Set(config.Token, token)
+	viper.Set(config.ServerUrl, viper.GetString(config.ArgServerUrl))
 
 	clientSvc, err := v5.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	if err != nil {
 		return err
