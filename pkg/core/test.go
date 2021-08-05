@@ -8,7 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
-	"github.com/ionos-cloud/ionosctl/pkg/resources/v6/mocks"
+	mockResources "github.com/ionos-cloud/ionosctl/pkg/resources/v6/mocks"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
@@ -35,31 +35,31 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocks)
 
 type ResourcesMocks struct {
-	Client              *mock_resources.MockClientService
-	Location            *mock_resources.MockLocationsService
-	Datacenter          *mock_resources.MockDatacentersService
-	Server              *mock_resources.MockServersService
-	Volume              *mock_resources.MockVolumesService
-	Lan                 *mock_resources.MockLansService
-	NatGateway          *mock_resources.MockNatGatewaysService
-	NetworkLoadBalancer *mock_resources.MockNetworkLoadBalancersService
-	Nic                 *mock_resources.MockNicsService
-	Loadbalancer        *mock_resources.MockLoadbalancersService
-	IpBlocks            *mock_resources.MockIpBlocksService
-	Request             *mock_resources.MockRequestsService
-	Image               *mock_resources.MockImagesService
-	Snapshot            *mock_resources.MockSnapshotsService
-	FirewallRule        *mock_resources.MockFirewallRulesService
-	FlowLog             *mock_resources.MockFlowLogsService
-	Label               *mock_resources.MockLabelResourcesService
-	Contract            *mock_resources.MockContractsService
-	User                *mock_resources.MockUsersService
-	Group               *mock_resources.MockGroupsService
-	S3Key               *mock_resources.MockS3KeysService
-	BackupUnit          *mock_resources.MockBackupUnitsService
-	Pcc                 *mock_resources.MockPccsService
-	K8s                 *mock_resources.MockK8sService
-	Template            *mock_resources.MockTemplatesService
+	Client              *mockResources.MockClientService
+	Location            *mockResources.MockLocationsService
+	Datacenter          *mockResources.MockDatacentersService
+	Server              *mockResources.MockServersService
+	Volume              *mockResources.MockVolumesService
+	Lan                 *mockResources.MockLansService
+	NatGateway          *mockResources.MockNatGatewaysService
+	NetworkLoadBalancer *mockResources.MockNetworkLoadBalancersService
+	Nic                 *mockResources.MockNicsService
+	Loadbalancer        *mockResources.MockLoadbalancersService
+	IpBlocks            *mockResources.MockIpBlocksService
+	Request             *mockResources.MockRequestsService
+	Image               *mockResources.MockImagesService
+	Snapshot            *mockResources.MockSnapshotsService
+	FirewallRule        *mockResources.MockFirewallRulesService
+	FlowLog             *mockResources.MockFlowLogsService
+	Label               *mockResources.MockLabelResourcesService
+	Contract            *mockResources.MockContractsService
+	User                *mockResources.MockUsersService
+	Group               *mockResources.MockGroupsService
+	S3Key               *mockResources.MockS3KeysService
+	BackupUnit          *mockResources.MockBackupUnitsService
+	Pcc                 *mockResources.MockPccsService
+	K8s                 *mockResources.MockK8sService
+	Template            *mockResources.MockTemplatesService
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -85,31 +85,31 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 // Init Mock Resources for Test
 func initMockResources(ctrl *gomock.Controller) *ResourcesMocks {
 	return &ResourcesMocks{
-		Client:              mock_resources.NewMockClientService(ctrl),
-		Location:            mock_resources.NewMockLocationsService(ctrl),
-		Datacenter:          mock_resources.NewMockDatacentersService(ctrl),
-		Server:              mock_resources.NewMockServersService(ctrl),
-		Lan:                 mock_resources.NewMockLansService(ctrl),
-		Volume:              mock_resources.NewMockVolumesService(ctrl),
-		NatGateway:          mock_resources.NewMockNatGatewaysService(ctrl),
-		NetworkLoadBalancer: mock_resources.NewMockNetworkLoadBalancersService(ctrl),
-		Nic:                 mock_resources.NewMockNicsService(ctrl),
-		Loadbalancer:        mock_resources.NewMockLoadbalancersService(ctrl),
-		IpBlocks:            mock_resources.NewMockIpBlocksService(ctrl),
-		Request:             mock_resources.NewMockRequestsService(ctrl),
-		Image:               mock_resources.NewMockImagesService(ctrl),
-		Snapshot:            mock_resources.NewMockSnapshotsService(ctrl),
-		FirewallRule:        mock_resources.NewMockFirewallRulesService(ctrl),
-		FlowLog:             mock_resources.NewMockFlowLogsService(ctrl),
-		Label:               mock_resources.NewMockLabelResourcesService(ctrl),
-		Contract:            mock_resources.NewMockContractsService(ctrl),
-		User:                mock_resources.NewMockUsersService(ctrl),
-		Group:               mock_resources.NewMockGroupsService(ctrl),
-		S3Key:               mock_resources.NewMockS3KeysService(ctrl),
-		BackupUnit:          mock_resources.NewMockBackupUnitsService(ctrl),
-		Pcc:                 mock_resources.NewMockPccsService(ctrl),
-		K8s:                 mock_resources.NewMockK8sService(ctrl),
-		Template:            mock_resources.NewMockTemplatesService(ctrl),
+		Client:              mockResources.NewMockClientService(ctrl),
+		Location:            mockResources.NewMockLocationsService(ctrl),
+		Datacenter:          mockResources.NewMockDatacentersService(ctrl),
+		Server:              mockResources.NewMockServersService(ctrl),
+		Lan:                 mockResources.NewMockLansService(ctrl),
+		Volume:              mockResources.NewMockVolumesService(ctrl),
+		NatGateway:          mockResources.NewMockNatGatewaysService(ctrl),
+		NetworkLoadBalancer: mockResources.NewMockNetworkLoadBalancersService(ctrl),
+		Nic:                 mockResources.NewMockNicsService(ctrl),
+		Loadbalancer:        mockResources.NewMockLoadbalancersService(ctrl),
+		IpBlocks:            mockResources.NewMockIpBlocksService(ctrl),
+		Request:             mockResources.NewMockRequestsService(ctrl),
+		Image:               mockResources.NewMockImagesService(ctrl),
+		Snapshot:            mockResources.NewMockSnapshotsService(ctrl),
+		FirewallRule:        mockResources.NewMockFirewallRulesService(ctrl),
+		FlowLog:             mockResources.NewMockFlowLogsService(ctrl),
+		Label:               mockResources.NewMockLabelResourcesService(ctrl),
+		Contract:            mockResources.NewMockContractsService(ctrl),
+		User:                mockResources.NewMockUsersService(ctrl),
+		Group:               mockResources.NewMockGroupsService(ctrl),
+		S3Key:               mockResources.NewMockS3KeysService(ctrl),
+		BackupUnit:          mockResources.NewMockBackupUnitsService(ctrl),
+		Pcc:                 mockResources.NewMockPccsService(ctrl),
+		K8s:                 mockResources.NewMockK8sService(ctrl),
+		Template:            mockResources.NewMockTemplatesService(ctrl),
 	}
 }
 
