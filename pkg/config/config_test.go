@@ -27,7 +27,7 @@ func TestGetServerUrl(t *testing.T) {
 	viper.Set(ArgConfig, filepath.Join("..", "testdata", "config.json"))
 	assert.NoError(t, os.Chmod(filepath.Join("..", "testdata", "config.json"), 0600))
 	assert.NoError(t, Load())
-	assert.Equal(t, "https://api.ionos.com/cloudapi/v5", GetServerUrl())
+	assert.Equal(t, "https://api.ionos.com", GetServerUrl())
 
 	viper.Reset()
 	fs := pflag.NewFlagSet(ArgServerUrl, pflag.ContinueOnError)
@@ -50,7 +50,7 @@ func TestLoadFile(t *testing.T) {
 	assert.Equal(t, "test@ionos.com", viper.GetString(Username))
 	assert.Equal(t, "test", viper.GetString(Password))
 	assert.Equal(t, "jwt-token", viper.GetString(Token))
-	assert.Equal(t, "https://api.ionos.com/cloudapi/v5", viper.GetString(ServerUrl))
+	assert.Equal(t, "https://api.ionos.com", viper.GetString(ServerUrl))
 }
 
 func TestLoadEnvFallback(t *testing.T) {
