@@ -61,6 +61,7 @@ Required values to run command:
       --source-mac string        Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses.
       --target-ip string         In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.
   -t, --timeout int              Timeout option for Request for Firewall Rule update [seconds] (default 60)
+  -v, --verbose                  see step by step process when running a command
   -w, --wait-for-request         Wait for Request for Firewall Rule update to be executed
 ```
 

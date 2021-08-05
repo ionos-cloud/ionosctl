@@ -52,6 +52,7 @@ Required values to run a command:
   -q, --quiet                 Quiet output
       --s3bucket string       S3 Bucket name configured for K8s usage
   -t, --timeout int           Timeout option for waiting for Cluster/Request [seconds] (default 600)
+  -v, --verbose               see step by step process when running a command
   -w, --wait-for-request      Wait for the Request for Cluster creation to be executed
   -W, --wait-for-state        Wait for the new Cluster to be in ACTIVE state
 ```

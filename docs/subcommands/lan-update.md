@@ -52,6 +52,7 @@ Required values to run command:
       --public                 Public option for LAN
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for LAN update [seconds] (default 60)
+  -v, --verbose                see step by step process when running a command
   -w, --wait-for-request       Wait for the Request for LAN update to be executed
 ```
 

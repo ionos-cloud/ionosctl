@@ -45,6 +45,7 @@ Required values to run command:
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
   -t, --timeout int        Timeout option for Request for Group deletion [seconds] (default 60)
+  -v, --verbose            see step by step process when running a command
   -w, --wait-for-request   Wait for Request for Group deletion to be executed
 ```
 

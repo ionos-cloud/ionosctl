@@ -52,6 +52,7 @@ Required values to run command:
   -q, --quiet             Quiet output
   -i, --s3key-id string   The unique User S3Key Id (required)
       --user-id string    The unique User Id (required)
+  -v, --verbose           see step by step process when running a command
 ```
 
 ## Examples
