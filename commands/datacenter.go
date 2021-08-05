@@ -230,8 +230,9 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
-	resp, err := c.DataCenters().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	c.Printer.Verbose("Datacenter with id: %v is deleting...", dcId)
+	resp, err := c.DataCenters().Delete(dcId)
 	if err != nil {
 		return err
 	}
