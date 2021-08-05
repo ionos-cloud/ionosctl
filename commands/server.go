@@ -664,7 +664,7 @@ func getServersIds(outErr io.Writer, datacenterId string) []string {
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	serverSvc := v5.NewServerService(clientSvc.Get(), context.TODO())

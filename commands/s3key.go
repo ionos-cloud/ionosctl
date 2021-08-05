@@ -348,7 +348,7 @@ func getS3KeyIds(outErr io.Writer, userId string) []string {
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	S3KeySvc := v5.NewS3KeyService(clientSvc.Get(), context.TODO())
