@@ -491,7 +491,7 @@ func getK8sClustersIds(outErr io.Writer) []string {
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	k8sSvc := v6.NewK8sService(clientSvc.Get(), context.TODO())

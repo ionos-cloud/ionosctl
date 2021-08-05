@@ -163,7 +163,7 @@ func (c *CommandConfig) InitV6Client() (*v6.Client, error) {
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token), // Token support
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	if err != nil {
 		return nil, err
