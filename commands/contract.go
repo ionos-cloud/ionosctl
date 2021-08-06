@@ -60,6 +60,7 @@ func contract() *core.Command {
 }
 
 func RunContractGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceLimits)))
 	contractResource, _, err := c.Contracts().Get()
 	if err != nil {
 		return err
