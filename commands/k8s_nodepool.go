@@ -348,7 +348,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*v5.K8sNodePoolForPost, error) {
 	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	nodeCount := viper.GetInt32(core.GetFlagName(c.NS, config.ArgK8sNodeCount))
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
-	cpiFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily))
+	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily))
 	cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
 	storageType := viper.GetString(core.GetFlagName(c.NS, config.ArgStorageType))
@@ -358,7 +358,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*v5.K8sNodePoolForPost, error) {
 	nodePoolProperties.SetK8sVersion(k8sversion)
 	nodePoolProperties.SetNodeCount(nodeCount)
 	nodePoolProperties.SetDatacenterId(dcId)
-	nodePoolProperties.SetCpuFamily(cpiFamily)
+	nodePoolProperties.SetCpuFamily(cpuFamily)
 	nodePoolProperties.SetCoresCount(cores)
 	nodePoolProperties.SetRamSize(int32(ramSize))
 	nodePoolProperties.SetAvailabilityZone(availabilityZone)
@@ -366,7 +366,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*v5.K8sNodePoolForPost, error) {
 	nodePoolProperties.SetStorageType(storageType)
 
 	c.Printer.Verbose("Properties set for creating the node pool: Name: %v, K8sVersion: %v, NodeCount: %v, DatacenterId: %v, CpuFamily: %v, CoresCount: %v, RamSize: %vMB, AvailabilityZone: %v, StorageSize: %v, StorageType: %v",
-		name, k8sversion, nodeCount, dcId, cpiFamily, cores, int32(ramSize), availabilityZone, int32(storageSize), storageType)
+		name, k8sversion, nodeCount, dcId, cpuFamily, cores, int32(ramSize), availabilityZone, int32(storageSize), storageType)
 
 	return &v5.K8sNodePoolForPost{
 		KubernetesNodePoolForPost: ionoscloud.KubernetesNodePoolForPost{

@@ -399,7 +399,6 @@ func getK8sClusterInfo(oldUser *v5.K8sCluster, c *core.CommandConfig) v5.K8sClus
 					KubernetesMaintenanceWindow: *maintenance,
 				})
 				propertiesUpdated.SetMaintenanceWindow(newMaintenanceWindow.KubernetesMaintenanceWindow)
-				c.Printer.Verbose("Property MaintenanceWindow set: %v", newMaintenanceWindow.KubernetesMaintenanceWindow)
 			}
 		}
 	}
@@ -584,6 +583,7 @@ func getMaintenanceInfo(c *core.CommandConfig, maintenance *v5.K8sMaintenanceWin
 	var day, time string
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay)) {
 		day = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay))
+		c.Printer.Verbose("Property DayOfTheWeek of MaintenanceWindow set: %v", day)
 	} else {
 		if d, ok := maintenance.GetDayOfTheWeekOk(); ok && d != nil {
 			day = *d
@@ -591,6 +591,7 @@ func getMaintenanceInfo(c *core.CommandConfig, maintenance *v5.K8sMaintenanceWin
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime)) {
 		time = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime))
+		c.Printer.Verbose("Property Time of MaintenanceWindow set: %v", time)
 	} else {
 		if t, ok := maintenance.GetTimeOk(); ok && t != nil {
 			time = *t
