@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	tpl = resources.Template{
+	tpl = v6.Template{
 		Template: ionoscloud.Template{
 			Id: &testTemplateVar,
 			Properties: &ionoscloud.TemplateProperties{
@@ -29,7 +29,7 @@ var (
 			},
 		},
 	}
-	templates = resources.Templates{
+	templates = v6.Templates{
 		Templates: ionoscloud.Templates{
 			Items: &[]ionoscloud.Template{tpl.Template},
 		},

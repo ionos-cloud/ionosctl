@@ -40,7 +40,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -u, --api-url string           Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
+  -u, --api-url string           Override default host url (default "https://api.ionos.com")
       --bus string               Bus of the Volume (default "VIRTIO")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId SshKeys DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])

@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	snapshotTest = resources.Snapshot{
+	snapshotTest = v6.Snapshot{
 		Snapshot: ionoscloud.Snapshot{
 			Id: &testSnapshotVar,
 			Properties: &ionoscloud.SnapshotProperties{
@@ -34,13 +34,13 @@ var (
 		},
 	}
 	snapshotState = "BUSY"
-	snapshots     = resources.Snapshots{
+	snapshots     = v6.Snapshots{
 		Snapshots: ionoscloud.Snapshots{
 			Id:    &testSnapshotVar,
 			Items: &[]ionoscloud.Snapshot{snapshotTest.Snapshot},
 		},
 	}
-	snapshotProperties = resources.SnapshotProperties{
+	snapshotProperties = v6.SnapshotProperties{
 		SnapshotProperties: ionoscloud.SnapshotProperties{
 			Name:                &testSnapshotNewVar,
 			Description:         &testSnapshotNewVar,
@@ -58,7 +58,7 @@ var (
 			LicenceType:         &testSnapshotVar,
 		},
 	}
-	snapshotNew = resources.Snapshot{
+	snapshotNew = v6.Snapshot{
 		Snapshot: ionoscloud.Snapshot{
 			Id:         &testSnapshotVar,
 			Properties: &snapshotProperties.SnapshotProperties,

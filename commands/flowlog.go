@@ -10,7 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -231,7 +231,7 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 	if !properties.HasAction() {
 		properties.SetAction(viper.GetString(core.GetFlagName(c.NS, config.ArgAction)))
 	}
-	input := resources.FlowLog{
+	input := v6.FlowLog{
 		FlowLog: ionoscloud.FlowLog{
 			Properties: &properties.FlowLogProperties,
 		},
@@ -273,8 +273,8 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 }
 
 // Get FlowLog Properties set used for create and update commands
-func getFlowLogPropertiesSet(c *core.CommandConfig) resources.FlowLogProperties {
-	properties := resources.FlowLogProperties{}
+func getFlowLogPropertiesSet(c *core.CommandConfig) v6.FlowLogProperties {
+	properties := v6.FlowLogProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	}
@@ -303,7 +303,7 @@ type FlowLogPrint struct {
 	State     string `json:"State,omitempty"`
 }
 
-func getFlowLogPrint(resp *resources.Response, c *core.CommandConfig, rule []resources.FlowLog) printer.Result {
+func getFlowLogPrint(resp *v6.Response, c *core.CommandConfig, rule []v6.FlowLog) printer.Result {
 	var r printer.Result
 	if c != nil {
 		if resp != nil {
@@ -350,25 +350,25 @@ func getFlowLogsCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getFlowLogs(flowLogs resources.FlowLogs) []resources.FlowLog {
-	ls := make([]resources.FlowLog, 0)
+func getFlowLogs(flowLogs v6.FlowLogs) []v6.FlowLog {
+	ls := make([]v6.FlowLog, 0)
 	if items, ok := flowLogs.GetItemsOk(); ok && items != nil {
 		for _, s := range *items {
-			ls = append(ls, resources.FlowLog{FlowLog: s})
+			ls = append(ls, v6.FlowLog{FlowLog: s})
 		}
 	}
 	return ls
 }
 
-func getFlowLog(flowLog *resources.FlowLog) []resources.FlowLog {
-	ss := make([]resources.FlowLog, 0)
+func getFlowLog(flowLog *v6.FlowLog) []v6.FlowLog {
+	ss := make([]v6.FlowLog, 0)
 	if flowLog != nil {
-		ss = append(ss, resources.FlowLog{FlowLog: flowLog.FlowLog})
+		ss = append(ss, v6.FlowLog{FlowLog: flowLog.FlowLog})
 	}
 	return ss
 }
 
-func getFlowLogsKVMaps(ls []resources.FlowLog) []map[string]interface{} {
+func getFlowLogsKVMaps(ls []v6.FlowLog) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ls))
 	if len(ls) > 0 {
 		for _, l := range ls {
@@ -379,7 +379,7 @@ func getFlowLogsKVMaps(ls []resources.FlowLog) []map[string]interface{} {
 	return out
 }
 
-func getFlowLogKVMap(l resources.FlowLog) map[string]interface{} {
+func getFlowLogKVMap(l v6.FlowLog) map[string]interface{} {
 	var flowLogPrint FlowLogPrint
 	if id, ok := l.GetIdOk(); ok && id != nil {
 		flowLogPrint.FlowLogId = *id
@@ -409,14 +409,14 @@ func getFlowLogKVMap(l resources.FlowLog) map[string]interface{} {
 func getFlowLogsIds(outErr io.Writer, datacenterId, serverId, nicId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	flowLogSvc := resources.NewFlowLogService(clientSvc.Get(), context.TODO())
+	flowLogSvc := v6.NewFlowLogService(clientSvc.Get(), context.TODO())
 	flowLogs, _, err := flowLogSvc.List(datacenterId, serverId, nicId)
 	clierror.CheckError(err, outErr)
 	flowLogsIds := make([]string, 0)

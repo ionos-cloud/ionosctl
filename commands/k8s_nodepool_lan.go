@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -197,8 +197,8 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 	return c.Printer.Print("Status: Command node pool lan remove has been successfully executed")
 }
 
-func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePool) resources.K8sNodePool {
-	propertiesUpdated := resources.K8sNodePoolProperties{}
+func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K8sNodePool {
+	propertiesUpdated := v6.K8sNodePoolProperties{}
 	if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 		if n, ok := properties.GetNodeCountOk(); ok && n != nil {
 			propertiesUpdated.SetNodeCount(*n)
@@ -242,15 +242,15 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			propertiesUpdated.SetLans(newLans)
 		}
 	}
-	return resources.K8sNodePool{
+	return v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &propertiesUpdated.KubernetesNodePoolProperties,
 		},
 	}
 }
 
-func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePool) resources.K8sNodePool {
-	propertiesUpdated := resources.K8sNodePoolProperties{}
+func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K8sNodePool {
+	propertiesUpdated := v6.K8sNodePoolProperties{}
 	if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 		if n, ok := properties.GetNodeCountOk(); ok && n != nil {
 			propertiesUpdated.SetNodeCount(*n)
@@ -279,7 +279,7 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *resources.K8sNodePoo
 			propertiesUpdated.SetLans(newLans)
 		}
 	}
-	return resources.K8sNodePool{
+	return v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &propertiesUpdated.KubernetesNodePoolProperties,
 		},
@@ -297,7 +297,7 @@ type K8sNodePoolLanPrint struct {
 	RoutesGatewayIp []string `json:"RoutesGatewayIp,omitempty"`
 }
 
-func getK8sNodePoolLanPrint(c *core.CommandConfig, k8ss []resources.K8sNodePoolLan) printer.Result {
+func getK8sNodePoolLanPrint(c *core.CommandConfig, k8ss []v6.K8sNodePoolLan) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if k8ss != nil {
@@ -309,13 +309,13 @@ func getK8sNodePoolLanPrint(c *core.CommandConfig, k8ss []resources.K8sNodePoolL
 	return r
 }
 
-func getK8sNodePoolLansForPut(ng *resources.K8sNodePoolForPut) []resources.K8sNodePoolLan {
-	ss := make([]resources.K8sNodePoolLan, 0)
+func getK8sNodePoolLansForPut(ng *v6.K8sNodePoolForPut) []v6.K8sNodePoolLan {
+	ss := make([]v6.K8sNodePoolLan, 0)
 	if ng != nil {
 		if properties, ok := ng.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
 				for _, lanItem := range *lans {
-					ss = append(ss, resources.K8sNodePoolLan{
+					ss = append(ss, v6.K8sNodePoolLan{
 						KubernetesNodePoolLan: lanItem,
 					})
 				}
@@ -348,17 +348,17 @@ func getK8sNodePoolLanCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getK8sNodePoolLans(k8ss *[]ionoscloud.KubernetesNodePoolLan) []resources.K8sNodePoolLan {
-	u := make([]resources.K8sNodePoolLan, 0)
+func getK8sNodePoolLans(k8ss *[]ionoscloud.KubernetesNodePoolLan) []v6.K8sNodePoolLan {
+	u := make([]v6.K8sNodePoolLan, 0)
 	if k8ss != nil {
 		for _, item := range *k8ss {
-			u = append(u, resources.K8sNodePoolLan{KubernetesNodePoolLan: item})
+			u = append(u, v6.K8sNodePoolLan{KubernetesNodePoolLan: item})
 		}
 	}
 	return u
 }
 
-func getK8sNodePoolLansKVMaps(us []resources.K8sNodePoolLan) []map[string]interface{} {
+func getK8sNodePoolLansKVMaps(us []v6.K8sNodePoolLan) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(us))
 	for _, u := range us {
 		var uPrint K8sNodePoolLanPrint

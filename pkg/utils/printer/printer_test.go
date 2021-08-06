@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -157,7 +157,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		ApiResponse: &resources.Response{
+		ApiResponse: &v6.Response{
 			APIResponse: ionoscloud.APIResponse{
 				Message: statusOkTestMsg,
 				Response: &http.Response{
@@ -191,7 +191,7 @@ func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		ApiResponse: &resources.Response{
+		ApiResponse: &v6.Response{
 			APIResponse: ionoscloud.APIResponse{
 				Message: statusOkTestMsg,
 				Response: &http.Response{
@@ -272,7 +272,7 @@ func TestPrinterPrintResultTextRequestId(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	res := Result{
-		ApiResponse: &resources.Response{
+		ApiResponse: &v6.Response{
 			APIResponse: ionoscloud.APIResponse{
 				Message: statusOkTestMsg,
 				Response: &http.Response{

@@ -11,7 +11,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	testFlowLog = resources.FlowLog{
+	testFlowLog = v6.FlowLog{
 		FlowLog: ionoscloud.FlowLog{
 			Id: &testFlowLogVar,
 			Properties: &ionoscloud.FlowLogProperties{
@@ -33,17 +33,17 @@ var (
 			},
 		},
 	}
-	testInputFlowLog = resources.FlowLog{
+	testInputFlowLog = v6.FlowLog{
 		FlowLog: ionoscloud.FlowLog{
 			Properties: testFlowLog.FlowLog.Properties,
 		},
 	}
-	testFlowLogUpdated = resources.FlowLog{
+	testFlowLogUpdated = v6.FlowLog{
 		FlowLog: ionoscloud.FlowLog{
 			Properties: &testFlowLogProperties.FlowLogProperties,
 		},
 	}
-	testFlowLogProperties = resources.FlowLogProperties{
+	testFlowLogProperties = v6.FlowLogProperties{
 		FlowLogProperties: ionoscloud.FlowLogProperties{
 			Name:      &testFlowLogNewVar,
 			Action:    &testFlowLogNewUpperVar,
@@ -51,7 +51,7 @@ var (
 			Bucket:    &testFlowLogNewVar,
 		},
 	}
-	testFlowLogs = resources.FlowLogs{
+	testFlowLogs = v6.FlowLogs{
 		FlowLogs: ionoscloud.FlowLogs{
 			Id:    &testFlowLogVar,
 			Items: &[]ionoscloud.FlowLog{testFlowLog.FlowLog},

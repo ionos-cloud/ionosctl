@@ -8,7 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -22,13 +22,13 @@ var (
 			Value: &testLabelResourceVar,
 		},
 	}
-	testLabelResources = resources.LabelResources{
+	testLabelResources = v6.LabelResources{
 		LabelResources: ionoscloud.LabelResources{
 			Id:    &testLabelVar,
 			Items: &[]ionoscloud.LabelResource{testLabelResource},
 		},
 	}
-	testLabelResourceRes = resources.LabelResource{LabelResource: testLabelResource}
+	testLabelResourceRes = v6.LabelResource{LabelResource: testLabelResource}
 	testLabelResourceVar = "test-label-resource"
 	testLabelResourceErr = errors.New("label resource test error")
 )

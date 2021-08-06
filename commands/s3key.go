@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -210,7 +210,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 
 func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	active := viper.GetBool(core.GetFlagName(c.NS, config.ArgS3KeyActive))
-	newKey := resources.S3Key{
+	newKey := v6.S3Key{
 		S3Key: ionoscloud.S3Key{
 			Properties: &ionoscloud.S3KeyProperties{
 				Active: &active,
@@ -258,7 +258,7 @@ type S3KeyPrint struct {
 	SecretKey string `json:"SecretKey,omitempty"`
 }
 
-func getS3KeyPrint(resp *resources.Response, c *core.CommandConfig, s []resources.S3Key) printer.Result {
+func getS3KeyPrint(resp *v6.Response, c *core.CommandConfig, s []v6.S3Key) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -298,25 +298,25 @@ func getS3KeyCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getS3Keys(S3Keys resources.S3Keys) []resources.S3Key {
-	ss := make([]resources.S3Key, 0)
+func getS3Keys(S3Keys v6.S3Keys) []v6.S3Key {
+	ss := make([]v6.S3Key, 0)
 	if items, ok := S3Keys.GetItemsOk(); ok && items != nil {
 		for _, s := range *items {
-			ss = append(ss, resources.S3Key{S3Key: s})
+			ss = append(ss, v6.S3Key{S3Key: s})
 		}
 	}
 	return ss
 }
 
-func getS3Key(s *resources.S3Key) []resources.S3Key {
-	ss := make([]resources.S3Key, 0)
+func getS3Key(s *v6.S3Key) []v6.S3Key {
+	ss := make([]v6.S3Key, 0)
 	if s != nil {
-		ss = append(ss, resources.S3Key{S3Key: s.S3Key})
+		ss = append(ss, v6.S3Key{S3Key: s.S3Key})
 	}
 	return ss
 }
 
-func getS3KeysKVMaps(ss []resources.S3Key) []map[string]interface{} {
+func getS3KeysKVMaps(ss []v6.S3Key) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		o := getS3KeyKVMap(s)
@@ -325,7 +325,7 @@ func getS3KeysKVMaps(ss []resources.S3Key) []map[string]interface{} {
 	return out
 }
 
-func getS3KeyKVMap(s resources.S3Key) map[string]interface{} {
+func getS3KeyKVMap(s v6.S3Key) map[string]interface{} {
 	var ssPrint S3KeyPrint
 	if ssId, ok := s.GetIdOk(); ok && ssId != nil {
 		ssPrint.S3KeyId = *ssId
@@ -344,14 +344,14 @@ func getS3KeyKVMap(s resources.S3Key) map[string]interface{} {
 func getS3KeyIds(outErr io.Writer, userId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	S3KeySvc := resources.NewS3KeyService(clientSvc.Get(), context.TODO())
+	S3KeySvc := v6.NewS3KeyService(clientSvc.Get(), context.TODO())
 	S3Keys, _, err := S3KeySvc.List(userId)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)

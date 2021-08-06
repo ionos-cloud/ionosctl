@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -216,7 +216,7 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 	return c.Printer.Print(getNatGatewayLanPrint(resp, c, nil))
 }
 
-func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway) *resources.NatGatewayProperties {
+func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *v6.NatGateway) *v6.NatGatewayProperties {
 	var proper []ionoscloud.NatGatewayLanProperties
 	if oldNg != nil {
 		if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
@@ -233,14 +233,14 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 		input.SetGatewayIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
 	}
 	proper = append(proper, input)
-	return &resources.NatGatewayProperties{
+	return &v6.NatGatewayProperties{
 		NatGatewayProperties: ionoscloud.NatGatewayProperties{
 			Lans: &proper,
 		},
 	}
 }
 
-func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway) *resources.NatGatewayProperties {
+func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *v6.NatGateway) *v6.NatGatewayProperties {
 	proper := make([]ionoscloud.NatGatewayLanProperties, 0)
 	if oldNg != nil {
 		if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
@@ -255,7 +255,7 @@ func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 			}
 		}
 	}
-	return &resources.NatGatewayProperties{
+	return &v6.NatGatewayProperties{
 		NatGatewayProperties: ionoscloud.NatGatewayProperties{
 			Lans: &proper,
 		},
@@ -271,7 +271,7 @@ type NatGatewayLanPrint struct {
 	GatewayIps      []string `json:"GatewayIps,omitempty"`
 }
 
-func getNatGatewayLanPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NatGatewayLanProperties) printer.Result {
+func getNatGatewayLanPrint(resp *v6.Response, c *core.CommandConfig, ss []v6.NatGatewayLanProperties) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -314,13 +314,13 @@ func getNatGatewayLansCols(flagName string, outErr io.Writer) []string {
 	return natgatewayCols
 }
 
-func getNatGatewayLans(ng *resources.NatGateway) []resources.NatGatewayLanProperties {
-	ss := make([]resources.NatGatewayLanProperties, 0)
+func getNatGatewayLans(ng *v6.NatGateway) []v6.NatGatewayLanProperties {
+	ss := make([]v6.NatGatewayLanProperties, 0)
 	if ng != nil {
 		if properties, ok := ng.GetPropertiesOk(); ok && properties != nil {
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
 				for _, lanItem := range *lans {
-					ss = append(ss, resources.NatGatewayLanProperties{
+					ss = append(ss, v6.NatGatewayLanProperties{
 						NatGatewayLanProperties: lanItem,
 					})
 				}
@@ -330,7 +330,7 @@ func getNatGatewayLans(ng *resources.NatGateway) []resources.NatGatewayLanProper
 	return ss
 }
 
-func getNatGatewayLansKVMaps(ss []resources.NatGatewayLanProperties) []map[string]interface{} {
+func getNatGatewayLansKVMaps(ss []v6.NatGatewayLanProperties) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var natgatewayPrint NatGatewayLanPrint

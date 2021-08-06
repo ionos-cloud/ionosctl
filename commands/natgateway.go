@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -215,7 +215,7 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayPrint(nil, c, []resources.NatGateway{*ng}))
+	return c.Printer.Print(getNatGatewayPrint(nil, c, []v6.NatGateway{*ng}))
 }
 
 func RunNatGatewayCreate(c *core.CommandConfig) error {
@@ -225,7 +225,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	}
 	ng, resp, err := c.NatGateways().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		resources.NatGateway{
+		v6.NatGateway{
 			NatGateway: ionoscloud.NatGateway{
 				Properties: &proper.NatGatewayProperties,
 			},
@@ -237,7 +237,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayPrint(resp, c, []resources.NatGateway{*ng}))
+	return c.Printer.Print(getNatGatewayPrint(resp, c, []v6.NatGateway{*ng}))
 }
 
 func RunNatGatewayUpdate(c *core.CommandConfig) error {
@@ -253,7 +253,7 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayPrint(resp, c, []resources.NatGateway{*ng}))
+	return c.Printer.Print(getNatGatewayPrint(resp, c, []v6.NatGateway{*ng}))
 }
 
 func RunNatGatewayDelete(c *core.CommandConfig) error {
@@ -273,7 +273,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getNatGatewayPrint(resp, c, nil))
 }
 
-func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties {
+func getNewNatGatewayInfo(c *core.CommandConfig) *v6.NatGatewayProperties {
 	input := ionoscloud.NatGatewayProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
@@ -281,7 +281,7 @@ func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIps)) {
 		input.SetPublicIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
 	}
-	return &resources.NatGatewayProperties{
+	return &v6.NatGatewayProperties{
 		NatGatewayProperties: input,
 	}
 }
@@ -312,7 +312,7 @@ type NatGatewayPrint struct {
 	State        string   `json:"State,omitempty"`
 }
 
-func getNatGatewayPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NatGateway) printer.Result {
+func getNatGatewayPrint(resp *v6.Response, c *core.CommandConfig, ss []v6.NatGateway) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -357,15 +357,15 @@ func getNatGatewaysCols(flagName string, outErr io.Writer) []string {
 	return natgatewayCols
 }
 
-func getNatGateways(natgateways resources.NatGateways) []resources.NatGateway {
-	ss := make([]resources.NatGateway, 0)
+func getNatGateways(natgateways v6.NatGateways) []v6.NatGateway {
+	ss := make([]v6.NatGateway, 0)
 	for _, s := range *natgateways.Items {
-		ss = append(ss, resources.NatGateway{NatGateway: s})
+		ss = append(ss, v6.NatGateway{NatGateway: s})
 	}
 	return ss
 }
 
-func getNatGatewaysKVMaps(ss []resources.NatGateway) []map[string]interface{} {
+func getNatGatewaysKVMaps(ss []v6.NatGateway) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var natgatewayPrint NatGatewayPrint
@@ -394,14 +394,14 @@ func getNatGatewaysKVMaps(ss []resources.NatGateway) []map[string]interface{} {
 func getNatGatewaysIds(outErr io.Writer, datacenterId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	natgatewaySvc := resources.NewNatGatewayService(clientSvc.Get(), context.TODO())
+	natgatewaySvc := v6.NewNatGatewayService(clientSvc.Get(), context.TODO())
 	natgateways, _, err := natgatewaySvc.List(datacenterId)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)

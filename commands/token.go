@@ -7,7 +7,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -60,7 +60,7 @@ func RunServerTokenGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTokenPrint(c, []resources.Token{t}))
+	return c.Printer.Print(getTokenPrint(c, []v6.Token{t}))
 }
 
 // Output Printing
@@ -71,7 +71,7 @@ type TokenPrint struct {
 	Token string `json:"Token,omitempty"`
 }
 
-func getTokenPrint(c *core.CommandConfig, ss []resources.Token) printer.Result {
+func getTokenPrint(c *core.CommandConfig, ss []v6.Token) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if ss != nil {
@@ -83,7 +83,7 @@ func getTokenPrint(c *core.CommandConfig, ss []resources.Token) printer.Result {
 	return r
 }
 
-func getTokenKVMaps(ss []resources.Token) []map[string]interface{} {
+func getTokenKVMaps(ss []v6.Token) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var tokenPrint TokenPrint

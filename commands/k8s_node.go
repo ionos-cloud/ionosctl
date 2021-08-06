@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -257,7 +257,7 @@ type K8sNodePrint struct {
 	State      string `json:"State,omitempty"`
 }
 
-func getK8sNodePrint(c *core.CommandConfig, k8ss []resources.K8sNode) printer.Result {
+func getK8sNodePrint(c *core.CommandConfig, k8ss []v6.K8sNode) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if k8ss != nil {
@@ -294,25 +294,25 @@ func getK8sNodeCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getK8sNodes(k8ss resources.K8sNodes) []resources.K8sNode {
-	u := make([]resources.K8sNode, 0)
+func getK8sNodes(k8ss v6.K8sNodes) []v6.K8sNode {
+	u := make([]v6.K8sNode, 0)
 	if items, ok := k8ss.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.K8sNode{KubernetesNode: item})
+			u = append(u, v6.K8sNode{KubernetesNode: item})
 		}
 	}
 	return u
 }
 
-func getK8sNode(u *resources.K8sNode) []resources.K8sNode {
-	k8ss := make([]resources.K8sNode, 0)
+func getK8sNode(u *v6.K8sNode) []v6.K8sNode {
+	k8ss := make([]v6.K8sNode, 0)
 	if u != nil {
-		k8ss = append(k8ss, resources.K8sNode{KubernetesNode: u.KubernetesNode})
+		k8ss = append(k8ss, v6.K8sNode{KubernetesNode: u.KubernetesNode})
 	}
 	return k8ss
 }
 
-func getK8sNodesKVMaps(us []resources.K8sNode) []map[string]interface{} {
+func getK8sNodesKVMaps(us []v6.K8sNode) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(us))
 	for _, u := range us {
 		var uPrint K8sNodePrint
@@ -347,14 +347,14 @@ func getK8sNodesKVMaps(us []resources.K8sNode) []map[string]interface{} {
 func getK8sNodesIds(outErr io.Writer, clusterId, nodepoolId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
 		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	k8sSvc := resources.NewK8sService(clientSvc.Get(), context.TODO())
+	k8sSvc := v6.NewK8sService(clientSvc.Get(), context.TODO())
 	k8ss, _, err := k8sSvc.ListNodes(clusterId, nodepoolId)
 	clierror.CheckError(err, outErr)
 	k8ssIds := make([]string, 0)
