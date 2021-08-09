@@ -41,6 +41,8 @@ const (
 	ArgName                  = "name"
 	ArgVolumeName            = "volume-name"
 	ArgNameShort             = "n"
+	ArgS3Bucket              = "s3bucket"
+	ArgApiSubnets            = "api-subnets"
 	ArgDescription           = "description"
 	ArgDescriptionShort      = "d"
 	ArgLocation              = "location"

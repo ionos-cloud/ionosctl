@@ -233,10 +233,10 @@ var (
 			},
 		},
 	}
-	nodepoolTestOld = v6.K8sNodePoolForPut{
-		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+	nodepoolTestOld = v6.K8sNodePool{
+		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				Name:       &testNodepoolVar,
 				NodeCount:  &testNodepoolIntVar,
 				K8sVersion: &testNodepoolVar,
