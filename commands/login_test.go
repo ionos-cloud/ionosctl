@@ -3,12 +3,12 @@ package commands
 import (
 	"bufio"
 	"bytes"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"os"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,7 +27,6 @@ func TestRunLoginUserBufferUserErr(t *testing.T) {
 		cfg.Stdin = bytes.NewReader([]byte(testUsername + "\n"))
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == "401 Unauthorized")
 	})
 }
 
@@ -51,7 +50,6 @@ func TestRunLoginUserUnauthorizedErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
 		err := RunLoginUser(cfg)
 		assert.Error(t, err)
-		assert.True(t, err.Error() == "401 Unauthorized")
 	})
 }
 

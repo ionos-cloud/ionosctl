@@ -170,10 +170,10 @@ var (
 			Items: &[]ionoscloud.KubernetesNodePool{nodepoolTest.KubernetesNodePool},
 		},
 	}
-	nodepoolTestNew = v6.K8sNodePoolForPut{
-		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+	nodepoolTestNew = v6.K8sNodePool{
+		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
+			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				Name:       &testNodepoolVar,
 				K8sVersion: &testNodepoolNewVar,
 				NodeCount:  &testNodepoolIntNewVar,
@@ -204,9 +204,9 @@ var (
 	nodepoolTestMap = map[string]string{
 		testNodepoolNewVar: testNodepoolNewVar,
 	}
-	nodepoolTestUpdateNew = v6.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+	nodepoolTestUpdateNew = v6.K8sNodePoolForPut{
+		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
 				K8sVersion: &testNodepoolNewVar,
 				NodeCount:  &testNodepoolIntNewVar,
 				AutoScaling: &ionoscloud.KubernetesAutoScaling{
@@ -243,9 +243,9 @@ var (
 			},
 		},
 	}
-	nodepoolTestUpdateOld = v6.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+	nodepoolTestUpdateOld = v6.K8sNodePoolForPut{
+		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
 				NodeCount:  &testNodepoolIntVar,
 				K8sVersion: &testNodepoolVar,
 			},

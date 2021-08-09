@@ -287,10 +287,10 @@ func (mr *MockK8sServiceMockRecorder) UpdateCluster(clusterId, input interface{}
 }
 
 // UpdateNodePool mocks base method.
-func (m *MockK8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool v6.K8sNodePool) (*v6.K8sNodePoolForPut, *v6.Response, error) {
+func (m *MockK8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool v6.K8sNodePoolForPut) (*v6.K8sNodePool, *v6.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateNodePool", clusterId, nodepoolId, nodepool)
-	ret0, _ := ret[0].(*v6.K8sNodePoolForPut)
+	ret0, _ := ret[0].(*v6.K8sNodePool)
 	ret1, _ := ret[1].(*v6.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
