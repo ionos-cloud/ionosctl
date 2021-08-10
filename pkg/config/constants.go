@@ -217,7 +217,8 @@ const (
 
 // Default values
 const (
-	DefaultApiURL          = "https://api.ionos.com/cloudapi/v6"
+	DefaultApiURL          = "https://api.ionos.com"
+	DefaultV6BasePath      = "/cloudapi/v6"
 	DefaultConfigFileName  = "/config.json"
 	DefaultOutputFormat    = "text"
 	DefaultWait            = false
@@ -235,4 +236,10 @@ const (
 	Username               = "userdata.name"
 	Password               = "userdata.password"
 	Token                  = "userdata.token"
+	ServerUrl              = "userdata.api-url"
+)
+
+// Custom env vars
+const (
+	IonosServerUrlEnvVar = "IONOS_API_URL"
 )

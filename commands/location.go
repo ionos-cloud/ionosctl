@@ -10,7 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -153,23 +153,23 @@ func getLocationCols(flagName string, outErr io.Writer) []string {
 	return locationsCols
 }
 
-func getLocation(u *resources.Location) []resources.Location {
-	locs := make([]resources.Location, 0)
+func getLocation(u *v6.Location) []v6.Location {
+	locs := make([]v6.Location, 0)
 	if u != nil {
-		locs = append(locs, resources.Location{Location: u.Location})
+		locs = append(locs, v6.Location{Location: u.Location})
 	}
 	return locs
 }
 
-func getLocations(locations resources.Locations) []resources.Location {
-	dc := make([]resources.Location, 0)
+func getLocations(locations v6.Locations) []v6.Location {
+	dc := make([]v6.Location, 0)
 	for _, d := range *locations.Items {
-		dc = append(dc, resources.Location{Location: d})
+		dc = append(dc, v6.Location{Location: d})
 	}
 	return dc
 }
 
-func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {
+func getLocationsKVMaps(dcs []v6.Location) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(dcs))
 	for _, dc := range dcs {
 		properties := dc.GetProperties()
@@ -204,14 +204,14 @@ func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {
 func getLocationIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	locationSvc := resources.NewLocationService(clientSvc.Get(), context.TODO())
+	locationSvc := v6.NewLocationService(clientSvc.Get(), context.TODO())
 	locations, _, err := locationSvc.List()
 	clierror.CheckError(err, outErr)
 	lcIds := make([]string, 0)

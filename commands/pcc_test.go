@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	pccTest = resources.PrivateCrossConnect{
+	pccTest = v6.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Properties: &ionoscloud.PrivateCrossConnectProperties{
 				Name:        &testPccVar,
@@ -26,14 +26,14 @@ var (
 			},
 		},
 	}
-	pccTestGet = resources.PrivateCrossConnect{
+	pccTestGet = v6.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Id:         &testPccVar,
 			Properties: pccTest.Properties,
 			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
-	pccPeerTest = resources.Peer{
+	pccPeerTest = v6.Peer{
 		Peer: ionoscloud.Peer{
 			Id:             &testPccVar,
 			Name:           &testPccVar,
@@ -42,19 +42,19 @@ var (
 			Location:       &testPccVar,
 		},
 	}
-	pccs = resources.PrivateCrossConnects{
+	pccs = v6.PrivateCrossConnects{
 		PrivateCrossConnects: ionoscloud.PrivateCrossConnects{
 			Id:    &testPccVar,
 			Items: &[]ionoscloud.PrivateCrossConnect{pccTest.PrivateCrossConnect},
 		},
 	}
-	pccProperties = resources.PrivateCrossConnectProperties{
+	pccProperties = v6.PrivateCrossConnectProperties{
 		PrivateCrossConnectProperties: ionoscloud.PrivateCrossConnectProperties{
 			Name:        &testPccNewVar,
 			Description: &testPccNewVar,
 		},
 	}
-	pccNew = resources.PrivateCrossConnect{
+	pccNew = v6.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Properties: &pccProperties.PrivateCrossConnectProperties,
 		},
@@ -151,7 +151,7 @@ func TestRunPccPeersList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
-		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, nil)
+		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]v6.Peer{pccPeerTest}, nil, nil)
 		err := RunPccPeersList(cfg)
 		assert.NoError(t, err)
 	})
@@ -165,7 +165,7 @@ func TestRunPccPeersListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
-		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]resources.Peer{pccPeerTest}, nil, testPccErr)
+		rm.Pcc.EXPECT().GetPeers(testPccVar).Return(&[]v6.Peer{pccPeerTest}, nil, testPccErr)
 		err := RunPccPeersList(cfg)
 		assert.Error(t, err)
 	})

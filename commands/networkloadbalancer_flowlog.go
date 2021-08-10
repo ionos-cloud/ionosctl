@@ -7,7 +7,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -263,7 +263,7 @@ func RunNetworkLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(nil, c, []resources.FlowLog{*ng}))
+	return c.Printer.Print(getFlowLogPrint(nil, c, []v6.FlowLog{*ng}))
 }
 
 func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
@@ -274,7 +274,7 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 	ng, resp, err := c.NetworkLoadBalancers().CreateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
-		resources.FlowLog{
+		v6.FlowLog{
 			FlowLog: ionoscloud.FlowLog{
 				Properties: &proper.FlowLogProperties,
 			},
@@ -289,7 +289,7 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(resp, c, []resources.FlowLog{*ng}))
+	return c.Printer.Print(getFlowLogPrint(resp, c, []v6.FlowLog{*ng}))
 }
 
 func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
@@ -306,7 +306,7 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getFlowLogPrint(resp, c, []resources.FlowLog{*ng}))
+	return c.Printer.Print(getFlowLogPrint(resp, c, []v6.FlowLog{*ng}))
 }
 
 func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
@@ -331,14 +331,14 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 func getNetworkLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, networkloadbalancerId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(clientSvc.Get(), context.TODO())
+	networkloadbalancerSvc := v6.NewNetworkLoadBalancerService(clientSvc.Get(), context.TODO())
 	natFlowLogs, _, err := networkloadbalancerSvc.ListFlowLogs(datacenterId, networkloadbalancerId)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)

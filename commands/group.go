@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -210,7 +210,7 @@ func RunGroupGet(c *core.CommandConfig) error {
 
 func RunGroupCreate(c *core.CommandConfig) error {
 	properties := getGroupCreateInfo(c)
-	newGroup := resources.Group{
+	newGroup := v6.Group{
 		Group: ionoscloud.Group{
 			Properties: &properties.GroupProperties,
 		},
@@ -234,7 +234,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	properties := getGroupUpdateInfo(u, c)
-	newGroup := resources.Group{
+	newGroup := v6.Group{
 		Group: ionoscloud.Group{
 			Properties: &properties.GroupProperties,
 		},
@@ -264,7 +264,7 @@ func RunGroupDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getGroupPrint(resp, c, nil))
 }
 
-func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
+func getGroupCreateInfo(c *core.CommandConfig) *v6.GroupProperties {
 	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	createDc := viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateDc))
 	createSnap := viper.GetBool(core.GetFlagName(c.NS, config.ArgCreateSnapshot))
@@ -282,7 +282,7 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 		"ReserveIp: %v, AccessActivityLog: %v, CreateBackupUnit: %v, CreatePcc: %v, CreateInternetAccess: %v, CreateK8sCluster: %v, "+
 		"S3Privilege: %v, CreateFlowLog: %v, AccessAndManageMonitoring: %v, AccessAndManageCertificates: %v",
 		name, createDc, createSnap, reserveIp, accessLog, createBackUp, createPcc, createNic, createK8s, s3, createFlowLog, monitoring, certs)
-	return &resources.GroupProperties{
+	return &v6.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
 			Name:                        &name,
 			CreateDataCenter:            &createDc,
@@ -301,7 +301,7 @@ func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
 	}
 }
 
-func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resources.GroupProperties {
+func getGroupUpdateInfo(oldGroup *v6.Group, c *core.CommandConfig) *v6.GroupProperties {
 	var (
 		groupName                                                           string
 		createDc, createSnap, createPcc, createBackUp, createNic, createK8s bool
@@ -413,7 +413,7 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			}
 		}
 	}
-	return &resources.GroupProperties{
+	return &v6.GroupProperties{
 		GroupProperties: ionoscloud.GroupProperties{
 			Name:                        &groupName,
 			CreateDataCenter:            &createDc,
@@ -457,7 +457,7 @@ type groupPrint struct {
 	AccessAndManageCertificates bool   `json:"AccessAndManageCertificates,omitempty"`
 }
 
-func getGroupPrint(resp *resources.Response, c *core.CommandConfig, groups []resources.Group) printer.Result {
+func getGroupPrint(resp *v6.Response, c *core.CommandConfig, groups []v6.Group) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -508,25 +508,25 @@ func getGroupCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getGroups(groups resources.Groups) []resources.Group {
-	u := make([]resources.Group, 0)
+func getGroups(groups v6.Groups) []v6.Group {
+	u := make([]v6.Group, 0)
 	if items, ok := groups.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.Group{Group: item})
+			u = append(u, v6.Group{Group: item})
 		}
 	}
 	return u
 }
 
-func getGroup(u *resources.Group) []resources.Group {
-	groups := make([]resources.Group, 0)
+func getGroup(u *v6.Group) []v6.Group {
+	groups := make([]v6.Group, 0)
 	if u != nil {
-		groups = append(groups, resources.Group{Group: u.Group})
+		groups = append(groups, v6.Group{Group: u.Group})
 	}
 	return groups
 }
 
-func getGroupsKVMaps(gs []resources.Group) []map[string]interface{} {
+func getGroupsKVMaps(gs []v6.Group) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(gs))
 	for _, g := range gs {
 		var gPrint groupPrint
@@ -583,14 +583,14 @@ func getGroupsKVMaps(gs []resources.Group) []map[string]interface{} {
 func getGroupsIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	groupSvc := resources.NewGroupService(clientSvc.Get(), context.TODO())
+	groupSvc := v6.NewGroupService(clientSvc.Get(), context.TODO())
 	groups, _, err := groupSvc.List()
 	clierror.CheckError(err, outErr)
 	groupsIds := make([]string, 0)

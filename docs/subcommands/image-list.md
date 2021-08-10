@@ -40,7 +40,7 @@ Use flags to retrieve a list of Images:
 ## Options
 
 ```text
-  -u, --api-url string        Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
+  -u, --api-url string        Override default host url (default "https://api.ionos.com")
       --cols strings          Set of columns to be printed on output 
                               Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit CreatedDate CreatedBy CreatedByUserId] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit,CreatedDate])
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")

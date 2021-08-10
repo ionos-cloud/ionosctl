@@ -31,7 +31,7 @@ Use this command to retrieve the current default Kubernetes version for Clusters
 ## Options
 
 ```text
-  -u, --api-url string   Override default API endpoint (default "https://api.ionos.com/cloudapi/v6")
+  -u, --api-url string   Override default host url (default "https://api.ionos.com")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
   -h, --help             help for get

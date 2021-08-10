@@ -4,7 +4,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/viper"
 )
@@ -241,7 +241,7 @@ type LabelResourcePrint struct {
 	Value string `json:"Value,omitempty"`
 }
 
-func getLabelResourcePrint(c *core.CommandConfig, s []resources.LabelResource) printer.Result {
+func getLabelResourcePrint(c *core.CommandConfig, s []v6.LabelResource) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if s != nil {
@@ -253,25 +253,25 @@ func getLabelResourcePrint(c *core.CommandConfig, s []resources.LabelResource) p
 	return r
 }
 
-func getLabelResources(labelResources resources.LabelResources) []resources.LabelResource {
-	ss := make([]resources.LabelResource, 0)
+func getLabelResources(labelResources v6.LabelResources) []v6.LabelResource {
+	ss := make([]v6.LabelResource, 0)
 	if items, ok := labelResources.GetItemsOk(); ok && items != nil {
 		for _, s := range *items {
-			ss = append(ss, resources.LabelResource{LabelResource: s})
+			ss = append(ss, v6.LabelResource{LabelResource: s})
 		}
 	}
 	return ss
 }
 
-func getLabelResource(s *resources.LabelResource) []resources.LabelResource {
-	ss := make([]resources.LabelResource, 0)
+func getLabelResource(s *v6.LabelResource) []v6.LabelResource {
+	ss := make([]v6.LabelResource, 0)
 	if s != nil {
-		ss = append(ss, resources.LabelResource{LabelResource: s.LabelResource})
+		ss = append(ss, v6.LabelResource{LabelResource: s.LabelResource})
 	}
 	return ss
 }
 
-func getLabelResourcesKVMaps(ss []resources.LabelResource) []map[string]interface{} {
+func getLabelResourcesKVMaps(ss []v6.LabelResource) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		o := getLabelResourceKVMap(s)
@@ -280,7 +280,7 @@ func getLabelResourcesKVMaps(ss []resources.LabelResource) []map[string]interfac
 	return out
 }
 
-func getLabelResourceKVMap(s resources.LabelResource) map[string]interface{} {
+func getLabelResourceKVMap(s v6.LabelResource) map[string]interface{} {
 	var ssPrint LabelResourcePrint
 	if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
 		if key, ok := properties.GetKeyOk(); ok && key != nil {

@@ -11,7 +11,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	testRule = resources.FirewallRule{
+	testRule = v6.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
 			Id: &testFirewallRuleVar,
 			Properties: &ionoscloud.FirewallruleProperties{
@@ -39,7 +39,7 @@ var (
 			},
 		},
 	}
-	testInputFirewallRuleProperties = resources.FirewallRuleProperties{
+	testInputFirewallRuleProperties = v6.FirewallRuleProperties{
 		FirewallruleProperties: ionoscloud.FirewallruleProperties{
 			Name:           &testFirewallRuleVar,
 			Protocol:       &testFirewallRuleProtocol,
@@ -53,18 +53,18 @@ var (
 			Type:           &testFirewallRuleType,
 		},
 	}
-	testInputFirewallRule = resources.FirewallRule{
+	testInputFirewallRule = v6.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
 			Properties: &testInputFirewallRuleProperties.FirewallruleProperties,
 		},
 	}
-	testFirewallRules = resources.FirewallRules{
+	testFirewallRules = v6.FirewallRules{
 		FirewallRules: ionoscloud.FirewallRules{
 			Id:    &testFirewallRuleVar,
 			Items: &[]ionoscloud.FirewallRule{testRule.FirewallRule},
 		},
 	}
-	testResponse = resources.Response{
+	testResponse = v6.Response{
 		APIResponse: ionoscloud.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{

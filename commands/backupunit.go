@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -222,7 +222,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
 	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
-	newBackupUnit := resources.BackupUnit{
+	newBackupUnit := v6.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Properties: &ionoscloud.BackupUnitProperties{
 				Name:     &name,
@@ -276,8 +276,8 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getBackupUnitPrint(resp, c, nil))
 }
 
-func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
-	var properties resources.BackupUnitProperties
+func getBackupUnitInfo(c *core.CommandConfig) *v6.BackupUnitProperties {
+	var properties v6.BackupUnitProperties
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
 		pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 		properties.SetPassword(pwd)
@@ -303,7 +303,7 @@ type BackupUnitPrint struct {
 	State            string `json:"State,omitempty"`
 }
 
-func getBackupUnitPrint(resp *resources.Response, c *core.CommandConfig, backupUnits []resources.BackupUnit) printer.Result {
+func getBackupUnitPrint(resp *v6.Response, c *core.CommandConfig, backupUnits []v6.BackupUnit) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -321,7 +321,7 @@ func getBackupUnitPrint(resp *resources.Response, c *core.CommandConfig, backupU
 	return r
 }
 
-func getBackupUnitSSOPrint(c *core.CommandConfig, backupUnit *resources.BackupUnitSSO) printer.Result {
+func getBackupUnitSSOPrint(c *core.CommandConfig, backupUnit *v6.BackupUnitSSO) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if backupUnit != nil {
@@ -357,25 +357,25 @@ func getBackupUnitCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getBackupUnits(backupUnits resources.BackupUnits) []resources.BackupUnit {
-	u := make([]resources.BackupUnit, 0)
+func getBackupUnits(backupUnits v6.BackupUnits) []v6.BackupUnit {
+	u := make([]v6.BackupUnit, 0)
 	if items, ok := backupUnits.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.BackupUnit{BackupUnit: item})
+			u = append(u, v6.BackupUnit{BackupUnit: item})
 		}
 	}
 	return u
 }
 
-func getBackupUnit(u *resources.BackupUnit) []resources.BackupUnit {
-	backupUnits := make([]resources.BackupUnit, 0)
+func getBackupUnit(u *v6.BackupUnit) []v6.BackupUnit {
+	backupUnits := make([]v6.BackupUnit, 0)
 	if u != nil {
-		backupUnits = append(backupUnits, resources.BackupUnit{BackupUnit: u.BackupUnit})
+		backupUnits = append(backupUnits, v6.BackupUnit{BackupUnit: u.BackupUnit})
 	}
 	return backupUnits
 }
 
-func getBackupUnitsKVMaps(us []resources.BackupUnit) []map[string]interface{} {
+func getBackupUnitsKVMaps(us []v6.BackupUnit) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(us))
 	for _, u := range us {
 		var uPrint BackupUnitPrint
@@ -401,7 +401,7 @@ func getBackupUnitsKVMaps(us []resources.BackupUnit) []map[string]interface{} {
 	return out
 }
 
-func getBackupUnitsSSOKVMaps(u *resources.BackupUnitSSO) []map[string]interface{} {
+func getBackupUnitsSSOKVMaps(u *v6.BackupUnitSSO) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0)
 	var uPrint BackupUnitPrint
 	if url, ok := u.GetSsoUrlOk(); ok && url != nil {
@@ -415,14 +415,14 @@ func getBackupUnitsSSOKVMaps(u *resources.BackupUnitSSO) []map[string]interface{
 func getBackupUnitsIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	backupUnitSvc := resources.NewBackupUnitService(clientSvc.Get(), context.TODO())
+	backupUnitSvc := v6.NewBackupUnitService(clientSvc.Get(), context.TODO())
 	backupUnits, _, err := backupUnitSvc.List()
 	clierror.CheckError(err, outErr)
 	backupUnitsIds := make([]string, 0)

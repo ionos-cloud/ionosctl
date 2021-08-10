@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	nodepoolTestPost = resources.K8sNodePool{
+	nodepoolTestPost = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				Name:             &testNodepoolVar,
@@ -40,7 +40,7 @@ var (
 			},
 		},
 	}
-	nodepoolTest = resources.K8sNodePool{
+	nodepoolTest = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				Name:             &testNodepoolVar,
@@ -62,7 +62,7 @@ var (
 			},
 		},
 	}
-	nodepoolTestId = resources.K8sNodePool{
+	nodepoolTestId = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
@@ -88,7 +88,7 @@ var (
 			},
 		},
 	}
-	nodepoolTestGet = resources.K8sNodePool{
+	nodepoolTestGet = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
@@ -124,7 +124,7 @@ var (
 			},
 		},
 	}
-	nodepoolTestGetNew = resources.K8sNodePool{
+	nodepoolTestGetNew = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Id: &testNodepoolVar,
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
@@ -164,13 +164,13 @@ var (
 			},
 		},
 	}
-	nodepools = resources.K8sNodePools{
+	nodepools = v6.K8sNodePools{
 		KubernetesNodePools: ionoscloud.KubernetesNodePools{
 			Id:    &testNodepoolVar,
 			Items: &[]ionoscloud.KubernetesNodePool{nodepoolTest.KubernetesNodePool},
 		},
 	}
-	nodepoolTestNew = resources.K8sNodePoolForPut{
+	nodepoolTestNew = v6.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Id: &testNodepoolVar,
 			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
@@ -204,7 +204,7 @@ var (
 	nodepoolTestMap = map[string]string{
 		testNodepoolNewVar: testNodepoolNewVar,
 	}
-	nodepoolTestUpdateNew = resources.K8sNodePool{
+	nodepoolTestUpdateNew = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				K8sVersion: &testNodepoolNewVar,
@@ -233,7 +233,7 @@ var (
 			},
 		},
 	}
-	nodepoolTestOld = resources.K8sNodePoolForPut{
+	nodepoolTestOld = v6.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Id: &testNodepoolVar,
 			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
@@ -243,7 +243,7 @@ var (
 			},
 		},
 	}
-	nodepoolTestUpdateOld = resources.K8sNodePool{
+	nodepoolTestUpdateOld = v6.K8sNodePool{
 		KubernetesNodePool: ionoscloud.KubernetesNodePool{
 			Properties: &ionoscloud.KubernetesNodePoolProperties{
 				NodeCount:  &testNodepoolIntVar,

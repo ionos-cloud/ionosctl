@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -43,24 +43,24 @@ var (
 			State: &testIpBlockStateVar,
 		},
 	}
-	testIpBlocks = resources.IpBlocks{
+	testIpBlocks = v6.IpBlocks{
 		IpBlocks: ionoscloud.IpBlocks{
 			Id:    &testIpBlockVar,
 			Items: &[]ionoscloud.IpBlock{testIpBlock},
 		},
 	}
-	newTestIpBlockProperties = resources.IpBlockProperties{
+	newTestIpBlockProperties = v6.IpBlockProperties{
 		IpBlockProperties: ionoscloud.IpBlockProperties{
 			Name: &newTestIpBlockVar,
 		},
 	}
-	newTestIpBlock = resources.IpBlock{
+	newTestIpBlock = v6.IpBlock{
 		IpBlock: ionoscloud.IpBlock{
 			Id:         &testIpBlockVar,
 			Properties: &newTestIpBlockProperties.IpBlockProperties,
 		},
 	}
-	resTestIpBlock      = resources.IpBlock{IpBlock: testIpBlock}
+	resTestIpBlock      = v6.IpBlock{IpBlock: testIpBlock}
 	testIpBlockVar      = "test-ip-block"
 	testIpBlockStateVar = "AVAILABLE"
 	testIpBlockIpsVar   = []string{"x.x.x.x"}

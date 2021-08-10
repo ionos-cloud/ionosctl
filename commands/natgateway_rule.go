@@ -10,7 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -256,7 +256,7 @@ func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayRulePrint(nil, c, []resources.NatGatewayRule{*ng}))
+	return c.Printer.Print(getNatGatewayRulePrint(nil, c, []v6.NatGatewayRule{*ng}))
 }
 
 func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
@@ -267,7 +267,7 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 	ng, resp, err := c.NatGateways().CreateRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
-		resources.NatGatewayRule{
+		v6.NatGatewayRule{
 			NatGatewayRule: ionoscloud.NatGatewayRule{
 				Properties: &proper.NatGatewayRuleProperties,
 			},
@@ -282,7 +282,7 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayRulePrint(resp, c, []resources.NatGatewayRule{*ng}))
+	return c.Printer.Print(getNatGatewayRulePrint(resp, c, []v6.NatGatewayRule{*ng}))
 }
 
 func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
@@ -299,7 +299,7 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNatGatewayRulePrint(resp, c, []resources.NatGatewayRule{*ng}))
+	return c.Printer.Print(getNatGatewayRulePrint(resp, c, []v6.NatGatewayRule{*ng}))
 }
 
 func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
@@ -321,7 +321,7 @@ func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getNatGatewayRulePrint(resp, c, nil))
 }
 
-func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRuleProperties {
+func getNewNatGatewayRuleInfo(c *core.CommandConfig) *v6.NatGatewayRuleProperties {
 	input := ionoscloud.NatGatewayRuleProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
@@ -358,7 +358,7 @@ func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRulePr
 		input.SetTargetPortRange(inputPortRange)
 		c.Printer.Verbose("Property TargetPortRang set with start: %v and stop: %v", portRangeStart, portRangeStop)
 	}
-	return &resources.NatGatewayRuleProperties{
+	return &v6.NatGatewayRuleProperties{
 		NatGatewayRuleProperties: input,
 	}
 }
@@ -383,7 +383,7 @@ type NatGatewayRulePrint struct {
 	State                string `json:"State,omitempty"`
 }
 
-func getNatGatewayRulePrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NatGatewayRule) printer.Result {
+func getNatGatewayRulePrint(resp *v6.Response, c *core.CommandConfig, ss []v6.NatGatewayRule) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -434,15 +434,15 @@ func getNatGatewayRulesCols(flagName string, outErr io.Writer) []string {
 	return natgatewayRuleCols
 }
 
-func getNatGatewayRules(natgatewayRules resources.NatGatewayRules) []resources.NatGatewayRule {
-	ss := make([]resources.NatGatewayRule, 0)
+func getNatGatewayRules(natgatewayRules v6.NatGatewayRules) []v6.NatGatewayRule {
+	ss := make([]v6.NatGatewayRule, 0)
 	for _, s := range *natgatewayRules.Items {
-		ss = append(ss, resources.NatGatewayRule{NatGatewayRule: s})
+		ss = append(ss, v6.NatGatewayRule{NatGatewayRule: s})
 	}
 	return ss
 }
 
-func getNatGatewayRulesKVMaps(ss []resources.NatGatewayRule) []map[string]interface{} {
+func getNatGatewayRulesKVMaps(ss []v6.NatGatewayRule) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var natgatewayRulePrint NatGatewayRulePrint
@@ -491,14 +491,14 @@ func getNatGatewayRulesKVMaps(ss []resources.NatGatewayRule) []map[string]interf
 func getNatGatewayRulesIds(outErr io.Writer, datacenterId, natgatewayId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	natgatewaySvc := resources.NewNatGatewayService(clientSvc.Get(), context.TODO())
+	natgatewaySvc := v6.NewNatGatewayService(clientSvc.Get(), context.TODO())
 	natgateways, _, err := natgatewaySvc.ListRules(datacenterId, natgatewayId)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)

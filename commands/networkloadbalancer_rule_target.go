@@ -10,7 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -209,7 +209,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	nlbId := viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId))
 	ruleId := viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId))
-	nlbForwardingRule := &resources.NetworkLoadBalancerForwardingRuleProperties{
+	nlbForwardingRule := &v6.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 			Targets: &targetItems,
 		},
@@ -222,7 +222,7 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getRuleTargetPrint(resp, c, []resources.NetworkLoadBalancerForwardingRuleTarget{targetNew}))
+	return c.Printer.Print(getRuleTargetPrint(resp, c, []v6.NetworkLoadBalancerForwardingRuleTarget{targetNew}))
 }
 
 func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
@@ -257,15 +257,15 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 	return c.Printer.Print(getRuleTargetPrint(resp, c, nil))
 }
 
-func getRuleTargetInfo(c *core.CommandConfig) resources.NetworkLoadBalancerForwardingRuleTarget {
+func getRuleTargetInfo(c *core.CommandConfig) v6.NetworkLoadBalancerForwardingRuleTarget {
 	targetIp := viper.GetString(core.GetFlagName(c.NS, config.ArgTargetIp))
 	targetPort := viper.GetInt32(core.GetFlagName(c.NS, config.ArgTargetPort))
 	weight := viper.GetInt32(core.GetFlagName(c.NS, config.ArgWeight))
-	target := resources.NetworkLoadBalancerForwardingRuleTarget{}
+	target := v6.NetworkLoadBalancerForwardingRuleTarget{}
 	target.SetIp(targetIp)
 	target.SetPort(targetPort)
 	target.SetWeight(weight)
-	targetHealth := resources.NetworkLoadBalancerForwardingRuleTargetHealthCheck{}
+	targetHealth := v6.NetworkLoadBalancerForwardingRuleTargetHealthCheck{}
 	maintenance := viper.GetBool(core.GetFlagName(c.NS, config.ArgMaintenance))
 	check := viper.GetBool(core.GetFlagName(c.NS, config.ArgCheck))
 	checkInterval := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCheckInterval))
@@ -278,7 +278,7 @@ func getRuleTargetInfo(c *core.CommandConfig) resources.NetworkLoadBalancerForwa
 	return target
 }
 
-func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBalancerForwardingRule) (*resources.NetworkLoadBalancerForwardingRuleProperties, error) {
+func getRuleTargetsRemove(c *core.CommandConfig, frOld *v6.NetworkLoadBalancerForwardingRule) (*v6.NetworkLoadBalancerForwardingRuleProperties, error) {
 	var (
 		foundIp   = false
 		foundPort = false
@@ -316,7 +316,7 @@ func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBal
 	if !foundPort {
 		return nil, errors.New("no forwarding rule target with the specified port found")
 	}
-	return &resources.NetworkLoadBalancerForwardingRuleProperties{
+	return &v6.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 			Targets: &targetItems,
 		},
@@ -336,7 +336,7 @@ type RuleTargetPrint struct {
 	Maintenance   bool   `json:"Maintenance,omitempty"`
 }
 
-func getRuleTargetPrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NetworkLoadBalancerForwardingRuleTarget) printer.Result {
+func getRuleTargetPrint(resp *v6.Response, c *core.CommandConfig, ss []v6.NetworkLoadBalancerForwardingRuleTarget) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -383,11 +383,11 @@ func getRuleTargetsCols(flagName string, outErr io.Writer) []string {
 	return ruleTargetCols
 }
 
-func getRuleTargets(targets *[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget) []resources.NetworkLoadBalancerForwardingRuleTarget {
-	ss := make([]resources.NetworkLoadBalancerForwardingRuleTarget, 0)
+func getRuleTargets(targets *[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget) []v6.NetworkLoadBalancerForwardingRuleTarget {
+	ss := make([]v6.NetworkLoadBalancerForwardingRuleTarget, 0)
 	if targets != nil {
 		for _, s := range *targets {
-			ss = append(ss, resources.NetworkLoadBalancerForwardingRuleTarget{
+			ss = append(ss, v6.NetworkLoadBalancerForwardingRuleTarget{
 				NetworkLoadBalancerForwardingRuleTarget: s,
 			})
 		}
@@ -395,7 +395,7 @@ func getRuleTargets(targets *[]ionoscloud.NetworkLoadBalancerForwardingRuleTarge
 	return ss
 }
 
-func getRuleTargetsKVMaps(targets []resources.NetworkLoadBalancerForwardingRuleTarget) []map[string]interface{} {
+func getRuleTargetsKVMaps(targets []v6.NetworkLoadBalancerForwardingRuleTarget) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(targets))
 	for _, target := range targets {
 		var targetPrint RuleTargetPrint

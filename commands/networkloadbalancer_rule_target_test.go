@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	testRuleTargetProperties = resources.NetworkLoadBalancerForwardingRuleProperties{
+	testRuleTargetProperties = v6.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 			Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{
 				{
@@ -34,13 +34,13 @@ var (
 			},
 		},
 	}
-	testNlbRuleTargetGet = resources.NetworkLoadBalancerForwardingRule{
+	testNlbRuleTargetGet = v6.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbRuleTargetVar,
 			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{},
 		},
 	}
-	testNlbRuleTargetGetUpdated = resources.NetworkLoadBalancerForwardingRule{
+	testNlbRuleTargetGetUpdated = v6.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbRuleTargetVar,
 			Properties: &testRuleTargetProperties.NetworkLoadBalancerForwardingRuleProperties,
@@ -139,7 +139,7 @@ func TestRunNlbRuleTargetListGetPropertiesErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRuleId), testNlbRuleTargetVar)
-		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&resources.NetworkLoadBalancerForwardingRule{}, nil, nil)
+		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&v6.NetworkLoadBalancerForwardingRule{}, nil, nil)
 		err := RunNlbRuleTargetList(cfg)
 		assert.Error(t, err)
 	})
@@ -275,7 +275,7 @@ func TestRunNlbRuleTargetRemove(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgTargetPort), testNlbRuleTargetIntVar)
 		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
-			&resources.NetworkLoadBalancerForwardingRuleProperties{
+			&v6.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
 				},
@@ -300,7 +300,7 @@ func TestRunNlbRuleTargetRemoveErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgTargetPort), testNlbRuleTargetIntVar)
 		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
-			&resources.NetworkLoadBalancerForwardingRuleProperties{
+			&v6.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
 				},
@@ -383,7 +383,7 @@ func TestRunNlbRuleTargetRemoveWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
-			&resources.NetworkLoadBalancerForwardingRuleProperties{
+			&v6.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
 				},
@@ -409,7 +409,7 @@ func TestRunNlbRuleTargetRemoveAskForConfirm(t *testing.T) {
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
 		rm.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
-			&resources.NetworkLoadBalancerForwardingRuleProperties{
+			&v6.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
 				},

@@ -9,7 +9,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -56,7 +56,7 @@ func TestRunIpConsumersList(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpConsumerVar)
-		rm.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumer}, nil, nil)
+		rm.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&v6.IpBlock{IpBlock: testIpConsumer}, nil, nil)
 		err := RunIpConsumersList(cfg)
 		assert.NoError(t, err)
 	})
@@ -70,7 +70,7 @@ func TestRunIpConsumersListPropertiesErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpConsumerVar)
-		rm.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumerProperties}, nil, nil)
+		rm.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&v6.IpBlock{IpBlock: testIpConsumerProperties}, nil, nil)
 		err := RunIpConsumersList(cfg)
 		assert.Error(t, err)
 	})
@@ -84,7 +84,7 @@ func TestRunIpConsumersListGetErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpConsumerVar)
-		rm.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumerGet}, nil, nil)
+		rm.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&v6.IpBlock{IpBlock: testIpConsumerGet}, nil, nil)
 		err := RunIpConsumersList(cfg)
 		assert.Error(t, err)
 	})
@@ -98,7 +98,7 @@ func TestRunIpConsumersListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpConsumerVar)
-		rm.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&resources.IpBlock{IpBlock: testIpConsumer}, nil, testIpConsumerErr)
+		rm.IpBlocks.EXPECT().Get(testIpConsumerVar).Return(&v6.IpBlock{IpBlock: testIpConsumer}, nil, testIpConsumerErr)
 		err := RunIpConsumersList(cfg)
 		assert.Error(t, err)
 	})

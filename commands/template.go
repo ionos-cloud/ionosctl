@@ -10,7 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -108,7 +108,7 @@ type TemplatePrint struct {
 	StorageSize string  `json:"StorageSize,omitempty"`
 }
 
-func getTemplatePrint(c *core.CommandConfig, tpls []resources.Template) printer.Result {
+func getTemplatePrint(c *core.CommandConfig, tpls []v6.Template) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if tpls != nil {
@@ -147,25 +147,25 @@ func getTemplateCols(flagName string, outErr io.Writer) []string {
 	return datacenterCols
 }
 
-func getTemplates(templates resources.Templates) []resources.Template {
-	tpls := make([]resources.Template, 0)
+func getTemplates(templates v6.Templates) []v6.Template {
+	tpls := make([]v6.Template, 0)
 	if items, ok := templates.GetItemsOk(); ok && items != nil {
 		for _, d := range *items {
-			tpls = append(tpls, resources.Template{Template: d})
+			tpls = append(tpls, v6.Template{Template: d})
 		}
 	}
 	return tpls
 }
 
-func getTemplate(template *resources.Template) []resources.Template {
-	tpls := make([]resources.Template, 0)
+func getTemplate(template *v6.Template) []v6.Template {
+	tpls := make([]v6.Template, 0)
 	if template != nil {
-		tpls = append(tpls, resources.Template{Template: template.Template})
+		tpls = append(tpls, v6.Template{Template: template.Template})
 	}
 	return tpls
 }
 
-func getTemplatesKVMaps(tpls []resources.Template) []map[string]interface{} {
+func getTemplatesKVMaps(tpls []v6.Template) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(tpls))
 	for _, tpl := range tpls {
 		o := getTemplateKVMap(tpl)
@@ -174,7 +174,7 @@ func getTemplatesKVMaps(tpls []resources.Template) []map[string]interface{} {
 	return out
 }
 
-func getTemplateKVMap(tpl resources.Template) map[string]interface{} {
+func getTemplateKVMap(tpl v6.Template) map[string]interface{} {
 	var tplPrint TemplatePrint
 	if tplId, ok := tpl.GetIdOk(); ok && tplId != nil {
 		tplPrint.TemplateId = *tplId
@@ -199,14 +199,14 @@ func getTemplateKVMap(tpl resources.Template) map[string]interface{} {
 func getTemplatesIds(outErr io.Writer) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	tplSvc := resources.NewTemplateService(clientSvc.Get(), context.TODO())
+	tplSvc := v6.NewTemplateService(clientSvc.Get(), context.TODO())
 	tpls, _, err := tplSvc.List()
 	clierror.CheckError(err, outErr)
 	tplsIds := make([]string, 0)

@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -208,7 +208,7 @@ func RunShareGet(c *core.CommandConfig) error {
 func RunShareCreate(c *core.CommandConfig) error {
 	editPrivilege := viper.GetBool(core.GetFlagName(c.NS, config.ArgEditPrivilege))
 	sharePrivilege := viper.GetBool(core.GetFlagName(c.NS, config.ArgSharePrivilege))
-	input := resources.GroupShare{
+	input := v6.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Properties: &ionoscloud.GroupShareProperties{
 				EditPrivilege:  &editPrivilege,
@@ -240,7 +240,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	properties := getShareUpdateInfo(s, c)
-	newShare := resources.GroupShare{
+	newShare := v6.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Properties: &properties.GroupShareProperties,
 		},
@@ -277,7 +277,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getGroupSharePrint(resp, c, nil))
 }
 
-func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *resources.GroupShareProperties {
+func getShareUpdateInfo(oldShare *v6.GroupShare, c *core.CommandConfig) *v6.GroupShareProperties {
 	var sharePrivilege, editPrivilege bool
 	if properties, ok := oldShare.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgEditPrivilege)) {
@@ -297,7 +297,7 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 			}
 		}
 	}
-	return &resources.GroupShareProperties{
+	return &v6.GroupShareProperties{
 		GroupShareProperties: ionoscloud.GroupShareProperties{
 			EditPrivilege:  &editPrivilege,
 			SharePrivilege: &sharePrivilege,
@@ -316,7 +316,7 @@ type groupSharePrint struct {
 	Type           string `json:"Type,omitempty"`
 }
 
-func getGroupSharePrint(resp *resources.Response, c *core.CommandConfig, groups []resources.GroupShare) printer.Result {
+func getGroupSharePrint(resp *v6.Response, c *core.CommandConfig, groups []v6.GroupShare) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -357,25 +357,25 @@ func getGroupShareCols(flagName string, outErr io.Writer) []string {
 	}
 }
 
-func getGroupShares(groups resources.GroupShares) []resources.GroupShare {
-	u := make([]resources.GroupShare, 0)
+func getGroupShares(groups v6.GroupShares) []v6.GroupShare {
+	u := make([]v6.GroupShare, 0)
 	if items, ok := groups.GetItemsOk(); ok && items != nil {
 		for _, item := range *items {
-			u = append(u, resources.GroupShare{GroupShare: item})
+			u = append(u, v6.GroupShare{GroupShare: item})
 		}
 	}
 	return u
 }
 
-func getGroupShare(u *resources.GroupShare) []resources.GroupShare {
-	groups := make([]resources.GroupShare, 0)
+func getGroupShare(u *v6.GroupShare) []v6.GroupShare {
+	groups := make([]v6.GroupShare, 0)
 	if u != nil {
-		groups = append(groups, resources.GroupShare{GroupShare: u.GroupShare})
+		groups = append(groups, v6.GroupShare{GroupShare: u.GroupShare})
 	}
 	return groups
 }
 
-func getGroupSharesKVMaps(gs []resources.GroupShare) []map[string]interface{} {
+func getGroupSharesKVMaps(gs []v6.GroupShare) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(gs))
 	for _, g := range gs {
 		var gPrint groupSharePrint
@@ -402,14 +402,14 @@ func getGroupSharesKVMaps(gs []resources.GroupShare) []map[string]interface{} {
 func getGroupResourcesIds(outErr io.Writer, groupId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	groupSvc := resources.NewGroupService(clientSvc.Get(), context.TODO())
+	groupSvc := v6.NewGroupService(clientSvc.Get(), context.TODO())
 	res, _, err := groupSvc.ListResources(groupId)
 	clierror.CheckError(err, outErr)
 	resIds := make([]string, 0)

@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	testInputForwardingRule = resources.NetworkLoadBalancerForwardingRule{
+	testInputForwardingRule = v6.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 			Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 				Name:         &testNlbForwardingRuleVar,
@@ -34,7 +34,7 @@ var (
 				},
 			}},
 	}
-	testNlbForwardingRulePropertiesNew = resources.NetworkLoadBalancerForwardingRuleProperties{
+	testNlbForwardingRulePropertiesNew = v6.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 			Name:         &testNlbForwardingRuleNewVar,
 			ListenerIp:   &testNlbForwardingRuleNewVar,
@@ -47,7 +47,7 @@ var (
 			},
 		},
 	}
-	testNlbForwardingRuleGet = resources.NetworkLoadBalancerForwardingRule{
+	testNlbForwardingRuleGet = v6.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbForwardingRuleVar,
 			Properties: testInputForwardingRule.Properties,
@@ -56,13 +56,13 @@ var (
 			},
 		},
 	}
-	testNlbForwardingRuleUpdated = resources.NetworkLoadBalancerForwardingRule{
+	testNlbForwardingRuleUpdated = v6.NetworkLoadBalancerForwardingRule{
 		NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 			Id:         &testNlbForwardingRuleVar,
 			Properties: &testNlbForwardingRulePropertiesNew.NetworkLoadBalancerForwardingRuleProperties,
 		},
 	}
-	testNlbForwardingRules = resources.NetworkLoadBalancerForwardingRules{
+	testNlbForwardingRules = v6.NetworkLoadBalancerForwardingRules{
 		NetworkLoadBalancerForwardingRules: ionoscloud.NetworkLoadBalancerForwardingRules{
 			Items: &[]ionoscloud.NetworkLoadBalancerForwardingRule{testNlbForwardingRuleGet.NetworkLoadBalancerForwardingRule},
 		},

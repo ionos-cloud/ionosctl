@@ -10,7 +10,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	natgatewayRuleTest = resources.NatGatewayRule{
+	natgatewayRuleTest = v6.NatGatewayRule{
 		NatGatewayRule: ionoscloud.NatGatewayRule{
 			Properties: &ionoscloud.NatGatewayRuleProperties{
 				Name:         &testNatGatewayRuleVar,
@@ -33,20 +33,20 @@ var (
 			},
 		},
 	}
-	natgatewayRuleTestGet = resources.NatGatewayRule{
+	natgatewayRuleTestGet = v6.NatGatewayRule{
 		NatGatewayRule: ionoscloud.NatGatewayRule{
 			Id:         &testNatGatewayRuleVar,
 			Properties: natgatewayRuleTest.Properties,
 			Metadata:   &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 		},
 	}
-	natgatewayRules = resources.NatGatewayRules{
+	natgatewayRules = v6.NatGatewayRules{
 		NatGatewayRules: ionoscloud.NatGatewayRules{
 			Id:    &testNatGatewayRuleVar,
 			Items: &[]ionoscloud.NatGatewayRule{natgatewayRuleTestGet.NatGatewayRule},
 		},
 	}
-	natgatewayRuleProperties = resources.NatGatewayRuleProperties{
+	natgatewayRuleProperties = v6.NatGatewayRuleProperties{
 		NatGatewayRuleProperties: ionoscloud.NatGatewayRuleProperties{
 			Name:         &testNatGatewayRuleNewVar,
 			PublicIp:     &testNatGatewayRuleNewVar,
@@ -59,7 +59,7 @@ var (
 			},
 		},
 	}
-	natgatewayRuleNew = resources.NatGatewayRule{
+	natgatewayRuleNew = v6.NatGatewayRule{
 		NatGatewayRule: ionoscloud.NatGatewayRule{
 			Id:         &testNatGatewayRuleVar,
 			Properties: &natgatewayRuleProperties.NatGatewayRuleProperties,

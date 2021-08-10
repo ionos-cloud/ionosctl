@@ -11,7 +11,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -260,7 +260,7 @@ func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getForwardingRulePrint(nil, c, []resources.NetworkLoadBalancerForwardingRule{*ng}))
+	return c.Printer.Print(getForwardingRulePrint(nil, c, []v6.NetworkLoadBalancerForwardingRule{*ng}))
 }
 
 func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
@@ -281,7 +281,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	ng, resp, err := c.NetworkLoadBalancers().CreateForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
-		resources.NetworkLoadBalancerForwardingRule{
+		v6.NetworkLoadBalancerForwardingRule{
 			NetworkLoadBalancerForwardingRule: ionoscloud.NetworkLoadBalancerForwardingRule{
 				Properties: &proper.NetworkLoadBalancerForwardingRuleProperties,
 			},
@@ -296,7 +296,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getForwardingRulePrint(resp, c, []resources.NetworkLoadBalancerForwardingRule{*ng}))
+	return c.Printer.Print(getForwardingRulePrint(resp, c, []v6.NetworkLoadBalancerForwardingRule{*ng}))
 }
 
 func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
@@ -317,7 +317,7 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getForwardingRulePrint(resp, c, []resources.NetworkLoadBalancerForwardingRule{*ng}))
+	return c.Printer.Print(getForwardingRulePrint(resp, c, []v6.NetworkLoadBalancerForwardingRule{*ng}))
 }
 
 func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
@@ -339,7 +339,7 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getForwardingRulePrint(resp, c, nil))
 }
 
-func getForwardingRulePropertiesSet(c *core.CommandConfig) *resources.NetworkLoadBalancerForwardingRuleProperties {
+func getForwardingRulePropertiesSet(c *core.CommandConfig) *v6.NetworkLoadBalancerForwardingRuleProperties {
 	input := ionoscloud.NetworkLoadBalancerForwardingRuleProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
@@ -361,12 +361,12 @@ func getForwardingRulePropertiesSet(c *core.CommandConfig) *resources.NetworkLoa
 		input.SetListenerPort(listenerPort)
 		c.Printer.Verbose("Property ListenerPort set: %v", listenerPort)
 	}
-	return &resources.NetworkLoadBalancerForwardingRuleProperties{
+	return &v6.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: input,
 	}
 }
 
-func getForwardingRuleHealthCheckPropertiesSet(c *core.CommandConfig) *resources.NetworkLoadBalancerForwardingRuleHealthCheck {
+func getForwardingRuleHealthCheckPropertiesSet(c *core.CommandConfig) *v6.NetworkLoadBalancerForwardingRuleHealthCheck {
 	inputHealth := ionoscloud.NetworkLoadBalancerForwardingRuleHealthCheck{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRetries)) {
 		inputHealth.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, config.ArgRetries)))
@@ -380,7 +380,7 @@ func getForwardingRuleHealthCheckPropertiesSet(c *core.CommandConfig) *resources
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgTargetTimeout)) {
 		inputHealth.SetTargetTimeout(viper.GetInt32(core.GetFlagName(c.NS, config.ArgTargetTimeout)))
 	}
-	return &resources.NetworkLoadBalancerForwardingRuleHealthCheck{
+	return &v6.NetworkLoadBalancerForwardingRuleHealthCheck{
 		NetworkLoadBalancerForwardingRuleHealthCheck: inputHealth,
 	}
 }
@@ -407,7 +407,7 @@ type ForwardingRulePrint struct {
 	State            string `json:"State,omitempty"`
 }
 
-func getForwardingRulePrint(resp *resources.Response, c *core.CommandConfig, ss []resources.NetworkLoadBalancerForwardingRule) printer.Result {
+func getForwardingRulePrint(resp *v6.Response, c *core.CommandConfig, ss []v6.NetworkLoadBalancerForwardingRule) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -459,15 +459,15 @@ func getForwardingRulesCols(flagName string, outErr io.Writer) []string {
 	return forwardingRuleCols
 }
 
-func getForwardingRules(forwardingrules resources.NetworkLoadBalancerForwardingRules) []resources.NetworkLoadBalancerForwardingRule {
-	ss := make([]resources.NetworkLoadBalancerForwardingRule, 0)
+func getForwardingRules(forwardingrules v6.NetworkLoadBalancerForwardingRules) []v6.NetworkLoadBalancerForwardingRule {
+	ss := make([]v6.NetworkLoadBalancerForwardingRule, 0)
 	for _, s := range *forwardingrules.Items {
-		ss = append(ss, resources.NetworkLoadBalancerForwardingRule{NetworkLoadBalancerForwardingRule: s})
+		ss = append(ss, v6.NetworkLoadBalancerForwardingRule{NetworkLoadBalancerForwardingRule: s})
 	}
 	return ss
 }
 
-func getForwardingRulesKVMaps(ss []resources.NetworkLoadBalancerForwardingRule) []map[string]interface{} {
+func getForwardingRulesKVMaps(ss []v6.NetworkLoadBalancerForwardingRule) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var forwardingRulePrint ForwardingRulePrint
@@ -519,14 +519,14 @@ func getForwardingRulesKVMaps(ss []resources.NetworkLoadBalancerForwardingRule) 
 func getForwardingRulesIds(outErr io.Writer, datacenterId, nlbId string) []string {
 	err := config.Load()
 	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
+	clientSvc, err := v6.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
-	nlbSvc := resources.NewNetworkLoadBalancerService(clientSvc.Get(), context.TODO())
+	nlbSvc := v6.NewNetworkLoadBalancerService(clientSvc.Get(), context.TODO())
 	natForwardingRules, _, err := nlbSvc.ListForwardingRules(datacenterId, nlbId)
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)

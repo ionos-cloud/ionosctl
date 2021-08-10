@@ -8,7 +8,7 @@ import (
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources"
+	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -24,7 +24,7 @@ var (
 			ResourceType: &testLabelVar,
 		},
 	}
-	testLabels = resources.Labels{
+	testLabels = v6.Labels{
 		Labels: ionoscloud.Labels{
 			Id:    &testLabelVar,
 			Items: &[]ionoscloud.Label{testLabel},
@@ -247,7 +247,7 @@ func TestRunLabelGetByUrn(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLabelUrn), testLabelVar)
-		label := resources.Label{Label: testLabel}
+		label := v6.Label{Label: testLabel}
 		rm.Label.EXPECT().GetByUrn(testLabelVar).Return(&label, nil, nil)
 		err := RunLabelGetByUrn(cfg)
 		assert.NoError(t, err)
@@ -262,7 +262,7 @@ func TestRunLabelGetByUrnErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLabelUrn), testLabelVar)
-		label := resources.Label{Label: testLabel}
+		label := v6.Label{Label: testLabel}
 		rm.Label.EXPECT().GetByUrn(testLabelVar).Return(&label, nil, testLabelErr)
 		err := RunLabelGetByUrn(cfg)
 		assert.Error(t, err)
