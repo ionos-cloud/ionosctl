@@ -486,6 +486,7 @@ func RunServerList(c *core.CommandConfig) error {
 }
 
 func RunServerGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	if err := utils.WaitForState(c, GetStateServer, viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))); err != nil {
 		return err
 	}
@@ -519,6 +520,9 @@ func RunServerCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		*input,
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -575,10 +579,10 @@ func RunServerDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 		return err
 	}
-	resp, err := c.Servers().Delete(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", serverId, dcId)
+	resp, err := c.Servers().Delete(dcId, serverId)
 	if err != nil {
 		return err
 	}
@@ -593,6 +597,7 @@ func RunServerStart(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "start server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Server is starting... ")
 	resp, err := c.Servers().Start(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -611,6 +616,7 @@ func RunServerStop(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Server is stopping... ")
 	resp, err := c.Servers().Stop(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -629,6 +635,7 @@ func RunServerSuspend(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "suspend cube server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Server is Suspending... ")
 	resp, err := c.Servers().Suspend(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -647,6 +654,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Server is rebooting... ")
 	resp, err := c.Servers().Reboot(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -665,6 +673,7 @@ func RunServerResume(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "resume cube server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Server is resuming... ")
 	resp, err := c.Servers().Resume(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -682,16 +691,24 @@ func RunServerResume(c *core.CommandConfig) error {
 func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
 	input := ionoscloud.ServerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.SetName(name)
+		c.Printer.Verbose("Property name set: %v ", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCPUFamily)) {
-		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)))
+		cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily))
+		c.Printer.Verbose("Property CpuFamily set: %v ", cpuFamily)
+		input.SetCpuFamily(cpuFamily)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgAvailabilityZone)) {
-		input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
+		availabilityZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
+		c.Printer.Verbose("Property AvailabilityZone set: %v ", availabilityZone)
+		input.SetAvailabilityZone(availabilityZone)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
-		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
+		cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
+		c.Printer.Verbose("Property Cores set: %v ", cores)
+		input.SetCores(cores)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
 		size, err := utils.ConvertSize(
@@ -701,6 +718,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		if err != nil {
 			return nil, err
 		}
+		c.Printer.Verbose("property Ram set: %vMB ", int32(size))
 		input.SetRam(int32(size))
 	}
 	return &resources.ServerProperties{
@@ -710,9 +728,15 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 
 func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	input := resources.ServerProperties{}
-	input.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
-	input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
-	input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	serverType := viper.GetString(core.GetFlagName(c.NS, config.ArgType))
+	availabilityZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	input.SetType(serverType)
+	input.SetAvailabilityZone(availabilityZone)
+	input.SetName(name)
+	c.Printer.Verbose("Property Type set: %v", serverType)
+	c.Printer.Verbose("Property AvailabilityZone set: %v", availabilityZone)
+	c.Printer.Verbose("Property Name set: %v", name)
 
 	// CUBE Server Properties
 	if viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == serverCubeType {
@@ -722,7 +746,9 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			input.SetName("Unnamed Cube")
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgTemplateId)) {
-			input.SetTemplateUuid(viper.GetString(core.GetFlagName(c.NS, config.ArgTemplateId)))
+			templateUuid := viper.GetString(core.GetFlagName(c.NS, config.ArgTemplateId))
+			input.SetTemplateUuid(templateUuid)
+			c.Printer.Verbose("Property TemplateUuid set: %v", templateUuid)
 		}
 	}
 
@@ -733,7 +759,9 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 			input.SetName("Unnamed Server")
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
-			input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
+			cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
+			input.SetCores(cores)
+			c.Printer.Verbose("Property Cores set: %v", cores)
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
 			size, err := utils.ConvertSize(
@@ -744,6 +772,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 				return nil, err
 			}
 			input.SetRam(int32(size))
+			c.Printer.Verbose("Property Ram set: %v", int32(size))
 		}
 	}
 	return &resources.Server{

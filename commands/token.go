@@ -53,6 +53,7 @@ func serverToken() *core.Command {
 }
 
 func RunServerTokenGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("ServerToken with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	t, _, err := c.Servers().GetToken(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),

@@ -208,6 +208,7 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 	if err := utils.WaitForState(c, GetStateNetworkLoadBalancer, viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId))); err != nil {
 		return err
 	}
+	c.Printer.Verbose("NetworkLoadBalancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)))
 	ng, _, err := c.NetworkLoadBalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
@@ -237,6 +238,9 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -266,10 +270,10 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer"); err != nil {
 		return err
 	}
-	resp, err := c.NetworkLoadBalancers().Delete(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	nlbId := viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId))
+	c.Printer.Verbose("NetworkLoadBalancer with id: %v is deleting...", nlbId)
+	resp, err := c.NetworkLoadBalancers().Delete(dcId, nlbId)
 	if err != nil {
 		return err
 	}
@@ -282,19 +286,30 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoadBalancerProperties {
 	input := ionoscloud.NetworkLoadBalancerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.SetName(name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIps)) {
-		input.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
+		ips := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps))
+		input.SetIps(ips)
+		c.Printer.Verbose("Property Ips set: %v", ips)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgListenerLan)) {
-		input.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgListenerLan)))
+		listenerLan := viper.GetInt32(core.GetFlagName(c.NS, config.ArgListenerLan))
+		input.SetListenerLan(listenerLan)
+		c.Printer.Verbose("Property ListenerLan set: %v", listenerLan)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgTargetLan)) {
-		input.SetTargetLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgTargetLan)))
+		targetLan := viper.GetInt32(core.GetFlagName(c.NS, config.ArgTargetLan))
+		input.SetTargetLan(targetLan)
+		c.Printer.Verbose("Property TargetLan set: %v", targetLan)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPrivateIps)) {
-		input.SetLbPrivateIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgPrivateIps)))
+		privateIps := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgPrivateIps))
+		input.SetLbPrivateIps(privateIps)
+		c.Printer.Verbose("Property PrivateIps set: %v", privateIps)
+
 	}
 	return &resources.NetworkLoadBalancerProperties{
 		NetworkLoadBalancerProperties: input,

@@ -206,16 +206,16 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 	}
 	targetNew := getRuleTargetInfo(c)
 	targetItems = append(targetItems, targetNew.NetworkLoadBalancerForwardingRuleTarget)
-	_, resp, err = c.NetworkLoadBalancers().UpdateForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
-		&resources.NetworkLoadBalancerForwardingRuleProperties{
-			NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
-				Targets: &targetItems,
-			},
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	nlbId := viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId))
+	ruleId := viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId))
+	nlbForwardingRule := &resources.NetworkLoadBalancerForwardingRuleProperties{
+		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+			Targets: &targetItems,
 		},
-	)
+	}
+	c.Printer.Verbose("Adding NlbRuleTarget with id: %v to NetworkLoadBalancer with id: %v", ruleId, nlbId)
+	_, resp, err = c.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbForwardingRule)
 	if err != nil {
 		return err
 	}
@@ -229,6 +229,7 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete forwarding rule target"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("NlbRuleTarget with id: %v is removing...", viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)))
 	frOld, resp, err := c.NetworkLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
@@ -257,15 +258,23 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 }
 
 func getRuleTargetInfo(c *core.CommandConfig) resources.NetworkLoadBalancerForwardingRuleTarget {
+	targetIp := viper.GetString(core.GetFlagName(c.NS, config.ArgTargetIp))
+	targetPort := viper.GetInt32(core.GetFlagName(c.NS, config.ArgTargetPort))
+	weight := viper.GetInt32(core.GetFlagName(c.NS, config.ArgWeight))
 	target := resources.NetworkLoadBalancerForwardingRuleTarget{}
-	target.SetIp(viper.GetString(core.GetFlagName(c.NS, config.ArgTargetIp)))
-	target.SetPort(viper.GetInt32(core.GetFlagName(c.NS, config.ArgTargetPort)))
-	target.SetWeight(viper.GetInt32(core.GetFlagName(c.NS, config.ArgWeight)))
+	target.SetIp(targetIp)
+	target.SetPort(targetPort)
+	target.SetWeight(weight)
 	targetHealth := resources.NetworkLoadBalancerForwardingRuleTargetHealthCheck{}
-	targetHealth.SetMaintenance(viper.GetBool(core.GetFlagName(c.NS, config.ArgMaintenance)))
-	targetHealth.SetCheck(viper.GetBool(core.GetFlagName(c.NS, config.ArgCheck)))
-	targetHealth.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCheckInterval)))
+	maintenance := viper.GetBool(core.GetFlagName(c.NS, config.ArgMaintenance))
+	check := viper.GetBool(core.GetFlagName(c.NS, config.ArgCheck))
+	checkInterval := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCheckInterval))
+	targetHealth.SetMaintenance(maintenance)
+	targetHealth.SetCheck(check)
+	targetHealth.SetCheckInterval(checkInterval)
 	target.SetHealthCheck(targetHealth.NetworkLoadBalancerForwardingRuleTargetHealthCheck)
+	c.Printer.Verbose("Properties set for adding the NlbRuleTarget: Ip: %v, Port: %v, Weight: %v, Maintenance: %v, Check: %v, CheckInterval: %v",
+		targetIp, targetPort, weight, maintenance, check, checkInterval)
 	return target
 }
 

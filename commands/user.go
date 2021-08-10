@@ -180,6 +180,7 @@ func RunUserList(c *core.CommandConfig) error {
 }
 
 func RunUserGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	u, _, err := c.Users().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if err != nil {
 		return err
@@ -206,7 +207,12 @@ func RunUserCreate(c *core.CommandConfig) error {
 			},
 		},
 	}
+	c.Printer.Verbose("Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
+		firstname, lastname, email, secureAuth, admin)
 	u, resp, err := c.Users().Create(newUser)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -230,6 +236,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("User with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	resp, err := c.Users().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if err != nil {
 		return err
@@ -245,6 +252,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirstName)) {
 			firstName = viper.GetString(core.GetFlagName(c.NS, config.ArgFirstName))
+			c.Printer.Verbose("Property FirstName set: %v", firstName)
 		} else {
 			if name, ok := properties.GetFirstnameOk(); ok && name != nil {
 				firstName = *name
@@ -252,6 +260,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLastName)) {
 			lastName = viper.GetString(core.GetFlagName(c.NS, config.ArgLastName))
+			c.Printer.Verbose("Property LastName set: %v", lastName)
 		} else {
 			if name, ok := properties.GetLastnameOk(); ok && name != nil {
 				lastName = *name
@@ -259,6 +268,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgEmail)) {
 			email = viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
+			c.Printer.Verbose("Property Email set: %v", email)
 		} else {
 			if e, ok := properties.GetEmailOk(); ok && e != nil {
 				email = *e
@@ -266,6 +276,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgForceSecAuth)) {
 			forceSecureAuth = viper.GetBool(core.GetFlagName(c.NS, config.ArgForceSecAuth))
+			c.Printer.Verbose("Property ForceSecAuth set: %v", forceSecureAuth)
 		} else {
 			if secAuth, ok := properties.GetForceSecAuthOk(); ok && secAuth != nil {
 				forceSecureAuth = *secAuth
@@ -273,6 +284,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgAdmin)) {
 			admin = viper.GetBool(core.GetFlagName(c.NS, config.ArgAdmin))
+			c.Printer.Verbose("Property Administrator set: %v", admin)
 		} else {
 			if administrator, ok := properties.GetAdministratorOk(); ok && administrator != nil {
 				admin = *administrator
@@ -397,12 +409,14 @@ func RunGroupUserList(c *core.CommandConfig) error {
 
 func RunGroupUserAdd(c *core.CommandConfig) error {
 	id := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
+	groupId := viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId))
+	c.Printer.Verbose("User with id: %v is adding to group with id: %v...", id, groupId)
 	u := resources.User{
 		User: ionoscloud.User{
 			Id: &id,
 		},
 	}
-	userAdded, resp, err := c.Groups().AddUser(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)), u)
+	userAdded, resp, err := c.Groups().AddUser(groupId, u)
 	if err != nil {
 		return err
 	}
@@ -413,9 +427,12 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove user from group"); err != nil {
 		return err
 	}
+	userId := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
+	groupId := viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId))
+	c.Printer.Verbose("User with id: %v is adding to group with id: %v...", userId, groupId)
 	resp, err := c.Groups().RemoveUser(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
+		groupId,
+		userId,
 	)
 	if err != nil {
 		return err

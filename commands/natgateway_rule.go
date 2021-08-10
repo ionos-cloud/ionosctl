@@ -247,6 +247,7 @@ func RunNatGatewayRuleList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayRuleGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("atGatewayRule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)))
 	ng, _, err := c.NatGateways().GetRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
@@ -272,6 +273,9 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -302,6 +306,7 @@ func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway rule"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("NatGatewayRule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)))
 	resp, err := c.NatGateways().DeleteRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
@@ -319,27 +324,39 @@ func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRuleProperties {
 	input := ionoscloud.NatGatewayRuleProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.SetName(name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIp)) {
-		input.SetPublicIp(viper.GetString(core.GetFlagName(c.NS, config.ArgIp)))
+		publicIp := viper.GetString(core.GetFlagName(c.NS, config.ArgIp))
+		input.SetPublicIp(publicIp)
+		c.Printer.Verbose("Property PublicIp set: %v", publicIp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgProtocol)) {
 		protocol := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol)))
 		input.SetProtocol(ionoscloud.NatGatewayRuleProtocol(protocol))
+		c.Printer.Verbose("Property Protocol set: %v", protocol)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSourceSubnet)) {
-		input.SetSourceSubnet(viper.GetString(core.GetFlagName(c.NS, config.ArgSourceSubnet)))
+		sourceSubnet := viper.GetString(core.GetFlagName(c.NS, config.ArgSourceSubnet))
+		input.SetSourceSubnet(sourceSubnet)
+		c.Printer.Verbose("Property SourceSubnet set: %v", sourceSubnet)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgTargetSubnet)) {
-		input.SetTargetSubnet(viper.GetString(core.GetFlagName(c.NS, config.ArgTargetSubnet)))
+		targetSubnet := viper.GetString(core.GetFlagName(c.NS, config.ArgTargetSubnet))
+		input.SetTargetSubnet(targetSubnet)
+		c.Printer.Verbose("Property Name set: %v", targetSubnet)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPortRangeStart)) &&
 		viper.IsSet(core.GetFlagName(c.NS, config.ArgPortRangeEnd)) {
 		inputPortRange := ionoscloud.TargetPortRange{}
-		inputPortRange.SetStart(viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeStart)))
-		inputPortRange.SetEnd(viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeEnd)))
+		portRangeStart := viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeStart))
+		portRangeStop := viper.GetInt32(core.GetFlagName(c.NS, config.ArgPortRangeEnd))
+		inputPortRange.SetStart(portRangeStart)
+		inputPortRange.SetEnd(portRangeStop)
 		input.SetTargetPortRange(inputPortRange)
+		c.Printer.Verbose("Property TargetPortRang set with start: %v and stop: %v", portRangeStart, portRangeStop)
 	}
 	return &resources.NatGatewayRuleProperties{
 		NatGatewayRuleProperties: input,
