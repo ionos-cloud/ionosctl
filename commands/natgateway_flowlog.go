@@ -131,7 +131,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgBucketName, config.ArgBucketNameShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgS3Bucket, config.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway FlowLog creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway FlowLog creation [seconds]")
 	create.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols, utils.ColsMessage(defaultFlowLogCols))
@@ -184,7 +184,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgBucketName, config.ArgBucketNameShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket")
+	update.AddStringFlag(config.ArgS3Bucket, config.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway FlowLog update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway FlowLog update [seconds]")
 	update.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols, utils.ColsMessage(defaultFlowLogCols))
@@ -239,7 +239,7 @@ Required values to run command:
 }
 
 func PreRunNatGatewayFlowLogCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgName, config.ArgDirection, config.ArgBucketName)
+	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgName, config.ArgDirection, config.ArgS3Bucket)
 }
 
 func PreRunDcNatGatewayFlowLogIds(c *core.PreCommandConfig) error {

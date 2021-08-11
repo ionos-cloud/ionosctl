@@ -49,7 +49,6 @@ Required values to run command:
 ```text
   -a, --action string                   Specifies the traffic Action pattern (default "ALL")
   -u, --api-url string                  Override default host url (default "https://api.ionos.com")
-  -b, --bucket-name string              S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
@@ -61,6 +60,7 @@ Required values to run command:
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
+  -b, --s3bucket string                 S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
   -t, --timeout int                     Timeout option for Request for Network Load Balancer FlowLog creation [seconds] (default 300)
   -w, --wait-for-request                Wait for the Request for Network Load Balancer FlowLog creation to be executed
 ```

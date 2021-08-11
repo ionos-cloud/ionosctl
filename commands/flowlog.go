@@ -132,7 +132,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgBucketName, config.ArgBucketNameShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgS3Bucket, config.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket "+config.RequiredFlag)
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for FlowLog creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for FlowLog creation [seconds]")
 
@@ -178,7 +178,7 @@ func PreRunFlowLogCreate(c *core.PreCommandConfig) error {
 	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
 		result = multierror.Append(result, err)
 	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgName, config.ArgDirection, config.ArgBucketName); err != nil {
+	if err := core.CheckRequiredFlags(c.NS, config.ArgName, config.ArgDirection, config.ArgS3Bucket); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if result != nil {
@@ -284,8 +284,8 @@ func getFlowLogPropertiesSet(c *core.CommandConfig) v6.FlowLogProperties {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDirection)) {
 		properties.SetDirection(strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgDirection))))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBucketName)) {
-		properties.SetBucket(viper.GetString(core.GetFlagName(c.NS, config.ArgBucketName)))
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgS3Bucket)) {
+		properties.SetBucket(viper.GetString(core.GetFlagName(c.NS, config.ArgS3Bucket)))
 	}
 	return properties
 }
