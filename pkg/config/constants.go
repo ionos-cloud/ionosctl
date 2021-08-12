@@ -194,4 +194,10 @@ const (
 	Username               = "userdata.name"
 	Password               = "userdata.password"
 	Token                  = "userdata.token"
+	ServerUrl              = "userdata.api-url"
+)
+
+// Custom env vars
+const (
+	IonosServerUrlEnvVar = "IONOS_API_URL"
 )

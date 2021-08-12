@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
+	v5 "github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -527,7 +527,7 @@ func getGroupsIds(outErr io.Writer) []string {
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	groupSvc := v5.NewGroupService(clientSvc.Get(), context.TODO())

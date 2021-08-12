@@ -251,7 +251,7 @@ func getAttachedCdromsIds(outErr io.Writer, datacenterId, serverId string) []str
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	serverSvc := v5.NewServerService(clientSvc.Get(), context.TODO())
@@ -277,7 +277,7 @@ func getImagesCdromIds(outErr io.Writer) []string {
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
-		viper.GetString(config.ArgServerUrl),
+		config.GetServerUrl(),
 	)
 	clierror.CheckError(err, outErr)
 	imageSvc := v5.NewImageService(clientSvc.Get(), context.TODO())
