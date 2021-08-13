@@ -271,6 +271,7 @@ func RunVolumeList(c *core.CommandConfig) error {
 }
 
 func RunVolumeGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Volume with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)))
 	vol, _, err := c.Volumes().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
@@ -290,6 +291,9 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		*input,
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -322,6 +326,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Volume with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)))
 	resp, err := c.Volumes().Delete(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
@@ -339,10 +344,16 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 func getNewVolume(c *core.CommandConfig) (*v5.Volume, error) {
 	proper := v5.VolumeProperties{}
 	// It will get the default values, if flags not set
-	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
-	proper.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
-	proper.SetType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
-	proper.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	bus := viper.GetString(core.GetFlagName(c.NS, config.ArgBus))
+	volumeType := viper.GetString(core.GetFlagName(c.NS, config.ArgType))
+	availabilityZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
+	proper.SetName(name)
+	proper.SetBus(bus)
+	proper.SetType(volumeType)
+	proper.SetAvailabilityZone(availabilityZone)
+	c.Printer.Verbose("Properties set for creating the Volume: name: %v, bus: %v, volumeType: %v, availabilityZone: %v",
+		name, bus, volumeType, availabilityZone)
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSize)) {
 		size, err := utils.ConvertSize(
 			viper.GetString(core.GetFlagName(c.NS, config.ArgSize)),
@@ -352,46 +363,73 @@ func getNewVolume(c *core.CommandConfig) (*v5.Volume, error) {
 			return nil, err
 		}
 		proper.SetSize(float32(size))
+		c.Printer.Verbose("Property Size set: %vGB", float32(size))
 	}
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitId)) {
-		proper.SetBackupunitId(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+		backupUnitId := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId))
+		proper.SetBackupunitId(backupUnitId)
+		c.Printer.Verbose("Property BackupUnitId set: %v", backupUnitId)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
-		proper.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)))
+		licenceType := viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType))
+		proper.SetLicenceType(licenceType)
+		c.Printer.Verbose("Property LicenceType set: %v", licenceType)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) {
-		proper.SetImage(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
+		imageId := viper.GetString(core.GetFlagName(c.NS, config.ArgImageId))
+		proper.SetImage(imageId)
+		c.Printer.Verbose("Property Image set: %v", imageId)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
-		proper.SetImageAlias(viper.GetString(core.GetFlagName(c.NS, config.ArgImageAlias)))
+		imageAlias := viper.GetString(core.GetFlagName(c.NS, config.ArgImageAlias))
+		proper.SetImageAlias(imageAlias)
+		c.Printer.Verbose("Property ImageAlias set: %v", imageAlias)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
-		proper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgPassword)))
+		password := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
+		proper.SetImagePassword(password)
+		c.Printer.Verbose("Property Password set")
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
-		proper.SetSshKeys(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgSshKeys)))
+		sshKeys := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgSshKeys))
+		proper.SetSshKeys(sshKeys)
+		c.Printer.Verbose("Property SshKeys set: %v", sshKeys)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgUserData)) {
-		proper.SetUserData(viper.GetString(core.GetFlagName(c.NS, config.ArgUserData)))
+		userData := viper.GetString(core.GetFlagName(c.NS, config.ArgUserData))
+		proper.SetUserData(userData)
+		c.Printer.Verbose("Property UserData set: %v", userData)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotPlug)) {
-		proper.SetCpuHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotPlug)))
+		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotPlug))
+		proper.SetCpuHotPlug(cpuHotPlug)
+		c.Printer.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamHotPlug)) {
-		proper.SetRamHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotPlug)))
+		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotPlug))
+		proper.SetRamHotPlug(ramHotPlug)
+		c.Printer.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotPlug)) {
-		proper.SetNicHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotPlug)))
+		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotPlug))
+		proper.SetNicHotPlug(nicHotPlug)
+		c.Printer.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotUnplug)) {
-		proper.SetNicHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotUnplug)))
+		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotUnplug))
+		proper.SetNicHotUnplug(nicHotUnplug)
+		c.Printer.Verbose("Property NicHotUnplug set: %v", nicHotUnplug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)) {
-		proper.SetDiscVirtioHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)))
+		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug))
+		proper.SetDiscVirtioHotPlug(discVirtioHotPlug)
+		c.Printer.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)) {
-		proper.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)))
+		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug))
+		proper.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
+		c.Printer.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
 	}
 	return &v5.Volume{
 		Volume: ionoscloud.Volume{
@@ -403,10 +441,14 @@ func getNewVolume(c *core.CommandConfig) (*v5.Volume, error) {
 func getVolumeInfo(c *core.CommandConfig) (*v5.VolumeProperties, error) {
 	input := v5.VolumeProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.SetName(name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBus)) {
-		input.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
+		bus := viper.GetString(core.GetFlagName(c.NS, config.ArgBus))
+		input.SetBus(bus)
+		c.Printer.Verbose("Property Bus set: %v", bus)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSize)) {
 		size, err := utils.ConvertSize(
@@ -417,25 +459,38 @@ func getVolumeInfo(c *core.CommandConfig) (*v5.VolumeProperties, error) {
 			return nil, err
 		}
 		input.SetSize(float32(size))
+		c.Printer.Verbose("Property Size set: %vGB", float32(size))
 	}
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCpuHotPlug)) {
-		input.SetCpuHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotPlug)))
+		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgCpuHotPlug))
+		input.SetCpuHotPlug(cpuHotPlug)
+		c.Printer.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRamHotPlug)) {
-		input.SetRamHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotPlug)))
+		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgRamHotPlug))
+		input.SetRamHotPlug(ramHotPlug)
+		c.Printer.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotPlug)) {
-		input.SetNicHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotPlug)))
+		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotPlug))
+		input.SetNicHotPlug(nicHotPlug)
+		c.Printer.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgNicHotUnplug)) {
-		input.SetNicHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotUnplug)))
+		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, config.ArgNicHotUnplug))
+		input.SetNicHotUnplug(nicHotUnplug)
+		c.Printer.Verbose("Property NicHotUnplug set: %v", nicHotUnplug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)) {
-		input.SetDiscVirtioHotPlug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug)))
+		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotPlug))
+		input.SetDiscVirtioHotPlug(discVirtioHotPlug)
+		c.Printer.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)) {
-		input.SetDiscVirtioHotUnplug(viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug)))
+		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, config.ArgDiscVirtioHotUnplug))
+		input.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
+		c.Printer.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
 	}
 	return &input, nil
 }

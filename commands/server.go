@@ -346,6 +346,7 @@ func RunServerList(c *core.CommandConfig) error {
 }
 
 func RunServerGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	if err := utils.WaitForState(c, GetStateServer, viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))); err != nil {
 		return err
 	}
@@ -379,6 +380,9 @@ func RunServerCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -435,6 +439,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)), viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	resp, err := c.Servers().Delete(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -453,6 +458,7 @@ func RunServerStart(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "start server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Server is starting... ")
 	resp, err := c.Servers().Start(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -471,6 +477,7 @@ func RunServerStop(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Server is stopping... ")
 	resp, err := c.Servers().Stop(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -486,6 +493,7 @@ func RunServerStop(c *core.CommandConfig) error {
 }
 
 func RunServerReboot(c *core.CommandConfig) error {
+	c.Printer.Verbose("Server is rebooting... ")
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
 		return err
 	}
@@ -506,16 +514,24 @@ func RunServerReboot(c *core.CommandConfig) error {
 func getNewServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
 	input := ionoscloud.ServerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		c.Printer.Verbose("Property name set: %v ", name)
+		input.SetName(name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCPUFamily)) {
-		input.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily)))
+		cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily))
+		c.Printer.Verbose("Property CpuFamily set: %v ", cpuFamily)
+		input.SetCpuFamily(cpuFamily)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgAvailabilityZone)) {
-		input.SetAvailabilityZone(viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone)))
+		availabilityZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
+		c.Printer.Verbose("Property AvailabilityZone set: %v ", availabilityZone)
+		input.SetAvailabilityZone(availabilityZone)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
-		input.SetCores(viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores)))
+		cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
+		c.Printer.Verbose("Property Cores set: %v ", cores)
+		input.SetCores(cores)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
 		size, err := utils.ConvertSize(
@@ -525,6 +541,7 @@ func getNewServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
 		if err != nil {
 			return nil, err
 		}
+		c.Printer.Verbose("property Ram set: %vMB ", int32(size))
 		input.SetRam(int32(size))
 	}
 	return &v5.ServerProperties{

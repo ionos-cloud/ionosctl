@@ -180,6 +180,7 @@ func RunUserList(c *core.CommandConfig) error {
 }
 
 func RunUserGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	u, _, err := c.Users().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if err != nil {
 		return err
@@ -206,7 +207,12 @@ func RunUserCreate(c *core.CommandConfig) error {
 			},
 		},
 	}
+	c.Printer.Verbose("Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
+		firstname, lastname, email, secureAuth, admin)
 	u, resp, err := c.Users().Create(newUser)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -230,6 +236,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("User with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	resp, err := c.Users().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if err != nil {
 		return err
@@ -245,6 +252,7 @@ func getUserInfo(oldUser *v5.User, c *core.CommandConfig) *v5.UserPut {
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirstName)) {
 			firstName = viper.GetString(core.GetFlagName(c.NS, config.ArgFirstName))
+			c.Printer.Verbose("Property FirstName set: %v", firstName)
 		} else {
 			if name, ok := properties.GetFirstnameOk(); ok && name != nil {
 				firstName = *name
@@ -252,6 +260,7 @@ func getUserInfo(oldUser *v5.User, c *core.CommandConfig) *v5.UserPut {
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLastName)) {
 			lastName = viper.GetString(core.GetFlagName(c.NS, config.ArgLastName))
+			c.Printer.Verbose("Property LastName set: %v", lastName)
 		} else {
 			if name, ok := properties.GetLastnameOk(); ok && name != nil {
 				lastName = *name
@@ -259,6 +268,7 @@ func getUserInfo(oldUser *v5.User, c *core.CommandConfig) *v5.UserPut {
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgEmail)) {
 			email = viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
+			c.Printer.Verbose("Property Email set: %v", email)
 		} else {
 			if e, ok := properties.GetEmailOk(); ok && e != nil {
 				email = *e
@@ -266,6 +276,7 @@ func getUserInfo(oldUser *v5.User, c *core.CommandConfig) *v5.UserPut {
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgForceSecAuth)) {
 			forceSecureAuth = viper.GetBool(core.GetFlagName(c.NS, config.ArgForceSecAuth))
+			c.Printer.Verbose("Property ForceSecAuth set: %v", forceSecureAuth)
 		} else {
 			if secAuth, ok := properties.GetForceSecAuthOk(); ok && secAuth != nil {
 				forceSecureAuth = *secAuth
@@ -273,6 +284,7 @@ func getUserInfo(oldUser *v5.User, c *core.CommandConfig) *v5.UserPut {
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgAdmin)) {
 			admin = viper.GetBool(core.GetFlagName(c.NS, config.ArgAdmin))
+			c.Printer.Verbose("Property Administrator set: %v", admin)
 		} else {
 			if administrator, ok := properties.GetAdministratorOk(); ok && administrator != nil {
 				admin = *administrator

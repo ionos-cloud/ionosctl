@@ -190,10 +190,13 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	lanId := viper.GetString(core.GetFlagName(c.NS, config.ArgLanId))
+	c.Printer.Verbose("Adding an IP Failover group with Datacenter id: %v and Lan id: %v to a LAN...", dcId, lanId)
 	ipsFailovers := make([]v5.IpFailover, 0)
 	lanUpdated, resp, err := c.Lans().Update(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
+		dcId,
+		lanId,
 		getIpFailoverInfo(c),
 	)
 	if err != nil {
@@ -218,12 +221,15 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	lanId := viper.GetString(core.GetFlagName(c.NS, config.ArgLanId))
+	c.Printer.Verbose("Removing an IP Failover group with Datacenter id: %v and Lan id: %v to a LAN...", dcId, lanId)
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
 		return err
 	}
 	oldLan, _, err := c.Lans().Get(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
+		dcId,
+		lanId,
 	)
 	if err != nil {
 		return err

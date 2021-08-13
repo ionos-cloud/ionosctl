@@ -36,6 +36,7 @@ Use this command to create a Private Cross-Connect. You can specify the name and
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for Request for Private Cross-Connect creation [seconds] (default 60)
+  -v, --verbose              see step by step process when running a command
   -w, --wait-for-request     Wait for the Request for Private Cross-Connect creation to be executed
 ```
 

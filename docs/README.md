@@ -269,6 +269,12 @@ DATACENTER_ID3   us/las
 
 Note: When using `TAB` in autocompletion, on `--cols` option on a specific resource, the available columns for that resource will be displayed.
 
+* Use the `--verbose` option
+
+You will see step-by-step process when running a command.
+
+This flag can be used with any command(in general create, read, update, delete, but it's available also for the other specific command) of any resource. 
+
 ### Help Information
 
 You can see all available options for each command, use:

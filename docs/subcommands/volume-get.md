@@ -45,6 +45,7 @@ Required values to run command:
   -h, --help                   help for get
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
+  -v, --verbose                see step by step process when running a command
   -i, --volume-id string       The unique Volume Id (required)
 ```
 

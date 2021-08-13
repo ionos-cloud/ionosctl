@@ -67,5 +67,6 @@ Note: PowerShell completions require version 5.0 or above, which comes with Wind
   -h, --help             help for powershell
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
+  -v, --verbose          see step by step process when running a command
 ```
 

@@ -61,6 +61,7 @@ Required values to run command:
       --sec-auth-protection      Enable secure authentication protection
   -i, --snapshot-id string       The unique Snapshot Id (required)
   -t, --timeout int              Timeout option for Request for Snapshot creation [seconds] (default 60)
+  -v, --verbose                  see step by step process when running a command
   -w, --wait-for-request         Wait for the Request for Snapshot creation to be executed
 ```
 
