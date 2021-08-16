@@ -28,6 +28,7 @@ var (
 	Quiet     bool
 	Force     bool
 	Verbose   bool
+	All       bool
 
 	cfgFile string
 
@@ -85,6 +86,9 @@ func init() {
 
 	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, config.ArgVerboseShort, false, "see step by step process when running a command")
 	_ = viper.BindPFlag(config.ArgVerbose, rootPFlagSet.Lookup(config.ArgVerbose))
+
+	rootPFlagSet.BoolVarP(&All, config.ArgAll, config.ArgAllShort, false, "delete all servers/volumes/datacenters etc")
+	_ = viper.BindPFlag(config.ArgAll, rootPFlagSet.Lookup(config.ArgAll))
 
 	addCommands()
 

@@ -27,6 +27,8 @@ const (
 	ArgForceShort            = "f"
 	ArgVerbose               = "verbose"
 	ArgVerboseShort          = "v"
+	ArgAll                   = "all"
+	ArgAllShort              = "a"
 	ArgServerUrl             = "api-url"
 	ArgServerUrlShort        = "u"
 	ArgCols                  = "cols"
