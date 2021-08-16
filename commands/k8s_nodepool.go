@@ -231,7 +231,10 @@ func PreRunK8sClusterDcIdsNodePoolName(c *core.PreCommandConfig) error {
 }
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
-	k8ss, _, err := c.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+	k8ss, resp, err := c.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -243,8 +246,11 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("K8s node pool with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
-	u, _, err := c.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
+	u, resp, err := c.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -259,6 +265,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	u, resp, err := c.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)), *newNodePool)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -285,8 +292,11 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	newNodePool := getNewK8sNodePoolUpdated(oldNodePool, c)
-	newNodePoolUpdated, _, err := c.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
+	newNodePoolUpdated, resp, err := c.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)), newNodePool)
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -302,8 +312,11 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
-	_, err = c.K8s().DeleteNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
+	resp, err := c.K8s().DeleteNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

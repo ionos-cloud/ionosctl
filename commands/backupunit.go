@@ -193,7 +193,10 @@ func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {
-	backupUnits, _, err := c.BackupUnit().List()
+	backupUnits, resp, err := c.BackupUnit().List()
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -202,7 +205,10 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 
 func RunBackupUnitGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
-	u, _, err := c.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+	u, resp, err := c.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -211,7 +217,10 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 
 func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
-	u, _, err := c.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+	u, resp, err := c.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -235,6 +244,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	u, resp, err := c.BackupUnit().Create(newBackupUnit)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -252,6 +262,9 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	newProperties := getBackupUnitInfo(c)
 	backupUnitUpd, resp, err := c.BackupUnit().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)), *newProperties)
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -267,6 +280,9 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	resp, err := c.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

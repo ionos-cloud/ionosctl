@@ -244,11 +244,14 @@ func PreRunGlobalDcServerNicIdsFRuleId(c *core.PreCommandConfig) error {
 }
 
 func RunFirewallRuleList(c *core.CommandConfig) error {
-	firewallRules, _, err := c.FirewallRules().List(
+	firewallRules, resp, err := c.FirewallRules().List(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -257,12 +260,15 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 
 func RunFirewallRuleGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Firewall Rule with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)))
-	firewallRule, _, err := c.FirewallRules().Get(
+	firewallRule, resp, err := c.FirewallRules().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -287,6 +293,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -306,6 +313,9 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)),
 		getFirewallRulePropertiesSet(c),
 	)
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -327,6 +337,9 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

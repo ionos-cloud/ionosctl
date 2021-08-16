@@ -83,7 +83,10 @@ func PreRunResourceType(c *core.PreCommandConfig) error {
 }
 
 func RunResourceList(c *core.CommandConfig) error {
-	resourcesListed, _, err := c.Users().ListResources()
+	resourcesListed, resp, err := c.Users().ListResources()
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -93,16 +96,22 @@ func RunResourceList(c *core.CommandConfig) error {
 func RunResourceGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgResourceId)) {
-		resourceListed, _, err := c.Users().GetResourceByTypeAndId(
+		resourceListed, resp, err := c.Users().GetResourceByTypeAndId(
 			viper.GetString(core.GetFlagName(c.NS, config.ArgType)),
 			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		)
+		if resp != nil {
+			c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}
 		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
-		resourcesListed, _, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
+		resourcesListed, resp, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
+		if resp != nil {
+			c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}
@@ -152,7 +161,10 @@ func groupResource() *core.Command {
 }
 
 func RunGroupResourceList(c *core.CommandConfig) error {
-	resourcesListed, _, err := c.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	resourcesListed, resp, err := c.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
