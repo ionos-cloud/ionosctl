@@ -59,6 +59,7 @@ Required values to run command:
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
+  -v, --verbose                    see step by step process when running a command
   -w, --wait-for-request           Wait for the Request for Server creation to be executed
   -W, --wait-for-state             Wait for new Server to be in AVAILABLE state
 ```

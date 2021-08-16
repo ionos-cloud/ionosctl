@@ -139,12 +139,13 @@ func (a *DataCenterApiService) DatacentersDeleteExecute(r ApiDatacentersDeleteRe
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "DatacentersDelete",
 	}
 
@@ -300,12 +301,13 @@ func (a *DataCenterApiService) DatacentersFindByIdExecute(r ApiDatacentersFindBy
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "DatacentersFindById",
 	}
 
@@ -473,12 +475,13 @@ func (a *DataCenterApiService) DatacentersGetExecute(r ApiDatacentersGetRequest)
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "DatacentersGet",
 	}
 
@@ -644,12 +647,13 @@ func (a *DataCenterApiService) DatacentersPatchExecute(r ApiDatacentersPatchRequ
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "DatacentersPatch",
 	}
 
@@ -811,12 +815,13 @@ func (a *DataCenterApiService) DatacentersPostExecute(r ApiDatacentersPostReques
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "DatacentersPost",
 	}
 
@@ -982,12 +987,13 @@ func (a *DataCenterApiService) DatacentersPutExecute(r ApiDatacentersPutRequest)
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "DatacentersPut",
 	}
 

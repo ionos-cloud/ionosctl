@@ -53,6 +53,7 @@ Required values to run a command:
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id
   -t, --timeout int            Timeout option for Request for NIC creation [seconds] (default 60)
+  -v, --verbose                see step by step process when running a command
   -w, --wait-for-request       Wait for the Request for NIC creation to be executed
 ```
 

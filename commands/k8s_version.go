@@ -4,8 +4,10 @@ import (
 	"context"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func k8sVersion() *core.Command {
@@ -73,6 +75,7 @@ func RunK8sVersionGet(c *core.CommandConfig) error {
 
 func getK8sVersion(c *core.CommandConfig) (string, error) {
 	if k8sversion, _, err := c.K8s().GetVersion(); err == nil {
+		c.Printer.Verbose("K8s version with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion)))
 		k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
 		k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
 		return k8sversion, nil

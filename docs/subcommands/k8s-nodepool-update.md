@@ -61,6 +61,7 @@ Required values to run command:
       --public-ips strings        Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2
   -q, --quiet                     Quiet output
   -t, --timeout int               Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
+  -v, --verbose                   see step by step process when running a command
   -W, --wait-for-state            Wait for the new NodePool to be in ACTIVE state
 ```
 

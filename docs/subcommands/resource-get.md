@@ -45,6 +45,7 @@ Required values to run command:
   -q, --quiet                Quiet output
   -i, --resource-id string   The ID of the specific Resource to retrieve information about
       --type string          The specific Type of Resources to retrieve information about
+  -v, --verbose              see step by step process when running a command
 ```
 
 ## Examples

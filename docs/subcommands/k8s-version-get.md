@@ -37,6 +37,7 @@ Use this command to retrieve the current default Kubernetes version for Clusters
   -h, --help             help for get
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
+  -v, --verbose          see step by step process when running a command
 ```
 
 ## Examples

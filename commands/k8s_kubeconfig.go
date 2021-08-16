@@ -47,6 +47,7 @@ func k8sKubeconfig() *core.Command {
 }
 
 func RunK8sKubeconfigGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("K8s kube config with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	u, _, err := c.K8s().ReadKubeConfig(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err

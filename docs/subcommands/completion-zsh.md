@@ -44,5 +44,6 @@ You will need to start a new shell for this setup to take effect.
   -h, --help             help for zsh
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
+  -v, --verbose          see step by step process when running a command
 ```
 

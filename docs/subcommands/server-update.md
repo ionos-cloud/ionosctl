@@ -61,6 +61,7 @@ Required values to run command:
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (default "256")
   -i, --server-id string           The unique Server Id (required)
   -t, --timeout int                Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds] (default 60)
+  -v, --verbose                    see step by step process when running a command
   -w, --wait-for-request           Wait for the Request for Server update to be executed
   -W, --wait-for-state             Wait for the updated Server to be in AVAILABLE state
 ```

@@ -139,12 +139,13 @@ func (a *IPBlocksApiService) IpblocksDeleteExecute(r ApiIpblocksDeleteRequest) (
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "IpblocksDelete",
 	}
 
@@ -300,12 +301,13 @@ func (a *IPBlocksApiService) IpblocksFindByIdExecute(r ApiIpblocksFindByIdReques
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "IpblocksFindById",
 	}
 
@@ -457,12 +459,13 @@ func (a *IPBlocksApiService) IpblocksGetExecute(r ApiIpblocksGetRequest) (IpBloc
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "IpblocksGet",
 	}
 
@@ -628,12 +631,13 @@ func (a *IPBlocksApiService) IpblocksPatchExecute(r ApiIpblocksPatchRequest) (Ip
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "IpblocksPatch",
 	}
 
@@ -795,12 +799,13 @@ func (a *IPBlocksApiService) IpblocksPostExecute(r ApiIpblocksPostRequest) (IpBl
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "IpblocksPost",
 	}
 
@@ -966,12 +971,13 @@ func (a *IPBlocksApiService) IpblocksPutExecute(r ApiIpblocksPutRequest) (IpBloc
 		return localVarReturnValue, nil, err
 	}
 
-	localVarHTTPResponse, err := a.client.callAPI(req)
+	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
 	localVarAPIResponse := &APIResponse {
 		Response: localVarHTTPResponse,
 		Method: localVarHTTPMethod,
 		RequestURL: localVarPath,
+		RequestTime: httpRequestTime,
 		Operation: "IpblocksPut",
 	}
 
