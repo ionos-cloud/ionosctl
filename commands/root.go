@@ -145,7 +145,6 @@ func (v cliVersion) GetVersion() string {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
-	rootCmd.AddCommand(completion())
 	rootCmd.AddCommand(version())
 	// V6 Resources Commands
 	rootCmd.AddCommand(login())

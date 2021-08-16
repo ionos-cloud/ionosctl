@@ -10,34 +10,30 @@ description: Generate code to enable auto-completion with `TAB` key for BASH ter
 ionosctl completion bash [flags]
 ```
 
-## Aliases
-
-For `completion` command:
-
-```text
-[comp]
-```
-
-For `bash` command:
-
-```text
-[b]
-```
-
 ## Description
 
-Use this command to generate completion code for BASH terminal. IonosCTL supports completion for commands and flags.
+Generate the autocompletion script for the bash shell.
 
-To load completions for the current session, execute:
+This script depends on the 'bash-completion' package. If it is not installed already, you can install it via your OS's package manager.
+
+To load completions in your current shell session:
 
 ```text
-source <(ionosctl completion bash)
+$ source <(ionosctl completion bash)
 ```
 
-To make these changes permanent, append the above line to your `.bashrc` file and use:
+To load completions for every new session, execute once:
+
+* Linux:
 
 ```text
-source ~/.bashrc
+$ ionosctl completion bash > /etc/bash_completion.d/ionosctl
+```
+
+* MacOS:
+
+```text
+$ ionosctl completion bash > /usr/local/etc/bash_completion.d/ionosctl
 ```
 
 You will need to start a new shell for this setup to take effect.
@@ -45,6 +41,7 @@ You will need to start a new shell for this setup to take effect.
 ## Options
 
 ```text
+      --no-descriptions  disable completion descriptions
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
