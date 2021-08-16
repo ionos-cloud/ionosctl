@@ -345,6 +345,8 @@ func TestGetK8sNodesIds(t *testing.T) {
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
 	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
+	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getK8sNodesIds(w, testNodeVar, testNodeVar)
 	err = w.Flush()
