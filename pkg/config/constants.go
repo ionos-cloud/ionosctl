@@ -197,7 +197,6 @@ const (
 	ServerUrl              = "userdata.api-url"
 )
 
-// Custom env vars
 const (
 	IonosServerUrlEnvVar = "IONOS_API_URL"
 )
