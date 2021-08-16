@@ -460,6 +460,8 @@ func TestGetSnapshotsIds(t *testing.T) {
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
 	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
+	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getSnapshotIds(w)
 	err = w.Flush()
