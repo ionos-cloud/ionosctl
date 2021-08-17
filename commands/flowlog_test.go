@@ -144,6 +144,8 @@ func TestRunFlowLogListErr(t *testing.T) {
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFlowLogVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFlowLogVar)
@@ -160,6 +162,7 @@ func TestRunFlowLogGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFlowLogVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFlowLogVar)

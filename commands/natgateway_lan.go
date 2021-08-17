@@ -168,19 +168,15 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayLanAdd(c *core.CommandConfig) error {
-	ng, _, err := c.NatGateways().Get(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	natGatewayId := viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId))
+	ng, _, err := c.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Adding NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
 	input := getNewNatGatewayLanInfo(c, ng)
-	ng, resp, err := c.NatGateways().Update(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
-		*input,
-	)
+	ng, resp, err := c.NatGateways().Update(dcId, natGatewayId, *input)
 	if err != nil {
 		return err
 	}
@@ -194,19 +190,15 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove nat gateway lan"); err != nil {
 		return err
 	}
-	ng, _, err := c.NatGateways().Get(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	natGatewayId := viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId))
+	ng, _, err := c.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Removing NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
 	input := removeNatGatewayLanInfo(c, ng)
-	ng, resp, err := c.NatGateways().Update(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
-		*input,
-	)
+	ng, resp, err := c.NatGateways().Update(dcId, natGatewayId, *input)
 	if err != nil {
 		return err
 	}
@@ -227,10 +219,14 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *v6.NatGateway) *v6.Na
 	}
 	input := ionoscloud.NatGatewayLanProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanId)) {
-		input.SetId(viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)))
+		lanId := viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId))
+		input.SetId(lanId)
+		c.Printer.Verbose("Property Id set: %v", lanId)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIps)) {
-		input.SetGatewayIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
+		gatewayIps := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps))
+		input.SetGatewayIps(gatewayIps)
+		c.Printer.Verbose("Property GatewayIps set: %v", gatewayIps)
 	}
 	proper = append(proper, input)
 	return &v6.NatGatewayProperties{

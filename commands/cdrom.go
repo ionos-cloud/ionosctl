@@ -172,11 +172,11 @@ func PreRunDcServerCdromIds(c *core.PreCommandConfig) error {
 }
 
 func RunServerCdromAttach(c *core.CommandConfig) error {
-	attachedCdrom, resp, err := c.Servers().AttachCdrom(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	cdRomId := viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId))
+	c.Printer.Verbose("CD-ROM with id: %v is attaching to server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
+	attachedCdrom, resp, err := c.Servers().AttachCdrom(dcId, serverId, cdRomId)
 	if err != nil {
 		return err
 	}
@@ -199,6 +199,7 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 }
 
 func RunServerCdromGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("CD-ROM with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)))
 	attachedCdrom, _, err := c.Servers().GetCdrom(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -214,6 +215,7 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach cdrom from server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)))
 	resp, err := c.Servers().DetachCdrom(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),

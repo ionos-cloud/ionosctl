@@ -50,6 +50,7 @@ Required values to run a command:
       --public               The indicator if the Cluster is public or private (default true)
   -q, --quiet                Quiet output
   -t, --timeout int          Timeout option for waiting for Cluster/Request [seconds] (default 600)
+  -v, --verbose              see step by step process when running a command
   -w, --wait-for-request     Wait for the Request for Cluster creation to be executed
   -W, --wait-for-state       Wait for the new Cluster to be in ACTIVE state
 ```

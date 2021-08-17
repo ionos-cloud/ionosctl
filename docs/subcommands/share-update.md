@@ -45,6 +45,7 @@ Required values to run command:
   -i, --resource-id string   The unique Resource Id (required)
       --share-privilege      Update the group's permission to share resource
   -t, --timeout int          Timeout option for Request for Resource Share update [seconds] (default 60)
+  -v, --verbose              see step by step process when running a command
   -w, --wait-for-request     Wait for the Request for Resource Share update to be executed
 ```
 

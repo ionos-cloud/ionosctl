@@ -69,6 +69,7 @@ Required values to run command:
   -t, --timeout int                Timeout option for Request for Volume creation [seconds] (default 60)
       --type string                Type of the Volume (default "HDD")
       --user-data string           The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property
+  -v, --verbose                    see step by step process when running a command
   -w, --wait-for-request           Wait for the Request for Volume creation to be executed
 ```
 

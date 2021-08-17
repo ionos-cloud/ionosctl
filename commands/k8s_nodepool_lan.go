@@ -227,14 +227,19 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K
 				Id:   &lanId,
 				Dhcp: &dhcp,
 			}
+			c.Printer.Verbose("Adding a Kubernetes NodePool LAN with id: %v and dhcp: %v", lanId, dhcp)
 			if viper.IsSet(core.GetFlagName(c.NS, config.ArgNetwork)) &&
 				viper.IsSet(core.GetFlagName(c.NS, config.ArgGatewayIp)) {
 				newRoute := ionoscloud.KubernetesNodePoolLanRoutes{}
 				if viper.IsSet(core.GetFlagName(c.NS, config.ArgNetwork)) {
-					newRoute.SetNetwork(viper.GetString(core.GetFlagName(c.NS, config.ArgNetwork)))
+					network := viper.GetString(core.GetFlagName(c.NS, config.ArgNetwork))
+					newRoute.SetNetwork(network)
+					c.Printer.Verbose("Property Network set: %v", network)
 				}
 				if viper.IsSet(core.GetFlagName(c.NS, config.ArgGatewayIp)) {
-					newRoute.SetGatewayIp(viper.GetString(core.GetFlagName(c.NS, config.ArgGatewayIp)))
+					gatewayIp := viper.GetString(core.GetFlagName(c.NS, config.ArgGatewayIp))
+					newRoute.SetGatewayIp(gatewayIp)
+					c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
 				}
 				newLan.SetRoutes([]ionoscloud.KubernetesNodePoolLanRoutes{newRoute})
 			}
@@ -267,6 +272,7 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanId)) {
 			lanId := viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId))
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
+			c.Printer.Verbose("Removing a Kubernetes NodePool LAN with id: %v", lanId)
 			if existingLans, ok := properties.GetLansOk(); ok && existingLans != nil {
 				for _, existingLan := range *existingLans {
 					if id, ok := existingLan.GetIdOk(); ok && id != nil {

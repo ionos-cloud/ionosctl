@@ -51,6 +51,7 @@ Required values to run command:
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
   -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)
+  -v, --verbose                   see step by step process when running a command
   -W, --wait-for-state            Wait for specified Cluster to be in ACTIVE state after updating
 ```
 

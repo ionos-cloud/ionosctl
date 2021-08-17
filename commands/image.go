@@ -135,6 +135,7 @@ func RunImageList(c *core.CommandConfig) error {
 }
 
 func RunImageGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
 	img, _, err := c.Images().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
 	if err != nil {
 		return err

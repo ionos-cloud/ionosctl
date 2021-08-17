@@ -258,6 +258,7 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("NatGatewayFlowLogGet with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)))
 	ng, _, err := c.NatGateways().GetFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
@@ -283,6 +284,9 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -313,6 +317,7 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway flowlog"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("NatGatewayFlowLog with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)))
 	resp, err := c.NatGateways().DeleteFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),

@@ -208,6 +208,7 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 	if err := utils.WaitForState(c, GetStateNatGateway, viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId))); err != nil {
 		return err
 	}
+	c.Printer.Verbose("NatGateway with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)))
 	ng, _, err := c.NatGateways().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
@@ -231,6 +232,9 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -260,10 +264,10 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway"); err != nil {
 		return err
 	}
-	resp, err := c.NatGateways().Delete(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	natGatewayId := viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId))
+	c.Printer.Verbose("NatGateway with id: %v is deleting...", natGatewayId)
+	resp, err := c.NatGateways().Delete(dcId, natGatewayId)
 	if err != nil {
 		return err
 	}
@@ -276,10 +280,14 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 func getNewNatGatewayInfo(c *core.CommandConfig) *v6.NatGatewayProperties {
 	input := ionoscloud.NatGatewayProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.SetName(name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIps)) {
-		input.SetPublicIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
+		publicIps := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps))
+		input.SetPublicIps(publicIps)
+		c.Printer.Verbose("Property PublicIps set: %v", publicIps)
 	}
 	return &v6.NatGatewayProperties{
 		NatGatewayProperties: input,

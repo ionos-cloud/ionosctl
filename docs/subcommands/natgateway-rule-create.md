@@ -65,6 +65,7 @@ Required values to run command:
       --source-subnet string   Source subnet of the NAT Gateway Rule (required)
       --target-subnet string   Target subnet or destination subnet of the NAT Gateway Rule
   -t, --timeout int            Timeout option for Request for NAT Gateway Rule creation [seconds] (default 60)
+  -v, --verbose                see step by step process when running a command
   -w, --wait-for-request       Wait for the Request for NAT Gateway Rule creation to be executed
 ```
 

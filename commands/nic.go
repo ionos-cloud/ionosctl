@@ -227,6 +227,7 @@ func RunNicList(c *core.CommandConfig) error {
 }
 
 func RunNicGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 	nic, _, err := c.Nics().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
@@ -239,23 +240,35 @@ func RunNicGet(c *core.CommandConfig) error {
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId))
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	ips := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps))
+	dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
+	lanId := viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId))
+	firewallActive := viper.GetBool(core.GetFlagName(c.NS, config.ArgFirewallActive))
+	firewallType := viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallType))
+
+	c.Printer.Verbose("Creating Nic in DataCenterId: %v with ServerId: %v...", dcId, serverId)
+	c.Printer.Verbose("Properties set for creating the Nic: Name: %v, Ips: %v, Dhcp: %v, Lan: %v FirewallActive: %v, FirewallType: %v",
+		name, ips, dhcp, lanId, firewallActive, firewallType)
+
 	inputProper := v6.NicProperties{}
-	inputProper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
-	inputProper.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
-	inputProper.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)))
-	inputProper.SetLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)))
-	inputProper.SetFirewallActive(viper.GetBool(core.GetFlagName(c.NS, config.ArgFirewallActive)))
-	inputProper.SetFirewallType(viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallType)))
+	inputProper.SetName(name)
+	inputProper.SetIps(ips)
+	inputProper.SetDhcp(dhcp)
+	inputProper.SetLan(lanId)
+	inputProper.SetFirewallActive(firewallActive)
+	inputProper.SetFirewallType(firewallType)
 	input := v6.Nic{
 		Nic: ionoscloud.Nic{
 			Properties: &inputProper.NicProperties,
 		},
 	}
-	nic, resp, err := c.Nics().Create(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
-		input,
-	)
+	nic, resp, err := c.Nics().Create(dcId, serverId, input)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -269,22 +282,34 @@ func RunNicCreate(c *core.CommandConfig) error {
 func RunNicUpdate(c *core.CommandConfig) error {
 	input := v6.NicProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.NicProperties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.NicProperties.SetName(name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDhcp)) {
-		input.NicProperties.SetDhcp(viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp)))
+		dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
+		input.NicProperties.SetDhcp(dhcp)
+		c.Printer.Verbose("Property Dhcp set: %v", dhcp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLanId)) {
-		input.NicProperties.SetLan(viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)))
+		lan := viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId))
+		input.NicProperties.SetLan(lan)
+		c.Printer.Verbose("Property Lan set: %v", lan)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgIps)) {
-		input.NicProperties.SetIps(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps)))
+		ips := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps))
+		input.NicProperties.SetIps(ips)
+		c.Printer.Verbose("Property Ips set: %v", ips)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallActive)) {
-		input.NicProperties.SetFirewallActive(viper.GetBool(core.GetFlagName(c.NS, config.ArgFirewallActive)))
+		firewallActive := viper.GetBool(core.GetFlagName(c.NS, config.ArgFirewallActive))
+		input.NicProperties.SetFirewallActive(firewallActive)
+		c.Printer.Verbose("Property FirewallActive set: %v", firewallActive)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgFirewallType)) {
-		input.NicProperties.SetFirewallType(viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallType)))
+		firewallType := viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallType))
+		input.NicProperties.SetFirewallType(firewallType)
+		c.Printer.Verbose("Property FirewallType set: %v", firewallType)
 	}
 	nicUpd, resp, err := c.Nics().Update(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
@@ -306,6 +331,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 	resp, err := c.Nics().Delete(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),

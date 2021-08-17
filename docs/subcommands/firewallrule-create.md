@@ -64,6 +64,7 @@ Required values to run command:
       --target-ip string       In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs
   -t, --timeout int            Timeout option for Request for Firewall Rule creation [seconds] (default 60)
       --type string            The type of Firewall Rule (default "INGRESS")
+  -v, --verbose                see step by step process when running a command
   -w, --wait-for-request       Wait for Request for Firewall Rule creation to be executed
 ```
 

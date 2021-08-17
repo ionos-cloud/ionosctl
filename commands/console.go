@@ -53,9 +53,12 @@ func serverConsole() *core.Command {
 }
 
 func RunServerConsoleGet(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	c.Printer.Verbose("ServerConsole with id: %v from Datacenter with id: %v is getting...", serverId, dcId)
 	t, _, err := c.Servers().GetRemoteConsoleUrl(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
+		dcId,
+		serverId,
 	)
 	if err != nil {
 		return err
