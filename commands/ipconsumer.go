@@ -61,7 +61,7 @@ func ipconsumer() *core.Command {
 func RunIpConsumersList(c *core.CommandConfig) error {
 	ipBlock, resp, err := c.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err

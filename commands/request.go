@@ -124,7 +124,7 @@ func PreRunRequestId(c *core.PreCommandConfig) error {
 func RunRequestList(c *core.CommandConfig) error {
 	requests, resp, err := c.Requests().List()
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -169,7 +169,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgRequestId)))
 	req, resp, err := c.Requests().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgRequestId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err

@@ -190,7 +190,7 @@ func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {
 func RunLoadBalancerList(c *core.CommandConfig) error {
 	lbs, resp, err := c.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -205,7 +205,7 @@ func RunLoadBalancerGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -221,7 +221,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	lb, resp, err := c.Loadbalancers().Create(dcId, name, dhcp)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -256,7 +256,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -278,7 +278,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err

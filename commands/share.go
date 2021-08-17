@@ -188,7 +188,7 @@ func PreRunGroupResourceIds(c *core.PreCommandConfig) error {
 func RunShareList(c *core.CommandConfig) error {
 	shares, resp, err := c.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -203,7 +203,7 @@ func RunShareGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -230,7 +230,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -258,7 +258,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 		newShare,
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -279,7 +279,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err

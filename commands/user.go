@@ -174,7 +174,7 @@ func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
 func RunUserList(c *core.CommandConfig) error {
 	users, resp, err := c.Users().List()
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -186,7 +186,7 @@ func RunUserGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	u, resp, err := c.Users().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -218,7 +218,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 	u, resp, err := c.Users().Create(newUser)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -229,7 +229,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 func RunUserUpdate(c *core.CommandConfig) error {
 	oldUser, resp, err := c.Users().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -249,7 +249,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 	c.Printer.Verbose("User with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	resp, err := c.Users().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -415,7 +415,7 @@ func groupUser() *core.Command {
 func RunGroupUserList(c *core.CommandConfig) error {
 	users, resp, err := c.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -434,7 +434,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding User with id: %v to group with id: %v...", id, groupId)
 	userAdded, resp, err := c.Groups().AddUser(groupId, u)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -451,7 +451,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding User with id: %v to group with id: %v...", id, groupId)
 	resp, err := c.Groups().RemoveUser(groupId, id)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err

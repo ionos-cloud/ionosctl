@@ -181,7 +181,7 @@ func PreRunUserKeyIds(c *core.PreCommandConfig) error {
 func RunUserS3KeyList(c *core.CommandConfig) error {
 	ss, resp, err := c.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -195,7 +195,7 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -209,7 +209,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	s, resp, err := c.S3Keys().Create(userId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -236,7 +236,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 		newKey,
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -257,7 +257,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err

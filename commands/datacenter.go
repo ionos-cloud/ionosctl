@@ -167,7 +167,8 @@ func PreRunDataCenterId(c *core.PreCommandConfig) error {
 func RunDataCenterList(c *core.CommandConfig) error {
 	datacenters, resp, err := c.DataCenters().List()
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		// c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -179,7 +180,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	dc, resp, err := c.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -195,7 +196,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	dc, resp, err := c.DataCenters().Create(name, description, location)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -224,7 +225,7 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -244,7 +245,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter with id: %v is deleting...", dcId)
 	resp, err := c.DataCenters().Delete(dcId)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err

@@ -340,7 +340,7 @@ func PreRunDcServerIds(c *core.PreCommandConfig) error {
 func RunServerList(c *core.CommandConfig) error {
 	servers, resp, err := c.Servers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -358,7 +358,7 @@ func RunServerGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -388,7 +388,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -424,7 +424,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		*input,
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -455,7 +455,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -476,6 +476,9 @@ func RunServerStart(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -495,6 +498,9 @@ func RunServerStop(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -514,6 +520,9 @@ func RunServerReboot(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

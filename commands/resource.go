@@ -85,7 +85,7 @@ func PreRunResourceType(c *core.PreCommandConfig) error {
 func RunResourceList(c *core.CommandConfig) error {
 	resourcesListed, resp, err := c.Users().ListResources()
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -101,7 +101,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		)
 		if resp != nil {
-			c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+			c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -110,7 +110,7 @@ func RunResourceGet(c *core.CommandConfig) error {
 	} else {
 		resourcesListed, resp, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
 		if resp != nil {
-			c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+			c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -163,7 +163,7 @@ func groupResource() *core.Command {
 func RunGroupResourceList(c *core.CommandConfig) error {
 	resourcesListed, resp, err := c.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err

@@ -198,7 +198,7 @@ func PreRunGlobalDcIdLanId(c *core.PreCommandConfig) error {
 func RunLanList(c *core.CommandConfig) error {
 	lans, resp, err := c.Lans().List(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -214,7 +214,7 @@ func RunLanGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -243,7 +243,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	l, resp, err := c.Lans().Create(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)), input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -286,7 +286,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -308,7 +308,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("the execution time of the command is: %v", resp.RequestTime)
+		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
 	}
 	if err != nil {
 		return err
