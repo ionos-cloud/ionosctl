@@ -123,6 +123,7 @@ var (
 				NicHotUnplug:        &testVolumeBoolVar,
 				DiscVirtioHotPlug:   &testVolumeBoolVar,
 				DiscVirtioHotUnplug: &testVolumeBoolVar,
+				SshKeys:             &testVolumeSliceVar,
 			},
 		},
 	}

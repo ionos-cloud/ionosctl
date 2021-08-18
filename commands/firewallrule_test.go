@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -65,6 +66,7 @@ var (
 					"location": {"https://api.ionos.com/cloudapi/v5/create/resource/status"},
 				},
 			},
+			RequestTime: time.Duration(50),
 		},
 	}
 	testFirewallRuleProtocol       = "TCP"
