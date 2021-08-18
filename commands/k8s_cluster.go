@@ -203,7 +203,7 @@ func PreRunK8sClusterName(c *core.PreCommandConfig) error {
 func RunK8sClusterList(c *core.CommandConfig) error {
 	k8ss, resp, err := c.K8s().ListClusters()
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -218,7 +218,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	u, resp, err := c.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -234,7 +234,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 	u, resp, err := c.K8s().CreateCluster(*newCluster)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -265,7 +265,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 	newCluster := getK8sClusterInfo(oldCluster, c)
 	k8sUpd, resp, err := c.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)), newCluster)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -288,7 +288,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	resp, err := c.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err

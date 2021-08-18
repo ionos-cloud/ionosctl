@@ -181,7 +181,7 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -199,7 +199,7 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -219,7 +219,7 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	resp, err := c.K8s().RecreateNode(k8sClusterId, k8sNodePoolId, k8sNodeId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -237,7 +237,7 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 
 	if err != nil {

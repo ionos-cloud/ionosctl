@@ -228,7 +228,7 @@ func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
 func RunSnapshotList(c *core.CommandConfig) error {
 	ss, resp, err := c.Snapshots().List()
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -240,7 +240,7 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	s, resp, err := c.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -267,7 +267,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -282,7 +282,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 func RunSnapshotUpdate(c *core.CommandConfig) error {
 	s, resp, err := c.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)), getSnapshotPropertiesSet(c))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -305,7 +305,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -320,7 +320,7 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 	c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	resp, err := c.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err

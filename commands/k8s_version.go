@@ -60,7 +60,7 @@ func k8sVersion() *core.Command {
 func RunK8sVersionList(c *core.CommandConfig) error {
 	u, resp, err := c.K8s().ListVersions()
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -82,7 +82,7 @@ func getK8sVersion(c *core.CommandConfig) (string, error) {
 		k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
 		k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
 		if resp != nil {
-			c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
 		return k8sversion, nil
 	} else {

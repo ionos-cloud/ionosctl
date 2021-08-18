@@ -172,7 +172,7 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -203,7 +203,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		getIpFailoverInfo(c),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -238,7 +238,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 		lanId,
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err

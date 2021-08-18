@@ -178,7 +178,7 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 	c.Printer.Verbose("CD-ROM with id: %v is attaching to server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
 	attachedCdrom, resp, err := c.Servers().AttachCdrom(dcId, serverId, cdRomId)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -196,7 +196,7 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -212,7 +212,7 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -231,7 +231,7 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 
 	if err != nil {

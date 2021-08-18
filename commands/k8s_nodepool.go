@@ -233,7 +233,7 @@ func PreRunK8sClusterDcIdsNodePoolName(c *core.PreCommandConfig) error {
 func RunK8sNodePoolList(c *core.CommandConfig) error {
 	k8ss, resp, err := c.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -249,7 +249,7 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 	u, resp, err := c.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -265,7 +265,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	u, resp, err := c.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)), *newNodePool)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -295,7 +295,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	newNodePoolUpdated, resp, err := c.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)), newNodePool)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -315,7 +315,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 	resp, err := c.K8s().DeleteNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err

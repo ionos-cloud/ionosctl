@@ -82,7 +82,7 @@ func PreRunLocationId(c *core.PreCommandConfig) error {
 func RunLocationList(c *core.CommandConfig) error {
 	locations, resp, err := c.Locations().List()
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -103,7 +103,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLocationId)))
 	loc, resp, err := c.Locations().GetByRegionAndLocationId(ids[0], ids[1])
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err

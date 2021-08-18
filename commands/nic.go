@@ -210,7 +210,7 @@ func RunNicList(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -231,7 +231,7 @@ func RunNicGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -253,7 +253,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	nic, resp, err := c.Nics().Create(dcId, serverId, name, ips, dhcp, lanId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 
 	if err != nil {
@@ -295,7 +295,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -318,7 +318,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -511,7 +511,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	c.Printer.Verbose("Attaching Nic with id: %v from LoadBalancer with id: %v")
 	attachedNic, resp, err := c.Loadbalancers().AttachNic(dcId, lbId, nicId)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -528,7 +528,7 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -544,7 +544,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -562,7 +562,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 	c.Printer.Verbose("Detaching Nic with id: %v from LoadBalancer with id: %v...")
 	resp, err := c.Loadbalancers().DetachNic(dcId, lbId, nicId)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err

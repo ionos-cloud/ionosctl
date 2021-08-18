@@ -12,7 +12,7 @@ import (
 func RunDataCenterLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.Labels().DatacenterList(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -26,7 +26,7 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 	labelDc, resp, err := c.Labels().DatacenterGet(dcId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Datacenter with id: %v...", labelKey, labelValue, dcId)
 	labelDc, resp, err := c.Labels().DatacenterCreate(dcId, labelKey, labelValue)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -55,7 +55,7 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 	c.Printer.Verbose("Removing label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 	resp, err := c.Labels().DatacenterDelete(dcId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for Server with id: %v...", labelkey, serverId)
 	labelDc, resp, err := c.Labels().ServerGet(dcId, serverId, labelkey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Server with id: %v...", labelKey, labelValue, serverId)
 	labelDc, resp, err := c.Labels().ServerCreate(dcId, serverId, labelKey, labelValue)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -115,7 +115,7 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 	c.Printer.Verbose("Removing label with key: %v for Server with id: %v...", labelKey, serverId)
 	resp, err := c.Labels().ServerDelete(dcId, serverId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -129,7 +129,7 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgVolumeId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -144,7 +144,7 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for Volume with id: %v...", labelKey, volumeId)
 	labelDc, resp, err := c.Labels().VolumeGet(dcId, volumeId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -160,7 +160,7 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Volume with id: %v...", labelKey, labelValue, volumeId)
 	labelDc, resp, err := c.Labels().VolumeCreate(dcId, volumeId, labelKey, labelValue)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -175,7 +175,7 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 	c.Printer.Verbose("Removing label with key: %v for Volume with id: %v...", labelKey, volumeId)
 	resp, err := c.Labels().VolumeDelete(dcId, volumeId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -186,7 +186,7 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 func RunIpBlockLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.Labels().IpBlockList(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgIpBlockId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -200,7 +200,7 @@ func RunIpBlockLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 	labelDc, resp, err := c.Labels().IpBlockGet(ipBlockId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -219,7 +219,7 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 		labelValue,
 	)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -233,7 +233,7 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 	c.Printer.Verbose("Removing label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 	resp, err := c.Labels().IpBlockDelete(ipBlockId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -244,7 +244,7 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 func RunSnapshotLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.Labels().SnapshotList(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgSnapshotId)))
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -258,7 +258,7 @@ func RunSnapshotLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 	labelDc, resp, err := c.Labels().SnapshotGet(snapshotId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -273,7 +273,7 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Snapshot with id: %v...", labelKey, labelValue, snapshotId)
 	labelDc, resp, err := c.Labels().SnapshotCreate(snapshotId, labelKey, labelValue)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -287,7 +287,7 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 	c.Printer.Verbose("Removing label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 	resp, err := c.Labels().SnapshotDelete(snapshotId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose("The execution time of the request is: %v", resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
