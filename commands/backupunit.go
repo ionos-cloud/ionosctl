@@ -268,10 +268,11 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	// if flag true ia lista si da delete la toate else cele 2 linii de mai jos
 	var resp *v5.Response
 	var err error
-	flag := viper.GetBool(config.ArgVerbose)
+	var backupUnits v5.BackupUnits
+	flag := viper.GetBool(config.ArgAll)
 	if flag {
-		c.Printer.Verbose("Deleting all the BackupUnits")
-		backupUnits, resp, err := c.BackupUnit().List()
+		c.Printer.Verbose("Deleting all the BackupUnits") // sau un in for "Backup unit with id: %v is deleting..."
+		backupUnits, resp, err = c.BackupUnit().List()
 		if err != nil {
 			return err
 		}
@@ -279,11 +280,12 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 			for _, backupUnit := range *backupUnitsItems {
 				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
 					resp, err = c.BackupUnit().Delete(*id)
+					if err != nil {
+						return err
+					}
 				}
 			}
 		}
-
-		// for prin lista si delete, vezi daca lasi verbose de sus sau pui in for "Backup unit with id: %v is deleting..."
 	} else {
 		c.Printer.Verbose("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 		resp, err = c.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
