@@ -265,29 +265,31 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
 		return err
 	}
-	// if flag true ia lista si da delete la toate else cele 2 linii de mai jos
 	var resp *v5.Response
 	var err error
 	var backupUnits v5.BackupUnits
 	flag := viper.GetBool(config.ArgAll)
 	if flag {
+		// ask for confirm are you sure you want to delete all the BackupUnits
 		c.Printer.Verbose("Deleting all the BackupUnits") // sau un in for "Backup unit with id: %v is deleting..."
 		backupUnits, resp, err = c.BackupUnit().List()
 		if err != nil {
 			return err
 		}
-		if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
+		if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil { // functiei de delete lista de aici
 			for _, backupUnit := range *backupUnitsItems {
 				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Backup unit with id: %v...", *id)
 					resp, err = c.BackupUnit().Delete(*id)
 					if err != nil {
 						return err
 					}
+					// wait for request ???
 				}
 			}
 		}
 	} else {
-		c.Printer.Verbose("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+		c.Printer.Verbose("Deleting Backup unit with id: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 		resp, err = c.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	}
 
