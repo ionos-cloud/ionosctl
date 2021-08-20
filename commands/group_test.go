@@ -439,7 +439,7 @@ func TestRunGroupDeleteResponseErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
-		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
+		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponseErr, nil)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
 	})

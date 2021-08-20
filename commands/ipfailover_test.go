@@ -324,7 +324,7 @@ func TestRunIpFailoverRemoveResponseErr(t *testing.T) {
 			LanProperties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{},
 			},
-		}).Return(&testLanIpFailoverRemove, &testResponse, nil)
+		}).Return(&testLanIpFailoverRemove, &testResponseErr, nil)
 		err := RunIpFailoverRemove(cfg)
 		assert.Error(t, err)
 	})

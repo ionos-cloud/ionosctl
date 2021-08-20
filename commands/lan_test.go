@@ -296,7 +296,7 @@ func TestRunLanUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testLanNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPublic), publicNewLan)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testLanNewVar)
-		rm.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, &testResponse, nil)
+		rm.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, &testResponseErr, nil)
 		err := RunLanUpdate(cfg)
 		assert.Error(t, err)
 	})

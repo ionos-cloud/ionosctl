@@ -63,7 +63,17 @@ var (
 		APIResponse: ionoscloud.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
-					"location": {"https://api.ionos.com/cloudapi/v5/create/resource/status"},
+					"Location": {"https://api.ionos.com/cloudapi/v5/requests/f2354da4-83e3-4e92-9d23-f3cb1ffecc31/status"},
+				},
+			},
+			RequestTime: time.Duration(50),
+		},
+	}
+	testResponseErr = v5.Response{
+		APIResponse: ionoscloud.APIResponse{
+			Response: &http.Response{
+				Header: map[string][]string{
+					"Location": {""},
 				},
 			},
 			RequestTime: time.Duration(50),
@@ -275,7 +285,7 @@ func TestRunFirewallRuleCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSourceMac), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgTargetIp), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.FirewallRule.EXPECT().Create(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRule).Return(&testInputFirewallRule, &testResponse, nil)
+		rm.FirewallRule.EXPECT().Create(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testInputFirewallRule).Return(&testInputFirewallRule, &testResponseErr, nil)
 		err := RunFirewallRuleCreate(cfg)
 		assert.Error(t, err)
 	})

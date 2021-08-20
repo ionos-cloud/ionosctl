@@ -63,6 +63,7 @@ var (
 				NicHotUnplug:        &testVolumeBoolVar,
 				DiscVirtioHotPlug:   &testVolumeBoolVar,
 				DiscVirtioHotUnplug: &testVolumeBoolVar,
+				SshKeys:             &testVolumeSliceVar,
 			},
 		},
 	}
@@ -123,7 +124,6 @@ var (
 				NicHotUnplug:        &testVolumeBoolVar,
 				DiscVirtioHotPlug:   &testVolumeBoolVar,
 				DiscVirtioHotUnplug: &testVolumeBoolVar,
-				SshKeys:             &testVolumeSliceVar,
 			},
 		},
 	}
@@ -324,9 +324,9 @@ func TestRunVolumeCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
-		// viper.Set(core.GetFlagName(cfg.NS, config.ArgSshKeys), testVolumeSliceVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSshKeys), testVolumeSliceVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&v5.Volume{Volume: v}, testResponse, nil)
+		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&v5.Volume{Volume: v}, &testResponse, nil)
 		err := RunVolumeCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -387,6 +387,7 @@ func TestRunVolumeCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSshKeys), testVolumeSliceVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&v5.Volume{Volume: v}, nil, testVolumeErr)
 		err := RunVolumeCreate(cfg)
@@ -417,6 +418,7 @@ func TestRunVolumeCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgSshKeys), testVolumeSliceVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&v5.Volume{Volume: v}, nil, nil)
 		err := RunVolumeCreate(cfg)
@@ -846,7 +848,7 @@ func TestRunServerVolumeDetachErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(&testResponse, nil)
+		rm.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(&testResponseErr, nil)
 		err := RunServerVolumeDetach(cfg)
 		assert.Error(t, err)
 	})

@@ -173,7 +173,7 @@ func TestRunShareCreateResponseErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
-		rm.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, &testResponse, nil)
+		rm.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, &testResponseErr, nil)
 		err := RunShareCreate(cfg)
 		assert.Error(t, err)
 	})

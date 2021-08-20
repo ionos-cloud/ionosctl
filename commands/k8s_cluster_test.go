@@ -470,7 +470,7 @@ func TestRunK8sClusterCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgApiSubnets), []string{testClusterVar})
-		rm.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, &testResponse, nil)
+		rm.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, &testResponseErr, nil)
 		err := RunK8sClusterCreate(cfg)
 		assert.Error(t, err)
 	})

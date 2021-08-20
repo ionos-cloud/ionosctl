@@ -166,7 +166,7 @@ func TestRunUserS3KeyCreateResponseErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserId), testS3keyVar)
-		rm.S3Key.EXPECT().Create(testS3keyVar).Return(&s3keyTest, &testResponse, nil)
+		rm.S3Key.EXPECT().Create(testS3keyVar).Return(&s3keyTest, &testResponseErr, nil)
 		err := RunUserS3KeyCreate(cfg)
 		assert.Error(t, err)
 	})

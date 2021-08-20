@@ -208,7 +208,7 @@ func TestRunIpBlockCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testIpBlockLocation)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), testIpBlockSize)
-		rm.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponse, nil)
+		rm.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponseErr, nil)
 		err := RunIpBlockCreate(cfg)
 		assert.Error(t, err)
 	})

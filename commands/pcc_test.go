@@ -203,7 +203,7 @@ func TestRunPccCreateResponseErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testPccVar)
-		rm.Pcc.EXPECT().Create(pccTest).Return(&pccTest, &testResponse, nil)
+		rm.Pcc.EXPECT().Create(pccTest).Return(&pccTest, &testResponseErr, nil)
 		err := RunPccCreate(cfg)
 		assert.Error(t, err)
 	})

@@ -268,7 +268,7 @@ func TestRunDataCenterUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDescription), testDatacenterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		rm.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties).Return(&dcNew, &testResponse, nil)
+		rm.Datacenter.EXPECT().Update(testDatacenterVar, dcProperties).Return(&dcNew, &testResponseErr, nil)
 		err := RunDataCenterUpdate(cfg)
 		assert.Error(t, err)
 	})

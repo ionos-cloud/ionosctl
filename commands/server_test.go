@@ -429,7 +429,7 @@ func TestRunServerUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponse, nil)
+		rm.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponseErr, nil)
 		err := RunServerUpdate(cfg)
 		assert.Error(t, err)
 	})

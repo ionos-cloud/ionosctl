@@ -251,7 +251,7 @@ func TestRunLoadBalancerUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDhcp), dhcpLoadbalancerNew)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testLoadbalancerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Loadbalancer.EXPECT().Update(testLoadbalancerVar, testLoadbalancerVar, loadbalancerProperties).Return(&loadbalancerNew, &testResponse, nil)
+		rm.Loadbalancer.EXPECT().Update(testLoadbalancerVar, testLoadbalancerVar, loadbalancerProperties).Return(&loadbalancerNew, &testResponseErr, nil)
 		err := RunLoadBalancerUpdate(cfg)
 		assert.Error(t, err)
 	})

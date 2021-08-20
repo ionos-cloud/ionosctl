@@ -250,7 +250,7 @@ func TestRunSnapshotCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSecAuthProtection), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).Return(&snapshotTest, &testResponse, nil)
+		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).Return(&snapshotTest, &testResponseErr, nil)
 		err := RunSnapshotCreate(cfg)
 		assert.Error(t, err)
 	})
