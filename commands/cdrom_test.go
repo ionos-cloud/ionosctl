@@ -190,7 +190,7 @@ func TestRunServerCdromDetachResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testResponse, nil)
+		rm.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testResponseErr, nil)
 		err := RunServerCdromDetach(cfg)
 		assert.Error(t, err)
 	})

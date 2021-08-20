@@ -226,7 +226,7 @@ func TestRunBackupUnitCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgEmail), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testBackupUnitVar)
-		rm.BackupUnit.EXPECT().Create(backupUnitTest).Return(&backupUnitTest, &testResponse, nil)
+		rm.BackupUnit.EXPECT().Create(backupUnitTest).Return(&backupUnitTest, &testResponseErr, nil)
 		err := RunBackupUnitCreate(cfg)
 		assert.Error(t, err)
 	})
