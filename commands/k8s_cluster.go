@@ -334,9 +334,11 @@ func getNewK8sCluster(c *core.CommandConfig) (*v6.K8sClusterForPost, error) {
 			Name: &name,
 		})
 		proper.SetS3Buckets(s3buckets)
+		c.Printer.Verbose("Property S3Buckets set: %v", s3buckets)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgApiSubnets)) {
 		proper.SetApiSubnetAllowList(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets)))
+		c.Printer.Verbose("Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets)))
 	}
 	return &v6.K8sClusterForPost{
 		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
@@ -374,6 +376,7 @@ func getK8sClusterInfo(oldUser *v6.K8sCluster, c *core.CommandConfig) v6.K8sClus
 				})
 			}
 			propertiesUpdated.SetS3Buckets(s3buckets)
+			c.Printer.Verbose("Property S3Buckets set: %v", s3buckets)
 		} else {
 			if bucketsOk, ok := properties.GetS3BucketsOk(); ok && bucketsOk != nil {
 				propertiesUpdated.SetS3Buckets(*bucketsOk)
@@ -381,6 +384,7 @@ func getK8sClusterInfo(oldUser *v6.K8sCluster, c *core.CommandConfig) v6.K8sClus
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgApiSubnets)) {
 			propertiesUpdated.SetApiSubnetAllowList(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets)))
+			c.Printer.Verbose("Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets)))
 		} else {
 			if subnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && subnetAllowListOk != nil {
 				propertiesUpdated.SetApiSubnetAllowList(*subnetAllowListOk)
