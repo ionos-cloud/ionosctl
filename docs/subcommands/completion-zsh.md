@@ -10,53 +10,30 @@ description: Generate code to enable auto-completion with `TAB` key for ZSH term
 ionosctl completion zsh [flags]
 ```
 
-## Aliases
-
-For `completion` command:
-
-```text
-[comp]
-```
-
-For `zsh` command:
-
-```text
-[z]
-```
-
 ## Description
 
-Use this command to generate completion code for ZSH terminal. IonosCTL supports completion for commands and flags.
+Generate the autocompletion script for the zsh shell.
 
-If shell completions are not already enabled for your environment, you need to enable them. Add the following line to your `~/.zshrc` file:
-
-```text
-autoload -Uz compinit; compinit
-```
-
-To load completions for each session execute the following commands:
+If shell completion is not already enabled in your environment you will need to enable it.  You can execute the following once:
 
 ```text
-mkdir -p ~/.config/ionosctl/completion/zsh
-ionosctl completion zsh > ~/.config/ionosctl/completion/zsh/_ionosctl
+$ echo "autoload -U compinit; compinit" >> ~/.zshrc
 ```
 
-Finally add the following line to your `~/.zshrc`file, before you call the `compinit` function:
+To load completions for every new session, execute once:
+
+* Linux:
+```text
+$ ionosctl completion zsh > "${fpath[1]}/_ionosctl"
+```
+
+* MacOS:
 
 ```text
-fpath+=(~/.config/ionosctl/completion/zsh)
+$ ionosctl completion zsh > /usr/local/share/zsh/site-functions/_ionosctl
 ```
 
-In the end your `~/.zshrc` file should contain the following two lines in the order given here:
-
-```text
-fpath+=(~/.config/ionosctl/completion/zsh)
-#  ... anything else that needs to be done before compinit
-autoload -Uz compinit; compinit
-# ...
-```
-
-You will need to start a new shell for this setup to take effect. Note: ZSH completions require zsh 5.2 or newer.
+You will need to start a new shell for this setup to take effect.
 
 ## Options
 
@@ -67,5 +44,6 @@ You will need to start a new shell for this setup to take effect. Note: ZSH comp
   -h, --help             help for zsh
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
+  -v, --verbose          see step by step process when running a command
 ```
 

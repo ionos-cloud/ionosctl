@@ -127,6 +127,8 @@ After a successful authentication, you will no longer need to provide credential
 
 To enable auto-completion, you need to use `ionosctl completion [shell]`, depending on the shell you are using.
 
+`ionosctl` uses the latest release of Cobra framework, which supports by default completion with descriptions for commands and flags. To disable it, `--no-descriptions` flag is available.
+
 #### Enabling Bash Shell Auto-Completion
 
 To load completions for the current session, execute:
@@ -268,6 +270,12 @@ DATACENTER_ID3   us/las
 ```
 
 Note: When using `TAB` in autocompletion, on `--cols` option on a specific resource, the available columns for that resource will be displayed.
+
+* Use the `--verbose` option
+
+You will see step-by-step process when running a command.
+
+This flag can be used with any command(in general create, read, update, delete, but it's available also for the other specific command) of any resource.
 
 ### Help Information
 

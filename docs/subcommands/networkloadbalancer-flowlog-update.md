@@ -61,6 +61,7 @@ Required values to run command:
   -q, --quiet                           Quiet output
   -b, --s3bucket string                 S3 Bucket name of an existing IONOS Cloud S3 Bucket
   -t, --timeout int                     Timeout option for Request for Network Load Balancer FlowLog update [seconds] (default 300)
+  -v, --verbose                         see step by step process when running a command
   -w, --wait-for-request                Wait for the Request for Network Load Balancer FlowLog update to be executed
 ```
 

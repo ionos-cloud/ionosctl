@@ -44,6 +44,7 @@ Required values to run command:
   -i, --location-id string   The unique Location Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
+  -v, --verbose              see step by step process when running a command
 ```
 
 ## Examples

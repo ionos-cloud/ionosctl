@@ -214,11 +214,16 @@ func RunFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunFlowLogGet(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId))
+	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId))
+	flowLogId := viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId))
+	c.Printer.Verbose("FlowLog with id: %v from Nic with id: %v is getting...", flowLogId, nicId)
 	flowLog, _, err := c.FlowLogs().Get(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)),
+		dcId,
+		serverId,
+		nicId,
+		flowLogId,
 	)
 	if err != nil {
 		return err
@@ -242,6 +247,9 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -256,11 +264,14 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete flow log"); err != nil {
 		return err
 	}
+	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	flowLogId := viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId))
+	c.Printer.Verbose("FlowLog with id: %v is deleting...", flowLogId)
 	resp, err := c.FlowLogs().Delete(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
+		dcId,
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)),
+		flowLogId,
 	)
 	if err != nil {
 		return err
@@ -276,16 +287,24 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 func getFlowLogPropertiesSet(c *core.CommandConfig) v6.FlowLogProperties {
 	properties := v6.FlowLogProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		properties.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		properties.SetName(name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgAction)) {
-		properties.SetAction(strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgAction))))
+		action := viper.GetString(core.GetFlagName(c.NS, config.ArgAction))
+		properties.SetAction(strings.ToUpper(action))
+		c.Printer.Verbose("Property Action set: %v", action)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgDirection)) {
-		properties.SetDirection(strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgDirection))))
+		direction := viper.GetString(core.GetFlagName(c.NS, config.ArgDirection))
+		properties.SetDirection(strings.ToUpper(direction))
+		c.Printer.Verbose("Property Direction set: %v", direction)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgS3Bucket)) {
-		properties.SetBucket(viper.GetString(core.GetFlagName(c.NS, config.ArgS3Bucket)))
+		bucketName := viper.GetString(core.GetFlagName(c.NS, config.ArgS3Bucket))
+		properties.SetBucket(bucketName)
+		c.Printer.Verbose("Property Bucket set: %v", bucketName)
 	}
 	return properties
 }

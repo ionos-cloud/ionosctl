@@ -251,6 +251,7 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("NetworkLoadBalancerForwardingRule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)))
 	ng, _, err := c.NetworkLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
@@ -286,6 +287,9 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -320,6 +324,7 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer forwarding rule"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("NetworkLoadBalancerForwardingRule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)))
 	resp, err := c.NetworkLoadBalancers().DeleteForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
@@ -337,16 +342,24 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 func getForwardingRulePropertiesSet(c *core.CommandConfig) *v6.NetworkLoadBalancerForwardingRuleProperties {
 	input := ionoscloud.NetworkLoadBalancerForwardingRuleProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
-		input.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+		input.SetName(name)
+		c.Printer.Verbose("Property Name set: %v", name)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgAlgorithm)) {
-		input.SetAlgorithm(strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgAlgorithm))))
+		algorithm := strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, config.ArgAlgorithm)))
+		input.SetAlgorithm(algorithm)
+		c.Printer.Verbose("Property Algorithm set: %v", algorithm)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgListenerIp)) {
-		input.SetListenerIp(viper.GetString(core.GetFlagName(c.NS, config.ArgListenerIp)))
+		listenerIp := viper.GetString(core.GetFlagName(c.NS, config.ArgListenerIp))
+		input.SetListenerIp(listenerIp)
+		c.Printer.Verbose("Property ListenerIp set: %v", listenerIp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgListenerPort)) {
-		input.SetListenerPort(viper.GetInt32(core.GetFlagName(c.NS, config.ArgListenerPort)))
+		listenerPort := viper.GetInt32(core.GetFlagName(c.NS, config.ArgListenerPort))
+		input.SetListenerPort(listenerPort)
+		c.Printer.Verbose("Property ListenerPort set: %v", listenerPort)
 	}
 	return &v6.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: input,

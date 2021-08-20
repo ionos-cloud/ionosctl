@@ -10,44 +10,34 @@ description: Generate code to enable auto-completion with `TAB` key for Fish ter
 ionosctl completion fish [flags]
 ```
 
-## Aliases
-
-For `completion` command:
-
-```text
-[comp]
-```
-
-For `fish` command:
-
-```text
-[f]
-```
-
 ## Description
 
-Use this command to generate completion code for Fish terminal. IonosCTL supports completion for commands and flags.
+Generate the autocompletion script for the fish shell.
 
-To load completions into the current shell execute:
-
-```text
-ionosctl completion fish | source
-```
-
-In order to make the completions permanent execute once:
+To load completions in your current shell session:
 
 ```text
-ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
+$ ionosctl completion fish | source
 ```
+
+To load completions for every new session, execute once:
+
+```text
+$ ionosctl completion fish > ~/.config/fish/completions/ionosctl.fish
+```
+
+You will need to start a new shell for this setup to take effect.
 
 ## Options
 
 ```text
+      --no-descriptions  disable completion descriptions
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
   -h, --help             help for fish
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
+  -v, --verbose          see step by step process when running a command
 ```
 

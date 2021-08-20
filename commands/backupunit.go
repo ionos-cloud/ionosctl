@@ -201,6 +201,7 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	u, _, err := c.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	if err != nil {
 		return err
@@ -209,6 +210,7 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
+	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	u, _, err := c.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	if err != nil {
 		return err
@@ -229,14 +231,21 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 			},
 		},
 	}
+	c.Printer.Verbose("Properties set for creating the Backup Unit: Name: %v , Email: %v", name, email)
 	u, resp, err := c.BackupUnit().Create(newBackupUnit)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	c.Printer.Print(backupUnitNote)
+	err = c.Printer.Print(backupUnitNote)
+	if err != nil {
+		return err
+	}
 	return c.Printer.Print(getBackupUnitPrint(resp, c, getBackupUnit(u)))
 }
 
@@ -256,6 +265,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	resp, err := c.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 	if err != nil {
 		return err
@@ -271,10 +281,12 @@ func getBackupUnitInfo(c *core.CommandConfig) *v6.BackupUnitProperties {
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
 		pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 		properties.SetPassword(pwd)
+		c.Printer.Verbose("Property Password set")
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgEmail)) {
 		email := viper.GetString(core.GetFlagName(c.NS, config.ArgEmail))
 		properties.SetEmail(email)
+		c.Printer.Verbose("Property Email set: %v", email)
 	}
 	return &properties
 }

@@ -254,6 +254,7 @@ func RunNetworkLoadBalancerFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerFlowLogGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("NetworkLoadBalancerFlowLog with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)))
 	ng, _, err := c.NetworkLoadBalancers().GetFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
@@ -279,6 +280,9 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -309,6 +313,7 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer flowlog"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("NetworkLoadBalancerFlowLog with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)))
 	resp, err := c.NetworkLoadBalancers().DeleteFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),

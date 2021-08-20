@@ -212,6 +212,7 @@ func RunK8sClusterGet(c *core.CommandConfig) error {
 	if err := utils.WaitForState(c, GetStateK8sCluster, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))); err != nil {
 		return err
 	}
+	c.Printer.Verbose("K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	u, _, err := c.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
@@ -225,6 +226,9 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 		return err
 	}
 	u, resp, err := c.K8s().CreateCluster(*newCluster)
+	if resp != nil {
+		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+	}
 	if err != nil {
 		return err
 	}
@@ -271,6 +275,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	resp, err := c.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
@@ -305,6 +310,7 @@ func getNewK8sCluster(c *core.CommandConfig) (*v6.K8sClusterForPost, error) {
 	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
+		c.Printer.Verbose("Property K8sVersion set: %v", k8sversion)
 	} else {
 		if k8sversion, err = getK8sVersion(c); err != nil {
 			return nil, err
@@ -312,10 +318,14 @@ func getNewK8sCluster(c *core.CommandConfig) (*v6.K8sClusterForPost, error) {
 	}
 	proper.SetK8sVersion(k8sversion)
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPublic)) {
-		proper.SetPublic(viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic)))
+		public := viper.GetBool(core.GetFlagName(c.NS, config.ArgPublic))
+		proper.SetPublic(public)
+		c.Printer.Verbose("Property Public set: %v", public)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgGatewayIp)) {
-		proper.SetGatewayIp(viper.GetString(core.GetFlagName(c.NS, config.ArgGatewayIp)))
+		gatewayIp := viper.GetString(core.GetFlagName(c.NS, config.ArgGatewayIp))
+		proper.SetGatewayIp(gatewayIp)
+		c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgS3Bucket)) {
 		s3buckets := make([]ionoscloud.S3Bucket, 0)
@@ -341,6 +351,7 @@ func getK8sClusterInfo(oldUser *v6.K8sCluster, c *core.CommandConfig) v6.K8sClus
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 			n := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 			propertiesUpdated.SetName(n)
+			c.Printer.Verbose("Property Name set: %v", n)
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				propertiesUpdated.SetName(*name)
@@ -349,6 +360,7 @@ func getK8sClusterInfo(oldUser *v6.K8sCluster, c *core.CommandConfig) v6.K8sClus
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 			v := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 			propertiesUpdated.SetK8sVersion(v)
+			c.Printer.Verbose("Property K8sVersion set: %v", v)
 		} else {
 			if vers, ok := properties.GetK8sVersionOk(); ok && vers != nil {
 				propertiesUpdated.SetK8sVersion(*vers)
@@ -563,6 +575,7 @@ func getMaintenanceInfo(c *core.CommandConfig, maintenance *v6.K8sMaintenanceWin
 	var day, time string
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay)) {
 		day = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay))
+		c.Printer.Verbose("Property DayOfTheWeek of MaintenanceWindow set: %v", day)
 	} else {
 		if d, ok := maintenance.GetDayOfTheWeekOk(); ok && d != nil {
 			day = *d
@@ -570,6 +583,7 @@ func getMaintenanceInfo(c *core.CommandConfig, maintenance *v6.K8sMaintenanceWin
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime)) {
 		time = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime))
+		c.Printer.Verbose("Property Time of MaintenanceWindow set: %v", time)
 	} else {
 		if t, ok := maintenance.GetTimeOk(); ok && t != nil {
 			time = *t
