@@ -51,7 +51,7 @@ Required values to run command:
   -n, --name string               The name for the K8s Cluster
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
-      --s3bucket string           S3 Bucket name configured for K8s usage
+      --s3bucket string           S3 Bucket name configured for K8s usage. It will overwrite the previous value
   -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)
   -v, --verbose                   see step by step process when running a command
   -W, --wait-for-state            Wait for specified Cluster to be in ACTIVE state after updating
