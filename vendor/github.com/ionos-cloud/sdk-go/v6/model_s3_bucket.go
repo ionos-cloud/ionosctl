@@ -14,48 +14,49 @@ import (
 	"encoding/json"
 )
 
-// LanEntities struct for LanEntities
-type LanEntities struct {
-	Nics *LanNics `json:"nics,omitempty"`
+// S3Bucket struct for S3Bucket
+type S3Bucket struct {
+	// Name of the S3 bucket
+	Name *string `json:"name"`
 }
 
 
 
-// GetNics returns the Nics field value
-// If the value is explicit nil, the zero value for LanNics will be returned
-func (o *LanEntities) GetNics() *LanNics {
+// GetName returns the Name field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *S3Bucket) GetName() *string {
 	if o == nil {
 		return nil
 	}
 
 
-	return o.Nics
+	return o.Name
 
 }
 
-// GetNicsOk returns a tuple with the Nics field value
+// GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *LanEntities) GetNicsOk() (*LanNics, bool) {
+func (o *S3Bucket) GetNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
 
 
-	return o.Nics, true
+	return o.Name, true
 }
 
-// SetNics sets field value
-func (o *LanEntities) SetNics(v LanNics) {
+// SetName sets field value
+func (o *S3Bucket) SetName(v string) {
 
 
-	o.Nics = &v
+	o.Name = &v
 
 }
 
-// HasNics returns a boolean if a field has been set.
-func (o *LanEntities) HasNics() bool {
-	if o != nil && o.Nics != nil {
+// HasName returns a boolean if a field has been set.
+func (o *S3Bucket) HasName() bool {
+	if o != nil && o.Name != nil {
 		return true
 	}
 
@@ -63,48 +64,48 @@ func (o *LanEntities) HasNics() bool {
 }
 
 
-func (o LanEntities) MarshalJSON() ([]byte, error) {
+func (o S3Bucket) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
-	if o.Nics != nil {
-		toSerialize["nics"] = o.Nics
+	if o.Name != nil {
+		toSerialize["name"] = o.Name
 	}
 	
 	return json.Marshal(toSerialize)
 }
 
-type NullableLanEntities struct {
-	value *LanEntities
+type NullableS3Bucket struct {
+	value *S3Bucket
 	isSet bool
 }
 
-func (v NullableLanEntities) Get() *LanEntities {
+func (v NullableS3Bucket) Get() *S3Bucket {
 	return v.value
 }
 
-func (v *NullableLanEntities) Set(val *LanEntities) {
+func (v *NullableS3Bucket) Set(val *S3Bucket) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableLanEntities) IsSet() bool {
+func (v NullableS3Bucket) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableLanEntities) Unset() {
+func (v *NullableS3Bucket) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableLanEntities(val *LanEntities) *NullableLanEntities {
-	return &NullableLanEntities{value: val, isSet: true}
+func NewNullableS3Bucket(val *S3Bucket) *NullableS3Bucket {
+	return &NullableS3Bucket{value: val, isSet: true}
 }
 
-func (v NullableLanEntities) MarshalJSON() ([]byte, error) {
+func (v NullableS3Bucket) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableLanEntities) UnmarshalJSON(src []byte) error {
+func (v *NullableS3Bucket) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -116,6 +116,8 @@ Required values to run a command:
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the K8s Cluster "+config.RequiredFlag)
 	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, it will be used the default one")
+	create.AddStringFlag(config.ArgS3Bucket, "", "", "S3 Bucket name configured for K8s usage")
+	create.AddStringSliceFlag(config.ArgApiSubnets, "", []string{""}, "Access to the K8s API server is restricted to these CIDRs. Cluster-internal traffic is not affected by this restriction. If no allowlist is specified, access is not restricted. If an IP without subnet mask is provided, the default value will be used: 32 for IPv4 and 128 for IPv6")
 	create.AddBoolFlag(config.ArgPublic, "", true, "The indicator if the Cluster is public or private")
 	create.AddStringFlag(config.ArgGatewayIp, "", "", "The IP address of the gateway used by the Cluster. This is mandatory when `public` is set to `false` and should not be provided otherwise")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Cluster creation to be executed")
@@ -145,6 +147,8 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the K8s Cluster")
 	update.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster")
+	update.AddStringFlag(config.ArgS3Bucket, "", "", "S3 Bucket name configured for K8s usage. It will overwrite the previous value")
+	update.AddStringSliceFlag(config.ArgApiSubnets, "", []string{""}, "Access to the K8s API server is restricted to these CIDRs. Cluster-internal traffic is not affected by this restriction. If no allowlist is specified, access is not restricted. If an IP without subnet mask is provided, the default value will be used: 32 for IPv4 and 128 for IPv6. This will overwrite the existing ones")
 	update.AddStringFlag(config.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}, cobra.ShellCompDirectiveNoFileComp
@@ -323,6 +327,19 @@ func getNewK8sCluster(c *core.CommandConfig) (*v6.K8sClusterForPost, error) {
 		proper.SetGatewayIp(gatewayIp)
 		c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgS3Bucket)) {
+		s3buckets := make([]ionoscloud.S3Bucket, 0)
+		name := viper.GetString(core.GetFlagName(c.NS, config.ArgS3Bucket))
+		s3buckets = append(s3buckets, ionoscloud.S3Bucket{
+			Name: &name,
+		})
+		proper.SetS3Buckets(s3buckets)
+		c.Printer.Verbose("Property S3Buckets set: %v", s3buckets)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgApiSubnets)) {
+		proper.SetApiSubnetAllowList(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets)))
+		c.Printer.Verbose("Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets)))
+	}
 	return &v6.K8sClusterForPost{
 		KubernetesClusterForPost: ionoscloud.KubernetesClusterForPost{
 			Properties: &proper.KubernetesClusterPropertiesForPost,
@@ -351,6 +368,28 @@ func getK8sClusterInfo(oldUser *v6.K8sCluster, c *core.CommandConfig) v6.K8sClus
 				propertiesUpdated.SetK8sVersion(*vers)
 			}
 		}
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgS3Bucket)) {
+			s3buckets := make([]ionoscloud.S3Bucket, 0)
+			for _, name := range viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgS3Bucket)) {
+				s3buckets = append(s3buckets, ionoscloud.S3Bucket{
+					Name: &name,
+				})
+			}
+			propertiesUpdated.SetS3Buckets(s3buckets)
+			c.Printer.Verbose("Property S3Buckets set: %v", s3buckets)
+		} else {
+			if bucketsOk, ok := properties.GetS3BucketsOk(); ok && bucketsOk != nil {
+				propertiesUpdated.SetS3Buckets(*bucketsOk)
+			}
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgApiSubnets)) {
+			propertiesUpdated.SetApiSubnetAllowList(viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets)))
+			c.Printer.Verbose("Property ApiSubnetAllowList set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgApiSubnets)))
+		} else {
+			if subnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && subnetAllowListOk != nil {
+				propertiesUpdated.SetApiSubnetAllowList(*subnetAllowListOk)
+			}
+		}
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceDay)) ||
 			viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sMaintenanceTime)) {
 			if maintenance, ok := properties.GetMaintenanceWindowOk(); ok && maintenance != nil {
@@ -372,7 +411,7 @@ func getK8sClusterInfo(oldUser *v6.K8sCluster, c *core.CommandConfig) v6.K8sClus
 
 var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "Public", "State", "MaintenanceWindow"}
 
-var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "Public", "GatewayIp"}
+var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "Public", "GatewayIp", "S3Bucket", "ApiSubnetAllowList"}
 
 type K8sClusterPrint struct {
 	ClusterId                string   `json:"ClusterId,omitempty"`
@@ -384,6 +423,8 @@ type K8sClusterPrint struct {
 	State                    string   `json:"State,omitempty"`
 	GatewayIps               string   `json:"GatewayIps,omitempty"`
 	Public                   bool     `json:"Public,omitempty"`
+	S3Bucket                 []string `json:"S3Bucket,omitempty"`
+	ApiSubnetAllowList       []string `json:"ApiSubnetAllowList,omitempty"`
 }
 
 func getK8sClusterPrint(resp *v6.Response, c *core.CommandConfig, k8ss []v6.K8sCluster) printer.Result {
@@ -483,6 +524,18 @@ func getK8sClustersKVMaps(us []v6.K8sCluster) []map[string]interface{} {
 			}
 			if gatewayIps, ok := properties.GetGatewayIpOk(); ok && gatewayIps != nil {
 				uPrint.GatewayIps = *gatewayIps
+			}
+			if apiSubnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && apiSubnetAllowListOk != nil {
+				uPrint.ApiSubnetAllowList = *apiSubnetAllowListOk
+			}
+			if s3BucketsOk, ok := properties.GetS3BucketsOk(); ok && s3BucketsOk != nil {
+				s3Buckets := make([]string, 0)
+				for _, s3BucketOk := range *s3BucketsOk {
+					if nameOk, ok := s3BucketOk.GetNameOk(); ok && nameOk != nil {
+						s3Buckets = append(s3Buckets, *nameOk)
+					}
+				}
+				uPrint.S3Bucket = s3Buckets
 			}
 		}
 		if meta, ok := u.GetMetadataOk(); ok && meta != nil {
