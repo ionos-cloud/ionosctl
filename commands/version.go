@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"net/http"
 	"strings"
 
@@ -37,7 +38,11 @@ func version() *core.Command {
 }
 
 func RunVersion(c *core.CommandConfig) error {
-	err := c.Printer.Print("You are currently using ionosctl the " + rootCmd.Command.Version + " version.")
+	err := c.Printer.Print("IONOS Cloud CLI version: " + rootCmd.Command.Version)
+	if err != nil {
+		return err
+	}
+	err = c.Printer.Print("SDK GO version: " + ionoscloud.Version)
 	if err != nil {
 		return err
 	}
