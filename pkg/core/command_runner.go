@@ -22,17 +22,27 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		Aliases: info.Aliases,
 		Example: info.Example,
 		PreRun: func(cmd *cobra.Command, args []string) {
+			// Set Printer in sync with the Output Flag
 			p := getPrinter()
+			// Set Command to Command Builder
+			// The cmd is passed to the PreCommandCfg
+			info.Command = &Command{Command: cmd}
+			// Create New PreCommandCfg
 			preCmdConfig := NewPreCommandCfg(p, info)
 			err := info.PreCmdRun(preCmdConfig)
 			clierror.CheckError(err, p.GetStderr())
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+			// Set Printer in sync with the Output Flag
 			p := getPrinter()
 			// Set Buffers
 			cmd.SetIn(os.Stdin)
 			cmd.SetOut(p.GetStdout())
 			cmd.SetErr(p.GetStderr())
+			// Set Command to Command Builder
+			// The cmd is passed to the CommandCfg
+			info.Command = &Command{Command: cmd}
+			// Create New CommandCfg
 			cmdConfig, err := NewCommandCfg(ctx, os.Stdin, p, info)
 			clierror.CheckError(err, p.GetStderr())
 			err = info.CmdRun(cmdConfig)
@@ -56,6 +66,9 @@ type PreCommandRun func(commandConfig *PreCommandConfig) error
 
 // PreCommandConfig Properties
 type PreCommandConfig struct {
+	// Command is a Wrapper around Cobra Command
+	Command *Command
+
 	// NS is Global Namespace for all Command Levels
 	NS string
 	// Namespace is the first level of the Command. e.g. [ionosctl] server
@@ -65,11 +78,13 @@ type PreCommandConfig struct {
 	// Verb is the 3rd level of the Command. e.g. [ionosctl server volume] attach
 	Verb string
 
+	// Printer used in output formatting
 	Printer printer.PrintService
 }
 
 func NewPreCommandCfg(p printer.PrintService, info CommandBuilder) *PreCommandConfig {
 	return &PreCommandConfig{
+		Command:   info.Command,
 		NS:        info.GetNS(),
 		Namespace: info.Namespace,
 		Resource:  info.Resource,
@@ -80,6 +95,7 @@ func NewPreCommandCfg(p printer.PrintService, info CommandBuilder) *PreCommandCo
 
 func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, info CommandBuilder) (*CommandConfig, error) {
 	cmdConfig := &CommandConfig{
+		Command:   info.Command,
 		NS:        info.GetNS(),
 		Namespace: info.Namespace,
 		Resource:  info.Resource,
@@ -112,6 +128,9 @@ type CommandRun func(commandConfig *CommandConfig) error
 
 // CommandConfig Properties and Services
 type CommandConfig struct {
+	// Command is a Wrapper around Cobra Command
+	Command *Command
+
 	// NS is Global Namespace for all Command Levels
 	NS string
 	// Namespace is the first level of the Command. e.g. [ionosctl] server
