@@ -47,7 +47,6 @@ Required values to run command:
 ```text
   -a, --action string          Specifies the traffic Action pattern
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
-  -b, --bucket-name string     S3 Bucket name of an existing IONOS Cloud S3 Bucket
       --cols strings           Set of columns to be printed on output 
                                Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
@@ -60,6 +59,7 @@ Required values to run command:
       --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
+  -b, --s3bucket string        S3 Bucket name of an existing IONOS Cloud S3 Bucket
   -t, --timeout int            Timeout option for Request for NAT Gateway FlowLog update [seconds] (default 60)
   -v, --verbose                see step by step process when running a command
   -w, --wait-for-request       Wait for the Request for NAT Gateway FlowLog update to be executed

@@ -412,8 +412,8 @@ func getNewK8sNodePool(c *core.CommandConfig) (*v6.K8sNodePool, error) {
 	}, nil
 }
 
-func getNewK8sNodePoolUpdated(oldUser *v6.K8sNodePool, c *core.CommandConfig) v6.K8sNodePool {
-	propertiesUpdated := v6.K8sNodePoolProperties{}
+func getNewK8sNodePoolUpdated(oldUser *v6.K8sNodePool, c *core.CommandConfig) v6.K8sNodePoolForPut {
+	propertiesUpdated := v6.K8sNodePoolPropertiesForPut{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 			version := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
@@ -512,9 +512,9 @@ func getNewK8sNodePoolUpdated(oldUser *v6.K8sNodePool, c *core.CommandConfig) v6
 			c.Printer.Verbose("Property PublicIps set: %v", publicIps)
 		}
 	}
-	return v6.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &propertiesUpdated.KubernetesNodePoolProperties,
+	return v6.K8sNodePoolForPut{
+		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }

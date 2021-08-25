@@ -197,8 +197,8 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 	return c.Printer.Print("Status: Command node pool lan remove has been successfully executed")
 }
 
-func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K8sNodePool {
-	propertiesUpdated := v6.K8sNodePoolProperties{}
+func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K8sNodePoolForPut {
+	propertiesUpdated := v6.K8sNodePoolPropertiesForPut{}
 	if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 		if n, ok := properties.GetNodeCountOk(); ok && n != nil {
 			propertiesUpdated.SetNodeCount(*n)
@@ -247,15 +247,15 @@ func getNewK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K
 			propertiesUpdated.SetLans(newLans)
 		}
 	}
-	return v6.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &propertiesUpdated.KubernetesNodePoolProperties,
+	return v6.K8sNodePoolForPut{
+		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }
 
-func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K8sNodePool {
-	propertiesUpdated := v6.K8sNodePoolProperties{}
+func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K8sNodePoolForPut {
+	propertiesUpdated := v6.K8sNodePoolPropertiesForPut{}
 	if properties, ok := oldNg.GetPropertiesOk(); ok && properties != nil {
 		if n, ok := properties.GetNodeCountOk(); ok && n != nil {
 			propertiesUpdated.SetNodeCount(*n)
@@ -285,9 +285,9 @@ func removeK8sNodePoolLanInfo(c *core.CommandConfig, oldNg *v6.K8sNodePool) v6.K
 			propertiesUpdated.SetLans(newLans)
 		}
 	}
-	return v6.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &propertiesUpdated.KubernetesNodePoolProperties,
+	return v6.K8sNodePoolForPut{
+		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
+			Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,
 		},
 	}
 }
@@ -315,7 +315,7 @@ func getK8sNodePoolLanPrint(c *core.CommandConfig, k8ss []v6.K8sNodePoolLan) pri
 	return r
 }
 
-func getK8sNodePoolLansForPut(ng *v6.K8sNodePoolForPut) []v6.K8sNodePoolLan {
+func getK8sNodePoolLansForPut(ng *v6.K8sNodePool) []v6.K8sNodePoolLan {
 	ss := make([]v6.K8sNodePoolLan, 0)
 	if ng != nil {
 		if properties, ok := ng.GetPropertiesOk(); ok && properties != nil {
