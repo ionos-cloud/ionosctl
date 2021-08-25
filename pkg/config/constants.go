@@ -243,3 +243,8 @@ const (
 const (
 	IonosServerUrlEnvVar = "IONOS_API_URL"
 )
+
+// Verbose Flag const
+const (
+	RequestTimeMessage = "The execution time of the request is: %v"
+)
