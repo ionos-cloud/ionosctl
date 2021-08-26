@@ -67,7 +67,7 @@ func location() *core.Command {
 		CmdRun:     RunLocationGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgLocationId, config.ArgIdShort, "", config.RequiredFlagLocationId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgLocationId, config.ArgIdShort, "", config.LocationId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

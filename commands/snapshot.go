@@ -66,7 +66,7 @@ func snapshot() *core.Command {
 		CmdRun:     RunSnapshotGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.SnapshotId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -95,17 +95,17 @@ Required values to run command:
 		CmdRun:     RunSnapshotCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Snapshot"+config.RequiredFlag, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Snapshot", core.RequiredFlagOption())
 	create.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Snapshot")
-	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgVolumeId, "", "", config.VolumeId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -140,7 +140,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.SnapshotId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -173,15 +173,15 @@ Required values to run command:
 		CmdRun:     RunSnapshotRestore,
 		InitClient: true,
 	})
-	restore.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId, core.RequiredFlagOption())
+	restore.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.SnapshotId, core.RequiredFlagOption())
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	restore.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId, core.RequiredFlagOption())
+	restore.AddStringFlag(config.ArgVolumeId, "", "", config.VolumeId, core.RequiredFlagOption())
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(restore.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -203,7 +203,7 @@ Required values to run command:
 		CmdRun:     RunSnapshotDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.SnapshotId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

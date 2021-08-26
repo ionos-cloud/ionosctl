@@ -94,7 +94,7 @@ Use flags to retrieve a list of Images:
 		CmdRun:     RunImageGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgImageId, config.ArgIdShort, "", config.RequiredFlagImageId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgImageId, config.ArgIdShort, "", config.ImageId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

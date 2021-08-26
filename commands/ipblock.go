@@ -22,7 +22,7 @@ func ipblock() *core.Command {
 	ipblockCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "ipblock",
-			Aliases:          []string{"ipb"},
+			Aliases:          []string{"ip", "ipb"},
 			Short:            "IpBlock Operations",
 			Long:             "The sub-commands of `ionosctl ipblock` allow you to create/reserve, list, get, update, delete IpBlocks.",
 			TraverseChildren: true,
@@ -66,7 +66,7 @@ func ipblock() *core.Command {
 		CmdRun:     RunIpBlockGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgIpBlockId, config.ArgIdShort, "", config.RequiredFlagIpBlockId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgIpBlockId, config.ArgIdShort, "", config.IpBlockId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -93,7 +93,7 @@ Required values to run command:
 		InitClient: true,
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the IpBlock. If not set, it will automatically be set")
-	create.AddStringFlag(config.ArgLocation, config.ArgLocationShort, "", "Location of the IpBlock "+config.RequiredFlag, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgLocation, config.ArgLocationShort, "", "Location of the IpBlock", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -122,7 +122,7 @@ Required values to run command:
 		CmdRun:     RunIpBlockUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgIpBlockId, config.ArgIdShort, "", config.RequiredFlagIpBlockId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgIpBlockId, config.ArgIdShort, "", config.IpBlockId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -151,7 +151,7 @@ Required values to run command:
 		CmdRun:     RunIpBlockDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgIpBlockId, config.ArgIdShort, "", config.RequiredFlagIpBlockId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgIpBlockId, config.ArgIdShort, "", config.IpBlockId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

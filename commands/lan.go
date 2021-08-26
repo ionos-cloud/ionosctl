@@ -51,7 +51,7 @@ func lan() *core.Command {
 		CmdRun:     RunLanList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -71,11 +71,11 @@ func lan() *core.Command {
 		CmdRun:     RunLanGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.RequiredFlagLanId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.LanId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -103,7 +103,7 @@ Required values to run command:
 		CmdRun:     RunLanCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -138,11 +138,11 @@ Required values to run command:
 		CmdRun:     RunLanUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.RequiredFlagLanId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.LanId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -177,11 +177,11 @@ Required values to run command:
 		CmdRun:     RunLanDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.RequiredFlagLanId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgLanId, config.ArgIdShort, "", config.LanId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})

@@ -93,7 +93,7 @@ func label() *core.Command {
 		CmdRun:     RunLabelGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	get.AddStringFlag(config.ArgLabelKey, "", "", config.LabelKey)
 
 	/*
 		Get By Urn Command
@@ -126,8 +126,8 @@ func label() *core.Command {
 		CmdRun:     RunLabelAdd,
 		InitClient: true,
 	})
-	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
-	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.RequiredFlagLabelValue)
+	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.LabelKey)
+	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.LabelValue)
 
 	/*
 		Remove Command
@@ -144,7 +144,7 @@ func label() *core.Command {
 		CmdRun:     RunLabelRemove,
 		InitClient: true,
 	})
-	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.RequiredFlagLabelKey)
+	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.LabelKey)
 
 	return labelCmd
 }

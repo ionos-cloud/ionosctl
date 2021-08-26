@@ -51,15 +51,15 @@ func firewallrule() *core.Command {
 		CmdRun:     RunFirewallRuleList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId, core.RequiredFlagOption())
+	list.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId, core.RequiredFlagOption())
+	list.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr,
 			viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId)),
@@ -82,22 +82,22 @@ func firewallrule() *core.Command {
 		CmdRun:     RunFirewallRuleGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr,
 			viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(get.NS, config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.RequiredFlagFirewallRuleId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.FirewallRuleId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
 			viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId)),
@@ -132,7 +132,7 @@ Required values to run command:
 		InitClient: true,
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Rule", "The name for the Firewall Rule")
-	create.AddStringFlag(config.ArgProtocol, "", "", "The Protocol for Firewall Rule: TCP, UDP, ICMP, ANY "+config.RequiredFlag, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgProtocol, "", "", "The Protocol for Firewall Rule: TCP, UDP, ICMP, ANY", core.RequiredFlagOption())
 	create.AddStringFlag(config.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses.")
 	create.AddStringFlag(config.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.")
 	create.AddStringFlag(config.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.")
@@ -142,15 +142,15 @@ Required values to run command:
 	create.AddIntFlag(config.ArgPortRangeStop, "", 1, "Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule creation [seconds]")
-	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr,
 			viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId)),
@@ -182,15 +182,15 @@ Required values to run command:
 		CmdRun:     RunFirewallRuleUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr,
 			viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId)),
@@ -205,7 +205,7 @@ Required values to run command:
 	update.AddIntFlag(config.ArgIcmpCode, "", 0, "Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.")
 	update.AddIntFlag(config.ArgPortRangeStart, "", 1, "Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
 	update.AddIntFlag(config.ArgPortRangeStop, "", 1, "Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
-	update.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.RequiredFlagFirewallRuleId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.FirewallRuleId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
 			viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId)),
@@ -239,22 +239,22 @@ Required values to run command:
 		CmdRun:     RunFirewallRuleDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr,
 			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.RequiredFlagFirewallRuleId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgFirewallRuleId, config.ArgIdShort, "", config.FirewallRuleId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFirewallRulesIds(os.Stderr,
 			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId)),

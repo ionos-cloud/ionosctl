@@ -66,7 +66,7 @@ func pcc() *core.Command {
 		CmdRun:     RunPccGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.PccId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -112,7 +112,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Private Cross-Connect")
 	update.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
-	update.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.PccId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -138,7 +138,7 @@ Required values to run command:
 		CmdRun:     RunPccDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.PccId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -291,7 +291,7 @@ func peers() *core.Command {
 		CmdRun:     RunPccPeersList,
 		InitClient: true,
 	})
-	listPeers.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
+	listPeers.AddStringFlag(config.ArgPccId, "", "", config.PccId)
 	_ = listPeers.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

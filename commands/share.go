@@ -50,7 +50,7 @@ func share() *core.Command {
 		CmdRun:     RunShareList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
+	list.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -70,11 +70,11 @@ func share() *core.Command {
 		CmdRun:     RunShareGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.ResourceId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -99,11 +99,11 @@ Required values to run a command:
 		CmdRun:     RunShareCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.ResourceId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -134,11 +134,11 @@ Required values to run command:
 		CmdRun:     RunShareUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.ResourceId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -167,11 +167,11 @@ Required values to run command:
 		CmdRun:     RunShareDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.ResourceId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})

@@ -143,7 +143,7 @@ func groupResource() *core.Command {
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
+	listResources.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

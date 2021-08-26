@@ -66,7 +66,7 @@ func datacenter() *core.Command {
 		CmdRun:     RunDataCenterGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -121,7 +121,7 @@ Required values to run command:
 		CmdRun:     RunDataCenterUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -151,7 +151,7 @@ Required values to run command:
 		CmdRun:     RunDataCenterDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.RequiredFlagDatacenterId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

@@ -67,7 +67,7 @@ func user() *core.Command {
 		CmdRun:     RunUserGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -96,10 +96,10 @@ Required values to run a command:
 		CmdRun:     RunUserCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgFirstName, "", "", "The first name for the User "+config.RequiredFlag, core.RequiredFlagOption())
-	create.AddStringFlag(config.ArgLastName, "", "", "The last name for the User "+config.RequiredFlag, core.RequiredFlagOption())
-	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User "+config.RequiredFlag, core.RequiredFlagOption())
-	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgFirstName, "", "", "The first name for the User", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgLastName, "", "", "The last name for the User", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long)", core.RequiredFlagOption())
 	create.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
 	create.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 
@@ -129,7 +129,7 @@ Required values to run command:
 	update.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User")
 	update.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
 	update.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
-	update.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId, core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -153,7 +153,7 @@ Required values to run command:
 		CmdRun:     RunUserDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId, core.RequiredFlagOption())
+	deleteCmd.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -335,7 +335,7 @@ func groupUser() *core.Command {
 	_ = listUsers.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	listUsers.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
+	listUsers.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = listUsers.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -359,11 +359,11 @@ func groupUser() *core.Command {
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	addUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
+	addUser.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	addUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId, core.RequiredFlagOption())
+	addUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -387,11 +387,11 @@ func groupUser() *core.Command {
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
+	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId, core.RequiredFlagOption())
+	removeUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupUsersIds(os.Stderr, viper.GetString(core.GetFlagName(removeUser.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
