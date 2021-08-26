@@ -197,7 +197,10 @@ func PreRunDcNetworkLoadBalancerIds(c *core.PreCommandConfig) error {
 }
 
 func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
-	networkloadbalancers, _, err := c.NetworkLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	networkloadbalancers, resp, err := c.NetworkLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -209,10 +212,13 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("NetworkLoadBalancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)))
-	ng, _, err := c.NetworkLoadBalancers().Get(
+	ng, resp, err := c.NetworkLoadBalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -240,6 +246,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -257,6 +264,9 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
 		*input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -274,6 +284,9 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 	nlbId := viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId))
 	c.Printer.Verbose("NetworkLoadBalancer with id: %v is deleting...", nlbId)
 	resp, err := c.NetworkLoadBalancers().Delete(dcId, nlbId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

@@ -197,7 +197,10 @@ func PreRunDcNatGatewayIds(c *core.PreCommandConfig) error {
 }
 
 func RunNatGatewayList(c *core.CommandConfig) error {
-	natgateways, _, err := c.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	natgateways, resp, err := c.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -209,10 +212,13 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("NatGateway with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)))
-	ng, _, err := c.NatGateways().Get(
+	ng, resp, err := c.NatGateways().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -234,6 +240,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -251,6 +258,9 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
 		*input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -268,6 +278,9 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId))
 	c.Printer.Verbose("NatGateway with id: %v is deleting...", natGatewayId)
 	resp, err := c.NatGateways().Delete(dcId, natGatewayId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

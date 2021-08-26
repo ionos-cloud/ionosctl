@@ -202,11 +202,14 @@ func PreRunGlobalDcServerNicIdsFlowLogId(c *core.PreCommandConfig) error {
 }
 
 func RunFlowLogList(c *core.CommandConfig) error {
-	flowLogs, _, err := c.FlowLogs().List(
+	flowLogs, resp, err := c.FlowLogs().List(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -219,12 +222,10 @@ func RunFlowLogGet(c *core.CommandConfig) error {
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId))
 	c.Printer.Verbose("FlowLog with id: %v from Nic with id: %v is getting...", flowLogId, nicId)
-	flowLog, _, err := c.FlowLogs().Get(
-		dcId,
-		serverId,
-		nicId,
-		flowLogId,
-	)
+	flowLog, resp, err := c.FlowLogs().Get(dcId, serverId, nicId, flowLogId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -249,6 +250,7 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -273,6 +275,9 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
 		flowLogId,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

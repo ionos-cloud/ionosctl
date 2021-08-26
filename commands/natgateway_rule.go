@@ -236,10 +236,13 @@ func PreRunDcNatGatewayRuleIds(c *core.PreCommandConfig) error {
 }
 
 func RunNatGatewayRuleList(c *core.CommandConfig) error {
-	natgatewayRules, _, err := c.NatGateways().ListRules(
+	natgatewayRules, resp, err := c.NatGateways().ListRules(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -248,11 +251,14 @@ func RunNatGatewayRuleList(c *core.CommandConfig) error {
 
 func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("atGatewayRule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)))
-	ng, _, err := c.NatGateways().GetRule(
+	ng, resp, err := c.NatGateways().GetRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -275,6 +281,7 @@ func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -293,6 +300,9 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 		*input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -312,6 +322,9 @@ func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

@@ -80,7 +80,10 @@ func PreRunTemplateId(c *core.PreCommandConfig) error {
 }
 
 func RunTemplateList(c *core.CommandConfig) error {
-	templates, _, err := c.Templates().List()
+	templates, resp, err := c.Templates().List()
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -89,7 +92,10 @@ func RunTemplateList(c *core.CommandConfig) error {
 
 func RunTemplateGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgTemplateId)))
-	tpl, _, err := c.Templates().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgTemplateId)))
+	tpl, resp, err := c.Templates().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgTemplateId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

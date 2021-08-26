@@ -170,11 +170,14 @@ func PreRunNetworkLoadBalancerRuleTarget(c *core.PreCommandConfig) error {
 }
 
 func RunNlbRuleTargetList(c *core.CommandConfig) error {
-	ng, _, err := c.NetworkLoadBalancers().GetForwardingRule(
+	ng, resp, err := c.NetworkLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -196,6 +199,9 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -235,6 +241,9 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

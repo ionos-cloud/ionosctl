@@ -240,10 +240,13 @@ func PreRunDcNetworkLoadBalancerForwardingRuleIds(c *core.PreCommandConfig) erro
 }
 
 func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
-	nlbForwardingRules, _, err := c.NetworkLoadBalancers().ListForwardingRules(
+	nlbForwardingRules, resp, err := c.NetworkLoadBalancers().ListForwardingRules(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -252,11 +255,14 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 
 func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("NetworkLoadBalancerForwardingRule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)))
-	ng, _, err := c.NetworkLoadBalancers().GetForwardingRule(
+	ng, resp, err := c.NetworkLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -289,6 +295,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -311,6 +318,9 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -330,6 +340,9 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

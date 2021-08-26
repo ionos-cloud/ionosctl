@@ -157,10 +157,13 @@ func PreRunDcNatGatewayLanIds(c *core.PreCommandConfig) error {
 }
 
 func RunNatGatewayLanList(c *core.CommandConfig) error {
-	ng, _, err := c.NatGateways().Get(
+	ng, resp, err := c.NatGateways().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -177,6 +180,9 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
 	input := getNewNatGatewayLanInfo(c, ng)
 	ng, resp, err := c.NatGateways().Update(dcId, natGatewayId, *input)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -199,6 +205,9 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 	c.Printer.Verbose("Removing NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
 	input := removeNatGatewayLanInfo(c, ng)
 	ng, resp, err := c.NatGateways().Update(dcId, natGatewayId, *input)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

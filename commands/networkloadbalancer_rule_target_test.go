@@ -87,11 +87,13 @@ func TestRunNlbRuleTargetList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRuleId), testNlbRuleTargetVar)
-		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
+		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).
+			Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
 		err := RunNlbRuleTargetList(cfg)
 		assert.NoError(t, err)
 	})
@@ -151,6 +153,7 @@ func TestRunNlbRuleTargetAdd(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
@@ -162,7 +165,8 @@ func TestRunNlbRuleTargetAdd(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCheck), testNlbRuleTargetBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgMaintenance), testNlbRuleTargetBoolVar)
 		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGet, nil, nil)
-		rm.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties).Return(&testNlbRuleTargetGetUpdated, nil, nil)
+		rm.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties).
+			Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
 		err := RunNlbRuleTargetAdd(cfg)
 		assert.NoError(t, err)
 	})
@@ -185,7 +189,8 @@ func TestRunNlbRuleTargetAddResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCheck), testNlbRuleTargetBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgMaintenance), testNlbRuleTargetBoolVar)
 		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGet, nil, nil)
-		rm.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties).Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
+		rm.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties).
+			Return(&testNlbRuleTargetGetUpdated, &testResponseErr, nil)
 		err := RunNlbRuleTargetAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -268,12 +273,14 @@ func TestRunNlbRuleTargetRemove(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRuleId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgTargetIp), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgTargetPort), testNlbRuleTargetIntVar)
-		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
+		rm.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).
+			Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
 		rm.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&v6.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{

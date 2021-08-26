@@ -196,7 +196,10 @@ func PreRunGlobalDcIdLanId(c *core.PreCommandConfig) error {
 }
 
 func RunLanList(c *core.CommandConfig) error {
-	lans, _, err := c.Lans().List(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
+	lans, resp, err := c.Lans().List(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -206,10 +209,13 @@ func RunLanList(c *core.CommandConfig) error {
 func RunLanGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Lan with id: %v from Datacenter with id: %v is getting...",
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)), viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
-	l, _, err := c.Lans().Get(
+	l, resp, err := c.Lans().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -237,6 +243,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	l, resp, err := c.Lans().Create(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)), input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -278,6 +285,9 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -295,10 +305,10 @@ func RunLanDelete(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, config.ArgLanId))
 	c.Printer.Verbose("Lan with id: %v is deleting...", lanId)
-	resp, err := c.Lans().Delete(
-		dcId,
-		lanId,
-	)
+	resp, err := c.Lans().Delete(dcId, lanId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

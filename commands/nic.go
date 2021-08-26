@@ -217,9 +217,12 @@ func PreRunGlobalDcServerIdsNicId(c *core.PreCommandConfig) error {
 }
 
 func RunNicList(c *core.CommandConfig) error {
-	nics, _, err := c.Nics().List(
+	nics, resp, err := c.Nics().List(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -228,11 +231,14 @@ func RunNicList(c *core.CommandConfig) error {
 
 func RunNicGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
-	nic, _, err := c.Nics().Get(
+	nic, resp, err := c.Nics().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -268,6 +274,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	nic, resp, err := c.Nics().Create(dcId, serverId, input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -317,6 +324,9 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -337,6 +347,9 @@ func RunNicDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -527,6 +540,9 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -537,10 +553,13 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicList(c *core.CommandConfig) error {
-	attachedNics, _, err := c.Loadbalancers().ListNics(
+	attachedNics, resp, err := c.Loadbalancers().ListNics(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -548,11 +567,14 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicGet(c *core.CommandConfig) error {
-	n, _, err := c.Loadbalancers().GetNic(
+	n, resp, err := c.Loadbalancers().GetNic(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -568,6 +590,9 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

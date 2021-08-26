@@ -247,10 +247,13 @@ func PreRunDcNatGatewayFlowLogIds(c *core.PreCommandConfig) error {
 }
 
 func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
-	natgatewayFlowLogs, _, err := c.NatGateways().ListFlowLogs(
+	natgatewayFlowLogs, resp, err := c.NatGateways().ListFlowLogs(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -259,11 +262,14 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 
 func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("NatGatewayFlowLogGet with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)))
-	ng, _, err := c.NatGateways().GetFlowLog(
+	ng, resp, err := c.NatGateways().GetFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -286,6 +292,7 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -304,6 +311,9 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)),
 		&input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -323,6 +333,9 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
