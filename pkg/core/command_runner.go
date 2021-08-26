@@ -64,6 +64,8 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 // Its purpose is to keep the validate part separate from run part.
 type PreCommandRun func(commandConfig *PreCommandConfig) error
 
+var NoPreRun = func(c *PreCommandConfig) error { return nil }
+
 // PreCommandConfig Properties
 type PreCommandConfig struct {
 	// Command is a Wrapper around Cobra Command

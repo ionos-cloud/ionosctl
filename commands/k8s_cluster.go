@@ -66,7 +66,7 @@ func k8sCluster() *core.Command {
 		ShortDesc:  "List Kubernetes Clusters",
 		LongDesc:   "Use this command to get a list of existing Kubernetes Clusters.",
 		Example:    listK8sClustersExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sClusterList,
 		InitClient: true,
 	})

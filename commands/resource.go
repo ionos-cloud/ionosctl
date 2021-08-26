@@ -46,7 +46,7 @@ func resource() *core.Command {
 		ShortDesc:  "List Resources",
 		LongDesc:   "Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.",
 		Example:    listResourcesExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunResourceList,
 		InitClient: true,
 	})

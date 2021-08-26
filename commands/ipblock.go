@@ -46,7 +46,7 @@ func ipblock() *core.Command {
 		ShortDesc:  "List IpBlocks",
 		LongDesc:   "Use this command to list IpBlocks.",
 		Example:    listIpBlockExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunIpBlockList,
 		InitClient: true,
 	})

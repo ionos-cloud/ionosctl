@@ -23,7 +23,6 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	noPreRun  = func(c *core.PreCommandConfig) error { return nil }
 	ServerURL string
 	Output    string
 	Quiet     bool

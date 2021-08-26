@@ -47,7 +47,7 @@ func group() *core.Command {
 		ShortDesc:  "List Groups",
 		LongDesc:   "Use this command to get a list of available Groups available on your account.",
 		Example:    listGroupExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunGroupList,
 		InitClient: true,
 	})

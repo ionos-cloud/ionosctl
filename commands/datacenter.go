@@ -46,7 +46,7 @@ func datacenter() *core.Command {
 		ShortDesc:  "List Data Centers",
 		LongDesc:   "Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.",
 		Example:    listDatacenterExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterList,
 		InitClient: true,
 	})
@@ -87,7 +87,7 @@ Virtual Data Centers are the foundation of the IONOS platform. VDCs act as logic
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
 		Example:    createDatacenterExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterCreate,
 		InitClient: true,
 	})

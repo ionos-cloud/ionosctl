@@ -46,7 +46,7 @@ func pcc() *core.Command {
 		ShortDesc:  "List Private Cross-Connects",
 		LongDesc:   "Use this command to get a list of existing Private Cross-Connects available on your account.",
 		Example:    listPccsExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunPccList,
 		InitClient: true,
 	})
@@ -82,7 +82,7 @@ func pcc() *core.Command {
 		ShortDesc:  "Create a Private Cross-Connect",
 		LongDesc:   "Use this command to create a Private Cross-Connect. You can specify the name and the description for the Private Cross-Connect.",
 		Example:    createPccExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunPccCreate,
 		InitClient: true,
 	})

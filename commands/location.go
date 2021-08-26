@@ -47,7 +47,7 @@ func location() *core.Command {
 		ShortDesc:  "List Locations",
 		LongDesc:   "Use this command to get a list of available locations to create objects on.",
 		Example:    listLocationExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunLocationList,
 		InitClient: true,
 	})

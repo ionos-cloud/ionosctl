@@ -73,7 +73,7 @@ func label() *core.Command {
 		ShortDesc:  "List Labels from Resources",
 		LongDesc:   "Use this command to list all Labels from all Resources under your account. If you want to list all Labels from a specific Resource, use `--resource-type` option together with the Resource Id: `--datacenter-id`, `--server-id`, `--volume-id`.",
 		Example:    listLabelsExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunLabelList,
 		InitClient: true,
 	})

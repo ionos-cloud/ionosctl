@@ -33,7 +33,7 @@ func k8sVersion() *core.Command {
 		ShortDesc:  "List Kubernetes Versions",
 		LongDesc:   "Use this command to retrieve all available Kubernetes versions.",
 		Example:    listK8sVersionsExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sVersionList,
 		InitClient: true,
 	})
@@ -49,7 +49,7 @@ func k8sVersion() *core.Command {
 		ShortDesc:  "Get Kubernetes Default Version",
 		LongDesc:   "Use this command to retrieve the current default Kubernetes version for Clusters and NodePools.",
 		Example:    getK8sVersionExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sVersionGet,
 		InitClient: true,
 	})

@@ -47,7 +47,7 @@ func user() *core.Command {
 		ShortDesc:  "List Users",
 		LongDesc:   "Use this command to get a list of existing Users available on your account.",
 		Example:    listUserExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunUserList,
 		InitClient: true,
 	})
@@ -120,7 +120,7 @@ Required values to run command:
 
 * User Id`,
 		Example:    updateUserExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunUserUpdate,
 		InitClient: true,
 	})

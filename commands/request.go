@@ -57,7 +57,7 @@ Use flags to retrieve a list of Requests:
 * sorting by method: ` + "`" + `ionosctl request list --method REQUEST_METHOD` + "`" + `, where request method can be CREATE or POST, UPDATE or PATCH, PUT and DELETE
 * sorting by both of the above options: ` + "`" + `ionosctl request list --method REQUEST_METHOD --latest N` + "`" + ``,
 		Example:    listRequestsExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})

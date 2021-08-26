@@ -46,7 +46,7 @@ func snapshot() *core.Command {
 		ShortDesc:  "List Snapshots",
 		LongDesc:   "Use this command to get a list of Snapshots.",
 		Example:    listSnapshotsExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunSnapshotList,
 		InitClient: true,
 	})

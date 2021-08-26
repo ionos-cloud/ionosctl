@@ -49,7 +49,7 @@ func backupunit() *core.Command {
 		ShortDesc:  "List BackupUnits",
 		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.",
 		Example:    listBackupUnitsExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunBackupUnitList,
 		InitClient: true,
 	})
