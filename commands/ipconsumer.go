@@ -50,7 +50,7 @@ func ipconsumer() *core.Command {
 		CmdRun:     RunIpConsumersList,
 		InitClient: true,
 	})
-	listResources.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
+	listResources.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId, core.RequiredFlagOption())
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

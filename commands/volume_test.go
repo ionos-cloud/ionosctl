@@ -148,7 +148,7 @@ func TestPreRunGlobalDcIdVolumeId(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
-		err := PreRunGlobalDcIdVolumeId(cfg)
+		err := PreRunDcVolumeIds(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -160,7 +160,7 @@ func TestPreRunGlobalDcIdVolumeIdRequiredFlagsErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdVolumeId(cfg)
+		err := PreRunDcVolumeIds(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -172,7 +172,7 @@ func TestPreRunGlobalDcIdVolumePropertiesErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcIdVolumeProperties(cfg)
+		err := PreRunDcIdVolumeProperties(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -187,7 +187,7 @@ func TestPreRunGlobalDcIdVolumePropertiesLicenceType(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), testVolumeVar)
-		err := PreRunGlobalDcIdVolumeProperties(cfg)
+		err := PreRunDcIdVolumeProperties(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -200,7 +200,7 @@ func TestPreRunGlobalDcIdVolumePropertiesLicenceTypeErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
-		err := PreRunGlobalDcIdVolumeProperties(cfg)
+		err := PreRunDcIdVolumeProperties(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -216,7 +216,7 @@ func TestPreRunGlobalDcIdVolumePropertiesImg(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), testVolumeVar)
-		err := PreRunGlobalDcIdVolumeProperties(cfg)
+		err := PreRunDcIdVolumeProperties(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -230,7 +230,7 @@ func TestPreRunGlobalDcIdVolumePropertiesImgErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), testVolumeVar)
-		err := PreRunGlobalDcIdVolumeProperties(cfg)
+		err := PreRunDcIdVolumeProperties(cfg)
 		assert.Error(t, err)
 	})
 }

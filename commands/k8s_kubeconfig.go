@@ -38,7 +38,7 @@ func k8sKubeconfig() *core.Command {
 		CmdRun:     RunK8sKubeconfigGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
+	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

@@ -80,7 +80,7 @@ func TestPreRunGlobalDcServerIds(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testNicVar)
-		err := PreRunGlobalDcServerIds(cfg)
+		err := DcServerIds(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -92,7 +92,7 @@ func TestPreRunGlobalDcServerIdsRequiredFlagsErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		err := PreRunGlobalDcServerIds(cfg)
+		err := DcServerIds(cfg)
 		assert.Error(t, err)
 	})
 }

@@ -69,7 +69,7 @@ func backupunit() *core.Command {
 		CmdRun:     RunBackupUnitGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
+	get.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -88,7 +88,7 @@ func backupunit() *core.Command {
 		CmdRun:     RunBackupUnitGetSsoUrl,
 		InitClient: true,
 	})
-	getsso.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
+	getsso.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId, core.RequiredFlagOption())
 	_ = getsso.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -121,9 +121,9 @@ Required values to run a command:
 		CmdRun:     RunBackupUnitCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Alphanumeric name you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Alphanumeric name you want to assign to the BackupUnit "+config.RequiredFlag, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The e-mail address you want to assign to the BackupUnit "+config.RequiredFlag, core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Alphanumeric password you want to assign to the BackupUnit "+config.RequiredFlag, core.RequiredFlagOption())
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit creation [seconds]")
 
@@ -148,7 +148,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Alphanumeric password you want to update for the BackupUnit")
 	update.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The e-mail address you want to update for the BackupUnit")
-	update.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
+	update.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -174,7 +174,7 @@ Required values to run command:
 		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId)
+	deleteCmd.AddStringFlag(config.ArgBackupUnitId, config.ArgIdShort, "", config.RequiredFlagBackupUnitId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -185,11 +185,11 @@ Required values to run command:
 }
 
 func PreRunBackupUnitId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgBackupUnitId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgBackupUnitId)
 }
 
 func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgName, config.ArgEmail, config.ArgPassword)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgName, config.ArgEmail, config.ArgPassword)
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {

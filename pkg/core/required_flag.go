@@ -5,45 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/spf13/viper"
-	multierror "go.uber.org/multierr"
 )
-
-func CheckRequiredGlobalFlags(cmdName string, globalFlagsName ...string) error {
-	var multiErr error
-	for _, flagName := range globalFlagsName {
-		if !viper.IsSet(GetGlobalFlagName(cmdName, flagName)) {
-			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
-		}
-	}
-	if multiErr != nil {
-		return multiErr
-	}
-	return nil
-}
-
-func CheckRequiredFlags(ns string, localFlagsName ...string) error {
-	var multiErr error
-	for _, flagName := range localFlagsName {
-		if !viper.IsSet(GetFlagName(ns, flagName)) {
-			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
-		}
-	}
-	if multiErr != nil {
-		return multiErr
-	}
-	return nil
-}
-
-func CheckRequiredFlagsWe(cmd *Command, ns string, localFlagsName ...string) error {
-	for _, flagName := range localFlagsName {
-		if !viper.IsSet(GetFlagName(ns, flagName)) {
-			return RequiresMinOptionsErr(cmd, len(localFlagsName))
-		}
-	}
-	return nil
-}
 
 const RequiredFlagsAnnotation = "RequiredFlags"
 
@@ -51,8 +14,7 @@ type FlagOptionFunc func(c *Command, flagName string)
 
 func RequiredFlagOption() FlagOptionFunc {
 	return func(c *Command, flagName string) {
-		usg := c.Command.Flag(flagName).Usage
-		c.Command.Flag(flagName).Usage = fmt.Sprintf("%s %s", usg, "(required)")
+		c.Command.Flag(flagName).Usage = fmt.Sprintf("%s (required)", c.Command.Flag(flagName).Usage)
 		c.Command.Annotations = map[string]string{RequiredFlagsAnnotation: fmt.Sprintf("%s --%s %s",
 			c.Command.Annotations[RequiredFlagsAnnotation],
 			flagName,
@@ -71,6 +33,24 @@ func RequiresMinOptionsErr(cmd *Command, min int) error {
 			cmd.CommandPath(),
 		),
 	)
+}
+
+func CheckRequiredGlobalFlags(cmd *Command, cmdName string, globalFlagsName ...string) error {
+	for _, flagName := range globalFlagsName {
+		if !viper.IsSet(GetGlobalFlagName(cmdName, flagName)) {
+			return RequiresMinOptionsErr(cmd, len(globalFlagsName))
+		}
+	}
+	return nil
+}
+
+func CheckRequiredFlags(cmd *Command, ns string, localFlagsName ...string) error {
+	for _, flagName := range localFlagsName {
+		if !viper.IsSet(GetFlagName(ns, flagName)) {
+			return RequiresMinOptionsErr(cmd, len(localFlagsName))
+		}
+	}
+	return nil
 }
 
 func pluralize(word string, number int) string {

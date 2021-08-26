@@ -66,7 +66,7 @@ func resource() *core.Command {
 		CmdRun:     RunResourceGet,
 		InitClient: true,
 	})
-	getRsc.AddStringFlag(config.ArgType, "", "", "The specific Type of Resources to retrieve information about")
+	getRsc.AddStringFlag(config.ArgType, "", "", "The specific Type of Resources to retrieve information about", core.RequiredFlagOption())
 	_ = getRsc.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"datacenter", "snapshot", "image", "ipblock", "pcc", "backupunit", "k8s"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -79,7 +79,7 @@ func resource() *core.Command {
 }
 
 func PreRunResourceType(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgType)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgType)
 }
 
 func RunResourceList(c *core.CommandConfig) error {
@@ -143,7 +143,7 @@ func groupResource() *core.Command {
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId, core.RequiredFlagOption())
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

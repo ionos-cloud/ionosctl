@@ -67,7 +67,7 @@ func group() *core.Command {
 		CmdRun:     RunGroupGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.RequiredFlagGroupId)
+	get.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.RequiredFlagGroupId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -91,7 +91,7 @@ Required values to run a command:
 		CmdRun:     RunGroupCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group "+config.RequiredFlag, core.RequiredFlagOption())
 	create.AddBoolFlag(config.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
 	create.AddBoolFlag(config.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
 	create.AddBoolFlag(config.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
@@ -125,11 +125,11 @@ Required values to run command:
 		CmdRun:     RunGroupUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.RequiredFlagGroupId)
+	update.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.RequiredFlagGroupId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group "+config.RequiredFlag)
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group "+config.RequiredFlag, core.RequiredFlagOption())
 	update.AddBoolFlag(config.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
 	update.AddBoolFlag(config.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
 	update.AddBoolFlag(config.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
@@ -161,7 +161,7 @@ Required values to run command:
 		CmdRun:     RunGroupDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.RequiredFlagGroupId)
+	deleteCmd.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.RequiredFlagGroupId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -174,15 +174,15 @@ Required values to run command:
 }
 
 func PreRunGroupId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgGroupId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgGroupId)
 }
 
 func PreRunGroupUserIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgUserId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgGroupId, config.ArgUserId)
 }
 
 func PreRunGroupName(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgName)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgName)
 }
 
 func RunGroupList(c *core.CommandConfig) error {

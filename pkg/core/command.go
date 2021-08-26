@@ -57,6 +57,11 @@ func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string, opti
 	}
 }
 
+func (c *Command) SetFlagAnnotation(name, key string, values ...string) {
+	flags := c.Command.Flags()
+	flags.SetAnnotation(name, key, values)
+}
+
 func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []string, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {

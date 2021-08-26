@@ -151,13 +151,13 @@ func label() *core.Command {
 
 func PreRunGlobalResourceTypeLabelKey(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgResourceType); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgResourceType); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := checkResourceIds(c); err != nil {
 		result = multierror.Append(result, err)
 	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgLabelKey); err != nil {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, config.ArgLabelKey); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if result != nil {
@@ -168,13 +168,13 @@ func PreRunGlobalResourceTypeLabelKey(c *core.PreCommandConfig) error {
 
 func PreRunGlobalResourceTypeLabelKeyValue(c *core.PreCommandConfig) error {
 	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgResourceType); err != nil {
+	if err := core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgResourceType); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if err := checkResourceIds(c); err != nil {
 		result = multierror.Append(result, err)
 	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgLabelKey, config.ArgLabelValue); err != nil {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, config.ArgLabelKey, config.ArgLabelValue); err != nil {
 		result = multierror.Append(result, err)
 	}
 	if result != nil {
@@ -184,7 +184,7 @@ func PreRunGlobalResourceTypeLabelKeyValue(c *core.PreCommandConfig) error {
 }
 
 func PreRunLabelUrn(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgLabelUrn)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgLabelUrn)
 }
 
 const labelResourceWarning = "Please use `--resource-type` flag with one option: \"datacenter\", \"volume\", \"server\", \"snapshot\", \"ipblock\""
@@ -280,15 +280,15 @@ func RunLabelRemove(c *core.CommandConfig) error {
 func checkResourceIds(c *core.PreCommandConfig) error {
 	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
 	case config.DatacenterResource:
-		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId)
+		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgDataCenterId)
 	case config.ServerResource:
-		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId)
+		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgDataCenterId, config.ArgServerId)
 	case config.VolumeResource:
-		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgVolumeId)
+		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgDataCenterId, config.ArgVolumeId)
 	case config.IpBlockResource:
-		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgIpBlockId)
+		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgIpBlockId)
 	case config.SnapshotResource:
-		return core.CheckRequiredGlobalFlags(c.Resource, config.ArgSnapshotId)
+		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgSnapshotId)
 	default:
 		return c.Printer.Print(labelResourceWarning)
 	}

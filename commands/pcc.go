@@ -66,7 +66,7 @@ func pcc() *core.Command {
 		CmdRun:     RunPccGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId)
+	get.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -112,7 +112,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Private Cross-Connect")
 	update.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
-	update.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId)
+	update.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -138,7 +138,7 @@ Required values to run command:
 		CmdRun:     RunPccDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId)
+	deleteCmd.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -151,7 +151,7 @@ Required values to run command:
 }
 
 func PreRunPccId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgPccId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgPccId)
 }
 
 func RunPccList(c *core.CommandConfig) error {
