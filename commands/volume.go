@@ -263,7 +263,10 @@ func PreRunGlobalDcIdVolumeId(c *core.PreCommandConfig) error {
 }
 
 func RunVolumeList(c *core.CommandConfig) error {
-	volumes, _, err := c.Volumes().List(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
+	volumes, resp, err := c.Volumes().List(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -272,10 +275,13 @@ func RunVolumeList(c *core.CommandConfig) error {
 
 func RunVolumeGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Volume with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)))
-	vol, _, err := c.Volumes().Get(
+	vol, resp, err := c.Volumes().Get(
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -293,6 +299,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -313,6 +320,9 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 		*input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -331,6 +341,9 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

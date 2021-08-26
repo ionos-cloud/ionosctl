@@ -107,7 +107,10 @@ func PreRunImageId(c *core.PreCommandConfig) error {
 }
 
 func RunImageList(c *core.CommandConfig) error {
-	images, _, err := c.Images().List()
+	images, resp, err := c.Images().List()
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -136,7 +139,10 @@ func RunImageList(c *core.CommandConfig) error {
 
 func RunImageGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
-	img, _, err := c.Images().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
+	img, resp, err := c.Images().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

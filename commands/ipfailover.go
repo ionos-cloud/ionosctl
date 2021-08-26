@@ -167,10 +167,13 @@ func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
 
 func RunIpFailoverList(c *core.CommandConfig) error {
 	ipsFailovers := make([]v5.IpFailover, 0)
-	obj, _, err := c.Lans().Get(
+	obj, resp, err := c.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -199,6 +202,9 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		lanId,
 		getIpFailoverInfo(c),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -227,10 +233,13 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
 		return err
 	}
-	oldLan, _, err := c.Lans().Get(
+	oldLan, resp, err := c.Lans().Get(
 		dcId,
 		lanId,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

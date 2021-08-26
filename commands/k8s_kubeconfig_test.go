@@ -33,9 +33,10 @@ func TestRunK8sKubeconfigGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testKubeconfigVar)
-		rm.K8s.EXPECT().ReadKubeConfig(testKubeconfigVar).Return(kubeconfigTestGet, nil, nil)
+		rm.K8s.EXPECT().ReadKubeConfig(testKubeconfigVar).Return(kubeconfigTestGet, &testResponse, nil)
 		err := RunK8sKubeconfigGet(cfg)
 		assert.NoError(t, err)
 	})
