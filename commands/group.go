@@ -76,22 +76,18 @@ func group() *core.Command {
 		Create Command
 	*/
 	create := core.NewCommand(ctx, groupCmd, core.CommandBuilder{
-		Namespace: "group",
-		Resource:  "group",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create a Group",
-		LongDesc: `Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
-
-Required values to run a command:
-
-* Name`,
+		Namespace:  "group",
+		Resource:   "group",
+		Verb:       "create",
+		Aliases:    []string{"c"},
+		ShortDesc:  "Create a Group",
+		LongDesc:   `Use this command to create a new Group and set Group privileges. You can specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.`,
 		Example:    createGroupExample,
-		PreCmdRun:  PreRunGroupName,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunGroupCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Group", "Name for the Group")
 	create.AddBoolFlag(config.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
 	create.AddBoolFlag(config.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
 	create.AddBoolFlag(config.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
@@ -181,10 +177,6 @@ func PreRunGroupUserIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgGroupId, config.ArgUserId)
 }
 
-func PreRunGroupName(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgName)
-}
-
 func RunGroupList(c *core.CommandConfig) error {
 	groups, _, err := c.Groups().List()
 	if err != nil {
@@ -209,6 +201,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 			Properties: &properties.GroupProperties,
 		},
 	}
+	c.Printer.Verbose("Creating Group...")
 	u, resp, err := c.Groups().Create(newGroup)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
@@ -233,6 +226,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 			Properties: &properties.GroupProperties,
 		},
 	}
+	c.Printer.Verbose("Updating Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	groupUpd, resp, err := c.Groups().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)), newGroup)
 	if err != nil {
 		return err

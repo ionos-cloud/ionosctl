@@ -100,14 +100,13 @@ You can wait for the Node Pool to be in "ACTIVE" state using ` + "`" + `--wait-f
 Required values to run a command:
 
 * K8s Cluster Id
-* Datacenter Id
-* Name`,
+* Datacenter Id`,
 		Example:    createK8sNodePoolExample,
-		PreCmdRun:  PreRunK8sClusterDcIdsNodePoolName,
+		PreCmdRun:  PreRunK8sClusterDcIds,
 		CmdRun:     RunK8sNodePoolCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the K8s NodePool", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed K8s NodePool", "The name for the K8s NodePool")
 	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, it will be used the default one")
 	create.AddStringFlag(config.ArgK8sClusterId, "", "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -226,11 +225,12 @@ func PreRunK8sClusterNodePoolIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgK8sClusterId, config.ArgK8sNodePoolId)
 }
 
-func PreRunK8sClusterDcIdsNodePoolName(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgK8sClusterId, config.ArgDataCenterId, config.ArgName)
+func PreRunK8sClusterDcIds(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgK8sClusterId, config.ArgDataCenterId)
 }
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting K8s NodePool from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	k8ss, _, err := c.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if err != nil {
 		return err
@@ -239,12 +239,13 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolGet(c *core.CommandConfig) error {
-	if err := utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))); err != nil {
+	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))
+	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))
+	if err := utils.WaitForState(c, GetStateK8sNodePool, k8sNodePoolId); err != nil {
 		return err
 	}
-	c.Printer.Verbose("K8s node pool with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
-	u, _, err := c.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	c.Printer.Verbose("K8s node pool with id: %v from K8s Cluster with id: %v is getting...", k8sNodePoolId, k8sClusterId)
+	u, _, err := c.K8s().GetNodePool(k8sClusterId, k8sNodePoolId)
 	if err != nil {
 		return err
 	}
@@ -256,6 +257,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Creating K8s NodePool in K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	u, resp, err := c.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)), *newNodePool)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
@@ -279,14 +281,15 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
-	oldNodePool, _, err := c.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))
+	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))
+	oldNodePool, _, err := c.K8s().GetNodePool(k8sClusterId, k8sNodePoolId)
 	if err != nil {
 		return err
 	}
 	newNodePool := getNewK8sNodePoolUpdated(oldNodePool, c)
-	newNodePoolUpdated, _, err := c.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)), newNodePool)
+	c.Printer.Verbose("Updating K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId)
+	newNodePoolUpdated, _, err := c.K8s().UpdateNodePool(k8sClusterId, k8sNodePoolId, newNodePool)
 	if err != nil {
 		return err
 	}
@@ -301,9 +304,10 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
-	_, err = c.K8s().DeleteNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))
+	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))
+	c.Printer.Verbose("Deleting K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId)
+	_, err = c.K8s().DeleteNodePool(k8sClusterId, k8sNodePoolId)
 	if err != nil {
 		return err
 	}

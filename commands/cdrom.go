@@ -175,7 +175,7 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	cdRomId := viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId))
-	c.Printer.Verbose("CD-ROM with id: %v is attaching to server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
+	c.Printer.Verbose("CD-ROM with id: %v is attaching to Server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
 	attachedCdrom, resp, err := c.Servers().AttachCdrom(dcId, serverId, cdRomId)
 	if err != nil {
 		return err
@@ -212,7 +212,7 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 }
 
 func RunServerCdromDetach(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach cdrom from server"); err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach CD-ROM from server"); err != nil {
 		return err
 	}
 	c.Printer.Verbose("CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)))

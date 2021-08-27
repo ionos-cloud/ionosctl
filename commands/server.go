@@ -338,6 +338,7 @@ func PreRunDcServerIds(c *core.PreCommandConfig) error {
 }
 
 func RunServerList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	servers, _, err := c.Servers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err
@@ -346,6 +347,7 @@ func RunServerList(c *core.CommandConfig) error {
 }
 
 func RunServerGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	c.Printer.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	if err := utils.WaitForState(c, GetStateServer, viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))); err != nil {
 		return err
@@ -372,6 +374,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	if !proper.ServerProperties.HasCpuFamily() {
 		proper.ServerProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily)))
 	}
+	c.Printer.Verbose("Creating Server in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	svr, resp, err := c.Servers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		v5.Server{
@@ -411,6 +414,8 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Updating Server with ID: %v in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	svr, resp, err := c.Servers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -458,7 +463,8 @@ func RunServerStart(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "start server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Server is starting... ")
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server with ID: %v is starting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	resp, err := c.Servers().Start(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -477,7 +483,8 @@ func RunServerStop(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Server is stopping... ")
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server with ID: %v is stopping... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	resp, err := c.Servers().Stop(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -493,10 +500,11 @@ func RunServerStop(c *core.CommandConfig) error {
 }
 
 func RunServerReboot(c *core.CommandConfig) error {
-	c.Printer.Verbose("Server is rebooting... ")
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server with ID: %v is rebooting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	resp, err := c.Servers().Reboot(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),

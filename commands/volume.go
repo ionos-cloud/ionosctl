@@ -265,6 +265,7 @@ func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
 }
 
 func RunVolumeList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	volumes, _, err := c.Volumes().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err
@@ -273,6 +274,7 @@ func RunVolumeList(c *core.CommandConfig) error {
 }
 
 func RunVolumeGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	c.Printer.Verbose("Volume with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)))
 	vol, _, err := c.Volumes().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
@@ -289,6 +291,8 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Creating Volume...")
 	vol, resp, err := c.Volumes().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		*input,
@@ -310,6 +314,8 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Updating Volume with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)))
 	vol, resp, err := c.Volumes().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
@@ -328,6 +334,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	c.Printer.Verbose("Volume with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)))
 	resp, err := c.Volumes().Delete(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
@@ -664,11 +671,12 @@ func PreRunDcServerVolumeIds(c *core.PreCommandConfig) error {
 }
 
 func RunServerVolumeAttach(c *core.CommandConfig) error {
-	attachedVol, resp, err := c.Servers().AttachVolume(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Attaching Volume with ID: %v to Server with ID: %v...", volumeId, serverId)
+	attachedVol, resp, err := c.Servers().AttachVolume(dcId, serverId, volumeId)
 	if err != nil {
 		return err
 	}
@@ -680,10 +688,11 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 }
 
 func RunServerVolumesList(c *core.CommandConfig) error {
-	attachedVols, _, err := c.Servers().ListVolumes(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Listing attached Volumes from Server with ID: %v...", serverId)
+	attachedVols, _, err := c.Servers().ListVolumes(dcId, serverId)
 	if err != nil {
 		return err
 	}
@@ -691,11 +700,12 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 }
 
 func RunServerVolumeGet(c *core.CommandConfig) error {
-	attachedVol, _, err := c.Servers().GetVolume(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Getting attached Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
+	attachedVol, _, err := c.Servers().GetVolume(dcId, serverId, volumeId)
 	if err != nil {
 		return err
 	}
@@ -706,11 +716,12 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server"); err != nil {
 		return err
 	}
-	resp, err := c.Servers().DetachVolume(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Detaching Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
+	resp, err := c.Servers().DetachVolume(dcId, serverId, volumeId)
 	if err != nil {
 		return err
 	}

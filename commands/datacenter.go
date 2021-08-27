@@ -22,7 +22,7 @@ func datacenter() *core.Command {
 	datacenterCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "datacenter",
-			Aliases:          []string{"d", "dc"},
+			Aliases:          []string{"d", "dc", "vdc"},
 			Short:            "Data Center Operations",
 			Long:             "The sub-commands of `ionosctl datacenter` allow you to create, list, get, update and delete Data Centers.",
 			TraverseChildren: true,
@@ -70,7 +70,6 @@ func datacenter() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.SetFlagAnnotation(config.ArgDataCenterId, "datacenter-id", getDataCentersIds(os.Stderr)...)
 
 	/*
 		Create Command
@@ -174,7 +173,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 }
 
 func RunDataCenterGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Datacenter with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	dc, _, err := c.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err
@@ -186,7 +185,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	description := viper.GetString(core.GetFlagName(c.NS, config.ArgDescription))
 	location := viper.GetString(core.GetFlagName(c.NS, config.ArgLocation))
-	c.Printer.Verbose("Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, location)
+	c.Printer.Verbose("Properties set for creating the Datacenter: Name: %v, Description: %v, Location: %v", name, description, location)
 	dc, resp, err := c.DataCenters().Create(name, description, location)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
@@ -232,7 +231,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		return err
 	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
-	c.Printer.Verbose("Datacenter with id: %v is deleting...", dcId)
+	c.Printer.Verbose("Deleting Datacenter with ID: %v...", dcId)
 	resp, err := c.DataCenters().Delete(dcId)
 	if err != nil {
 		return err

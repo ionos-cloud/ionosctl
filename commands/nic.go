@@ -220,6 +220,9 @@ Required values to run command:
 }
 
 func RunNicList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
+	c.Printer.Verbose("Getting NICs...")
 	nics, _, err := c.Nics().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	if err != nil {
 		return err
@@ -233,6 +236,8 @@ func RunNicList(c *core.CommandConfig) error {
 }
 
 func RunNicGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	c.Printer.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 	n, _, err := c.Nics().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
@@ -291,6 +296,9 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		input.NicProperties.SetIps(ips)
 		c.Printer.Verbose("Property Ips set: %v", ips)
 	}
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
+	c.Printer.Verbose("Updating NIC with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 	nicUpd, resp, err := c.Nics().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -311,7 +319,9 @@ func RunNicDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
+	c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 	resp, err := c.Nics().Delete(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -500,11 +510,12 @@ func PreRunDcNicLoadBalancerIds(c *core.PreCommandConfig) error {
 }
 
 func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
-	attachedNic, resp, err := c.Loadbalancers().AttachNic(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Attaching NIC with ID: %v to LoadBalancer with ID: %v", nicId, lbId)
+	attachedNic, resp, err := c.Loadbalancers().AttachNic(dcId, lbId, nicId)
 	if err != nil {
 		return err
 	}
@@ -515,10 +526,11 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicList(c *core.CommandConfig) error {
-	attachedNics, _, err := c.Loadbalancers().ListNics(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Listing attached NICs from LoadBalancer with ID: %v", lbId)
+	attachedNics, _, err := c.Loadbalancers().ListNics(dcId, lbId)
 	if err != nil {
 		return err
 	}
@@ -526,11 +538,12 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicGet(c *core.CommandConfig) error {
-	n, _, err := c.Loadbalancers().GetNic(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Getting attached NIC with ID: %v from LoadBalancer with ID: %v", nicId, lbId)
+	n, _, err := c.Loadbalancers().GetNic(dcId, lbId, nicId)
 	if err != nil {
 		return err
 	}
@@ -541,11 +554,12 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
 		return err
 	}
-	resp, err := c.Loadbalancers().DetachNic(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Detaching NIC with ID: %v from LoadBalancer with ID: %v", nicId, lbId)
+	resp, err := c.Loadbalancers().DetachNic(dcId, lbId, nicId)
 	if err != nil {
 		return err
 	}

@@ -179,6 +179,7 @@ func PreRunUserKeyIds(c *core.PreCommandConfig) error {
 }
 
 func RunUserS3KeyList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Listing S3 Keys of User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	ss, _, err := c.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	if err != nil {
 		return err
@@ -199,7 +200,7 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 
 func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	userId := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
-	c.Printer.Verbose("Properties set for creating the S3key: UserId: %v", userId)
+	c.Printer.Verbose("Creating S3 Key for User with ID: %v", userId)
 	s, resp, err := c.S3Keys().Create(userId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
@@ -224,10 +225,10 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 			},
 		},
 	}
-	s, resp, err := c.S3Keys().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
-		newKey,
-	)
+	userId := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
+	keyId := viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId))
+	c.Printer.Verbose("Creating S3 Key with ID: %v for User with ID: %v", keyId, userId)
+	s, resp, err := c.S3Keys().Update(userId, keyId, newKey)
 	if err != nil {
 		return err
 	}
@@ -242,6 +243,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("User ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	c.Printer.Verbose("S3 keys with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
 	resp, err := c.S3Keys().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),

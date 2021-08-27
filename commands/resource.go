@@ -152,6 +152,7 @@ func groupResource() *core.Command {
 }
 
 func RunGroupResourceList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	resourcesListed, _, err := c.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	if err != nil {
 		return err

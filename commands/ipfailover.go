@@ -192,13 +192,9 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 func RunIpFailoverAdd(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, config.ArgLanId))
-	c.Printer.Verbose("Adding an IP Failover group with Datacenter id: %v and Lan id: %v to a LAN...", dcId, lanId)
+	c.Printer.Verbose("Adding an IP Failover group to LAN with ID: %v from Datacenter with id: %v...", lanId, dcId)
 	ipsFailovers := make([]v5.IpFailover, 0)
-	lanUpdated, resp, err := c.Lans().Update(
-		dcId,
-		lanId,
-		getIpFailoverInfo(c),
-	)
+	lanUpdated, resp, err := c.Lans().Update(dcId, lanId, getIpFailoverInfo(c))
 	if err != nil {
 		return err
 	}
@@ -223,14 +219,11 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 func RunIpFailoverRemove(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, config.ArgLanId))
-	c.Printer.Verbose("Removing an IP Failover group with Datacenter id: %v and Lan id: %v to a LAN...", dcId, lanId)
+	c.Printer.Verbose("Removing IP Failover group from LAN with ID: %v from Datacenter with id: %v...", lanId, dcId)
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
 		return err
 	}
-	oldLan, _, err := c.Lans().Get(
-		dcId,
-		lanId,
-	)
+	oldLan, _, err := c.Lans().Get(dcId, lanId)
 	if err != nil {
 		return err
 	}
@@ -260,6 +253,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 func getIpFailoverInfo(c *core.CommandConfig) v5.LanProperties {
 	ip := viper.GetString(core.GetFlagName(c.NS, config.ArgIp))
 	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	c.Printer.Verbose("Adding IpFailover with Ip: %v and NicUuid: %v", ip, nicId)
 	return v5.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
 			IpFailover: &[]ionoscloud.IPFailover{
@@ -275,7 +269,7 @@ func getIpFailoverInfo(c *core.CommandConfig) v5.LanProperties {
 func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]ionoscloud.IPFailover) v5.LanProperties {
 	removeIp := viper.GetString(core.GetFlagName(c.NS, config.ArgIp))
 	removeNicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
-
+	c.Printer.Verbose("Removing IpFailover with Ip: %v and NicUuid: %v", removeIp, removeNicId)
 	newIpFailover := make([]ionoscloud.IPFailover, 0)
 	for _, failover := range *failovers {
 		if ip, ok := failover.GetIpOk(); ok && ip != nil && *ip != removeIp {

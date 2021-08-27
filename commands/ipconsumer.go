@@ -59,6 +59,7 @@ func ipconsumer() *core.Command {
 }
 
 func RunIpConsumersList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting IpBlock with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
 	ipBlock, _, err := c.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
 	if err != nil {
 		return err
@@ -67,6 +68,7 @@ func RunIpConsumersList(c *core.CommandConfig) error {
 	if properties, ok := ipBlock.GetPropertiesOk(); ok && properties != nil {
 		if ipCons, ok := properties.GetIpConsumersOk(); ok && ipCons != nil {
 			ipsConsumers := make([]v5.IpConsumer, 0)
+			c.Printer.Verbose("Getting IpConsumers from IpBlock...")
 			for _, ip := range *ipCons {
 				ipsConsumers = append(ipsConsumers, v5.IpConsumer{IpConsumer: ip})
 			}

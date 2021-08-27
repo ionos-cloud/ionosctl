@@ -194,6 +194,7 @@ func RunShareList(c *core.CommandConfig) error {
 }
 
 func RunShareGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Group ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	c.Printer.Verbose("Share with resource id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
 	s, _, err := c.Groups().GetShare(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
@@ -217,6 +218,8 @@ func RunShareCreate(c *core.CommandConfig) error {
 		},
 	}
 	c.Printer.Verbose("Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege, sharePrivilege)
+	c.Printer.Verbose("Group ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	c.Printer.Verbose("Adding Share for resource id: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
 	shareAdded, resp, err := c.Groups().AddShare(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
@@ -245,6 +248,8 @@ func RunShareUpdate(c *core.CommandConfig) error {
 			Properties: &properties.GroupShareProperties,
 		},
 	}
+	c.Printer.Verbose("Group ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	c.Printer.Verbose("Updating Share for resource id: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
 	shareUpdated, resp, err := c.Groups().UpdateShare(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),

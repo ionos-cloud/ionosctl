@@ -230,6 +230,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 			Properties: &properties,
 		},
 	}
+	c.Printer.Verbose("Creating LAN in Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	l, resp, err := c.Lans().Create(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)), input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
@@ -269,6 +270,8 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		input.SetPcc(pcc)
 		c.Printer.Verbose("Property Pcc set: %v", pcc)
 	}
+	c.Printer.Verbose("Updating LAN with ID: %v from Datacenter with ID: %v...",
+		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	lanUpdated, resp, err := c.Lans().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
@@ -288,7 +291,8 @@ func RunLanDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Lan with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)))
+	c.Printer.Verbose("Deleting LAN with ID: %v from Datacenter with ID: %v...",
+		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	resp, err := c.Lans().Delete(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),

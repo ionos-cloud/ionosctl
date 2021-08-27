@@ -209,6 +209,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
 		firstname, lastname, email, secureAuth, admin)
+	c.Printer.Verbose("Creating User...")
 	u, resp, err := c.Users().Create(newUser)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
@@ -225,6 +226,7 @@ func RunUserUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	newUser := getUserInfo(oldUser, c)
+	c.Printer.Verbose("Updating User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	userUpd, resp, err := c.Users().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)), *newUser)
 	if err != nil {
 		return err

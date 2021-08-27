@@ -280,11 +280,11 @@ func PreRunDcServerNicFRuleIds(c *core.PreCommandConfig) error {
 }
 
 func RunFirewallRuleList(c *core.CommandConfig) error {
-	firewallRules, _, err := c.FirewallRules().List(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
-	)
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	datacenterId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	c.Printer.Verbose("Getting Firewall Rules from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", nicId, serverId, datacenterId)
+	firewallRules, _, err := c.FirewallRules().List(datacenterId, serverId, nicId)
 	if err != nil {
 		return err
 	}
@@ -292,13 +292,12 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Firewall Rule with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)))
-	firewallRule, _, err := c.FirewallRules().Get(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)),
-	)
+	fruleId := viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	datacenterId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	c.Printer.Verbose("Getting Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
+	firewallRule, _, err := c.FirewallRules().Get(datacenterId, serverId, nicId, fruleId)
 	if err != nil {
 		return err
 	}
@@ -315,12 +314,11 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 			Properties: &properties.FirewallruleProperties,
 		},
 	}
-	firewallRule, resp, err := c.FirewallRules().Create(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
-		input,
-	)
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	datacenterId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	c.Printer.Verbose("Creating Firewall Rule attached to specified NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", nicId, serverId, datacenterId)
+	firewallRule, resp, err := c.FirewallRules().Create(datacenterId, serverId, nicId, input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
@@ -335,13 +333,12 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleUpdate(c *core.CommandConfig) error {
-	firewallRule, resp, err := c.FirewallRules().Update(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)),
-		getFirewallRulePropertiesSet(c),
-	)
+	fruleId := viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	datacenterId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	c.Printer.Verbose("Updating Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
+	firewallRule, resp, err := c.FirewallRules().Update(datacenterId, serverId, nicId, fruleId, getFirewallRulePropertiesSet(c))
 	if err != nil {
 		return err
 	}
@@ -353,16 +350,15 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleDelete(c *core.CommandConfig) error {
+	fruleId := viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	datacenterId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Firewall Rule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)))
-	resp, err := c.FirewallRules().Delete(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId)),
-	)
+	c.Printer.Verbose("Deleting Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
+	resp, err := c.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId)
 	if err != nil {
 		return err
 	}

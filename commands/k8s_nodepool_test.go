@@ -226,7 +226,7 @@ func TestPreRunK8sClusterDcIdsNodePoolName(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testNodepoolVar)
-		err := PreRunK8sClusterDcIdsNodePoolName(cfg)
+		err := PreRunK8sClusterDcIds(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -238,7 +238,7 @@ func TestPreRunK8sClusterDcIdsNodePoolNameErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunK8sClusterDcIdsNodePoolName(cfg)
+		err := PreRunK8sClusterDcIds(cfg)
 		assert.Error(t, err)
 	})
 }
