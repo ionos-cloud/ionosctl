@@ -190,7 +190,7 @@ const (
 	DefaultTimeoutSeconds  = int(60)
 	K8sTimeoutSeconds      = int(600)
 	DefaultServerCores     = 2
-	DefaultServerRAM       = 256
+	DefaultServerRAM       = "256"
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
 	DefaultServerCPUFamily = "AMD_OPTERON"

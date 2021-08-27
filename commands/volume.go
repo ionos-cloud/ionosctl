@@ -265,7 +265,7 @@ func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
 }
 
 func RunVolumeList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	volumes, resp, err := c.Volumes().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

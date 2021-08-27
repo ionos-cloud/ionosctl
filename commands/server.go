@@ -4,10 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"os"
-	"strconv"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -18,6 +14,8 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"io"
+	"os"
 )
 
 func server() *core.Command {
@@ -108,7 +106,7 @@ Required values to run command:
 * Cores
 * RAM`,
 		Example:    createServerExample,
-		PreCmdRun:  PreRunDcIdCoresRam,
+		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunServerCreate,
 		InitClient: true,
 	})
@@ -117,8 +115,8 @@ Required values to run command:
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Server", "Name of the Server")
-	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
-	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
+	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
+	create.AddStringFlag(config.ArgRam, "", config.DefaultServerRAM, "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -181,7 +179,7 @@ Required values to run command:
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
-	update.AddStringFlag(config.ArgRam, "", strconv.Itoa(config.DefaultServerRAM), "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
+	update.AddStringFlag(config.ArgRam, "", config.DefaultServerRAM, "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -329,10 +327,6 @@ Required values to run command:
 	return serverCmd
 }
 
-func PreRunDcIdCoresRam(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgCores, config.ArgRam)
-}
-
 func PreRunDcServerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgServerId)
 }
@@ -373,13 +367,6 @@ func RunServerCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
-	}
-	// If CPU Family has not been set, take the default value
-	if !proper.ServerProperties.HasCpuFamily() {
-		proper.ServerProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily)))
-	}
 	c.Printer.Verbose("Creating Server in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	svr, resp, err := c.Servers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
@@ -417,7 +404,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
-	input, err := getNewServerInfo(c)
+	input, err := getServerInfo(c)
 	if err != nil {
 		return err
 	}
@@ -543,6 +530,37 @@ func RunServerReboot(c *core.CommandConfig) error {
 
 func getNewServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
 	input := ionoscloud.ServerProperties{}
+
+	// Setting Properties for the New Server
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	c.Printer.Verbose("Property name set: %v ", name)
+	input.SetName(name)
+	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily))
+	c.Printer.Verbose("Property CpuFamily set: %v ", cpuFamily)
+	input.SetCpuFamily(cpuFamily)
+	availabilityZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
+	c.Printer.Verbose("Property AvailabilityZone set: %v ", availabilityZone)
+	input.SetAvailabilityZone(availabilityZone)
+	cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
+	c.Printer.Verbose("Property Cores set: %v ", cores)
+	input.SetCores(cores)
+	size, err := utils.ConvertSize(
+		viper.GetString(core.GetFlagName(c.NS, config.ArgRam)),
+		utils.MegaBytes,
+	)
+	if err != nil {
+		return nil, err
+	}
+	c.Printer.Verbose("Property Ram set: %vMB ", int32(size))
+	input.SetRam(int32(size))
+
+	return &v5.ServerProperties{
+		ServerProperties: input,
+	}, nil
+}
+
+func getServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
+	input := ionoscloud.ServerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 		c.Printer.Verbose("Property name set: %v ", name)
@@ -571,7 +589,7 @@ func getNewServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Printer.Verbose("property Ram set: %vMB ", int32(size))
+		c.Printer.Verbose("Property Ram set: %vMB ", int32(size))
 		input.SetRam(int32(size))
 	}
 	return &v5.ServerProperties{

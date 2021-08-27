@@ -87,17 +87,15 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id
-* Volume Id
-* Name
-* Licence Type`,
+* Volume Id`,
 		Example:    createSnapshotExample,
-		PreCmdRun:  PreRunSnapNameLicenceDcIdVolumeId,
+		PreCmdRun:  PreRunDcVolumeIds,
 		CmdRun:     RunSnapshotCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Snapshot", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Snapshot", "Name of the Snapshot")
 	create.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Snapshot")
-	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgLicenceType, "", "LINUX", "Licence Type of the Snapshot")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -217,10 +215,6 @@ func PreRunSnapshotId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgSnapshotId)
 }
 
-func PreRunSnapNameLicenceDcIdVolumeId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgName, config.ArgLicenceType)
-}
-
 func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
 }
@@ -257,14 +251,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, config.ArgSecAuthProtection))
 	c.Printer.Verbose("Properties set for creating the Snapshot: DatacenterId: %v, VolumeId: %v, Name: %v, Description: %v, LicenseType: %v, SecAuthProtection: %v",
 		dcId, volumeId, name, description, licenseType, secAuthProtection)
-	s, resp, err := c.Snapshots().Create(
-		dcId,
-		volumeId,
-		name,
-		description,
-		licenseType,
-		secAuthProtection,
-	)
+	s, resp, err := c.Snapshots().Create(dcId, volumeId, name, description, licenseType, secAuthProtection)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -280,6 +267,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 }
 
 func RunSnapshotUpdate(c *core.CommandConfig) error {
+	c.Printer.Verbose("Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	s, resp, err := c.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)), getSnapshotPropertiesSet(c))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
