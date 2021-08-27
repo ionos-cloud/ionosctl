@@ -223,7 +223,10 @@ func RunNicList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	c.Printer.Verbose("Getting NICs...")
-	nics, _, err := c.Nics().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
+	nics, resp, err := c.Nics().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -239,11 +242,14 @@ func RunNicGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	c.Printer.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
-	n, _, err := c.Nics().Get(
+	n, resp, err := c.Nics().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -264,6 +270,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	n, resp, err := c.Nics().Create(dcId, serverId, name, ips, dhcp, lanId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -305,6 +312,9 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -327,6 +337,9 @@ func RunNicDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -516,6 +529,9 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Attaching NIC with ID: %v to LoadBalancer with ID: %v", nicId, lbId)
 	attachedNic, resp, err := c.Loadbalancers().AttachNic(dcId, lbId, nicId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -530,7 +546,10 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Listing attached NICs from LoadBalancer with ID: %v", lbId)
-	attachedNics, _, err := c.Loadbalancers().ListNics(dcId, lbId)
+	attachedNics, resp, err := c.Loadbalancers().ListNics(dcId, lbId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -543,7 +562,10 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting attached NIC with ID: %v from LoadBalancer with ID: %v", nicId, lbId)
-	n, _, err := c.Loadbalancers().GetNic(dcId, lbId, nicId)
+	n, resp, err := c.Loadbalancers().GetNic(dcId, lbId, nicId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -560,6 +582,9 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Detaching NIC with ID: %v from LoadBalancer with ID: %v", nicId, lbId)
 	resp, err := c.Loadbalancers().DetachNic(dcId, lbId, nicId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

@@ -199,3 +199,8 @@ const (
 	Token                  = "userdata.token"
 	ServerUrl              = "userdata.api-url"
 )
+
+// Verbose Flag const
+const (
+	RequestTimeMessage = "The execution time of the request is: %v"
+)

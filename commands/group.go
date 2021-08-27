@@ -178,7 +178,10 @@ func PreRunGroupUserIds(c *core.PreCommandConfig) error {
 }
 
 func RunGroupList(c *core.CommandConfig) error {
-	groups, _, err := c.Groups().List()
+	groups, resp, err := c.Groups().List()
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -187,7 +190,10 @@ func RunGroupList(c *core.CommandConfig) error {
 
 func RunGroupGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
-	u, _, err := c.Groups().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	u, resp, err := c.Groups().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -205,6 +211,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 	u, resp, err := c.Groups().Create(newGroup)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -228,6 +235,9 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Updating Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	groupUpd, resp, err := c.Groups().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)), newGroup)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -243,6 +253,9 @@ func RunGroupDelete(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	resp, err := c.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

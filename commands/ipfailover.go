@@ -167,10 +167,13 @@ func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
 
 func RunIpFailoverList(c *core.CommandConfig) error {
 	ipsFailovers := make([]v5.IpFailover, 0)
-	obj, _, err := c.Lans().Get(
+	obj, resp, err := c.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -195,6 +198,9 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding an IP Failover group to LAN with ID: %v from Datacenter with id: %v...", lanId, dcId)
 	ipsFailovers := make([]v5.IpFailover, 0)
 	lanUpdated, resp, err := c.Lans().Update(dcId, lanId, getIpFailoverInfo(c))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -234,6 +240,9 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 				viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 				removeIpFailoverInfo(c, ipfailovers),
 			)
+			if resp != nil {
+				c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			}
 			if err != nil {
 				return err
 			}

@@ -284,7 +284,10 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	datacenterId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	c.Printer.Verbose("Getting Firewall Rules from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", nicId, serverId, datacenterId)
-	firewallRules, _, err := c.FirewallRules().List(datacenterId, serverId, nicId)
+	firewallRules, resp, err := c.FirewallRules().List(datacenterId, serverId, nicId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -297,7 +300,10 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	datacenterId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	c.Printer.Verbose("Getting Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
-	firewallRule, _, err := c.FirewallRules().Get(datacenterId, serverId, nicId, fruleId)
+	firewallRule, resp, err := c.FirewallRules().Get(datacenterId, serverId, nicId, fruleId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -321,6 +327,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	firewallRule, resp, err := c.FirewallRules().Create(datacenterId, serverId, nicId, input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -339,6 +346,9 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 	datacenterId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	c.Printer.Verbose("Updating Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
 	firewallRule, resp, err := c.FirewallRules().Update(datacenterId, serverId, nicId, fruleId, getFirewallRulePropertiesSet(c))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -359,6 +369,9 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Deleting Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
 	resp, err := c.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

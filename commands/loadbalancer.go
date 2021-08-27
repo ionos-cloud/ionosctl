@@ -189,7 +189,10 @@ func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {
 
 func RunLoadBalancerList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting LoadBalancers from Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
-	lbs, _, err := c.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	lbs, resp, err := c.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -199,10 +202,13 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 func RunLoadBalancerGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting LoadBalancer with ID: %v from Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
-	lb, _, err := c.Loadbalancers().Get(
+	lb, resp, err := c.Loadbalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -218,6 +224,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	lb, resp, err := c.Loadbalancers().Create(dcId, name, dhcp)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -254,6 +261,9 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -274,6 +284,9 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

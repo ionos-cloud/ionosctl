@@ -178,10 +178,13 @@ func PreRunK8sClusterNodesIds(c *core.PreCommandConfig) error {
 func RunK8sNodeList(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8s Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	c.Printer.Verbose("K8s NodePool ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
-	k8ss, _, err := c.K8s().ListNodes(
+	k8ss, resp, err := c.K8s().ListNodes(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -195,10 +198,13 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8s Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	c.Printer.Verbose("K8s NodePool ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
 	c.Printer.Verbose("K8s node with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)))
-	u, _, err := c.K8s().GetNode(
+	u, resp, err := c.K8s().GetNode(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -217,6 +223,7 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	resp, err := c.K8s().RecreateNode(k8sClusterId, k8sNodePoolId, k8sNodeId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -231,10 +238,14 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 	c.Printer.Verbose("K8s Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	c.Printer.Verbose("K8s NodePool ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
 	c.Printer.Verbose("K8s node with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)))
-	_, err := c.K8s().DeleteNode(
+	resp, err := c.K8s().DeleteNode(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
+
 	if err != nil {
 		return err
 	}

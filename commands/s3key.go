@@ -180,7 +180,10 @@ func PreRunUserKeyIds(c *core.PreCommandConfig) error {
 
 func RunUserS3KeyList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Listing S3 Keys of User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
-	ss, _, err := c.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+	ss, resp, err := c.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -189,9 +192,12 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 
 func RunUserS3KeyGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
-	s, _, err := c.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
+	s, resp, err := c.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -204,6 +210,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	s, resp, err := c.S3Keys().Create(userId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -229,6 +236,9 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	keyId := viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId))
 	c.Printer.Verbose("Creating S3 Key with ID: %v for User with ID: %v", keyId, userId)
 	s, resp, err := c.S3Keys().Update(userId, keyId, newKey)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -248,6 +258,9 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	resp, err := c.S3Keys().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

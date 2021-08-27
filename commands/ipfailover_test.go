@@ -125,10 +125,11 @@ func TestRunIpFailoverList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testIpFailoverVar)
-		rm.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, nil, nil)
+		rm.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, &testResponse, nil)
 		err := RunIpFailoverList(cfg)
 		assert.NoError(t, err)
 	})
@@ -189,13 +190,14 @@ func TestRunIpFailoverAdd(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLanId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testIpFailoverVar)
-		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, testLanPropertiesIpFailover).Return(&testLanIpFailover, nil, nil)
+		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, testLanPropertiesIpFailover).Return(&testLanIpFailover, &testResponse, nil)
 		err := RunIpFailoverAdd(cfg)
 		assert.NoError(t, err)
 	})
@@ -284,6 +286,7 @@ func TestRunIpFailoverRemove(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -293,7 +296,7 @@ func TestRunIpFailoverRemove(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIp), testIpFailoverVar)
-		rm.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, nil, nil)
+		rm.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, &testResponse, nil)
 		rm.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, v5.LanProperties{
 			LanProperties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{},
@@ -324,7 +327,7 @@ func TestRunIpFailoverRemoveResponseErr(t *testing.T) {
 			LanProperties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{},
 			},
-		}).Return(&testLanIpFailoverRemove, &testResponse, nil)
+		}).Return(&testLanIpFailoverRemove, &testResponseErr, nil)
 		err := RunIpFailoverRemove(cfg)
 		assert.Error(t, err)
 	})

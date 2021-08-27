@@ -165,7 +165,10 @@ func PreRunDataCenterId(c *core.PreCommandConfig) error {
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {
-	datacenters, _, err := c.DataCenters().List()
+	datacenters, resp, err := c.DataCenters().List()
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -174,7 +177,10 @@ func RunDataCenterList(c *core.CommandConfig) error {
 
 func RunDataCenterGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
-	dc, _, err := c.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	dc, resp, err := c.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -189,6 +195,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	dc, resp, err := c.DataCenters().Create(name, description, location)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -216,6 +223,9 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -233,6 +243,9 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	c.Printer.Verbose("Deleting Datacenter with ID: %v...", dcId)
 	resp, err := c.DataCenters().Delete(dcId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
