@@ -18,7 +18,6 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	multierror "go.uber.org/multierr"
 )
 
 func volume() *core.Command {
@@ -94,17 +93,15 @@ func volume() *core.Command {
 		ShortDesc: "Create a Volume",
 		LongDesc: `Use this command to create a Volume on your account, within a Data Center. This will NOT attach the Volume to a Server. Please see the Servers commands for details on how to attach storage Volumes. You can specify the name, size, type, licence type, availability zone, image and other properties for the object.
 
-Note: You will need to provide a valid value for either the Image, Image Alias, or the Licence Type options. The Licence Type is required, but if Image or Image Alias is supplied, then Licence Type is already set and cannot be changed. Similarly either the Image Password or SSH Keys attributes need to be defined when creating a Volume that uses an Image or Image Alias of an IONOS public HDD Image. You may wish to set a valid value for Image Password even when using SSH Keys so that it is possible to authenticate with a password when using the remote console feature of the DCD.
+Note: The Licence Type has a default value, but if Image ID or Image Alias is supplied, then Licence Type will be automatically set. The Image Password or SSH Keys attributes can be defined when creating a Volume that uses an Image ID or Image Alias of an IONOS public Image. You may wish to set a valid value for Image Password even when using SSH Keys so that it is possible to authenticate with a password when using the remote console feature of the DCD.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
 Required values to run command:
 
-* Data Center Id
-* Licence Type/Image Id or Image Alias
-* Size`,
+* Data Center Id`,
 		Example:    createVolumeExample,
-		PreCmdRun:  PreRunDcIdVolumeProperties,
+		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunVolumeCreate,
 		InitClient: true,
 	})
@@ -112,8 +109,8 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Storage", "Name of the Volume")
-	create.AddStringFlag(config.ArgSize, "", strconv.Itoa(config.DefaultVolumeSize), "The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Volume", "Name of the Volume")
+	create.AddStringFlag(config.ArgSize, "", strconv.Itoa(config.DefaultVolumeSize), "The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -121,7 +118,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Volume")
+	create.AddStringFlag(config.ArgLicenceType, "", "LINUX", "Licence Type of the Volume")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -137,12 +134,12 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgImageId, "", "", "The Image Id or snapshot Id to be used as template for the new Volume")
+	create.AddStringFlag(config.ArgImageId, "", "", "The Image Id or Snapshot Id to be used as template for the new Volume")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
-	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "abcde12345", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringFlag(config.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
 	create.AddBoolFlag(config.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
 	create.AddBoolFlag(config.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
@@ -235,29 +232,6 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume deletion [seconds]")
 
 	return volumeCmd
-}
-
-func PreRunDcIdVolumeProperties(c *core.PreCommandConfig) error {
-	var result error
-	if err := core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgSize); err != nil {
-		result = multierror.Append(result, err)
-	}
-	// Check required flags
-	if !viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
-		if !viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) &&
-			!viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
-			result = multierror.Append(result, errors.New("image-id, image-alias or licence-type option must be set"))
-		} else {
-			if !viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) &&
-				!viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
-				result = multierror.Append(result, errors.New("image-password or ssh-keys option must be set"))
-			}
-		}
-	}
-	if result != nil {
-		return result
-	}
-	return nil
 }
 
 func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
@@ -374,26 +348,26 @@ func getNewVolume(c *core.CommandConfig) (*v5.Volume, error) {
 	proper.SetBus(bus)
 	proper.SetType(volumeType)
 	proper.SetAvailabilityZone(availabilityZone)
-	c.Printer.Verbose("Properties set for creating the Volume: name: %v, bus: %v, volumeType: %v, availabilityZone: %v",
+	c.Printer.Verbose("Properties set for creating the Volume: Name: %v, Bus: %v, Type: %v, AvailabilityZone: %v",
 		name, bus, volumeType, availabilityZone)
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSize)) {
-		size, err := utils.ConvertSize(
-			viper.GetString(core.GetFlagName(c.NS, config.ArgSize)),
-			utils.GigaBytes,
-		)
-		if err != nil {
-			return nil, err
-		}
-		proper.SetSize(float32(size))
-		c.Printer.Verbose("Property Size set: %vGB", float32(size))
+	// Set Size
+	size, err := utils.ConvertSize(
+		viper.GetString(core.GetFlagName(c.NS, config.ArgSize)),
+		utils.GigaBytes,
+	)
+	if err != nil {
+		return nil, err
 	}
+	proper.SetSize(float32(size))
+	c.Printer.Verbose("Property Size set: %vGB", float32(size))
 	// Check if flags are set and set options
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgBackupUnitId)) {
 		backupUnitId := viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId))
 		proper.SetBackupunitId(backupUnitId)
 		c.Printer.Verbose("Property BackupUnitId set: %v", backupUnitId)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
+	if !viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) &&
+		!viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
 		licenceType := viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType))
 		proper.SetLicenceType(licenceType)
 		c.Printer.Verbose("Property LicenceType set: %v", licenceType)
@@ -408,7 +382,8 @@ func getNewVolume(c *core.CommandConfig) (*v5.Volume, error) {
 		proper.SetImageAlias(imageAlias)
 		c.Printer.Verbose("Property ImageAlias set: %v", imageAlias)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) ||
+		viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
 		password := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 		proper.SetImagePassword(password)
 		c.Printer.Verbose("Property Password set")

@@ -102,9 +102,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 
 Required values to run command:
 
-* Data Center Id
-* Cores
-* RAM`,
+* Data Center Id`,
 		Example:    createServerExample,
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunServerCreate,
