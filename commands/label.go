@@ -12,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	multierror "go.uber.org/multierr"
 )
 
 func label() *core.Command {
@@ -31,41 +30,11 @@ func label() *core.Command {
 	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultLabelResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	globalFlags.StringP(config.ArgDataCenterId, "", "", "The unique Data Center Id")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgServerId, "", "", "The unique Server Id")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(labelCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgVolumeId, "", "", "The unique Volume Id")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgVolumeId), globalFlags.Lookup(config.ArgVolumeId))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(labelCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgIpBlockId, "", "", "The unique IpBlock Id")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgIpBlockId), globalFlags.Lookup(config.ArgIpBlockId))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgSnapshotId, "", "", "The unique Snapshot Id")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgSnapshotId), globalFlags.Lookup(config.ArgSnapshotId))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgResourceType, "", "", "Resource Type")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(labelCmd.Name(), config.ArgResourceType), globalFlags.Lookup(config.ArgResourceType))
-	_ = labelCmd.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"datacenter", "volume", "server", "snapshot", "ipblock"}, cobra.ShellCompDirectiveNoFileComp
-	})
 
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, labelCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, labelCmd, core.CommandBuilder{
 		Namespace:  "label",
 		Resource:   "label",
 		Verb:       "list",
@@ -76,6 +45,30 @@ func label() *core.Command {
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunLabelList,
 		InitClient: true,
+	})
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringFlag(config.ArgServerId, "", "", config.ServerId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringFlag(config.ArgVolumeId, "", "", config.VolumeId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringFlag(config.ArgIpBlockId, "", "", config.IpBlockId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringFlag(config.ArgSnapshotId, "", "", config.SnapshotId)
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringFlag(config.ArgResourceType, "", "", "Resource Type")
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{config.DatacenterResource, config.VolumeResource, config.ServerResource, config.SnapshotResource, config.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -89,11 +82,35 @@ func label() *core.Command {
 		ShortDesc:  "Get a Label",
 		LongDesc:   "Use this command to get information about a specified Label from a specified Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key",
 		Example:    getLabelExample,
-		PreCmdRun:  PreRunGlobalResourceTypeLabelKey,
+		PreCmdRun:  PreRunResourceTypeLabelKey,
 		CmdRun:     RunLabelGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgLabelKey, "", "", config.LabelKey)
+	get.AddStringFlag(config.ArgLabelKey, "", "", config.LabelKey, core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgServerId, "", "", config.ServerId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgVolumeId, "", "", config.VolumeId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgIpBlockId, "", "", config.IpBlockId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgSnapshotId, "", "", config.SnapshotId)
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgResourceType, "", "", "Resource Type", core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{config.DatacenterResource, config.VolumeResource, config.ServerResource, config.SnapshotResource, config.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Get By Urn Command
@@ -109,7 +126,7 @@ func label() *core.Command {
 		CmdRun:     RunLabelGetByUrn,
 		InitClient: true,
 	})
-	getByUrn.AddStringFlag(config.ArgLabelUrn, "", "", "URN for the Label [urn:label:<resource_type>:<resource_uuid>:<key>] (required)")
+	getByUrn.AddStringFlag(config.ArgLabelUrn, "", "", "URN for the Label [urn:label:<resource_type>:<resource_uuid>:<key>]", core.RequiredFlagOption())
 
 	/*
 		Add Command
@@ -122,12 +139,36 @@ func label() *core.Command {
 		ShortDesc:  "Add a Label to a Resource",
 		LongDesc:   "Use this command to add a Label to a specific Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key\n* Label Value",
 		Example:    addLabelExample,
-		PreCmdRun:  PreRunGlobalResourceTypeLabelKeyValue,
+		PreCmdRun:  PreRunResourceTypeLabelKeyValue,
 		CmdRun:     RunLabelAdd,
 		InitClient: true,
 	})
-	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.LabelKey)
-	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.LabelValue)
+	addLabel.AddStringFlag(config.ArgLabelKey, "", "", config.LabelKey, core.RequiredFlagOption())
+	addLabel.AddStringFlag(config.ArgLabelValue, "", "", config.LabelValue, core.RequiredFlagOption())
+	addLabel.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	addLabel.AddStringFlag(config.ArgServerId, "", "", config.ServerId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(addLabel.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	addLabel.AddStringFlag(config.ArgVolumeId, "", "", config.VolumeId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(addLabel.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	addLabel.AddStringFlag(config.ArgIpBlockId, "", "", config.IpBlockId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	addLabel.AddStringFlag(config.ArgSnapshotId, "", "", config.SnapshotId)
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	addLabel.AddStringFlag(config.ArgResourceType, "", "", "Resource Type", core.RequiredFlagOption())
+	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{config.DatacenterResource, config.VolumeResource, config.ServerResource, config.SnapshotResource, config.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Remove Command
@@ -140,47 +181,57 @@ func label() *core.Command {
 		ShortDesc:  "Remove a Label from a Resource",
 		LongDesc:   "Use this command to remove a Label from a Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key",
 		Example:    removeLabelExample,
-		PreCmdRun:  PreRunGlobalResourceTypeLabelKey,
+		PreCmdRun:  PreRunResourceTypeLabelKey,
 		CmdRun:     RunLabelRemove,
 		InitClient: true,
 	})
-	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.LabelKey)
+	removeLabel.AddStringFlag(config.ArgLabelKey, "", "", config.LabelKey, core.RequiredFlagOption())
+	removeLabel.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId)
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	removeLabel.AddStringFlag(config.ArgServerId, "", "", config.ServerId)
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(removeLabel.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	removeLabel.AddStringFlag(config.ArgVolumeId, "", "", config.VolumeId)
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(removeLabel.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	removeLabel.AddStringFlag(config.ArgIpBlockId, "", "", config.IpBlockId)
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	removeLabel.AddStringFlag(config.ArgSnapshotId, "", "", config.SnapshotId)
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	removeLabel.AddStringFlag(config.ArgResourceType, "", "", "Resource Type", core.RequiredFlagOption())
+	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{config.DatacenterResource, config.VolumeResource, config.ServerResource, config.SnapshotResource, config.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	return labelCmd
 }
 
-func PreRunGlobalResourceTypeLabelKey(c *core.PreCommandConfig) error {
-	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgResourceType); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if err := checkResourceIds(c); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if err := core.CheckRequiredFlags(c.Command, c.NS, config.ArgLabelKey); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if result != nil {
-		return result
-	}
-	return nil
+func PreRunResourceTypeLabelKey(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgResourceType, config.ArgDataCenterId, config.ArgLabelKey},
+		[]string{config.ArgResourceType, config.ArgDataCenterId, config.ArgVolumeId, config.ArgLabelKey},
+		[]string{config.ArgResourceType, config.ArgDataCenterId, config.ArgServerId, config.ArgLabelKey},
+		[]string{config.ArgResourceType, config.ArgSnapshotId, config.ArgLabelKey},
+		[]string{config.ArgResourceType, config.ArgIpBlockId, config.ArgLabelKey},
+	)
 }
 
-func PreRunGlobalResourceTypeLabelKeyValue(c *core.PreCommandConfig) error {
-	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgResourceType); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if err := checkResourceIds(c); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if err := core.CheckRequiredFlags(c.Command, c.NS, config.ArgLabelKey, config.ArgLabelValue); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if result != nil {
-		return result
-	}
-	return nil
+func PreRunResourceTypeLabelKeyValue(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgResourceType, config.ArgDataCenterId, config.ArgLabelKey, config.ArgLabelValue},
+		[]string{config.ArgResourceType, config.ArgDataCenterId, config.ArgVolumeId, config.ArgLabelKey, config.ArgLabelValue},
+		[]string{config.ArgResourceType, config.ArgDataCenterId, config.ArgServerId, config.ArgLabelKey, config.ArgLabelValue},
+		[]string{config.ArgResourceType, config.ArgSnapshotId, config.ArgLabelKey, config.ArgLabelValue},
+		[]string{config.ArgResourceType, config.ArgIpBlockId, config.ArgLabelKey, config.ArgLabelValue},
+	)
 }
 
 func PreRunLabelUrn(c *core.PreCommandConfig) error {
@@ -190,7 +241,7 @@ func PreRunLabelUrn(c *core.PreCommandConfig) error {
 const labelResourceWarning = "Please use `--resource-type` flag with one option: \"datacenter\", \"volume\", \"server\", \"snapshot\", \"ipblock\""
 
 func RunLabelList(c *core.CommandConfig) error {
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
+	switch viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType)) {
 	case config.DatacenterResource:
 		return RunDataCenterLabelsList(c)
 	case config.ServerResource:
@@ -211,9 +262,9 @@ func RunLabelList(c *core.CommandConfig) error {
 }
 
 func RunLabelGet(c *core.CommandConfig) error {
-	resourceType := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType))
-	labelKey := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgLabelKey))
-	labelValue := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgLabelValue))
+	resourceType := viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType))
+	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
+	labelValue := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue))
 	c.Printer.Verbose("Getting label with label key: %v and label value: %v for %v...", labelKey, labelValue, resourceType)
 	switch resourceType {
 	case config.DatacenterResource:
@@ -242,7 +293,7 @@ func RunLabelGetByUrn(c *core.CommandConfig) error {
 }
 
 func RunLabelAdd(c *core.CommandConfig) error {
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
+	switch viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType)) {
 	case config.DatacenterResource:
 		return RunDataCenterLabelAdd(c)
 	case config.ServerResource:
@@ -259,7 +310,7 @@ func RunLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunLabelRemove(c *core.CommandConfig) error {
-	resourceType := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType))
+	resourceType := viper.GetString(core.GetFlagName(c.NS, config.ArgResourceType))
 	c.Printer.Verbose("Label is removing from %v...", resourceType)
 	switch resourceType {
 	case config.DatacenterResource:
@@ -272,23 +323,6 @@ func RunLabelRemove(c *core.CommandConfig) error {
 		return RunIpBlockLabelRemove(c)
 	case config.SnapshotResource:
 		return RunSnapshotLabelRemove(c)
-	default:
-		return c.Printer.Print(labelResourceWarning)
-	}
-}
-
-func checkResourceIds(c *core.PreCommandConfig) error {
-	switch viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgResourceType)) {
-	case config.DatacenterResource:
-		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgDataCenterId)
-	case config.ServerResource:
-		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgDataCenterId, config.ArgServerId)
-	case config.VolumeResource:
-		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgDataCenterId, config.ArgVolumeId)
-	case config.IpBlockResource:
-		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgIpBlockId)
-	case config.SnapshotResource:
-		return core.CheckRequiredGlobalFlags(c.Command, c.Resource, config.ArgSnapshotId)
 	default:
 		return c.Printer.Print(labelResourceWarning)
 	}

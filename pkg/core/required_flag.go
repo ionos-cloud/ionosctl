@@ -72,15 +72,6 @@ func RequiresMultipleOptionsErr(cmd *Command, flagNamesSets ...[]string) error {
 	)
 }
 
-func CheckRequiredGlobalFlags(cmd *Command, cmdName string, globalFlagsName ...string) error {
-	for _, flagName := range globalFlagsName {
-		if !viper.IsSet(GetGlobalFlagName(cmdName, flagName)) {
-			return RequiresMinOptionsErr(cmd, globalFlagsName...)
-		}
-	}
-	return nil
-}
-
 func CheckRequiredFlags(cmd *Command, ns string, localFlagsName ...string) error {
 	for _, flagName := range localFlagsName {
 		if !viper.IsSet(GetFlagName(ns, flagName)) {
