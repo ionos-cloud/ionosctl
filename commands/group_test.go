@@ -128,31 +128,6 @@ func TestPreRunGroupUserIdsErr(t *testing.T) {
 	})
 }
 
-func TestPreRunGroupName(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testGroupVar)
-		err := PreRunGroupName(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGroupNameErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunGroupName(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunGroupList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

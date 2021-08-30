@@ -10,20 +10,25 @@ import (
 
 const RequiredFlagsAnnotation = "RequiredFlags"
 
-type FlagOptionFunc func(c *Command, flagName string)
+var RequiredFlagErr = errors.New("error checking required flags on command")
+
+type FlagOptionFunc func(cmd *Command, flagName string)
 
 func RequiredFlagOption() FlagOptionFunc {
-	return func(c *Command, flagName string) {
-		c.Command.Flag(flagName).Usage = fmt.Sprintf("%s (required)", c.Command.Flag(flagName).Usage)
+	return func(cmd *Command, flagName string) {
+		cmd.Command.Flag(flagName).Usage = fmt.Sprintf("%s (required)", cmd.Command.Flag(flagName).Usage)
 		// For documentation purposes, add flag to command Annotation
-		c.Command.Annotations = map[string]string{RequiredFlagsAnnotation: fmt.Sprintf("%s --%s %s",
-			c.Command.Annotations[RequiredFlagsAnnotation],
+		cmd.Command.Annotations = map[string]string{RequiredFlagsAnnotation: fmt.Sprintf("%s --%s %s",
+			cmd.Command.Annotations[RequiredFlagsAnnotation],
 			flagName,
 			strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))}
 	}
 }
 
 func RequiresMinOptionsErr(cmd *Command, flagNames ...string) error {
+	if cmd == nil {
+		return RequiredFlagErr
+	}
 	var usage string
 	usage = cmd.CommandPath()
 	for _, flagName := range flagNames {
@@ -43,6 +48,9 @@ func RequiresMinOptionsErr(cmd *Command, flagNames ...string) error {
 }
 
 func RequiresMultipleOptionsErr(cmd *Command, flagNamesSets ...[]string) error {
+	if cmd == nil {
+		return RequiredFlagErr
+	}
 	var usage string
 	for _, flagNamesSet := range flagNamesSets {
 		usage = fmt.Sprintf("%s%s", usage, cmd.CommandPath())
@@ -82,9 +90,9 @@ func CheckRequiredFlags(cmd *Command, ns string, localFlagsName ...string) error
 	return nil
 }
 
-// CheckRequiredFlagsSets focuses on commands that support multiple ways to run
+// CheckRequiredFlagsSets focuses on commands that support multiple ways to run,
 // and it is required at least one of the ways to be set.
-// For example: for `ionosctl datacenter delete`, it is required to be set
+// For example: for `datacenter delete`, it is required to be set
 // either `--datacenter-id` option, either `--all` option.
 func CheckRequiredFlagsSets(cmd *Command, ns string, localFlagsNameSets ...[]string) error {
 	checkSet := false

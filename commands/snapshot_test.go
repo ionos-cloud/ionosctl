@@ -96,34 +96,6 @@ func TestPreRunSnapshotIdErr(t *testing.T) {
 	})
 }
 
-func TestPreRunSnapNameLicenceDcIdVolumeId(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testSnapshotVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testSnapshotVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
-		err := PreRunSnapNameLicenceDcIdVolumeId(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunSnapNameLicenceDcIdVolumeIdErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunSnapNameLicenceDcIdVolumeId(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestPreRunSnapshotIdDcIdVolumeId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

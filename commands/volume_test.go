@@ -147,7 +147,7 @@ func TestPreRunGlobalDcIdVolumeId(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		err := PreRunDcVolumeIds(cfg)
 		assert.NoError(t, err)
@@ -166,76 +166,6 @@ func TestPreRunGlobalDcIdVolumeIdRequiredFlagsErr(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcIdVolumePropertiesErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunDcIdVolumeProperties(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumePropertiesLicenceType(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), testVolumeVar)
-		err := PreRunDcIdVolumeProperties(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumePropertiesLicenceTypeErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
-		err := PreRunDcIdVolumeProperties(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumePropertiesImg(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), testVolumeVar)
-		err := PreRunDcIdVolumeProperties(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGlobalDcIdVolumePropertiesImgErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageAlias), testVolumeVar)
-		err := PreRunDcIdVolumeProperties(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunVolumeList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -245,7 +175,7 @@ func TestRunVolumeList(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		rm.Volume.EXPECT().List(testVolumeVar).Return(vs, &testResponse, nil)
 		err := RunVolumeList(cfg)
 		assert.NoError(t, err)
@@ -260,7 +190,7 @@ func TestRunVolumeListErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		rm.Volume.EXPECT().List(testVolumeVar).Return(vs, nil, testVolumeErr)
 		err := RunVolumeList(cfg)
 		assert.Error(t, err)
@@ -276,7 +206,7 @@ func TestRunVolumeGet(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		rm.Volume.EXPECT().Get(testVolumeVar, testVolumeVar).Return(&v5.Volume{Volume: v}, &testResponse, nil)
 		err := RunVolumeGet(cfg)
@@ -292,7 +222,7 @@ func TestRunVolumeGetErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		rm.Volume.EXPECT().Get(testVolumeVar, testVolumeVar).Return(&v5.Volume{Volume: v}, nil, testVolumeErr)
 		err := RunVolumeGet(cfg)
@@ -309,7 +239,7 @@ func TestRunVolumeCreate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), sizeVolume)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testVolumeVar)
@@ -340,7 +270,7 @@ func TestRunVolumeCreateImg(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), sizeVolume)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testVolumeVar)
@@ -372,7 +302,7 @@ func TestRunVolumeCreateErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), sizeVolume)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testVolumeVar)
@@ -403,7 +333,7 @@ func TestRunVolumeCreateWaitErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), sizeVolume)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testVolumeVar)
@@ -435,7 +365,7 @@ func TestRunVolumeUpdate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testVolumeNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), sizeVolumeNew)
@@ -461,7 +391,7 @@ func TestRunVolumeUpdateErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testVolumeNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), sizeVolumeNew)
@@ -487,7 +417,7 @@ func TestRunVolumeUpdateWaitErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testVolumeNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), sizeVolumeNew)
@@ -515,7 +445,7 @@ func TestRunVolumeDelete(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
 		viper.Set(config.ArgVerbose, true)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(&testResponse, nil)
@@ -533,7 +463,7 @@ func TestRunVolumeDeleteErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(nil, testVolumeErr)
@@ -551,7 +481,7 @@ func TestRunVolumeDeleteWaitErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(nil, nil)
@@ -570,7 +500,7 @@ func TestRunVolumeDeleteAskForConfirm(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(nil, nil)
@@ -589,7 +519,7 @@ func TestRunVolumeDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, false)
 		cfg.Stdin = os.Stdin
-		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		err := RunVolumeDelete(cfg)

@@ -109,33 +109,6 @@ func TestPreRunDcServerIdsRequiredFlagErr(t *testing.T) {
 	})
 }
 
-func TestPreRunDcIdCoresRam(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), testServerVar)
-		err := PreRunDcIdCoresRam(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunDcIdCoresRamRequiredFlagErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunDcIdCoresRam(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunServerList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
