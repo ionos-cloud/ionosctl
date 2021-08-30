@@ -106,8 +106,8 @@ Required values to run a command:
 		CmdRun:     RunK8sNodePoolCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed K8s NodePool", "The name for the K8s NodePool")
-	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, it will be used the default one")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "UnnamedNodePool", "The name for the K8s NodePool")
+	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, the default one will be used")
 	create.AddStringFlag(config.ArgK8sClusterId, "", "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -230,7 +230,7 @@ func PreRunK8sClusterDcIds(c *core.PreCommandConfig) error {
 }
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting K8s NodePool from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+	c.Printer.Verbose("Getting K8s NodePools from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	k8ss, resp, err := c.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

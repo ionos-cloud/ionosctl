@@ -110,8 +110,8 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 		CmdRun:     RunK8sClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed K8s Cluster", "The name for the K8s Cluster")
-	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, it will be used the default one")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "UnnamedCluster", "The name for the K8s Cluster")
+	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, the default one will be used")
 	create.AddStringFlag(config.ArgS3Bucket, "", "", "S3 Bucket name configured for K8s usage")
 	create.AddStringSliceFlag(config.ArgApiSubnets, "", []string{""}, "Access to the K8s API server is restricted to these CIDRs. Cluster-internal traffic is not affected by this restriction. If no allowlist is specified, access is not restricted. If an IP without subnet mask is provided, the default value will be used: 32 for IPv4 and 128 for IPv6")
 	create.AddBoolFlag(config.ArgPublic, "", true, "The indicator if the Cluster is public or private")
