@@ -66,7 +66,7 @@ func label() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(config.ArgResourceType, "", "", "Resource Type")
+	list.AddStringFlag(config.ArgResourceType, "", "", "Type of the resource to list labels from")
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{config.DatacenterResource, config.VolumeResource, config.ServerResource, config.SnapshotResource, config.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -107,7 +107,7 @@ func label() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgResourceType, "", "", "Resource Type", core.RequiredFlagOption())
+	get.AddStringFlag(config.ArgResourceType, "", "", "Type of the resource to get label from", core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{config.DatacenterResource, config.VolumeResource, config.ServerResource, config.SnapshotResource, config.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -165,7 +165,7 @@ func label() *core.Command {
 	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	addLabel.AddStringFlag(config.ArgResourceType, "", "", "Resource Type", core.RequiredFlagOption())
+	addLabel.AddStringFlag(config.ArgResourceType, "", "", "Type of the resource to add label to", core.RequiredFlagOption())
 	_ = addLabel.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{config.DatacenterResource, config.VolumeResource, config.ServerResource, config.SnapshotResource, config.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -206,7 +206,7 @@ func label() *core.Command {
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeLabel.AddStringFlag(config.ArgResourceType, "", "", "Resource Type", core.RequiredFlagOption())
+	removeLabel.AddStringFlag(config.ArgResourceType, "", "", "Type of the resource to remove label for", core.RequiredFlagOption())
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(config.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{config.DatacenterResource, config.VolumeResource, config.ServerResource, config.SnapshotResource, config.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
 	})

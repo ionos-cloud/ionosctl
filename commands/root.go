@@ -55,10 +55,8 @@ func GetRootCmd() *core.Command {
 
 // Customize Help Command
 var helpCommand = &cobra.Command{
-	Use:               "help [command]",
-	Short:             "Help about the command",
-	PersistentPreRun:  func(cmd *cobra.Command, args []string) {},
-	PersistentPostRun: func(cmd *cobra.Command, args []string) {},
+	Use:   "help [command]",
+	Short: "Help about the command",
 	RunE: func(c *cobra.Command, args []string) error {
 		cmd, args, e := c.Root().Find(args)
 		if cmd == nil || e != nil || len(args) > 0 {

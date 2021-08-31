@@ -10,7 +10,10 @@ import (
 
 const RequiredFlagsAnnotation = "RequiredFlags"
 
-var RequiredFlagErr = errors.New("error checking required flags on command")
+var (
+	flagNamePrintF  = "%s --%s %s"
+	requiredFlagErr = errors.New("error checking required flags on command")
+)
 
 type FlagOptionFunc func(cmd *Command, flagName string)
 
@@ -18,7 +21,7 @@ func RequiredFlagOption() FlagOptionFunc {
 	return func(cmd *Command, flagName string) {
 		cmd.Command.Flag(flagName).Usage = fmt.Sprintf("%s (required)", cmd.Command.Flag(flagName).Usage)
 		// For documentation purposes, add flag to command Annotation
-		cmd.Command.Annotations = map[string]string{RequiredFlagsAnnotation: fmt.Sprintf("%s --%s %s",
+		cmd.Command.Annotations = map[string]string{RequiredFlagsAnnotation: fmt.Sprintf(flagNamePrintF,
 			cmd.Command.Annotations[RequiredFlagsAnnotation],
 			flagName,
 			strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))}
@@ -27,12 +30,12 @@ func RequiredFlagOption() FlagOptionFunc {
 
 func RequiresMinOptionsErr(cmd *Command, flagNames ...string) error {
 	if cmd == nil {
-		return RequiredFlagErr
+		return requiredFlagErr
 	}
 	var usage string
 	usage = cmd.CommandPath()
 	for _, flagName := range flagNames {
-		usage = fmt.Sprintf("%s --%s %s", usage, flagName,
+		usage = fmt.Sprintf(flagNamePrintF, usage, flagName,
 			strings.ReplaceAll(strings.ToUpper(flagName), "-", "_"),
 		)
 	}
@@ -49,13 +52,13 @@ func RequiresMinOptionsErr(cmd *Command, flagNames ...string) error {
 
 func RequiresMultipleOptionsErr(cmd *Command, flagNamesSets ...[]string) error {
 	if cmd == nil {
-		return RequiredFlagErr
+		return requiredFlagErr
 	}
 	var usage string
 	for _, flagNamesSet := range flagNamesSets {
 		usage = fmt.Sprintf("%s%s", usage, cmd.CommandPath())
 		for _, flagName := range flagNamesSet {
-			usage = fmt.Sprintf("%s --%s %s", usage, flagName,
+			usage = fmt.Sprintf(flagNamePrintF, usage, flagName,
 				strings.ReplaceAll(strings.ToUpper(flagName), "-", "_"),
 			)
 		}
