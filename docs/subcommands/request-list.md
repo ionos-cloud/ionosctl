@@ -42,12 +42,12 @@ Use flags to retrieve a list of Requests:
                          Available columns: [RequestId CreatedDate CreatedBy Method Status Message Url Body Targets] (default [RequestId,CreatedDate,Method,Status,Message,Targets])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
-  -h, --help             help for list
+  -h, --help             Print usage
       --latest int       Show latest N Requests. If it is not set, all Requests will be printed
       --method string    Show only the Requests with this method. E.g CREATE, UPDATE, DELETE
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          see step by step process when running a command
+  -v, --verbose          Print step-by-step process when running command
 ```
 
 ## Examples

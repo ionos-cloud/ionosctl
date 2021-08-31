@@ -36,13 +36,13 @@ Note: The command can also be used without `--user` and `--password` flags. For 
   -u, --api-url string    Override default host url (default "https://api.ionos.com")
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force             Force command to execute without user input
-  -h, --help              help for login
+  -h, --help              Print usage
   -o, --output string     Desired output format [text|json] (default "text")
   -p, --password string   Password to authenticate
   -q, --quiet             Quiet output
       --token string      Token to authenticate
       --user string       Username to authenticate
-  -v, --verbose           see step by step process when running a command
+  -v, --verbose           Print step-by-step process when running command
 ```
 
 ## Examples

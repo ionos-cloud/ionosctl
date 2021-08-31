@@ -47,12 +47,12 @@ Required values to run command:
                           Available columns: [S3KeyId Active] (default [S3KeyId,Active])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force             Force command to execute without user input
-  -h, --help              help for get
+  -h, --help              Print usage
   -o, --output string     Desired output format [text|json] (default "text")
   -q, --quiet             Quiet output
   -i, --s3key-id string   The unique User S3Key Id (required)
       --user-id string    The unique User Id (required)
-  -v, --verbose           see step by step process when running a command
+  -v, --verbose           Print step-by-step process when running command
 ```
 
 ## Examples

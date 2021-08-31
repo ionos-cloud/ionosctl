@@ -45,14 +45,14 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for create
+  -h, --help                   Print usage
   -n, --name string            The name of the LAN (default "Unnamed LAN")
   -o, --output string          Desired output format [text|json] (default "text")
       --pcc-id string          The unique Id of the Private Cross-Connect the LAN will connect to
       --public                 Indicates if the LAN faces the public Internet (true) or not (false)
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for LAN creation [seconds] (default 60)
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
   -w, --wait-for-request       Wait for the Request for LAN creation to be executed
 ```
 
