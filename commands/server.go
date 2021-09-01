@@ -59,7 +59,7 @@ func server() *core.Command {
 		CmdRun:     RunServerList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -79,11 +79,11 @@ func server() *core.Command {
 		CmdRun:     RunServerGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	get.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -133,13 +133,13 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		CmdRun:     RunServerCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Server", "Name of the Server")
-	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB "+config.RequiredFlag)
+	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -151,7 +151,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgTemplateId, "", "", "[CUBE Server] The unique Template Id "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgTemplateId, "", "", "[CUBE Server] The unique Template Id", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getTemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -166,7 +166,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgLicenceType, "l", "", "[CUBE Server] Licence Type of the Direct Attached Storage "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgLicenceType, "l", "", "[CUBE Server] Licence Type of the Direct Attached Storage", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -212,11 +212,11 @@ Required values to run command:
 		CmdRun:     RunServerUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	update.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	update.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -262,11 +262,11 @@ Required values to run command:
 		CmdRun:     RunServerDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	deleteCmd.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -294,11 +294,11 @@ Required values to run command:
 		CmdRun:     RunServerSuspend,
 		InitClient: true,
 	})
-	suspend.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	suspend.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = suspend.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	suspend.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	suspend.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = suspend.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getCubeServersIds(os.Stderr, viper.GetString(core.GetFlagName(suspend.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -327,11 +327,11 @@ Required values to run command:
 		CmdRun:     RunServerStart,
 		InitClient: true,
 	})
-	start.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	start.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = start.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	start.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	start.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = start.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(start.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -360,11 +360,11 @@ Required values to run command:
 		CmdRun:     RunServerStop,
 		InitClient: true,
 	})
-	stop.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	stop.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	stop.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	stop.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(stop.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -393,11 +393,11 @@ Required values to run command:
 		CmdRun:     RunServerReboot,
 		InitClient: true,
 	})
-	reboot.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	reboot.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	reboot.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	reboot.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(reboot.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -426,11 +426,11 @@ Required values to run command:
 		CmdRun:     RunServerResume,
 		InitClient: true,
 	})
-	resume.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	resume.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = resume.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	resume.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	resume.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = resume.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getCubeServersIds(os.Stderr, viper.GetString(core.GetFlagName(resume.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -448,11 +448,11 @@ Required values to run command:
 func PreRunServerCreate(c *core.PreCommandConfig) error {
 	if !viper.IsSet(core.GetFlagName(c.NS, config.ArgType)) ||
 		viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == serverEnterpriseType {
-		return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgCores, config.ArgRam)
+		return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgCores, config.ArgRam)
 	} else {
 		if viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == serverCubeType {
 			var result error
-			if err := core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgTemplateId); err != nil {
+			if err := core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgTemplateId); err != nil {
 				result = multierror.Append(result, err)
 			}
 			if !viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
@@ -474,7 +474,7 @@ func PreRunServerCreate(c *core.PreCommandConfig) error {
 }
 
 func PreRunDcServerIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgServerId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgServerId)
 }
 
 func RunServerList(c *core.CommandConfig) error {
@@ -551,6 +551,8 @@ func RunServerUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Updating Server with ID: %v in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	svr, resp, err := c.Servers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -718,7 +720,7 @@ func getUpdateServerInfo(c *core.CommandConfig) (*v6.ServerProperties, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Printer.Verbose("property Ram set: %vMB ", int32(size))
+		c.Printer.Verbose("Property Ram set: %vMB ", int32(size))
 		input.SetRam(int32(size))
 	}
 	return &v6.ServerProperties{
