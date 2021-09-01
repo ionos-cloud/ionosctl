@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"regexp"
+	"strconv"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -144,6 +145,8 @@ func TestPreRunServerCreate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), testServerVar)
 		err := PreRunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -296,7 +299,7 @@ func TestRunServerCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerEnterpriseType)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), cores)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), strconv.Itoa(int(ram)))
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&v6.Server{Server: s}, nil, nil)
 		err := RunServerCreate(cfg)

@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -14,8 +17,6 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io"
-	"os"
 )
 
 const (
@@ -100,7 +101,7 @@ func server() *core.Command {
 
 * For ENTERPRISE Servers:
 
-You can set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
+You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
 * providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
 * providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
@@ -110,6 +111,8 @@ To see which CPU Family are available in which location, use ` + "`" + `ionosctl
 Required values to create a Server of type ENTERPRISE:
 
 * Data Center Id
+* Cores
+* RAM
 
 * For CUBE Servers:
 
@@ -134,8 +137,8 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Server", "Name of the Server")
-	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
-	create.AddStringFlag(config.ArgRam, "", config.DefaultServerRAM, "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
+	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -442,7 +445,7 @@ Required values to run command:
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgDataCenterId},
+		[]string{config.ArgDataCenterId, config.ArgCores, config.ArgRam},
 		[]string{config.ArgDataCenterId, config.ArgType, config.ArgTemplateId},
 		[]string{config.ArgDataCenterId, config.ArgType, config.ArgTemplateId, config.ArgImageId},
 	)
@@ -732,18 +735,22 @@ func getNewServer(c *core.CommandConfig) (*v6.Server, error) {
 		if !input.HasName() {
 			input.SetName("Unnamed Server")
 		}
-		cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
-		input.SetCores(cores)
-		c.Printer.Verbose("Property Cores set: %v", cores)
-		size, err := utils.ConvertSize(
-			viper.GetString(core.GetFlagName(c.NS, config.ArgRam)),
-			utils.MegaBytes,
-		)
-		if err != nil {
-			return nil, err
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
+			cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
+			input.SetCores(cores)
+			c.Printer.Verbose("Property Cores set: %v", cores)
 		}
-		input.SetRam(int32(size))
-		c.Printer.Verbose("Property Ram set: %vMB", int32(size))
+		if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
+			size, err := utils.ConvertSize(
+				viper.GetString(core.GetFlagName(c.NS, config.ArgRam)),
+				utils.MegaBytes,
+			)
+			if err != nil {
+				return nil, err
+			}
+			input.SetRam(int32(size))
+			c.Printer.Verbose("Property Ram set: %vMB", int32(size))
+		}
 	}
 	return &v6.Server{
 		Server: ionoscloud.Server{
