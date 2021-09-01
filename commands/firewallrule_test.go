@@ -87,7 +87,7 @@ var (
 	testFirewallRuleErr            = errors.New("firewall rule test error")
 )
 
-func TestPreRunGlobalDcServerNicIds(t *testing.T) {
+func TestPreRunDcServerNicIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -102,7 +102,7 @@ func TestPreRunGlobalDcServerNicIds(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcServerNicIdsErr(t *testing.T) {
+func TestPreRunDcServerNicIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -114,7 +114,7 @@ func TestPreRunGlobalDcServerNicIdsErr(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcServerNicIdsFRuleProtocol(t *testing.T) {
+func TestPreRunDcServerNicIdsFRuleProtocol(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -130,7 +130,7 @@ func TestPreRunGlobalDcServerNicIdsFRuleProtocol(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcServerNicIdsFRuleProtocolErr(t *testing.T) {
+func TestPreRunDcServerNicIdsFRuleProtocolErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -142,7 +142,7 @@ func TestPreRunGlobalDcServerNicIdsFRuleProtocolErr(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcServerNicIdsFRuleId(t *testing.T) {
+func TestPreRunDcServerNicFRuleIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -158,7 +158,7 @@ func TestPreRunGlobalDcServerNicIdsFRuleId(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcServerNicIdsFRuleIdErr(t *testing.T) {
+func TestPreRunDcServerNicFRuleIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {

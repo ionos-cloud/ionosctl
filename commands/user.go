@@ -120,7 +120,7 @@ Required values to run command:
 
 * User Id`,
 		Example:    updateUserExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunUserId,
 		CmdRun:     RunUserUpdate,
 		InitClient: true,
 	})

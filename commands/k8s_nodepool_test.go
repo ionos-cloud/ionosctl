@@ -216,7 +216,7 @@ func TestPreRunK8sClusterNodePoolIdsErr(t *testing.T) {
 	})
 }
 
-func TestPreRunK8sClusterDcIdsNodePoolName(t *testing.T) {
+func TestPreRunK8sClusterDcIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -231,7 +231,7 @@ func TestPreRunK8sClusterDcIdsNodePoolName(t *testing.T) {
 	})
 }
 
-func TestPreRunK8sClusterDcIdsNodePoolNameErr(t *testing.T) {
+func TestPreRunK8sClusterDcIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {

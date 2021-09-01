@@ -140,7 +140,7 @@ var (
 	testVolumeErr      = errors.New("volume test: error occurred")
 )
 
-func TestPreRunGlobalDcIdVolumeId(t *testing.T) {
+func TestPreRunDcVolumeIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -154,7 +154,7 @@ func TestPreRunGlobalDcIdVolumeId(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcIdVolumeIdRequiredFlagsErr(t *testing.T) {
+func TestPreRunDcVolumeIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
