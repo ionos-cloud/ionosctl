@@ -47,7 +47,7 @@ func template() *core.Command {
 		ShortDesc:  "List Templates",
 		LongDesc:   "Use this command to get a list of available public Templates.",
 		Example:    listTemplateExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTemplateList,
 		InitClient: true,
 	})
@@ -67,7 +67,7 @@ func template() *core.Command {
 		CmdRun:     RunTemplateGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgTemplateId, config.ArgIdShort, "", config.RequiredFlagTemplateId)
+	get.AddStringFlag(config.ArgTemplateId, config.ArgIdShort, "", config.TemplateId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getTemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -76,7 +76,7 @@ func template() *core.Command {
 }
 
 func PreRunTemplateId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgTemplateId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgTemplateId)
 }
 
 func RunTemplateList(c *core.CommandConfig) error {

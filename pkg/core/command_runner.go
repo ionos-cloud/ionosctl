@@ -146,26 +146,30 @@ type CommandConfig struct {
 	Printer printer.PrintService
 	initCfg func(commandConfig *CommandConfig) error
 	// v6 Resources Services
-	Locations     func() v6.LocationsService
-	DataCenters   func() v6.DatacentersService
-	Servers       func() v6.ServersService
-	Volumes       func() v6.VolumesService
-	Lans          func() v6.LansService
-	Nics          func() v6.NicsService
-	Loadbalancers func() v6.LoadbalancersService
-	Requests      func() v6.RequestsService
-	Images        func() v6.ImagesService
-	Snapshots     func() v6.SnapshotsService
-	IpBlocks      func() v6.IpBlocksService
-	FirewallRules func() v6.FirewallRulesService
-	Labels        func() v6.LabelResourcesService
-	Contracts     func() v6.ContractsService
-	Users         func() v6.UsersService
-	Groups        func() v6.GroupsService
-	S3Keys        func() v6.S3KeysService
-	BackupUnit    func() v6.BackupUnitsService
-	Pccs          func() v6.PccsService
-	K8s           func() v6.K8sService
+	Locations            func() v6.LocationsService
+	DataCenters          func() v6.DatacentersService
+	Servers              func() v6.ServersService
+	Volumes              func() v6.VolumesService
+	Lans                 func() v6.LansService
+	NatGateways          func() v6.NatGatewaysService
+	NetworkLoadBalancers func() v6.NetworkLoadBalancersService
+	Nics                 func() v6.NicsService
+	Loadbalancers        func() v6.LoadbalancersService
+	Requests             func() v6.RequestsService
+	Images               func() v6.ImagesService
+	Snapshots            func() v6.SnapshotsService
+	IpBlocks             func() v6.IpBlocksService
+	FirewallRules        func() v6.FirewallRulesService
+	FlowLogs             func() v6.FlowLogsService
+	Labels               func() v6.LabelResourcesService
+	Contracts            func() v6.ContractsService
+	Users                func() v6.UsersService
+	Groups               func() v6.GroupsService
+	S3Keys               func() v6.S3KeysService
+	BackupUnit           func() v6.BackupUnitsService
+	Pccs                 func() v6.PccsService
+	K8s                  func() v6.K8sService
+	Templates            func() v6.TemplatesService
 	// Context
 	Context context.Context
 }
@@ -195,6 +199,10 @@ func (c *CommandConfig) Initv6Services(client *v6.Client) error {
 	c.Servers = func() v6.ServersService { return v6.NewServerService(client, c.Context) }
 	c.Volumes = func() v6.VolumesService { return v6.NewVolumeService(client, c.Context) }
 	c.Lans = func() v6.LansService { return v6.NewLanService(client, c.Context) }
+	c.NatGateways = func() v6.NatGatewaysService { return v6.NewNatGatewayService(client, c.Context) }
+	c.NetworkLoadBalancers = func() v6.NetworkLoadBalancersService {
+		return v6.NewNetworkLoadBalancerService(client, c.Context)
+	}
 	c.Nics = func() v6.NicsService { return v6.NewNicService(client, c.Context) }
 	c.Loadbalancers = func() v6.LoadbalancersService { return v6.NewLoadbalancerService(client, c.Context) }
 	c.IpBlocks = func() v6.IpBlocksService { return v6.NewIpBlockService(client, c.Context) }
@@ -202,6 +210,7 @@ func (c *CommandConfig) Initv6Services(client *v6.Client) error {
 	c.Images = func() v6.ImagesService { return v6.NewImageService(client, c.Context) }
 	c.Snapshots = func() v6.SnapshotsService { return v6.NewSnapshotService(client, c.Context) }
 	c.FirewallRules = func() v6.FirewallRulesService { return v6.NewFirewallRuleService(client, c.Context) }
+	c.FlowLogs = func() v6.FlowLogsService { return v6.NewFlowLogService(client, c.Context) }
 	c.Labels = func() v6.LabelResourcesService { return v6.NewLabelResourceService(client, c.Context) }
 	c.Contracts = func() v6.ContractsService { return v6.NewContractService(client, c.Context) }
 	c.Users = func() v6.UsersService { return v6.NewUserService(client, c.Context) }
@@ -210,6 +219,7 @@ func (c *CommandConfig) Initv6Services(client *v6.Client) error {
 	c.BackupUnit = func() v6.BackupUnitsService { return v6.NewBackupUnitService(client, c.Context) }
 	c.Pccs = func() v6.PccsService { return v6.NewPrivateCrossConnectService(client, c.Context) }
 	c.K8s = func() v6.K8sService { return v6.NewK8sService(client, c.Context) }
+	c.Templates = func() v6.TemplatesService { return v6.NewTemplateService(client, c.Context) }
 	return nil
 }
 
