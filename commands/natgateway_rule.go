@@ -107,7 +107,6 @@ Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id
-* Name
 * Public IP
 * Source Subnet`,
 		Example:    createNatGatewayRuleExample,
@@ -123,7 +122,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway Rule", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Rule", "Name of the NAT Gateway Rule")
 	create.AddStringFlag(config.ArgProtocol, config.ArgProtocolShort, string(ionoscloud.ALL), "Protocol of the NAT Gateway Rule. If protocol is 'ICMP' then targetPortRange start and end cannot be set", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{string(ionoscloud.TCP), string(ionoscloud.UDP), string(ionoscloud.ICMP), string(ionoscloud.ALL)}, cobra.ShellCompDirectiveNoFileComp
@@ -228,7 +227,7 @@ Required values to run command:
 }
 
 func PreRunNatGatewayRuleCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgName, config.ArgIp, config.ArgSourceSubnet)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgIp, config.ArgSourceSubnet)
 }
 
 func PreRunDcNatGatewayRuleIds(c *core.PreCommandConfig) error {
@@ -261,8 +260,13 @@ func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 
 func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 	proper := getNewNatGatewayRuleInfo(c)
+	if !proper.HasName() {
+		proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	}
 	if !proper.HasProtocol() {
 		proper.SetProtocol(ionoscloud.NatGatewayRuleProtocol(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol))))
+		c.Printer.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol)))
 	}
 	ng, resp, err := c.NatGateways().CreateRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),

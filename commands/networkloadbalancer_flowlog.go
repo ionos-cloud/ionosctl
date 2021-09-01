@@ -106,8 +106,6 @@ Required values to run command:
 
 * Data Center Id
 * Network Load Balancer Id
-* Name
-* Direction
 * Bucket Name`,
 		Example:    createNetworkLoadBalancerFlowLogExample,
 		PreCmdRun:  PreRunNetworkLoadBalancerFlowLogCreate,
@@ -122,12 +120,12 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the FlowLog", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed FlowLog", "The name for the FlowLog")
 	create.AddStringFlag(config.ArgAction, config.ArgActionShort, "ALL", "Specifies the traffic Action pattern")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgDirection, config.ArgDirectionShort, "", "Specifies the traffic Direction pattern", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgDirection, config.ArgDirectionShort, "BIDIRECTIONAL", "Specifies the traffic Direction pattern")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -235,7 +233,7 @@ Required values to run command:
 }
 
 func PreRunNetworkLoadBalancerFlowLogCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNetworkLoadBalancerId, config.ArgName, config.ArgDirection, config.ArgS3Bucket)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNetworkLoadBalancerId, config.ArgS3Bucket)
 }
 
 func PreRunDcNetworkLoadBalancerFlowLogIds(c *core.PreCommandConfig) error {
@@ -293,7 +291,7 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
-	input := getFlowLogPropertiesSet(c)
+	input := getFlowLogPropertiesUpdate(c)
 	ng, resp, err := c.NetworkLoadBalancers().UpdateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNetworkLoadBalancerId)),

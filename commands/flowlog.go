@@ -17,7 +17,6 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	multierror "go.uber.org/multierr"
 )
 
 func flowlog() *core.Command {
@@ -32,24 +31,6 @@ func flowlog() *core.Command {
 		},
 	}
 	globalFlags := flowLogCmd.GlobalFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
-	_ = flowLogCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgServerId, "", "", config.RequiredFlagServerId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
-	_ = flowLogCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgNicId, "", "", config.RequiredFlagNicId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgNicId), globalFlags.Lookup(config.ArgNicId))
-	_ = flowLogCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNicsIds(os.Stderr,
-			viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgDataCenterId)),
-			viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgServerId)),
-		), cobra.ShellCompDirectiveNoFileComp
-	})
 	globalFlags.StringSliceP(config.ArgCols, "", defaultFlowLogCols, utils.ColsMessage(defaultFlowLogCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = flowLogCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -59,7 +40,7 @@ func flowlog() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, flowLogCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, flowLogCmd, core.CommandBuilder{
 		Namespace:  "flowlog",
 		Resource:   "flowlog",
 		Verb:       "list",
@@ -67,9 +48,22 @@ func flowlog() *core.Command {
 		ShortDesc:  "List FlowLogs",
 		LongDesc:   "Use this command to get a list of FlowLogs from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id",
 		Example:    listFlowLogExample,
-		PreCmdRun:  PreRunGlobalDcServerNicIds,
+		PreCmdRun:  PreRunDcServerNicIds,
 		CmdRun:     RunFlowLogList,
 		InitClient: true,
+	})
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(list.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -83,16 +77,29 @@ func flowlog() *core.Command {
 		ShortDesc:  "Get a FlowLog",
 		LongDesc:   "Use this command to retrieve information of a specified FlowLog from a NIC.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id\n* FlowLog Id",
 		Example:    getFlowLogExample,
-		PreCmdRun:  PreRunGlobalDcServerNicIdsFlowLogId,
+		PreCmdRun:  PreRunDcServerNicFlowLogIds,
 		CmdRun:     RunFlowLogGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgFlowLogId, config.ArgIdShort, "", config.RequiredFlagFlowLogId)
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(get.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgFlowLogId, config.ArgIdShort, "", config.FlowLogId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgFlowLogId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getFlowLogsIds(os.Stderr,
-			viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgDataCenterId)),
-			viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgServerId)),
-			viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(get.NS, config.ArgServerId)),
+			viper.GetString(core.GetFlagName(get.NS, config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -114,25 +121,36 @@ Required values to run command:
 
 * Data Center Id
 * Server Id
-* Nic Id 
-* Name
-* Direction
+* Nic Id
 * Target S3 Bucket Name`,
 		Example:    createFlowLogExample,
 		PreCmdRun:  PreRunFlowLogCreate,
 		CmdRun:     RunFlowLogCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the FlowLog "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(create.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed FlowLog", "The name for the FlowLog")
 	create.AddStringFlag(config.ArgAction, config.ArgActionShort, "ALL", "Specifies the traffic Action pattern")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgDirection, config.ArgDirectionShort, "", "Specifies the traffic Direction pattern "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgDirection, config.ArgDirectionShort, "BIDIRECTIONAL", "Specifies the traffic Direction pattern")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgS3Bucket, config.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgS3Bucket, config.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket", core.RequiredFlagOption())
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for FlowLog creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for FlowLog creation [seconds]")
 
@@ -156,16 +174,28 @@ Required values to run command:
 * Nic Id
 * FlowLog Id`,
 		Example:    deleteFlowLogExample,
-		PreCmdRun:  PreRunGlobalDcServerNicIdsFlowLogId,
+		PreCmdRun:  PreRunDcServerNicFlowLogIds,
 		CmdRun:     RunFlowLogDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgFlowLogId, config.ArgIdShort, "", config.RequiredFlagFlowLogId)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	deleteCmd.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	deleteCmd.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	deleteCmd.AddStringFlag(config.ArgFlowLogId, config.ArgIdShort, "", config.FlowLogId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgFlowLogId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getFlowLogsIds(os.Stderr,
-			viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgDataCenterId)),
-			viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgServerId)),
-			viper.GetString(core.GetGlobalFlagName(flowLogCmd.Name(), config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+		return getFlowLogsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgServerId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for FlowLog deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for FlowLog deletion [seconds]")
@@ -174,38 +204,18 @@ Required values to run command:
 }
 
 func PreRunFlowLogCreate(c *core.PreCommandConfig) error {
-	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgName, config.ArgDirection, config.ArgS3Bucket); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if result != nil {
-		return result
-	}
-	return nil
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId, config.ArgS3Bucket)
 }
 
-func PreRunGlobalDcServerNicIdsFlowLogId(c *core.PreCommandConfig) error {
-	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgFlowLogId); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if result != nil {
-		return result
-	}
-	return nil
+func PreRunDcServerNicFlowLogIds(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId, config.ArgFlowLogId)
 }
 
 func RunFlowLogList(c *core.CommandConfig) error {
 	flowLogs, _, err := c.FlowLogs().List(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
 	if err != nil {
 		return err
@@ -214,9 +224,9 @@ func RunFlowLogList(c *core.CommandConfig) error {
 }
 
 func RunFlowLogGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
-	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId))
-	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId))
 	c.Printer.Verbose("FlowLog with id: %v from Nic with id: %v is getting...", flowLogId, nicId)
 	flowLog, _, err := c.FlowLogs().Get(
@@ -233,18 +243,15 @@ func RunFlowLogGet(c *core.CommandConfig) error {
 
 func RunFlowLogCreate(c *core.CommandConfig) error {
 	properties := getFlowLogPropertiesSet(c)
-	if !properties.HasAction() {
-		properties.SetAction(viper.GetString(core.GetFlagName(c.NS, config.ArgAction)))
-	}
 	input := v6.FlowLog{
 		FlowLog: ionoscloud.FlowLog{
 			Properties: &properties.FlowLogProperties,
 		},
 	}
 	flowLog, resp, err := c.FlowLogs().Create(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 		input,
 	)
 	if resp != nil {
@@ -264,13 +271,12 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete flow log"); err != nil {
 		return err
 	}
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, config.ArgFlowLogId))
 	c.Printer.Verbose("FlowLog with id: %v is deleting...", flowLogId)
-	resp, err := c.FlowLogs().Delete(
-		dcId,
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgNicId)),
+	resp, err := c.FlowLogs().Delete(dcId,
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 		flowLogId,
 	)
 	if err != nil {
@@ -283,8 +289,28 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getFlowLogPrint(resp, c, nil))
 }
 
-// Get FlowLog Properties set used for create and update commands
+// Get FlowLog Properties set used for create commands
 func getFlowLogPropertiesSet(c *core.CommandConfig) v6.FlowLogProperties {
+	properties := v6.FlowLogProperties{}
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	properties.SetName(name)
+	c.Printer.Verbose("Property Name set: %v", name)
+	action := viper.GetString(core.GetFlagName(c.NS, config.ArgAction))
+	properties.SetAction(strings.ToUpper(action))
+	c.Printer.Verbose("Property Action set: %v", action)
+	direction := viper.GetString(core.GetFlagName(c.NS, config.ArgDirection))
+	properties.SetDirection(strings.ToUpper(direction))
+	c.Printer.Verbose("Property Direction set: %v", direction)
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgS3Bucket)) {
+		bucketName := viper.GetString(core.GetFlagName(c.NS, config.ArgS3Bucket))
+		properties.SetBucket(bucketName)
+		c.Printer.Verbose("Property Bucket set: %v", bucketName)
+	}
+	return properties
+}
+
+// Get FlowLog Properties set used for update commands
+func getFlowLogPropertiesUpdate(c *core.CommandConfig) v6.FlowLogProperties {
 	properties := v6.FlowLogProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))

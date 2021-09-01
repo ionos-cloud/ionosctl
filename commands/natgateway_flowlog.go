@@ -106,8 +106,6 @@ Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id
-* Name
-* Direction
 * Bucket Name`,
 		Example:    createNatGatewayFlowLogExample,
 		PreCmdRun:  PreRunNatGatewayFlowLogCreate,
@@ -122,12 +120,12 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the FlowLog", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed FlowLog", "The name for the FlowLog")
 	create.AddStringFlag(config.ArgAction, config.ArgActionShort, "ALL", "Specifies the traffic Action pattern")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgDirection, config.ArgDirectionShort, "", "Specifies the traffic Direction pattern", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgDirection, config.ArgDirectionShort, "BIDIRECTIONAL", "Specifies the traffic Direction pattern")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -239,7 +237,7 @@ Required values to run command:
 }
 
 func PreRunNatGatewayFlowLogCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgName, config.ArgDirection, config.ArgS3Bucket)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgS3Bucket)
 }
 
 func PreRunDcNatGatewayFlowLogIds(c *core.PreCommandConfig) error {
@@ -272,9 +270,6 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 
 func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 	proper := getFlowLogPropertiesSet(c)
-	if !proper.HasAction() {
-		proper.SetAction(viper.GetString(core.GetFlagName(c.NS, config.ArgAction)))
-	}
 	ng, resp, err := c.NatGateways().CreateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),
@@ -297,7 +292,7 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
-	input := getFlowLogPropertiesSet(c)
+	input := getFlowLogPropertiesUpdate(c)
 	ng, resp, err := c.NatGateways().UpdateFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNatGatewayId)),

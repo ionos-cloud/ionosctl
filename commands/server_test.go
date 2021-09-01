@@ -144,8 +144,6 @@ func TestPreRunServerCreate(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), testServerVar)
 		err := PreRunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -161,7 +159,6 @@ func TestPreRunServerCreateCube(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerCubeType)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgTemplateId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testLicenceType)
 		err := PreRunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -174,7 +171,6 @@ func TestPreRunServerCreateCubeErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerCubeType)
 		err := PreRunServerCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -191,37 +187,8 @@ func TestPreRunServerCreateCubeImg(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerCubeType)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgTemplateId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testServerVar)
 		err := PreRunServerCreate(cfg)
 		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunServerCreateCubeImgErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgType), testServerCubeType)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgTemplateId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgImageId), testServerVar)
-		err := PreRunServerCreate(cfg)
-		assert.Error(t, err)
-	})
-}
-
-func TestPreRunServerCreateRequiredFlagErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunServerCreate(cfg)
-		assert.Error(t, err)
 	})
 }
 

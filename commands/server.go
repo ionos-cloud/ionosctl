@@ -4,10 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"os"
-	"strconv"
-
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -18,7 +14,8 @@ import (
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	multierror "go.uber.org/multierr"
+	"io"
+	"os"
 )
 
 const (
@@ -33,7 +30,7 @@ func server() *core.Command {
 			Use:              "server",
 			Aliases:          []string{"s", "svr"},
 			Short:            "Server Operations",
-			Long:             "The sub-commands of `ionosctl server` allow you to create, list, get, update, delete, start, stop, reboot, suspend, resume Servers.",
+			Long:             "The sub-commands of `ionosctl server` allow you to manage Servers.",
 			TraverseChildren: true,
 		},
 	}
@@ -103,7 +100,7 @@ func server() *core.Command {
 
 * For ENTERPRISE Servers:
 
-It is required that the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
+You can set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
 * providing only the value, e.g.` + "`" + `--ram 256` + "`" + ` equals 256MB.
 * providing both the value and the unit, e.g.` + "`" + `--ram 1GB` + "`" + `.
@@ -113,8 +110,6 @@ To see which CPU Family are available in which location, use ` + "`" + `ionosctl
 Required values to create a Server of type ENTERPRISE:
 
 * Data Center Id
-* Cores
-* RAM
 
 * For CUBE Servers:
 
@@ -125,7 +120,8 @@ Required values to create a Server of type CUBE:
 * Data Center Id
 * Type
 * Template Id
-* Licence Type/Image Id for the Direct Attached Storage. For Image Id, it will be required also an image password or SSH keys.
+
+By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the ` + "`" + `--licence-type` + "`" + ` option or set an Image Id. For Image Id, it is recommended to set a password or SSH keys.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.`,
 		Example:    createServerExample,
@@ -138,8 +134,8 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Server", "Name of the Server")
-	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
-	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
+	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
+	create.AddStringFlag(config.ArgRam, "", config.DefaultServerRAM, "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -166,7 +162,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgLicenceType, "l", "", "[CUBE Server] Licence Type of the Direct Attached Storage", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgLicenceType, "l", "LINUX", "[CUBE Server] Licence Type of the Direct Attached Storage")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -174,9 +170,8 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "[CUBE Server] Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "abcde12345", "[CUBE Server] Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringSliceFlag(config.ArgSshKeys, "", []string{""}, "SSH Keys of the Direct Attached Storage")
-
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server creation to be executed")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for new Server to be in AVAILABLE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]")
@@ -230,7 +225,7 @@ Required values to run command:
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
-	update.AddStringFlag(config.ArgRam, "", strconv.Itoa(config.DefaultServerRAM), "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
+	update.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -446,31 +441,11 @@ Required values to run command:
 }
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {
-	if !viper.IsSet(core.GetFlagName(c.NS, config.ArgType)) ||
-		viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == serverEnterpriseType {
-		return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgCores, config.ArgRam)
-	} else {
-		if viper.GetString(core.GetFlagName(c.NS, config.ArgType)) == serverCubeType {
-			var result error
-			if err := core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgTemplateId); err != nil {
-				result = multierror.Append(result, err)
-			}
-			if !viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
-				if !viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) {
-					result = multierror.Append(result, errors.New("image-id or licence-type option must be set"))
-				} else {
-					if !viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) &&
-						!viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
-						result = multierror.Append(result, errors.New("password or ssh-keys option must be set"))
-					}
-				}
-			}
-			if result != nil {
-				return result
-			}
-		}
-	}
-	return nil
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgDataCenterId},
+		[]string{config.ArgDataCenterId, config.ArgType, config.ArgTemplateId},
+		[]string{config.ArgDataCenterId, config.ArgType, config.ArgTemplateId, config.ArgImageId},
+	)
 }
 
 func PreRunDcServerIds(c *core.PreCommandConfig) error {
@@ -516,10 +491,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 			},
 		})
 	}
-	svr, resp, err := c.Servers().Create(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		*input,
-	)
+	svr, resp, err := c.Servers().Create(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)), *input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
@@ -760,22 +732,18 @@ func getNewServer(c *core.CommandConfig) (*v6.Server, error) {
 		if !input.HasName() {
 			input.SetName("Unnamed Server")
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
-			cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
-			input.SetCores(cores)
-			c.Printer.Verbose("Property Cores set: %v", cores)
+		cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
+		input.SetCores(cores)
+		c.Printer.Verbose("Property Cores set: %v", cores)
+		size, err := utils.ConvertSize(
+			viper.GetString(core.GetFlagName(c.NS, config.ArgRam)),
+			utils.MegaBytes,
+		)
+		if err != nil {
+			return nil, err
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
-			size, err := utils.ConvertSize(
-				viper.GetString(core.GetFlagName(c.NS, config.ArgRam)),
-				utils.MegaBytes,
-			)
-			if err != nil {
-				return nil, err
-			}
-			input.SetRam(int32(size))
-			c.Printer.Verbose("Property Ram set: %v", int32(size))
-		}
+		input.SetRam(int32(size))
+		c.Printer.Verbose("Property Ram set: %vMB", int32(size))
 	}
 	return &v6.Server{
 		Server: ionoscloud.Server{
@@ -789,13 +757,11 @@ func getNewDAS(c *core.CommandConfig) *v6.Volume {
 	volumeProper.SetType("DAS")
 	volumeProper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeName)))
 	volumeProper.SetBus(viper.GetString(core.GetFlagName(c.NS, config.ArgBus)))
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
-		volumeProper.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)))
-	}
+	volumeProper.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) {
 		volumeProper.SetImage(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
 		volumeProper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgPassword)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgSshKeys)) {
