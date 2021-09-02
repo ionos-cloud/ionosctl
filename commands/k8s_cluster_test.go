@@ -184,31 +184,6 @@ func TestPreRunK8sClusterIdErr(t *testing.T) {
 	})
 }
 
-func TestPreRunK8sClusterName(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testClusterVar)
-		err := PreRunK8sClusterName(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunK8sClusterNameErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunK8sClusterName(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunK8sClusterList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

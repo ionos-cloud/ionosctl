@@ -10,6 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
 	mockResourcesV5 "github.com/ionos-cloud/ionosctl/pkg/resources/v5/mocks"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -23,6 +24,11 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 	p, _ := printer.NewPrinterRegistry(writer, writer)
 	prt := p[viper.GetString(config.ArgOutput)]
 	preCmdCfg := &PreCommandConfig{
+		Command: &Command{
+			Command: &cobra.Command{
+				Use: testConst,
+			},
+		},
 		NS:        testConst,
 		Namespace: testConst,
 		Resource:  testConst,

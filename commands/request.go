@@ -57,7 +57,7 @@ Use flags to retrieve a list of Requests:
 * sorting by method: ` + "`" + `ionosctl request list --method REQUEST_METHOD` + "`" + `, where request method can be CREATE or POST, UPDATE or PATCH, PUT and DELETE
 * sorting by both of the above options: ` + "`" + `ionosctl request list --method REQUEST_METHOD --latest N` + "`" + ``,
 		Example:    listRequestsExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
@@ -82,7 +82,7 @@ Use flags to retrieve a list of Requests:
 		CmdRun:     RunRequestGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgRequestId, config.ArgIdShort, "", config.RequiredFlagRequestId)
+	get.AddStringFlag(config.ArgRequestId, config.ArgIdShort, "", config.RequestId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -108,7 +108,7 @@ Required values to run command:
 		CmdRun:     RunRequestWait,
 		InitClient: true,
 	})
-	wait.AddStringFlag(config.ArgRequestId, config.ArgIdShort, "", config.RequiredFlagRequestId)
+	wait.AddStringFlag(config.ArgRequestId, config.ArgIdShort, "", config.RequestId, core.RequiredFlagOption())
 	_ = wait.Command.RegisterFlagCompletionFunc(config.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -118,7 +118,7 @@ Required values to run command:
 }
 
 func PreRunRequestId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgRequestId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgRequestId)
 }
 
 func RunRequestList(c *core.CommandConfig) error {

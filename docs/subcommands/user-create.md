@@ -49,12 +49,12 @@ Required values to run a command:
       --first-name string   The first name for the User (required)
   -f, --force               Force command to execute without user input
       --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User
-  -h, --help                help for create
+  -h, --help                Print usage
       --last-name string    The last name for the User (required)
   -o, --output string       Desired output format [text|json] (default "text")
   -p, --password string     The password for the User (must be at least 5 characters long) (required)
   -q, --quiet               Quiet output
-  -v, --verbose             see step by step process when running a command
+  -v, --verbose             Print step-by-step process when running command
 ```
 
 ## Examples

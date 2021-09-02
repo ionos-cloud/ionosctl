@@ -15,7 +15,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	multierror "go.uber.org/multierr"
 )
 
 func nic() *core.Command {
@@ -30,16 +29,6 @@ func nic() *core.Command {
 		},
 	}
 	globalFlags := nicCmd.GlobalFlags()
-	globalFlags.StringP(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId), globalFlags.Lookup(config.ArgDataCenterId))
-	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	})
-	globalFlags.StringP(config.ArgServerId, "", "", "The unique Server Id")
-	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId), globalFlags.Lookup(config.ArgServerId))
-	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
-	})
 	globalFlags.StringSliceP(config.ArgCols, "", defaultNicCols, utils.ColsMessage(allNicCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(nicCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = nicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -49,7 +38,7 @@ func nic() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, nicCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, nicCmd, core.CommandBuilder{
 		Namespace:  "nic",
 		Resource:   "nic",
 		Verb:       "list",
@@ -57,9 +46,17 @@ func nic() *core.Command {
 		ShortDesc:  "List NICs",
 		LongDesc:   "Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listNicExample,
-		PreCmdRun:  PreRunGlobalDcServerIds,
+		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunNicList,
 		InitClient: true,
+	})
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -73,13 +70,22 @@ func nic() *core.Command {
 		ShortDesc:  "Get a NIC",
 		LongDesc:   "Use this command to get information about a specified NIC from specified Data Center and Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* NIC Id",
 		Example:    getNicExample,
-		PreCmdRun:  PreRunGlobalDcServerIdsNicId,
+		PreCmdRun:  PreRunDcServerNicIds,
 		CmdRun:     RunNicGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.RequiredFlagNicId)
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	get.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.NicId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNicsIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId)), viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(get.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -100,16 +106,24 @@ Required values to run a command:
 * Data Center Id
 * Server Id`,
 		Example:    createNicExample,
-		PreCmdRun:  PreRunGlobalDcServerIds,
+		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunNicCreate,
 		InitClient: true,
+	})
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Internet Access", "The name of the NIC")
 	create.AddStringSliceFlag(config.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
 	create.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC")
 	create.AddIntFlag(config.ArgLanId, "", config.DefaultNicLanId, "The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC creation [seconds]")
@@ -136,18 +150,27 @@ Required values to run command:
 * Data Center Id
 * NIC Id`,
 		Example:    updateNicExample,
-		PreCmdRun:  PreRunGlobalDcServerIdsNicId,
+		PreCmdRun:  PreRunDcServerNicIds,
 		CmdRun:     RunNicUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.RequiredFlagNicId)
+	update.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.NicId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNicsIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId)), viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(update.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name of the NIC")
 	update.AddIntFlag(config.ArgLanId, "", config.DefaultNicLanId, "The LAN ID the NIC sits on")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgDhcp, "", config.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC update to be executed")
@@ -173,13 +196,22 @@ Required values to run command:
 * Server Id
 * NIC Id`,
 		Example:    deleteNicExample,
-		PreCmdRun:  PreRunGlobalDcServerIdsNicId,
+		PreCmdRun:  PreRunDcServerNicIds,
 		CmdRun:     RunNicDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.RequiredFlagNicId)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	deleteCmd.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	deleteCmd.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.NicId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNicsIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgDataCenterId)), viper.GetString(core.GetGlobalFlagName(nicCmd.Name(), config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC deletion [seconds]")
@@ -187,28 +219,11 @@ Required values to run command:
 	return nicCmd
 }
 
-func PreRunGlobalDcServerIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId)
-}
-
-func PreRunGlobalDcServerIdsNicId(c *core.PreCommandConfig) error {
-	var result error
-	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgNicId); err != nil {
-		result = multierror.Append(result, err)
-	}
-	if result != nil {
-		return result
-	}
-	return nil
-}
-
 func RunNicList(c *core.CommandConfig) error {
-	nics, resp, err := c.Nics().List(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)))
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
+	c.Printer.Verbose("Getting NICs...")
+	nics, resp, err := c.Nics().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -224,10 +239,12 @@ func RunNicList(c *core.CommandConfig) error {
 }
 
 func RunNicGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	c.Printer.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
-	nic, resp, err := c.Nics().Get(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
+	n, resp, err := c.Nics().Get(
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
 	if resp != nil {
@@ -236,12 +253,12 @@ func RunNicGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(nil, c, []v5.Nic{*nic}))
+	return c.Printer.Print(getNicPrint(nil, c, []v5.Nic{*n}))
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
-	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
 	ips := viper.GetStringSlice(core.GetFlagName(c.NS, config.ArgIps))
 	dhcp := viper.GetBool(core.GetFlagName(c.NS, config.ArgDhcp))
@@ -250,20 +267,18 @@ func RunNicCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating Nic in DataCenterId: %v with ServerId: %v...", dcId, serverId)
 	c.Printer.Verbose("Properties set for creating the Nic: Name: %v, Ips: %v, Dhcp: %v, Lan: %v",
 		name, ips, dhcp, lanId)
-	nic, resp, err := c.Nics().Create(dcId, serverId, name, ips, dhcp, lanId)
+	n, resp, err := c.Nics().Create(dcId, serverId, name, ips, dhcp, lanId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
-
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
-	return c.Printer.Print(getNicPrint(resp, c, []v5.Nic{*nic}))
+	return c.Printer.Print(getNicPrint(resp, c, []v5.Nic{*n}))
 }
 
 func RunNicUpdate(c *core.CommandConfig) error {
@@ -288,9 +303,12 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		input.NicProperties.SetIps(ips)
 		c.Printer.Verbose("Property Ips set: %v", ips)
 	}
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
+	c.Printer.Verbose("Updating NIC with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 	nicUpd, resp, err := c.Nics().Update(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 		input,
 	)
@@ -311,10 +329,12 @@ func RunNicDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
+	c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 	resp, err := c.Nics().Delete(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
 	)
 	if resp != nil {
@@ -323,7 +343,6 @@ func RunNicDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
@@ -371,7 +390,7 @@ Required values to run command:
 	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	attachNic.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -379,14 +398,13 @@ Required values to run command:
 	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachNic.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
+	attachNic.AddStringFlag(config.ArgLoadBalancerId, "", "", config.LoadBalancerId, core.RequiredFlagOption())
 	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(attachNic.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.RequiredFlagNicId)
+	attachNic.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.NicId, core.RequiredFlagOption())
 	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getNicsIds(os.Stderr,
-			viper.GetString(core.GetFlagName(attachNic.NS, config.ArgDataCenterId)),
+		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(attachNic.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(attachNic.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachNic.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC attachment to be executed")
@@ -411,11 +429,11 @@ Required values to run command:
 	_ = listNics.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	listNics.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	listNics.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = listNics.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	listNics.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
+	listNics.AddStringFlag(config.ArgLoadBalancerId, "", "", config.LoadBalancerId, core.RequiredFlagOption())
 	_ = listNics.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(listNics.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -439,15 +457,15 @@ Required values to run command:
 	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	getNicCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	getNicCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	getNicCmd.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
+	getNicCmd.AddStringFlag(config.ArgLoadBalancerId, "", "", config.LoadBalancerId, core.RequiredFlagOption())
 	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(getNicCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	getNicCmd.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.RequiredFlagNicId)
+	getNicCmd.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.NicId, core.RequiredFlagOption())
 	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedNicsIds(os.Stderr,
 			viper.GetString(core.GetFlagName(getNicCmd.NS, config.ArgDataCenterId)),
@@ -482,15 +500,15 @@ Required values to run command:
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	detachNic.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.RequiredFlagNicId)
+	detachNic.AddStringFlag(config.ArgNicId, config.ArgIdShort, "", config.NicId, core.RequiredFlagOption())
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedNicsIds(os.Stderr, viper.GetString(core.GetFlagName(detachNic.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(detachNic.NS, config.ArgLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddStringFlag(config.ArgLoadBalancerId, "", "", config.RequiredFlagLoadBalancerId)
+	detachNic.AddStringFlag(config.ArgLoadBalancerId, "", "", config.LoadBalancerId, core.RequiredFlagOption())
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(detachNic.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -501,14 +519,15 @@ Required values to run command:
 }
 
 func PreRunDcNicLoadBalancerIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNicId, config.ArgLoadBalancerId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNicId, config.ArgLoadBalancerId)
 }
 
 func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
-	c.Printer.Verbose("Attaching Nic with id: %v from LoadBalancer with id: %v")
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Attaching NIC with ID: %v to LoadBalancer with ID: %v", nicId, lbId)
 	attachedNic, resp, err := c.Loadbalancers().AttachNic(dcId, lbId, nicId)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -523,10 +542,11 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicList(c *core.CommandConfig) error {
-	attachedNics, resp, err := c.Loadbalancers().ListNics(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Listing attached NICs from LoadBalancer with ID: %v", lbId)
+	attachedNics, resp, err := c.Loadbalancers().ListNics(dcId, lbId)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -537,12 +557,12 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting Nic with id: %v from LoadBalancer with id: %v...")
-	n, resp, err := c.Loadbalancers().GetNic(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)),
-	)
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Getting attached NIC with ID: %v from LoadBalancer with ID: %v", nicId, lbId)
+	n, resp, err := c.Loadbalancers().GetNic(dcId, lbId, nicId)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -553,13 +573,14 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
-	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
-	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Detaching Nic with id: %v from LoadBalancer with id: %v...")
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	lbId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Detaching NIC with ID: %v from LoadBalancer with ID: %v", nicId, lbId)
 	resp, err := c.Loadbalancers().DetachNic(dcId, lbId, nicId)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

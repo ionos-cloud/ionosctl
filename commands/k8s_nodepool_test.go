@@ -216,7 +216,7 @@ func TestPreRunK8sClusterNodePoolIdsErr(t *testing.T) {
 	})
 }
 
-func TestPreRunK8sClusterDcIdsNodePoolName(t *testing.T) {
+func TestPreRunK8sClusterDcIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -226,19 +226,19 @@ func TestPreRunK8sClusterDcIdsNodePoolName(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testNodepoolVar)
-		err := PreRunK8sClusterDcIdsNodePoolName(cfg)
+		err := PreRunK8sClusterDcIds(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestPreRunK8sClusterDcIdsNodePoolNameErr(t *testing.T) {
+func TestPreRunK8sClusterDcIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunK8sClusterDcIdsNodePoolName(cfg)
+		err := PreRunK8sClusterDcIds(cfg)
 		assert.Error(t, err)
 	})
 }

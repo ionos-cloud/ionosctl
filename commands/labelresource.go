@@ -10,7 +10,7 @@ import (
 )
 
 func RunDataCenterLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.Labels().DatacenterList(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)))
+	labelDcs, resp, err := c.Labels().DatacenterList(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -21,7 +21,7 @@ func RunDataCenterLabelsList(c *core.CommandConfig) error {
 }
 
 func RunDataCenterLabelGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Getting label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 	labelDc, resp, err := c.Labels().DatacenterGet(dcId, labelKey)
@@ -35,7 +35,7 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 }
 
 func RunDataCenterLabelAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Datacenter with id: %v...", labelKey, labelValue, dcId)
@@ -50,7 +50,7 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunDataCenterLabelRemove(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Removing label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 	resp, err := c.Labels().DatacenterDelete(dcId, labelKey)
@@ -65,8 +65,8 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 
 func RunServerLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.Labels().ServerList(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -78,8 +78,8 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 }
 
 func RunServerLabelGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
-	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	labelkey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Getting label with key: %v for Server with id: %v...", labelkey, serverId)
 	labelDc, resp, err := c.Labels().ServerGet(dcId, serverId, labelkey)
@@ -93,8 +93,8 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 }
 
 func RunServerLabelAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
-	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Server with id: %v...", labelKey, labelValue, serverId)
@@ -109,8 +109,8 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunServerLabelRemove(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
-	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Removing label with key: %v for Server with id: %v...", labelKey, serverId)
 	resp, err := c.Labels().ServerDelete(dcId, serverId, labelKey)
@@ -125,8 +125,8 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 
 func RunVolumeLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.Labels().VolumeList(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgVolumeId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 	)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -138,8 +138,8 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgVolumeId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Getting label with key: %v for Volume with id: %v...", labelKey, volumeId)
 	labelDc, resp, err := c.Labels().VolumeGet(dcId, volumeId, labelKey)
@@ -153,8 +153,8 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgVolumeId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Volume with id: %v...", labelKey, labelValue, volumeId)
@@ -169,8 +169,8 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunVolumeLabelRemove(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgVolumeId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Removing label with key: %v for Volume with id: %v...", labelKey, volumeId)
 	resp, err := c.Labels().VolumeDelete(dcId, volumeId, labelKey)
@@ -184,7 +184,7 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.Labels().IpBlockList(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgIpBlockId)))
+	labelDcs, resp, err := c.Labels().IpBlockList(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -195,7 +195,7 @@ func RunIpBlockLabelsList(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelGet(c *core.CommandConfig) error {
-	ipBlockId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgIpBlockId))
+	ipBlockId := viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Getting label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 	labelDc, resp, err := c.Labels().IpBlockGet(ipBlockId, labelKey)
@@ -209,7 +209,7 @@ func RunIpBlockLabelGet(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelAdd(c *core.CommandConfig) error {
-	ipBlockId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgIpBlockId))
+	ipBlockId := viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to IpBlock with id: %v...", labelKey, labelValue, ipBlockId)
@@ -228,7 +228,7 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunIpBlockLabelRemove(c *core.CommandConfig) error {
-	ipBlockId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgIpBlockId))
+	ipBlockId := viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Removing label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 	resp, err := c.Labels().IpBlockDelete(ipBlockId, labelKey)
@@ -242,7 +242,7 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelsList(c *core.CommandConfig) error {
-	labelDcs, resp, err := c.Labels().SnapshotList(viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgSnapshotId)))
+	labelDcs, resp, err := c.Labels().SnapshotList(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -253,7 +253,7 @@ func RunSnapshotLabelsList(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelGet(c *core.CommandConfig) error {
-	snapshotId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgSnapshotId))
+	snapshotId := viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Getting label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 	labelDc, resp, err := c.Labels().SnapshotGet(snapshotId, labelKey)
@@ -267,7 +267,7 @@ func RunSnapshotLabelGet(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelAdd(c *core.CommandConfig) error {
-	snapshotId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgSnapshotId))
+	snapshotId := viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Snapshot with id: %v...", labelKey, labelValue, snapshotId)
@@ -282,7 +282,7 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 }
 
 func RunSnapshotLabelRemove(c *core.CommandConfig) error {
-	snapshotId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgSnapshotId))
+	snapshotId := viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId))
 	labelKey := viper.GetString(core.GetFlagName(c.NS, config.ArgLabelKey))
 	c.Printer.Verbose("Removing label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 	resp, err := c.Labels().SnapshotDelete(snapshotId, labelKey)

@@ -50,13 +50,13 @@ Required values to run a command:
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -e, --email string       The e-mail address you want to assign to the BackupUnit (required)
   -f, --force              Force command to execute without user input
-  -h, --help               help for create
+  -h, --help               Print usage
   -n, --name string        Alphanumeric name you want to assign to the BackupUnit (required)
   -o, --output string      Desired output format [text|json] (default "text")
   -p, --password string    Alphanumeric password you want to assign to the BackupUnit (required)
   -q, --quiet              Quiet output
   -t, --timeout int        Timeout option for Request for BackupUnit creation [seconds] (default 60)
-  -v, --verbose            see step by step process when running a command
+  -v, --verbose            Print step-by-step process when running command
   -w, --wait-for-request   Wait for the Request for BackupUnit creation to be executed
 ```
 

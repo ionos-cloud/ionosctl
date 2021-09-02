@@ -46,7 +46,7 @@ func pcc() *core.Command {
 		ShortDesc:  "List Private Cross-Connects",
 		LongDesc:   "Use this command to get a list of existing Private Cross-Connects available on your account.",
 		Example:    listPccsExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunPccList,
 		InitClient: true,
 	})
@@ -66,7 +66,7 @@ func pcc() *core.Command {
 		CmdRun:     RunPccGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId)
+	get.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.PccId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -82,11 +82,11 @@ func pcc() *core.Command {
 		ShortDesc:  "Create a Private Cross-Connect",
 		LongDesc:   "Use this command to create a Private Cross-Connect. You can specify the name and the description for the Private Cross-Connect.",
 		Example:    createPccExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunPccCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Cross Connect", "The name for the Private Cross-Connect")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed PrivateCrossConnect", "The name for the Private Cross-Connect")
 	create.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect creation [seconds]")
@@ -112,7 +112,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Private Cross-Connect")
 	update.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
-	update.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId)
+	update.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.PccId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -138,7 +138,7 @@ Required values to run command:
 		CmdRun:     RunPccDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.RequiredFlagPccId)
+	deleteCmd.AddStringFlag(config.ArgPccId, config.ArgIdShort, "", config.PccId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -151,7 +151,7 @@ Required values to run command:
 }
 
 func PreRunPccId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgPccId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgPccId)
 }
 
 func RunPccList(c *core.CommandConfig) error {
@@ -210,6 +210,7 @@ func RunPccUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	newProperties := getPccInfo(oldPcc, c)
+	c.Printer.Verbose("Updating Private Cross-Connect with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	pccUpd, resp, err := c.Pccs().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)), *newProperties)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -304,7 +305,7 @@ func peers() *core.Command {
 		CmdRun:     RunPccPeersList,
 		InitClient: true,
 	})
-	listPeers.AddStringFlag(config.ArgPccId, "", "", config.RequiredFlagPccId)
+	listPeers.AddStringFlag(config.ArgPccId, "", "", config.PccId)
 	_ = listPeers.Command.RegisterFlagCompletionFunc(config.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -313,6 +314,7 @@ func peers() *core.Command {
 }
 
 func RunPccPeersList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting Peers from Private Cross-Connect with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	u, resp, err := c.Pccs().GetPeers(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

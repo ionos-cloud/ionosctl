@@ -45,14 +45,14 @@ Required values to run command:
       --datacenter-id string     The unique Data Center Id (required)
       --dhcp                     Indicates if the Load Balancer will reserve an IP using DHCP (default true)
   -f, --force                    Force command to execute without user input
-  -h, --help                     help for update
+  -h, --help                     Print usage
       --ip string                The IP of the Load Balancer
   -i, --loadbalancer-id string   The unique Load Balancer Id (required)
   -n, --name string              Name of the Load Balancer
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
   -t, --timeout int              Timeout option for Request for Load Balancer update [seconds] (default 60)
-  -v, --verbose                  see step by step process when running a command
+  -v, --verbose                  Print step-by-step process when running command
   -w, --wait-for-request         Wait for Request for Load Balancer update to be executed
 ```
 

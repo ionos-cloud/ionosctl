@@ -47,13 +47,13 @@ Required values to run command:
       --datacenter-id string     The unique Data Center Id (required)
   -i, --firewallrule-id string   The unique FirewallRule Id (required)
   -f, --force                    Force command to execute without user input
-  -h, --help                     help for delete
+  -h, --help                     Print usage
       --nic-id string            The unique NIC Id (required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --server-id string         The unique Server Id (required)
   -t, --timeout int              Timeout option for Request for Firewall Rule deletion [seconds] (default 60)
-  -v, --verbose                  see step by step process when running a command
+  -v, --verbose                  Print step-by-step process when running command
   -w, --wait-for-request         Wait for Request for Firewall Rule deletion to be executed
 ```
 

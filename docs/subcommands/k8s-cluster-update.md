@@ -44,7 +44,7 @@ Required values to run command:
                                   Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions Public GatewayIp S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                     Force command to execute without user input
-  -h, --help                      help for update
+  -h, --help                      Print usage
       --k8s-version string        The K8s version for the Cluster
       --maintenance-day string    The day of the week for Maintenance Window has the English day format as following: Monday or Saturday
       --maintenance-time string   The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00
@@ -53,7 +53,7 @@ Required values to run command:
   -q, --quiet                     Quiet output
       --s3bucket string           S3 Bucket name configured for K8s usage
   -t, --timeout int               Timeout option for waiting for Cluster to be in ACTIVE state after updating [seconds] (default 600)
-  -v, --verbose                   see step by step process when running a command
+  -v, --verbose                   Print step-by-step process when running command
   -W, --wait-for-state            Wait for specified Cluster to be in ACTIVE state after updating
 ```
 

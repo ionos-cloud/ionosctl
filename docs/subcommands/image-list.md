@@ -45,7 +45,7 @@ Use flags to retrieve a list of Images:
                               Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit CreatedDate CreatedBy CreatedByUserId] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit,CreatedDate])
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                 Force command to execute without user input
-  -h, --help                  help for list
+  -h, --help                  Print usage
       --image-alias string    Image Alias or part of Image Alias to sort Images by
       --latest int            Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed
       --licence-type string   The licence type of the Image
@@ -53,7 +53,7 @@ Use flags to retrieve a list of Images:
   -o, --output string         Desired output format [text|json] (default "text")
   -q, --quiet                 Quiet output
       --type string           The type of the Image
-  -v, --verbose               see step by step process when running a command
+  -v, --verbose               Print step-by-step process when running command
 ```
 
 ## Examples

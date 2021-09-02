@@ -40,12 +40,12 @@ Required values to run command:
                              Available columns: [ResourceId Name SecAuthProtection Type State] (default [ResourceId,Name,SecAuthProtection,Type,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
-  -h, --help                 help for get
+  -h, --help                 Print usage
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -i, --resource-id string   The ID of the specific Resource to retrieve information about
-      --type string          The specific Type of Resources to retrieve information about
-  -v, --verbose              see step by step process when running a command
+      --type string          The specific Type of Resources to retrieve information about (required)
+  -v, --verbose              Print step-by-step process when running command
 ```
 
 ## Examples

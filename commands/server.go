@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
@@ -53,7 +52,7 @@ func server() *core.Command {
 		CmdRun:     RunServerList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -73,11 +72,11 @@ func server() *core.Command {
 		CmdRun:     RunServerGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	get.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -93,7 +92,7 @@ func server() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a Server",
-		LongDesc: `Use this command to create a Server in a specified Virtual Data Center. It is required that the number of cores for the Server and the amount of memory for the Server to be set.
+		LongDesc: `Use this command to create a Server in a specified Virtual Data Center. It is required that the number of cores and the amount of memory for the Server to be set.
 
 The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
@@ -108,17 +107,17 @@ Required values to run command:
 * Cores
 * RAM`,
 		Example:    createServerExample,
-		PreCmdRun:  PreRunDcIdCoresRam,
+		PreCmdRun:  PreRunDcIdServerCoresRam,
 		CmdRun:     RunServerCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Server", "Name of the Server")
-	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB "+config.RequiredFlag)
+	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -163,16 +162,16 @@ Required values to run command:
 		CmdRun:     RunServerUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	update.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	update.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Server")
-	update.AddStringFlag(config.ArgCPUFamily, "", config.DefaultServerCPUFamily, "CPU Family of the Server")
+	update.AddStringFlag(config.ArgCPUFamily, "", "", "CPU Family of the Server")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgCPUFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -181,7 +180,7 @@ Required values to run command:
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
-	update.AddStringFlag(config.ArgRam, "", strconv.Itoa(config.DefaultServerRAM), "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
+	update.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -213,11 +212,11 @@ Required values to run command:
 		CmdRun:     RunServerDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	deleteCmd.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -246,11 +245,11 @@ Required values to run command:
 		CmdRun:     RunServerStart,
 		InitClient: true,
 	})
-	start.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	start.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = start.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	start.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	start.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = start.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(start.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -279,11 +278,11 @@ Required values to run command:
 		CmdRun:     RunServerStop,
 		InitClient: true,
 	})
-	stop.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	stop.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	stop.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	stop.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = stop.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(stop.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -312,11 +311,11 @@ Required values to run command:
 		CmdRun:     RunServerReboot,
 		InitClient: true,
 	})
-	reboot.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	reboot.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	reboot.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	reboot.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = reboot.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(reboot.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -329,15 +328,16 @@ Required values to run command:
 	return serverCmd
 }
 
-func PreRunDcIdCoresRam(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgCores, config.ArgRam)
+func PreRunDcIdServerCoresRam(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgCores, config.ArgRam)
 }
 
 func PreRunDcServerIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgServerId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgServerId)
 }
 
 func RunServerList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	servers, resp, err := c.Servers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -349,6 +349,7 @@ func RunServerList(c *core.CommandConfig) error {
 }
 
 func RunServerGet(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	c.Printer.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	if err := utils.WaitForState(c, GetStateServer, viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))); err != nil {
 		return err
@@ -371,13 +372,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if !proper.HasName() {
-		proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
-	}
-	// If CPU Family has not been set, take the default value
-	if !proper.ServerProperties.HasCpuFamily() {
-		proper.ServerProperties.SetCpuFamily(viper.GetString(core.GetFlagName(c.NS, config.ArgCpuFamily)))
-	}
+	c.Printer.Verbose("Creating Server in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	svr, resp, err := c.Servers().Create(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		v5.Server{
@@ -414,10 +409,12 @@ func RunServerCreate(c *core.CommandConfig) error {
 }
 
 func RunServerUpdate(c *core.CommandConfig) error {
-	input, err := getNewServerInfo(c)
+	input, err := getServerInfo(c)
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Updating Server with ID: %v in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	svr, resp, err := c.Servers().Update(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -471,7 +468,8 @@ func RunServerStart(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "start server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Server is starting... ")
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server with ID: %v is starting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	resp, err := c.Servers().Start(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -493,7 +491,8 @@ func RunServerStop(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "stop server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Server is stopping... ")
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server with ID: %v is stopping... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	resp, err := c.Servers().Stop(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -512,10 +511,11 @@ func RunServerStop(c *core.CommandConfig) error {
 }
 
 func RunServerReboot(c *core.CommandConfig) error {
-	c.Printer.Verbose("Server is rebooting... ")
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "reboot server"); err != nil {
 		return err
 	}
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Server with ID: %v is rebooting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
 	resp, err := c.Servers().Reboot(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
@@ -534,6 +534,40 @@ func RunServerReboot(c *core.CommandConfig) error {
 }
 
 func getNewServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
+	input := ionoscloud.ServerProperties{}
+
+	// Setting Properties for the New Server
+	name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
+	c.Printer.Verbose("Property name set: %v ", name)
+	input.SetName(name)
+	cpuFamily := viper.GetString(core.GetFlagName(c.NS, config.ArgCPUFamily))
+	c.Printer.Verbose("Property CpuFamily set: %v ", cpuFamily)
+	input.SetCpuFamily(cpuFamily)
+	availabilityZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
+	c.Printer.Verbose("Property AvailabilityZone set: %v ", availabilityZone)
+	input.SetAvailabilityZone(availabilityZone)
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
+		cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
+		c.Printer.Verbose("Property Cores set: %v ", cores)
+		input.SetCores(cores)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
+		size, err := utils.ConvertSize(
+			viper.GetString(core.GetFlagName(c.NS, config.ArgRam)),
+			utils.MegaBytes,
+		)
+		if err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Property Ram set: %vMB ", int32(size))
+		input.SetRam(int32(size))
+	}
+	return &v5.ServerProperties{
+		ServerProperties: input,
+	}, nil
+}
+
+func getServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
 	input := ionoscloud.ServerProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgName)) {
 		name := viper.GetString(core.GetFlagName(c.NS, config.ArgName))
@@ -563,7 +597,7 @@ func getNewServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Printer.Verbose("property Ram set: %vMB ", int32(size))
+		c.Printer.Verbose("Property Ram set: %vMB ", int32(size))
 		input.SetRam(int32(size))
 	}
 	return &v5.ServerProperties{

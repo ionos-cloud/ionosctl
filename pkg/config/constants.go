@@ -1,5 +1,9 @@
 package config
 
+const (
+	IonosServerUrlEnvVar = "IONOS_API_URL"
+)
+
 // Resources
 const (
 	DatacenterResource = "datacenter"
@@ -146,33 +150,32 @@ const (
 	ArgCdromId        = "cdrom-id"
 )
 
-// Required Flags
+// Descriptions for Flags Resources
 const (
-	RequiredFlag               = "(required)"
-	RequiredFlagDatacenterId   = "The unique Data Center Id " + RequiredFlag
-	RequiredFlagLanId          = "The unique LAN Id " + RequiredFlag
-	RequiredFlagLoadBalancerId = "The unique Load Balancer Id " + RequiredFlag
-	RequiredFlagNicId          = "The unique NIC Id " + RequiredFlag
-	RequiredFlagRequestId      = "The unique Request Id " + RequiredFlag
-	RequiredFlagServerId       = "The unique Server Id " + RequiredFlag
-	RequiredFlagVolumeId       = "The unique Volume Id " + RequiredFlag
-	RequiredFlagSnapshotId     = "The unique Snapshot Id " + RequiredFlag
-	RequiredFlagImageId        = "The unique Image Id " + RequiredFlag
-	RequiredFlagIpBlockId      = "The unique IpBlock Id " + RequiredFlag
-	RequiredFlagFirewallRuleId = "The unique FirewallRule Id " + RequiredFlag
-	RequiredFlagLocationId     = "The unique Location Id " + RequiredFlag
-	RequiredFlagLabelKey       = "The unique Label Key " + RequiredFlag
-	RequiredFlagLabelValue     = "The unique Label Value " + RequiredFlag
-	RequiredFlagUserId         = "The unique User Id " + RequiredFlag
-	RequiredFlagGroupId        = "The unique Group Id " + RequiredFlag
-	RequiredFlagResourceId     = "The unique Resource Id " + RequiredFlag
-	RequiredFlagS3KeyId        = "The unique User S3Key Id " + RequiredFlag
-	RequiredFlagBackupUnitId   = "The unique BackupUnit Id " + RequiredFlag
-	RequiredFlagPccId          = "The unique Private Cross-Connect Id " + RequiredFlag
-	RequiredFlagK8sClusterId   = "The unique K8s Cluster Id " + RequiredFlag
-	RequiredFlagK8sNodePoolId  = "The unique K8s Node Pool Id " + RequiredFlag
-	RequiredFlagK8sNodeId      = "The unique K8s Node Id " + RequiredFlag
-	RequiredFlagCdromId        = "The unique Cdrom Id " + RequiredFlag
+	DatacenterId   = "The unique Data Center Id"
+	LanId          = "The unique LAN Id"
+	LoadBalancerId = "The unique Load Balancer Id"
+	NicId          = "The unique NIC Id"
+	RequestId      = "The unique Request Id"
+	ServerId       = "The unique Server Id"
+	VolumeId       = "The unique Volume Id"
+	SnapshotId     = "The unique Snapshot Id"
+	ImageId        = "The unique Image Id"
+	IpBlockId      = "The unique IpBlock Id"
+	FirewallRuleId = "The unique FirewallRule Id"
+	LocationId     = "The unique Location Id"
+	LabelKey       = "The unique Label Key"
+	LabelValue     = "The unique Label Value"
+	UserId         = "The unique User Id"
+	GroupId        = "The unique Group Id"
+	ResourceId     = "The unique Resource Id"
+	S3KeyId        = "The unique User S3Key Id"
+	BackupUnitId   = "The unique BackupUnit Id"
+	PccId          = "The unique Private Cross-Connect Id"
+	K8sClusterId   = "The unique K8s Cluster Id"
+	K8sNodePoolId  = "The unique K8s Node Pool Id"
+	K8sNodeId      = "The unique K8s Node Id"
+	CdromId        = "The unique Cdrom Id"
 )
 
 // Default values
@@ -187,7 +190,6 @@ const (
 	DefaultTimeoutSeconds  = int(60)
 	K8sTimeoutSeconds      = int(600)
 	DefaultServerCores     = 2
-	DefaultServerRAM       = 256
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
 	DefaultServerCPUFamily = "AMD_OPTERON"
@@ -195,10 +197,6 @@ const (
 	Password               = "userdata.password"
 	Token                  = "userdata.token"
 	ServerUrl              = "userdata.api-url"
-)
-
-const (
-	IonosServerUrlEnvVar = "IONOS_API_URL"
 )
 
 // Verbose Flag const

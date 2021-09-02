@@ -47,7 +47,7 @@ func contract() *core.Command {
 		ShortDesc:  "Get information about the Contract Resources on your account",
 		LongDesc:   "Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
 		Example:    getContractExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunContractGet,
 		InitClient: true,
 	})
@@ -60,7 +60,7 @@ func contract() *core.Command {
 }
 
 func RunContractGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceLimits)))
+	c.Printer.Verbose("Getting properties from contract regarding resource limits: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceLimits)))
 	contractResource, resp, err := c.Contracts().Get()
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
