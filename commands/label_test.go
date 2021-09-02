@@ -34,7 +34,7 @@ var (
 	testLabelErr = errors.New("label test error")
 )
 
-func TestPreRunGlobalResourceTypeLabelKey(t *testing.T) {
+func TestPreRunResourceTypeLabelKey(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -49,7 +49,7 @@ func TestPreRunGlobalResourceTypeLabelKey(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalResourceTypeLabelKeyErr(t *testing.T) {
+func TestPreRunResourceTypeLabelKeyErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -61,7 +61,7 @@ func TestPreRunGlobalResourceTypeLabelKeyErr(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalResourceTypeLabelKeyValue(t *testing.T) {
+func TestPreRunResourceTypeLabelKeyValue(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -77,7 +77,7 @@ func TestPreRunGlobalResourceTypeLabelKeyValue(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalResourceTypeLabelKeyValueErr(t *testing.T) {
+func TestPreRunResourceTypeLabelKeyValueErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -89,7 +89,7 @@ func TestPreRunGlobalResourceTypeLabelKeyValueErr(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalResourceTypeLabelKeyResourceErr(t *testing.T) {
+func TestPreRunResourceTypeLabelKeyValueResourceErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {

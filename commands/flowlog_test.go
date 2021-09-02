@@ -95,7 +95,7 @@ func TestPreRunFlowLogCreateErr(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcServerNicIdsFlowLogId(t *testing.T) {
+func TestPreRunDcServerNicFlowLogIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
@@ -111,7 +111,7 @@ func TestPreRunGlobalDcServerNicIdsFlowLogId(t *testing.T) {
 	})
 }
 
-func TestPreRunGlobalDcServerNicIdsFlowLogIdErr(t *testing.T) {
+func TestPreRunDcServerNicFlowLogIdsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {

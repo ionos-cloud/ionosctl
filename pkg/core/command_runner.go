@@ -107,11 +107,11 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		Context:   ctx,
 		// Define init Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
-			v6Client, err := c.Initv6Client()
+			v6Client, err := c.InitV6Client()
 			if err != nil {
 				return err
 			}
-			if err = c.Initv6Services(v6Client); err != nil {
+			if err = c.InitV6Services(v6Client); err != nil {
 				return err
 			}
 			return nil
@@ -145,7 +145,7 @@ type CommandConfig struct {
 	Stdin   io.Reader
 	Printer printer.PrintService
 	initCfg func(commandConfig *CommandConfig) error
-	// v6 Resources Services
+	// V6 Resources Services
 	Locations            func() v6.LocationsService
 	DataCenters          func() v6.DatacentersService
 	Servers              func() v6.ServersService
@@ -174,8 +174,8 @@ type CommandConfig struct {
 	Context context.Context
 }
 
-// Initv6Client for Commands
-func (c *CommandConfig) Initv6Client() (*v6.Client, error) {
+// InitV6Client for Commands
+func (c *CommandConfig) InitV6Client() (*v6.Client, error) {
 	err := config.Load()
 	if err != nil {
 		return nil, err
@@ -192,8 +192,8 @@ func (c *CommandConfig) Initv6Client() (*v6.Client, error) {
 	return clientSvc.Get(), nil
 }
 
-// Initv6Services for Commands
-func (c *CommandConfig) Initv6Services(client *v6.Client) error {
+// InitV6Services for Commands
+func (c *CommandConfig) InitV6Services(client *v6.Client) error {
 	c.Locations = func() v6.LocationsService { return v6.NewLocationService(client, c.Context) }
 	c.DataCenters = func() v6.DatacentersService { return v6.NewDataCenterService(client, c.Context) }
 	c.Servers = func() v6.ServersService { return v6.NewServerService(client, c.Context) }

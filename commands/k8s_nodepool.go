@@ -108,7 +108,7 @@ Required values to run a command:
 		CmdRun:     RunK8sNodePoolCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "UnnamedPool", "The name for the K8s NodePool")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "UnnamedNodePool", "The name for the K8s NodePool")
 	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, the default one will be used")
 	create.AddStringFlag(config.ArgK8sClusterId, "", "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

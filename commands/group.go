@@ -3,17 +3,17 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/fatih/structs"
-	v6 "github.com/ionos-cloud/ionosctl/pkg/resources/v6"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"io"
 	"os"
 
+	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
+	v6 "github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -87,7 +87,7 @@ func group() *core.Command {
 		CmdRun:     RunGroupCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Group", "Name for the Group")
 	create.AddBoolFlag(config.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
 	create.AddBoolFlag(config.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
 	create.AddBoolFlag(config.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
@@ -153,7 +153,7 @@ Required values to run command:
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Group",
-		LongDesc: `Use this operation to delete a single Group.Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
+		LongDesc: `Use this operation to delete a single Group. Resources that are assigned to the Group are NOT deleted, but are no longer accessible to the Group members unless the member is a Contract Owner, Admin, or Resource Owner.
 
 Required values to run command:
 
