@@ -103,9 +103,11 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 
 Required values to run command:
 
-* Data Center Id`,
+* Data Center Id
+* Cores
+* RAM`,
 		Example:    createServerExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunDcIdServerCoresRam,
 		CmdRun:     RunServerCreate,
 		InitClient: true,
 	})
@@ -114,8 +116,8 @@ Required values to run command:
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Server", "Name of the Server")
-	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
-	create.AddStringFlag(config.ArgRam, "", config.DefaultServerRAM, "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
+	create.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -178,7 +180,7 @@ Required values to run command:
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddIntFlag(config.ArgCores, "", config.DefaultServerCores, "The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits")
-	update.AddStringFlag(config.ArgRam, "", config.DefaultServerRAM, "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
+	update.AddStringFlag(config.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -324,6 +326,10 @@ Required values to run command:
 	serverCmd.AddCommand(serverCdrom())
 
 	return serverCmd
+}
+
+func PreRunDcIdServerCoresRam(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgCores, config.ArgRam)
 }
 
 func PreRunDcServerIds(c *core.PreCommandConfig) error {
@@ -540,19 +546,22 @@ func getNewServerInfo(c *core.CommandConfig) (*v5.ServerProperties, error) {
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, config.ArgAvailabilityZone))
 	c.Printer.Verbose("Property AvailabilityZone set: %v ", availabilityZone)
 	input.SetAvailabilityZone(availabilityZone)
-	cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
-	c.Printer.Verbose("Property Cores set: %v ", cores)
-	input.SetCores(cores)
-	size, err := utils.ConvertSize(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgRam)),
-		utils.MegaBytes,
-	)
-	if err != nil {
-		return nil, err
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgCores)) {
+		cores := viper.GetInt32(core.GetFlagName(c.NS, config.ArgCores))
+		c.Printer.Verbose("Property Cores set: %v ", cores)
+		input.SetCores(cores)
 	}
-	c.Printer.Verbose("Property Ram set: %vMB ", int32(size))
-	input.SetRam(int32(size))
-
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgRam)) {
+		size, err := utils.ConvertSize(
+			viper.GetString(core.GetFlagName(c.NS, config.ArgRam)),
+			utils.MegaBytes,
+		)
+		if err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Property Ram set: %vMB ", int32(size))
+		input.SetRam(int32(size))
+	}
 	return &v5.ServerProperties{
 		ServerProperties: input,
 	}, nil
