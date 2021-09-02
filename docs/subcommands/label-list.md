@@ -31,14 +31,14 @@ Use this command to list all Labels from all Resources under your account. If yo
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for list
+  -h, --help                   Print usage
       --ipblock-id string      The unique IpBlock Id
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --resource-type string   Resource Type
+      --resource-type string   Type of the resource to list labels from
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
       --volume-id string       The unique Volume Id
 ```
 

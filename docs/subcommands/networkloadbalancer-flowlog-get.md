@@ -50,11 +50,11 @@ Required values to run command:
       --datacenter-id string            The unique Data Center Id (required)
   -i, --flowlog-id string               The unique FlowLog Id (required)
   -f, --force                           Force command to execute without user input
-  -h, --help                            help for get
+  -h, --help                            Print usage
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
-  -v, --verbose                         see step by step process when running a command
+  -v, --verbose                         Print step-by-step process when running command
 ```
 
 ## Examples

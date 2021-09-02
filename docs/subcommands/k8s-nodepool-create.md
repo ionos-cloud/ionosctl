@@ -36,7 +36,6 @@ Required values to run a command:
 
 * K8s Cluster Id
 * Datacenter Id
-* Name
 
 ## Options
 
@@ -52,10 +51,10 @@ Required values to run a command:
       --datacenter-id string       The unique Data Center Id (required)
       --dhcp                       Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP (default true)
   -f, --force                      Force command to execute without user input
-  -h, --help                       help for create
-      --k8s-version string         The K8s version for the NodePool. If not set, it will be used the default one
+  -h, --help                       Print usage
+      --k8s-version string         The K8s version for the NodePool. If not set, the default one will be used
       --lan-ids ints               Collection of LAN Ids of existing LANs to be attached to worker Nodes
-  -n, --name string                The name for the K8s NodePool (required)
+  -n, --name string                The name for the K8s NodePool (default "UnnamedNodePool")
       --node-count int             The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability (default 1)
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
@@ -63,7 +62,7 @@ Required values to run a command:
       --storage-size string        The size of the Storage in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
       --storage-type string        Storage Type (default "HDD")
   -t, --timeout int                Timeout option for waiting for NodePool to be in ACTIVE state[seconds] (default 600)
-  -v, --verbose                    see step by step process when running a command
+  -v, --verbose                    Print step-by-step process when running command
   -W, --wait-for-state             Wait for the new NodePool to be in ACTIVE state
 ```
 

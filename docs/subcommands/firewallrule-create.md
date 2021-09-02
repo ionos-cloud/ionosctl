@@ -48,7 +48,7 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for create
+  -h, --help                   Print usage
       --icmp-code int          Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes
       --icmp-type int          Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types
   -n, --name string            The name for the Firewall Rule (default "Unnamed Rule")
@@ -64,7 +64,7 @@ Required values to run command:
       --target-ip string       In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs
   -t, --timeout int            Timeout option for Request for Firewall Rule creation [seconds] (default 60)
       --type string            The type of Firewall Rule (default "INGRESS")
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
   -w, --wait-for-request       Wait for Request for Firewall Rule creation to be executed
 ```
 

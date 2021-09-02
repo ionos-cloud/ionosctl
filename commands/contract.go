@@ -47,7 +47,7 @@ func contract() *core.Command {
 		ShortDesc:  "Get information about the Contract Resources on your account",
 		LongDesc:   "Use this command to get information about the Contract Resources on your account. Use `--resource-limits` flag to see specific Contract Resources Limits.",
 		Example:    getContractExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunContractGet,
 		InitClient: true,
 	})

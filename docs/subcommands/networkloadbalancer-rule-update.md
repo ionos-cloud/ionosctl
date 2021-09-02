@@ -54,7 +54,7 @@ Required values to run command:
       --connection-timeout int          [Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed (default 5000)
       --datacenter-id string            The unique Data Center Id (required)
   -f, --force                           Force command to execute without user input
-  -h, --help                            help for update
+  -h, --help                            Print usage
       --listener-ip string              Listening IP (required)
       --listener-port string            Listening port number. Range: 1 to 65535 (required)
   -n, --name string                     The name for the Forwarding Rule
@@ -65,7 +65,7 @@ Required values to run command:
   -i, --rule-id string                  The unique ForwardingRule Id (required)
       --target-timeout int              [Health Check] TargetTimeout specifies the maximum inactivity time (in milliseconds) on the target VM side (default 5000)
   -t, --timeout int                     Timeout option for Request for Forwarding Rule update [seconds] (default 300)
-  -v, --verbose                         see step by step process when running a command
+  -v, --verbose                         Print step-by-step process when running command
   -w, --wait-for-request                Wait for the Request for Forwarding Rule update to be executed
 ```
 

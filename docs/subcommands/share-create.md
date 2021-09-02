@@ -37,13 +37,13 @@ Required values to run a command:
       --edit-privilege       Set the group's permission to edit privileges on resource
   -f, --force                Force command to execute without user input
       --group-id string      The unique Group Id (required)
-  -h, --help                 help for create
+  -h, --help                 Print usage
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -i, --resource-id string   The unique Resource Id (required)
       --share-privilege      Set the group's permission to share resource
   -t, --timeout int          Timeout option for Request for Resource to be shared through a Group [seconds] (default 60)
-  -v, --verbose              see step by step process when running a command
+  -v, --verbose              Print step-by-step process when running command
   -w, --wait-for-request     Wait for the Request for Resource share to executed
 ```
 

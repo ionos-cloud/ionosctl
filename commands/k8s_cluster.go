@@ -44,7 +44,7 @@ func k8sCluster() *core.Command {
 			Use:              "cluster",
 			Aliases:          []string{"c"},
 			Short:            "Kubernetes Cluster Operations",
-			Long:             "The sub-commands of `ionosctl k8s cluster` allow you to list, get, create, update, delete Kubernetes Clusters.",
+			Long:             "The sub-commands of `ionosctl k8s` allow you to perform Kubernetes Operations.",
 			TraverseChildren: true,
 		},
 	}
@@ -66,7 +66,7 @@ func k8sCluster() *core.Command {
 		ShortDesc:  "List Kubernetes Clusters",
 		LongDesc:   "Use this command to get a list of existing Kubernetes Clusters.",
 		Example:    listK8sClustersExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sClusterList,
 		InitClient: true,
 	})
@@ -86,7 +86,7 @@ func k8sCluster() *core.Command {
 		CmdRun:     RunK8sClusterGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgK8sClusterId, config.ArgIdShort, "", config.RequiredFlagK8sClusterId)
+	get.AddStringFlag(config.ArgK8sClusterId, config.ArgIdShort, "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -104,18 +104,14 @@ func k8sCluster() *core.Command {
 		ShortDesc: "Create a Kubernetes Cluster",
 		LongDesc: `Use this command to create a new Managed Kubernetes Cluster. Regarding the name for the Kubernetes Cluster, the limit is 63 characters following the rule to begin and end with an alphanumeric character with dashes, underscores, dots, and alphanumerics between. Regarding the Kubernetes Version for the Cluster, if not set via flag, it will be used the default one: ` + "`" + `ionosctl k8s version get` + "`" + `.
 
-You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.
-
-Required values to run a command:
-
-* Name`,
+You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for-state` + "`" + ` flag together with ` + "`" + `--timeout` + "`" + ` option.`,
 		Example:    createK8sClusterExample,
-		PreCmdRun:  PreRunK8sClusterName,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the K8s Cluster "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, it will be used the default one")
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "UnnamedCluster", "The name for the K8s Cluster")
+	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, the default one will be used")
 	create.AddStringFlag(config.ArgS3Bucket, "", "", "S3 Bucket name configured for K8s usage")
 	create.AddStringSliceFlag(config.ArgApiSubnets, "", []string{""}, "Access to the K8s API server is restricted to these CIDRs. Cluster-internal traffic is not affected by this restriction. If no allowlist is specified, access is not restricted. If an IP without subnet mask is provided, the default value will be used: 32 for IPv4 and 128 for IPv6")
 	create.AddBoolFlag(config.ArgPublic, "", true, "The indicator if the Cluster is public or private")
@@ -154,7 +150,7 @@ Required values to run command:
 		return []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
-	update.AddStringFlag(config.ArgK8sClusterId, config.ArgIdShort, "", config.RequiredFlagK8sClusterId)
+	update.AddStringFlag(config.ArgK8sClusterId, config.ArgIdShort, "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -182,7 +178,7 @@ Required values to run command:
 		CmdRun:     RunK8sClusterDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgK8sClusterId, config.ArgIdShort, "", config.RequiredFlagK8sClusterId)
+	deleteCmd.AddStringFlag(config.ArgK8sClusterId, config.ArgIdShort, "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -193,11 +189,7 @@ Required values to run command:
 }
 
 func PreRunK8sClusterId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId)
-}
-
-func PreRunK8sClusterName(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgName)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgK8sClusterId)
 }
 
 func RunK8sClusterList(c *core.CommandConfig) error {
@@ -225,6 +217,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Creating K8s Cluster...")
 	u, resp, err := c.K8s().CreateCluster(*newCluster)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
@@ -256,6 +249,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	newCluster := getK8sClusterInfo(oldCluster, c)
+	c.Printer.Verbose("Updating K8s cluster with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	k8sUpd, _, err := c.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)), newCluster)
 	if err != nil {
 		return err
@@ -308,6 +302,7 @@ func getNewK8sCluster(c *core.CommandConfig) (*v6.K8sClusterForPost, error) {
 	)
 	proper := v6.K8sClusterPropertiesForPost{}
 	proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgK8sVersion)) {
 		k8sversion = viper.GetString(core.GetFlagName(c.NS, config.ArgK8sVersion))
 		c.Printer.Verbose("Property K8sVersion set: %v", k8sversion)

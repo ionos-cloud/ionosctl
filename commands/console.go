@@ -40,11 +40,11 @@ func serverConsole() *core.Command {
 		CmdRun:     RunServerConsoleGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.RequiredFlagServerId)
+	get.AddStringFlag(config.ArgServerId, config.ArgIdShort, "", config.ServerId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -55,11 +55,8 @@ func serverConsole() *core.Command {
 func RunServerConsoleGet(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
-	c.Printer.Verbose("ServerConsole with id: %v from Datacenter with id: %v is getting...", serverId, dcId)
-	t, _, err := c.Servers().GetRemoteConsoleUrl(
-		dcId,
-		serverId,
-	)
+	c.Printer.Verbose("Getting Consoler URL for Server with ID: %v from Datacenter with ID: %v...", serverId, dcId)
+	t, _, err := c.Servers().GetRemoteConsoleUrl(dcId, serverId)
 	if err != nil {
 		return err
 	}
