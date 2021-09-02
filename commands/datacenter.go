@@ -22,7 +22,7 @@ func datacenter() *core.Command {
 	datacenterCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "datacenter",
-			Aliases:          []string{"d", "dc"},
+			Aliases:          []string{"d", "dc", "vdc"},
 			Short:            "Data Center Operations",
 			Long:             "The sub-commands of `ionosctl datacenter` allow you to create, list, get, update and delete Data Centers.",
 			TraverseChildren: true,
@@ -46,7 +46,7 @@ func datacenter() *core.Command {
 		ShortDesc:  "List Data Centers",
 		LongDesc:   "Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.",
 		Example:    listDatacenterExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterList,
 		InitClient: true,
 	})
@@ -66,7 +66,7 @@ func datacenter() *core.Command {
 		CmdRun:     RunDataCenterGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.RequiredFlagDatacenterId)
+	get.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -86,7 +86,7 @@ Virtual Data Centers are the foundation of the IONOS platform. VDCs act as logic
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
 		Example:    createDatacenterExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterCreate,
 		InitClient: true,
 	})
@@ -120,7 +120,7 @@ Required values to run command:
 		CmdRun:     RunDataCenterUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.RequiredFlagDatacenterId)
+	update.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -150,7 +150,7 @@ Required values to run command:
 		CmdRun:     RunDataCenterDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.RequiredFlagDatacenterId)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, config.ArgIdShort, "", config.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -161,7 +161,7 @@ Required values to run command:
 }
 
 func PreRunDataCenterId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId)
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {
@@ -173,7 +173,7 @@ func RunDataCenterList(c *core.CommandConfig) error {
 }
 
 func RunDataCenterGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Datacenter with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+	c.Printer.Verbose("Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	dc, _, err := c.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
 		return err
@@ -231,7 +231,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		return err
 	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
-	c.Printer.Verbose("Datacenter with id: %v is deleting...", dcId)
+	c.Printer.Verbose("Deleting Datacenter with ID: %v...", dcId)
 	resp, err := c.DataCenters().Delete(dcId)
 	if err != nil {
 		return err

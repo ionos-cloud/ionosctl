@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
+	v6 "github.com/ionos-cloud/ionosctl/pkg/resources/v6"
 	"github.com/ionos-cloud/ionosctl/pkg/utils"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
@@ -47,7 +47,7 @@ func group() *core.Command {
 		ShortDesc:  "List Groups",
 		LongDesc:   "Use this command to get a list of available Groups available on your account.",
 		Example:    listGroupExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunGroupList,
 		InitClient: true,
 	})
@@ -67,7 +67,7 @@ func group() *core.Command {
 		CmdRun:     RunGroupGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.RequiredFlagGroupId)
+	get.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.GroupId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -76,22 +76,18 @@ func group() *core.Command {
 		Create Command
 	*/
 	create := core.NewCommand(ctx, groupCmd, core.CommandBuilder{
-		Namespace: "group",
-		Resource:  "group",
-		Verb:      "create",
-		Aliases:   []string{"c"},
-		ShortDesc: "Create a Group",
-		LongDesc: `Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
-
-Required values to run a command:
-
-* Name`,
+		Namespace:  "group",
+		Resource:   "group",
+		Verb:       "create",
+		Aliases:    []string{"c"},
+		ShortDesc:  "Create a Group",
+		LongDesc:   `Use this command to create a new Group and set Group privileges. You can specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.`,
 		Example:    createGroupExample,
-		PreCmdRun:  PreRunGroupName,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunGroupCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Group", "Name for the Group")
 	create.AddBoolFlag(config.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
 	create.AddBoolFlag(config.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
 	create.AddBoolFlag(config.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
@@ -128,11 +124,11 @@ Required values to run command:
 		CmdRun:     RunGroupUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.RequiredFlagGroupId)
+	update.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.GroupId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group "+config.RequiredFlag)
+	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name for the Group")
 	update.AddBoolFlag(config.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
 	update.AddBoolFlag(config.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
 	update.AddBoolFlag(config.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
@@ -167,7 +163,7 @@ Required values to run command:
 		CmdRun:     RunGroupDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.RequiredFlagGroupId)
+	deleteCmd.AddStringFlag(config.ArgGroupId, config.ArgIdShort, "", config.GroupId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -180,15 +176,11 @@ Required values to run command:
 }
 
 func PreRunGroupId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgGroupId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgGroupId)
 }
 
 func PreRunGroupUserIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgUserId)
-}
-
-func PreRunGroupName(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgName)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgGroupId, config.ArgUserId)
 }
 
 func RunGroupList(c *core.CommandConfig) error {

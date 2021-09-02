@@ -7,6 +7,9 @@ import (
 // CommandBuilder contains information about
 // the new Command to be used in Cobra Command
 type CommandBuilder struct {
+	// Command is a Wrapper around Cobra Command
+	Command *Command
+
 	// Command Levels
 	// Namespace is the first level of the Command. e.g. [ionosctl] server
 	Namespace string

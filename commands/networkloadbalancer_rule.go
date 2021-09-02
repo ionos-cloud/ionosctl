@@ -53,11 +53,11 @@ func networkloadbalancerRule() *core.Command {
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.RequiredFlagNetworkLoadBalancerId)
+	list.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.NetworkLoadBalancerId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -77,15 +77,15 @@ func networkloadbalancerRule() *core.Command {
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.RequiredFlagNetworkLoadBalancerId)
+	get.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.NetworkLoadBalancerId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagForwardingRuleId)
+	get.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.ForwardingRuleId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(get.NS, config.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
@@ -115,17 +115,17 @@ Required values to run command:
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.RequiredFlagNetworkLoadBalancerId)
+	create.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.NetworkLoadBalancerId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Forwarding Rule", "The name for the Forwarding Rule")
-	create.AddStringFlag(config.ArgListenerIp, "", "", "Listening IP "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgListenerPort, "", "", "Listening port number. Range: 1 to 65535 "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgListenerIp, "", "", "Listening IP", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgListenerPort, "", "", "Listening port number. Range: 1 to 65535", core.RequiredFlagOption())
 	create.AddIntFlag(config.ArgRetries, "", 3, "[Health Check] Retries specifies the number of retries to perform on a target VM after a connection failure. Range: 0 to 65535")
 	create.AddIntFlag(config.ArgClientTimeout, "", 5000, "[Health Check] ClientTimeout is expressed in milliseconds. This inactivity timeout applies when the client is expected to acknowledge or send data")
 	create.AddIntFlag(config.ArgConnectionTimeout, "", 5000, "[Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed")
@@ -160,22 +160,22 @@ Required values to run command:
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	update.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.RequiredFlagNetworkLoadBalancerId)
+	update.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.NetworkLoadBalancerId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagForwardingRuleId)
+	update.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.ForwardingRuleId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(update.NS, config.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the Forwarding Rule")
-	update.AddStringFlag(config.ArgListenerIp, "", "", "Listening IP "+config.RequiredFlag)
-	update.AddStringFlag(config.ArgListenerPort, "", "", "Listening port number. Range: 1 to 65535 "+config.RequiredFlag)
+	update.AddStringFlag(config.ArgListenerIp, "", "", "Listening IP", core.RequiredFlagOption())
+	update.AddStringFlag(config.ArgListenerPort, "", "", "Listening port number. Range: 1 to 65535", core.RequiredFlagOption())
 	update.AddStringFlag(config.ArgAlgorithm, "", "ROUND_ROBIN", "Algorithm for the balancing")
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgAlgorithm, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ROUND_ROBIN", "RANDOM", "SOURCE_IP", "LEAST_CONNECTION"}, cobra.ShellCompDirectiveNoFileComp
@@ -210,15 +210,15 @@ Required values to run command:
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.RequiredFlagNetworkLoadBalancerId)
+	deleteCmd.AddStringFlag(config.ArgNetworkLoadBalancerId, "", "", config.NetworkLoadBalancerId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagForwardingRuleId)
+	deleteCmd.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.ForwardingRuleId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
@@ -232,11 +232,11 @@ Required values to run command:
 }
 
 func PreRunNetworkLoadBalancerForwardingRuleCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNetworkLoadBalancerId, config.ArgListenerIp, config.ArgListenerPort)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNetworkLoadBalancerId, config.ArgListenerIp, config.ArgListenerPort)
 }
 
 func PreRunDcNetworkLoadBalancerForwardingRuleIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNetworkLoadBalancerId, config.ArgRuleId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNetworkLoadBalancerId, config.ArgRuleId)
 }
 
 func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {

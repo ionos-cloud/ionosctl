@@ -28,7 +28,7 @@ func version() *core.Command {
 		ShortDesc:  "Show the current version",
 		LongDesc:   "The `ionosctl version` command displays the current version of the ionosctl software and the latest Github release.",
 		Example:    "ionosctl version",
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunVersion,
 		InitClient: false,
 	})

@@ -34,8 +34,6 @@ Required values to run command:
 
 * Data Center Id
 * Volume Id
-* Name
-* Licence Type
 
 ## Options
 
@@ -47,14 +45,14 @@ Required values to run command:
       --datacenter-id string   The unique Data Center Id (required)
   -d, --description string     Description of the Snapshot
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for create
-      --licence-type string    Licence Type of the Snapshot(required)
-  -n, --name string            Name of the Snapshot(required)
+  -h, --help                   Print usage
+      --licence-type string    Licence Type of the Snapshot (default "LINUX")
+  -n, --name string            Name of the Snapshot (default "Unnamed Snapshot")
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --sec-auth-protection    Enable secure authentication protection
   -t, --timeout int            Timeout option for Request for Snapshot creation [seconds] (default 60)
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
       --volume-id string       The unique Volume Id (required)
   -w, --wait-for-request       Wait for the Request for Snapshot creation to be executed
 ```

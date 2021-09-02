@@ -40,28 +40,6 @@ var (
 			},
 		},
 	}
-	k8sNodepoolLanTestForPut = v6.K8sNodePoolForPut{
-		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
-			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
-				NodeCount:  &testK8sNodePoolLanIntVar,
-				K8sVersion: &testK8sNodePoolLanVar,
-				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
-					DayOfTheWeek: &testK8sNodePoolLanVar,
-					Time:         &testK8sNodePoolLanVar,
-				},
-				AutoScaling: &ionoscloud.KubernetesAutoScaling{
-					MinNodeCount: &testK8sNodePoolLanIntVar,
-					MaxNodeCount: &testK8sNodePoolLanIntVar,
-				},
-				Lans: &[]ionoscloud.KubernetesNodePoolLan{
-					{
-						Id:   &testK8sNodePoolLanIntVar,
-						Dhcp: &testK8sNodePoolLanBoolVar,
-					},
-				},
-			},
-		},
-	}
 	inputK8sNodepoolLanTest = v6.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{

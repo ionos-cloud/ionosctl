@@ -15,7 +15,7 @@ ionosctl datacenter delete [flags]
 For `datacenter` command:
 
 ```text
-[d dc]
+[d dc vdc]
 ```
 
 For `delete` command:
@@ -43,11 +43,11 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -i, --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for delete
+  -h, --help                   Print usage
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for Data Center deletion [seconds] (default 60)
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
   -w, --wait-for-request       Wait for the Request for Data Center deletion
 ```
 

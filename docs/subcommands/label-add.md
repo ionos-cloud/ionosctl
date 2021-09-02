@@ -38,16 +38,16 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for add
+  -h, --help                   Print usage
       --ipblock-id string      The unique IpBlock Id
       --label-key string       The unique Label Key (required)
       --label-value string     The unique Label Value (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --resource-type string   Resource Type
+      --resource-type string   Type of the resource to add label to (required)
       --server-id string       The unique Server Id
       --snapshot-id string     The unique Snapshot Id
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
       --volume-id string       The unique Volume Id
 ```
 

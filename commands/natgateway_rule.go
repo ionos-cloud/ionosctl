@@ -52,11 +52,11 @@ func natgatewayRule() *core.Command {
 		CmdRun:     RunNatGatewayRuleList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	list.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(config.ArgNatGatewayId, "", "", config.RequiredFlagNatGatewayId)
+	list.AddStringFlag(config.ArgNatGatewayId, "", "", config.NatGatewayId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -76,15 +76,15 @@ func natgatewayRule() *core.Command {
 		CmdRun:     RunNatGatewayRuleGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	get.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgNatGatewayId, "", "", config.RequiredFlagNatGatewayId)
+	get.AddStringFlag(config.ArgNatGatewayId, "", "", config.NatGatewayId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagRuleId)
+	get.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RuleId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewayRulesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(get.NS, config.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
@@ -107,7 +107,6 @@ Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id
-* Name
 * Public IP
 * Source Subnet`,
 		Example:    createNatGatewayRuleExample,
@@ -115,21 +114,21 @@ Required values to run command:
 		CmdRun:     RunNatGatewayRuleCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgNatGatewayId, "", "", config.RequiredFlagNatGatewayId)
+	create.AddStringFlag(config.ArgNatGatewayId, "", "", config.NatGatewayId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the NAT Gateway Rule "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgProtocol, config.ArgProtocolShort, string(ionoscloud.ALL), "Protocol of the NAT Gateway Rule. If protocol is 'ICMP' then targetPortRange start and end cannot be set "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Rule", "Name of the NAT Gateway Rule")
+	create.AddStringFlag(config.ArgProtocol, config.ArgProtocolShort, string(ionoscloud.ALL), "Protocol of the NAT Gateway Rule. If protocol is 'ICMP' then targetPortRange start and end cannot be set", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{string(ionoscloud.TCP), string(ionoscloud.UDP), string(ionoscloud.ICMP), string(ionoscloud.ALL)}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgIp, "", "", "Public IP address of the NAT Gateway Rule "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgSourceSubnet, "", "", "Source subnet of the NAT Gateway Rule "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgIp, "", "", "Public IP address of the NAT Gateway Rule", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgSourceSubnet, "", "", "Source subnet of the NAT Gateway Rule", core.RequiredFlagOption())
 	create.AddStringFlag(config.ArgTargetSubnet, "", "", "Target subnet or destination subnet of the NAT Gateway Rule")
 	create.AddIntFlag(config.ArgPortRangeStart, "", 1, "Target port range start associated with the NAT Gateway Rule")
 	create.AddIntFlag(config.ArgPortRangeEnd, "", 1, "Target port range end associated with the NAT Gateway Rule")
@@ -159,15 +158,15 @@ Required values to run command:
 		CmdRun:     RunNatGatewayRuleUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	update.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgNatGatewayId, "", "", config.RequiredFlagNatGatewayId)
+	update.AddStringFlag(config.ArgNatGatewayId, "", "", config.NatGatewayId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagRuleId)
+	update.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RuleId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewayRulesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(update.NS, config.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
@@ -208,15 +207,15 @@ Required values to run command:
 		CmdRun:     RunNatGatewayRuleDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	deleteCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgNatGatewayId, "", "", config.RequiredFlagNatGatewayId)
+	deleteCmd.AddStringFlag(config.ArgNatGatewayId, "", "", config.NatGatewayId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RequiredFlagRuleId)
+	deleteCmd.AddStringFlag(config.ArgRuleId, config.ArgIdShort, "", config.RuleId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNatGatewayRulesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgNatGatewayId))), cobra.ShellCompDirectiveNoFileComp
@@ -228,11 +227,11 @@ Required values to run command:
 }
 
 func PreRunNatGatewayRuleCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgName, config.ArgIp, config.ArgSourceSubnet)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgIp, config.ArgSourceSubnet)
 }
 
 func PreRunDcNatGatewayRuleIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgRuleId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgNatGatewayId, config.ArgRuleId)
 }
 
 func RunNatGatewayRuleList(c *core.CommandConfig) error {
@@ -261,8 +260,13 @@ func RunNatGatewayRuleGet(c *core.CommandConfig) error {
 
 func RunNatGatewayRuleCreate(c *core.CommandConfig) error {
 	proper := getNewNatGatewayRuleInfo(c)
+	if !proper.HasName() {
+		proper.SetName(viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+		c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgName)))
+	}
 	if !proper.HasProtocol() {
 		proper.SetProtocol(ionoscloud.NatGatewayRuleProtocol(viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol))))
+		c.Printer.Verbose("Property Protocol set: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgProtocol)))
 	}
 	ng, resp, err := c.NatGateways().CreateRule(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),

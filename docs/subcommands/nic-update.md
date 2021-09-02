@@ -51,16 +51,16 @@ Required values to run command:
       --firewall-active        Activate or deactivate the Firewall
       --firewall-type string   The type of Firewall Rules that will be allowed on the NIC (default "INGRESS")
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for update
+  -h, --help                   Print usage
       --ips strings            IPs assigned to the NIC
       --lan-id int             The LAN ID the NIC sits on (default 1)
   -n, --name string            The name of the NIC
   -i, --nic-id string          The unique NIC Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --server-id string       The unique Server Id
+      --server-id string       The unique Server Id (required)
   -t, --timeout int            Timeout option for Request for NIC update [seconds] (default 60)
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
   -w, --wait-for-request       Wait for the Request for NIC update to be executed
 ```
 

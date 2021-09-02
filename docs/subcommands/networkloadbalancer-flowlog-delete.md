@@ -52,12 +52,12 @@ Required values to run command:
       --datacenter-id string            The unique Data Center Id (required)
   -i, --flowlog-id string               The unique FlowLog Id (required)
   -f, --force                           Force command to execute without user input
-  -h, --help                            help for delete
+  -h, --help                            Print usage
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
   -t, --timeout int                     Timeout option for Request for Network Load Balancer FlowLog deletion [seconds] (default 300)
-  -v, --verbose                         see step by step process when running a command
+  -v, --verbose                         Print step-by-step process when running command
   -w, --wait-for-request                Wait for the Request for Network Load Balancer FlowLog deletion to be executed
 ```
 
