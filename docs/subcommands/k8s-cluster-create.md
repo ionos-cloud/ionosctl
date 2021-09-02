@@ -30,10 +30,6 @@ Use this command to create a new Managed Kubernetes Cluster. Regarding the name 
 
 You can wait for the Cluster to be in "ACTIVE" state using `--wait-for-state` flag together with `--timeout` option.
 
-Required values to run a command:
-
-* Name
-
 ## Options
 
 ```text
@@ -44,15 +40,15 @@ Required values to run a command:
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                 Force command to execute without user input
       --gateway-ip public     The IP address of the gateway used by the Cluster. This is mandatory when public is set to `false` and should not be provided otherwise
-  -h, --help                  help for create
-      --k8s-version string    The K8s version for the Cluster. If not set, it will be used the default one
-  -n, --name string           The name for the K8s Cluster (required)
+  -h, --help                  Print usage
+      --k8s-version string    The K8s version for the Cluster. If not set, the default one will be used
+  -n, --name string           The name for the K8s Cluster (default "UnnamedCluster")
   -o, --output string         Desired output format [text|json] (default "text")
       --public                The indicator if the Cluster is public or private (default true)
   -q, --quiet                 Quiet output
       --s3bucket string       S3 Bucket name configured for K8s usage
   -t, --timeout int           Timeout option for waiting for Cluster/Request [seconds] (default 600)
-  -v, --verbose               see step by step process when running a command
+  -v, --verbose               Print step-by-step process when running command
   -w, --wait-for-request      Wait for the Request for Cluster creation to be executed
   -W, --wait-for-state        Wait for the new Cluster to be in ACTIVE state
 ```

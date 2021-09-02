@@ -57,7 +57,7 @@ Required values to run command:
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string            The unique Data Center Id (required)
   -f, --force                           Force command to execute without user input
-  -h, --help                            help for add
+  -h, --help                            Print usage
       --maintenance                     [Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
@@ -66,7 +66,7 @@ Required values to run command:
       --target-ip string                IP of a balanced target VM (required)
       --target-port string              Port of the balanced target service. Range: 1 to 65535 (required)
   -t, --timeout int                     Timeout option for Request for Forwarding Rule Target creation [seconds] (default 300)
-  -v, --verbose                         see step by step process when running a command
+  -v, --verbose                         Print step-by-step process when running command
   -w, --wait-for-request                Wait for the Request for Forwarding Rule Target creation to be executed
       --weight int                      Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256 (default 1)
 ```

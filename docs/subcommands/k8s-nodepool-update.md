@@ -49,7 +49,7 @@ Required values to run command:
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --dhcp                      Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP (default true)
   -f, --force                     Force command to execute without user input
-  -h, --help                      help for update
+  -h, --help                      Print usage
       --k8s-version string        The K8s version for the NodePool. K8s version downgrade is not supported
       --label-key string          Label key. Must be set together with --label-value
       --label-value string        Label value. Must be set together with --label-key
@@ -64,7 +64,7 @@ Required values to run command:
       --public-ips strings        Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2
   -q, --quiet                     Quiet output
   -t, --timeout int               Timeout option for waiting for NodePool to be in ACTIVE state [seconds] (default 600)
-  -v, --verbose                   see step by step process when running a command
+  -v, --verbose                   Print step-by-step process when running command
   -W, --wait-for-state            Wait for the new NodePool to be in ACTIVE state
 ```
 

@@ -40,8 +40,6 @@ Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id
-* Name
-* Direction
 * Bucket Name
 
 ## Options
@@ -53,16 +51,16 @@ Required values to run command:
                                Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-  -d, --direction string       Specifies the traffic Direction pattern (required)
+  -d, --direction string       Specifies the traffic Direction pattern (default "BIDIRECTIONAL")
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for create
-  -n, --name string            The name for the FlowLog (required)
+  -h, --help                   Print usage
+  -n, --name string            The name for the FlowLog (default "Unnamed FlowLog")
       --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -b, --s3bucket string        S3 Bucket name of an existing IONOS Cloud S3 Bucket (required)
   -t, --timeout int            Timeout option for Request for NAT Gateway FlowLog creation [seconds] (default 60)
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
   -w, --wait-for-request       Wait for the Request for NAT Gateway FlowLog creation to be executed
 ```
 

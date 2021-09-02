@@ -30,7 +30,7 @@ Use this command to create an ENTERPRISE or CUBE Server in a specified Virtual D
 
 * For ENTERPRISE Servers:
 
-It is required that the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
+You need to set the number of cores for the Server and the amount of memory for the Server to be set. The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
 * providing only the value, e.g.`--ram 256` equals 256MB.
 * providing both the value and the unit, e.g.`--ram 1GB`.
@@ -52,7 +52,8 @@ Required values to create a Server of type CUBE:
 * Data Center Id
 * Type
 * Template Id
-* Licence Type/Image Id for the Direct Attached Storage. For Image Id, it will be required also an image password or SSH keys.
+
+By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the `--licence-type` option or set an Image Id. For Image Id, it is recommended to set a password or SSH keys.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
 
@@ -69,19 +70,19 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
       --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
-  -h, --help                       help for create
+  -h, --help                       Print usage
       --image-id string            [CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage
-  -l, --licence-type string        [CUBE Server] Licence Type of the Direct Attached Storage (required)
+  -l, --licence-type string        [CUBE Server] Licence Type of the Direct Attached Storage (default "LINUX")
   -n, --name string                Name of the Server (default "Unnamed Server")
   -o, --output string              Desired output format [text|json] (default "text")
-  -p, --password string            [CUBE Server] Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
+  -p, --password string            [CUBE Server] Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9 (default "abcde12345")
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
       --ssh-keys strings           SSH Keys of the Direct Attached Storage
       --template-id string         [CUBE Server] The unique Template Id (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
       --type string                Type usages for the Server (default "ENTERPRISE")
-  -v, --verbose                    see step by step process when running a command
+  -v, --verbose                    Print step-by-step process when running command
   -N, --volume-name string         [CUBE Server] Name of the Direct Attached Storage (default "Unnamed Direct Attached Storage")
   -w, --wait-for-request           Wait for the Request for Server creation to be executed
   -W, --wait-for-state             Wait for new Server to be in AVAILABLE state
@@ -90,10 +91,10 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
 ## Examples
 
 ```text
-ionosctl server create --datacenter-id DATACENTER_ID --name NAME --cores 2 --ram 512MB -w -W
+ionosctl server create --datacenter-id DATACENTER_ID --cores 2 --ram 512MB -w -W
 
 ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --licence-type LICENCE_TYPE -w -W
 
-ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password PASSWORD -w -W
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID -w -W
 ```
 

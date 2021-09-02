@@ -15,7 +15,7 @@ ionosctl ipblock create [flags]
 For `ipblock` command:
 
 ```text
-[ipb]
+[ip ipb]
 ```
 
 For `create` command:
@@ -30,10 +30,6 @@ Use this command to create/reserve an IpBlock in a specified location that can b
 
 You can wait for the Request to be executed using `--wait-for-request` option.
 
-Required values to run command:
-
-* Location
-
 ## Options
 
 ```text
@@ -42,14 +38,14 @@ Required values to run command:
                            Available columns: [IpBlockId Name Location Size Ips State] (default [IpBlockId,Name,Location,Size,Ips,State])
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force              Force command to execute without user input
-  -h, --help               help for create
-  -l, --location string    Location of the IpBlock (required)
+  -h, --help               Print usage
+  -l, --location string    Location of the IpBlock (default "de/txl")
   -n, --name string        Name of the IpBlock. If not set, it will automatically be set
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
       --size int           Size of the IpBlock (default 2)
   -t, --timeout int        Timeout option for Request for IpBlock creation [seconds] (default 60)
-  -v, --verbose            see step by step process when running a command
+  -v, --verbose            Print step-by-step process when running command
   -w, --wait-for-request   Wait for the Request for IpBlock creation to be executed
 ```
 

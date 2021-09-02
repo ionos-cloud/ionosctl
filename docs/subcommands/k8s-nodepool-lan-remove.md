@@ -43,12 +43,12 @@ Required values to run command:
                              Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
-  -h, --help                 help for remove
+  -h, --help                 Print usage
   -i, --lan-id int           The unique LAN Id of existing LANs to be detached from worker Nodes (required)
       --nodepool-id string   The unique K8s Node Pool Id (required)
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
-  -v, --verbose              see step by step process when running a command
+  -v, --verbose              Print step-by-step process when running command
 ```
 
 ## Examples

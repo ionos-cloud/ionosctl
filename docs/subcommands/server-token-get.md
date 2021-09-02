@@ -48,11 +48,11 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for get
+  -h, --help                   Print usage
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -i, --server-id string       The unique Server Id (required)
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
 ```
 
 ## Examples

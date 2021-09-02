@@ -40,7 +40,6 @@ Required values to run command:
 
 * Data Center Id
 * NAT Gateway Id
-* Name
 * Public IP
 * Source Subnet
 
@@ -53,9 +52,9 @@ Required values to run command:
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for create
+  -h, --help                   Print usage
       --ip string              Public IP address of the NAT Gateway Rule (required)
-  -n, --name string            Name of the NAT Gateway Rule (required)
+  -n, --name string            Name of the NAT Gateway Rule (default "Unnamed Rule")
       --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
       --port-range-end int     Target port range end associated with the NAT Gateway Rule (default 1)
@@ -65,7 +64,7 @@ Required values to run command:
       --source-subnet string   Source subnet of the NAT Gateway Rule (required)
       --target-subnet string   Target subnet or destination subnet of the NAT Gateway Rule
   -t, --timeout int            Timeout option for Request for NAT Gateway Rule creation [seconds] (default 60)
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
   -w, --wait-for-request       Wait for the Request for NAT Gateway Rule creation to be executed
 ```
 

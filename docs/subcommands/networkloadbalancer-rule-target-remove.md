@@ -53,7 +53,7 @@ Required values to run command:
   -c, --config string                   Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string            The unique Data Center Id (required)
   -f, --force                           Force command to execute without user input
-  -h, --help                            help for remove
+  -h, --help                            Print usage
       --networkloadbalancer-id string   The unique NetworkLoadBalancer Id (required)
   -o, --output string                   Desired output format [text|json] (default "text")
   -q, --quiet                           Quiet output
@@ -61,7 +61,7 @@ Required values to run command:
       --target-ip string                IP of a balanced target VM (required)
       --target-port string              Port of the balanced target service. Range: 1 to 65535 (required)
   -t, --timeout int                     Timeout option for Request for Forwarding Rule Target deletion [seconds] (default 300)
-  -v, --verbose                         see step by step process when running a command
+  -v, --verbose                         Print step-by-step process when running command
   -w, --wait-for-request                Wait for the Request for Forwarding Rule Target deletion to be executed
 ```
 

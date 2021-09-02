@@ -54,14 +54,14 @@ Required values to run command:
   -d, --direction string       Specifies the traffic Direction pattern
   -i, --flowlog-id string      The unique FlowLog Id (required)
   -f, --force                  Force command to execute without user input
-  -h, --help                   help for update
+  -h, --help                   Print usage
   -n, --name string            Name of the NAT Gateway FlowLog
       --natgateway-id string   The unique NatGateway Id (required)
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
   -b, --s3bucket string        S3 Bucket name of an existing IONOS Cloud S3 Bucket
   -t, --timeout int            Timeout option for Request for NAT Gateway FlowLog update [seconds] (default 60)
-  -v, --verbose                see step by step process when running a command
+  -v, --verbose                Print step-by-step process when running command
   -w, --wait-for-request       Wait for the Request for NAT Gateway FlowLog update to be executed
 ```
 
