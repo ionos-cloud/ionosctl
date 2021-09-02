@@ -47,7 +47,7 @@ func lan() *core.Command {
 		ShortDesc:  "List LANs",
 		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listLanExample,
-		PreCmdRun:  PreRunDcLanIds,
+		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunLanList,
 		InitClient: true,
 	})

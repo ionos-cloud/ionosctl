@@ -367,7 +367,8 @@ func getNewVolume(c *core.CommandConfig) (*v5.Volume, error) {
 		c.Printer.Verbose("Property BackupUnitId set: %v", backupUnitId)
 	}
 	if !viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) &&
-		!viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
+		!viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) ||
+		viper.IsSet(core.GetFlagName(c.NS, config.ArgLicenceType)) {
 		licenceType := viper.GetString(core.GetFlagName(c.NS, config.ArgLicenceType))
 		proper.SetLicenceType(licenceType)
 		c.Printer.Verbose("Property LicenceType set: %v", licenceType)
@@ -383,7 +384,8 @@ func getNewVolume(c *core.CommandConfig) (*v5.Volume, error) {
 		c.Printer.Verbose("Property ImageAlias set: %v", imageAlias)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgImageId)) ||
-		viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) {
+		viper.IsSet(core.GetFlagName(c.NS, config.ArgImageAlias)) ||
+		viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
 		password := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 		proper.SetImagePassword(password)
 		c.Printer.Verbose("Property Password set")

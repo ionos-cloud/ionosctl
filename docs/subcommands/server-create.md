@@ -26,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Use this command to create a Server in a specified Virtual Data Center. You can set the number of cores and the amount of memory for the Server.
+Use this command to create a Server in a specified Virtual Data Center. It is required that the number of cores and the amount of memory for the Server to be set.
 
 The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
