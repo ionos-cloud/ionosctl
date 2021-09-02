@@ -38,6 +38,8 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
 Required values to run command:
 
 * Data Center Id
+* Cores
+* RAM
 
 ## Options
 
@@ -47,7 +49,7 @@ Required values to run command:
       --cols strings               Set of columns to be printed on output 
                                    Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (default 2)
+      --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
       --cpu-family string          CPU Family for the Server (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
@@ -55,7 +57,7 @@ Required values to run command:
   -n, --name string                Name of the Server (default "Unnamed Server")
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
-      --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (default "256")
+      --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
   -v, --verbose                    Print step-by-step process when running command
   -w, --wait-for-request           Wait for the Request for Server creation to be executed

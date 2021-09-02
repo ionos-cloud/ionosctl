@@ -51,14 +51,14 @@ Required values to run command:
                                    Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (default 2)
-      --cpu-family string          CPU Family of the Server (default "AMD_OPTERON")
+      --cpu-family string          CPU Family of the Server
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
   -n, --name string                Name of the Server
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
-      --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (default "256")
+      --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB
   -i, --server-id string           The unique Server Id (required)
   -t, --timeout int                Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds] (default 60)
   -v, --verbose                    Print step-by-step process when running command
