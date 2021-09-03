@@ -96,34 +96,6 @@ func TestPreRunSnapshotIdErr(t *testing.T) {
 	})
 }
 
-func TestPreRunSnapNameLicenceDcIdVolumeId(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testSnapshotVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testSnapshotVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
-		err := PreRunSnapNameLicenceDcIdVolumeId(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunSnapNameLicenceDcIdVolumeIdErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunSnapNameLicenceDcIdVolumeId(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestPreRunSnapshotIdDcIdVolumeId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -145,9 +117,10 @@ func TestRunSnapshotList(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.Snapshot.EXPECT().List().Return(snapshots, nil, nil)
+		rm.Snapshot.EXPECT().List().Return(snapshots, &testResponse, nil)
 		err := RunSnapshotList(cfg)
 		assert.NoError(t, err)
 	})
@@ -188,10 +161,11 @@ func TestRunSnapshotGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
-		rm.Snapshot.EXPECT().Get(testSnapshotVar).Return(&snapshotTest, nil, nil)
+		rm.Snapshot.EXPECT().Get(testSnapshotVar).Return(&snapshotTest, &testResponse, nil)
 		err := RunSnapshotGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -218,6 +192,7 @@ func TestRunSnapshotCreate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testSnapshotVar)
@@ -228,7 +203,8 @@ func TestRunSnapshotCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSecAuthProtection), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).Return(&snapshotTest, nil, nil)
+		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).
+			Return(&snapshotTest, &testResponse, nil)
 		err := RunSnapshotCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -250,7 +226,7 @@ func TestRunSnapshotCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSecAuthProtection), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).Return(&snapshotTest, &testResponse, nil)
+		rm.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).Return(&snapshotTest, &testResponseErr, nil)
 		err := RunSnapshotCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -262,6 +238,7 @@ func TestRunSnapshotUpdate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
@@ -280,7 +257,7 @@ func TestRunSnapshotUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSecAuthProtection), testSnapshotBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLicenceType), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Snapshot.EXPECT().Update(testSnapshotVar, snapshotProperties).Return(&snapshotNew, nil, nil)
+		rm.Snapshot.EXPECT().Update(testSnapshotVar, snapshotProperties).Return(&snapshotNew, &testResponse, nil)
 		err := RunSnapshotUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -322,6 +299,7 @@ func TestRunSnapshotRestore(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
@@ -329,7 +307,7 @@ func TestRunSnapshotRestore(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgVolumeId), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Snapshot.EXPECT().Restore(testSnapshotVar, testSnapshotVar, testSnapshotVar).Return(nil, nil)
+		rm.Snapshot.EXPECT().Restore(testSnapshotVar, testSnapshotVar, testSnapshotVar).Return(&testResponse, nil)
 		err := RunSnapshotRestore(cfg)
 		assert.NoError(t, err)
 	})
@@ -380,12 +358,13 @@ func TestRunSnapshotDelete(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSnapshotId), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(nil, nil)
+		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
 		err := RunSnapshotDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -475,6 +454,8 @@ func TestGetSnapshotsIds(t *testing.T) {
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getSnapshotIds(w)

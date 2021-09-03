@@ -27,6 +27,33 @@ var (
 	testCdromErr = errors.New("cdrom test error")
 )
 
+func TestPreRunDcServerCdromIds(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
+		err := PreRunDcServerCdromIds(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunDcServerCdromIdsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunDcServerCdromIds(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunServerCdromAttach(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -34,11 +61,12 @@ func TestRunServerCdromAttach(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().AttachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, nil, nil)
+		rm.Server.EXPECT().AttachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, &testResponse, nil)
 		err := RunServerCdromAttach(cfg)
 		assert.NoError(t, err)
 	})
@@ -86,9 +114,10 @@ func TestRunServerCdromsList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
-		rm.Server.EXPECT().ListCdroms(testCdromVar, testCdromVar).Return(testCdroms, nil, nil)
+		rm.Server.EXPECT().ListCdroms(testCdromVar, testCdromVar).Return(testCdroms, &testResponse, nil)
 		err := RunServerCdromsList(cfg)
 		assert.NoError(t, err)
 	})
@@ -116,10 +145,11 @@ func TestRunServerCdromGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
-		rm.Server.EXPECT().GetCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, nil, nil)
+		rm.Server.EXPECT().GetCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testImage, &testResponse, nil)
 		err := RunServerCdromGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -190,7 +220,7 @@ func TestRunServerCdromDetachResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCdromId), testCdromVar)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testResponse, nil)
+		rm.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testResponseErr, nil)
 		err := RunServerCdromDetach(cfg)
 		assert.Error(t, err)
 	})
@@ -261,6 +291,8 @@ func TestGetAttachedCdromsIds(t *testing.T) {
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
 	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
+	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getAttachedCdromsIds(w, testVolumeVar, testVolumeVar)
 	err = w.Flush()
@@ -277,6 +309,8 @@ func TestGetImagesCdromIds(t *testing.T) {
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getImagesCdromIds(w)

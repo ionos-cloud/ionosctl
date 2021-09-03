@@ -46,12 +46,12 @@ Required values to run command:
       --first-name string   The first name for the User
   -f, --force               Force command to execute without user input
       --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User
-  -h, --help                help for update
+  -h, --help                Print usage
       --last-name string    The last name for the User
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
   -i, --user-id string      The unique User Id (required)
-  -v, --verbose             see step by step process when running a command
+  -v, --verbose             Print step-by-step process when running command
 ```
 
 ## Examples

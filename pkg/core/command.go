@@ -2,12 +2,9 @@ package core
 
 import (
 	"fmt"
-
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	multierror "go.uber.org/multierr"
 )
 
 type Command struct {
@@ -45,11 +42,7 @@ func (c *Command) SubCommands() []*Command {
 	return c.subCommands
 }
 
-func (c *Command) MarkFlagRequired(flagName string) error {
-	return c.Command.MarkFlagRequired(flagName)
-}
-
-func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string) {
+func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
 		flags.StringP(name, shorthand, defaultValue, desc)
@@ -57,9 +50,19 @@ func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string) {
 		flags.String(name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
 }
 
-func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []string, desc string) {
+func (c *Command) SetFlagAnnotation(name, key string, values ...string) {
+	flags := c.Command.Flags()
+	flags.SetAnnotation(name, key, values)
+}
+
+func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []string, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
 		flags.StringSliceP(name, shorthand, defaultValue, desc)
@@ -67,9 +70,14 @@ func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []stri
 		flags.StringSlice(name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
 }
 
-func (c *Command) AddIntSliceFlag(name, shorthand string, defaultValue []int, desc string) {
+func (c *Command) AddIntSliceFlag(name, shorthand string, defaultValue []int, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
 		flags.IntSliceP(name, shorthand, defaultValue, desc)
@@ -77,9 +85,14 @@ func (c *Command) AddIntSliceFlag(name, shorthand string, defaultValue []int, de
 		flags.IntSlice(name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
 }
 
-func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc string) {
+func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
 		flags.IntP(name, shorthand, defaultValue, desc)
@@ -87,9 +100,14 @@ func (c *Command) AddIntFlag(name, shorthand string, defaultValue int, desc stri
 		flags.Int(name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
 }
 
-func (c *Command) AddFloat32Flag(name, shorthand string, defaultValue float32, desc string) {
+func (c *Command) AddFloat32Flag(name, shorthand string, defaultValue float32, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
 		flags.Float32P(name, shorthand, defaultValue, desc)
@@ -97,9 +115,14 @@ func (c *Command) AddFloat32Flag(name, shorthand string, defaultValue float32, d
 		flags.Float32(name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
+
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
+	}
 }
 
-func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc string) {
+func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc string, optionFunc ...FlagOptionFunc) {
 	flags := c.Command.Flags()
 	if shorthand != "" {
 		flags.BoolP(name, shorthand, defaultValue, desc)
@@ -107,32 +130,11 @@ func (c *Command) AddBoolFlag(name, shorthand string, defaultValue bool, desc st
 		flags.Bool(name, defaultValue, desc)
 	}
 	viper.BindPFlag(GetFlagName(c.NS, name), c.Command.Flags().Lookup(name))
-}
 
-func CheckRequiredGlobalFlags(cmdName string, globalFlagsName ...string) error {
-	var multiErr error
-	for _, flagName := range globalFlagsName {
-		if !viper.IsSet(GetGlobalFlagName(cmdName, flagName)) {
-			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
-		}
+	// Add Option to Flag
+	for _, option := range optionFunc {
+		option(c, name)
 	}
-	if multiErr != nil {
-		return multiErr
-	}
-	return nil
-}
-
-func CheckRequiredFlags(ns string, localFlagsName ...string) error {
-	var multiErr error
-	for _, flagName := range localFlagsName {
-		if !viper.IsSet(GetFlagName(ns, flagName)) {
-			multiErr = multierror.Append(multiErr, clierror.NewRequiredFlagErr(flagName))
-		}
-	}
-	if multiErr != nil {
-		return multiErr
-	}
-	return nil
 }
 
 func GetFlagName(ns, flagName string) string {

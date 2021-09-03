@@ -40,12 +40,12 @@ Required values to run command:
                              Available columns: [SnapshotId Name LicenceType Size State] (default [SnapshotId,Name,LicenceType,Size,State])
   -c, --config string        Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                Force command to execute without user input
-  -h, --help                 help for delete
+  -h, --help                 Print usage
   -o, --output string        Desired output format [text|json] (default "text")
   -q, --quiet                Quiet output
   -i, --snapshot-id string   The unique Snapshot Id (required)
   -t, --timeout int          Timeout option for Request for Snapshot deletion [seconds] (default 60)
-  -v, --verbose              see step by step process when running a command
+  -v, --verbose              Print step-by-step process when running command
   -w, --wait-for-request     Wait for the Request for Snapshot deletion to be executed
 ```
 

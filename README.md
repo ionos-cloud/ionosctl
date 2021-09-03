@@ -136,6 +136,8 @@ After a successful authentication with the `login` command, you will no longer n
 
 To enable auto-completion, you need to use `ionosctl completion [shell]`, depending on the shell you are using.
 
+`ionosctl` uses the latest release of Cobra framework, which supports by default completion with descriptions for commands and flags. To disable it, `--no-descriptions` flag is available.
+
 #### Enabling Bash Shell Auto-Completion
 
 To load completions for the current session, execute: 

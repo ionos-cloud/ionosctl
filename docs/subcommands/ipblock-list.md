@@ -15,7 +15,7 @@ ionosctl ipblock list [flags]
 For `ipblock` command:
 
 ```text
-[ipb]
+[ip ipb]
 ```
 
 For `list` command:
@@ -36,10 +36,10 @@ Use this command to list IpBlocks.
                          Available columns: [IpBlockId Name Location Size Ips State] (default [IpBlockId,Name,Location,Size,Ips,State])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
-  -h, --help             help for list
+  -h, --help             Print usage
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          see step by step process when running a command
+  -v, --verbose          Print step-by-step process when running command
 ```
 
 ## Examples

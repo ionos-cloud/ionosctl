@@ -26,7 +26,7 @@ For `create` command:
 
 ## Description
 
-Use this command to create a Server in a specified Virtual Data Center. It is required that the number of cores for the Server and the amount of memory for the Server to be set.
+Use this command to create a Server in a specified Virtual Data Center. It is required that the number of cores and the amount of memory for the Server to be set.
 
 The amount of memory for the Server must be specified in multiples of 256. The default unit is MB. Minimum: 256MB. Maximum: it depends on your contract limit. You can set the RAM size in the following ways:
 
@@ -53,13 +53,13 @@ Required values to run command:
       --cpu-family string          CPU Family for the Server (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
-  -h, --help                       help for create
+  -h, --help                       Print usage
   -n, --name string                Name of the Server (default "Unnamed Server")
   -o, --output string              Desired output format [text|json] (default "text")
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
-  -v, --verbose                    see step by step process when running a command
+  -v, --verbose                    Print step-by-step process when running command
   -w, --wait-for-request           Wait for the Request for Server creation to be executed
   -W, --wait-for-state             Wait for new Server to be in AVAILABLE state
 ```

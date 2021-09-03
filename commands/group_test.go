@@ -128,40 +128,16 @@ func TestPreRunGroupUserIdsErr(t *testing.T) {
 	})
 }
 
-func TestPreRunGroupName(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testGroupVar)
-		err := PreRunGroupName(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunGroupNameErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunGroupName(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunGroupList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		rm.Group.EXPECT().List().Return(groups, nil, nil)
+		rm.Group.EXPECT().List().Return(groups, &testResponse, nil)
 		err := RunGroupList(cfg)
 		assert.NoError(t, err)
 	})
@@ -187,10 +163,11 @@ func TestRunGroupGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
-		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestGet, nil, nil)
+		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestGet, &testResponse, nil)
 		err := RunGroupGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -232,6 +209,7 @@ func TestRunGroupCreate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testGroupVar)
@@ -244,7 +222,7 @@ func TestRunGroupCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgReserveIp), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessLog), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Privilege), testGroupBoolVar)
-		rm.Group.EXPECT().Create(groupTest).Return(&groupTest, nil, nil)
+		rm.Group.EXPECT().Create(groupTest).Return(&groupTest, &testResponse, nil)
 		err := RunGroupCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -329,6 +307,7 @@ func TestRunGroupUpdate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
@@ -343,7 +322,7 @@ func TestRunGroupUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAccessLog), testGroupBoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Privilege), testGroupBoolNewVar)
 		rm.Group.EXPECT().Get(testGroupVar).Return(&groupTestNew, nil, nil)
-		rm.Group.EXPECT().Update(testGroupVar, groupTestNew).Return(&groupNew, nil, nil)
+		rm.Group.EXPECT().Update(testGroupVar, groupTestNew).Return(&groupNew, &testResponse, nil)
 		err := RunGroupUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -419,11 +398,12 @@ func TestRunGroupDelete(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
-		rm.Group.EXPECT().Delete(testGroupVar).Return(nil, nil)
+		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		err := RunGroupDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -439,7 +419,7 @@ func TestRunGroupDeleteResponseErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
-		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
+		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponseErr, nil)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -543,6 +523,8 @@ func TestGetGroupsIds(t *testing.T) {
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getGroupsIds(w)

@@ -50,7 +50,7 @@ func ipconsumer() *core.Command {
 		CmdRun:     RunIpConsumersList,
 		InitClient: true,
 	})
-	listResources.AddStringFlag(config.ArgIpBlockId, "", "", config.RequiredFlagIpBlockId)
+	listResources.AddStringFlag(config.ArgIpBlockId, "", "", config.IpBlockId, core.RequiredFlagOption())
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -59,7 +59,11 @@ func ipconsumer() *core.Command {
 }
 
 func RunIpConsumersList(c *core.CommandConfig) error {
-	ipBlock, _, err := c.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
+	c.Printer.Verbose("Getting IpBlock with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
+	ipBlock, resp, err := c.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -67,6 +71,7 @@ func RunIpConsumersList(c *core.CommandConfig) error {
 	if properties, ok := ipBlock.GetPropertiesOk(); ok && properties != nil {
 		if ipCons, ok := properties.GetIpConsumersOk(); ok && ipCons != nil {
 			ipsConsumers := make([]v5.IpConsumer, 0)
+			c.Printer.Verbose("Getting IpConsumers from IpBlock...")
 			for _, ip := range *ipCons {
 				ipsConsumers = append(ipsConsumers, v5.IpConsumer{IpConsumer: ip})
 			}

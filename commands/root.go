@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/pkg/core"
@@ -22,7 +23,6 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	noPreRun  = func(c *core.PreCommandConfig) error { return nil }
 	ServerURL string
 	Output    string
 	Quiet     bool
@@ -54,9 +54,26 @@ func GetRootCmd() *core.Command {
 	return rootCmd
 }
 
+// Customize Help Command
+var helpCommand = &cobra.Command{
+	Use:   "help [command]",
+	Short: "Help about the command",
+	RunE: func(c *cobra.Command, args []string) error {
+		cmd, args, e := c.Root().Find(args)
+		if cmd == nil || e != nil || len(args) > 0 {
+			return fmt.Errorf("unknown help topic: %v", strings.Join(args, " "))
+		}
+		helpFunc := cmd.HelpFunc()
+		helpFunc(cmd, args)
+		return nil
+	},
+}
+
 func init() {
 	initConfig()
-	rootCmd.Command.SetUsageTemplate(usageTemplate)
+
+	rootCmd.Command.SetUsageTemplate(helpTemplate)
+	rootCmd.Command.SetHelpCommand(helpCommand)
 
 	// Init version
 	initVersion()
@@ -66,27 +83,26 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootPFlagSet := rootCmd.GlobalFlags()
+	// Customize Help Flag
+	rootPFlagSet.BoolP("help", "h", false, "Print usage")
+	// Add Custom Flags
 	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, config.ArgConfigShort, config.GetConfigFile(), "Configuration file used for authentication")
 	_ = viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
-
 	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, config.ArgServerUrlShort, config.DefaultApiURL, "Override default host url")
 	_ = viper.BindPFlag(config.ArgServerUrl, rootPFlagSet.Lookup(config.ArgServerUrl))
-
 	rootPFlagSet.StringVarP(&Output, config.ArgOutput, config.ArgOutputShort, config.DefaultOutputFormat, "Desired output format [text|json]")
 	_ = viper.BindPFlag(config.ArgOutput, rootPFlagSet.Lookup(config.ArgOutput))
 	_ = rootCmd.Command.RegisterFlagCompletionFunc(config.ArgOutput, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"json", "text"}, cobra.ShellCompDirectiveNoFileComp
 	})
-
 	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, config.ArgQuietShort, false, "Quiet output")
 	_ = viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
-
 	rootPFlagSet.BoolVarP(&Force, config.ArgForce, config.ArgForceShort, false, "Force command to execute without user input")
 	_ = viper.BindPFlag(config.ArgForce, rootPFlagSet.Lookup(config.ArgForce))
-
-	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, config.ArgVerboseShort, false, "see step by step process when running a command")
+	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, config.ArgVerboseShort, false, "Print step-by-step process when running command")
 	_ = viper.BindPFlag(config.ArgVerbose, rootPFlagSet.Lookup(config.ArgVerbose))
 
+	// Add SubCommands to RootCmd
 	addCommands()
 
 	cobra.OnInitialize(initConfig)
@@ -109,8 +125,11 @@ func initConfig() {
 		viper.SetConfigName("config")
 		viper.SetConfigType("json")
 	}
-
-	viper.AutomaticEnv() // read in environment variables that match
+	// Read Environment Variables.
+	// For authentication, there are used the following ENV:
+	// IONOS_USERNAME, IONOS_PASSWORD or IONOS_TOKEN
+	// The user can also overwrite the endpoint: IONOS_API_URL
+	viper.AutomaticEnv()
 }
 
 func initVersion() {
@@ -149,7 +168,6 @@ func (v cliVersion) GetVersion() string {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
-	rootCmd.AddCommand(completion())
 	rootCmd.AddCommand(version())
 	// V5 Resources Commands
 	rootCmd.AddCommand(login())
@@ -178,7 +196,7 @@ func addCommands() {
 	rootCmd.AddCommand(k8s())
 }
 
-const usageTemplate = `USAGE: {{if .Runnable}}
+const helpTemplate = `USAGE: {{if .Runnable}}
   {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
   {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
 
@@ -186,7 +204,7 @@ ALIASES:
   {{.NameAndAliases}}{{end}}{{if .HasExample}}
 
 EXAMPLES:
-{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
+  {{.Example}}{{end}}{{if .HasAvailableSubCommands}}
 
 AVAILABLE COMMANDS:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
   {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}

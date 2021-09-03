@@ -1,5 +1,12 @@
 # Changelog
 
+## \[5.0.8\]
+
+* Added `--verbose` flag to all commands to see step-by-step process when running a command
+* Updated Cobra version to [v1.2.1](https://github.com/spf13/cobra/releases/tag/v1.2.0), improving completions with descriptions
+* Fixed bug [#99](https://github.com/ionos-cloud/ionosctl/issues/99)
+* Added support for `IONOS_API_URL` environment variable to overwrite default [URL](https://api.ionos.com)
+
 ## \[5.0.7\]
 
 - Added `api-subnets` and `s3bucket` options for `cluster` command

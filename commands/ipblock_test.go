@@ -95,31 +95,6 @@ func TestPreRunIpBlockIdErr(t *testing.T) {
 	})
 }
 
-func TestPreRunIpBlockLocation(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testIpBlockLocation)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockLocation(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunIpBlockLocationErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunIpBlockLocation(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunIpBlockList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -127,8 +102,9 @@ func TestRunIpBlockList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		rm.IpBlocks.EXPECT().List().Return(testIpBlocks, nil, nil)
+		rm.IpBlocks.EXPECT().List().Return(testIpBlocks, &testResponse, nil)
 		err := RunIpBlockList(cfg)
 		assert.NoError(t, err)
 	})
@@ -156,9 +132,10 @@ func TestRunIpBlockGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
-		rm.IpBlocks.EXPECT().Get(testIpBlockVar).Return(&resTestIpBlock, nil, nil)
+		rm.IpBlocks.EXPECT().Get(testIpBlockVar).Return(&resTestIpBlock, &testResponse, nil)
 		err := RunIpBlockGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -187,11 +164,12 @@ func TestRunIpBlockCreate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testIpBlockLocation)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), testIpBlockSize)
-		rm.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, nil, nil)
+		rm.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponse, nil)
 		err := RunIpBlockCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -208,7 +186,7 @@ func TestRunIpBlockCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgLocation), testIpBlockLocation)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgSize), testIpBlockSize)
-		rm.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponse, nil)
+		rm.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponseErr, nil)
 		err := RunIpBlockCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -221,10 +199,11 @@ func TestRunIpBlockUpdate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), newTestIpBlockVar)
-		rm.IpBlocks.EXPECT().Update(testIpBlockVar, newTestIpBlockProperties).Return(&newTestIpBlock, nil, nil)
+		rm.IpBlocks.EXPECT().Update(testIpBlockVar, newTestIpBlockProperties).Return(&newTestIpBlock, &testResponse, nil)
 		err := RunIpBlockUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -254,10 +233,11 @@ func TestRunIpBlockDelete(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(nil, nil)
+		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -347,6 +327,8 @@ func TestGetIpBlocksIds(t *testing.T) {
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getIpBlocksIds(w)

@@ -46,7 +46,7 @@ func snapshot() *core.Command {
 		ShortDesc:  "List Snapshots",
 		LongDesc:   "Use this command to get a list of Snapshots.",
 		Example:    listSnapshotsExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunSnapshotList,
 		InitClient: true,
 	})
@@ -66,7 +66,7 @@ func snapshot() *core.Command {
 		CmdRun:     RunSnapshotGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId)
+	get.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.SnapshotId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -87,25 +87,23 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id
-* Volume Id
-* Name
-* Licence Type`,
+* Volume Id`,
 		Example:    createSnapshotExample,
-		PreCmdRun:  PreRunSnapNameLicenceDcIdVolumeId,
+		PreCmdRun:  PreRunDcVolumeIds,
 		CmdRun:     RunSnapshotCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "Name of the Snapshot"+config.RequiredFlag)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "Unnamed Snapshot", "Name of the Snapshot")
 	create.AddStringFlag(config.ArgDescription, config.ArgDescriptionShort, "", "Description of the Snapshot")
-	create.AddStringFlag(config.ArgLicenceType, "", "", "Licence Type of the Snapshot"+config.RequiredFlag)
+	create.AddStringFlag(config.ArgLicenceType, "", "LINUX", "Licence Type of the Snapshot")
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	create.AddStringFlag(config.ArgVolumeId, "", "", config.VolumeId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -140,7 +138,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId)
+	update.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.SnapshotId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -173,15 +171,15 @@ Required values to run command:
 		CmdRun:     RunSnapshotRestore,
 		InitClient: true,
 	})
-	restore.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId)
+	restore.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.SnapshotId, core.RequiredFlagOption())
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	restore.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddStringFlag(config.ArgVolumeId, "", "", config.RequiredFlagVolumeId)
+	restore.AddStringFlag(config.ArgVolumeId, "", "", config.VolumeId, core.RequiredFlagOption())
 	_ = restore.Command.RegisterFlagCompletionFunc(config.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(restore.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -199,11 +197,11 @@ Required values to run command:
 		ShortDesc:  "Delete a Snapshot",
 		LongDesc:   "Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		Example:    deleteSnapshotExample,
-		PreCmdRun:  PreRunSnapshotIdAll,
+		PreCmdRun:  PreRunSnapshotId,
 		CmdRun:     RunSnapshotDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.RequiredFlagSnapshotId)
+	deleteCmd.AddStringFlag(config.ArgSnapshotId, config.ArgIdShort, "", config.SnapshotId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -215,37 +213,18 @@ Required values to run command:
 }
 
 func PreRunSnapshotId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgSnapshotId)
-}
-
-func PreRunSnapshotIdAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgSnapshotId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and SnapshotId")
-	}
-
-	return errors.New("neither All flag or SnapshotId was set or these are not set properly")
-}
-
-func PreRunSnapNameLicenceDcIdVolumeId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgName, config.ArgLicenceType)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgSnapshotId)
 }
 
 func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgVolumeId, config.ArgSnapshotId)
 }
 
 func RunSnapshotList(c *core.CommandConfig) error {
-	ss, _, err := c.Snapshots().List()
+	ss, resp, err := c.Snapshots().List()
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -254,7 +233,10 @@ func RunSnapshotList(c *core.CommandConfig) error {
 
 func RunSnapshotGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
-	s, _, err := c.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
+	s, resp, err := c.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -270,16 +252,10 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, config.ArgSecAuthProtection))
 	c.Printer.Verbose("Properties set for creating the Snapshot: DatacenterId: %v, VolumeId: %v, Name: %v, Description: %v, LicenseType: %v, SecAuthProtection: %v",
 		dcId, volumeId, name, description, licenseType, secAuthProtection)
-	s, resp, err := c.Snapshots().Create(
-		dcId,
-		volumeId,
-		name,
-		description,
-		licenseType,
-		secAuthProtection,
-	)
+	s, resp, err := c.Snapshots().Create(dcId, volumeId, name, description, licenseType, secAuthProtection)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -292,7 +268,11 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 }
 
 func RunSnapshotUpdate(c *core.CommandConfig) error {
+	c.Printer.Verbose("Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 	s, resp, err := c.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)), getSnapshotPropertiesSet(c))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -313,6 +293,9 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -353,6 +336,9 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
 		resp, err := c.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}

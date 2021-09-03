@@ -60,7 +60,7 @@ Use flags to retrieve a list of Images:
 * sorting by the time the Image was created, starting from now in descending order, take the first N Images, using ` + "`" + `ionosctl image list --latest N` + "`" + `
 * sorting by multiple of above options, using ` + "`" + `ionosctl image list --type IMAGE_TYPE --location LOCATION_ID --latest N` + "`" + ``,
 		Example:    listImagesExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunImageList,
 		InitClient: true,
 	})
@@ -94,7 +94,7 @@ Use flags to retrieve a list of Images:
 		CmdRun:     RunImageGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgImageId, config.ArgIdShort, "", config.RequiredFlagImageId)
+	get.AddStringFlag(config.ArgImageId, config.ArgIdShort, "", config.ImageId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -103,11 +103,14 @@ Use flags to retrieve a list of Images:
 }
 
 func PreRunImageId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgImageId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgImageId)
 }
 
 func RunImageList(c *core.CommandConfig) error {
-	images, _, err := c.Images().List()
+	images, resp, err := c.Images().List()
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -136,7 +139,10 @@ func RunImageList(c *core.CommandConfig) error {
 
 func RunImageGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
-	img, _, err := c.Images().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
+	img, resp, err := c.Images().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgImageId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

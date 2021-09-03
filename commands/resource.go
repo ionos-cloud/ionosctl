@@ -46,7 +46,7 @@ func resource() *core.Command {
 		ShortDesc:  "List Resources",
 		LongDesc:   "Use this command to get a full list of existing Resources. To sort list by Resource Type, use `ionosctl resource get` command.",
 		Example:    listResourcesExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunResourceList,
 		InitClient: true,
 	})
@@ -66,7 +66,7 @@ func resource() *core.Command {
 		CmdRun:     RunResourceGet,
 		InitClient: true,
 	})
-	getRsc.AddStringFlag(config.ArgType, "", "", "The specific Type of Resources to retrieve information about")
+	getRsc.AddStringFlag(config.ArgType, "", "", "The specific Type of Resources to retrieve information about", core.RequiredFlagOption())
 	_ = getRsc.Command.RegisterFlagCompletionFunc(config.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"datacenter", "snapshot", "image", "ipblock", "pcc", "backupunit", "k8s"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -79,11 +79,14 @@ func resource() *core.Command {
 }
 
 func PreRunResourceType(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgType)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgType)
 }
 
 func RunResourceList(c *core.CommandConfig) error {
-	resourcesListed, _, err := c.Users().ListResources()
+	resourcesListed, resp, err := c.Users().ListResources()
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -93,16 +96,22 @@ func RunResourceList(c *core.CommandConfig) error {
 func RunResourceGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
 	if viper.IsSet(core.GetFlagName(c.NS, config.ArgResourceId)) {
-		resourceListed, _, err := c.Users().GetResourceByTypeAndId(
+		resourceListed, resp, err := c.Users().GetResourceByTypeAndId(
 			viper.GetString(core.GetFlagName(c.NS, config.ArgType)),
 			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		)
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}
 		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
-		resourcesListed, _, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
+		resourcesListed, resp, err := c.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, config.ArgType)))
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}
@@ -143,7 +152,7 @@ func groupResource() *core.Command {
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	listResources.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	listResources.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -152,7 +161,11 @@ func groupResource() *core.Command {
 }
 
 func RunGroupResourceList(c *core.CommandConfig) error {
-	resourcesListed, _, err := c.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	c.Printer.Verbose("Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	resourcesListed, resp, err := c.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

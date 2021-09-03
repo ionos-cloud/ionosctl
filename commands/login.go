@@ -32,7 +32,7 @@ You can use another configuration file for authentication with ` + "`" + `--conf
 
 Note: The command can also be used without ` + "`" + `--user` + "`" + ` and ` + "`" + `--password` + "`" + ` flags. For more details, see Examples.`,
 		Example:    loginExamples,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunLoginUser,
 		InitClient: false,
 	})

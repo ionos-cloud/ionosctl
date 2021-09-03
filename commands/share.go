@@ -50,7 +50,7 @@ func share() *core.Command {
 		CmdRun:     RunShareList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	list.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -70,11 +70,11 @@ func share() *core.Command {
 		CmdRun:     RunShareGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	get.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId)
+	get.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.ResourceId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -99,11 +99,11 @@ Required values to run a command:
 		CmdRun:     RunShareCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	create.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId)
+	create.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.ResourceId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -134,11 +134,11 @@ Required values to run command:
 		CmdRun:     RunShareUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	update.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId)
+	update.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.ResourceId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -163,15 +163,15 @@ Required values to run command:
 * Resource Id
 * Group Id`,
 		Example:    deleteShareExample,
-		PreCmdRun:  PreRunGroupResourceIdsAll,
+		PreCmdRun:  PreRunGroupResourceIds,
 		CmdRun:     RunShareDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	deleteCmd.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.RequiredFlagResourceId)
+	deleteCmd.AddStringFlag(config.ArgResourceId, config.ArgIdShort, "", config.ResourceId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -183,29 +183,14 @@ Required values to run command:
 }
 
 func PreRunGroupResourceIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgResourceId)
-}
-
-func PreRunGroupResourceIdsAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgResourceId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and ShareId")
-	}
-
-	return errors.New("neither All flag or ShareId was set or these are not set properly")
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgGroupId, config.ArgResourceId)
 }
 
 func RunShareList(c *core.CommandConfig) error {
-	shares, _, err := c.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	shares, resp, err := c.Groups().ListShares(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -213,11 +198,16 @@ func RunShareList(c *core.CommandConfig) error {
 }
 
 func RunShareGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Share with resource id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
-	s, _, err := c.Groups().GetShare(
+	c.Printer.Verbose("Getting Share with Resource ID: %v from Group with ID: %v...",
+		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	s, resp, err := c.Groups().GetShare(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -236,6 +226,9 @@ func RunShareCreate(c *core.CommandConfig) error {
 		},
 	}
 	c.Printer.Verbose("Properties set for creating the Share: EditPrivilege: %v, SharePrivilege: %v", editPrivilege, sharePrivilege)
+	c.Printer.Verbose("Adding Share for Resource ID: %v from Group with ID: %v...",
+		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	shareAdded, resp, err := c.Groups().AddShare(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
@@ -243,6 +236,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -264,11 +258,17 @@ func RunShareUpdate(c *core.CommandConfig) error {
 			Properties: &properties.GroupShareProperties,
 		},
 	}
+	c.Printer.Verbose("Updating Share for Resource ID: %v from Group with ID: %v...",
+		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
+		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 	shareUpdated, resp, err := c.Groups().UpdateShare(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
 		newShare,
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -312,8 +312,13 @@ func RunShareDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Share with resource id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
+		c.Printer.Verbose("Deleting Share with Resource ID: %v from Group with ID: %v...",
+			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
+			viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
 		resp, err := c.Groups().RemoveShare(groupId, shareId)
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}

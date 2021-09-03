@@ -47,7 +47,7 @@ func location() *core.Command {
 		ShortDesc:  "List Locations",
 		LongDesc:   "Use this command to get a list of available locations to create objects on.",
 		Example:    listLocationExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunLocationList,
 		InitClient: true,
 	})
@@ -67,7 +67,7 @@ func location() *core.Command {
 		CmdRun:     RunLocationGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgLocationId, config.ArgIdShort, "", config.RequiredFlagLocationId)
+	get.AddStringFlag(config.ArgLocationId, config.ArgIdShort, "", config.LocationId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -76,11 +76,14 @@ func location() *core.Command {
 }
 
 func PreRunLocationId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgLocationId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgLocationId)
 }
 
 func RunLocationList(c *core.CommandConfig) error {
-	locations, _, err := c.Locations().List()
+	locations, resp, err := c.Locations().List()
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -98,7 +101,10 @@ func RunLocationGet(c *core.CommandConfig) error {
 		return errors.New("error getting location id & region id")
 	}
 	c.Printer.Verbose("Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLocationId)))
-	loc, _, err := c.Locations().GetByRegionAndLocationId(ids[0], ids[1])
+	loc, resp, err := c.Locations().GetByRegionAndLocationId(ids[0], ids[1])
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

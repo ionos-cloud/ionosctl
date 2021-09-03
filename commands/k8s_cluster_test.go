@@ -184,40 +184,16 @@ func TestPreRunK8sClusterIdErr(t *testing.T) {
 	})
 }
 
-func TestPreRunK8sClusterName(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testClusterVar)
-		err := PreRunK8sClusterName(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunK8sClusterNameErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		err := PreRunK8sClusterName(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunK8sClusterList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.K8s.EXPECT().ListClusters().Return(clusters, nil, nil)
+		rm.K8s.EXPECT().ListClusters().Return(clusters, &testResponse, nil)
 		err := RunK8sClusterList(cfg)
 		assert.NoError(t, err)
 	})
@@ -243,11 +219,12 @@ func TestRunK8sClusterGet(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testClusterVar)
-		rm.K8s.EXPECT().GetCluster(testClusterVar).Return(&clusterTestGet, nil, nil)
+		rm.K8s.EXPECT().GetCluster(testClusterVar).Return(&clusterTestGet, &testResponse, nil)
 		err := RunK8sClusterGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -308,6 +285,7 @@ func TestRunK8sClusterCreate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
@@ -318,7 +296,7 @@ func TestRunK8sClusterCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgApiSubnets), []string{testClusterVar})
-		rm.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, nil, nil)
+		rm.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, &testResponse, nil)
 		err := RunK8sClusterCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -470,7 +448,7 @@ func TestRunK8sClusterCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgApiSubnets), []string{testClusterVar})
-		rm.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, &testResponse, nil)
+		rm.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, &testResponseErr, nil)
 		err := RunK8sClusterCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -504,6 +482,7 @@ func TestRunK8sClusterUpdate(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
@@ -515,7 +494,7 @@ func TestRunK8sClusterUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgS3Bucket), testClusterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgApiSubnets), []string{testClusterNewVar})
 		rm.K8s.EXPECT().GetCluster(testClusterVar).Return(&clusterTestGet, nil, nil)
-		rm.K8s.EXPECT().UpdateCluster(testClusterVar, clusterNewTestPut).Return(&clusterNew, nil, nil)
+		rm.K8s.EXPECT().UpdateCluster(testClusterVar, clusterNewTestPut).Return(&clusterNew, &testResponse, nil)
 		err := RunK8sClusterUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -638,12 +617,13 @@ func TestRunK8sClusterDelete(t *testing.T) {
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testClusterVar)
-		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(nil, nil)
+		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(&testResponse, nil)
 		err := RunK8sClusterDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -750,6 +730,8 @@ func TestGetK8sClustersIds(t *testing.T) {
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getK8sClustersIds(w)

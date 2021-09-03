@@ -47,7 +47,7 @@ func user() *core.Command {
 		ShortDesc:  "List Users",
 		LongDesc:   "Use this command to get a list of existing Users available on your account.",
 		Example:    listUserExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunUserList,
 		InitClient: true,
 	})
@@ -67,7 +67,7 @@ func user() *core.Command {
 		CmdRun:     RunUserGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
+	get.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -96,10 +96,10 @@ Required values to run a command:
 		CmdRun:     RunUserCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgFirstName, "", "", "The first name for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgLastName, "", "", "The last name for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long) "+config.RequiredFlag)
+	create.AddStringFlag(config.ArgFirstName, "", "", "The first name for the User", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgLastName, "", "", "The last name for the User", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User", core.RequiredFlagOption())
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long)", core.RequiredFlagOption())
 	create.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
 	create.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 
@@ -120,7 +120,7 @@ Required values to run command:
 
 * User Id`,
 		Example:    updateUserExample,
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  PreRunUserId,
 		CmdRun:     RunUserUpdate,
 		InitClient: true,
 	})
@@ -129,7 +129,7 @@ Required values to run command:
 	update.AddStringFlag(config.ArgEmail, config.ArgEmailShort, "", "The email for the User")
 	update.AddBoolFlag(config.ArgAdmin, "", false, "Assigns the User to have administrative rights")
 	update.AddBoolFlag(config.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
-	update.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
+	update.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -149,11 +149,11 @@ Required values to run command:
 
 * User Id`,
 		Example:    deleteUserExample,
-		PreCmdRun:  PreRunUserIdAll,
+		PreCmdRun:  PreRunUserId,
 		CmdRun:     RunUserDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
+	deleteCmd.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -165,33 +165,18 @@ Required values to run command:
 }
 
 func PreRunUserId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgUserId)
-}
-
-func PreRunUserIdAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgUserId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and UserId")
-	}
-
-	return errors.New("neither All flag or UserId id was set or these are not set properly")
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgUserId)
 }
 
 func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgFirstName, config.ArgLastName, config.ArgEmail, config.ArgPassword)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgFirstName, config.ArgLastName, config.ArgEmail, config.ArgPassword)
 }
 
 func RunUserList(c *core.CommandConfig) error {
-	users, _, err := c.Users().List()
+	users, resp, err := c.Users().List()
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -200,7 +185,10 @@ func RunUserList(c *core.CommandConfig) error {
 
 func RunUserGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
-	u, _, err := c.Users().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+	u, resp, err := c.Users().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -228,9 +216,11 @@ func RunUserCreate(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Properties set for creating the user: Firstname: %v, Lastname: %v, Email: %v, ForceSecAuth: %v, Administrator: %v",
 		firstname, lastname, email, secureAuth, admin)
+	c.Printer.Verbose("Creating User...")
 	u, resp, err := c.Users().Create(newUser)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -240,10 +230,14 @@ func RunUserCreate(c *core.CommandConfig) error {
 
 func RunUserUpdate(c *core.CommandConfig) error {
 	oldUser, resp, err := c.Users().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
 	newUser := getUserInfo(oldUser, c)
+	c.Printer.Verbose("Updating User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 	userUpd, resp, err := c.Users().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)), *newUser)
 	if err != nil {
 		return err
@@ -285,6 +279,9 @@ func RunUserDelete(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose("User with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 		resp, err := c.Users().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}
@@ -387,7 +384,7 @@ func groupUser() *core.Command {
 	_ = listUsers.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	listUsers.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	listUsers.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = listUsers.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -411,11 +408,11 @@ func groupUser() *core.Command {
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	addUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	addUser.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	addUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
+	addUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = addUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -439,11 +436,11 @@ func groupUser() *core.Command {
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultUserCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.RequiredFlagGroupId)
+	removeUser.AddStringFlag(config.ArgGroupId, "", "", config.GroupId, core.RequiredFlagOption())
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.RequiredFlagUserId)
+	removeUser.AddStringFlag(config.ArgUserId, config.ArgIdShort, "", config.UserId, core.RequiredFlagOption())
 	_ = removeUser.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getGroupUsersIds(os.Stderr, viper.GetString(core.GetFlagName(removeUser.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -452,7 +449,10 @@ func groupUser() *core.Command {
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {
-	users, _, err := c.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	users, resp, err := c.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -466,7 +466,12 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 			Id: &id,
 		},
 	}
-	userAdded, resp, err := c.Groups().AddUser(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)), u)
+	groupId := viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId))
+	c.Printer.Verbose("Adding User with id: %v to group with id: %v...", id, groupId)
+	userAdded, resp, err := c.Groups().AddUser(groupId, u)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -477,10 +482,13 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove user from group"); err != nil {
 		return err
 	}
-	resp, err := c.Groups().RemoveUser(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
-	)
+	id := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
+	groupId := viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId))
+	c.Printer.Verbose("Adding User with id: %v to group with id: %v...", id, groupId)
+	resp, err := c.Groups().RemoveUser(groupId, id)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

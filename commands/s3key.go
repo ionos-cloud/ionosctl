@@ -51,7 +51,7 @@ func userS3key() *core.Command {
 		CmdRun:     RunUserS3KeyList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	list.AddStringFlag(config.ArgUserId, "", "", config.UserId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -71,11 +71,11 @@ func userS3key() *core.Command {
 		CmdRun:     RunUserS3KeyGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	get.AddStringFlag(config.ArgUserId, "", "", config.UserId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgS3KeyId, config.ArgIdShort, "", config.RequiredFlagS3KeyId)
+	get.AddStringFlag(config.ArgS3KeyId, config.ArgIdShort, "", config.S3KeyId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -103,7 +103,7 @@ Required values to run command:
 		CmdRun:     RunUserS3KeyCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	create.AddStringFlag(config.ArgUserId, "", "", config.UserId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -133,12 +133,12 @@ Required values to run command:
 		CmdRun:     RunUserS3KeyUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	update.AddStringFlag(config.ArgUserId, "", "", config.UserId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgS3KeyActive, "", false, "Enable or disable an User S3Key")
-	update.AddStringFlag(config.ArgS3KeyId, config.ArgIdShort, "", config.RequiredFlagS3KeyId)
+	update.AddStringFlag(config.ArgS3KeyId, config.ArgIdShort, "", config.S3KeyId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -156,15 +156,15 @@ Required values to run command:
 		ShortDesc:  "Delete a S3Key",
 		LongDesc:   "Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    deleteS3KeyExample,
-		PreCmdRun:  PreRunUserKeyIdsAll,
+		PreCmdRun:  PreRunUserKeyIds,
 		CmdRun:     RunUserS3KeyDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgUserId, "", "", config.RequiredFlagUserId)
+	deleteCmd.AddStringFlag(config.ArgUserId, "", "", config.UserId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgS3KeyId, config.ArgIdShort, "", config.RequiredFlagS3KeyId)
+	deleteCmd.AddStringFlag(config.ArgS3KeyId, config.ArgIdShort, "", config.S3KeyId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -176,29 +176,15 @@ Required values to run command:
 }
 
 func PreRunUserKeyIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgUserId, config.ArgS3KeyId)
-}
-
-func PreRunUserKeyIdsAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgUserId, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgUserId, config.ArgS3KeyId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and S3KeyId")
-	}
-
-	return errors.New("neither All flag or S3KeyId was set or these are not set properly")
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgUserId, config.ArgS3KeyId)
 }
 
 func RunUserS3KeyList(c *core.CommandConfig) error {
-	ss, _, err := c.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+	c.Printer.Verbose("Listing S3 Keys of User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+	ss, resp, err := c.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -207,9 +193,12 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 
 func RunUserS3KeyGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
-	s, _, err := c.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
+	s, resp, err := c.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -218,10 +207,11 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 
 func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	userId := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
-	c.Printer.Verbose("Properties set for creating the S3key: UserId: %v", userId)
+	c.Printer.Verbose("Creating S3 Key for User with ID: %v", userId)
 	s, resp, err := c.S3Keys().Create(userId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -243,10 +233,13 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 			},
 		},
 	}
-	s, resp, err := c.S3Keys().Update(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
-		newKey,
-	)
+	userId := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
+	keyId := viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId))
+	c.Printer.Verbose("Creating S3 Key with ID: %v for User with ID: %v", keyId, userId)
+	s, resp, err := c.S3Keys().Update(userId, keyId, newKey)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -291,8 +284,12 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
 			return err
 		}
+		c.Printer.Verbose("User ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
 		c.Printer.Verbose("S3 keys with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
 		resp, err := c.S3Keys().Delete(userId, s3KeyId)
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}

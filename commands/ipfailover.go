@@ -51,11 +51,11 @@ func ipfailover() *core.Command {
 		CmdRun:     RunIpFailoverList,
 		InitClient: true,
 	})
-	listCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	listCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = listCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	listCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	listCmd.AddStringFlag(config.ArgLanId, "", "", config.LanId, core.RequiredFlagOption())
 	_ = listCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(listCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -89,24 +89,24 @@ Required values to run command:
 		CmdRun:     RunIpFailoverAdd,
 		InitClient: true,
 	})
-	addCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	addCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = addCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	addCmd.AddStringFlag(config.ArgLanId, "", "", config.LanId, core.RequiredFlagOption())
 	_ = addCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	addCmd.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = addCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
+	addCmd.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
 	_ = addCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(addCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(config.ArgIp, "", "", "IP address to be added to IP Failover Group "+config.RequiredFlag)
+	addCmd.AddStringFlag(config.ArgIp, "", "", "IP address to be added to IP Failover Group", core.RequiredFlagOption())
 	addCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IP Failover creation to be executed")
 	addCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover creation [seconds]")
 
@@ -133,24 +133,24 @@ Required values to run command:
 		CmdRun:     RunIpFailoverRemove,
 		InitClient: true,
 	})
-	removeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	removeCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(config.ArgLanId, "", "", config.RequiredFlagLanId)
+	removeCmd.AddStringFlag(config.ArgLanId, "", "", config.LanId, core.RequiredFlagOption())
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getLansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	removeCmd.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(config.ArgNicId, "", "", config.RequiredFlagNicId)
+	removeCmd.AddStringFlag(config.ArgNicId, "", "", config.NicId, core.RequiredFlagOption())
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getNicsIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(removeCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(config.ArgIp, "", "", "Allocated IP "+config.RequiredFlag)
+	removeCmd.AddStringFlag(config.ArgIp, "", "", "Allocated IP", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IP Failover deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover deletion [seconds]")
 
@@ -158,19 +158,22 @@ Required values to run command:
 }
 
 func PreRunDcLanIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgLanId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgLanId)
 }
 
 func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgLanId, config.ArgServerId, config.ArgNicId, config.ArgIp)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgLanId, config.ArgServerId, config.ArgNicId, config.ArgIp)
 }
 
 func RunIpFailoverList(c *core.CommandConfig) error {
 	ipsFailovers := make([]v5.IpFailover, 0)
-	obj, _, err := c.Lans().Get(
+	obj, resp, err := c.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -192,13 +195,12 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 func RunIpFailoverAdd(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, config.ArgLanId))
-	c.Printer.Verbose("Adding an IP Failover group with Datacenter id: %v and Lan id: %v to a LAN...", dcId, lanId)
+	c.Printer.Verbose("Adding an IP Failover group to LAN with ID: %v from Datacenter with id: %v...", lanId, dcId)
 	ipsFailovers := make([]v5.IpFailover, 0)
-	lanUpdated, resp, err := c.Lans().Update(
-		dcId,
-		lanId,
-		getIpFailoverInfo(c),
-	)
+	lanUpdated, resp, err := c.Lans().Update(dcId, lanId, getIpFailoverInfo(c))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -223,14 +225,11 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 func RunIpFailoverRemove(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, config.ArgLanId))
-	c.Printer.Verbose("Removing an IP Failover group with Datacenter id: %v and Lan id: %v to a LAN...", dcId, lanId)
+	c.Printer.Verbose("Removing IP Failover group from LAN with ID: %v from Datacenter with id: %v...", lanId, dcId)
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
 		return err
 	}
-	oldLan, _, err := c.Lans().Get(
-		dcId,
-		lanId,
-	)
+	oldLan, _, err := c.Lans().Get(dcId, lanId)
 	if err != nil {
 		return err
 	}
@@ -241,6 +240,9 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 				viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)),
 				removeIpFailoverInfo(c, ipfailovers),
 			)
+			if resp != nil {
+				c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			}
 			if err != nil {
 				return err
 			}
@@ -260,6 +262,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 func getIpFailoverInfo(c *core.CommandConfig) v5.LanProperties {
 	ip := viper.GetString(core.GetFlagName(c.NS, config.ArgIp))
 	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
+	c.Printer.Verbose("Adding IpFailover with Ip: %v and NicUuid: %v", ip, nicId)
 	return v5.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
 			IpFailover: &[]ionoscloud.IPFailover{
@@ -275,7 +278,7 @@ func getIpFailoverInfo(c *core.CommandConfig) v5.LanProperties {
 func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]ionoscloud.IPFailover) v5.LanProperties {
 	removeIp := viper.GetString(core.GetFlagName(c.NS, config.ArgIp))
 	removeNicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
-
+	c.Printer.Verbose("Removing IpFailover with Ip: %v and NicUuid: %v", removeIp, removeNicId)
 	newIpFailover := make([]ionoscloud.IPFailover, 0)
 	for _, failover := range *failovers {
 		if ip, ok := failover.GetIpOk(); ok && ip != nil && *ip != removeIp {

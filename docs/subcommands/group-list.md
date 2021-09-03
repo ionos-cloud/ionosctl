@@ -36,10 +36,10 @@ Use this command to get a list of available Groups available on your account.
                          Available columns: [GroupId Name CreateDataCenter CreateSnapshot ReserveIp AccessActivityLog CreatePcc S3Privilege CreateBackupUnit CreateInternetAccess CreateK8s] (default [GroupId,Name,CreateDataCenter,CreateSnapshot,ReserveIp,AccessActivityLog,CreatePcc,S3Privilege,CreateBackupUnit,CreateInternetAccess,CreateK8s])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
-  -h, --help             help for list
+  -h, --help             Print usage
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          see step by step process when running a command
+  -v, --verbose          Print step-by-step process when running command
 ```
 
 ## Examples

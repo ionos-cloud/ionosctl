@@ -53,7 +53,7 @@ func k8sNodePool() *core.Command {
 		CmdRun:     RunK8sNodePoolList,
 		InitClient: true,
 	})
-	list.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
+	list.AddStringFlag(config.ArgK8sClusterId, "", "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -73,11 +73,11 @@ func k8sNodePool() *core.Command {
 		CmdRun:     RunK8sNodePoolGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
+	get.AddStringFlag(config.ArgK8sClusterId, "", "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(config.ArgK8sNodePoolId, config.ArgIdShort, "", config.RequiredFlagK8sNodePoolId)
+	get.AddStringFlag(config.ArgK8sNodePoolId, config.ArgIdShort, "", config.K8sNodePoolId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -100,20 +100,19 @@ You can wait for the Node Pool to be in "ACTIVE" state using ` + "`" + `--wait-f
 Required values to run a command:
 
 * K8s Cluster Id
-* Datacenter Id
-* Name`,
+* Datacenter Id`,
 		Example:    createK8sNodePoolExample,
-		PreCmdRun:  PreRunK8sClusterDcIdsNodePoolName,
+		PreCmdRun:  PreRunK8sClusterDcIds,
 		CmdRun:     RunK8sNodePoolCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(config.ArgName, config.ArgNameShort, "", "The name for the K8s NodePool "+config.RequiredFlag)
-	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, it will be used the default one")
-	create.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
+	create.AddStringFlag(config.ArgName, config.ArgNameShort, "UnnamedNodePool", "The name for the K8s NodePool")
+	create.AddStringFlag(config.ArgK8sVersion, "", "", "The K8s version for the NodePool. If not set, the default one will be used")
+	create.AddStringFlag(config.ArgK8sClusterId, "", "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	create.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -179,11 +178,11 @@ Required values to run command:
 	update.AddStringFlag(config.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
 	update.AddStringSliceFlag(config.ArgPublicIps, "", []string{""}, "Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2")
 	update.AddIntSliceFlag(config.ArgLanIds, "", []int{}, "The unique LAN Ids of existing LANs to be attached to worker Nodes. It will be attached to the existing ones")
-	update.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
+	update.AddStringFlag(config.ArgK8sClusterId, "", "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(config.ArgK8sNodePoolId, config.ArgIdShort, "", config.RequiredFlagK8sNodePoolId)
+	update.AddStringFlag(config.ArgK8sNodePoolId, config.ArgIdShort, "", config.K8sNodePoolId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -206,15 +205,15 @@ Required values to run command:
 * K8s Cluster Id
 * K8s NodePool Id`,
 		Example:    deleteK8sNodePoolExample,
-		PreCmdRun:  PreRunK8sClusterNodePoolIdsAll,
+		PreCmdRun:  PreRunK8sClusterNodePoolIds,
 		CmdRun:     RunK8sNodePoolDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(config.ArgK8sClusterId, "", "", config.RequiredFlagK8sClusterId)
+	deleteCmd.AddStringFlag(config.ArgK8sClusterId, "", "", config.K8sClusterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(config.ArgK8sNodePoolId, config.ArgIdShort, "", config.RequiredFlagK8sNodePoolId)
+	deleteCmd.AddStringFlag(config.ArgK8sNodePoolId, config.ArgIdShort, "", config.K8sNodePoolId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -224,33 +223,19 @@ Required values to run command:
 }
 
 func PreRunK8sClusterNodePoolIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgK8sNodePoolId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgK8sClusterId, config.ArgK8sNodePoolId)
 }
 
-func PreRunK8sClusterNodePoolIdsAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgK8sNodePoolId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and K8sNodePoolId")
-	}
-
-	return errors.New("neither All flag or K8sNodePoolId was set or these are not set properly")
-}
-
-func PreRunK8sClusterDcIdsNodePoolName(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgDataCenterId, config.ArgName)
+func PreRunK8sClusterDcIds(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgK8sClusterId, config.ArgDataCenterId)
 }
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
-	k8ss, _, err := c.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+	c.Printer.Verbose("Getting K8s NodePools from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+	k8ss, resp, err := c.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -258,12 +243,16 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolGet(c *core.CommandConfig) error {
-	if err := utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))); err != nil {
+	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))
+	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))
+	if err := utils.WaitForState(c, GetStateK8sNodePool, k8sNodePoolId); err != nil {
 		return err
 	}
-	c.Printer.Verbose("K8s node pool with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
-	u, _, err := c.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	c.Printer.Verbose("K8s node pool with id: %v from K8s Cluster with id: %v is getting...", k8sNodePoolId, k8sClusterId)
+	u, resp, err := c.K8s().GetNodePool(k8sClusterId, k8sNodePoolId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -275,9 +264,11 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	c.Printer.Verbose("Creating K8s NodePool in K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
 	u, resp, err := c.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)), *newNodePool)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -298,14 +289,18 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
-	oldNodePool, _, err := c.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
+	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))
+	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId))
+	oldNodePool, _, err := c.K8s().GetNodePool(k8sClusterId, k8sNodePoolId)
 	if err != nil {
 		return err
 	}
 	newNodePool := getNewK8sNodePoolUpdated(oldNodePool, c)
-	newNodePoolUpdated, _, err := c.K8s().UpdateNodePool(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)), newNodePool)
+	c.Printer.Verbose("Updating K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId)
+	newNodePoolUpdated, resp, err := c.K8s().UpdateNodePool(k8sClusterId, k8sNodePoolId, newNodePool)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -351,7 +346,10 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)))
-		_, err = c.K8s().DeleteNodePool(clusterId, nodepollId)
+		resp, err = c.K8s().DeleteNodePool(clusterId, nodepollId)
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}

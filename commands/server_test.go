@@ -83,6 +83,33 @@ var (
 	testServerErr    = errors.New("server test: error occurred")
 )
 
+func TestPreRunDcIdServerCoresRam(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), testServerVar)
+		err := PreRunDcIdServerCoresRam(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunDcIdServerCoresRamErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunDcIdServerCoresRam(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunDcServerIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -109,33 +136,6 @@ func TestPreRunDcServerIdsRequiredFlagErr(t *testing.T) {
 	})
 }
 
-func TestPreRunDcIdCoresRam(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgCores), testServerVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), testServerVar)
-		err := PreRunDcIdCoresRam(cfg)
-		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunDcIdCoresRamRequiredFlagErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		err := PreRunDcIdCoresRam(cfg)
-		assert.Error(t, err)
-	})
-}
-
 func TestRunServerList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -144,8 +144,9 @@ func TestRunServerList(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
-		rm.Server.EXPECT().List(testServerVar).Return(ss, nil, nil)
+		rm.Server.EXPECT().List(testServerVar).Return(ss, &testResponse, nil)
 		err := RunServerList(cfg)
 		assert.NoError(t, err)
 	})
@@ -174,9 +175,10 @@ func TestRunServerGet(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
-		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&v5.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Get(testServerVar, testServerVar).Return(&v5.Server{Server: s}, &testResponse, nil)
 		err := RunServerGet(cfg)
 		assert.NoError(t, err)
 	})
@@ -241,6 +243,7 @@ func TestRunServerCreate(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerVar)
@@ -248,7 +251,7 @@ func TestRunServerCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgRam), ram)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&v5.Server{Server: s}, nil, nil)
+		rm.Server.EXPECT().Create(testServerVar, serverCreate).Return(&v5.Server{Server: s}, &testResponse, nil)
 		err := RunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -328,6 +331,7 @@ func TestRunServerUpdate(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgName), testServerNewVar)
@@ -336,7 +340,7 @@ func TestRunServerUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, nil)
+		rm.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponse, nil)
 		err := RunServerUpdate(cfg)
 		assert.NoError(t, err)
 	})
@@ -429,7 +433,7 @@ func TestRunServerUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCPUFamily), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponse, nil)
+		rm.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponseErr, nil)
 		err := RunServerUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -466,10 +470,11 @@ func TestRunServerDelete(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Delete(testServerVar, testServerVar).Return(nil, nil)
+		rm.Server.EXPECT().Delete(testServerVar, testServerVar).Return(&testResponse, nil)
 		err := RunServerDelete(cfg)
 		assert.NoError(t, err)
 	})
@@ -557,10 +562,11 @@ func TestRunServerStart(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Start(testServerVar, testServerVar).Return(nil, nil)
+		rm.Server.EXPECT().Start(testServerVar, testServerVar).Return(&testResponse, nil)
 		err := RunServerStart(cfg)
 		assert.NoError(t, err)
 	})
@@ -629,10 +635,11 @@ func TestRunServerStop(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.Server.EXPECT().Stop(testServerVar, testServerVar).Return(nil, nil)
+		rm.Server.EXPECT().Stop(testServerVar, testServerVar).Return(&testResponse, nil)
 		err := RunServerStop(cfg)
 		assert.NoError(t, err)
 	})
@@ -701,9 +708,10 @@ func TestRunServerReboot(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
-		rm.Server.EXPECT().Reboot(testServerVar, testServerVar).Return(nil, nil)
+		rm.Server.EXPECT().Reboot(testServerVar, testServerVar).Return(&testResponse, nil)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		err := RunServerReboot(cfg)
 		assert.NoError(t, err)
@@ -796,6 +804,8 @@ func TestGetServersIds(t *testing.T) {
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	getServersIds(w, testServerVar)

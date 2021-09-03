@@ -58,15 +58,15 @@ Required values to run command:
 		CmdRun:     RunServerCdromAttach,
 		InitClient: true,
 	})
-	attachCdrom.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	attachCdrom.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachCdrom.AddStringFlag(config.ArgCdromId, config.ArgIdShort, "", config.RequiredFlagCdromId)
+	attachCdrom.AddStringFlag(config.ArgCdromId, config.ArgIdShort, "", config.CdromId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(config.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImagesCdromIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachCdrom.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	attachCdrom.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachCdrom.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -88,11 +88,11 @@ Required values to run command:
 		CmdRun:     RunServerCdromsList,
 		InitClient: true,
 	})
-	listCdroms.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	listCdroms.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = listCdroms.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	listCdroms.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	listCdroms.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = listCdroms.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(listCdroms.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -112,15 +112,15 @@ Required values to run command:
 		PreCmdRun:  PreRunDcServerCdromIds,
 		CmdRun:     RunServerCdromGet,
 	})
-	getCdromCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	getCdromCmd.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	getCdromCmd.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	getCdromCmd.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(getCdromCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	getCdromCmd.AddStringFlag(config.ArgCdromId, config.ArgIdShort, "", config.RequiredFlagCdromId)
+	getCdromCmd.AddStringFlag(config.ArgCdromId, config.ArgIdShort, "", config.CdromId, core.RequiredFlagOption())
 	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(config.ArgCdromId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedCdromsIds(os.Stderr, viper.GetString(core.GetFlagName(getCdromCmd.NS, config.ArgDataCenterId)), viper.GetString(core.GetFlagName(getCdromCmd.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -148,16 +148,16 @@ Required values to run command:
 		CmdRun:     RunServerCdromDetach,
 		InitClient: true,
 	})
-	detachCdrom.AddStringFlag(config.ArgDataCenterId, "", "", config.RequiredFlagDatacenterId)
+	detachCdrom.AddStringFlag(config.ArgDataCenterId, "", "", config.DatacenterId, core.RequiredFlagOption())
 	_ = detachCdrom.Command.RegisterFlagCompletionFunc(config.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachCdrom.AddStringFlag(config.ArgCdromId, config.ArgIdShort, "", config.RequiredFlagCdromId)
+	detachCdrom.AddStringFlag(config.ArgCdromId, config.ArgIdShort, "", config.CdromId, core.RequiredFlagOption())
 	_ = detachCdrom.Command.RegisterFlagCompletionFunc(config.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getAttachedCdromsIds(os.Stderr, viper.GetString(core.GetFlagName(detachCdrom.NS, config.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(detachCdrom.NS, config.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachCdrom.AddStringFlag(config.ArgServerId, "", "", config.RequiredFlagServerId)
+	detachCdrom.AddStringFlag(config.ArgServerId, "", "", config.ServerId, core.RequiredFlagOption())
 	_ = detachCdrom.Command.RegisterFlagCompletionFunc(config.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(detachCdrom.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -168,15 +168,18 @@ Required values to run command:
 }
 
 func PreRunDcServerCdromIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgServerId, config.ArgCdromId)
+	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgServerId, config.ArgCdromId)
 }
 
 func RunServerCdromAttach(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	cdRomId := viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId))
-	c.Printer.Verbose("CD-ROM with id: %v is attaching to server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
+	c.Printer.Verbose("CD-ROM with id: %v is attaching to Server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
 	attachedCdrom, resp, err := c.Servers().AttachCdrom(dcId, serverId, cdRomId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -188,10 +191,13 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 }
 
 func RunServerCdromsList(c *core.CommandConfig) error {
-	attachedCdroms, _, err := c.Servers().ListCdroms(
+	attachedCdroms, resp, err := c.Servers().ListCdroms(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -200,11 +206,14 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 
 func RunServerCdromGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("CD-ROM with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)))
-	attachedCdrom, _, err := c.Servers().GetCdrom(
+	attachedCdrom, resp, err := c.Servers().GetCdrom(
 		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -212,7 +221,7 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 }
 
 func RunServerCdromDetach(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach cdrom from server"); err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach CD-ROM from server"); err != nil {
 		return err
 	}
 	c.Printer.Verbose("CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)))
@@ -221,6 +230,9 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, config.ArgCdromId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 
 	if err != nil {
 		return err

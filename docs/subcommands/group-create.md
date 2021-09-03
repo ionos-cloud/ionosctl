@@ -26,11 +26,7 @@ For `create` command:
 
 ## Description
 
-Use this command to create a new Group and set Group privileges. You need to specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
-
-Required values to run a command:
-
-* Name
+Use this command to create a new Group and set Group privileges. You can specify the name for the new Group. By default, all privileges will be set to false. You need to use flags privileges to be set to true.
 
 ## Options
 
@@ -47,14 +43,14 @@ Required values to run a command:
       --create-pcc         The group will be allowed to create PCCs
       --create-snapshot    The group will be allowed to create Snapshots
   -f, --force              Force command to execute without user input
-  -h, --help               help for create
-  -n, --name string        Name for the Group (required)
+  -h, --help               Print usage
+  -n, --name string        Name for the Group (default "Unnamed Group")
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
       --reserve-ip         The group will be allowed to reserve IP addresses
       --s3privilege        The group will be allowed to manage S3
   -t, --timeout int        Timeout option for Request for Group creation [seconds] (default 60)
-  -v, --verbose            see step by step process when running a command
+  -v, --verbose            Print step-by-step process when running command
   -w, --wait-for-request   Wait for Request for Group creation to be executed
 ```
 
