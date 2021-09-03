@@ -163,7 +163,7 @@ Required values to run command:
 * Data Center Id
 * Load Balancer Id`,
 		Example:    deleteLoadbalancerExample,
-		PreCmdRun:  PreRunDcLoadBalancerIds,
+		PreCmdRun:  PreRunDcLoadBalancerIdsAll,
 		CmdRun:     RunLoadBalancerDelete,
 		InitClient: true,
 	})
@@ -176,6 +176,7 @@ Required values to run command:
 		return getLoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Load Balancer deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Loadblancers from a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer deletion [seconds]")
 
 	loadbalancerCmd.AddCommand(loadBalancerNic())
@@ -185,6 +186,24 @@ Required values to run command:
 
 func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgLoadBalancerId)
+}
+
+func PreRunDcLoadBalancerIdsAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgLoadBalancerId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and LoadBalancerId")
+	}
+
+	return errors.New("neither All flag or LoadBalancerId was set or these are not set properly")
 }
 
 func RunLoadBalancerList(c *core.CommandConfig) error {
@@ -259,21 +278,50 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Load balancer with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)))
-	resp, err := c.Loadbalancers().Delete(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)),
-	)
-	if err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var loadBalancers v5.Loadbalancers
+	dcid := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	loadBlanacerId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the LoadBalancers?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the LoadBalancers...")
+		loadBalancers, resp, err = c.Loadbalancers().List(dcid)
+		if err != nil {
+			return err
+		}
+		if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
+			for _, lb := range *loadBalancersItems {
+				if id, ok := lb.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting LoadBalancer with id: %v...", *id)
+					resp, err = c.Loadbalancers().Delete(dcid, *id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Load balancer with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)))
+		resp, err := c.Loadbalancers().Delete(dcid, loadBlanacerId)
+		if err != nil {
+			return err
+		}
+
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getLoadbalancerPrint(resp, c, nil))
 }
 

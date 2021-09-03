@@ -149,7 +149,7 @@ Required values to run command:
 
 * User Id`,
 		Example:    deleteUserExample,
-		PreCmdRun:  PreRunUserId,
+		PreCmdRun:  PreRunUserIdAll,
 		CmdRun:     RunUserDelete,
 		InitClient: true,
 	})
@@ -157,6 +157,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(config.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Users.")
 
 	userCmd.AddCommand(userS3key())
 
@@ -165,6 +166,24 @@ Required values to run command:
 
 func PreRunUserId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgUserId)
+}
+
+func PreRunUserIdAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgUserId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and UserId")
+	}
+
+	return errors.New("neither All flag or UserId id was set or these are not set properly")
 }
 
 func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
@@ -233,14 +252,47 @@ func RunUserUpdate(c *core.CommandConfig) error {
 }
 
 func RunUserDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var users v5.Users
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Users?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Users...")
+		users, resp, err = c.Users().List()
+		if err != nil {
+			return err
+		}
+		if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
+			for _, user := range *usersItems {
+				if id, ok := user.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting User with id: %v...", *id)
+					resp, err = c.Users().Delete(*id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("User with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+		resp, err := c.Users().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
-	c.Printer.Verbose("User with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
-	resp, err := c.Users().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
-	if err != nil {
-		return err
-	}
+
 	return c.Printer.Print(getUserPrint(resp, c, nil))
 }
 

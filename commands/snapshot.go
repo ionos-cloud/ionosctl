@@ -199,7 +199,7 @@ Required values to run command:
 		ShortDesc:  "Delete a Snapshot",
 		LongDesc:   "Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		Example:    deleteSnapshotExample,
-		PreCmdRun:  PreRunSnapshotId,
+		PreCmdRun:  PreRunSnapshotIdAll,
 		CmdRun:     RunSnapshotDelete,
 		InitClient: true,
 	})
@@ -208,6 +208,7 @@ Required values to run command:
 		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Snapshots.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
 
 	return snapshotCmd
@@ -215,6 +216,24 @@ Required values to run command:
 
 func PreRunSnapshotId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgSnapshotId)
+}
+
+func PreRunSnapshotIdAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgSnapshotId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and SnapshotId")
+	}
+
+	return errors.New("neither All flag or SnapshotId was set or these are not set properly")
 }
 
 func PreRunSnapNameLicenceDcIdVolumeId(c *core.PreCommandConfig) error {
@@ -301,14 +320,47 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 }
 
 func RunSnapshotDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var snapshots v5.Snapshots
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Snapshots?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Snapshots...")
+		snapshots, resp, err = c.Snapshots().List()
+		if err != nil {
+			return err
+		}
+		if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
+			for _, snapshot := range *snapshotsItems {
+				if id, ok := snapshot.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Snapshot with id: %v...", *id)
+					resp, err = c.Snapshots().Delete(*id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
+		resp, err := c.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
-	c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
-	resp, err := c.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgSnapshotId)))
-	if err != nil {
-		return err
-	}
+
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 

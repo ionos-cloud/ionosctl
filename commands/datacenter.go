@@ -146,7 +146,7 @@ Required values to run command:
 
 * Data Center Id`,
 		Example:    deleteDatacenterExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunDataCenterIdAll,
 		CmdRun:     RunDataCenterDelete,
 		InitClient: true,
 	})
@@ -155,6 +155,7 @@ Required values to run command:
 		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center deletion")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Datacenters.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
 
 	return datacenterCmd
@@ -162,6 +163,24 @@ Required values to run command:
 
 func PreRunDataCenterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId)
+}
+
+func PreRunDataCenterIdAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgDataCenterId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and DatacenterId")
+	}
+
+	return errors.New("neither All flag or DatacenterId was set or these are not set properly")
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {
@@ -227,19 +246,48 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
-		return err
-	}
-	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
-	c.Printer.Verbose("Datacenter with id: %v is deleting...", dcId)
-	resp, err := c.DataCenters().Delete(dcId)
-	if err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var datacenters v5.Datacenters
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Datacenters?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Datacenters...")
+		datacenters, resp, err = c.DataCenters().List()
+		if err != nil {
+			return err
+		}
+		if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
+			for _, dc := range *datacentersItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Datacenter with id: %v...", *id)
+					resp, err = c.DataCenters().Delete(*id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
+			return err
+		}
+		dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+		c.Printer.Verbose("Datacenter with id: %v is deleting...", dcId)
+		resp, err := c.DataCenters().Delete(dcId)
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getDataCenterPrint(resp, c, nil))
 }
 

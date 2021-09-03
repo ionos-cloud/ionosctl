@@ -156,7 +156,7 @@ Required values to run command:
 		ShortDesc:  "Delete a S3Key",
 		LongDesc:   "Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    deleteS3KeyExample,
-		PreCmdRun:  PreRunUserKeyIds,
+		PreCmdRun:  PreRunUserKeyIdsAll,
 		CmdRun:     RunUserS3KeyDelete,
 		InitClient: true,
 	})
@@ -169,6 +169,7 @@ Required values to run command:
 		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for User S3Key deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the S3Keys of an User.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key deletion [seconds]")
 
 	return s3keyCmd
@@ -176,6 +177,24 @@ Required values to run command:
 
 func PreRunUserKeyIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgUserId, config.ArgS3KeyId)
+}
+
+func PreRunUserKeyIdsAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgUserId, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgUserId, config.ArgS3KeyId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and S3KeyId")
+	}
+
+	return errors.New("neither All flag or S3KeyId was set or these are not set properly")
 }
 
 func RunUserS3KeyList(c *core.CommandConfig) error {
@@ -239,20 +258,50 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("S3 keys with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
-	resp, err := c.S3Keys().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)),
-	)
-	if err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var s3Keys v5.S3Keys
+	userId := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
+	s3KeyId := viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the S3Keys?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the S3Keys...")
+		s3Keys, resp, err = c.S3Keys().List(userId)
+		if err != nil {
+			return err
+		}
+		if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
+			for _, s3Key := range *s3KeysItems {
+				if id, ok := s3Key.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting S3Key with id: %v...", *id)
+					resp, err = c.S3Keys().Delete(userId, *id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("S3 keys with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
+		resp, err := c.S3Keys().Delete(userId, s3KeyId)
+		if err != nil {
+			return err
+		}
+
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, nil))
 }
 

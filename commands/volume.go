@@ -208,7 +208,7 @@ Required values to run command:
 * Data Center Id
 * Volume Id`,
 		Example:    deleteVolumeExample,
-		PreCmdRun:  PreRunGlobalDcIdVolumeId,
+		PreCmdRun:  PreRunGlobalDcIdVolumeIdAll,
 		CmdRun:     RunVolumeDelete,
 		InitClient: true,
 	})
@@ -217,6 +217,7 @@ Required values to run command:
 		return getVolumesIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(volumeCmd.Name(), config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all Volumes from a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume deletion [seconds]")
 
 	return volumeCmd
@@ -260,6 +261,27 @@ func PreRunGlobalDcIdVolumeId(c *core.PreCommandConfig) error {
 		return result
 	}
 	return nil
+}
+
+func PreRunGlobalDcIdVolumeIdAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredGlobalFlags(c.NS, config.ArgDataCenterId); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgVolumeId); err == nil {
+		count++
+	}
+	if count == 2 {
+		return nil
+	}
+	if count == 3 {
+		return errors.New("you can not set both All flag and VolumeId")
+	}
+
+	return errors.New("neither All flag or VolumeId was set or these are not set properly")
 }
 
 func RunVolumeList(c *core.CommandConfig) error {
@@ -323,21 +345,50 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 }
 
 func RunVolumeDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Volume with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)))
-	resp, err := c.Volumes().Delete(
-		viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)),
-	)
-	if err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var volumes v5.Volumes
+	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Volumes?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Volumes...")
+		volumes, resp, err = c.Volumes().List(dcId)
+		if err != nil {
+			return err
+		}
+		if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
+			for _, volume := range *volumesItems {
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Volume with id: %v...", *id)
+					resp, err = c.Volumes().Delete(dcId, *id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Volume with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId)))
+		resp, err := c.Volumes().Delete(dcId, volumeId)
+		if err != nil {
+			return err
+		}
+
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getVolumePrint(resp, c, nil))
 }
 

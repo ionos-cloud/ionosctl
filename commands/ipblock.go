@@ -147,7 +147,7 @@ Required values to run command:
 
 * IpBlock Id`,
 		Example:    deleteIpBlockExample,
-		PreCmdRun:  PreRunIpBlockId,
+		PreCmdRun:  PreRunIpBlockIdAll,
 		CmdRun:     RunIpBlockDelete,
 		InitClient: true,
 	})
@@ -156,6 +156,7 @@ Required values to run command:
 		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IpBlock deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the IpBlocks.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock deletion [seconds]")
 
 	return ipblockCmd
@@ -167,6 +168,24 @@ func PreRunIpBlockLocation(c *core.PreCommandConfig) error {
 
 func PreRunIpBlockId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgIpBlockId)
+}
+
+func PreRunIpBlockIdAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgIpBlockId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and IpBlockId")
+	}
+
+	return errors.New("neither All flag or IpBlockId was set or these are not set properly")
 }
 
 func RunIpBlockList(c *core.CommandConfig) error {
@@ -231,18 +250,48 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 }
 
 func RunIpBlockDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Ip block with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
-	resp, err := c.IpBlocks().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
-	if err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var ipBlocks v5.IpBlocks
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the IpBlocks?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the IpBlocks...")
+		ipBlocks, resp, err = c.IpBlocks().List()
+		if err != nil {
+			return err
+		}
+		if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
+			for _, dc := range *ipBlocksItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting IpBlock with id: %v...", *id)
+					resp, err = c.IpBlocks().Delete(*id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Ip block with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
+		resp, err := c.IpBlocks().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgIpBlockId)))
+		if err != nil {
+			return err
+		}
+
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getIpBlockPrint(resp, c, nil))
 }
 

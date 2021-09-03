@@ -209,7 +209,7 @@ Required values to run command:
 * Data Center Id
 * Server Id`,
 		Example:    deleteServerExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunDcServerIdsAll,
 		CmdRun:     RunServerDelete,
 		InitClient: true,
 	})
@@ -222,6 +222,7 @@ Required values to run command:
 		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all Servers form a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
 
 	/*
@@ -337,6 +338,24 @@ func PreRunDcServerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgServerId)
 }
 
+func PreRunDcServerIdsAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgDataCenterId, config.ArgServerId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and ServerId")
+	}
+
+	return errors.New("neither All flag or ServerId was set or these are not set properly")
+}
+
 func RunServerList(c *core.CommandConfig) error {
 	servers, _, err := c.Servers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	if err != nil {
@@ -436,21 +455,50 @@ func RunServerUpdate(c *core.CommandConfig) error {
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)), viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
-	resp, err := c.Servers().Delete(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)),
-	)
-	if err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var servers v5.Servers
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Servers?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Servers...")
+		servers, resp, err = c.Servers().List(dcId)
+		if err != nil {
+			return err
+		}
+		if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
+			for _, server := range *serversItems {
+				if id, ok := server.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Server with id: %v...", *id)
+					resp, err = c.Servers().Delete(dcId, *id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)), viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+		resp, err := c.Servers().Delete(dcId, serverId)
+		if err != nil {
+			return err
+		}
+
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 

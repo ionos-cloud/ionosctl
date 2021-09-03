@@ -178,7 +178,7 @@ Required values to run command:
 
 * K8s Cluster Id`,
 		Example:    deleteK8sClusterExample,
-		PreCmdRun:  PreRunK8sClusterId,
+		PreCmdRun:  PreRunK8sClusterIdAll,
 		CmdRun:     RunK8sClusterDelete,
 		InitClient: true,
 	})
@@ -187,6 +187,7 @@ Required values to run command:
 		return getK8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Cluster deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Kubernetes clusters.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.K8sTimeoutSeconds, "Timeout option for waiting for Request [seconds]")
 
 	return k8sCmd
@@ -194,6 +195,24 @@ Required values to run command:
 
 func PreRunK8sClusterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId)
+}
+
+func PreRunK8sClusterIdAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and K8sClusterId")
+	}
+
+	return errors.New("neither All flag or K8sClusterId was set or these are not set properly")
 }
 
 func PreRunK8sClusterName(c *core.PreCommandConfig) error {
@@ -272,17 +291,47 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 }
 
 func RunK8sClusterDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var k8Clusters v5.K8sClusters
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the K8sClusters?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the K8sClusters...")
+		k8Clusters, resp, err = c.K8s().ListClusters()
+		if err != nil {
+			return err
+		}
+		if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
+			for _, k8sCluster := range *k8sClustersItems {
+				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting K8sCluster with id: %v...", *id)
+					resp, err = c.K8s().DeleteCluster(*id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+		resp, err := c.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
-	c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
-	resp, err := c.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
+
 	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
 }
 

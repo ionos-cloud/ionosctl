@@ -134,7 +134,7 @@ Required values to run command:
 
 * Pcc Id`,
 		Example:    deletePccExample,
-		PreCmdRun:  PreRunPccId,
+		PreCmdRun:  PreRunPccIdAll,
 		CmdRun:     RunPccDelete,
 		InitClient: true,
 	})
@@ -143,6 +143,7 @@ Required values to run command:
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all Private Cross-Connects.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect deletion [seconds]")
 
 	pccCmd.AddCommand(peers())
@@ -152,6 +153,24 @@ Required values to run command:
 
 func PreRunPccId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgPccId)
+}
+
+func PreRunPccIdAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgPccId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and PccId")
+	}
+
+	return errors.New("neither All flag or PccId was set or these are not set properly")
 }
 
 func RunPccList(c *core.CommandConfig) error {
@@ -215,18 +234,48 @@ func RunPccUpdate(c *core.CommandConfig) error {
 }
 
 func RunPccDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Private cross connect with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
-	resp, err := c.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
-	if err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var pccs v5.PrivateCrossConnects
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the PrivateCrossConnects?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
+		pccs, resp, err = c.Pccs().List()
+		if err != nil {
+			return err
+		}
+		if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
+			for _, pcc := range *pccsItems {
+				if id, ok := pcc.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting PrivateCrossConnect with id: %v...", *id)
+					resp, err = c.Pccs().Delete(*id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Private cross connect with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
+		resp, err := c.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgPccId)))
+		if err != nil {
+			return err
+		}
+
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getPccPrint(resp, c, nil))
 }
 

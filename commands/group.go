@@ -157,7 +157,7 @@ Required values to run command:
 
 * Group Id`,
 		Example:    deleteGroupExample,
-		PreCmdRun:  PreRunGroupId,
+		PreCmdRun:  PreRunGroupIdAll,
 		CmdRun:     RunGroupDelete,
 		InitClient: true,
 	})
@@ -166,6 +166,7 @@ Required values to run command:
 		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all Groups.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group deletion [seconds]")
 
 	groupCmd.AddCommand(groupResource())
@@ -175,6 +176,24 @@ Required values to run command:
 
 func PreRunGroupId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgGroupId)
+}
+
+func PreRunGroupIdAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgGroupId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and GroupId")
+	}
+
+	return errors.New("neither All flag or GroupId was set or these are not set properly")
 }
 
 func PreRunGroupUserIds(c *core.PreCommandConfig) error {
@@ -244,17 +263,47 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 }
 
 func RunGroupDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var groups v5.Groups
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Groups?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Groups...")
+		groups, resp, err = c.Groups().List()
+		if err != nil {
+			return err
+		}
+		if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
+			for _, group := range *groupsItems {
+				if id, ok := group.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Group with id: %v...", *id)
+					resp, err = c.Groups().Delete(*id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+		resp, err := c.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
-	c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
-	resp, err := c.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
+
 	return c.Printer.Print(getGroupPrint(resp, c, nil))
 }
 

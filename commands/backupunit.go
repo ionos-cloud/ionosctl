@@ -170,7 +170,7 @@ Required values to run command:
 
 * BackupUnit Id`,
 		Example:    deleteBackupUnitExample,
-		PreCmdRun:  PreRunBackupUnitId,
+		PreCmdRun:  PreRunBackupUnitIdAll,
 		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,
 	})
@@ -179,6 +179,7 @@ Required values to run command:
 		return getBackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all BackupUnits.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit deletion [seconds]")
 
 	return backupUnitCmd
@@ -186,6 +187,24 @@ Required values to run command:
 
 func PreRunBackupUnitId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgBackupUnitId)
+}
+
+func PreRunBackupUnitIdAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgBackupUnitId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and BackupUnitId")
+	}
+
+	return errors.New("neither All flag or BackupUnitId was set or these are not set properly")
 }
 
 func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
@@ -262,21 +281,20 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
-		return err
-	}
 	var resp *v5.Response
 	var err error
 	var backupUnits v5.BackupUnits
-	flag := viper.GetBool(config.ArgAll)
-	if flag {
-		// ask for confirm are you sure you want to delete all the BackupUnits
-		c.Printer.Verbose("Deleting all the BackupUnits") // sau un in for "Backup unit with id: %v is deleting..."
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Backup units?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the BackupUnits...")
 		backupUnits, resp, err = c.BackupUnit().List()
 		if err != nil {
 			return err
 		}
-		if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil { // functiei de delete lista de aici
+		if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
 			for _, backupUnit := range *backupUnitsItems {
 				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting Backup unit with id: %v...", *id)
@@ -284,21 +302,26 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 					if err != nil {
 						return err
 					}
-					// wait for request ???
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
 				}
 			}
 		}
 	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
+			return err
+		}
 		c.Printer.Verbose("Deleting Backup unit with id: %v...", viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
 		resp, err = c.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgBackupUnitId)))
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
 
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getBackupUnitPrint(resp, c, nil))
 }
 

@@ -163,7 +163,7 @@ Required values to run command:
 * Resource Id
 * Group Id`,
 		Example:    deleteShareExample,
-		PreCmdRun:  PreRunGroupResourceIds,
+		PreCmdRun:  PreRunGroupResourceIdsAll,
 		CmdRun:     RunShareDelete,
 		InitClient: true,
 	})
@@ -176,6 +176,7 @@ Required values to run command:
 		return getGroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, config.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Resource Share deletion to be executed")
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Resources Share from a specified Group.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share deletion [seconds]")
 
 	return shareCmd
@@ -183,6 +184,24 @@ Required values to run command:
 
 func PreRunGroupResourceIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgResourceId)
+}
+
+func PreRunGroupResourceIdsAll(c *core.PreCommandConfig) error {
+	var count = 0
+	if err := core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgAll); err == nil {
+		count++
+	}
+	if err := core.CheckRequiredFlags(c.NS, config.ArgGroupId, config.ArgResourceId); err == nil {
+		count++
+	}
+	if count == 1 {
+		return nil
+	}
+	if count == 2 {
+		return errors.New("you can not set both All flag and ShareId")
+	}
+
+	return errors.New("neither All flag or ShareId was set or these are not set properly")
 }
 
 func RunShareList(c *core.CommandConfig) error {
@@ -260,20 +279,49 @@ func RunShareUpdate(c *core.CommandConfig) error {
 }
 
 func RunShareDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
-		return err
+	var resp *v5.Response
+	var err error
+	var groupShares v5.GroupShares
+	groupId := viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId))
+	shareId := viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	if allFlag {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the GroupShares?"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the GroupShares...")
+		groupShares, resp, err = c.Groups().ListShares(groupId)
+		if err != nil {
+			return err
+		}
+		if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
+			for _, share := range *groupSharesItems {
+				if id, ok := share.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting GroupShare with id: %v...", *id)
+					resp, err = c.Groups().RemoveShare(groupId, *id)
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Share with resource id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
+		resp, err := c.Groups().RemoveShare(groupId, shareId)
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+			return err
+		}
 	}
-	c.Printer.Verbose("Share with resource id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)))
-	resp, err := c.Groups().RemoveShare(
-		viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)),
-		viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
-	)
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
-		return err
-	}
+
 	return c.Printer.Print(getGroupSharePrint(resp, c, nil))
 }
 
