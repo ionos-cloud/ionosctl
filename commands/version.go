@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 )
@@ -19,7 +19,7 @@ const (
 	latestGhReleaseUrl    = "https://github.com/ionos-cloud/ionosctl/releases/latest"
 )
 
-func version() *core.Command {
+func VersionCmd() *core.Command {
 	ctx := context.TODO()
 	versionCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
 		Namespace:  "version",

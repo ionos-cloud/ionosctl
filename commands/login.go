@@ -6,15 +6,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources/v5"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
 )
 
-func login() *core.Command {
+func LoginCmd() *core.Command {
 	ctx := context.TODO()
 	loginCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
 		Namespace: "login",
@@ -31,7 +31,6 @@ func login() *core.Command {
 You can use another configuration file for authentication with ` + "`" + `--config` + "`" + ` global option.
 
 Note: The command can also be used without ` + "`" + `--user` + "`" + ` and ` + "`" + `--password` + "`" + ` flags. For more details, see Examples.`,
-		Example:    loginExamples,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunLoginUser,
 		InitClient: false,
@@ -77,7 +76,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	viper.Set(config.Token, token)
 	viper.Set(config.ServerUrl, viper.GetString(config.ArgServerUrl))
 
-	clientSvc, err := v5.NewClientService(
+	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
@@ -87,7 +86,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 		return err
 	}
 
-	dcsSvc := v5.NewDataCenterService(clientSvc.Get(), context.TODO())
+	dcsSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
 	_, _, err = dcsSvc.List()
 	if err != nil {
 		return err
