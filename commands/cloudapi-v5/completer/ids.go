@@ -2,10 +2,10 @@ package completer
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"io"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
 	"github.com/spf13/viper"
 )

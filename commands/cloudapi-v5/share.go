@@ -3,17 +3,17 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
-	"github.com/ionos-cloud/ionosctl/internal/utils"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/waiter"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/internal/utils"
+	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -243,7 +243,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareAdded)))
@@ -274,7 +274,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareUpdated)))
@@ -297,7 +297,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, nil))

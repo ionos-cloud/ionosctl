@@ -3,11 +3,11 @@ package completer
 import (
 	"bufio"
 	"bytes"
-	"github.com/ionos-cloud/ionosctl/internal/config"
 	"os"
 	"regexp"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"os"
 	"regexp"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -164,7 +164,7 @@ func TestRunDataCenterCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDescription), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLocation), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV5Mocks.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, &testResponse, nil)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{Datacenter: dc}, &testResponse, nil)
 		err := RunDataCenterCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -182,7 +182,7 @@ func TestRunDataCenterCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLocation), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		rm.CloudApiV5Mocks.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, nil)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{Datacenter: dc}, nil, nil)
 		err := RunDataCenterCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -200,7 +200,7 @@ func TestRunDataCenterCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLocation), testDatacenterVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		rm.CloudApiV5Mocks.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{dc}, nil, testDatacenterErr)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().Create(testDatacenterVar, testDatacenterVar, testDatacenterVar).Return(&resources.Datacenter{Datacenter: dc}, nil, testDatacenterErr)
 		err := RunDataCenterCreate(cfg)
 		assert.Error(t, err)
 	})

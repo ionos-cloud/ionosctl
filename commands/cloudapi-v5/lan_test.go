@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"os"
 	"regexp"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
@@ -188,6 +188,7 @@ func TestRunLanCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgPccId), testLanVar)
 		rm.CloudApiV5Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, nil)
+
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})

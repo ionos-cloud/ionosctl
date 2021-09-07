@@ -2,10 +2,10 @@ package cloudapi_v5
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/spf13/cobra"
 )
 

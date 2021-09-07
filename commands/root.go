@@ -170,7 +170,7 @@ func (v cliVersion) GetVersion() string {
 func addCommands() {
 	rootCmd.AddCommand(VersionCmd())
 	rootCmd.AddCommand(LoginCmd())
-	// Add Compute Resources Commands
+	// Add CloudApiV5 Resources Commands
 	rootCmd.AddCommand(cloudapiv5.DatacenterCmd())
 	rootCmd.AddCommand(cloudapiv5.BackupunitCmd())
 	rootCmd.AddCommand(cloudapiv5.ContractCmd())
@@ -188,6 +188,7 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv5.NicCmd())
 	rootCmd.AddCommand(cloudapiv5.PccCmd())
 	rootCmd.AddCommand(cloudapiv5.ResourceCmd())
+	rootCmd.AddCommand(cloudapiv5.RequestCmd())
 	rootCmd.AddCommand(cloudapiv5.ServerCmd())
 	rootCmd.AddCommand(cloudapiv5.ShareCmd())
 	rootCmd.AddCommand(cloudapiv5.UserCmd())

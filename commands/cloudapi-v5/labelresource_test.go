@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
 	"testing"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"

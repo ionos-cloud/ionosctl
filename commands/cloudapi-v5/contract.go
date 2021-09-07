@@ -3,14 +3,14 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"io"
 	"strings"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
