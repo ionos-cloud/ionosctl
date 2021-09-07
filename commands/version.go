@@ -17,6 +17,9 @@ import (
 const (
 	latestGhApiReleaseUrl = "https://api.github.com/repos/ionos-cloud/ionosctl/releases/latest"
 	latestGhReleaseUrl    = "https://github.com/ionos-cloud/ionosctl/releases/latest"
+	versionExamples       = `ionosctl version
+
+ionosctl version --updates`
 )
 
 func VersionCmd() *core.Command {
@@ -27,7 +30,7 @@ func VersionCmd() *core.Command {
 		Verb:       "version",
 		ShortDesc:  "Show the current version of CLI and SDK",
 		LongDesc:   "The `ionosctl version` command displays the current version of the ionosctl software, the SDK GO version and the latest Github release.",
-		Example:    "ionosctl version",
+		Example:    versionExamples,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunVersion,
 		InitClient: false,

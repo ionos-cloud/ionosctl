@@ -3,17 +3,17 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
-	utils2 "github.com/ionos-cloud/ionosctl/internal/utils"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/waiter"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
+	utils2 "github.com/ionos-cloud/ionosctl/internal/utils"
+	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
 	"github.com/spf13/cobra"
@@ -48,6 +48,7 @@ func DatacenterCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Data Centers",
 		LongDesc:   "Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.",
+		Example:    listDatacenterExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterList,
 		InitClient: true,
@@ -62,6 +63,7 @@ func DatacenterCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Data Center",
+		Example:    getDatacenterExample,
 		LongDesc:   "Use this command to retrieve details about a Virtual Data Center by using its ID.\n\nRequired values to run command:\n\n* Data Center Id",
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunDataCenterGet,
@@ -86,6 +88,7 @@ func DatacenterCmd() *core.Command {
 Virtual Data Centers are the foundation of the IONOS platform.CloudApiV5Mocks. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
+		Example:    createDatacenterExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterCreate,
 		InitClient: true,
@@ -115,6 +118,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 Required values to run command:
 
 * Data Center Id`,
+		Example:    updateDatacenterExample,
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunDataCenterUpdate,
 		InitClient: true,
@@ -144,7 +148,7 @@ NOTE: This is a highly destructive operation which should be used with extreme c
 Required values to run command:
 
 * Data Center Id`,
-
+		Example:    deleteDatacenterExample,
 		PreCmdRun:  PreRunDataCenterId,
 		CmdRun:     RunDataCenterDelete,
 		InitClient: true,

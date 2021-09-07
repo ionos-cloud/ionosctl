@@ -1,20 +1,6 @@
 package cloudapi_v5
 
 const (
-
-	/*
-		Login Examples
-	*/
-	loginExamples = `ionosctl login --user USERNAME --password PASSWORD
-Status: Authentication successful!
-
-ionosctl login 
-Enter your username:
-USERNAME
-Enter your password:
-
-Status: Authentication successful!`
-
 	/*
 		Location Examples
 	*/

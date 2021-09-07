@@ -14,6 +14,18 @@ import (
 	"golang.org/x/term"
 )
 
+const (
+	loginExamples = `ionosctl login --user USERNAME --password PASSWORD
+Status: Authentication successful!
+
+ionosctl login 
+Enter your username:
+USERNAME
+Enter your password:
+
+Status: Authentication successful!`
+)
+
 func LoginCmd() *core.Command {
 	ctx := context.TODO()
 	loginCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
@@ -31,6 +43,7 @@ func LoginCmd() *core.Command {
 You can use another configuration file for authentication with ` + "`" + `--config` + "`" + ` global option.
 
 Note: The command can also be used without ` + "`" + `--user` + "`" + ` and ` + "`" + `--password` + "`" + ` flags. For more details, see Examples.`,
+		Example:    loginExamples,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunLoginUser,
 		InitClient: false,
