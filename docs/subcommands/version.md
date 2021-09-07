@@ -31,5 +31,7 @@ The `ionosctl version` command displays the current version of the ionosctl soft
 
 ```text
 ionosctl version
+
+ionosctl version --updates
 ```
 

@@ -143,7 +143,7 @@ Required values to run command:
 	})
 	create.AddStringFlag(cloudapiv5.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
 	create.AddStringFlag(cloudapiv5.ArgPassword, cloudapiv5.ArgPasswordShort, "abcde12345", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
-	create.AddStringFlag(cloudapiv5.ArgUserData, "", "", "The cloud-cmd configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-cmd compatibility in conjunction with this property")
+	create.AddStringFlag(cloudapiv5.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
 	create.AddBoolFlag(cloudapiv5.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
 	create.AddBoolFlag(cloudapiv5.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
 	create.AddBoolFlag(cloudapiv5.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")

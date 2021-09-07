@@ -85,7 +85,7 @@ func DatacenterCmd() *core.Command {
 		ShortDesc: "Create a Data Center",
 		LongDesc: `Use this command to create a Virtual Data Center. You can specify the name, description or location for the object.
 
-Virtual Data Centers are the foundation of the IONOS platform.CloudApiV5Mocks. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
+Virtual Data Centers are the foundation of the IONOS platform. VDCs act as logical containers for all other objects you will be creating, e.g. servers. You can provision as many Data Centers as you want. Data Centers have their own private network and are logically segmented from each other to create isolation.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.`,
 		Example:    createDatacenterExample,
@@ -96,9 +96,9 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	create.AddStringFlag(cloudapiv5.ArgName, cloudapiv5.ArgNameShort, "Unnamed Data Center", "Name of the Data Center")
 	create.AddStringFlag(cloudapiv5.ArgDescription, cloudapiv5.ArgDescriptionShort, "", "Description of the Data Center")
 	create.AddStringFlag(cloudapiv5.ArgLocation, cloudapiv5.ArgLocationShort, "de/txl", "Location for the Data Center")
-	//_ = create.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	//	return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
-	//})
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
 

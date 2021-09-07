@@ -129,7 +129,7 @@ Required values to run a command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AMD_OPTERON", "INTEL_XEON", "INTEL_SKYLAKE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv5.ArgAvailabilityZone, cloudapiv5.ArgAvailabilityZoneShort, "AUTO", "The cloudapi-v5 Availability Zone in which the Node should exist")
+	create.AddStringFlag(cloudapiv5.ArgAvailabilityZone, cloudapiv5.ArgAvailabilityZoneShort, "AUTO", "The compute Availability Zone in which the Node should exist")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgCpuFamily, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2"}, cobra.ShellCompDirectiveNoFileComp
 	})

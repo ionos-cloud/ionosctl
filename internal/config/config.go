@@ -66,7 +66,6 @@ func LoadFile() error {
 	strBase10 := strconv.FormatInt(permNumberBase10, 8)
 	permNumber, _ := strconv.Atoi(strBase10)
 
-	//TODO: Recheck if keeping implementation below
 	system := runtime.GOOS
 	if system == "windows" {
 		if permNumber == int(666) {
