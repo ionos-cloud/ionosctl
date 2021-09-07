@@ -3,13 +3,13 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/internal/core"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/commands"
+	"github.com/ionos-cloud/ionosctl/internal/core"
 )
 
 func main() {

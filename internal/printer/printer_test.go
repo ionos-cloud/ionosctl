@@ -3,12 +3,12 @@ package printer
 import (
 	"bufio"
 	"bytes"
-	"github.com/ionos-cloud/ionosctl/internal/config"
 	"net/http"
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

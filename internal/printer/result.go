@@ -9,7 +9,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
 )
 
 func ColsMessage(cols []string) string {

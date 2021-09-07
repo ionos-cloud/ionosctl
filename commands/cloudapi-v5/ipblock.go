@@ -14,8 +14,8 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/waiter"
-	cloudapiv5 "github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
-	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
+	cloudapiv5 "github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

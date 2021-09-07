@@ -2,7 +2,7 @@ package waiter
 
 import (
 	"github.com/ionos-cloud/ionosctl/internal/core"
-	cloudapiv5 "github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
+	cloudapiv5 "github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/spf13/viper"
 )
 

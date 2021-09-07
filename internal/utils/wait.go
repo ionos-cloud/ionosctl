@@ -2,12 +2,12 @@ package utils
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	core2 "github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	core2 "github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/spf13/viper"
 )
 

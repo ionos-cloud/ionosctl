@@ -2,13 +2,13 @@ package core
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
-	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
 	"io"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

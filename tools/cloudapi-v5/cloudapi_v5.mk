@@ -5,7 +5,7 @@
 .PHONY: cloudapiv5_test_unit
 cloudapiv5_test_unit:
 	@echo "--- Run unit tests for CloudApiV5 ---"
-	@go test -cover ./commands/cloudapi-v5/... ./pkg/cloudapi-v5/...
+	@go test -cover ./commands/cloudapi-v5/... ./services/cloudapi-v5/...
 	@echo "DONE"
 
 .PHONY: cloudapiv5_test

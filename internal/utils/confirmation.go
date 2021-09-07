@@ -3,11 +3,11 @@ package utils
 import (
 	"bufio"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"io"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/spf13/viper"
 )
 

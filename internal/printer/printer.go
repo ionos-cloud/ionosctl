@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/internal/config"
 	"io"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/spf13/viper"
 )
 
@@ -65,7 +65,8 @@ type JSONPrinter struct {
 func (p *JSONPrinter) Print(v interface{}) error {
 	switch v.(type) {
 	case Result:
-		if err := v.(*Result).PrintJSON(p.Stdout); err != nil {
+		result := v.(Result)
+		if err := result.PrintJSON(p.Stdout); err != nil {
 			return err
 		}
 	default:

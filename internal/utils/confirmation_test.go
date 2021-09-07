@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
-	mockprinter "github.com/ionos-cloud/ionosctl/internal/printer/mocks"
 	"io"
 	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
+	mockprinter "github.com/ionos-cloud/ionosctl/internal/printer/mocks"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

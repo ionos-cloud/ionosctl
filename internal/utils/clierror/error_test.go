@@ -4,12 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/internal/config"
 	"io"
 	"regexp"
 	"testing"
 
 	"github.com/fatih/color"
+	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

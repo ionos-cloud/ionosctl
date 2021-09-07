@@ -3,13 +3,13 @@ package core
 import (
 	"bytes"
 	"context"
-	config2 "github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5"
 	"io"
 	"os"
 
+	config2 "github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

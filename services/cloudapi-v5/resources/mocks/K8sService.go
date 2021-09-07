@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	resources "github.com/ionos-cloud/ionosctl/pkg/cloudapi-v5/resources"
+	resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
 )
 
 // MockK8sService is a mock of K8sService interface.

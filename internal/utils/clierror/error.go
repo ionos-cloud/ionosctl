@@ -3,12 +3,12 @@ package clierror
 import (
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"io"
 	"os"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/spf13/viper"
 )
 
