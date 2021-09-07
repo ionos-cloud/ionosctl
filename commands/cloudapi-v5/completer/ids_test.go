@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +17,9 @@ import (
 var testIdVar = "test-id"
 
 func TestGetBackupUnitIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -25,6 +28,7 @@ func TestGetBackupUnitIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	BackupUnitsIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -33,7 +37,9 @@ func TestGetBackupUnitIds(t *testing.T) {
 }
 
 func TestGetAttachedCdromsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -42,6 +48,7 @@ func TestGetAttachedCdromsIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	AttachedCdromsIds(w, testIdVar, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -50,7 +57,9 @@ func TestGetAttachedCdromsIds(t *testing.T) {
 }
 
 func TestGetDataCentersIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -59,6 +68,7 @@ func TestGetDataCentersIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	DataCentersIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -67,7 +77,9 @@ func TestGetDataCentersIds(t *testing.T) {
 }
 
 func TestGetFirewallRulesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -76,6 +88,7 @@ func TestGetFirewallRulesIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	FirewallRulesIds(w, testIdVar, testIdVar, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -84,7 +97,9 @@ func TestGetFirewallRulesIds(t *testing.T) {
 }
 
 func TestGetGroupsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -93,6 +108,7 @@ func TestGetGroupsIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	GroupsIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -101,7 +117,9 @@ func TestGetGroupsIds(t *testing.T) {
 }
 
 func TestGetImagesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -110,6 +128,7 @@ func TestGetImagesIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	ImageIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -118,7 +137,9 @@ func TestGetImagesIds(t *testing.T) {
 }
 
 func TestGetIpBlocksIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -127,6 +148,7 @@ func TestGetIpBlocksIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	IpBlocksIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -135,7 +157,9 @@ func TestGetIpBlocksIds(t *testing.T) {
 }
 
 func TestGetK8sClustersIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -144,6 +168,7 @@ func TestGetK8sClustersIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	K8sClustersIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -152,7 +177,9 @@ func TestGetK8sClustersIds(t *testing.T) {
 }
 
 func TestGetK8sNodesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -161,6 +188,7 @@ func TestGetK8sNodesIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	K8sNodesIds(w, testIdVar, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -169,7 +197,9 @@ func TestGetK8sNodesIds(t *testing.T) {
 }
 
 func TestGetK8sNodePoolsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -178,6 +208,7 @@ func TestGetK8sNodePoolsIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	K8sNodePoolsIds(w, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -186,7 +217,9 @@ func TestGetK8sNodePoolsIds(t *testing.T) {
 }
 
 func TestGetLansIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -195,6 +228,7 @@ func TestGetLansIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	LansIds(w, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -203,7 +237,9 @@ func TestGetLansIds(t *testing.T) {
 }
 
 func TestGetLoadbalancersIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -212,7 +248,8 @@ func TestGetLoadbalancersIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	LoadbalancersIds(w, "loadbalancer")
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+	LoadbalancersIds(w, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`401 Unauthorized`)
@@ -220,7 +257,9 @@ func TestGetLoadbalancersIds(t *testing.T) {
 }
 
 func TestGetLocationsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -229,6 +268,7 @@ func TestGetLocationsIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	LocationIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -237,7 +277,9 @@ func TestGetLocationsIds(t *testing.T) {
 }
 
 func TestGetNicsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -246,6 +288,7 @@ func TestGetNicsIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	NicsIds(w, testIdVar, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -254,7 +297,9 @@ func TestGetNicsIds(t *testing.T) {
 }
 
 func TestGetAttachedNicsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -263,6 +308,7 @@ func TestGetAttachedNicsIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	AttachedNicsIds(w, testIdVar, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -271,7 +317,9 @@ func TestGetAttachedNicsIds(t *testing.T) {
 }
 
 func TestGetPccsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -280,6 +328,7 @@ func TestGetPccsIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	PccsIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -288,7 +337,9 @@ func TestGetPccsIds(t *testing.T) {
 }
 
 func TestGetRequestsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -297,6 +348,7 @@ func TestGetRequestsIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	RequestsIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -305,7 +357,9 @@ func TestGetRequestsIds(t *testing.T) {
 }
 
 func TestGetResourcesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -314,6 +368,7 @@ func TestGetResourcesIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	ResourcesIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -322,7 +377,9 @@ func TestGetResourcesIds(t *testing.T) {
 }
 
 func TestGetS3KeyIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -331,6 +388,7 @@ func TestGetS3KeyIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	S3KeyIds(w, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -339,7 +397,9 @@ func TestGetS3KeyIds(t *testing.T) {
 }
 
 func TestGetServersIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -348,6 +408,7 @@ func TestGetServersIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	ServersIds(w, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -356,7 +417,9 @@ func TestGetServersIds(t *testing.T) {
 }
 
 func TestGetGroupResourcesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -365,6 +428,7 @@ func TestGetGroupResourcesIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	GroupResourcesIds(w, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -373,7 +437,9 @@ func TestGetGroupResourcesIds(t *testing.T) {
 }
 
 func TestGetSnapshotsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -382,6 +448,7 @@ func TestGetSnapshotsIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	SnapshotIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -390,13 +457,16 @@ func TestGetSnapshotsIds(t *testing.T) {
 }
 
 func TestGetUsersIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
 	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	UsersIds(w)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -405,7 +475,9 @@ func TestGetUsersIds(t *testing.T) {
 }
 
 func TestGetGroupUsersIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -414,6 +486,7 @@ func TestGetGroupUsersIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	GroupUsersIds(w, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -422,7 +495,9 @@ func TestGetGroupUsersIds(t *testing.T) {
 }
 
 func TestGetVolumesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -431,6 +506,7 @@ func TestGetVolumesIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	VolumesIds(w, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -439,7 +515,9 @@ func TestGetVolumesIds(t *testing.T) {
 }
 
 func TestGetAttachedVolumesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer
+	clierror.ErrAction = func() { return }
 	w := bufio.NewWriter(&b)
 	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 	assert.NoError(t, err)
@@ -448,6 +526,7 @@ func TestGetAttachedVolumesIds(t *testing.T) {
 	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
 	assert.NoError(t, err)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	AttachedVolumesIds(w, testIdVar, testIdVar)
 	err = w.Flush()
 	assert.NoError(t, err)

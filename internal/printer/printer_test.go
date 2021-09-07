@@ -21,7 +21,6 @@ var (
 
 func TestNewPrinterJSON(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
@@ -31,7 +30,6 @@ func TestNewPrinterJSON(t *testing.T) {
 
 func TestNewPrinterText(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
@@ -46,7 +44,6 @@ func TestPrinterPrintResultJson(t *testing.T) {
   "Status": "command executed"
 }`
 	)
-
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -59,11 +56,9 @@ func TestPrinterPrintResultJson(t *testing.T) {
 	res := Result{
 		Message: commandExecutedTestMsg,
 	}
-
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(str)
 	assert.True(t, re.Match(b.Bytes()))
 }
@@ -75,7 +70,6 @@ func TestPrinterPrintStandardResultJson(t *testing.T) {
   "Status": "Command datacenter create has been successfully executed"
 }`
 	)
-
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	viper.Set(config.ArgQuiet, false)
@@ -89,7 +83,6 @@ func TestPrinterPrintStandardResultJson(t *testing.T) {
 		Resource: "datacenter",
 		Verb:     "create",
 	}
-
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -104,7 +97,6 @@ func TestPrinterPrintDefaultJson(t *testing.T) {
   "Message": "command executed"
 }`
 	)
-
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	viper.Set(config.ArgQuiet, false)
@@ -114,18 +106,15 @@ func TestPrinterPrintDefaultJson(t *testing.T) {
 	p := reg["json"]
 	p.SetStderr(w)
 	p.SetStdout(w)
-
 	p.Print(commandExecutedTestMsg)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(str)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
 func TestPrinterPrintDefaultQuietJson(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, true)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -135,11 +124,9 @@ func TestPrinterPrintDefaultQuietJson(t *testing.T) {
 	p := reg["json"]
 	p.SetStderr(w)
 	p.SetStdout(w)
-
 	p.Print(commandExecutedTestMsg)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(``)
 	assert.True(t, re.Match(b.Bytes()))
 }
@@ -151,7 +138,6 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
   "RequestId": "123456"
 }`
 	)
-
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -172,11 +158,9 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 		},
 	}
 	res.ApiResponse.Header.Add("location", "https://api.test.ionos.com/cloudapi/v5/requests/123456/status")
-
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(str)
 	assert.True(t, re.Match(b.Bytes()))
 }
@@ -186,7 +170,6 @@ func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 		b      bytes.Buffer
 		strErr = `https://api.ionos.com/servers/123456 does not contain requestId`
 	)
-
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -207,7 +190,6 @@ func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 		},
 	}
 	res.ApiResponse.Header.Add("location", "https://api.ionos.com/servers/123456")
-
 	err = p.Print(res)
 	assert.Error(t, err)
 	assert.EqualError(t, err, strErr)
@@ -215,14 +197,12 @@ func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 
 func TestPrinterGetStdoutJSON(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
 	out := reg["json"].GetStdout()
-
 	err = w.Flush()
 	assert.NoError(t, err)
 	assert.True(t, out == w)
@@ -230,7 +210,6 @@ func TestPrinterGetStdoutJSON(t *testing.T) {
 
 func TestPrinterGetStderrJSON(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
@@ -245,7 +224,6 @@ func TestPrinterGetStderrJSON(t *testing.T) {
 
 func TestPrinterPrintResultText(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -269,7 +247,6 @@ func TestPrinterPrintResultText(t *testing.T) {
 
 func TestPrinterPrintResultTextRequestId(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -290,18 +267,15 @@ func TestPrinterPrintResultTextRequestId(t *testing.T) {
 		},
 	}
 	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v5/requests/123456/status")
-
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(`123456`)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
 func TestPrinterPrintResultTextResource(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -319,14 +293,12 @@ func TestPrinterPrintResultTextResource(t *testing.T) {
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(`Command datacenter create has been successfully executed`)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
 func TestPrinterPrintResultTextWaitResource(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -344,14 +316,12 @@ func TestPrinterPrintResultTextWaitResource(t *testing.T) {
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(`Command datacenter create & wait have been successfully executed`)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
 func TestPrinterPrintResultTextWaitStateResource(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -370,7 +340,6 @@ func TestPrinterPrintResultTextWaitStateResource(t *testing.T) {
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(`Command datacenter create & wait have been successfully executed`)
 	assert.True(t, re.Match(b.Bytes()))
 }
@@ -381,7 +350,6 @@ func TestPrinterPrintResultTextKeyValue(t *testing.T) {
 		tabwrt = `ID    Name    Authorized   Age\[min]
 123   dummy   true         1.230000`
 	)
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -406,14 +374,12 @@ func TestPrinterPrintResultTextKeyValue(t *testing.T) {
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(tabwrt)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
 func TestPrinterPrintDefaultText(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -424,30 +390,25 @@ func TestPrinterPrintDefaultText(t *testing.T) {
 	p.SetStderr(w)
 	p.SetStdout(w)
 	input := "dummy"
-
 	p.Print(input)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(input)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
 func TestPrinterUnknownFormatType(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "dummy")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
 	_, err := NewPrinterRegistry(w, w)
 	assert.Error(t, err)
-
 	assert.True(t, err.Error() == `unknown type format dummy. Hint: use --output json|text`)
 }
 
 func TestPrinterResultQuiet(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, true)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
@@ -460,25 +421,21 @@ func TestPrinterResultQuiet(t *testing.T) {
 	res := Result{
 		Message: commandExecutedTestMsg,
 	}
-
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
-
 	re := regexp.MustCompile(``)
 	assert.True(t, re.Match(b.Bytes()))
 }
 
 func TestPrinterGetStdoutText(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
 	out := reg["text"].GetStdout()
-
 	err = w.Flush()
 	assert.NoError(t, err)
 	assert.True(t, out == w)
@@ -486,14 +443,12 @@ func TestPrinterGetStdoutText(t *testing.T) {
 
 func TestPrinterGetStderrText(t *testing.T) {
 	var b bytes.Buffer
-
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
 	reg, err := NewPrinterRegistry(w, w)
 	assert.NoError(t, err)
 	out := reg["text"].GetStderr()
-
 	err = w.Flush()
 	assert.NoError(t, err)
 	assert.True(t, out == w)

@@ -79,12 +79,22 @@ var (
 			CreatedDate: &testIonosTime,
 		},
 	}
+	testRequestStatus = resources.RequestStatus{
+		RequestStatus: ionoscloud.RequestStatus{
+			Id: &testRequestVar,
+			Metadata: &ionoscloud.RequestStatusMetadata{
+				Status:  &testRequestStatusVar,
+				Message: &testRequestVar,
+			},
+		},
+	}
 	testRequests = resources.Requests{
 		Requests: ionoscloud.Requests{
 			Id:    &testRequestVar,
 			Items: &[]ionoscloud.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
 		},
 	}
+	testRequestStatusVar    = "DONE"
 	testIonosTime           = ionoscloud.IonosTime{Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.Now().Location())}
 	testRequestVar          = "test-request"
 	testRequestMethodPut    = "PUT"

@@ -275,7 +275,8 @@ func TestRunIpFailoverAddWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgIp), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV5Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, testLanPropertiesIpFailover).Return(&testLanIpFailover, nil, nil)
+		rm.CloudApiV5Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, testLanPropertiesIpFailover).Return(&testLanIpFailover, &testResponse, nil)
+		rm.CloudApiV5Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunIpFailoverAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -396,7 +397,8 @@ func TestRunIpFailoverRemoveWaitReqErr(t *testing.T) {
 			LanProperties: ionoscloud.LanProperties{
 				IpFailover: &[]ionoscloud.IPFailover{},
 			},
-		}).Return(&testLanIpFailoverRemove, nil, nil)
+		}).Return(&testLanIpFailoverRemove, &testResponse, nil)
+		rm.CloudApiV5Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunIpFailoverRemove(cfg)
 		assert.Error(t, err)
 	})

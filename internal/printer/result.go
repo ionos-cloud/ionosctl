@@ -32,7 +32,7 @@ type Result struct {
 func (prt *Result) PrintText(out io.Writer) error {
 	var resultPrint ResultPrint
 	if prt.Resource != "" && prt.Verb != "" {
-		prt.Message = standardSuccessMsg(prt.Resource, prt.Verb, prt.WaitForRequest, prt.WaitForState)
+		resultPrint.Message = standardSuccessMsg(prt.Resource, prt.Verb, prt.WaitForRequest, prt.WaitForState)
 	} else if prt.Message != "" {
 		resultPrint.Message = prt.Message
 	}
@@ -122,7 +122,7 @@ func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{
 	w := new(tabwriter.Writer)
 	w.Init(out, 5, 0, 3, ' ', tabwriter.StripEscape)
 
-	headers := []string{}
+	var headers []string
 	for _, col := range cols {
 		headers = append(headers, col)
 	}
@@ -132,8 +132,8 @@ func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{
 	}
 
 	for _, r := range keyValueMap {
-		values := []interface{}{}
-		formats := []string{}
+		var values []interface{}
+		var formats []string
 
 		for _, col := range cols {
 			v := r[col]
