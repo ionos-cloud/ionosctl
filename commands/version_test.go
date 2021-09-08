@@ -22,6 +22,16 @@ func TestRunVersion(t *testing.T) {
 	})
 }
 
+func TestRunVersionUpdates(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUpdates), true)
+		err := RunVersion(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestGetGithubLatestReleaseErr(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	clierror.ErrAction = func() { return }

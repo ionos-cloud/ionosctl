@@ -18,6 +18,15 @@ var (
 	testK8sVersionErr  = errors.New("k8s-version test error")
 )
 
+func TestK8sVersionCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(K8sVersionCmd())
+	if ok := K8sVersionCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestRunK8sVersionList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

@@ -191,6 +191,15 @@ var (
 	testNodepoolErr       = errors.New("nodepool test error")
 )
 
+func TestK8sNodePoolCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(K8sNodePoolCmd())
+	if ok := K8sNodePoolCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunK8sClusterNodePoolIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

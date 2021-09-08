@@ -28,6 +28,15 @@ var (
 	testKubeconfigErr = errors.New("kubeconfig test error")
 )
 
+func TestK8sKubeconfigCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(K8sKubeconfigCmd())
+	if ok := K8sKubeconfigCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestRunK8sKubeconfigGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

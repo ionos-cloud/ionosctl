@@ -141,6 +141,24 @@ var (
 	testVolumeErr      = errors.New("volume test: error occurred")
 )
 
+func TestVolumeCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(VolumeCmd())
+	if ok := VolumeCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
+func TestServerVolumeCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(ServerVolumeCmd())
+	if ok := ServerVolumeCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunDcVolumeIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

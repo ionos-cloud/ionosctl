@@ -55,6 +55,24 @@ var (
 	testResourceErr     = errors.New("resource test error")
 )
 
+func TestResourceCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(ResourceCmd())
+	if ok := ResourceCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
+func TestGroupResourceCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(GroupResourceCmd())
+	if ok := GroupResourceCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunResourceType(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

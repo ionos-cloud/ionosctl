@@ -62,6 +62,15 @@ var (
 	testDatacenterErr     = errors.New("datacenter test error occurred")
 )
 
+func TestDatacenterCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(DatacenterCmd())
+	if ok := DatacenterCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunDataCenterId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

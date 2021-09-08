@@ -78,6 +78,15 @@ var (
 	testGroupErr        = errors.New("resource test error")
 )
 
+func TestGroupCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(GroupCmd())
+	if ok := FirewallRuleCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunGroupId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

@@ -28,6 +28,15 @@ var (
 	testCdromErr = errors.New("cdrom test error")
 )
 
+func TestServerCdromCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(ServerCdromCmd())
+	if ok := ServerCdromCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunDcServerCdromIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

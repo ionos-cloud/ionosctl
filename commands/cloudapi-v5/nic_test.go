@@ -72,6 +72,24 @@ var (
 	testNicErr    = errors.New("nic test: error occurred")
 )
 
+func TestNicCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(NicCmd())
+	if ok := NicCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
+func TestLoadBalancerNicCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(LoadBalancerNicCmd())
+	if ok := LoadBalancerNicCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestRunNicList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

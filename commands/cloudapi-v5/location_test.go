@@ -39,6 +39,15 @@ var (
 	testLocationErr = errors.New("location test error occurred")
 )
 
+func TestLocationCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(LocationCmd())
+	if ok := LocationCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreLocationId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

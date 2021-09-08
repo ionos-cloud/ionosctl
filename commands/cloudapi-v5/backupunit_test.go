@@ -66,6 +66,15 @@ var (
 	testBackupUnitErr    = errors.New("backup-unit test error")
 )
 
+func TestBackupunitCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(BackupunitCmd())
+	if ok := BackupunitCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunBackupUnitId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

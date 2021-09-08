@@ -71,6 +71,15 @@ var (
 	testIpBlockErr      = errors.New("ip block test: error occurred")
 )
 
+func TestIpblockCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(IpblockCmd())
+	if ok := IpblockCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunIpBlockId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

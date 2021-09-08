@@ -55,6 +55,15 @@ var (
 	testS3keyErr        = errors.New("s3key test error")
 )
 
+func TestUserS3keyCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(UserS3keyCmd())
+	if ok := UserS3keyCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunUserKeyIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

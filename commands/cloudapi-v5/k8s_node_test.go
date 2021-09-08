@@ -49,6 +49,15 @@ var (
 	testNodeErr  = errors.New("node test error")
 )
 
+func TestK8sNodeCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(K8sNodeCmd())
+	if ok := K8sNodeCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunK8sClusterNodesIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

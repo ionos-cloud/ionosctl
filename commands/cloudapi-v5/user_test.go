@@ -83,6 +83,24 @@ var (
 	testUserErr     = errors.New("user test error")
 )
 
+func TestUserCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(UserCmd())
+	if ok := UserCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
+func TestGroupUserCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(GroupUserCmd())
+	if ok := GroupUserCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunUserId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

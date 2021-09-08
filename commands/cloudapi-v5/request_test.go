@@ -106,6 +106,15 @@ var (
 	testTypeRequestVar      = ionoscloud.Type("datacenter")
 )
 
+func TestRequestCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(RequestCmd())
+	if ok := RequestCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunRequestId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

@@ -70,6 +70,15 @@ var (
 	testLanErr    = errors.New("lan test: error occurred")
 )
 
+func TestLanCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(LanCmd())
+	if ok := LanCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestRunLanList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

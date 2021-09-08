@@ -53,6 +53,15 @@ var (
 	testImageErr      = errors.New("image test error")
 )
 
+func TestImageCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(ImageCmd())
+	if ok := ImageCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreImageId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

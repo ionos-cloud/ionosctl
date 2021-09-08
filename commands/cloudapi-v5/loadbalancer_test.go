@@ -54,6 +54,15 @@ var (
 	testLoadbalancerErr    = errors.New("loadbalancer test: error occurred")
 )
 
+func TestLoadBalancerCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(LoadBalancerCmd())
+	if ok := LoadBalancerCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunDcLoadBalancerIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

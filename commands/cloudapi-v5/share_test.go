@@ -60,6 +60,15 @@ var (
 	testShareErr        = errors.New("share test error")
 )
 
+func TestShareCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(ShareCmd())
+	if ok := ShareCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunGroupResourceIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

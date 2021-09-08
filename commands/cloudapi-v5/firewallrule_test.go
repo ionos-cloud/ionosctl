@@ -89,6 +89,15 @@ var (
 	testFirewallRuleErr            = errors.New("firewall rule test error")
 )
 
+func TestFirewallRuleCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(FirewallRuleCmd())
+	if ok := FirewallRuleCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunDcServerNicIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

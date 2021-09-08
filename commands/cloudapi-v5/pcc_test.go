@@ -65,6 +65,15 @@ var (
 	testPccErr    = errors.New("pcc test error")
 )
 
+func TestPccCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(PccCmd())
+	if ok := PccCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunPccId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

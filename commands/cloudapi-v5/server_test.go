@@ -84,6 +84,15 @@ var (
 	testServerErr    = errors.New("server test: error occurred")
 )
 
+func TestServerCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(ServerCmd())
+	if ok := ServerCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunDcIdServerCoresRam(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

@@ -19,7 +19,9 @@ type Command struct {
 func (c *Command) AddCommand(commands ...*Command) {
 	c.subCommands = append(c.subCommands, commands...)
 	for _, cmd := range commands {
-		c.Command.AddCommand(cmd.Command)
+		if cmd != nil && c.Command != nil {
+			c.Command.AddCommand(cmd.Command)
+		}
 	}
 }
 
@@ -41,6 +43,14 @@ func (c *Command) GlobalFlags() *flag.FlagSet {
 
 func (c *Command) SubCommands() []*Command {
 	return c.subCommands
+}
+
+func (c *Command) IsAvailableCommand() bool {
+	if c != nil && c.Command != nil {
+		return c.Command.IsAvailableCommand()
+	} else {
+		return false
+	}
 }
 
 func (c *Command) AddStringFlag(name, shorthand, defaultValue, desc string, optionFunc ...FlagOptionFunc) {

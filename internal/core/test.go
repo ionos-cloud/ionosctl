@@ -15,6 +15,14 @@ import (
 
 const testConst = "test"
 
+var (
+	RootCmdTest = Command{
+		Command: &cobra.Command{
+			Use: testConst,
+		},
+	}
+)
+
 type PreCmdRunTest func(c *PreCommandConfig)
 
 func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {

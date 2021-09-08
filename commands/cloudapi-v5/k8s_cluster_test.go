@@ -160,6 +160,24 @@ var (
 	testClusterErr      = errors.New("cluster test error")
 )
 
+func TestK8sCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(K8sCmd())
+	if ok := K8sCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
+func TestK8sClusterCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(K8sClusterCmd())
+	if ok := K8sClusterCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunK8sClusterId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

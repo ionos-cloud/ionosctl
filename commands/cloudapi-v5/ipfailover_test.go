@@ -64,6 +64,15 @@ var (
 	testIpFailoverErr = errors.New("ip failover error test")
 )
 
+func TestIpfailoverCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(IpfailoverCmd())
+	if ok := IpfailoverCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunDcLanIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
