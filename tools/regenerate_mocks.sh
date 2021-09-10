@@ -3,7 +3,7 @@
 # Regenerate mocks
 
 # For cloudapi/v6 resources
-pushd "pkg/resources/v6" >/dev/null || exit
+pushd "services/cloudapi-v6/resources" >/dev/null || exit
 
 GO111MODULE=off go get -u github.com/golang/mock/mockgen
 
@@ -32,6 +32,6 @@ mockgen -source backupunit.go >mocks/BackupUnitService.go
 mockgen -source pcc.go >mocks/PccService.go
 mockgen -source k8s.go >mocks/K8sService.go
 mockgen -source template.go >mocks/TemplateService.go
-mockgen -source ../../utils/printer/printer.go >../../utils/printer/mocks/PrintService.go
+#mockgen -source ../../utils/printer/printer.go >../../utils/printer/mocks/PrintService.go
 
 pushd >/dev/null || exit
