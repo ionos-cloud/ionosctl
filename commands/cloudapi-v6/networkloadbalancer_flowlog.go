@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -285,7 +286,7 @@ func RunNetworkLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFlowLogPrint(resp, c, []resources.FlowLog{*ng}))
@@ -302,7 +303,7 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFlowLogPrint(resp, c, []resources.FlowLog{*ng}))
@@ -321,7 +322,7 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFlowLogPrint(resp, c, nil))

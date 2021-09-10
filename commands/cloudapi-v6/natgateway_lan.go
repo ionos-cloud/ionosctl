@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -181,7 +182,7 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getNatGatewayLanPrint(resp, c, getNatGatewayLans(ng)))
@@ -203,7 +204,7 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getNatGatewayLanPrint(resp, c, nil))
@@ -244,7 +245,7 @@ func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
 				for _, lanItem := range *lans {
 					if id, ok := lanItem.GetIdOk(); ok && id != nil {
-						if *id != viper.GetInt32(core.GetFlagName(c.NS, config.ArgLanId)) {
+						if *id != viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId)) {
 							proper = append(proper, lanItem)
 						}
 					}

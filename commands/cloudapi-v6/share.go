@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -235,7 +236,7 @@ func RunShareCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareAdded)))
@@ -263,7 +264,7 @@ func RunShareUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, getGroupShare(shareUpdated)))
@@ -283,7 +284,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getGroupSharePrint(resp, c, nil))

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -179,7 +180,7 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Load Balancer deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer deletion [seconds]")
 
-	loadbalancerCmd.AddCommand(loadBalancerNic())
+	loadbalancerCmd.AddCommand(LoadBalancerNicCmd())
 
 	return loadbalancerCmd
 }
@@ -222,7 +223,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getLoadbalancerPrint(resp, c, []resources.Loadbalancer{*lb}))
@@ -254,7 +255,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getLoadbalancerPrint(resp, c, []resources.Loadbalancer{*lb}))
@@ -273,7 +274,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getLoadbalancerPrint(resp, c, nil))

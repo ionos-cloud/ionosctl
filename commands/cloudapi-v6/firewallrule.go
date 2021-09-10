@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -285,7 +286,7 @@ func PreRunDcServerNicIds(c *core.PreCommandConfig) error {
 }
 
 func PreRunDcServerNicIdsFRuleProtocol(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgServerId, cloudapi_v6.ArgNicId, config.ArgProtocol)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgServerId, cloudapi_v6.ArgNicId, cloudapi_v6.ArgProtocol)
 }
 
 func PreRunDcServerNicFRuleIds(c *core.PreCommandConfig) error {
@@ -344,7 +345,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, getFirewallRule(firewallRule)))
@@ -362,7 +363,7 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, getFirewallRule(firewallRule)))
@@ -383,7 +384,7 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, nil))

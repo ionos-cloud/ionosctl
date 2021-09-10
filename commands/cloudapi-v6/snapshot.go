@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -255,7 +256,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
@@ -268,7 +269,7 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, getSnapshot(s)))
@@ -287,6 +288,9 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
+		return err
+	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 
@@ -297,6 +301,9 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 	c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)))
 	resp, err := c.CloudApiV6Services.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)))
 	if err != nil {
+		return err
+	}
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))

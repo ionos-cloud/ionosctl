@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -241,7 +242,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	err = c.Printer.Print(backupUnitNote)
@@ -257,7 +258,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getBackupUnitPrint(resp, c, getBackupUnit(backupUnitUpd)))
@@ -272,7 +273,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getBackupUnitPrint(resp, c, nil))

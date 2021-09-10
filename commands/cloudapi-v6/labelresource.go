@@ -2,7 +2,6 @@ package commands
 
 import (
 	"github.com/fatih/structs"
-	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
@@ -31,7 +30,7 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 
 func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	labelKey := viper.GetString(core.GetFlagName(c.NS, concloudapi_v6fig.ArgLabelKey))
+	labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLabelKey))
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Datacenter with id: %v...", labelKey, labelValue, dcId)
 	labelDc, _, err := c.CloudApiV6Services.Labels().DatacenterCreate(dcId, labelKey, labelValue)

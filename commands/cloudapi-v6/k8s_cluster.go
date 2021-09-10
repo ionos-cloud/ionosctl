@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -29,11 +30,11 @@ func K8sCmd() *core.Command {
 			TraverseChildren: true,
 		},
 	}
-	k8sCmd.AddCommand(k8sVersion())
+	k8sCmd.AddCommand(K8sVersionCmd())
 	k8sCmd.AddCommand(K8sClusterCmd())
-	k8sCmd.AddCommand(k8sKubeconfig())
-	k8sCmd.AddCommand(k8sNodePool())
-	k8sCmd.AddCommand(k8sNode())
+	k8sCmd.AddCommand(K8sKubeconfigCmd())
+	k8sCmd.AddCommand(K8sNodePoolCmd())
+	k8sCmd.AddCommand(K8sNodeCmd())
 
 	return k8sCmd
 }
@@ -226,7 +227,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
@@ -275,7 +276,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))

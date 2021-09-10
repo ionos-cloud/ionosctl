@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -436,10 +437,10 @@ Required values to run command:
 	resume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server resume to be executed")
 	resume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server resume [seconds]")
 
-	serverCmd.AddCommand(serverToken())
-	serverCmd.AddCommand(serverConsole())
-	serverCmd.AddCommand(serverVolume())
-	serverCmd.AddCommand(serverCdrom())
+	serverCmd.AddCommand(ServerTokenCmd())
+	serverCmd.AddCommand(ServerConsoleCmd())
+	serverCmd.AddCommand(ServerVolumeCmd())
+	serverCmd.AddCommand(ServerCdromCmd())
 
 	return serverCmd
 }
@@ -503,7 +504,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
@@ -538,7 +539,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
@@ -565,7 +566,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
@@ -584,7 +585,7 @@ func RunServerStart(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
@@ -603,7 +604,7 @@ func RunServerStop(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
@@ -622,7 +623,7 @@ func RunServerSuspend(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
@@ -641,7 +642,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
@@ -660,7 +661,7 @@ func RunServerResume(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))

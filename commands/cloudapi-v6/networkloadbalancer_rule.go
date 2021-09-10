@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -227,7 +228,7 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapi_v6.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule deletion [seconds]")
 
-	nlbRuleCmd.AddCommand(nlbRuleTarget())
+	nlbRuleCmd.AddCommand(NlbRuleTargetCmd())
 
 	return nlbRuleCmd
 }
@@ -294,7 +295,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getForwardingRulePrint(resp, c, []resources.NetworkLoadBalancerForwardingRule{*ng}))
@@ -315,7 +316,7 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getForwardingRulePrint(resp, c, []resources.NetworkLoadBalancerForwardingRule{*ng}))
@@ -334,7 +335,7 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getForwardingRulePrint(resp, c, nil))

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -182,9 +183,9 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway deletion [seconds]")
 
-	natgatewayCmd.AddCommand(natgatewayRule())
-	natgatewayCmd.AddCommand(natgatewayLan())
-	natgatewayCmd.AddCommand(natgatewayFlowLog())
+	natgatewayCmd.AddCommand(NatgatewayRuleCmd())
+	natgatewayCmd.AddCommand(NatgatewayLanCmd())
+	natgatewayCmd.AddCommand(NatgatewayFlowLogCmd())
 
 	return natgatewayCmd
 }
@@ -239,7 +240,7 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getNatGatewayPrint(resp, c, []resources.NatGateway{*ng}))
@@ -255,7 +256,7 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getNatGatewayPrint(resp, c, []resources.NatGateway{*ng}))
@@ -272,7 +273,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getNatGatewayPrint(resp, c, nil))
