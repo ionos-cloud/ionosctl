@@ -229,7 +229,7 @@ Required values to run command:
 		return getK8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
-	k8sCmd.AddCommand(k8sNodePoolLan())
+	k8sCmd.AddCommand(K8sNodePoolLanCmd())
 
 	return k8sCmd
 }
