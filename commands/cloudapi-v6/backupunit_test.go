@@ -66,6 +66,15 @@ var (
 	testBackupUnitErr    = errors.New("backup-unit test error")
 )
 
+func TestBackupunitCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(BackupunitCmd())
+	if ok := BackupunitCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunBackupUnitId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -225,7 +234,7 @@ func TestRunBackupUnitCreateResponseErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgName), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgEmail), testBackupUnitVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testBackupUnitVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgPassword), testBackupUnitVar)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest).Return(&backupUnitTest, &testResponse, nil)
 		err := RunBackupUnitCreate(cfg)
 		assert.Error(t, err)
@@ -242,8 +251,9 @@ func TestRunBackupUnitCreateWaitErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgName), testBackupUnitVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgEmail), testBackupUnitVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testBackupUnitVar)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest).Return(&backupUnitTest, nil, nil)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgPassword), testBackupUnitVar)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Create(backupUnitTest).Return(&backupUnitTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, nil)
 		err := RunBackupUnitCreate(cfg)
 		assert.Error(t, err)
 	})

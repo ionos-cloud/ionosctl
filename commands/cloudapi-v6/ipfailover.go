@@ -202,7 +202,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
 	if properties, ok := lanUpdated.GetPropertiesOk(); ok && properties != nil {
@@ -241,7 +241,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 				return err
 			}
 
-			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetRequestPath(resp)); err != nil {
+			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 				return err
 			}
 			return c.Printer.Print(getIpFailoverPrint(resp, c, nil))

@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/commands"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/internal/core"
 )
 
 func main() {

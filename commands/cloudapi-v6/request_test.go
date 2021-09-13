@@ -79,12 +79,22 @@ var (
 			CreatedDate: &testIonosTime,
 		},
 	}
+	testRequestStatus = resources.RequestStatus{
+		RequestStatus: ionoscloud.RequestStatus{
+			Id: &testRequestVar,
+			Metadata: &ionoscloud.RequestStatusMetadata{
+				Status:  &testRequestStatusVar,
+				Message: &testRequestVar,
+			},
+		},
+	}
 	testRequests = resources.Requests{
 		Requests: ionoscloud.Requests{
 			Id:    &testRequestVar,
 			Items: &[]ionoscloud.Request{rq, testRequestUpdated, testRequestUpdatedPatch, testRequestDeleted, testRequestCreated},
 		},
 	}
+	testRequestStatusVar    = "DONE"
 	testRequestVar          = "test-request"
 	testRequestPathVar      = fmt.Sprintf("https://api.ionos.com/cloudapi/v6/requests/%s", testRequestVar)
 	testRequestErr          = errors.New("request test: error occurred")

@@ -65,11 +65,12 @@ var (
 			Items: &[]ionoscloud.FirewallRule{testRule.FirewallRule},
 		},
 	}
-	testResponse = resources.Response{
+	testRequestIdVar = "f2354da4-83e3-4e92-9d23-f3cb1ffecc31"
+	testResponse     = resources.Response{
 		APIResponse: ionoscloud.APIResponse{
 			Response: &http.Response{
 				Header: map[string][]string{
-					"location": {"https://api.ionos.com/cloudapi/v6/create/resource/status"},
+					"Location": {"https://api.ionos.com/cloudapi/v6/requests/f2354da4-83e3-4e92-9d23-f3cb1ffecc31/status"},
 				},
 			},
 		},
