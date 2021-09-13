@@ -70,6 +70,15 @@ var (
 	testLanErr    = errors.New("lan test: error occurred")
 )
 
+func TestLanCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(LanCmd())
+	if ok := LanCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestRunLanList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -177,7 +186,8 @@ func TestRunLanCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgName), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgPublic), publicLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgPccId), testLanVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, nil, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Create(testLanVar, resources.LanPost{LanPost: lanPostTest}).Return(&resources.LanPost{LanPost: lp}, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunLanCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -236,7 +246,7 @@ func TestRunLanUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgName), testLanNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgPublic), publicNewLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgPccId), testLanNewVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, &testResponse, testLanErr)
 		err := RunLanUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -256,7 +266,8 @@ func TestRunLanUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgName), testLanNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgPublic), publicNewLan)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgPccId), testLanNewVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, nil, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testLanVar, testLanVar, lanProperties).Return(&lanNew, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunLanUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -307,7 +318,8 @@ func TestRunLanDeleteWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLanId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.Lan.EXPECT().Delete(testLanVar, testLanVar).Return(nil, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Delete(testLanVar, testLanVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunLanDelete(cfg)
 		assert.Error(t, err)
 	})

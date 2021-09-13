@@ -39,6 +39,15 @@ var (
 	testTemplateErr  = errors.New("template test error")
 )
 
+func TestTemplateCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(TemplateCmd())
+	if ok := TemplateCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreTemplateId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

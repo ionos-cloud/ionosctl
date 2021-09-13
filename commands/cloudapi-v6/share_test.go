@@ -60,6 +60,15 @@ var (
 	testShareErr        = errors.New("share test error")
 )
 
+func TestShareCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(ShareCmd())
+	if ok := ShareCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunGroupResourceIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -168,7 +177,7 @@ func TestRunShareCreateResponseErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgResourceId), testShareVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, &testResponse, testShareErr)
 		err := RunShareCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -199,7 +208,8 @@ func TestRunShareCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgResourceId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, nil, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().AddShare(testShareVar, testShareVar, shareTest).Return(&shareTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunShareCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -270,7 +280,8 @@ func TestRunShareUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgSharePrivilege), testShareBoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.CloudApiV6Mocks.Group.EXPECT().GetShare(testShareVar, testShareVar).Return(&shareTest, nil, nil)
-		rm.CloudApiV6Mocks.Group.EXPECT().UpdateShare(testShareVar, testShareVar, shareNew).Return(&shareNew, nil, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().UpdateShare(testShareVar, testShareVar, shareNew).Return(&shareNew, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunShareUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -320,7 +331,8 @@ func TestRunShareDeleteWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgResourceId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(nil, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunShareDelete(cfg)
 		assert.Error(t, err)
 	})

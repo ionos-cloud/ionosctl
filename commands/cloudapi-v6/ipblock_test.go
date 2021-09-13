@@ -71,6 +71,15 @@ var (
 	testIpBlockErr      = errors.New("ip block test: error occurred")
 )
 
+func TestIpblockCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(IpblockCmd())
+	if ok := IpblockCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunIpBlockId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -178,7 +187,7 @@ func TestRunIpBlockCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgName), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocation), testIpBlockLocation)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgSize), testIpBlockSize)
-		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponse, nil)
+		rm.CloudApiV6Mocks.IpBlocks.EXPECT().Create(testIpBlockVar, testIpBlockLocation, testIpBlockSize).Return(&resTestIpBlock, &testResponse, testIpBlockErr)
 		err := RunIpBlockCreate(cfg)
 		assert.Error(t, err)
 	})

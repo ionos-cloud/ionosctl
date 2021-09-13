@@ -72,6 +72,15 @@ var (
 	testSnapshotErr     = errors.New("snapshot test error")
 )
 
+func TestSnapshotCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(SnapshotCmd())
+	if ok := SnapshotCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunSnapshotId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -216,7 +225,7 @@ func TestRunSnapshotCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgName), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgSecAuthProtection), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).Return(&snapshotTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Snapshot.EXPECT().Create(testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, testSnapshotVar, false).Return(&snapshotTest, &testResponse, testSnapshotErr)
 		err := RunSnapshotCreate(cfg)
 		assert.Error(t, err)
 	})

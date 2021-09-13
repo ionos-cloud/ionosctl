@@ -66,6 +66,15 @@ var (
 	testFlowLogErr         = errors.New("flowlog test error")
 )
 
+func TestFlowlogCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(FlowlogCmd())
+	if ok := FlowlogCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunFlowLogCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -227,7 +236,7 @@ func TestRunFlowLogCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgDirection), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgS3Bucket), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.FlowLog.EXPECT().Create(testFlowLogVar, testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testInputFlowLog, &testResponse, nil)
+		rm.CloudApiV6Mocks.FlowLog.EXPECT().Create(testFlowLogVar, testFlowLogVar, testFlowLogVar, testInputFlowLog).Return(&testInputFlowLog, &testResponse, testFlowLogErr)
 		err := RunFlowLogCreate(cfg)
 		assert.Error(t, err)
 	})

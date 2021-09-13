@@ -186,7 +186,7 @@ func TestRunNlbRuleTargetAddResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgCheck), testNlbRuleTargetBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgMaintenance), testNlbRuleTargetBoolVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGet, nil, nil)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties).Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties).Return(&testNlbRuleTargetGetUpdated, &testResponse, testNlbRuleTargetErr)
 		err := RunNlbRuleTargetAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -255,7 +255,8 @@ func TestRunNlbRuleTargetAddWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgCheck), testNlbRuleTargetBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgMaintenance), testNlbRuleTargetBoolVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGet, nil, nil)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties).Return(&testNlbRuleTargetGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar, &testRuleTargetProperties).Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNlbRuleTargetAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -388,7 +389,8 @@ func TestRunNlbRuleTargetRemoveWaitErr(t *testing.T) {
 				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
 				},
-			}).Return(&testNlbRuleTargetGet, nil, nil)
+			}).Return(&testNlbRuleTargetGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNlbRuleTargetRemove(cfg)
 		assert.Error(t, err)
 	})

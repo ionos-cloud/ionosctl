@@ -65,6 +65,15 @@ var (
 	testPccErr    = errors.New("pcc test error")
 )
 
+func TestPccCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(PccCmd())
+	if ok := PccCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunPccId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -196,7 +205,7 @@ func TestRunPccCreateResponseErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgName), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgDescription), testPccVar)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().Create(pccTest).Return(&pccTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().Create(pccTest).Return(&pccTest, &testResponse, testPccErr)
 		err := RunPccCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -227,7 +236,8 @@ func TestRunPccCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgName), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgDescription), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().Create(pccTest).Return(&pccTest, nil, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().Create(pccTest).Return(&pccTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunPccCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -294,7 +304,8 @@ func TestRunPccUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgDescription), testPccNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.CloudApiV6Mocks.Pcc.EXPECT().Get(testPccVar).Return(&pccTest, nil, nil)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().Update(testPccVar, pccProperties).Return(&pccNew, nil, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().Update(testPccVar, pccProperties).Return(&pccNew, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunPccUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -356,7 +367,8 @@ func TestRunPccDeleteWaitErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgPccId), testPccVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().Delete(testPccVar).Return(nil, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunPccDelete(cfg)
 		assert.Error(t, err)
 	})

@@ -164,7 +164,7 @@ func TestRunNatGatewayLanAddResponseErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar).Return(&natgatewayLanTest, nil, nil)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestProper).Return(&natgatewayLanTestUpdated, &testResponse, nil)
 		err := RunNatGatewayLanAdd(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -216,7 +216,8 @@ func TestRunNatGatewayLanAddWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLanId), testNatGatewayLanNewIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar).Return(&natgatewayLanTest, nil, nil)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestProper).Return(&natgatewayLanTestUpdated, nil, nil)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestProper).Return(&natgatewayLanTestUpdated, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNatGatewayLanAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -288,7 +289,8 @@ func TestRunNatGatewayLanRemoveWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgNatGatewayId), testNatGatewayLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLanId), testNatGatewayLanNewIntVar)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar).Return(&natgatewayLanTest, nil, nil)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestRemove).Return(&natgatewayLanTest, nil, nil)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestRemove).Return(&natgatewayLanTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunNatGatewayLanRemove(cfg)
 		assert.Error(t, err)
 	})

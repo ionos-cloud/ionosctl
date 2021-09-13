@@ -83,6 +83,15 @@ var (
 	testUserErr     = errors.New("user test error")
 )
 
+func TestUserCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(UserCmd())
+	if ok := UserCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunUserId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -218,7 +227,7 @@ func TestRunUserCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLastName), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgEmail), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testUserVar)
-		rm.CloudApiV6Mocks.User.EXPECT().Create(userTest).Return(&userTestGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.User.EXPECT().Create(userTest).Return(&userTestGet, &testResponse, testUserErr)
 		err := RunUserCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -454,7 +463,7 @@ func TestRunGroupUserAddResponse(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgUserId), testUserVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, groupUserTest).Return(&userTestGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().AddUser(testGroupVar, groupUserTest).Return(&userTestGet, &testResponse, testUserErr)
 		err := RunGroupUserAdd(cfg)
 		assert.Error(t, err)
 	})

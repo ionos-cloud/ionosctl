@@ -160,6 +160,15 @@ var (
 	testClusterErr      = errors.New("cluster test error")
 )
 
+func TestK8sCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(K8sCmd())
+	if ok := K8sCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunK8sClusterId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -374,7 +383,8 @@ func TestRunK8sClusterCreateWaitReqErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgApiSubnets), []string{testClusterVar})
-		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTestId, nil, nil)
+		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTestId, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunK8sClusterCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -432,7 +442,7 @@ func TestRunK8sClusterCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgApiSubnets), []string{testClusterVar})
-		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, &testResponse, testClusterErr)
 		err := RunK8sClusterCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -613,7 +623,8 @@ func TestRunK8sClusterDeleteWaitReqErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgK8sClusterId), testClusterVar)
-		rm.CloudApiV6Mocks.K8s.EXPECT().DeleteCluster(testClusterVar).Return(nil, nil)
+		rm.CloudApiV6Mocks.K8s.EXPECT().DeleteCluster(testClusterVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunK8sClusterDelete(cfg)
 		assert.Error(t, err)
 	})

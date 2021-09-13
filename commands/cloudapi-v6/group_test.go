@@ -84,6 +84,15 @@ var (
 	testGroupErr        = errors.New("resource test error")
 )
 
+func TestGroupCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(GroupCmd())
+	if ok := GroupCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunGroupId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -302,7 +311,8 @@ func TestRunGroupCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgCreateFlowLog), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgAccessMonitoring), testGroupBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgAccessCerts), testGroupBoolVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().Create(groupTest).Return(&groupTestGet, nil, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().Create(groupTest).Return(&groupTestGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunGroupCreate(cfg)
 		assert.Error(t, err)
 	})
@@ -376,7 +386,8 @@ func TestRunGroupUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.CloudApiV6Mocks.Group.EXPECT().Get(testGroupVar).Return(&groupTest, nil, nil)
-		rm.CloudApiV6Mocks.Group.EXPECT().Update(testGroupVar, groupTest).Return(&groupTest, nil, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().Update(testGroupVar, groupTest).Return(&groupTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunGroupUpdate(cfg)
 		assert.Error(t, err)
 	})
@@ -420,7 +431,7 @@ func TestRunGroupDeleteResponseErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGroupId), testGroupVar)
-		rm.CloudApiV6Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, testGroupErr)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
 	})
@@ -436,7 +447,8 @@ func TestRunGroupDeleteWaitErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
-		rm.CloudApiV6Mocks.Group.EXPECT().Delete(testGroupVar).Return(nil, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
 	})

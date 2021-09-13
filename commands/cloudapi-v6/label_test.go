@@ -35,6 +35,15 @@ var (
 	testLabelErr = errors.New("label test error")
 )
 
+func TestLabelCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(LabelCmd())
+	if ok := LabelCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunResourceTypeLabelKey(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
