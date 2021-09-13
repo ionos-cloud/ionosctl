@@ -208,7 +208,7 @@ func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
-	if err := utils.WaitForState(c, GetStateNetworkLoadBalancer, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNetworkLoadBalancerId))); err != nil {
+	if err := utils.WaitForState(c, waiter.NetworkLoadBalancerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNetworkLoadBalancerId))); err != nil {
 		return err
 	}
 	c.Printer.Verbose("NetworkLoadBalancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNetworkLoadBalancerId)))
@@ -317,21 +317,6 @@ func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoad
 	return &resources.NetworkLoadBalancerProperties{
 		NetworkLoadBalancerProperties: input,
 	}
-}
-
-// Wait for State
-
-func GetStateNetworkLoadBalancer(c *core.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.CloudApiV6Services.NetworkLoadBalancers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)), objId)
-	if err != nil {
-		return nil, err
-	}
-	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			return state, nil
-		}
-	}
-	return nil, nil
 }
 
 // Output Printing

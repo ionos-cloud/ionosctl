@@ -208,7 +208,7 @@ func RunNatGatewayList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayGet(c *core.CommandConfig) error {
-	if err := utils.WaitForState(c, GetStateNatGateway, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNatGatewayId))); err != nil {
+	if err := utils.WaitForState(c, waiter.NatGatewayStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNatGatewayId))); err != nil {
 		return err
 	}
 	c.Printer.Verbose("NatGateway with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNatGatewayId)))
@@ -295,21 +295,6 @@ func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties
 	return &resources.NatGatewayProperties{
 		NatGatewayProperties: input,
 	}
-}
-
-// Wait for State
-
-func GetStateNatGateway(c *core.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.CloudApiV6Services.NatGateways().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)), objId)
-	if err != nil {
-		return nil, err
-	}
-	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			return state, nil
-		}
-	}
-	return nil, nil
 }
 
 // Output Printing

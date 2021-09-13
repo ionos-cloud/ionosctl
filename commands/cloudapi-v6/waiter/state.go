@@ -58,3 +58,29 @@ func K8sNodePoolStateInterrogator(c *core.CommandConfig, objId string) (*string,
 	}
 	return nil, nil
 }
+
+func NatGatewayStateInterrogator(c *core.CommandConfig, objId string) (*string, error) {
+	obj, _, err := c.CloudApiV6Services.NatGateways().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), objId)
+	if err != nil {
+		return nil, err
+	}
+	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			return state, nil
+		}
+	}
+	return nil, nil
+}
+
+func NetworkLoadBalancerStateInterrogator(c *core.CommandConfig, objId string) (*string, error) {
+	obj, _, err := c.CloudApiV6Services.NetworkLoadBalancers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), objId)
+	if err != nil {
+		return nil, err
+	}
+	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
+		if state, ok := metadata.GetStateOk(); ok && state != nil {
+			return state, nil
+		}
+	}
+	return nil, nil
+}

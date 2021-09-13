@@ -204,7 +204,7 @@ func RunK8sClusterList(c *core.CommandConfig) error {
 }
 
 func RunK8sClusterGet(c *core.CommandConfig) error {
-	if err := utils.WaitForState(c, GetStateK8sCluster, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId))); err != nil {
+	if err := utils.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId))); err != nil {
 		return err
 	}
 	c.Printer.Verbose("K8s cluster with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId)))
@@ -233,7 +233,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
 		if id, ok := u.GetIdOk(); ok && id != nil {
-			if err = utils.WaitForState(c, GetStateK8sCluster, *id); err != nil {
+			if err = utils.WaitForState(c, waiter.K8sClusterStateInterrogator, *id); err != nil {
 				return err
 			}
 			if u, _, err = c.CloudApiV6Services.K8s().GetCluster(*id); err != nil {
@@ -258,7 +258,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
-		if err = utils.WaitForState(c, GetStateK8sCluster, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId))); err != nil {
+		if err = utils.WaitForState(c, waiter.K8sClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId))); err != nil {
 			return err
 		}
 		if k8sUpd, _, err = c.CloudApiV6Services.K8s().GetCluster(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId))); err != nil {
@@ -281,21 +281,6 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
-}
-
-// Wait for State
-
-func GetStateK8sCluster(c *core.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.CloudApiV6Services.K8s().GetCluster(objId)
-	if err != nil {
-		return nil, err
-	}
-	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			return state, nil
-		}
-	}
-	return nil, nil
 }
 
 func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, error) {

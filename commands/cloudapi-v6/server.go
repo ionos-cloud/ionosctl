@@ -468,7 +468,7 @@ func RunServerList(c *core.CommandConfig) error {
 
 func RunServerGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Server with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)))
-	if err := utils.WaitForState(c, GetStateServer, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))); err != nil {
+	if err := utils.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))); err != nil {
 		return err
 	}
 	svr, _, err := c.CloudApiV6Services.Servers().Get(
@@ -510,7 +510,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
 		if id, ok := svr.GetIdOk(); ok && id != nil {
-			if err = utils.WaitForState(c, GetStateServer, *id); err != nil {
+			if err = utils.WaitForState(c, waiter.ServerStateInterrogator, *id); err != nil {
 				return err
 			}
 			if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
@@ -544,7 +544,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		return err
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
-		if err = utils.WaitForState(c, GetStateServer, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))); err != nil {
+		if err = utils.WaitForState(c, waiter.ServerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))); err != nil {
 			return err
 		}
 		if svr, _, err = c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
@@ -782,21 +782,6 @@ func getNewDAS(c *core.CommandConfig) *resources.Volume {
 			Properties: &volumeProper.VolumeProperties,
 		},
 	}
-}
-
-// Wait for State
-
-func GetStateServer(c *core.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.CloudApiV6Services.Servers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)), objId)
-	if err != nil {
-		return nil, err
-	}
-	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			return state, nil
-		}
-	}
-	return nil, nil
 }
 
 // Output Printing

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -255,7 +256,7 @@ func RunK8sNodePoolList(c *core.CommandConfig) error {
 func RunK8sNodePoolGet(c *core.CommandConfig) error {
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sNodePoolId))
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId))
-	if err := utils.WaitForState(c, GetStateK8sNodePool, k8sNodePoolId); err != nil {
+	if err := utils.WaitForState(c, waiter.K8sNodePoolStateInterrogator, k8sNodePoolId); err != nil {
 		return err
 	}
 	c.Printer.Verbose("K8s node pool with id: %v from K8s Cluster with id: %v is getting...", k8sNodePoolId, k8sClusterId)
@@ -281,7 +282,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	}
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForState)) {
 		if id, ok := u.GetIdOk(); ok && id != nil {
-			if err = utils.WaitForState(c, GetStateK8sNodePool, *id); err != nil {
+			if err = utils.WaitForState(c, waiter.K8sNodePoolStateInterrogator, *id); err != nil {
 				return err
 			}
 			if u, _, err = c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId)), *id); err != nil {
@@ -306,7 +307,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForState(c, GetStateK8sNodePool, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sNodePoolId))); err != nil {
+	if err = utils.WaitForState(c, waiter.K8sNodePoolStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sNodePoolId))); err != nil {
 		return err
 	}
 	newNodePoolUpdated, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId)),
@@ -327,21 +328,6 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print("Status: Command node pool delete has been successfully executed")
-}
-
-// Wait for State
-
-func GetStateK8sNodePool(c *core.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.CloudApiV6Services.K8s().GetNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgK8sClusterId)), objId)
-	if err != nil {
-		return nil, err
-	}
-	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			return state, nil
-		}
-	}
-	return nil, nil
 }
 
 func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePool, error) {
