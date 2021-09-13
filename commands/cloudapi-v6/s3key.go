@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
@@ -55,7 +56,7 @@ func UserS3keyCmd() *core.Command {
 	})
 	list.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -75,11 +76,11 @@ func UserS3keyCmd() *core.Command {
 	})
 	get.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(cloudapi_v6.ArgS3KeyId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.S3KeyId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -107,7 +108,7 @@ Required values to run command:
 	})
 	create.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for User S3Key creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key creation [seconds]")
@@ -137,12 +138,12 @@ Required values to run command:
 	})
 	update.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(cloudapi_v6.ArgS3KeyActive, "", false, "Enable or disable an User S3Key")
 	update.AddStringFlag(cloudapi_v6.ArgS3KeyId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.S3KeyId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for User S3Key update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key update [seconds]")
@@ -164,11 +165,11 @@ Required values to run command:
 	})
 	deleteCmd.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddStringFlag(cloudapi_v6.ArgS3KeyId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.S3KeyId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getS3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for User S3Key deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key deletion [seconds]")
@@ -350,30 +351,4 @@ func getS3KeyKVMap(s resources.S3Key) map[string]interface{} {
 		}
 	}
 	return structs.Map(ssPrint)
-}
-
-func getS3KeyIds(outErr io.Writer, userId string) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	S3KeySvc := resources.NewS3KeyService(clientSvc.Get(), context.TODO())
-	S3Keys, _, err := S3KeySvc.List(userId)
-	clierror.CheckError(err, outErr)
-	ssIds := make([]string, 0)
-	if items, ok := S3Keys.S3Keys.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				ssIds = append(ssIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return ssIds
 }

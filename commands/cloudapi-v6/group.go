@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
@@ -71,7 +72,7 @@ func GroupCmd() *core.Command {
 	})
 	get.AddStringFlag(cloudapi_v6.ArgGroupId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.GroupId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -128,7 +129,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(cloudapi_v6.ArgGroupId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.GroupId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "Name for the Group")
 	update.AddBoolFlag(cloudapi_v6.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
@@ -167,7 +168,7 @@ Required values to run command:
 	})
 	deleteCmd.AddStringFlag(cloudapi_v6.ArgGroupId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.GroupId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group deletion [seconds]")
@@ -572,30 +573,4 @@ func getGroupsKVMaps(gs []resources.Group) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
-}
-
-func getGroupsIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	groupSvc := resources.NewGroupService(clientSvc.Get(), context.TODO())
-	groups, _, err := groupSvc.List()
-	clierror.CheckError(err, outErr)
-	groupsIds := make([]string, 0)
-	if items, ok := groups.Groups.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				groupsIds = append(groupsIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return groupsIds
 }

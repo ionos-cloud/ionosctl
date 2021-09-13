@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -72,7 +73,7 @@ func ResourceCmd() *core.Command {
 	})
 	getRsc.AddStringFlag(cloudapi_v6.ArgResourceId, cloudapi_v6.ArgIdShort, "", "The ID of the specific Resource to retrieve information about")
 	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return resourceCmd
@@ -145,7 +146,7 @@ func GroupResourceCmd() *core.Command {
 	})
 	listResources.AddStringFlag(cloudapi_v6.ArgGroupId, "", "", cloudapi_v6.GroupId, core.RequiredFlagOption())
 	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return resourceCmd
@@ -267,30 +268,4 @@ func getResourcesKVMaps(rs []resources.Resource) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
-}
-
-func getResourcesIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	userSvc := resources.NewUserService(clientSvc.Get(), context.TODO())
-	res, _, err := userSvc.ListResources()
-	clierror.CheckError(err, outErr)
-	resIds := make([]string, 0)
-	if items, ok := res.Resources.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				resIds = append(resIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return resIds
 }

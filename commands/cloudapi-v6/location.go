@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -69,7 +70,7 @@ func LocationCmd() *core.Command {
 	})
 	get.AddStringFlag(cloudapi_v6.ArgLocationId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.LocationId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	locationCmd.AddCommand(CpuCmd())
@@ -199,30 +200,4 @@ func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
-}
-
-func getLocationIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	locationSvc := resources.NewLocationService(clientSvc.Get(), context.TODO())
-	locations, _, err := locationSvc.List()
-	clierror.CheckError(err, outErr)
-	lcIds := make([]string, 0)
-	if items, ok := locations.Locations.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				lcIds = append(lcIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return lcIds
 }

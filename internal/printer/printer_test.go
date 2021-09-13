@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -157,7 +157,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 			},
 		},
 	}
-	res.ApiResponse.Header.Add("location", "https://api.test.ionos.com/cloudapi/v5/requests/123456/status")
+	res.ApiResponse.Header.Add("location", "https://api.test.ionos.com/cloudapi/v6/requests/123456/status")
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -266,7 +266,7 @@ func TestPrinterPrintResultTextRequestId(t *testing.T) {
 			},
 		},
 	}
-	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v5/requests/123456/status")
+	res.ApiResponse.Header.Add("location", "https://api.ionos.com/cloudapi/v6/requests/123456/status")
 	p.Print(res)
 	err = w.Flush()
 	assert.NoError(t, err)
@@ -458,7 +458,7 @@ func TestGetRequestId(t *testing.T) {
 	id, err := GetRequestId(config.DefaultApiURL)
 	assert.Error(t, err)
 	assert.Empty(t, id)
-	id, err = GetRequestId("https://api.test.ionos.com/cloudapi/v5/requests/test/status")
+	id, err = GetRequestId("https://api.test.ionos.com/cloudapi/v6/requests/test/status")
 	assert.NoError(t, err)
 	assert.Equal(t, "test", id)
 }

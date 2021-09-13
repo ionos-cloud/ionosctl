@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -69,7 +70,7 @@ func TemplateCmd() *core.Command {
 	})
 	get.AddStringFlag(cloudapi_v6.ArgTemplateId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.TemplateId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getTemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.TemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return templateCmd
@@ -194,30 +195,4 @@ func getTemplateKVMap(tpl resources.Template) map[string]interface{} {
 		}
 	}
 	return structs.Map(tplPrint)
-}
-
-func getTemplatesIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	tplSvc := resources.NewTemplateService(clientSvc.Get(), context.TODO())
-	tpls, _, err := tplSvc.List()
-	clierror.CheckError(err, outErr)
-	tplsIds := make([]string, 0)
-	if items, ok := tpls.Templates.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				tplsIds = append(tplsIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return tplsIds
 }

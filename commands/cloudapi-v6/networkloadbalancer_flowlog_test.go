@@ -5,14 +5,11 @@ import (
 	"bytes"
 	"errors"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"os"
-	"regexp"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -360,23 +357,4 @@ func TestRunNetworkLoadBalancerFlowLogDeleteAskForConfirmErr(t *testing.T) {
 		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
 		assert.Error(t, err)
 	})
-}
-
-func TestGetNetworkLoadBalancerFlowLogsIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
-	assert.NoError(t, err)
-	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	getNetworkLoadBalancerFlowLogsIds(w, testFlowLogVar, testFlowLogVar)
-	err = w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
-	assert.True(t, re.Match(b.Bytes()))
 }

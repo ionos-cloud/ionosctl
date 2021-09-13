@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -70,7 +71,7 @@ func UserCmd() *core.Command {
 	})
 	get.AddStringFlag(cloudapi_v6.ArgUserId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -132,7 +133,7 @@ Required values to run command:
 	update.AddBoolFlag(cloudapi_v6.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
 	update.AddStringFlag(cloudapi_v6.ArgUserId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -156,7 +157,7 @@ Required values to run command:
 	})
 	deleteCmd.AddStringFlag(cloudapi_v6.ArgUserId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	userCmd.AddCommand(UserS3keyCmd())
@@ -340,7 +341,7 @@ func GroupUserCmd() *core.Command {
 	})
 	listUsers.AddStringFlag(cloudapi_v6.ArgGroupId, "", "", cloudapi_v6.GroupId, core.RequiredFlagOption())
 	_ = listUsers.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -364,11 +365,11 @@ func GroupUserCmd() *core.Command {
 	})
 	addUser.AddStringFlag(cloudapi_v6.ArgGroupId, "", "", cloudapi_v6.GroupId, core.RequiredFlagOption())
 	_ = addUser.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	addUser.AddStringFlag(cloudapi_v6.ArgUserId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = addUser.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getUsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -392,11 +393,11 @@ func GroupUserCmd() *core.Command {
 	})
 	removeUser.AddStringFlag(cloudapi_v6.ArgGroupId, "", "", cloudapi_v6.GroupId, core.RequiredFlagOption())
 	_ = removeUser.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeUser.AddStringFlag(cloudapi_v6.ArgUserId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.UserId, core.RequiredFlagOption())
 	_ = removeUser.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getGroupUsersIds(os.Stderr, viper.GetString(core.GetFlagName(removeUser.NS, cloudapi_v6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.GroupUsersIds(os.Stderr, viper.GetString(core.GetFlagName(removeUser.NS, cloudapi_v6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return groupUserCmd
@@ -574,56 +575,4 @@ func getUsersKVMaps(us []resources.User) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
-}
-
-func getUsersIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	userSvc := resources.NewUserService(clientSvc.Get(), context.TODO())
-	users, _, err := userSvc.List()
-	clierror.CheckError(err, outErr)
-	usersIds := make([]string, 0)
-	if items, ok := users.Users.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				usersIds = append(usersIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return usersIds
-}
-
-func getGroupUsersIds(outErr io.Writer, groupId string) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	groupSvc := resources.NewGroupService(clientSvc.Get(), context.TODO())
-	users, _, err := groupSvc.ListUsers(groupId)
-	clierror.CheckError(err, outErr)
-	usersIds := make([]string, 0)
-	if items, ok := users.GroupMembers.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				usersIds = append(usersIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return usersIds
 }

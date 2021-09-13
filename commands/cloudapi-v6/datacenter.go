@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
@@ -70,7 +71,7 @@ func DatacenterCmd() *core.Command {
 	})
 	get.AddStringFlag(cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -96,7 +97,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	create.AddStringFlag(cloudapi_v6.ArgDescription, cloudapi_v6.ArgDescriptionShort, "", "Description of the Data Center")
 	create.AddStringFlag(cloudapi_v6.ArgLocation, cloudapi_v6.ArgLocationShort, "de/txl", "Location for the Data Center")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center creation [seconds]")
@@ -124,7 +125,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "Name of the Data Center")
 	update.AddStringFlag(cloudapi_v6.ArgDescription, cloudapi_v6.ArgDescriptionShort, "", "Description of the Data Center")
@@ -154,7 +155,7 @@ Required values to run command:
 	})
 	deleteCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center deletion")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
@@ -366,30 +367,4 @@ func getDataCentersKVMaps(dcs []resources.Datacenter) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
-}
-
-func getDataCentersIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	datacenterSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
-	datacenters, _, err := datacenterSvc.List()
-	clierror.CheckError(err, outErr)
-	dcIds := make([]string, 0)
-	if items, ok := datacenters.Datacenters.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				dcIds = append(dcIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return dcIds
 }

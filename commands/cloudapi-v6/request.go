@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -84,7 +85,7 @@ Use flags to retrieve a list of Requests:
 	})
 	get.AddStringFlag(cloudapi_v6.ArgRequestId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.RequestId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.RequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -110,7 +111,7 @@ Required values to run command:
 	})
 	wait.AddStringFlag(cloudapi_v6.ArgRequestId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.RequestId, core.RequiredFlagOption())
 	_ = wait.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getRequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.RequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	wait.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
 
@@ -352,30 +353,4 @@ func getRequestsKVMaps(requests []resources.Request) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
-}
-
-func getRequestsIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	reqSvc := resources.NewRequestService(clientSvc.Get(), context.TODO())
-	requests, _, err := reqSvc.List()
-	clierror.CheckError(err, outErr)
-	reqIds := make([]string, 0)
-	if items, ok := requests.Requests.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				reqIds = append(reqIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return reqIds
 }

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"os"
 
@@ -48,23 +49,23 @@ func LabelCmd() *core.Command {
 	})
 	list.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(cloudapi_v6.ArgVolumeId, "", "", cloudapi_v6.VolumeId)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(cloudapi_v6.ArgIpBlockId, "", "", cloudapi_v6.IpBlockId)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(cloudapi_v6.ArgSnapshotId, "", "", cloudapi_v6.SnapshotId)
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(cloudapi_v6.ArgResourceType, "", "", "Type of the resource to list labels from")
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -89,23 +90,23 @@ func LabelCmd() *core.Command {
 	get.AddStringFlag(cloudapi_v6.ArgLabelKey, "", "", cloudapi_v6.LabelKey, core.RequiredFlagOption())
 	get.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId)
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId)
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(cloudapi_v6.ArgVolumeId, "", "", cloudapi_v6.VolumeId)
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(cloudapi_v6.ArgIpBlockId, "", "", cloudapi_v6.IpBlockId)
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(cloudapi_v6.ArgSnapshotId, "", "", cloudapi_v6.SnapshotId)
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddStringFlag(cloudapi_v6.ArgResourceType, "", "", "Type of the resource to get label from", core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -147,23 +148,23 @@ func LabelCmd() *core.Command {
 	addLabel.AddStringFlag(cloudapi_v6.ArgLabelValue, "", "", cloudapi_v6.LabelValue, core.RequiredFlagOption())
 	addLabel.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId)
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	addLabel.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId)
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(addLabel.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(addLabel.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	addLabel.AddStringFlag(cloudapi_v6.ArgVolumeId, "", "", cloudapi_v6.VolumeId)
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(addLabel.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(addLabel.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	addLabel.AddStringFlag(cloudapi_v6.ArgIpBlockId, "", "", cloudapi_v6.IpBlockId)
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	addLabel.AddStringFlag(cloudapi_v6.ArgSnapshotId, "", "", cloudapi_v6.SnapshotId)
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	addLabel.AddStringFlag(cloudapi_v6.ArgResourceType, "", "", "Type of the resource to add label to", core.RequiredFlagOption())
 	_ = addLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -188,23 +189,23 @@ func LabelCmd() *core.Command {
 	removeLabel.AddStringFlag(cloudapi_v6.ArgLabelKey, "", "", cloudapi_v6.LabelKey, core.RequiredFlagOption())
 	removeLabel.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getDataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getServersIds(os.Stderr, viper.GetString(core.GetFlagName(removeLabel.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(removeLabel.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(cloudapi_v6.ArgVolumeId, "", "", cloudapi_v6.VolumeId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(removeLabel.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(removeLabel.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(cloudapi_v6.ArgIpBlockId, "", "", cloudapi_v6.IpBlockId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(cloudapi_v6.ArgSnapshotId, "", "", cloudapi_v6.SnapshotId)
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getSnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeLabel.AddStringFlag(cloudapi_v6.ArgResourceType, "", "", "Type of the resource to remove label for", core.RequiredFlagOption())
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

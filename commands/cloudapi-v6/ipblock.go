@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
@@ -70,7 +71,7 @@ func IpblockCmd() *core.Command {
 	})
 	get.AddStringFlag(cloudapi_v6.ArgIpBlockId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.IpBlockId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -93,7 +94,7 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	create.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "Name of the IpBlock. If not set, it will automatically be set")
 	create.AddStringFlag(cloudapi_v6.ArgLocation, cloudapi_v6.ArgLocationShort, "de/txl", "Location of the IpBlock")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddIntFlag(cloudapi_v6.ArgSize, "", 2, "Size of the IpBlock")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IpBlock creation to be executed")
@@ -122,7 +123,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(cloudapi_v6.ArgIpBlockId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.IpBlockId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "Name of the IpBlock")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IpBlock update to be executed")
@@ -151,7 +152,7 @@ Required values to run command:
 	})
 	deleteCmd.AddStringFlag(cloudapi_v6.ArgIpBlockId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.IpBlockId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IpBlock deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock deletion [seconds]")
@@ -347,30 +348,4 @@ func getIpBlockKVMap(s resources.IpBlock) map[string]interface{} {
 		}
 	}
 	return structs.Map(ipblockPrint)
-}
-
-func getIpBlocksIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	ipBlockSvc := resources.NewIpBlockService(clientSvc.Get(), context.TODO())
-	ipBlocks, _, err := ipBlockSvc.List()
-	clierror.CheckError(err, outErr)
-	ssIds := make([]string, 0)
-	if items, ok := ipBlocks.IpBlocks.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				ssIds = append(ssIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return ssIds
 }

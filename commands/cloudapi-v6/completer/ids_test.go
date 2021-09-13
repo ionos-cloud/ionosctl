@@ -533,3 +533,132 @@ func TestGetAttachedVolumesIds(t *testing.T) {
 	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }
+
+func TestGetNatGatewaysIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() {}
+	w := bufio.NewWriter(&b)
+	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	NatGatewaysIds(w, testIdVar)
+	err = w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestGetNatGatewayFlowLogsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() {}
+	w := bufio.NewWriter(&b)
+	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
+	assert.NoError(t, err)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	NatGatewayFlowLogsIds(w, testIdVar, testIdVar)
+	err = w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestGetNatGatewayRulesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() {}
+	w := bufio.NewWriter(&b)
+	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
+	assert.NoError(t, err)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	NatGatewayRulesIds(w, testIdVar, testIdVar)
+	err = w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestGetNetworkLoadBalancersIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() {}
+	w := bufio.NewWriter(&b)
+	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
+	assert.NoError(t, err)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	NetworkLoadBalancersIds(w, testIdVar)
+	err = w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestGetNetworkLoadBalancerFlowLogsIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() {}
+	w := bufio.NewWriter(&b)
+	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
+	assert.NoError(t, err)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	NetworkLoadBalancerFlowLogsIds(w, testIdVar, testIdVar)
+	err = w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestGetNetworkLoadBalancerForwardingRulesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() {}
+	w := bufio.NewWriter(&b)
+	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	ForwardingRulesIds(w, testIdVar, testIdVar)
+	err = w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}
+
+func TestGetTemplatesIds(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() {}
+	w := bufio.NewWriter(&b)
+	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
+	assert.NoError(t, err)
+	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
+	assert.NoError(t, err)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	TemplatesIds(w)
+	err = w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(`401 Unauthorized`)
+	assert.True(t, re.Match(b.Bytes()))
+}

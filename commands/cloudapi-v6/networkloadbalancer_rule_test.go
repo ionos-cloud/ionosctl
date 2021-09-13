@@ -467,20 +467,3 @@ func TestGetForwardingRulesColsErr(t *testing.T) {
 	re := regexp.MustCompile(`unknown column Unknown`)
 	assert.True(t, re.Match(b.Bytes()))
 }
-
-func TestGetNetworkLoadBalancerForwardingRulesIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
-	assert.NoError(t, err)
-	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	getForwardingRulesIds(w, testNlbForwardingRuleVar, testNlbForwardingRuleVar)
-	err = w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
-	assert.True(t, re.Match(b.Bytes()))
-}

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -52,7 +53,7 @@ func IpconsumerCmd() *core.Command {
 	})
 	listResources.AddStringFlag(cloudapi_v6.ArgIpBlockId, "", "", cloudapi_v6.IpBlockId, core.RequiredFlagOption())
 	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getIpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return resourceCmd

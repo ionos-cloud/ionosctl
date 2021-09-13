@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
@@ -74,7 +75,7 @@ Use flags to retrieve a list of Images:
 	})
 	list.AddStringFlag(cloudapi_v6.ArgLocation, cloudapi_v6.ArgLocationShort, "", "The location of the Image")
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getLocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringFlag(cloudapi_v6.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by")
 	list.AddIntFlag(cloudapi_v6.ArgLatest, "", 0, "Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed")
@@ -96,7 +97,7 @@ Use flags to retrieve a list of Images:
 	})
 	get.AddStringFlag(cloudapi_v6.ArgImageId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.ImageId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return imageCmd
@@ -292,32 +293,6 @@ func getImageKVMap(img resources.Image) map[string]interface{} {
 		}
 	}
 	return structs.Map(imgPrint)
-}
-
-func getImageIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	imageSvc := resources.NewImageService(clientSvc.Get(), context.TODO())
-	images, _, err := imageSvc.List()
-	clierror.CheckError(err, outErr)
-	imgsIds := make([]string, 0)
-	if items, ok := images.Images.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				imgsIds = append(imgsIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return imgsIds
 }
 
 // Output Columns Sorting

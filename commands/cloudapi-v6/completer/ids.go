@@ -86,6 +86,25 @@ func FirewallRulesIds(outErr io.Writer, datacenterId, serverId, nicId string) []
 	return firewallRulesIds
 }
 
+func FlowLogsIds(outErr io.Writer, datacenterId, serverId, nicId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	flowLogSvc := resources.NewFlowLogService(client, context.TODO())
+	flowLogs, _, err := flowLogSvc.List(datacenterId, serverId, nicId)
+	clierror.CheckError(err, outErr)
+	flowLogsIds := make([]string, 0)
+	if items, ok := flowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				flowLogsIds = append(flowLogsIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return flowLogsIds
+}
+
 func GroupsIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
@@ -257,6 +276,120 @@ func LocationIds(outErr io.Writer) []string {
 	return lcIds
 }
 
+func NatGatewaysIds(outErr io.Writer, datacenterId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	natgatewaySvc := resources.NewNatGatewayService(client, context.TODO())
+	natgateways, _, err := natgatewaySvc.List(datacenterId)
+	clierror.CheckError(err, outErr)
+	ssIds := make([]string, 0)
+	if items, ok := natgateways.NatGateways.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
+
+func NatGatewayFlowLogsIds(outErr io.Writer, datacenterId, natgatewayId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	natgatewaySvc := resources.NewNatGatewayService(client, context.TODO())
+	natFlowLogs, _, err := natgatewaySvc.ListFlowLogs(datacenterId, natgatewayId)
+	clierror.CheckError(err, outErr)
+	ssIds := make([]string, 0)
+	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
+
+func NatGatewayRulesIds(outErr io.Writer, datacenterId, natgatewayId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	natgatewaySvc := resources.NewNatGatewayService(client, context.TODO())
+	natgateways, _, err := natgatewaySvc.ListRules(datacenterId, natgatewayId)
+	clierror.CheckError(err, outErr)
+	ssIds := make([]string, 0)
+	if items, ok := natgateways.NatGatewayRules.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
+
+func NetworkLoadBalancersIds(outErr io.Writer, datacenterId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client, context.TODO())
+	networkloadbalancers, _, err := networkloadbalancerSvc.List(datacenterId)
+	clierror.CheckError(err, outErr)
+	ssIds := make([]string, 0)
+	if items, ok := networkloadbalancers.NetworkLoadBalancers.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
+
+func NetworkLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, networkloadbalancerId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	networkloadbalancerSvc := resources.NewNetworkLoadBalancerService(client, context.TODO())
+	natFlowLogs, _, err := networkloadbalancerSvc.ListFlowLogs(datacenterId, networkloadbalancerId)
+	clierror.CheckError(err, outErr)
+	ssIds := make([]string, 0)
+	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
+
+func ForwardingRulesIds(outErr io.Writer, datacenterId, nlbId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	nlbSvc := resources.NewNetworkLoadBalancerService(client, context.TODO())
+	natForwardingRules, _, err := nlbSvc.ListForwardingRules(datacenterId, nlbId)
+	clierror.CheckError(err, outErr)
+	ssIds := make([]string, 0)
+	if items, ok := natForwardingRules.NetworkLoadBalancerForwardingRules.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
+
 func NicsIds(outErr io.Writer, datacenterId, serverId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
@@ -426,6 +559,25 @@ func SnapshotIds(outErr io.Writer) []string {
 		return nil
 	}
 	return ssIds
+}
+
+func TemplatesIds(outErr io.Writer) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	tplSvc := resources.NewTemplateService(client, context.TODO())
+	tpls, _, err := tplSvc.List()
+	clierror.CheckError(err, outErr)
+	tplsIds := make([]string, 0)
+	if items, ok := tpls.Templates.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				tplsIds = append(tplsIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return tplsIds
 }
 
 func UsersIds(outErr io.Writer) []string {
