@@ -2,17 +2,17 @@ package commands
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -61,17 +61,17 @@ Required values to run command:
 		CmdRun:     RunServerCdromAttach,
 		InitClient: true,
 	})
-	attachCdrom.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	attachCdrom.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachCdrom.AddStringFlag(cloudapi_v6.ArgCdromId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.CdromId, core.RequiredFlagOption())
-	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	attachCdrom.AddStringFlag(cloudapiv6.ArgCdromId, cloudapiv6.ArgIdShort, "", cloudapiv6.CdromId, core.RequiredFlagOption())
+	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getImagesCdromIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachCdrom.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachCdrom.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	attachCdrom.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachCdrom.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachCdrom.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for CD-ROM attachment to be executed")
 	attachCdrom.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Cdrom attachment [seconds]")
@@ -91,13 +91,13 @@ Required values to run command:
 		CmdRun:     RunServerCdromsList,
 		InitClient: true,
 	})
-	listCdroms.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = listCdroms.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	listCdroms.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = listCdroms.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	listCdroms.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = listCdroms.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(listCdroms.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	listCdroms.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = listCdroms.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(listCdroms.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -115,17 +115,17 @@ Required values to run command:
 		PreCmdRun:  PreRunDcServerCdromIds,
 		CmdRun:     RunServerCdromGet,
 	})
-	getCdromCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getCdromCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	getCdromCmd.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(getCdromCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	getCdromCmd.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(getCdromCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	getCdromCmd.AddStringFlag(cloudapi_v6.ArgCdromId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.CdromId, core.RequiredFlagOption())
-	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgCdromId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AttachedCdromsIds(os.Stderr, viper.GetString(core.GetFlagName(getCdromCmd.NS, cloudapi_v6.ArgDataCenterId)), viper.GetString(core.GetFlagName(getCdromCmd.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	getCdromCmd.AddStringFlag(cloudapiv6.ArgCdromId, cloudapiv6.ArgIdShort, "", cloudapiv6.CdromId, core.RequiredFlagOption())
+	_ = getCdromCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.AttachedCdromsIds(os.Stderr, viper.GetString(core.GetFlagName(getCdromCmd.NS, cloudapiv6.ArgDataCenterId)), viper.GetString(core.GetFlagName(getCdromCmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -151,18 +151,18 @@ Required values to run command:
 		CmdRun:     RunServerCdromDetach,
 		InitClient: true,
 	})
-	detachCdrom.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = detachCdrom.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	detachCdrom.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = detachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachCdrom.AddStringFlag(cloudapi_v6.ArgCdromId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.CdromId, core.RequiredFlagOption())
-	_ = detachCdrom.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AttachedCdromsIds(os.Stderr, viper.GetString(core.GetFlagName(detachCdrom.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(detachCdrom.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	detachCdrom.AddStringFlag(cloudapiv6.ArgCdromId, cloudapiv6.ArgIdShort, "", cloudapiv6.CdromId, core.RequiredFlagOption())
+	_ = detachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.AttachedCdromsIds(os.Stderr, viper.GetString(core.GetFlagName(detachCdrom.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(detachCdrom.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachCdrom.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = detachCdrom.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(detachCdrom.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	detachCdrom.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = detachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(detachCdrom.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	detachCdrom.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for CD-ROM detachment to be executed")
 	detachCdrom.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for CD-ROM detachment [seconds]")
@@ -171,13 +171,13 @@ Required values to run command:
 }
 
 func PreRunDcServerCdromIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgServerId, cloudapi_v6.ArgCdromId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgCdromId)
 }
 
 func RunServerCdromAttach(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))
-	cdRomId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgCdromId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	cdRomId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
 	c.Printer.Verbose("CD-ROM with id: %v is attaching to server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
 	attachedCdrom, resp, err := c.CloudApiV6Services.Servers().AttachCdrom(dcId, serverId, cdRomId)
 	if err != nil {
@@ -192,8 +192,8 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 
 func RunServerCdromsList(c *core.CommandConfig) error {
 	attachedCdroms, _, err := c.CloudApiV6Services.Servers().ListCdroms(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if err != nil {
 		return err
@@ -202,11 +202,11 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 }
 
 func RunServerCdromGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("CD-ROM with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgCdromId)))
+	c.Printer.Verbose("CD-ROM with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)))
 	attachedCdrom, _, err := c.CloudApiV6Services.Servers().GetCdrom(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgCdromId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)),
 	)
 	if err != nil {
 		return err
@@ -218,11 +218,11 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach cdrom from server"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgCdromId)))
+	c.Printer.Verbose("CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)))
 	resp, err := c.CloudApiV6Services.Servers().DetachCdrom(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgCdromId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)),
 	)
 
 	if err != nil {

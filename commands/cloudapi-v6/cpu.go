@@ -4,17 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 	"strings"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -53,8 +53,8 @@ func CpuCmd() *core.Command {
 		CmdRun:     RunLocationCpuList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapi_v6.ArgLocationId, "", "", cloudapi_v6.LocationId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgLocationId, "", "", cloudapiv6.LocationId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -62,7 +62,7 @@ func CpuCmd() *core.Command {
 }
 
 func RunLocationCpuList(c *core.CommandConfig) error {
-	locId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLocationId))
+	locId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId))
 	ids := strings.Split(locId, "/")
 	if len(ids) != 2 {
 		return errors.New("error getting location id & region id")

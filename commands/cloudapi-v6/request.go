@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 	"sort"
@@ -13,10 +11,12 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -62,9 +62,9 @@ Use flags to retrieve a list of Requests:
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
-	list.AddIntFlag(cloudapi_v6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed")
-	list.AddStringFlag(cloudapi_v6.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE")
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed")
+	list.AddStringFlag(cloudapiv6.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"POST", "PUT", "DELETE", "PATCH", "CREATE", "UPDATE"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -83,8 +83,8 @@ Use flags to retrieve a list of Requests:
 		CmdRun:     RunRequestGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgRequestId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.RequestId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgRequestId, cloudapiv6.ArgIdShort, "", cloudapiv6.RequestId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -109,8 +109,8 @@ Required values to run command:
 		CmdRun:     RunRequestWait,
 		InitClient: true,
 	})
-	wait.AddStringFlag(cloudapi_v6.ArgRequestId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.RequestId, core.RequiredFlagOption())
-	_ = wait.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	wait.AddStringFlag(cloudapiv6.ArgRequestId, cloudapiv6.ArgIdShort, "", cloudapiv6.RequestId, core.RequiredFlagOption())
+	_ = wait.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRequestId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	wait.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
@@ -119,7 +119,7 @@ Required values to run command:
 }
 
 func PreRunRequestId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgRequestId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgRequestId)
 }
 
 func RunRequestList(c *core.CommandConfig) error {
@@ -127,8 +127,8 @@ func RunRequestList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgMethod)) {
-		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgMethod))) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMethod)) {
+		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))) {
 		case "CREATE":
 			requests = sortRequestsByMethod(requests, "POST")
 		case "UPDATE":
@@ -148,11 +148,11 @@ func RunRequestList(c *core.CommandConfig) error {
 			}
 			requests.Items = &sortReqsUpdated
 		default:
-			requests = sortRequestsByMethod(requests, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgMethod))))
+			requests = sortRequestsByMethod(requests, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMethod))))
 		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgLatest)) {
-		requests = sortRequestsByTime(requests, viper.GetInt(core.GetFlagName(c.NS, cloudapi_v6.ArgLatest)))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)) {
+		requests = sortRequestsByTime(requests, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
 	}
 
 	if itemsOk, ok := requests.GetItemsOk(); ok && itemsOk != nil {
@@ -164,8 +164,8 @@ func RunRequestList(c *core.CommandConfig) error {
 }
 
 func RunRequestGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgRequestId)))
-	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgRequestId)))
+	c.Printer.Verbose("Request with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
+	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
 	if err != nil {
 		return err
 	}
@@ -173,7 +173,7 @@ func RunRequestGet(c *core.CommandConfig) error {
 }
 
 func RunRequestWait(c *core.CommandConfig) error {
-	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgRequestId)))
+	req, _, err := c.CloudApiV6Services.Requests().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRequestId)))
 	if err != nil {
 		return err
 	}

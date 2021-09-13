@@ -11,30 +11,10 @@ const (
 
 // Flags
 const (
-	ArgConfig                = "config"
-	ArgConfigShort           = "c"
-	ArgOutput                = "output"
-	ArgOutputShort           = "o"
-	ArgQuiet                 = "quiet"
-	ArgQuietShort            = "q"
-	ArgWaitForRequest        = "wait-for-request"
-	ArgWaitForRequestShort   = "w"
-	ArgWaitForState          = "wait-for-state"
-	ArgWaitForStateShort     = "W"
-	ArgTimeout               = "timeout"
-	ArgTimeoutShort          = "t"
-	ArgForce                 = "force"
-	ArgForceShort            = "f"
-	ArgVerbose               = "verbose"
-	ArgVerboseShort          = "v"
-	ArgServerUrl             = "api-url"
-	ArgServerUrlShort        = "u"
 	ArgCols                  = "cols"
 	ArgUserData              = "user-data"
 	ArgFirstName             = "first-name"
 	ArgLastName              = "last-name"
-	ArgToken                 = "token"
-	ArgUser                  = "user"
 	ArgEmail                 = "email"
 	ArgEmailShort            = "e"
 	ArgPassword              = "password"
@@ -143,7 +123,6 @@ const (
 	ArgPublicIps             = "public-ips"
 	ArgPrivateIps            = "private-ips"
 	ArgGatewayIp             = "gateway-ip"
-	ArgUpdates               = "updates"
 	ArgLatest                = "latest"
 	ArgMethod                = "method"
 )
@@ -217,9 +196,6 @@ const (
 
 // Default values
 const (
-	DefaultApiURL          = "https://api.ionos.com"
-	DefaultV6BasePath      = "/cloudapi/v6"
-	DefaultConfigFileName  = "/config.json"
 	DefaultOutputFormat    = "text"
 	DefaultWait            = false
 	DefaultPublic          = false
@@ -229,12 +205,7 @@ const (
 	NlbTimeoutSeconds      = int(300)
 	K8sTimeoutSeconds      = int(600)
 	DefaultServerCores     = 2
-	DefaultServerRAM       = "256"
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
 	DefaultServerCPUFamily = "AMD_OPTERON"
-	Username               = "userdata.name"
-	Password               = "userdata.password"
-	Token                  = "userdata.token"
-	ServerUrl              = "userdata.api-url"
 )

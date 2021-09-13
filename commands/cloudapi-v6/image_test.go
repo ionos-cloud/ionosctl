@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"regexp"
 	"strings"
 	"testing"
@@ -12,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -69,7 +69,7 @@ func TestPreImageId(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgImageId), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testImageVar)
 		err := PreRunImageId(cfg)
 		assert.NoError(t, err)
 	})
@@ -121,11 +121,11 @@ func TestRunImageListSort(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocation), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLicenceType), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgType), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLatest), 1)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgImageAlias), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocation), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLicenceType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 1)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testImageVar)
 		rm.CloudApiV6Mocks.Image.EXPECT().List().Return(testImages, nil, nil)
 		err := RunImageList(cfg)
 		assert.NoError(t, err)
@@ -139,11 +139,11 @@ func TestRunImageListSortOptionErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocation), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLicenceType), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgType), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLatest), 1)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgImageAlias), "no alias")
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocation), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLicenceType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 1)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), "no alias")
 		rm.CloudApiV6Mocks.Image.EXPECT().List().Return(testImages, nil, nil)
 		err := RunImageList(cfg)
 		assert.Error(t, err)
@@ -157,11 +157,11 @@ func TestRunImageListSortErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocation), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLicenceType), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgType), testImageVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLatest), 1)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgImageAlias), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocation), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLicenceType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 1)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testImageVar)
 		rm.CloudApiV6Mocks.Image.EXPECT().List().Return(testImages, nil, testImageErr)
 		err := RunImageList(cfg)
 		assert.Error(t, err)
@@ -175,7 +175,7 @@ func TestRunImageGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgImageId), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testImageVar)
 		rm.CloudApiV6Mocks.Image.EXPECT().Get(testImageVar).Return(&testImage, nil, nil)
 		err := RunImageGet(cfg)
 		assert.NoError(t, err)
@@ -189,7 +189,7 @@ func TestRunImageGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgImageId), testImageVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testImageVar)
 		rm.CloudApiV6Mocks.Image.EXPECT().Get(testImageVar).Return(&testImage, nil, testImageErr)
 		err := RunImageGet(cfg)
 		assert.Error(t, err)

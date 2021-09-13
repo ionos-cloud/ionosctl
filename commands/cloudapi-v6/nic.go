@@ -3,18 +3,18 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -54,13 +54,13 @@ func NicCmd() *core.Command {
 		CmdRun:     RunNicList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	list.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -78,18 +78,18 @@ func NicCmd() *core.Command {
 		CmdRun:     RunNicGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(cloudapi_v6.ArgNicId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(cloudapiv6.ArgNicId, cloudapiv6.ArgIdShort, "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -114,25 +114,25 @@ Required values to run a command:
 		CmdRun:     RunNicCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	create.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "Internet Access", "The name of the NIC")
-	create.AddStringSliceFlag(cloudapi_v6.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
-	create.AddBoolFlag(cloudapi_v6.ArgDhcp, "", cloudapi_v6.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC")
-	create.AddBoolFlag(cloudapi_v6.ArgFirewallActive, "", cloudapi_v6.DefaultFirewallActive, "Activate or deactivate the Firewall")
-	create.AddStringFlag(cloudapi_v6.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Internet Access", "The name of the NIC")
+	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
+	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC")
+	create.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Activate or deactivate the Firewall")
+	create.AddStringFlag(cloudapiv6.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(cloudapi_v6.ArgLanId, "", cloudapi_v6.DefaultNicLanId, "The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	create.AddIntFlag(cloudapiv6.ArgLanId, "", cloudapiv6.DefaultNicLanId, "The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC creation [seconds]")
@@ -163,33 +163,33 @@ Required values to run command:
 		CmdRun:     RunNicUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	update.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgNicId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	update.AddStringFlag(cloudapiv6.ArgNicId, cloudapiv6.ArgIdShort, "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "The name of the NIC")
-	update.AddIntFlag(cloudapi_v6.ArgLanId, "", cloudapi_v6.DefaultNicLanId, "The LAN ID the NIC sits on")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name of the NIC")
+	update.AddIntFlag(cloudapiv6.ArgLanId, "", cloudapiv6.DefaultNicLanId, "The LAN ID the NIC sits on")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapi_v6.ArgFirewallActive, "", cloudapi_v6.DefaultFirewallActive, "Activate or deactivate the Firewall")
-	update.AddStringFlag(cloudapi_v6.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Activate or deactivate the Firewall")
+	update.AddStringFlag(cloudapiv6.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapi_v6.ArgDhcp, "", cloudapi_v6.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
+	update.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
-	update.AddStringSliceFlag(cloudapi_v6.ArgIps, "", []string{""}, "IPs assigned to the NIC")
+	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "IPs assigned to the NIC")
 
 	/*
 		Delete Command
@@ -214,18 +214,18 @@ Required values to run command:
 		CmdRun:     RunNicDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	deleteCmd.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgNicId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	deleteCmd.AddStringFlag(cloudapiv6.ArgNicId, cloudapiv6.ArgIdShort, "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC deletion [seconds]")
@@ -235,8 +235,8 @@ Required values to run command:
 
 func RunNicList(c *core.CommandConfig) error {
 	nics, _, err := c.CloudApiV6Services.Nics().List(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)))
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
 	if err != nil {
 		return err
 	}
@@ -244,11 +244,11 @@ func RunNicList(c *core.CommandConfig) error {
 }
 
 func RunNicGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)))
+	c.Printer.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)))
 	n, _, err := c.CloudApiV6Services.Nics().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
 	if err != nil {
 		return err
@@ -257,14 +257,14 @@ func RunNicGet(c *core.CommandConfig) error {
 }
 
 func RunNicCreate(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
-	ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapi_v6.ArgIps))
-	dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDhcp))
-	lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId))
-	firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallActive))
-	firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallType))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
+	dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
+	lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
+	firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive))
+	firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType))
 
 	c.Printer.Verbose("Creating Nic in DataCenterId: %v with ServerId: %v...", dcId, serverId)
 	c.Printer.Verbose("Properties set for creating the Nic: Name: %v, Ips: %v, Dhcp: %v, Lan: %v FirewallActive: %v, FirewallType: %v",
@@ -298,40 +298,40 @@ func RunNicCreate(c *core.CommandConfig) error {
 
 func RunNicUpdate(c *core.CommandConfig) error {
 	input := resources.NicProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.NicProperties.SetName(name)
 		c.Printer.Verbose("Property Name set: %v", name)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDhcp)) {
-		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDhcp))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp)) {
+		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 		input.NicProperties.SetDhcp(dhcp)
 		c.Printer.Verbose("Property Dhcp set: %v", dhcp)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId)) {
-		lan := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
+		lan := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 		input.NicProperties.SetLan(lan)
 		c.Printer.Verbose("Property Lan set: %v", lan)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgIps)) {
-		ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapi_v6.ArgIps))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
+		ips := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
 		input.NicProperties.SetIps(ips)
 		c.Printer.Verbose("Property Ips set: %v", ips)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallActive)) {
-		firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallActive))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive)) {
+		firewallActive := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallActive))
 		input.NicProperties.SetFirewallActive(firewallActive)
 		c.Printer.Verbose("Property FirewallActive set: %v", firewallActive)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallType)) {
-		firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallType))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType)) {
+		firewallType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallType))
 		input.NicProperties.SetFirewallType(firewallType)
 		c.Printer.Verbose("Property FirewallType set: %v", firewallType)
 	}
 	nicUpd, resp, err := c.CloudApiV6Services.Nics().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 		input,
 	)
 	if err != nil {
@@ -348,11 +348,11 @@ func RunNicDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)))
+	c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)))
 	resp, err := c.CloudApiV6Services.Nics().Delete(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
 	if err != nil {
 		return err
@@ -405,22 +405,22 @@ Required values to run command:
 	_ = attachNic.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = attachNic.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	attachNic.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = attachNic.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddStringFlag(cloudapi_v6.ArgServerId, "", "", "The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion")
-	_ = attachNic.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachNic.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	attachNic.AddStringFlag(cloudapiv6.ArgServerId, "", "", "The unique Server Id on which NIC is build on. Not required, but it helps in autocompletion")
+	_ = attachNic.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachNic.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddStringFlag(cloudapi_v6.ArgLoadBalancerId, "", "", cloudapi_v6.LoadBalancerId, core.RequiredFlagOption())
-	_ = attachNic.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(attachNic.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	attachNic.AddStringFlag(cloudapiv6.ArgLoadBalancerId, "", "", cloudapiv6.LoadBalancerId, core.RequiredFlagOption())
+	_ = attachNic.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(attachNic.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachNic.AddStringFlag(cloudapi_v6.ArgNicId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = attachNic.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(attachNic.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(attachNic.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	attachNic.AddStringFlag(cloudapiv6.ArgNicId, cloudapiv6.ArgIdShort, "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = attachNic.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(attachNic.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(attachNic.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachNic.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC attachment to be executed")
 	attachNic.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC attachment [seconds]")
@@ -444,13 +444,13 @@ Required values to run command:
 	_ = listNics.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	listNics.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = listNics.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	listNics.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = listNics.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	listNics.AddStringFlag(cloudapi_v6.ArgLoadBalancerId, "", "", cloudapi_v6.LoadBalancerId, core.RequiredFlagOption())
-	_ = listNics.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(listNics.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	listNics.AddStringFlag(cloudapiv6.ArgLoadBalancerId, "", "", cloudapiv6.LoadBalancerId, core.RequiredFlagOption())
+	_ = listNics.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(listNics.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -472,18 +472,18 @@ Required values to run command:
 	_ = getNicCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	getNicCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = getNicCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getNicCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = getNicCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	getNicCmd.AddStringFlag(cloudapi_v6.ArgLoadBalancerId, "", "", cloudapi_v6.LoadBalancerId, core.RequiredFlagOption())
-	_ = getNicCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(getNicCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	getNicCmd.AddStringFlag(cloudapiv6.ArgLoadBalancerId, "", "", cloudapiv6.LoadBalancerId, core.RequiredFlagOption())
+	_ = getNicCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(getNicCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	getNicCmd.AddStringFlag(cloudapi_v6.ArgNicId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = getNicCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AttachedNicsIds(os.Stderr, viper.GetString(core.GetFlagName(getNicCmd.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(getNicCmd.NS, cloudapi_v6.ArgLoadBalancerId)),
+	getNicCmd.AddStringFlag(cloudapiv6.ArgNicId, cloudapiv6.ArgIdShort, "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = getNicCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.AttachedNicsIds(os.Stderr, viper.GetString(core.GetFlagName(getNicCmd.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(getNicCmd.NS, cloudapiv6.ArgLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -514,18 +514,18 @@ Required values to run command:
 	_ = detachNic.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allNicCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = detachNic.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	detachNic.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = detachNic.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddStringFlag(cloudapi_v6.ArgNicId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = detachNic.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AttachedNicsIds(os.Stderr, viper.GetString(core.GetFlagName(detachNic.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(detachNic.NS, cloudapi_v6.ArgLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
+	detachNic.AddStringFlag(cloudapiv6.ArgNicId, cloudapiv6.ArgIdShort, "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = detachNic.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.AttachedNicsIds(os.Stderr, viper.GetString(core.GetFlagName(detachNic.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(detachNic.NS, cloudapiv6.ArgLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachNic.AddStringFlag(cloudapi_v6.ArgLoadBalancerId, "", "", cloudapi_v6.LoadBalancerId, core.RequiredFlagOption())
-	_ = detachNic.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(detachNic.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	detachNic.AddStringFlag(cloudapiv6.ArgLoadBalancerId, "", "", cloudapiv6.LoadBalancerId, core.RequiredFlagOption())
+	_ = detachNic.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(detachNic.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	detachNic.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC detachment to be executed")
 	detachNic.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC detachment [seconds]")
@@ -534,14 +534,14 @@ Required values to run command:
 }
 
 func PreRunDcNicLoadBalancerIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgNicId, cloudapi_v6.ArgLoadBalancerId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNicId, cloudapiv6.ArgLoadBalancerId)
 }
 
 func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	attachedNic, resp, err := c.CloudApiV6Services.Loadbalancers().AttachNic(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
 	if err != nil {
 		return err
@@ -554,8 +554,8 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 
 func RunLoadBalancerNicList(c *core.CommandConfig) error {
 	attachedNics, _, err := c.CloudApiV6Services.Loadbalancers().ListNics(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 	)
 	if err != nil {
 		return err
@@ -565,9 +565,9 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 
 func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 	n, _, err := c.CloudApiV6Services.Loadbalancers().GetNic(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
 	if err != nil {
 		return err
@@ -580,9 +580,9 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 		return err
 	}
 	resp, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
 	if err != nil {
 		return err

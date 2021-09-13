@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -25,7 +25,7 @@ func TestRunK8sKubeconfigGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgK8sClusterId), testKubeconfigVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testKubeconfigVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ReadKubeConfig(testKubeconfigVar).Return(testKubeconfigVar, nil, nil)
 		err := RunK8sKubeconfigGet(cfg)
 		assert.NoError(t, err)
@@ -39,7 +39,7 @@ func TestRunK8sKubeconfigGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgK8sClusterId), testKubeconfigVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testKubeconfigVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ReadKubeConfig(testKubeconfigVar).Return(testKubeconfigVar, nil, testKubeconfigErr)
 		err := RunK8sKubeconfigGet(cfg)
 		assert.Error(t, err)

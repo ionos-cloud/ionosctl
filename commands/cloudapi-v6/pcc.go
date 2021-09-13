@@ -3,18 +3,18 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -69,8 +69,8 @@ func PccCmd() *core.Command {
 		CmdRun:     RunPccGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgPccId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.PccId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", cloudapiv6.PccId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -89,8 +89,8 @@ func PccCmd() *core.Command {
 		CmdRun:     RunPccCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "Unnamed PrivateCrossConnect", "The name for the Private Cross-Connect")
-	create.AddStringFlag(cloudapi_v6.ArgDescription, cloudapi_v6.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed PrivateCrossConnect", "The name for the Private Cross-Connect")
+	create.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect creation [seconds]")
 
@@ -113,10 +113,10 @@ Required values to run command:
 		CmdRun:     RunPccUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "The name for the Private Cross-Connect")
-	update.AddStringFlag(cloudapi_v6.ArgDescription, cloudapi_v6.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
-	update.AddStringFlag(cloudapi_v6.ArgPccId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.PccId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the Private Cross-Connect")
+	update.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "The description for the Private Cross-Connect")
+	update.AddStringFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", cloudapiv6.PccId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect update to be executed")
@@ -141,8 +141,8 @@ Required values to run command:
 		CmdRun:     RunPccDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgPccId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.PccId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", cloudapiv6.PccId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
@@ -154,7 +154,7 @@ Required values to run command:
 }
 
 func PreRunPccId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgPccId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgPccId)
 }
 
 func RunPccList(c *core.CommandConfig) error {
@@ -166,8 +166,8 @@ func RunPccList(c *core.CommandConfig) error {
 }
 
 func RunPccGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Private cross connect with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPccId)))
-	u, _, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPccId)))
+	c.Printer.Verbose("Private cross connect with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	u, _, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
 	if err != nil {
 		return err
 	}
@@ -175,8 +175,8 @@ func RunPccGet(c *core.CommandConfig) error {
 }
 
 func RunPccCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
-	description := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDescription))
+	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 	newUser := resources.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Properties: &ionoscloud.PrivateCrossConnectProperties{
@@ -201,12 +201,12 @@ func RunPccCreate(c *core.CommandConfig) error {
 }
 
 func RunPccUpdate(c *core.CommandConfig) error {
-	oldPcc, resp, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPccId)))
+	oldPcc, resp, err := c.CloudApiV6Services.Pccs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
 	if err != nil {
 		return err
 	}
 	newProperties := getPccInfo(oldPcc, c)
-	pccUpd, resp, err := c.CloudApiV6Services.Pccs().Update(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPccId)), *newProperties)
+	pccUpd, resp, err := c.CloudApiV6Services.Pccs().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)), *newProperties)
 	if err != nil {
 		return err
 	}
@@ -221,8 +221,8 @@ func RunPccDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Private cross connect with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPccId)))
-	resp, err := c.CloudApiV6Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPccId)))
+	c.Printer.Verbose("Private cross connect with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	resp, err := c.CloudApiV6Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
 	if err != nil {
 		return err
 	}
@@ -236,16 +236,16 @@ func RunPccDelete(c *core.CommandConfig) error {
 func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *resources.PrivateCrossConnectProperties {
 	var namePcc, description string
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgName)) {
-			namePcc = viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+			namePcc = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 			c.Printer.Verbose("Property Name set: %v", namePcc)
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				namePcc = *name
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDescription)) {
-			description = viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDescription))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
+			description = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 			c.Printer.Verbose("Property Description set: %v", description)
 		} else {
 			if desc, ok := properties.GetDescriptionOk(); ok && desc != nil {
@@ -294,8 +294,8 @@ func PeersCmd() *core.Command {
 		CmdRun:     RunPccPeersList,
 		InitClient: true,
 	})
-	listPeers.AddStringFlag(cloudapi_v6.ArgPccId, "", "", cloudapi_v6.PccId, core.RequiredFlagOption())
-	_ = listPeers.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	listPeers.AddStringFlag(cloudapiv6.ArgPccId, "", "", cloudapiv6.PccId, core.RequiredFlagOption())
+	_ = listPeers.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -303,8 +303,8 @@ func PeersCmd() *core.Command {
 }
 
 func RunPccPeersList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting Peers from Private Cross-Connect with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPccId)))
-	u, _, err := c.CloudApiV6Services.Pccs().GetPeers(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPccId)))
+	c.Printer.Verbose("Getting Peers from Private Cross-Connect with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
+	u, _, err := c.CloudApiV6Services.Pccs().GetPeers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
 	if err != nil {
 		return err
 	}

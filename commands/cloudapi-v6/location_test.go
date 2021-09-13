@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"regexp"
 	"strings"
 	"testing"
@@ -12,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -64,7 +64,7 @@ func TestPreLocationId(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocationId), testLocationVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationVar)
 		err := PreRunLocationId(cfg)
 		assert.NoError(t, err)
 	})
@@ -115,7 +115,7 @@ func TestRunLocationGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocationId), testLocationVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationVar)
 		testIds := strings.Split(testLocationVar, "/")
 		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, nil, nil)
 		err := RunLocationGet(cfg)
@@ -130,7 +130,7 @@ func TestRunLocationGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocationId), testLocationVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationVar)
 		testIds := strings.Split(testLocationVar, "/")
 		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, nil, testLocationErr)
 		err := RunLocationGet(cfg)
@@ -145,7 +145,7 @@ func TestRunLocationGetLocationErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocationId), "us")
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), "us")
 		err := RunLocationGet(cfg)
 		assert.Error(t, err)
 	})

@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"strings"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -51,8 +51,8 @@ func ContractCmd() *core.Command {
 		CmdRun:     RunContractGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgResourceLimits, "", "", "Specify Resource Limits to see details about it")
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgResourceLimits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgResourceLimits, "", "", "Specify Resource Limits to see details about it")
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceLimits, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CORES", "RAM", "HDD", "SSD", "DAS", "IPS", "K8S", "NLB", "NAT"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -60,13 +60,13 @@ func ContractCmd() *core.Command {
 }
 
 func RunContractGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgResourceLimits)))
+	c.Printer.Verbose("Contract with resource limits: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)))
 	contractResource, _, err := c.CloudApiV6Services.Contracts().Get()
 	if err != nil {
 		return err
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgResourceLimits)) {
-		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgResourceLimits))) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits)) {
+		switch strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceLimits))) {
 		case "CORES":
 			return c.Printer.Print(getContractPrint(c, getContract(contractResource), contractCoresCols))
 		case "RAM":

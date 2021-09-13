@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"regexp"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -55,7 +55,7 @@ func TestPreTemplateId(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgTemplateId), testTemplateVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testTemplateVar)
 		err := PreRunTemplateId(cfg)
 		assert.NoError(t, err)
 	})
@@ -106,7 +106,7 @@ func TestRunTemplateGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgTemplateId), testTemplateVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testTemplateVar)
 		rm.CloudApiV6Mocks.Template.EXPECT().Get(testTemplateVar).Return(&tpl, nil, nil)
 		err := RunTemplateGet(cfg)
 		assert.NoError(t, err)
@@ -120,7 +120,7 @@ func TestRunTemplateGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgTemplateId), testTemplateVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testTemplateVar)
 		rm.CloudApiV6Mocks.Template.EXPECT().Get(testTemplateVar).Return(&tpl, nil, testTemplateErr)
 		err := RunTemplateGet(cfg)
 		assert.Error(t, err)

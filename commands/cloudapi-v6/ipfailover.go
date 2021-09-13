@@ -3,18 +3,18 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -54,13 +54,13 @@ func IpfailoverCmd() *core.Command {
 		CmdRun:     RunIpFailoverList,
 		InitClient: true,
 	})
-	listCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = listCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	listCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = listCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	listCmd.AddStringFlag(cloudapi_v6.ArgLanId, "", "", cloudapi_v6.LanId, core.RequiredFlagOption())
-	_ = listCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(listCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	listCmd.AddStringFlag(cloudapiv6.ArgLanId, "", "", cloudapiv6.LanId, core.RequiredFlagOption())
+	_ = listCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(listCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -92,24 +92,24 @@ Required values to run command:
 		CmdRun:     RunIpFailoverAdd,
 		InitClient: true,
 	})
-	addCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = addCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	addCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = addCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(cloudapi_v6.ArgLanId, "", "", cloudapi_v6.LanId, core.RequiredFlagOption())
-	_ = addCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	addCmd.AddStringFlag(cloudapiv6.ArgLanId, "", "", cloudapiv6.LanId, core.RequiredFlagOption())
+	_ = addCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = addCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	addCmd.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = addCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(cloudapi_v6.ArgNicId, "", "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = addCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(addCmd.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	addCmd.AddStringFlag(cloudapiv6.ArgNicId, "", "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = addCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NicsIds(os.Stderr, viper.GetString(core.GetFlagName(addCmd.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(addCmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	addCmd.AddStringFlag(cloudapi_v6.ArgIp, "", "", "IP address to be added to IP Failover Group", core.RequiredFlagOption())
+	addCmd.AddStringFlag(cloudapiv6.ArgIp, "", "", "IP address to be added to IP Failover Group", core.RequiredFlagOption())
 	addCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IP Failover creation to be executed")
 	addCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover creation [seconds]")
 
@@ -136,24 +136,24 @@ Required values to run command:
 		CmdRun:     RunIpFailoverRemove,
 		InitClient: true,
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	removeCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgLanId, "", "", cloudapi_v6.LanId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	removeCmd.AddStringFlag(cloudapiv6.ArgLanId, "", "", cloudapiv6.LanId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LansIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	removeCmd.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgNicId, "", "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NicsIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(removeCmd.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	removeCmd.AddStringFlag(cloudapiv6.ArgNicId, "", "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NicsIds(os.Stderr, viper.GetString(core.GetGlobalFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgIp, "", "", "Allocated IP", core.RequiredFlagOption())
+	removeCmd.AddStringFlag(cloudapiv6.ArgIp, "", "", "Allocated IP", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IP Failover deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover deletion [seconds]")
 
@@ -161,18 +161,18 @@ Required values to run command:
 }
 
 func PreRunDcLanIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgLanId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLanId)
 }
 
 func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgLanId, cloudapi_v6.ArgServerId, cloudapi_v6.ArgNicId, cloudapi_v6.ArgIp)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLanId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId, cloudapiv6.ArgIp)
 }
 
 func RunIpFailoverList(c *core.CommandConfig) error {
 	ipsFailovers := make([]resources.IpFailover, 0)
 	obj, _, err := c.CloudApiV6Services.Lans().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
 	)
 	if err != nil {
 		return err
@@ -193,8 +193,8 @@ func RunIpFailoverList(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 	c.Printer.Verbose("Adding an IP Failover group to LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 	ipsFailovers := make([]resources.IpFailover, 0)
 	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c))
@@ -220,8 +220,8 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 	c.Printer.Verbose("Removing IP Failover group from LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
 		return err
@@ -233,8 +233,8 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 	if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
 		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
 			_, resp, err := c.CloudApiV6Services.Lans().Update(
-				viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-				viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId)),
+				viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+				viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
 				removeIpFailoverInfo(c, ipfailovers),
 			)
 			if err != nil {
@@ -254,8 +254,8 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 }
 
 func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
-	ip := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgIp))
-	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId))
+	ip := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
+	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	c.Printer.Verbose("Adding IpFailover with Ip: %v and NicUuid: %v", ip, nicId)
 	return resources.LanProperties{
 		LanProperties: ionoscloud.LanProperties{
@@ -270,8 +270,8 @@ func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
 }
 
 func removeIpFailoverInfo(c *core.CommandConfig, failovers *[]ionoscloud.IPFailover) resources.LanProperties {
-	removeIp := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgIp))
-	removeNicId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId))
+	removeIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp))
+	removeNicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	c.Printer.Verbose("Removing IpFailover with Ip: %v and NicUuid: %v", removeIp, removeNicId)
 	newIpFailover := make([]ionoscloud.IPFailover, 0)
 	for _, failover := range *failovers {

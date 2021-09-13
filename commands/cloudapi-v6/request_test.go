@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"regexp"
 	"testing"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -121,7 +121,7 @@ func TestPreRunRequestId(t *testing.T) {
 	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunRequestId(cfg)
 		assert.NoError(t, err)
@@ -161,8 +161,8 @@ func TestRunRequestListSortedUpdate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLatest), 10)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgMethod), "UPDATE")
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 10)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), "UPDATE")
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
@@ -176,8 +176,8 @@ func TestRunRequestListSortedCreate(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLatest), 10)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgMethod), "CREATE")
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 10)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), "CREATE")
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
@@ -191,8 +191,8 @@ func TestRunRequestListSortedDelete(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLatest), 1)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgMethod), "DELETE")
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 1)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), "DELETE")
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
@@ -206,8 +206,8 @@ func TestRunRequestListSortedErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLatest), 10)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgMethod), "no method")
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLatest), 10)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMethod), "no method")
 		rm.CloudApiV6Mocks.Request.EXPECT().List().Return(testRequests, nil, nil)
 		err := RunRequestList(cfg)
 		assert.Error(t, err)
@@ -235,7 +235,7 @@ func TestRunRequestGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
 		req := resources.Request{Request: rq}
 		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		err := RunRequestGet(cfg)
@@ -250,7 +250,7 @@ func TestRunRequestGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
 		req := resources.Request{Request: rq}
 		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, nil, testRequestErr)
 		err := RunRequestGet(cfg)
@@ -266,7 +266,7 @@ func TestRunRequestWait(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
 		req := resources.Request{Request: rq}
 		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, nil)
@@ -282,7 +282,7 @@ func TestRunRequestWaitErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgRequestId), testRequestVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRequestId), testRequestVar)
 		req := resources.Request{Request: rq}
 		rm.CloudApiV6Mocks.Request.EXPECT().Get(testRequestVar).Return(&req, nil, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().Wait(testRequestPathVar+"/status").Return(nil, testRequestErr)

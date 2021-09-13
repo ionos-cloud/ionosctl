@@ -3,18 +3,18 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -52,13 +52,13 @@ Required values to run command:
 		CmdRun:     RunNatGatewayLanList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapi_v6.ArgNatGatewayId, "", "", cloudapi_v6.NatGatewayId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	list.AddStringFlag(cloudapiv6.ArgNatGatewayId, "", "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	list.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols, printer.ColsMessage(defaultNatGatewayLanCols))
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -90,19 +90,19 @@ Required values to run command:
 		CmdRun:     RunNatGatewayLanAdd,
 		InitClient: true,
 	})
-	add.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	add.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapi_v6.ArgNatGatewayId, "", "", cloudapi_v6.NatGatewayId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	add.AddStringFlag(cloudapiv6.ArgNatGatewayId, "", "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
+	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddIntFlag(cloudapi_v6.ArgLanId, cloudapi_v6.ArgIdShort, 1, cloudapi_v6.LanId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	add.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 1, cloudapiv6.LanId, core.RequiredFlagOption())
+	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringSliceFlag(cloudapi_v6.ArgIps, "", []string{""}, "Collection of Gateway IPs. If not set, it will automatically reserve public IPs")
+	add.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "Collection of Gateway IPs. If not set, it will automatically reserve public IPs")
 	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Lan addition to be executed")
 	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Lan addition [seconds]")
 	add.AddStringSliceFlag(config.ArgCols, "", defaultNatGatewayLanCols, printer.ColsMessage(defaultNatGatewayLanCols))
@@ -133,17 +133,17 @@ Required values to run command:
 		CmdRun:     RunNatGatewayLanRemove,
 		InitClient: true,
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	removeCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgNatGatewayId, "", "", cloudapi_v6.NatGatewayId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	removeCmd.AddStringFlag(cloudapiv6.ArgNatGatewayId, "", "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddIntFlag(cloudapi_v6.ArgLanId, cloudapi_v6.ArgIdShort, 1, cloudapi_v6.LanId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	removeCmd.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 1, cloudapiv6.LanId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway Lan deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Lan deletion [seconds]")
@@ -156,13 +156,13 @@ Required values to run command:
 }
 
 func PreRunDcNatGatewayLanIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgNatGatewayId, cloudapi_v6.ArgLanId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgLanId)
 }
 
 func RunNatGatewayLanList(c *core.CommandConfig) error {
 	ng, _, err := c.CloudApiV6Services.NatGateways().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNatGatewayId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 	)
 	if err != nil {
 		return err
@@ -171,8 +171,8 @@ func RunNatGatewayLanList(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayLanAdd(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNatGatewayId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
 		return err
@@ -193,8 +193,8 @@ func RunNatGatewayLanRemove(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove nat gateway lan"); err != nil {
 		return err
 	}
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNatGatewayId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
 		return err
@@ -221,13 +221,13 @@ func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 		}
 	}
 	input := ionoscloud.NatGatewayLanProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId)) {
-		lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
+		lanId := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 		input.SetId(lanId)
 		c.Printer.Verbose("Property Id set: %v", lanId)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgIps)) {
-		gatewayIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapi_v6.ArgIps))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIps)) {
+		gatewayIps := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgIps))
 		input.SetGatewayIps(gatewayIps)
 		c.Printer.Verbose("Property GatewayIps set: %v", gatewayIps)
 	}
@@ -246,7 +246,7 @@ func removeNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway)
 			if lans, ok := properties.GetLansOk(); ok && lans != nil {
 				for _, lanItem := range *lans {
 					if id, ok := lanItem.GetIdOk(); ok && id != nil {
-						if *id != viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgLanId)) {
+						if *id != viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)) {
 							proper = append(proper, lanItem)
 						}
 					}

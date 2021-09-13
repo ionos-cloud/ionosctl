@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -32,8 +32,8 @@ func TestRunServerConsoleGet(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgDataCenterId), testConsoleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgServerId), testConsoleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testConsoleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testConsoleVar)
 		rm.CloudApiV6Mocks.Server.EXPECT().GetRemoteConsoleUrl(testConsoleVar, testConsoleVar).Return(testConsole, nil, nil)
 		err := RunServerConsoleGet(cfg)
 		assert.NoError(t, err)
@@ -47,8 +47,8 @@ func TestRunServerConsoleGetErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgDataCenterId), testConsoleVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgServerId), testConsoleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testConsoleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testConsoleVar)
 		rm.CloudApiV6Mocks.Server.EXPECT().GetRemoteConsoleUrl(testConsoleVar, testConsoleVar).Return(testConsole, nil, testConsoleErr)
 		err := RunServerConsoleGet(cfg)
 		assert.Error(t, err)

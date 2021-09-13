@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"regexp"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -71,7 +71,7 @@ func TestPreRunResourceType(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testResourceVar)
 		err := PreRunResourceType(cfg)
 		assert.NoError(t, err)
 	})
@@ -122,7 +122,7 @@ func TestRunResourceGetByType(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testResourceVar)
 		rm.CloudApiV6Mocks.User.EXPECT().GetResourcesByType(testResourceVar).Return(rs, nil, nil)
 		err := RunResourceGet(cfg)
 		assert.NoError(t, err)
@@ -136,8 +136,8 @@ func TestRunResourceGetByTypeAndId(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgType), testResourceVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgResourceId), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceId), testResourceVar)
 		rm.CloudApiV6Mocks.User.EXPECT().GetResourceByTypeAndId(testResourceVar, testResourceVar).Return(&resourceTestGet, nil, nil)
 		err := RunResourceGet(cfg)
 		assert.NoError(t, err)
@@ -151,8 +151,8 @@ func TestRunResourceGetByTypeAndIdErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgType), testResourceVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgResourceId), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceId), testResourceVar)
 		rm.CloudApiV6Mocks.User.EXPECT().GetResourceByTypeAndId(testResourceVar, testResourceVar).Return(&resourceTestGet, nil, testResourceErr)
 		err := RunResourceGet(cfg)
 		assert.Error(t, err)
@@ -166,7 +166,7 @@ func TestRunResourceGetByTypeErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgType), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testResourceVar)
 		rm.CloudApiV6Mocks.User.EXPECT().GetResourcesByType(testResourceVar).Return(rs, nil, testResourceErr)
 		err := RunResourceGet(cfg)
 		assert.Error(t, err)
@@ -182,7 +182,7 @@ func TestRunGroupResourceList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGroupId), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testResourceVar)
 		rm.CloudApiV6Mocks.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, nil, nil)
 		err := RunGroupResourceList(cfg)
 		assert.NoError(t, err)
@@ -196,7 +196,7 @@ func TestRunGroupResourceListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgGroupId), testResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testResourceVar)
 		rm.CloudApiV6Mocks.Group.EXPECT().ListResources(testResourceVar).Return(resourceGroupTest, nil, testResourceErr)
 		err := RunGroupResourceList(cfg)
 		assert.Error(t, err)

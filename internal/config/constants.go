@@ -2,7 +2,6 @@ package config
 
 const (
 	IonosServerUrlEnvVar = "IONOS_API_URL"
-	RequestTimeMessage   = "The execution time of the request is: %v"
 
 	ArgConfig              = "config"
 	ArgConfigShort         = "c"

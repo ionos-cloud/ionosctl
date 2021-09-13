@@ -3,18 +3,18 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -72,8 +72,8 @@ func BackupunitCmd() *core.Command {
 		CmdRun:     RunBackupUnitGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgBackupUnitId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.BackupUnitId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgBackupUnitId, cloudapiv6.ArgIdShort, "", cloudapiv6.BackupUnitId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -91,8 +91,8 @@ func BackupunitCmd() *core.Command {
 		CmdRun:     RunBackupUnitGetSsoUrl,
 		InitClient: true,
 	})
-	getsso.AddStringFlag(cloudapi_v6.ArgBackupUnitId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.BackupUnitId, core.RequiredFlagOption())
-	_ = getsso.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getsso.AddStringFlag(cloudapiv6.ArgBackupUnitId, cloudapiv6.ArgIdShort, "", cloudapiv6.BackupUnitId, core.RequiredFlagOption())
+	_ = getsso.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -124,9 +124,9 @@ Required values to run a command:
 		CmdRun:     RunBackupUnitCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "Alphanumeric name you want to assign to the BackupUnit", core.RequiredFlagOption())
-	create.AddStringFlag(cloudapi_v6.ArgEmail, cloudapi_v6.ArgEmailShort, "", "The e-mail address you want to assign to the BackupUnit", core.RequiredFlagOption())
-	create.AddStringFlag(cloudapi_v6.ArgPassword, cloudapi_v6.ArgPasswordShort, "", "Alphanumeric password you want to assign to the BackupUnit", core.RequiredFlagOption())
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Alphanumeric name you want to assign to the BackupUnit", core.RequiredFlagOption())
+	create.AddStringFlag(cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The e-mail address you want to assign to the BackupUnit", core.RequiredFlagOption())
+	create.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "", "Alphanumeric password you want to assign to the BackupUnit", core.RequiredFlagOption())
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit creation [seconds]")
 
@@ -149,10 +149,10 @@ Required values to run command:
 		CmdRun:     RunBackupUnitUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(cloudapi_v6.ArgPassword, cloudapi_v6.ArgPasswordShort, "", "Alphanumeric password you want to update for the BackupUnit")
-	update.AddStringFlag(cloudapi_v6.ArgEmail, cloudapi_v6.ArgEmailShort, "", "The e-mail address you want to update for the BackupUnit")
-	update.AddStringFlag(cloudapi_v6.ArgBackupUnitId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.BackupUnitId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "", "Alphanumeric password you want to update for the BackupUnit")
+	update.AddStringFlag(cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The e-mail address you want to update for the BackupUnit")
+	update.AddStringFlag(cloudapiv6.ArgBackupUnitId, cloudapiv6.ArgIdShort, "", cloudapiv6.BackupUnitId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit update to be executed")
@@ -177,8 +177,8 @@ Required values to run command:
 		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgBackupUnitId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.BackupUnitId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgBackupUnitId, cloudapiv6.ArgIdShort, "", cloudapiv6.BackupUnitId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit deletion to be executed")
@@ -188,11 +188,11 @@ Required values to run command:
 }
 
 func PreRunBackupUnitId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgBackupUnitId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgBackupUnitId)
 }
 
 func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgName, cloudapi_v6.ArgEmail, cloudapi_v6.ArgPassword)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgName, cloudapiv6.ArgEmail, cloudapiv6.ArgPassword)
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {
@@ -204,8 +204,8 @@ func RunBackupUnitList(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBackupUnitId)))
-	u, _, err := c.CloudApiV6Services.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBackupUnitId)))
+	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
+	u, _, err := c.CloudApiV6Services.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	if err != nil {
 		return err
 	}
@@ -213,8 +213,8 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
-	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBackupUnitId)))
-	u, _, err := c.CloudApiV6Services.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBackupUnitId)))
+	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
+	u, _, err := c.CloudApiV6Services.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	if err != nil {
 		return err
 	}
@@ -222,9 +222,9 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitCreate(c *core.CommandConfig) error {
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
-	email := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgEmail))
-	pwd := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPassword))
+	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
+	pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 	newBackupUnit := resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Properties: &ionoscloud.BackupUnitProperties{
@@ -254,7 +254,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 
 func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	newProperties := getBackupUnitInfo(c)
-	backupUnitUpd, resp, err := c.CloudApiV6Services.BackupUnit().Update(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBackupUnitId)), *newProperties)
+	backupUnitUpd, resp, err := c.CloudApiV6Services.BackupUnit().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)), *newProperties)
 	if err != nil {
 		return err
 	}
@@ -268,8 +268,8 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBackupUnitId)))
-	resp, err := c.CloudApiV6Services.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBackupUnitId)))
+	c.Printer.Verbose("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
+	resp, err := c.CloudApiV6Services.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	if err != nil {
 		return err
 	}
@@ -281,13 +281,13 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 
 func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 	var properties resources.BackupUnitProperties
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgPassword)) {
-		pwd := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPassword))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
+		pwd := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 		properties.SetPassword(pwd)
 		c.Printer.Verbose("Property Password set")
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgEmail)) {
-		email := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgEmail))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEmail)) {
+		email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
 		properties.SetEmail(email)
 		c.Printer.Verbose("Property Email set: %v", email)
 	}

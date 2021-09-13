@@ -4,16 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -68,8 +68,8 @@ func TemplateCmd() *core.Command {
 		CmdRun:     RunTemplateGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgTemplateId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.TemplateId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgTemplateId, cloudapiv6.ArgIdShort, "", cloudapiv6.TemplateId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTemplateId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TemplatesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -77,7 +77,7 @@ func TemplateCmd() *core.Command {
 }
 
 func PreRunTemplateId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgTemplateId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgTemplateId)
 }
 
 func RunTemplateList(c *core.CommandConfig) error {
@@ -89,8 +89,8 @@ func RunTemplateList(c *core.CommandConfig) error {
 }
 
 func RunTemplateGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgTemplateId)))
-	tpl, _, err := c.CloudApiV6Services.Templates().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgTemplateId)))
+	c.Printer.Verbose("Template with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)))
+	tpl, _, err := c.CloudApiV6Services.Templates().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTemplateId)))
 	if err != nil {
 		return err
 	}

@@ -3,18 +3,18 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -54,8 +54,8 @@ func UserS3keyCmd() *core.Command {
 		CmdRun:     RunUserS3KeyList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -74,13 +74,13 @@ func UserS3keyCmd() *core.Command {
 		CmdRun:     RunUserS3KeyGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(cloudapi_v6.ArgS3KeyId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.S3KeyId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(cloudapiv6.ArgS3KeyId, cloudapiv6.ArgIdShort, "", cloudapiv6.S3KeyId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -106,8 +106,8 @@ Required values to run command:
 		CmdRun:     RunUserS3KeyCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for User S3Key creation to be executed")
@@ -136,14 +136,14 @@ Required values to run command:
 		CmdRun:     RunUserS3KeyUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapi_v6.ArgS3KeyActive, "", false, "Enable or disable an User S3Key")
-	update.AddStringFlag(cloudapi_v6.ArgS3KeyId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.S3KeyId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
+	update.AddBoolFlag(cloudapiv6.ArgS3KeyActive, "", false, "Enable or disable an User S3Key")
+	update.AddStringFlag(cloudapiv6.ArgS3KeyId, cloudapiv6.ArgIdShort, "", cloudapiv6.S3KeyId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for User S3Key update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key update [seconds]")
@@ -163,13 +163,13 @@ Required values to run command:
 		CmdRun:     RunUserS3KeyDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgUserId, "", "", cloudapi_v6.UserId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgUserId, "", "", cloudapiv6.UserId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgS3KeyId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.S3KeyId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
+	deleteCmd.AddStringFlag(cloudapiv6.ArgS3KeyId, cloudapiv6.ArgIdShort, "", cloudapiv6.S3KeyId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgS3KeyId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for User S3Key deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key deletion [seconds]")
@@ -178,11 +178,11 @@ Required values to run command:
 }
 
 func PreRunUserKeyIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgUserId, cloudapi_v6.ArgS3KeyId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgUserId, cloudapiv6.ArgS3KeyId)
 }
 
 func RunUserS3KeyList(c *core.CommandConfig) error {
-	ss, _, err := c.CloudApiV6Services.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgUserId)))
+	ss, _, err := c.CloudApiV6Services.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
 	if err != nil {
 		return err
 	}
@@ -190,9 +190,9 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgS3KeyId)))
-	s, _, err := c.CloudApiV6Services.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgUserId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgS3KeyId)),
+	c.Printer.Verbose("S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)))
+	s, _, err := c.CloudApiV6Services.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)),
 	)
 	if err != nil {
 		return err
@@ -201,7 +201,7 @@ func RunUserS3KeyGet(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyCreate(c *core.CommandConfig) error {
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgUserId))
+	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	c.Printer.Verbose("Creating S3 Key for User with ID: %v", userId)
 	s, resp, err := c.CloudApiV6Services.S3Keys().Create(userId)
 	if resp != nil {
@@ -218,7 +218,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyUpdate(c *core.CommandConfig) error {
-	active := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgS3KeyActive))
+	active := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyActive))
 	c.Printer.Verbose("Property Active set: %v", active)
 	newKey := resources.S3Key{
 		S3Key: ionoscloud.S3Key{
@@ -227,8 +227,8 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 			},
 		},
 	}
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgUserId))
-	keyId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgS3KeyId))
+	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
+	keyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))
 	c.Printer.Verbose("Creating S3 Key with ID: %v for User with ID: %v", keyId, userId)
 	s, resp, err := c.CloudApiV6Services.S3Keys().Update(userId, keyId, newKey)
 	if err != nil {
@@ -245,10 +245,10 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("User ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgUserId)))
-	c.Printer.Verbose("Deleting S3 Key with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgS3KeyId)))
-	resp, err := c.CloudApiV6Services.S3Keys().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgUserId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgS3KeyId)),
+	c.Printer.Verbose("User ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	c.Printer.Verbose("Deleting S3 Key with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)))
+	resp, err := c.CloudApiV6Services.S3Keys().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)),
 	)
 	if err != nil {
 		return err

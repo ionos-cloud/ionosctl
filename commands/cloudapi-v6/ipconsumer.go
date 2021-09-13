@@ -3,16 +3,16 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -51,8 +51,8 @@ func IpconsumerCmd() *core.Command {
 		CmdRun:     RunIpConsumersList,
 		InitClient: true,
 	})
-	listResources.AddStringFlag(cloudapi_v6.ArgIpBlockId, "", "", cloudapi_v6.IpBlockId, core.RequiredFlagOption())
-	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	listResources.AddStringFlag(cloudapiv6.ArgIpBlockId, "", "", cloudapiv6.IpBlockId, core.RequiredFlagOption())
+	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -60,7 +60,7 @@ func IpconsumerCmd() *core.Command {
 }
 
 func RunIpConsumersList(c *core.CommandConfig) error {
-	ipBlock, _, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgIpBlockId)))
+	ipBlock, _, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	if err != nil {
 		return err
 	}

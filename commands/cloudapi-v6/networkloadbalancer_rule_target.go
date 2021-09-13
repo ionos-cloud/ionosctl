@@ -4,18 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -55,19 +55,19 @@ func NlbRuleTargetCmd() *core.Command {
 		CmdRun:     RunNlbRuleTargetList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapi_v6.ArgNetworkLoadBalancerId, "", "", cloudapi_v6.NetworkLoadBalancerId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	list.AddStringFlag(cloudapiv6.ArgNetworkLoadBalancerId, "", "", cloudapiv6.NetworkLoadBalancerId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapi_v6.ArgRuleId, "", "", cloudapi_v6.ForwardingRuleId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgRuleId, "", "", cloudapiv6.ForwardingRuleId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ForwardingRulesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgNetworkLoadBalancerId)),
+			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -98,29 +98,29 @@ Required values to run command:
 		CmdRun:     RunNlbRuleTargetAdd,
 		InitClient: true,
 	})
-	add.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	add.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapi_v6.ArgNetworkLoadBalancerId, "", "", cloudapi_v6.NetworkLoadBalancerId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	add.AddStringFlag(cloudapiv6.ArgNetworkLoadBalancerId, "", "", cloudapiv6.NetworkLoadBalancerId, core.RequiredFlagOption())
+	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapi_v6.ArgRuleId, "", "", cloudapi_v6.ForwardingRuleId, core.RequiredFlagOption())
-	_ = add.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	add.AddStringFlag(cloudapiv6.ArgRuleId, "", "", cloudapiv6.ForwardingRuleId, core.RequiredFlagOption())
+	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ForwardingRulesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(add.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(add.NS, cloudapi_v6.ArgNetworkLoadBalancerId)),
+			viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapi_v6.ArgTargetIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
-	add.AddStringFlag(cloudapi_v6.ArgTargetPort, "", "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
-	add.AddIntFlag(cloudapi_v6.ArgWeight, "", 1, "Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256")
-	add.AddIntFlag(cloudapi_v6.ArgCheckInterval, "", 2000, "[Health Check] CheckInterval determines the duration (in milliseconds) between consecutive health checks")
-	add.AddBoolFlag(cloudapi_v6.ArgCheck, "", true, "[Health Check] Check specifies whether the target VM's health is checked")
-	add.AddBoolFlag(cloudapi_v6.ArgMaintenance, "", false, "[Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not")
+	add.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
+	add.AddStringFlag(cloudapiv6.ArgTargetPort, "", "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
+	add.AddIntFlag(cloudapiv6.ArgWeight, "", 1, "Weight parameter is used to adjust the target VM's weight relative to other target VMs. Maximum: 256")
+	add.AddIntFlag(cloudapiv6.ArgCheckInterval, "", 2000, "[Health Check] CheckInterval determines the duration (in milliseconds) between consecutive health checks")
+	add.AddBoolFlag(cloudapiv6.ArgCheck, "", true, "[Health Check] Check specifies whether the target VM's health is checked")
+	add.AddBoolFlag(cloudapiv6.ArgMaintenance, "", false, "[Health Check]  Maintenance specifies if a target VM should be marked as down, even if it is not")
 	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Target creation to be executed")
-	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapi_v6.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target creation [seconds]")
+	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target creation [seconds]")
 
 	/*
 		Remove Command
@@ -147,36 +147,36 @@ Required values to run command:
 		CmdRun:     RunNlbRuleTargetRemove,
 		InitClient: true,
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	removeCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgNetworkLoadBalancerId, "", "", cloudapi_v6.NetworkLoadBalancerId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	removeCmd.AddStringFlag(cloudapiv6.ArgNetworkLoadBalancerId, "", "", cloudapiv6.NetworkLoadBalancerId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgRuleId, "", "", cloudapi_v6.ForwardingRuleId, core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(removeCmd.NS, cloudapi_v6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
+	removeCmd.AddStringFlag(cloudapiv6.ArgRuleId, "", "", cloudapiv6.ForwardingRuleId, core.RequiredFlagOption())
+	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	removeCmd.AddStringFlag(cloudapi_v6.ArgTargetIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
-	removeCmd.AddStringFlag(cloudapi_v6.ArgTargetPort, "", "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
+	removeCmd.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
+	removeCmd.AddStringFlag(cloudapiv6.ArgTargetPort, "", "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Target deletion to be executed")
-	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapi_v6.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target deletion [seconds]")
+	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target deletion [seconds]")
 
 	return nlbRuleTargetCmd
 }
 
 func PreRunNetworkLoadBalancerRuleTarget(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgNetworkLoadBalancerId, cloudapi_v6.ArgRuleId, cloudapi_v6.ArgTargetIp, cloudapi_v6.ArgTargetPort)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgTargetIp, cloudapiv6.ArgTargetPort)
 }
 
 func RunNlbRuleTargetList(c *core.CommandConfig) error {
 	ng, _, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
 	if err != nil {
 		return err
@@ -195,9 +195,9 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 	var targetItems []ionoscloud.NetworkLoadBalancerForwardingRuleTarget
 	ngOld, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
 	if err != nil {
 		return err
@@ -209,9 +209,9 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 	}
 	targetNew := getRuleTargetInfo(c)
 	targetItems = append(targetItems, targetNew.NetworkLoadBalancerForwardingRuleTarget)
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	nlbId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNetworkLoadBalancerId))
-	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgRuleId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	nlbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
+	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
 	nlbForwardingRule := &resources.NetworkLoadBalancerForwardingRuleProperties{
 		NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
 			Targets: &targetItems,
@@ -232,11 +232,11 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete forwarding rule target"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("NlbRuleTarget with id: %v is removing...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgRuleId)))
+	c.Printer.Verbose("NlbRuleTarget with id: %v is removing...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
 	frOld, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
 	if err != nil {
 		return err
@@ -246,9 +246,9 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 		return err
 	}
 	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 		proper,
 	)
 	if err != nil {
@@ -261,17 +261,17 @@ func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
 }
 
 func getRuleTargetInfo(c *core.CommandConfig) resources.NetworkLoadBalancerForwardingRuleTarget {
-	targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgTargetIp))
-	targetPort := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgTargetPort))
-	weight := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgWeight))
+	targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp))
+	targetPort := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetPort))
+	weight := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgWeight))
 	target := resources.NetworkLoadBalancerForwardingRuleTarget{}
 	target.SetIp(targetIp)
 	target.SetPort(targetPort)
 	target.SetWeight(weight)
 	targetHealth := resources.NetworkLoadBalancerForwardingRuleTargetHealthCheck{}
-	maintenance := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgMaintenance))
-	check := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCheck))
-	checkInterval := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgCheckInterval))
+	maintenance := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenance))
+	check := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCheck))
+	checkInterval := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval))
 	targetHealth.SetMaintenance(maintenance)
 	targetHealth.SetCheck(check)
 	targetHealth.SetCheckInterval(checkInterval)
@@ -294,13 +294,13 @@ func getRuleTargetsRemove(c *core.CommandConfig, frOld *resources.NetworkLoadBal
 				removeIp := false
 				removePort := false
 				if ip, ok := targetItem.GetIpOk(); ok && ip != nil {
-					if *ip == viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgTargetIp)) {
+					if *ip == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp)) {
 						removeIp = true
 						foundIp = true
 					}
 				}
 				if port, ok := targetItem.GetPortOk(); ok && port != nil {
-					if *port == viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgTargetPort)) {
+					if *port == viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetPort)) {
 						removePort = true
 						foundPort = true
 					}

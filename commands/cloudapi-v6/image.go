@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 	"sort"
@@ -13,10 +11,12 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -65,20 +65,20 @@ Use flags to retrieve a list of Images:
 		CmdRun:     RunImageList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapi_v6.ArgType, "", "", "The type of the Image")
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgType, "", "", "The type of the Image")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CDROM", "HDD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapi_v6.ArgLicenceType, "", "", "The licence type of the Image")
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgLicenceType, "", "", "The licence type of the Image")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapi_v6.ArgLocation, cloudapi_v6.ArgLocationShort, "", "The location of the Image")
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "", "The location of the Image")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapi_v6.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by")
-	list.AddIntFlag(cloudapi_v6.ArgLatest, "", 0, "Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed")
+	list.AddStringFlag(cloudapiv6.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by")
+	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed")
 
 	/*
 		Get Command
@@ -95,8 +95,8 @@ Use flags to retrieve a list of Images:
 		CmdRun:     RunImageGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgImageId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.ImageId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgImageId, cloudapiv6.ArgIdShort, "", cloudapiv6.ImageId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -104,7 +104,7 @@ Use flags to retrieve a list of Images:
 }
 
 func PreRunImageId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgImageId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgImageId)
 }
 
 func RunImageList(c *core.CommandConfig) error {
@@ -112,20 +112,20 @@ func RunImageList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgLocation)) {
-		images = sortImagesByLocation(images, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLocation)))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)) {
+		images = sortImagesByLocation(images, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgLicenceType)) {
-		images = sortImagesByLicenceType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLicenceType))))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
+		images = sortImagesByLicenceType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgType)) {
-		images = sortImagesByType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgType))))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgType)) {
+		images = sortImagesByType(images, strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgImageAlias)) {
-		images = sortImagesByAlias(images, viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgImageAlias)))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
+		images = sortImagesByAlias(images, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgLatest)) {
-		images = sortImagesByTime(images, viper.GetInt(core.GetFlagName(c.NS, cloudapi_v6.ArgLatest)))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)) {
+		images = sortImagesByTime(images, viper.GetInt(core.GetFlagName(c.NS, cloudapiv6.ArgLatest)))
 	}
 	if itemsOk, ok := images.GetItemsOk(); ok && itemsOk != nil {
 		if len(*itemsOk) == 0 {
@@ -136,8 +136,8 @@ func RunImageList(c *core.CommandConfig) error {
 }
 
 func RunImageGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgImageId)))
-	img, _, err := c.CloudApiV6Services.Images().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgImageId)))
+	c.Printer.Verbose("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
+	img, _, err := c.CloudApiV6Services.Images().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
 	if err != nil {
 		return err
 	}

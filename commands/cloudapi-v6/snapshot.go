@@ -3,18 +3,18 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -69,8 +69,8 @@ func SnapshotCmd() *core.Command {
 		CmdRun:     RunSnapshotGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgSnapshotId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.SnapshotId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgSnapshotId, cloudapiv6.ArgIdShort, "", cloudapiv6.SnapshotId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -96,21 +96,21 @@ Required values to run command:
 		CmdRun:     RunSnapshotCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "Unnamed Snapshot", "Name of the Snapshot")
-	create.AddStringFlag(cloudapi_v6.ArgDescription, cloudapi_v6.ArgDescriptionShort, "", "Description of the Snapshot")
-	create.AddStringFlag(cloudapi_v6.ArgLicenceType, "", "LINUX", "Licence Type of the Snapshot")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Snapshot", "Name of the Snapshot")
+	create.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Snapshot")
+	create.AddStringFlag(cloudapiv6.ArgLicenceType, "", "LINUX", "Licence Type of the Snapshot")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgVolumeId, "", "", cloudapi_v6.VolumeId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	create.AddStringFlag(cloudapiv6.ArgVolumeId, "", "", cloudapiv6.VolumeId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(cloudapi_v6.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
+	create.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
@@ -135,27 +135,27 @@ Required values to run command:
 		CmdRun:     RunSnapshotUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "Name of the Snapshot")
-	update.AddStringFlag(cloudapi_v6.ArgDescription, cloudapi_v6.ArgDescriptionShort, "", "Description of the Snapshot")
-	update.AddStringFlag(cloudapi_v6.ArgLicenceType, "", "", "Licence Type of the Snapshot")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Snapshot")
+	update.AddStringFlag(cloudapiv6.ArgDescription, cloudapiv6.ArgDescriptionShort, "", "Description of the Snapshot")
+	update.AddStringFlag(cloudapiv6.ArgLicenceType, "", "", "Licence Type of the Snapshot")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgSnapshotId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.SnapshotId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgSnapshotId, cloudapiv6.ArgIdShort, "", cloudapiv6.SnapshotId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapi_v6.ArgCpuHotPlug, "", false, "This volume is capable of CPU hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgCpuHotUnplug, "", false, "This volume is capable of CPU hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgRamHotPlug, "", false, "This volume is capable of memory hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgRamHotUnplug, "", false, "This volume is capable of memory hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgNicHotPlug, "", false, "This volume is capable of NIC hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgNicHotUnplug, "", false, "This volume is capable of NIC hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgDiscVirtioHotPlug, "", false, "This volume is capable of VirtIO drive hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgDiscVirtioHotUnplug, "", false, "This volume is capable of VirtIO drive hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
+	update.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", false, "This volume is capable of CPU hot plug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgCpuHotUnplug, "", false, "This volume is capable of CPU hot unplug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "This volume is capable of memory hot plug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "This volume is capable of memory hot unplug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "This volume is capable of NIC hot plug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "This volume is capable of NIC hot unplug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "This volume is capable of VirtIO drive hot plug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "This volume is capable of VirtIO drive hot unplug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
@@ -174,17 +174,17 @@ Required values to run command:
 		CmdRun:     RunSnapshotRestore,
 		InitClient: true,
 	})
-	restore.AddStringFlag(cloudapi_v6.ArgSnapshotId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.SnapshotId, core.RequiredFlagOption())
-	_ = restore.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	restore.AddStringFlag(cloudapiv6.ArgSnapshotId, cloudapiv6.ArgIdShort, "", cloudapiv6.SnapshotId, core.RequiredFlagOption())
+	_ = restore.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = restore.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	restore.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = restore.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	restore.AddStringFlag(cloudapi_v6.ArgVolumeId, "", "", cloudapi_v6.VolumeId, core.RequiredFlagOption())
-	_ = restore.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(restore.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	restore.AddStringFlag(cloudapiv6.ArgVolumeId, "", "", cloudapiv6.VolumeId, core.RequiredFlagOption())
+	_ = restore.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(restore.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	restore.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot restore to be executed")
 	restore.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot restore [seconds]")
@@ -204,8 +204,8 @@ Required values to run command:
 		CmdRun:     RunSnapshotDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgSnapshotId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.SnapshotId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgSnapshotId, cloudapiv6.ArgIdShort, "", cloudapiv6.SnapshotId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot deletion to be executed")
@@ -215,11 +215,11 @@ Required values to run command:
 }
 
 func PreRunSnapshotId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgSnapshotId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgSnapshotId)
 }
 
 func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgVolumeId, cloudapi_v6.ArgSnapshotId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgVolumeId, cloudapiv6.ArgSnapshotId)
 }
 
 func RunSnapshotList(c *core.CommandConfig) error {
@@ -231,8 +231,8 @@ func RunSnapshotList(c *core.CommandConfig) error {
 }
 
 func RunSnapshotGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)))
-	s, _, err := c.CloudApiV6Services.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)))
+	c.Printer.Verbose("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	s, _, err := c.CloudApiV6Services.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	if err != nil {
 		return err
 	}
@@ -240,12 +240,12 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 }
 
 func RunSnapshotCreate(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId))
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
-	description := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDescription))
-	licenseType := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLicenceType))
-	secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgSecAuthProtection))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
+	licenseType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))
+	secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSecAuthProtection))
 	c.Printer.Verbose("Properties set for creating the Snapshot: DatacenterId: %v, VolumeId: %v, Name: %v, Description: %v, LicenseType: %v, SecAuthProtection: %v",
 		dcId, volumeId, name, description, licenseType, secAuthProtection)
 
@@ -264,8 +264,8 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 }
 
 func RunSnapshotUpdate(c *core.CommandConfig) error {
-	c.Printer.Verbose("Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)))
-	s, resp, err := c.CloudApiV6Services.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)), getSnapshotPropertiesSet(c))
+	c.Printer.Verbose("Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	s, resp, err := c.CloudApiV6Services.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)), getSnapshotPropertiesSet(c))
 	if err != nil {
 		return err
 	}
@@ -280,11 +280,11 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore snapshot"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Snapshot with id: %v is restoring...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)))
+	c.Printer.Verbose("Snapshot with id: %v is restoring...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	resp, err := c.CloudApiV6Services.Snapshots().Restore(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)),
 	)
 	if err != nil {
 		return err
@@ -299,8 +299,8 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)))
-	resp, err := c.CloudApiV6Services.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSnapshotId)))
+	c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	resp, err := c.CloudApiV6Services.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	if err != nil {
 		return err
 	}
@@ -312,73 +312,73 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 
 func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotProperties {
 	input := resources.SnapshotProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
 		c.Printer.Verbose("Property Name set: %v", name)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDescription)) {
-		description := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDescription))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDescription)) {
+		description := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDescription))
 		input.SetDescription(description)
 		c.Printer.Verbose("Property Description set: %v", description)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgLicenceType)) {
-		licenceType := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLicenceType))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
+		licenceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))
 		input.SetLicenceType(licenceType)
 		c.Printer.Verbose("Property LicenceType set: %v", licenceType)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCpuHotPlug)) {
-		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCpuHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug)) {
+		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug))
 		input.SetCpuHotPlug(cpuHotPlug)
 		c.Printer.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCpuHotUnplug)) {
-		cpuHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCpuHotUnplug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotUnplug)) {
+		cpuHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotUnplug))
 		input.SetCpuHotUnplug(cpuHotUnplug)
 		c.Printer.Verbose("Property CpuHotUnplug set: %v", cpuHotUnplug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgRamHotPlug)) {
-		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgRamHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug)) {
+		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug))
 		input.SetRamHotPlug(ramHotPlug)
 		c.Printer.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgRamHotUnplug)) {
-		ramHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgRamHotUnplug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotUnplug)) {
+		ramHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotUnplug))
 		input.SetRamHotUnplug(ramHotUnplug)
 		c.Printer.Verbose("Property RamHotUnplug set: %v", ramHotUnplug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotPlug)) {
-		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug)) {
+		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug))
 		input.SetNicHotPlug(nicHotPlug)
 		c.Printer.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotUnplug)) {
-		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotUnplug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug)) {
+		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug))
 		input.SetNicHotUnplug(nicHotUnplug)
 		c.Printer.Verbose("Property nicHotUnplug set: %v", nicHotUnplug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotPlug)) {
-		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug)) {
+		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug))
 		input.SetDiscVirtioHotPlug(discVirtioHotPlug)
 		c.Printer.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotUnplug)) {
-		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotUnplug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug)) {
+		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug))
 		input.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
 		c.Printer.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscScsiHotPlug)) {
-		discScsiHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscScsiHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotPlug)) {
+		discScsiHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotPlug))
 		input.SetDiscScsiHotPlug(discScsiHotPlug)
 		c.Printer.Verbose("Property DiscScsiHotPlug set: %v", discScsiHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscScsiHotUnplug)) {
-		discScsiHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscScsiHotUnplug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotUnplug)) {
+		discScsiHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscScsiHotUnplug))
 		input.SetDiscScsiHotUnplug(discScsiHotUnplug)
 		c.Printer.Verbose("Property DiscScsiHotUnplug set: %v", discScsiHotUnplug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgSecAuthProtection)) {
-		secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgSecAuthProtection))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSecAuthProtection)) {
+		secAuthProtection := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgSecAuthProtection))
 		input.SetSecAuthProtection(secAuthProtection)
 		c.Printer.Verbose("Property SecAuthProtection set: %v", secAuthProtection)
 	}

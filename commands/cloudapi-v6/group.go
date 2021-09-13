@@ -3,18 +3,18 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -70,8 +70,8 @@ func GroupCmd() *core.Command {
 		CmdRun:     RunGroupGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgGroupId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.GroupId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.GroupId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -90,19 +90,19 @@ func GroupCmd() *core.Command {
 		CmdRun:     RunGroupCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "Unnamed Group", "Name for the Group")
-	create.AddBoolFlag(cloudapi_v6.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
-	create.AddBoolFlag(cloudapi_v6.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
-	create.AddBoolFlag(cloudapi_v6.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
-	create.AddBoolFlag(cloudapi_v6.ArgAccessLog, "", false, "The group will be allowed to access the activity log")
-	create.AddBoolFlag(cloudapi_v6.ArgCreatePcc, "", false, "The group will be allowed to create PCCs")
-	create.AddBoolFlag(cloudapi_v6.ArgS3Privilege, "", false, "The group will be allowed to manage S3")
-	create.AddBoolFlag(cloudapi_v6.ArgCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
-	create.AddBoolFlag(cloudapi_v6.ArgCreateNic, "", false, "The group will be allowed to create NICs")
-	create.AddBoolFlag(cloudapi_v6.ArgCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
-	create.AddBoolFlag(cloudapi_v6.ArgCreateFlowLog, "", false, "The group will be allowed to create Flow Logs")
-	create.AddBoolFlag(cloudapi_v6.ArgAccessMonitoring, "", false, "Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service")
-	create.AddBoolFlag(cloudapi_v6.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates")
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Group", "Name for the Group")
+	create.AddBoolFlag(cloudapiv6.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
+	create.AddBoolFlag(cloudapiv6.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
+	create.AddBoolFlag(cloudapiv6.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
+	create.AddBoolFlag(cloudapiv6.ArgAccessLog, "", false, "The group will be allowed to access the activity log")
+	create.AddBoolFlag(cloudapiv6.ArgCreatePcc, "", false, "The group will be allowed to create PCCs")
+	create.AddBoolFlag(cloudapiv6.ArgS3Privilege, "", false, "The group will be allowed to manage S3")
+	create.AddBoolFlag(cloudapiv6.ArgCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
+	create.AddBoolFlag(cloudapiv6.ArgCreateNic, "", false, "The group will be allowed to create NICs")
+	create.AddBoolFlag(cloudapiv6.ArgCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
+	create.AddBoolFlag(cloudapiv6.ArgCreateFlowLog, "", false, "The group will be allowed to create Flow Logs")
+	create.AddBoolFlag(cloudapiv6.ArgAccessMonitoring, "", false, "Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service")
+	create.AddBoolFlag(cloudapiv6.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group creation [seconds]")
 
@@ -127,23 +127,23 @@ Required values to run command:
 		CmdRun:     RunGroupUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(cloudapi_v6.ArgGroupId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.GroupId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.GroupId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "Name for the Group")
-	update.AddBoolFlag(cloudapi_v6.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
-	update.AddBoolFlag(cloudapi_v6.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
-	update.AddBoolFlag(cloudapi_v6.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
-	update.AddBoolFlag(cloudapi_v6.ArgAccessLog, "", false, "The group will be allowed to access the activity log")
-	update.AddBoolFlag(cloudapi_v6.ArgCreatePcc, "", false, "The group will be allowed to create PCCs")
-	update.AddBoolFlag(cloudapi_v6.ArgS3Privilege, "", false, "The group will be allowed to manage S3")
-	update.AddBoolFlag(cloudapi_v6.ArgCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
-	update.AddBoolFlag(cloudapi_v6.ArgCreateNic, "", false, "The group will be allowed to create NICs")
-	update.AddBoolFlag(cloudapi_v6.ArgCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
-	update.AddBoolFlag(cloudapi_v6.ArgCreateFlowLog, "", false, "The group will be allowed to create Flow Logs")
-	update.AddBoolFlag(cloudapi_v6.ArgAccessMonitoring, "", false, "Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service")
-	update.AddBoolFlag(cloudapi_v6.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates")
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name for the Group")
+	update.AddBoolFlag(cloudapiv6.ArgCreateDc, "", false, "The group will be allowed to create Data Centers")
+	update.AddBoolFlag(cloudapiv6.ArgCreateSnapshot, "", false, "The group will be allowed to create Snapshots")
+	update.AddBoolFlag(cloudapiv6.ArgReserveIp, "", false, "The group will be allowed to reserve IP addresses")
+	update.AddBoolFlag(cloudapiv6.ArgAccessLog, "", false, "The group will be allowed to access the activity log")
+	update.AddBoolFlag(cloudapiv6.ArgCreatePcc, "", false, "The group will be allowed to create PCCs")
+	update.AddBoolFlag(cloudapiv6.ArgS3Privilege, "", false, "The group will be allowed to manage S3")
+	update.AddBoolFlag(cloudapiv6.ArgCreateBackUpUnit, "", false, "The group will be able to manage Backup Units")
+	update.AddBoolFlag(cloudapiv6.ArgCreateNic, "", false, "The group will be allowed to create NICs")
+	update.AddBoolFlag(cloudapiv6.ArgCreateK8s, "", false, "The group will be allowed to create K8s Clusters")
+	update.AddBoolFlag(cloudapiv6.ArgCreateFlowLog, "", false, "The group will be allowed to create Flow Logs")
+	update.AddBoolFlag(cloudapiv6.ArgAccessMonitoring, "", false, "Privilege for a group to access and manage monitoring related functionality using Monotoring-as-a-Service")
+	update.AddBoolFlag(cloudapiv6.ArgAccessCerts, "", false, "Privilege for a group to access and manage certificates")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group update [seconds]")
 
@@ -166,8 +166,8 @@ Required values to run command:
 		CmdRun:     RunGroupDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgGroupId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.GroupId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgGroupId, cloudapiv6.ArgIdShort, "", cloudapiv6.GroupId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group deletion to be executed")
@@ -179,11 +179,11 @@ Required values to run command:
 }
 
 func PreRunGroupId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgGroupId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgGroupId)
 }
 
 func PreRunGroupUserIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgGroupId, cloudapi_v6.ArgUserId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgGroupId, cloudapiv6.ArgUserId)
 }
 
 func RunGroupList(c *core.CommandConfig) error {
@@ -195,8 +195,8 @@ func RunGroupList(c *core.CommandConfig) error {
 }
 
 func RunGroupGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgGroupId)))
-	u, _, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgGroupId)))
+	c.Printer.Verbose("Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	u, _, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	if err != nil {
 		return err
 	}
@@ -224,7 +224,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 }
 
 func RunGroupUpdate(c *core.CommandConfig) error {
-	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgGroupId)))
+	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	if err != nil {
 		return err
 	}
@@ -234,7 +234,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 			Properties: &properties.GroupProperties,
 		},
 	}
-	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgGroupId)), newGroup)
+	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup)
 	if err != nil {
 		return err
 	}
@@ -245,11 +245,11 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 }
 
 func RunGroupDelete(c *core.CommandConfig) error {
-	c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgGroupId)))
+	c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
 		return err
 	}
-	resp, err := c.CloudApiV6Services.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgGroupId)))
+	resp, err := c.CloudApiV6Services.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	if err != nil {
 		return err
 	}
@@ -260,19 +260,19 @@ func RunGroupDelete(c *core.CommandConfig) error {
 }
 
 func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
-	createDc := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateDc))
-	createSnap := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateSnapshot))
-	reserveIp := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgReserveIp))
-	accessLog := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgAccessLog))
-	createBackUp := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateBackUpUnit))
-	createPcc := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreatePcc))
-	createNic := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateNic))
-	createK8s := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateK8s))
-	s3 := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgS3Privilege))
-	createFlowLog := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateFlowLog))
-	monitoring := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgAccessMonitoring))
-	certs := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgAccessCerts))
+	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	createDc := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateDc))
+	createSnap := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateSnapshot))
+	reserveIp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgReserveIp))
+	accessLog := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessLog))
+	createBackUp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateBackUpUnit))
+	createPcc := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreatePcc))
+	createNic := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateNic))
+	createK8s := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateK8s))
+	s3 := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgS3Privilege))
+	createFlowLog := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateFlowLog))
+	monitoring := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessMonitoring))
+	certs := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessCerts))
 	c.Printer.Verbose("Properties set for creating the group: Name: %v, CreateDatacenter: %v, CreateSnapshot: %v, "+
 		"ReserveIp: %v, AccessActivityLog: %v, CreateBackupUnit: %v, CreatePcc: %v, CreateInternetAccess: %v, CreateK8sCluster: %v, "+
 		"S3Privilege: %v, CreateFlowLog: %v, AccessAndManageMonitoring: %v, AccessAndManageCertificates: %v",
@@ -303,104 +303,104 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 		reserveIp, accessLog, s3, createFlowLog, monitoring, certs          bool
 	)
 	if properties, ok := oldGroup.GetPropertiesOk(); ok && properties != nil {
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgName)) {
-			groupName = viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+			groupName = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 			c.Printer.Verbose("Property Name set: %v", groupName)
 		} else {
 			if name, ok := properties.GetNameOk(); ok && name != nil {
 				groupName = *name
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateDc)) {
-			createDc = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateDc))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateDc)) {
+			createDc = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateDc))
 			c.Printer.Verbose("Property CreateDataCenter set: %v", createDc)
 		} else {
 			if dc, ok := properties.GetCreateDataCenterOk(); ok && dc != nil {
 				createDc = *dc
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateSnapshot)) {
-			createSnap = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateSnapshot))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateSnapshot)) {
+			createSnap = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateSnapshot))
 			c.Printer.Verbose("Property CreateSnapshot set: %v", createSnap)
 		} else {
 			if s, ok := properties.GetCreateSnapshotOk(); ok && s != nil {
 				createSnap = *s
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCreatePcc)) {
-			createPcc = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreatePcc))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreatePcc)) {
+			createPcc = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreatePcc))
 			c.Printer.Verbose("Property CreatePcc set: %v", createPcc)
 		} else {
 			if s, ok := properties.GetCreatePccOk(); ok && s != nil {
 				createPcc = *s
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateK8s)) {
-			createK8s = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateK8s))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateK8s)) {
+			createK8s = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateK8s))
 			c.Printer.Verbose("Property CreateK8sCluster set: %v", createK8s)
 		} else {
 			if s, ok := properties.GetCreateK8sClusterOk(); ok && s != nil {
 				createK8s = *s
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateNic)) {
-			createNic = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateNic))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateNic)) {
+			createNic = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateNic))
 			c.Printer.Verbose("Property CreateInternetAccess set: %v", createNic)
 		} else {
 			if s, ok := properties.GetCreateInternetAccessOk(); ok && s != nil {
 				createNic = *s
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateBackUpUnit)) {
-			createBackUp = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateBackUpUnit))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateBackUpUnit)) {
+			createBackUp = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateBackUpUnit))
 			c.Printer.Verbose("Property CreateBackupUnit set: %v", createBackUp)
 		} else {
 			if s, ok := properties.GetCreateBackupUnitOk(); ok && s != nil {
 				createBackUp = *s
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgReserveIp)) {
-			reserveIp = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgReserveIp))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgReserveIp)) {
+			reserveIp = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgReserveIp))
 			c.Printer.Verbose("Property ReserveIp set: %v", reserveIp)
 		} else {
 			if ip, ok := properties.GetReserveIpOk(); ok && ip != nil {
 				reserveIp = *ip
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgAccessLog)) {
-			accessLog = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgAccessLog))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessLog)) {
+			accessLog = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessLog))
 			c.Printer.Verbose("Property AccessActivityLog set: %v", accessLog)
 		} else {
 			if log, ok := properties.GetAccessActivityLogOk(); ok && log != nil {
 				accessLog = *log
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgS3Privilege)) {
-			s3 = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgS3Privilege))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Privilege)) {
+			s3 = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgS3Privilege))
 			c.Printer.Verbose("Property S3Privilege set: %v", s3)
 		} else {
 			if s, ok := properties.GetS3PrivilegeOk(); ok && s != nil {
 				s3 = *s
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateFlowLog)) {
-			createFlowLog = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCreateFlowLog))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCreateFlowLog)) {
+			createFlowLog = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCreateFlowLog))
 			c.Printer.Verbose("Property CreateFlowLog set: %v", createFlowLog)
 		} else {
 			if f, ok := properties.GetCreateFlowLogOk(); ok && f != nil {
 				createFlowLog = *f
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgAccessMonitoring)) {
-			monitoring = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgAccessMonitoring))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessMonitoring)) {
+			monitoring = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessMonitoring))
 			c.Printer.Verbose("Property AccessAndManageMonitoring set: %v", monitoring)
 		} else {
 			if m, ok := properties.GetAccessAndManageMonitoringOk(); ok && m != nil {
 				monitoring = *m
 			}
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgAccessCerts)) {
-			certs = viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgAccessCerts))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAccessCerts)) {
+			certs = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAccessCerts))
 			c.Printer.Verbose("Property AccessAndManageCertificates set: %v", certs)
 		} else {
 			if accessCerts, ok := properties.GetAccessAndManageCertificatesOk(); ok && accessCerts != nil {

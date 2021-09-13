@@ -3,17 +3,17 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 	"strings"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -68,8 +68,8 @@ func LocationCmd() *core.Command {
 		CmdRun:     RunLocationGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgLocationId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.LocationId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgLocationId, cloudapiv6.ArgIdShort, "", cloudapiv6.LocationId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -79,7 +79,7 @@ func LocationCmd() *core.Command {
 }
 
 func PreRunLocationId(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgLocationId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgLocationId)
 }
 
 func RunLocationList(c *core.CommandConfig) error {
@@ -95,12 +95,12 @@ func RunLocationList(c *core.CommandConfig) error {
 }
 
 func RunLocationGet(c *core.CommandConfig) error {
-	locId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLocationId))
+	locId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId))
 	ids := strings.Split(locId, "/")
 	if len(ids) != 2 {
 		return errors.New("error getting location id & region id")
 	}
-	c.Printer.Verbose("Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLocationId)))
+	c.Printer.Verbose("Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId)))
 	loc, _, err := c.CloudApiV6Services.Locations().GetByRegionAndLocationId(ids[0], ids[1])
 	if err != nil {
 		return err

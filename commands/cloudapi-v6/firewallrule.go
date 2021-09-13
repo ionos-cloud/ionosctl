@@ -3,19 +3,19 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 	"strings"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -55,19 +55,19 @@ func FirewallruleCmd() *core.Command {
 		CmdRun:     RunFirewallRuleList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	list.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapi_v6.ArgNicId, "", "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgNicId, "", "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NicsIds(os.Stderr,
-			viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(list.NS, cloudapi_v6.ArgServerId)),
+			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -86,27 +86,27 @@ func FirewallruleCmd() *core.Command {
 		CmdRun:     RunFirewallRuleGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(cloudapi_v6.ArgNicId, "", "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgNicId, "", "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NicsIds(os.Stderr,
-			viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgServerId)),
+			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(cloudapi_v6.ArgFirewallRuleId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.FirewallRuleId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgFirewallRuleId, cloudapiv6.ArgIdShort, "", cloudapiv6.FirewallRuleId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.FirewallRulesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgServerId)),
-			viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgServerId)),
+			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -135,37 +135,37 @@ Required values to run command:
 		CmdRun:     RunFirewallRuleCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "Unnamed Rule", "The name for the Firewall Rule")
-	create.AddStringFlag(cloudapi_v6.ArgProtocol, "", "", "The Protocol for Firewall Rule: TCP, UDP, ICMP, ANY", core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Rule", "The name for the Firewall Rule")
+	create.AddStringFlag(cloudapiv6.ArgProtocol, "", "", "The Protocol for Firewall Rule: TCP, UDP, ICMP, ANY", core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"TCP", "UDP", "ICMP", "ANY"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses")
-	create.AddStringFlag(cloudapi_v6.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs")
-	create.AddStringFlag(cloudapi_v6.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs")
-	create.AddIntFlag(cloudapi_v6.ArgIcmpType, "", 0, "Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types")
-	create.AddIntFlag(cloudapi_v6.ArgIcmpCode, "", 0, "Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes")
-	create.AddIntFlag(cloudapi_v6.ArgPortRangeStart, "", 1, "Define the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
-	create.AddIntFlag(cloudapi_v6.ArgPortRangeEnd, "", 1, "Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
-	create.AddStringFlag(cloudapi_v6.ArgType, "", "INGRESS", "The type of Firewall Rule")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses")
+	create.AddStringFlag(cloudapiv6.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs")
+	create.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs")
+	create.AddIntFlag(cloudapiv6.ArgIcmpType, "", 0, "Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types")
+	create.AddIntFlag(cloudapiv6.ArgIcmpCode, "", 0, "Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes")
+	create.AddIntFlag(cloudapiv6.ArgPortRangeStart, "", 1, "Define the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
+	create.AddIntFlag(cloudapiv6.ArgPortRangeEnd, "", 1, "Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
+	create.AddStringFlag(cloudapiv6.ArgType, "", "INGRESS", "The type of Firewall Rule")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule creation [seconds]")
-	create.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	create.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgNicId, "", "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgNicId, "", "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NicsIds(os.Stderr,
-			viper.GetString(core.GetFlagName(create.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(create.NS, cloudapi_v6.ArgServerId)),
+			viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -193,40 +193,40 @@ Required values to run command:
 		CmdRun:     RunFirewallRuleUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "The name for the Firewall Rule")
-	update.AddStringFlag(cloudapi_v6.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses")
-	update.AddStringFlag(cloudapi_v6.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs")
-	update.AddStringFlag(cloudapi_v6.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs")
-	update.AddIntFlag(cloudapi_v6.ArgIcmpType, "", 0, "Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types")
-	update.AddIntFlag(cloudapi_v6.ArgIcmpCode, "", 0, "Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes")
-	update.AddIntFlag(cloudapi_v6.ArgPortRangeStart, "", 1, "Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
-	update.AddIntFlag(cloudapi_v6.ArgPortRangeEnd, "", 1, "Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
-	update.AddStringFlag(cloudapi_v6.ArgType, "", "", "The type of Firewall Rule")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the Firewall Rule")
+	update.AddStringFlag(cloudapiv6.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses")
+	update.AddStringFlag(cloudapiv6.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs")
+	update.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs")
+	update.AddIntFlag(cloudapiv6.ArgIcmpType, "", 0, "Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types")
+	update.AddIntFlag(cloudapiv6.ArgIcmpCode, "", 0, "Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes")
+	update.AddIntFlag(cloudapiv6.ArgPortRangeStart, "", 1, "Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
+	update.AddIntFlag(cloudapiv6.ArgPortRangeEnd, "", 1, "Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
+	update.AddStringFlag(cloudapiv6.ArgType, "", "", "The type of Firewall Rule")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgFirewallRuleId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.FirewallRuleId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgFirewallRuleId, cloudapiv6.ArgIdShort, "", cloudapiv6.FirewallRuleId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.FirewallRulesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgServerId)),
-			viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgServerId)),
+			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule update [seconds]")
-	update.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	update.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgNicId, "", "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgNicId, "", "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NicsIds(os.Stderr,
-			viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgServerId)),
+			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -254,27 +254,27 @@ Required values to run command:
 		CmdRun:     RunFirewallRuleDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	deleteCmd.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgNicId, "", "", cloudapi_v6.NicId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgNicId, "", "", cloudapiv6.NicId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNicId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NicsIds(os.Stderr,
-			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgServerId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgFirewallRuleId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.FirewallRuleId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgFirewallRuleId, cloudapiv6.ArgIdShort, "", cloudapiv6.FirewallRuleId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFirewallRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.FirewallRulesIds(os.Stderr,
-			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgServerId)),
-			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
+			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgServerId)),
+			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
@@ -283,22 +283,22 @@ Required values to run command:
 }
 
 func PreRunDcServerNicIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgServerId, cloudapi_v6.ArgNicId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId)
 }
 
 func PreRunDcServerNicIdsFRuleProtocol(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgServerId, cloudapi_v6.ArgNicId, cloudapi_v6.ArgProtocol)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId, cloudapiv6.ArgProtocol)
 }
 
 func PreRunDcServerNicFRuleIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgServerId, cloudapi_v6.ArgNicId, cloudapi_v6.ArgFirewallRuleId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId, cloudapiv6.ArgFirewallRuleId)
 }
 
 func RunFirewallRuleList(c *core.CommandConfig) error {
 	firewallRules, _, err := c.CloudApiV6Services.FirewallRules().List(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
 	if err != nil {
 		return err
@@ -307,12 +307,12 @@ func RunFirewallRuleList(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Firewall Rule with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallRuleId)))
+	c.Printer.Verbose("Firewall Rule with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)))
 	firewallRule, _, err := c.CloudApiV6Services.FirewallRules().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)),
 	)
 	if err != nil {
 		return err
@@ -323,10 +323,10 @@ func RunFirewallRuleGet(c *core.CommandConfig) error {
 func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	properties := getFirewallRulePropertiesSet(c)
 	if !properties.HasName() {
-		properties.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName)))
+		properties.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	}
 	if !properties.HasType() {
-		properties.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgType)))
+		properties.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
 	}
 	input := resources.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
@@ -334,9 +334,9 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 		},
 	}
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Create(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 		input,
 	)
 	if resp != nil {
@@ -354,10 +354,10 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 
 func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 	firewallRule, resp, err := c.CloudApiV6Services.FirewallRules().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)),
 		getFirewallRulePropertiesSet(c),
 	)
 	if err != nil {
@@ -371,15 +371,15 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleDelete(c *core.CommandConfig) error {
-	c.Printer.Verbose("Firewall Rule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallRuleId)))
+	c.Printer.Verbose("Firewall Rule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)))
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
 		return err
 	}
 	resp, err := c.CloudApiV6Services.FirewallRules().Delete(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgFirewallRuleId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)),
 	)
 	if err != nil {
 		return err
@@ -394,53 +394,53 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 // Get Firewall Rule Properties set used for create and update commands
 func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleProperties {
 	properties := resources.FirewallRuleProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		properties.SetName(name)
 		c.Printer.Verbose("Property Name set: %v", name)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgProtocol)) {
-		protocol := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgProtocol))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)) {
+		protocol := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol))
 		properties.SetProtocol(protocol)
 		c.Printer.Verbose("Property Protocol set: %v", protocol)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgSourceIp)) {
-		sourceIp := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSourceIp))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp)) {
+		sourceIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceIp))
 		properties.SetSourceIp(sourceIp)
 		c.Printer.Verbose("Property SourceIp set: %v", sourceIp)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgSourceMac)) {
-		sourceMac := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSourceMac))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSourceMac)) {
+		sourceMac := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSourceMac))
 		properties.SetSourceMac(sourceMac)
 		c.Printer.Verbose("Property SourceMac set: %v", sourceMac)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgTargetIp)) {
-		targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgTargetIp))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp)) {
+		targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp))
 		properties.SetTargetIp(targetIp)
 		c.Printer.Verbose("Property TargetIp set: %v", targetIp)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgIcmpCode)) {
-		icmpCode := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgIcmpCode))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpCode)) {
+		icmpCode := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpCode))
 		properties.SetIcmpCode(icmpCode)
 		c.Printer.Verbose("Property IcmpCode set: %v", icmpCode)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgIcmpType)) {
-		icmpType := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgIcmpType))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpType)) {
+		icmpType := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpType))
 		properties.SetIcmpType(icmpType)
 		c.Printer.Verbose("Property IcmpType set: %v", icmpType)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgPortRangeStart)) {
-		portRangeStart := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgPortRangeStart))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart)) {
+		portRangeStart := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeStart))
 		properties.SetPortRangeStart(portRangeStart)
 		c.Printer.Verbose("Property PortRangeStart set: %v", portRangeStart)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgPortRangeEnd)) {
-		portRangeEnd := viper.GetInt32(core.GetFlagName(c.NS, cloudapi_v6.ArgPortRangeEnd))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd)) {
+		portRangeEnd := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPortRangeEnd))
 		properties.SetPortRangeEnd(portRangeEnd)
 		c.Printer.Verbose("Property PortRangeEnd set: %v", portRangeEnd)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgType)) {
-		firewallruleType := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgType))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgType)) {
+		firewallruleType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))
 		properties.SetType(strings.ToUpper(firewallruleType))
 		c.Printer.Verbose("Property Type set: %v", firewallruleType)
 	}

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"regexp"
 	"strings"
 	"testing"
@@ -12,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -28,7 +28,7 @@ func TestRunLocationCpuList(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocationId), testLocationCpuVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationCpuVar)
 		testIds := strings.Split(testLocationCpuVar, "/")
 		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, nil, nil)
 		err := RunLocationCpuList(cfg)
@@ -43,7 +43,7 @@ func TestRunLocationCpuListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapi_v6.ArgLocationId), testLocationCpuVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLocationId), testLocationCpuVar)
 		testIds := strings.Split(testLocationCpuVar, "/")
 		rm.CloudApiV6Mocks.Location.EXPECT().GetByRegionAndLocationId(testIds[0], testIds[1]).Return(&loc, nil, testLocationCpuErr)
 		err := RunLocationCpuList(cfg)

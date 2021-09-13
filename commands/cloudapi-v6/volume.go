@@ -4,19 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 	"strconv"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/cobra"
@@ -56,8 +56,8 @@ func VolumeCmd() *core.Command {
 		CmdRun:     RunVolumeList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = list.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -76,13 +76,13 @@ func VolumeCmd() *core.Command {
 		CmdRun:     RunVolumeGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	get.AddStringFlag(cloudapi_v6.ArgVolumeId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.VolumeId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	get.AddStringFlag(cloudapiv6.ArgVolumeId, cloudapiv6.ArgIdShort, "", cloudapiv6.VolumeId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -108,49 +108,49 @@ Required values to run command:
 		CmdRun:     RunVolumeCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "Unnamed Volume", "Name of the Volume")
-	create.AddStringFlag(cloudapi_v6.ArgSize, "", strconv.Itoa(cloudapi_v6.DefaultVolumeSize), "The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Volume", "Name of the Volume")
+	create.AddStringFlag(cloudapiv6.ArgSize, "", strconv.Itoa(cloudapiv6.DefaultVolumeSize), "The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgBus, "", "VIRTIO", "The bus type of the Volume")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgBus, "", "VIRTIO", "The bus type of the Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBus, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"VIRTIO", "IDE"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgLicenceType, "", "LINUX", "Licence Type of the Volume")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgLicenceType, "", "LINUX", "Licence Type of the Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgType, "", "HDD", "Type of the Volume")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgType, "", "HDD", "Type of the Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD", "SSD Standard", "SSD Premium"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgAvailabilityZone, cloudapi_v6.ArgAvailabilityZoneShort, "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgAvailabilityZone, cloudapiv6.ArgAvailabilityZoneShort, "AUTO", "Availability zone of the Volume. Storage zone can only be selected prior provisioning")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAvailabilityZone, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"AUTO", "ZONE_1", "ZONE_2", "ZONE_3"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgBackupUnitId, "", "", "The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgBackupUnitId, "", "", "The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgImageId, "", "", "The Image Id or Snapshot Id to be used as template for the new Volume")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgImageId, "", "", "The Image Id or Snapshot Id to be used as template for the new Volume")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapi_v6.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
-	create.AddStringFlag(cloudapi_v6.ArgPassword, cloudapi_v6.ArgPasswordShort, "abcde12345", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
-	create.AddStringFlag(cloudapi_v6.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
-	create.AddBoolFlag(cloudapi_v6.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
-	create.AddBoolFlag(cloudapi_v6.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
-	create.AddBoolFlag(cloudapi_v6.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
-	create.AddBoolFlag(cloudapi_v6.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
-	create.AddBoolFlag(cloudapi_v6.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
-	create.AddBoolFlag(cloudapi_v6.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
-	create.AddStringSliceFlag(cloudapi_v6.ArgSshKeys, "", []string{""}, "SSH Keys of the Volume")
+	create.AddStringFlag(cloudapiv6.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
+	create.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "abcde12345", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
+	create.AddStringFlag(cloudapiv6.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
+	create.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
+	create.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
+	create.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
+	create.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
+	create.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
+	create.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
+	create.AddStringSliceFlag(cloudapiv6.ArgSshKeys, "", []string{""}, "SSH Keys of the Volume")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume creation [seconds]")
 
@@ -178,26 +178,26 @@ Required values to run command:
 		CmdRun:     RunVolumeUpdate,
 		InitClient: true,
 	})
-	update.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgVolumeId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.VolumeId, core.RequiredFlagOption())
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	update.AddStringFlag(cloudapiv6.ArgVolumeId, cloudapiv6.ArgIdShort, "", cloudapiv6.VolumeId, core.RequiredFlagOption())
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgName, cloudapi_v6.ArgNameShort, "", "Name of the Volume")
-	update.AddStringFlag(cloudapi_v6.ArgSize, "", "", "The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Volume")
+	update.AddStringFlag(cloudapiv6.ArgSize, "", "", "The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapi_v6.ArgBus, "", "VIRTIO", "Bus of the Volume")
-	update.AddBoolFlag(cloudapi_v6.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapi_v6.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
+	update.AddStringFlag(cloudapiv6.ArgBus, "", "VIRTIO", "Bus of the Volume")
+	update.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume update [seconds]")
 
@@ -223,13 +223,13 @@ Required values to run command:
 		CmdRun:     RunVolumeDelete,
 		InitClient: true,
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	deleteCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(cloudapi_v6.ArgVolumeId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.VolumeId, core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	deleteCmd.AddStringFlag(cloudapiv6.ArgVolumeId, cloudapiv6.ArgIdShort, "", cloudapiv6.VolumeId, core.RequiredFlagOption())
+	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume deletion [seconds]")
@@ -238,12 +238,12 @@ Required values to run command:
 }
 
 func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgVolumeId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgVolumeId)
 }
 
 func RunVolumeList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)))
-	volumes, _, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)))
+	c.Printer.Verbose("Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	volumes, _, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if err != nil {
 		return err
 	}
@@ -251,11 +251,11 @@ func RunVolumeList(c *core.CommandConfig) error {
 }
 
 func RunVolumeGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)))
-	c.Printer.Verbose("Volume with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId)))
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("Volume with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)))
 	vol, _, err := c.CloudApiV6Services.Volumes().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
 	if err != nil {
 		return err
@@ -268,7 +268,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	vol, resp, err := c.CloudApiV6Services.Volumes().Create(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)), *input)
+	vol, resp, err := c.CloudApiV6Services.Volumes().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
 	}
@@ -286,8 +286,8 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	vol, resp, err := c.CloudApiV6Services.Volumes().Update(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId)), *input)
+	vol, resp, err := c.CloudApiV6Services.Volumes().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)), *input)
 	if err != nil {
 		return err
 	}
@@ -301,10 +301,10 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
 		return err
 	}
-	c.Printer.Verbose("Volume with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId)))
+	c.Printer.Verbose("Volume with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)))
 	resp, err := c.CloudApiV6Services.Volumes().Delete(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
 	if err != nil {
 		return err
@@ -318,10 +318,10 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 
 func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	proper := resources.VolumeProperties{}
-	name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
-	bus := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBus))
-	volumeType := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgType))
-	availabilityZone := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgAvailabilityZone))
+	name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
+	bus := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus))
+	volumeType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))
+	availabilityZone := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAvailabilityZone))
 	// It will get the default values, if flags not set
 	proper.SetName(name)
 	proper.SetBus(bus)
@@ -330,7 +330,7 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	c.Printer.Verbose("Properties set for creating the Volume: Name: %v, Bus: %v, VolumeType: %v, AvailabilityZone: %v",
 		name, bus, volumeType, availabilityZone)
 	size, err := utils.ConvertSize(
-		viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSize)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
 		utils.GigaBytes,
 	)
 	if err != nil {
@@ -339,67 +339,67 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 	proper.SetSize(float32(size))
 	c.Printer.Verbose("Property Size set: %vGB", float32(size))
 	// Check if flags are set and set options
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgBackupUnitId)) {
-		backupUnitId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBackupUnitId))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)) {
+		backupUnitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
 		proper.SetBackupunitId(backupUnitId)
 		c.Printer.Verbose("Property BackupUnitId set: %v", backupUnitId)
 	}
-	if !viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgImageId)) &&
-		!viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgImageAlias)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgLicenceType)) {
-		licenceType := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgLicenceType))
+	if !viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) &&
+		!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
+		licenceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType))
 		proper.SetLicenceType(licenceType)
 		c.Printer.Verbose("Property LicenceType set: %v", licenceType)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgImageId)) {
-		imageId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgImageId))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) {
+		imageId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId))
 		proper.SetImage(imageId)
 		c.Printer.Verbose("Property Image set: %v", imageId)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgImageId)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgImageAlias)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgPassword)) {
-		imagePassword := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgPassword))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
+		imagePassword := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
 		proper.SetImagePassword(imagePassword)
 		c.Printer.Verbose("Property ImagePassword set")
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgSshKeys)) {
-		sshKeys := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapi_v6.ArgSshKeys))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeys)) {
+		sshKeys := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeys))
 		proper.SetSshKeys(sshKeys)
 		c.Printer.Verbose("Property SshKeys set: %v", sshKeys)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgUserData)) {
-		userData := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgUserData))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgUserData)) {
+		userData := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserData))
 		proper.SetUserData(userData)
 		c.Printer.Verbose("Property UserData set: %v", userData)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCpuHotPlug)) {
-		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCpuHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug)) {
+		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug))
 		proper.SetCpuHotPlug(cpuHotPlug)
 		c.Printer.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgRamHotPlug)) {
-		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgRamHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug)) {
+		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug))
 		proper.SetRamHotPlug(ramHotPlug)
 		c.Printer.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotPlug)) {
-		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug)) {
+		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug))
 		proper.SetNicHotPlug(nicHotPlug)
 		c.Printer.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotUnplug)) {
-		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotUnplug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug)) {
+		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug))
 		proper.SetNicHotUnplug(nicHotUnplug)
 		c.Printer.Verbose("Property NicHotUnplug set: %v", nicHotUnplug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotPlug)) {
-		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug)) {
+		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug))
 		proper.SetDiscVirtioHotPlug(discVirtioHotPlug)
 		c.Printer.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotUnplug)) {
-		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotUnplug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug)) {
+		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug))
 		proper.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
 		c.Printer.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
 	}
@@ -412,19 +412,19 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 
 func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 	input := resources.VolumeProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgName)) {
-		name := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgName))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
+		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName))
 		input.SetName(name)
 		c.Printer.Verbose("Property Name set: %v", name)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgBus)) {
-		bus := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgBus))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgBus)) {
+		bus := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus))
 		input.SetBus(bus)
 		c.Printer.Verbose("Property Bus set: %v", bus)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgSize)) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSize)) {
 		size, err := utils.ConvertSize(
-			viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgSize)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSize)),
 			utils.GigaBytes,
 		)
 		if err != nil {
@@ -434,33 +434,33 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 		c.Printer.Verbose("Property Size set: %vGB", float32(size))
 	}
 	// Check if flags are set and set options
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgCpuHotPlug)) {
-		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgCpuHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug)) {
+		cpuHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCpuHotPlug))
 		input.SetCpuHotPlug(cpuHotPlug)
 		c.Printer.Verbose("Property CpuHotPlug set: %v", cpuHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgRamHotPlug)) {
-		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgRamHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug)) {
+		ramHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgRamHotPlug))
 		input.SetRamHotPlug(ramHotPlug)
 		c.Printer.Verbose("Property RamHotPlug set: %v", ramHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotPlug)) {
-		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug)) {
+		nicHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotPlug))
 		input.SetNicHotPlug(nicHotPlug)
 		c.Printer.Verbose("Property NicHotPlug set: %v", nicHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotUnplug)) {
-		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgNicHotUnplug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug)) {
+		nicHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNicHotUnplug))
 		input.SetNicHotUnplug(nicHotUnplug)
 		c.Printer.Verbose("Property NicHotUnplug set: %v", nicHotUnplug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotPlug)) {
-		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotPlug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug)) {
+		discVirtioHotPlug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotPlug))
 		input.SetDiscVirtioHotPlug(discVirtioHotPlug)
 		c.Printer.Verbose("Property DiscVirtioHotPlug set: %v", discVirtioHotPlug)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotUnplug)) {
-		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapi_v6.ArgDiscVirtioHotUnplug))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug)) {
+		discVirtioHotUnplug := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDiscVirtioHotUnplug))
 		input.SetDiscVirtioHotUnplug(discVirtioHotUnplug)
 		c.Printer.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
 	}
@@ -508,17 +508,17 @@ Required values to run command:
 	_ = attachVolume.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	attachVolume.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = attachVolume.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	attachVolume.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = attachVolume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachVolume.AddStringFlag(cloudapi_v6.ArgVolumeId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.VolumeId, core.RequiredFlagOption())
-	_ = attachVolume.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(attachVolume.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	attachVolume.AddStringFlag(cloudapiv6.ArgVolumeId, cloudapiv6.ArgIdShort, "", cloudapiv6.VolumeId, core.RequiredFlagOption())
+	_ = attachVolume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(attachVolume.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	attachVolume.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = attachVolume.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachVolume.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	attachVolume.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = attachVolume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(attachVolume.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachVolume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume attachment to be executed")
 	attachVolume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume attachment [seconds]")
@@ -542,13 +542,13 @@ Required values to run command:
 	_ = listVolumes.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	listVolumes.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	listVolumes.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	listVolumes.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(listVolumes.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	listVolumes.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(listVolumes.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -570,17 +570,17 @@ Required values to run command:
 	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	getVolumeCmd.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getVolumeCmd.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	getVolumeCmd.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(getVolumeCmd.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	getVolumeCmd.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(getVolumeCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	getVolumeCmd.AddStringFlag(cloudapi_v6.ArgVolumeId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.VolumeId, core.RequiredFlagOption())
-	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AttachedVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(getVolumeCmd.NS, cloudapi_v6.ArgDataCenterId)), viper.GetString(core.GetFlagName(getVolumeCmd.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	getVolumeCmd.AddStringFlag(cloudapiv6.ArgVolumeId, cloudapiv6.ArgIdShort, "", cloudapiv6.VolumeId, core.RequiredFlagOption())
+	_ = getVolumeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.AttachedVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(getVolumeCmd.NS, cloudapiv6.ArgDataCenterId)), viper.GetString(core.GetFlagName(getVolumeCmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -610,18 +610,18 @@ Required values to run command:
 	_ = detachVolume.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allVolumeCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	detachVolume.AddStringFlag(cloudapi_v6.ArgDataCenterId, "", "", cloudapi_v6.DatacenterId, core.RequiredFlagOption())
-	_ = detachVolume.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	detachVolume.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
+	_ = detachVolume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachVolume.AddStringFlag(cloudapi_v6.ArgVolumeId, cloudapi_v6.ArgIdShort, "", cloudapi_v6.VolumeId, core.RequiredFlagOption())
-	_ = detachVolume.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.AttachedVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(detachVolume.NS, cloudapi_v6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(detachVolume.NS, cloudapi_v6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
+	detachVolume.AddStringFlag(cloudapiv6.ArgVolumeId, cloudapiv6.ArgIdShort, "", cloudapiv6.VolumeId, core.RequiredFlagOption())
+	_ = detachVolume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.AttachedVolumesIds(os.Stderr, viper.GetString(core.GetFlagName(detachVolume.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(detachVolume.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	detachVolume.AddStringFlag(cloudapi_v6.ArgServerId, "", "", cloudapi_v6.ServerId, core.RequiredFlagOption())
-	_ = detachVolume.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(detachVolume.NS, cloudapi_v6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	detachVolume.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
+	_ = detachVolume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(detachVolume.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	detachVolume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume detachment to be executed")
 	detachVolume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume detachment [seconds]")
@@ -630,13 +630,13 @@ Required values to run command:
 }
 
 func PreRunDcServerVolumeIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgDataCenterId, cloudapi_v6.ArgServerId, cloudapi_v6.ArgVolumeId)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgVolumeId)
 }
 
 func RunServerVolumeAttach(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Attaching Volume with ID: %v to Server with ID: %v...", volumeId, serverId)
 	attachedVol, resp, err := c.CloudApiV6Services.Servers().AttachVolume(dcId, serverId, volumeId)
@@ -651,8 +651,8 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 }
 
 func RunServerVolumesList(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Listing attached Volumes from Server with ID: %v...", serverId)
 	attachedVols, _, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId)
@@ -663,9 +663,9 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 }
 
 func RunServerVolumeGet(c *core.CommandConfig) error {
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting attached Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
 	attachedVol, _, err := c.CloudApiV6Services.Servers().GetVolume(dcId, serverId, volumeId)
@@ -679,9 +679,9 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server"); err != nil {
 		return err
 	}
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgServerId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgVolumeId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Detaching Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
 	resp, err := c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, volumeId)

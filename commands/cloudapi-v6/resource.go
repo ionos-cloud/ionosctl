@@ -3,16 +3,16 @@ package commands
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
-	cloudapi_v6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -67,12 +67,12 @@ func ResourceCmd() *core.Command {
 		CmdRun:     RunResourceGet,
 		InitClient: true,
 	})
-	getRsc.AddStringFlag(cloudapi_v6.ArgType, "", "", "The specific Type of Resources to retrieve information about", core.RequiredFlagOption())
-	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getRsc.AddStringFlag(cloudapiv6.ArgType, "", "", "The specific Type of Resources to retrieve information about", core.RequiredFlagOption())
+	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"datacenter", "snapshot", "image", "ipblock", "pcc", "backupunit", "k8s"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	getRsc.AddStringFlag(cloudapi_v6.ArgResourceId, cloudapi_v6.ArgIdShort, "", "The ID of the specific Resource to retrieve information about")
-	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	getRsc.AddStringFlag(cloudapiv6.ArgResourceId, cloudapiv6.ArgIdShort, "", "The ID of the specific Resource to retrieve information about")
+	_ = getRsc.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgResourceId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ResourcesIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -80,7 +80,7 @@ func ResourceCmd() *core.Command {
 }
 
 func PreRunResourceType(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapi_v6.ArgType)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgType)
 }
 
 func RunResourceList(c *core.CommandConfig) error {
@@ -92,18 +92,18 @@ func RunResourceList(c *core.CommandConfig) error {
 }
 
 func RunResourceGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgResourceId)))
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapi_v6.ArgResourceId)) {
+	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)) {
 		resourceListed, _, err := c.CloudApiV6Services.Users().GetResourceByTypeAndId(
-			viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgType)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgResourceId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		)
 		if err != nil {
 			return err
 		}
 		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
-		resourcesListed, _, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgType)))
+		resourcesListed, _, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
 		if err != nil {
 			return err
 		}
@@ -144,8 +144,8 @@ func GroupResourceCmd() *core.Command {
 	_ = listResources.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultResourceCols, cobra.ShellCompDirectiveNoFileComp
 	})
-	listResources.AddStringFlag(cloudapi_v6.ArgGroupId, "", "", cloudapi_v6.GroupId, core.RequiredFlagOption())
-	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapi_v6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	listResources.AddStringFlag(cloudapiv6.ArgGroupId, "", "", cloudapiv6.GroupId, core.RequiredFlagOption())
+	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -153,8 +153,8 @@ func GroupResourceCmd() *core.Command {
 }
 
 func RunGroupResourceList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgGroupId)))
-	resourcesListed, _, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapi_v6.ArgGroupId)))
+	c.Printer.Verbose("Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	resourcesListed, _, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	if err != nil {
 		return err
 	}
