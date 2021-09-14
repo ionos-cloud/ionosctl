@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
-	utils2 "github.com/ionos-cloud/ionosctl/internal/utils"
+	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
@@ -204,7 +204,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getDataCenterPrint(resp, c, []resources.Datacenter{*dc}))
@@ -233,14 +233,14 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getDataCenterPrint(resp, c, []resources.Datacenter{*dc}))
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
-	if err := utils2.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
 		return err
 	}
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
@@ -253,7 +253,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		return err
 	}
 
-	if err = utils2.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
 	return c.Printer.Print(getDataCenterPrint(resp, c, nil))

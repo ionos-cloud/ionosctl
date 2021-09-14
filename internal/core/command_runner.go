@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	config2 "github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
@@ -108,7 +108,7 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		// Define cmd Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
 			// Load configuration file or Env Variables once
-			if err := config2.Load(); err != nil {
+			if err := config.Load(); err != nil {
 				return err
 			}
 			// Init Clients and Services
@@ -160,7 +160,7 @@ type CommandConfig struct {
 
 func getPrinter() printer.PrintService {
 	var out io.Writer
-	if viper.GetBool(config2.ArgQuiet) {
+	if viper.GetBool(config.ArgQuiet) {
 		var execOut bytes.Buffer
 		out = &execOut
 	} else {
@@ -168,5 +168,5 @@ func getPrinter() printer.PrintService {
 	}
 	printReg, err := printer.NewPrinterRegistry(out, os.Stderr)
 	clierror.CheckError(err, os.Stderr)
-	return printReg[viper.GetString(config2.ArgOutput)]
+	return printReg[viper.GetString(config.ArgOutput)]
 }
