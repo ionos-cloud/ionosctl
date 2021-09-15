@@ -6,15 +6,27 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/resources/v6"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/printer"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
 )
 
-func login() *core.Command {
+const (
+	loginExamples = `ionosctl login --user USERNAME --password PASSWORD
+Status: Authentication successful!
+
+ionosctl login 
+Enter your username:
+USERNAME
+Enter your password:
+
+Status: Authentication successful!`
+)
+
+func LoginCmd() *core.Command {
 	ctx := context.TODO()
 	loginCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
 		Namespace: "login",
@@ -77,7 +89,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	viper.Set(config.Token, token)
 	viper.Set(config.ServerUrl, viper.GetString(config.ArgServerUrl))
 
-	clientSvc, err := v6.NewClientService(
+	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
 		viper.GetString(config.Token),
@@ -87,7 +99,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 		return err
 	}
 
-	dcsSvc := v6.NewDataCenterService(clientSvc.Get(), context.TODO())
+	dcsSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
 	_, _, err = dcsSvc.List()
 	if err != nil {
 		return err

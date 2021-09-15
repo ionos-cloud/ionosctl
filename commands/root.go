@@ -6,8 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -168,36 +169,36 @@ func (v cliVersion) GetVersion() string {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
-	rootCmd.AddCommand(version())
+	rootCmd.AddCommand(VersionCmd())
+	rootCmd.AddCommand(LoginCmd())
 	// V6 Resources Commands
-	rootCmd.AddCommand(login())
-	rootCmd.AddCommand(location())
-	rootCmd.AddCommand(datacenter())
-	rootCmd.AddCommand(server())
-	rootCmd.AddCommand(volume())
-	rootCmd.AddCommand(lan())
-	rootCmd.AddCommand(natgateway())
-	rootCmd.AddCommand(networkloadbalancer())
-	rootCmd.AddCommand(nic())
-	rootCmd.AddCommand(loadBalancer())
-	rootCmd.AddCommand(ipblock())
-	rootCmd.AddCommand(ipconsumer())
-	rootCmd.AddCommand(ipfailover())
-	rootCmd.AddCommand(request())
-	rootCmd.AddCommand(snapshot())
-	rootCmd.AddCommand(image())
-	rootCmd.AddCommand(firewallrule())
-	rootCmd.AddCommand(flowlog())
-	rootCmd.AddCommand(label())
-	rootCmd.AddCommand(contract())
-	rootCmd.AddCommand(user())
-	rootCmd.AddCommand(group())
-	rootCmd.AddCommand(resource())
-	rootCmd.AddCommand(backupunit())
-	rootCmd.AddCommand(pcc())
-	rootCmd.AddCommand(share())
-	rootCmd.AddCommand(k8s())
-	rootCmd.AddCommand(template())
+	rootCmd.AddCommand(cloudapiv6.LocationCmd())
+	rootCmd.AddCommand(cloudapiv6.DatacenterCmd())
+	rootCmd.AddCommand(cloudapiv6.ServerCmd())
+	rootCmd.AddCommand(cloudapiv6.VolumeCmd())
+	rootCmd.AddCommand(cloudapiv6.LanCmd())
+	rootCmd.AddCommand(cloudapiv6.NatgatewayCmd())
+	rootCmd.AddCommand(cloudapiv6.NetworkloadbalancerCmd())
+	rootCmd.AddCommand(cloudapiv6.NicCmd())
+	rootCmd.AddCommand(cloudapiv6.LoadBalancerCmd())
+	rootCmd.AddCommand(cloudapiv6.IpblockCmd())
+	rootCmd.AddCommand(cloudapiv6.IpconsumerCmd())
+	rootCmd.AddCommand(cloudapiv6.IpfailoverCmd())
+	rootCmd.AddCommand(cloudapiv6.RequestCmd())
+	rootCmd.AddCommand(cloudapiv6.SnapshotCmd())
+	rootCmd.AddCommand(cloudapiv6.ImageCmd())
+	rootCmd.AddCommand(cloudapiv6.FirewallruleCmd())
+	rootCmd.AddCommand(cloudapiv6.FlowlogCmd())
+	rootCmd.AddCommand(cloudapiv6.LabelCmd())
+	rootCmd.AddCommand(cloudapiv6.ContractCmd())
+	rootCmd.AddCommand(cloudapiv6.UserCmd())
+	rootCmd.AddCommand(cloudapiv6.GroupCmd())
+	rootCmd.AddCommand(cloudapiv6.ResourceCmd())
+	rootCmd.AddCommand(cloudapiv6.BackupunitCmd())
+	rootCmd.AddCommand(cloudapiv6.PccCmd())
+	rootCmd.AddCommand(cloudapiv6.ShareCmd())
+	rootCmd.AddCommand(cloudapiv6.K8sCmd())
+	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}
