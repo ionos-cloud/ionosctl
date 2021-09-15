@@ -10,30 +10,32 @@ import (
 
 type Services struct {
 	// Compute Resources Services
-	Locations            func() resources.LocationsService
-	DataCenters          func() resources.DatacentersService
-	Servers              func() resources.ServersService
-	Volumes              func() resources.VolumesService
-	Lans                 func() resources.LansService
-	NatGateways          func() resources.NatGatewaysService
-	NetworkLoadBalancers func() resources.NetworkLoadBalancersService
-	Nics                 func() resources.NicsService
-	Loadbalancers        func() resources.LoadbalancersService
-	Requests             func() resources.RequestsService
-	Images               func() resources.ImagesService
-	Snapshots            func() resources.SnapshotsService
-	IpBlocks             func() resources.IpBlocksService
-	FirewallRules        func() resources.FirewallRulesService
-	FlowLogs             func() resources.FlowLogsService
-	Labels               func() resources.LabelResourcesService
-	Contracts            func() resources.ContractsService
-	Users                func() resources.UsersService
-	Groups               func() resources.GroupsService
-	S3Keys               func() resources.S3KeysService
-	BackupUnit           func() resources.BackupUnitsService
-	Pccs                 func() resources.PccsService
-	K8s                  func() resources.K8sService
-	Templates            func() resources.TemplatesService
+	Locations                func() resources.LocationsService
+	DataCenters              func() resources.DatacentersService
+	Servers                  func() resources.ServersService
+	Volumes                  func() resources.VolumesService
+	Lans                     func() resources.LansService
+	NatGateways              func() resources.NatGatewaysService
+	ApplicationLoadBalancers func() resources.ApplicationLoadBalancersService
+	NetworkLoadBalancers     func() resources.NetworkLoadBalancersService
+	Nics                     func() resources.NicsService
+	Loadbalancers            func() resources.LoadbalancersService
+	Requests                 func() resources.RequestsService
+	Images                   func() resources.ImagesService
+	Snapshots                func() resources.SnapshotsService
+	IpBlocks                 func() resources.IpBlocksService
+	FirewallRules            func() resources.FirewallRulesService
+	FlowLogs                 func() resources.FlowLogsService
+	Labels                   func() resources.LabelResourcesService
+	Contracts                func() resources.ContractsService
+	Users                    func() resources.UsersService
+	Groups                   func() resources.GroupsService
+	S3Keys                   func() resources.S3KeysService
+	BackupUnit               func() resources.BackupUnitsService
+	Pccs                     func() resources.PccsService
+	K8s                      func() resources.K8sService
+	Templates                func() resources.TemplatesService
+	TargetGroups             func() resources.TargetGroupsService
 	// Context
 	Context context.Context
 }
@@ -60,6 +62,9 @@ func (c *Services) InitServices(client *resources.Client) error {
 	c.Volumes = func() resources.VolumesService { return resources.NewVolumeService(client, c.Context) }
 	c.Lans = func() resources.LansService { return resources.NewLanService(client, c.Context) }
 	c.NatGateways = func() resources.NatGatewaysService { return resources.NewNatGatewayService(client, c.Context) }
+	c.ApplicationLoadBalancers = func() resources.ApplicationLoadBalancersService {
+		return resources.NewApplicationLoadBalancerService(client, c.Context)
+	}
 	c.NetworkLoadBalancers = func() resources.NetworkLoadBalancersService {
 		return resources.NewNetworkLoadBalancerService(client, c.Context)
 	}
@@ -80,5 +85,8 @@ func (c *Services) InitServices(client *resources.Client) error {
 	c.Pccs = func() resources.PccsService { return resources.NewPrivateCrossConnectService(client, c.Context) }
 	c.K8s = func() resources.K8sService { return resources.NewK8sService(client, c.Context) }
 	c.Templates = func() resources.TemplatesService { return resources.NewTemplateService(client, c.Context) }
+	c.TargetGroups = func() resources.TargetGroupsService {
+		return resources.NewTargetGroupService(client, c.Context)
+	}
 	return nil
 }
