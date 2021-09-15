@@ -45,7 +45,7 @@ Required values to run command:
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --connection-timeout int   [Health Check] The maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed (default 5000)
   -f, --force                    Force command to execute without user input
-  -h, --help                     help for update
+  -h, --help                     Print usage
       --match-type string        [HTTP Health Check] Match Type for the HTTP health check (default "STATUS_CODE")
       --method string            [HTTP Health Check] Method for the HTTP health check (default "GET")
   -n, --name string              Name of the Target Group (default "Updated Target Group")
@@ -58,9 +58,9 @@ Required values to run command:
       --response string          [HTTP Health Check] The response returned by the request (default "200")
       --retries int              [Health Check] The number of retries to perform on a target VM after a connection failure. (valid range: [0, 65535]) (default 3)
       --target-timeout int       [Health Check] The maximum inactivity time (in milliseconds) on the target VM side (default 50000)
-  -i, --targetgroup-id string    The unique TargetGroup Id (required)
+  -i, --targetgroup-id string    The unique Target Group Id (required)
   -t, --timeout int              Timeout option for Request for Target Group update [seconds] (default 60)
-  -v, --verbose                  see step by step process when running a command
+  -v, --verbose                  Print step-by-step process when running command
   -w, --wait-for-request         Wait for the Request for Target Group update to be executed
 ```
 

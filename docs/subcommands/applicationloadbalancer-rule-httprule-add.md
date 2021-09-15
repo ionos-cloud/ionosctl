@@ -60,7 +60,7 @@ Required values to run command:
       --datacenter-id string                The unique Data Center Id (required)
       --drop-query                          Default is false; must be true for REDIRECT action
   -f, --force                               Force command to execute without user input
-  -h, --help                                help for add
+  -h, --help                                Print usage
   -l, --location string                     The location for redirecting; mandatory for REDIRECT action (default "www.ionos.com")
   -n, --name string                         A name of that Application Load Balancer Http Rule (required) (default "Unnamed Http Rule")
       --negate                              Specifies whether the condition is negated or not; default: false
@@ -72,7 +72,7 @@ Required values to run command:
       --targetgroup-id string               The Id of the Target Group; mandatory for FORWARD action
   -t, --timeout int                         Timeout option for Request for Forwarding Rule Http Rule creation [seconds] (default 300)
       --type string                         Type of the Http Rule (required)
-  -v, --verbose                             see step by step process when running a command
+  -v, --verbose                             Print step-by-step process when running command
   -w, --wait-for-request                    Wait for the Request for Forwarding Rule Http Rule creation to be executed
 ```
 

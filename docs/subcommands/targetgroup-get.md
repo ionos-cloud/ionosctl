@@ -40,11 +40,11 @@ Required values to run command:
                                 Available columns: [TargetGroupId Name Algorithm Protocol CheckTimeout ConnectTimeout TargetTimeout Retries Path Method MatchType Response Regex Negate State] (default [TargetGroupId,Name,Algorithm,Protocol,CheckTimeout,ConnectTimeout,TargetTimeout,State])
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                   Force command to execute without user input
-  -h, --help                    help for get
+  -h, --help                    Print usage
   -o, --output string           Desired output format [text|json] (default "text")
   -q, --quiet                   Quiet output
-  -i, --targetgroup-id string   The unique TargetGroup Id (required)
-  -v, --verbose                 see step by step process when running a command
+  -i, --targetgroup-id string   The unique Target Group Id (required)
+  -v, --verbose                 Print step-by-step process when running command
 ```
 
 ## Examples

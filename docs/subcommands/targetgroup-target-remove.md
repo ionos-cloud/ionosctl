@@ -48,14 +48,14 @@ Required values to run command:
                                 Available columns: [TargetIp TargetPort Weight Check CheckInterval Maintenance] (default [TargetIp,TargetPort,Weight,Check,CheckInterval,Maintenance])
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                   Force command to execute without user input
-  -h, --help                    help for remove
+  -h, --help                    Print usage
   -o, --output string           Desired output format [text|json] (default "text")
   -q, --quiet                   Quiet output
       --target-ip string        IP of a balanced target VM (required)
       --target-port int         Port of the balanced target service. (range: 1 to 65535) (required) (default 8080)
-  -i, --targetgroup-id string   The unique TargetGroup Id (required)
+  -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout option for Request for Target Group Target deletion [seconds] (default 60)
-  -v, --verbose                 see step by step process when running a command
+  -v, --verbose                 Print step-by-step process when running command
   -w, --wait-for-request        Wait for the Request for Target Group Target deletion to be executed
 ```
 

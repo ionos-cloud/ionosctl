@@ -42,11 +42,11 @@ Use this command to get a list of Target Groups Targets.
                                 Available columns: [TargetIp TargetPort Weight Check CheckInterval Maintenance] (default [TargetIp,TargetPort,Weight,Check,CheckInterval,Maintenance])
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                   Force command to execute without user input
-  -h, --help                    help for list
+  -h, --help                    Print usage
   -o, --output string           Desired output format [text|json] (default "text")
   -q, --quiet                   Quiet output
-  -i, --targetgroup-id string   The unique TargetGroup Id (required)
-  -v, --verbose                 see step by step process when running a command
+  -i, --targetgroup-id string   The unique Target Group Id (required)
+  -v, --verbose                 Print step-by-step process when running command
 ```
 
 ## Examples
