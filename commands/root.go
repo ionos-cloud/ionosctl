@@ -6,8 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	cloudapiv5 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v5"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -167,32 +168,31 @@ func (v cliVersion) GetVersion() string {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
-	rootCmd.AddCommand(version())
-	// V5 Resources Commands
-	rootCmd.AddCommand(login())
-	rootCmd.AddCommand(location())
-	rootCmd.AddCommand(datacenter())
-	rootCmd.AddCommand(server())
-	rootCmd.AddCommand(volume())
-	rootCmd.AddCommand(lan())
-	rootCmd.AddCommand(nic())
-	rootCmd.AddCommand(loadBalancer())
-	rootCmd.AddCommand(ipblock())
-	rootCmd.AddCommand(ipconsumer())
-	rootCmd.AddCommand(ipfailover())
-	rootCmd.AddCommand(request())
-	rootCmd.AddCommand(snapshot())
-	rootCmd.AddCommand(image())
-	rootCmd.AddCommand(firewallrule())
-	rootCmd.AddCommand(label())
-	rootCmd.AddCommand(contract())
-	rootCmd.AddCommand(user())
-	rootCmd.AddCommand(group())
-	rootCmd.AddCommand(resource())
-	rootCmd.AddCommand(backupunit())
-	rootCmd.AddCommand(pcc())
-	rootCmd.AddCommand(share())
-	rootCmd.AddCommand(k8s())
+	rootCmd.AddCommand(VersionCmd())
+	rootCmd.AddCommand(LoginCmd())
+	// Add CloudApiV5 Resources Commands
+	rootCmd.AddCommand(cloudapiv5.DatacenterCmd())
+	rootCmd.AddCommand(cloudapiv5.BackupunitCmd())
+	rootCmd.AddCommand(cloudapiv5.ContractCmd())
+	rootCmd.AddCommand(cloudapiv5.FirewallRuleCmd())
+	rootCmd.AddCommand(cloudapiv5.GroupCmd())
+	rootCmd.AddCommand(cloudapiv5.ImageCmd())
+	rootCmd.AddCommand(cloudapiv5.IpblockCmd())
+	rootCmd.AddCommand(cloudapiv5.IpconsumerCmd())
+	rootCmd.AddCommand(cloudapiv5.IpfailoverCmd())
+	rootCmd.AddCommand(cloudapiv5.K8sCmd())
+	rootCmd.AddCommand(cloudapiv5.LabelCmd())
+	rootCmd.AddCommand(cloudapiv5.LanCmd())
+	rootCmd.AddCommand(cloudapiv5.LoadBalancerCmd())
+	rootCmd.AddCommand(cloudapiv5.LocationCmd())
+	rootCmd.AddCommand(cloudapiv5.NicCmd())
+	rootCmd.AddCommand(cloudapiv5.PccCmd())
+	rootCmd.AddCommand(cloudapiv5.ResourceCmd())
+	rootCmd.AddCommand(cloudapiv5.RequestCmd())
+	rootCmd.AddCommand(cloudapiv5.ServerCmd())
+	rootCmd.AddCommand(cloudapiv5.ShareCmd())
+	rootCmd.AddCommand(cloudapiv5.UserCmd())
+	rootCmd.AddCommand(cloudapiv5.VolumeCmd())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}
