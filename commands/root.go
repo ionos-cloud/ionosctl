@@ -164,6 +164,7 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.VolumeCmd())
 	rootCmd.AddCommand(cloudapiv6.LanCmd())
 	rootCmd.AddCommand(cloudapiv6.NatgatewayCmd())
+	rootCmd.AddCommand(cloudapiv6.ApplicationLoadBalancerCmd())
 	rootCmd.AddCommand(cloudapiv6.NetworkloadbalancerCmd())
 	rootCmd.AddCommand(cloudapiv6.NicCmd())
 	rootCmd.AddCommand(cloudapiv6.LoadBalancerCmd())
@@ -184,6 +185,7 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.PccCmd())
 	rootCmd.AddCommand(cloudapiv6.ShareCmd())
 	rootCmd.AddCommand(cloudapiv6.K8sCmd())
+	rootCmd.AddCommand(cloudapiv6.TargetGroupCmd())
 	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
 }
 

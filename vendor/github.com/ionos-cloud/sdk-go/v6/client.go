@@ -50,7 +50,11 @@ const (
 	RequestStatusFailed  = "FAILED"
 	RequestStatusDone    = "DONE"
 
+<<<<<<< HEAD
 	Version = "6.0.0-beta.7"
+=======
+   Version              = "VERSION_PLACEHOLDER"
+>>>>>>> feat: add ALB cmds
 )
 
 // APIClient manages communication with the CLOUD API API v6.0-SDK.3
@@ -63,7 +67,13 @@ type APIClient struct {
 
 	DefaultApi *DefaultApiService
 
+<<<<<<< HEAD
 	BackupUnitsApi *BackupUnitsApiService
+=======
+    ApplicationLoadBalancersApi *ApplicationLoadBalancersApiService
+
+    BackupUnitsApi *BackupUnitsApiService
+>>>>>>> feat: add ALB cmds
 
 	ContractResourcesApi *ContractResourcesApiService
 
@@ -101,7 +111,13 @@ type APIClient struct {
 
 	SnapshotsApi *SnapshotsApiService
 
+<<<<<<< HEAD
 	TemplatesApi *TemplatesApiService
+=======
+    TargetGroupsApi *TargetGroupsApiService
+
+    TemplatesApi *TemplatesApiService
+>>>>>>> feat: add ALB cmds
 
 	UserManagementApi *UserManagementApiService
 
@@ -117,6 +133,7 @@ type service struct {
 // NewAPIClient creates a new API client. Requires a userAgent string describing your application.
 // optionally a custom http.Client to allow for advanced features such as caching.
 func NewAPIClient(cfg *Configuration) *APIClient {
+<<<<<<< HEAD
 	if cfg.HTTPClient == nil {
 		cfg.HTTPClient = http.DefaultClient
 	}
@@ -152,6 +169,45 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.VolumesApi = (*VolumesApiService)(&c.common)
 
 	return c
+=======
+    if cfg.HTTPClient == nil {
+        cfg.HTTPClient = http.DefaultClient
+    }
+
+    c := &APIClient{}
+    c.cfg = cfg
+    c.common.client = c
+
+    // API Services
+    c.DefaultApi = (*DefaultApiService)(&c.common)
+    c.ApplicationLoadBalancersApi = (*ApplicationLoadBalancersApiService)(&c.common)
+    c.BackupUnitsApi = (*BackupUnitsApiService)(&c.common)
+    c.ContractResourcesApi = (*ContractResourcesApiService)(&c.common)
+    c.DataCentersApi = (*DataCentersApiService)(&c.common)
+    c.FirewallRulesApi = (*FirewallRulesApiService)(&c.common)
+    c.FlowLogsApi = (*FlowLogsApiService)(&c.common)
+    c.IPBlocksApi = (*IPBlocksApiService)(&c.common)
+    c.ImagesApi = (*ImagesApiService)(&c.common)
+    c.KubernetesApi = (*KubernetesApiService)(&c.common)
+    c.LabelsApi = (*LabelsApiService)(&c.common)
+    c.LansApi = (*LansApiService)(&c.common)
+    c.LoadBalancersApi = (*LoadBalancersApiService)(&c.common)
+    c.LocationsApi = (*LocationsApiService)(&c.common)
+    c.NATGatewaysApi = (*NATGatewaysApiService)(&c.common)
+    c.NetworkInterfacesApi = (*NetworkInterfacesApiService)(&c.common)
+    c.NetworkLoadBalancersApi = (*NetworkLoadBalancersApiService)(&c.common)
+    c.PrivateCrossConnectsApi = (*PrivateCrossConnectsApiService)(&c.common)
+    c.RequestsApi = (*RequestsApiService)(&c.common)
+    c.ServersApi = (*ServersApiService)(&c.common)
+    c.SnapshotsApi = (*SnapshotsApiService)(&c.common)
+    c.TargetGroupsApi = (*TargetGroupsApiService)(&c.common)
+    c.TemplatesApi = (*TemplatesApiService)(&c.common)
+    c.UserManagementApi = (*UserManagementApiService)(&c.common)
+    c.UserS3KeysApi = (*UserS3KeysApiService)(&c.common)
+    c.VolumesApi = (*VolumesApiService)(&c.common)
+
+    return c
+>>>>>>> feat: add ALB cmds
 }
 
 func atoi(in string) (int, error) {
