@@ -8,6 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
+	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/cloudapi-dbaas-pgsql"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -52,7 +53,8 @@ type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocksTest)
 
 type ResourcesMocksTest struct {
 	// Add New Services Resources Mocks
-	CloudApiV5Mocks cloudapi_v5.ResourcesMocks
+	CloudApiV5Mocks         cloudapi_v5.ResourcesMocks
+	CloudApiDbaasPgsqlMocks cloudapidbaaspgsql.ResourcesMocks
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -81,12 +83,14 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 // Init Mock Resources for Test
 func initMockResources(ctrl *gomock.Controller) *ResourcesMocksTest {
 	return &ResourcesMocksTest{
-		CloudApiV5Mocks: *cloudapi_v5.InitMocksResources(ctrl),
+		CloudApiV5Mocks:         *cloudapi_v5.InitMocksResources(ctrl),
+		CloudApiDbaasPgsqlMocks: *cloudapidbaaspgsql.InitMocksResources(ctrl),
 	}
 }
 
 // Init Mock Services for Command Test
 func initMockServices(c *CommandConfig, tm *ResourcesMocksTest) *CommandConfig {
 	c.CloudApiV5Services = *cloudapi_v5.InitMockServices(&c.CloudApiV5Services, &tm.CloudApiV5Mocks)
+	c.CloudApiDbaasPgsqlServices = *cloudapidbaaspgsql.InitMockServices(&c.CloudApiDbaasPgsqlServices, &tm.CloudApiDbaasPgsqlMocks)
 	return c
 }

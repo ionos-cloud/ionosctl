@@ -1,0 +1,706 @@
+swagger: "2.0"
+info:
+    description: >-
+        An enterprise-grade Database is provided as a Service (DBaaS) solution
+        that can be managed through a browser-based "Data Center Designer" (DCD)
+        tool or via an easy to use API.
+
+
+        The API allows you to create additional databse clusters or modify existing ones. It is designed to allow users to leverage the same power and flexibility found within the DCD visual tool. Both tools are consistent with their concepts and lend well to making the experience smooth and intuitive.
+    version: 0.0.1-SDK.1
+    title: IONOS DBaaS REST API foobar2
+host: api.ionos.com
+basePath: /cloudapi/databases/postgres
+tags:
+    - name: Clusters
+      description: everything about PostgreSQL clusters
+    - name: Backups
+      description: everything about PostgreSQL backups
+    - name: Restores
+      description: everything about PostgreSQL restores
+    - name: Metadata
+      description: all metadata about the API, like versions
+schemes:
+    - https
+paths:
+    /clusters:
+        get:
+            operationId: clustersGet
+            summary: List clusters
+            description: Retrieves a list of PostgreSQL clusters.
+            produces:
+                - application/json
+            tags:
+                - Clusters
+            parameters:
+                - name: filter.name
+                  in: query
+                  required: false
+                  type: string
+                  description: Response filter to list only the PostgreSQL clusters that contain
+                      the specified name. The value is case insensitive and
+                      matched on the 'display_name' field.
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        $ref: "#/definitions/ClusterList"
+                default:
+                    $ref: "#/responses/ApiError"
+        post:
+            operationId: clustersPost
+            summary: Create a cluster
+            description: Creates a new PostgreSQL cluster.
+            consumes:
+                - application/json
+            produces:
+                - application/json
+            tags:
+                - Clusters
+            parameters:
+                - name: Cluster
+                  in: body
+                  required: true
+                  description: The cluster to be created.
+                  schema:
+                      $ref: "#/definitions/CreateClusterRequest"
+                - name: from_backup
+                  in: query
+                  description: The unique ID of the backup you want to restore.
+                  type: string
+                  required: false
+                - name: from_recovery_target_time
+                  in: query
+                  description: >
+                      If this value is supplied as ISO 8601 timestamp, the
+                      backup will be
+
+                      replayed up until the given timestamp. If empty, the backup will be
+
+                      applied completely.
+                  type: string
+                  required: false
+            responses:
+                "202":
+                    description: The created cluster is returned with `lifecycle_status` set to
+                        "PENDING"
+                    schema:
+                        $ref: "#/definitions/Cluster"
+                default:
+                    $ref: "#/responses/ApiError"
+    "/clusters/{clusterId}":
+        get:
+            operationId: clustersFindById
+            summary: Fetch a cluster
+            description: You can retrieve a PostgreSQL cluster by using its ID. This value
+                can be found in the response body when a PostgreSQL cluster is
+                created or when you GET a list of PostgreSQL clusters.
+            produces:
+                - application/json
+            tags:
+                - Clusters
+            parameters:
+                - description: The unique ID of the cluster
+                  in: path
+                  name: clusterId
+                  required: true
+                  type: string
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        $ref: "#/definitions/Cluster"
+                default:
+                    $ref: "#/responses/ApiError"
+        patch:
+            operationId: clustersPatch
+            summary: Patch a cluster
+            description: Patch attributes of a PostgreSQL cluster.
+            produces:
+                - application/json
+            tags:
+                - Clusters
+            parameters:
+                - description: The unique ID of the cluster
+                  in: path
+                  name: clusterId
+                  required: true
+                  type: string
+                - name: Cluster
+                  in: body
+                  required: true
+                  description: The modified cluster.
+                  schema:
+                      $ref: "#/definitions/PatchClusterRequest"
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        $ref: "#/definitions/Cluster"
+                default:
+                    $ref: "#/responses/ApiError"
+        delete:
+            operationId: clustersDelete
+            summary: Delete a cluster
+            description: Delete a PostgreSQL cluster.
+            produces:
+                - application/json
+            tags:
+                - Clusters
+            parameters:
+                - description: The unique ID of the cluster
+                  in: path
+                  name: clusterId
+                  required: true
+                  type: string
+            responses:
+                "200":
+                    description: The deleted cluster with `lifecycle_status` set to "DELETING"
+                    schema:
+                        $ref: "#/definitions/Cluster"
+                default:
+                    $ref: "#/responses/ApiError"
+    /clusters/backups:
+        get:
+            operationId: clustersBackupsGet
+            summary: List cluster backups
+            description: Retrieves a list of all PostgreSQL cluster backups.
+            produces:
+                - application/json
+            tags:
+                - Backups
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        $ref: "#/definitions/ClusterBackupList"
+                default:
+                    $ref: "#/responses/ApiError"
+    "/clusters/backups/{backupId}":
+        get:
+            operationId: clustersBackupsFindById
+            summary: Fetch a cluster backup
+            description: Retrieve a PostgreSQL cluster backup by using its ID. This value
+                can be found when you GET a list of PostgreSQL cluster backups.
+            produces:
+                - application/json
+            tags:
+                - Backups
+            parameters:
+                - name: backupId
+                  description: The unique ID of the backup
+                  in: path
+                  required: true
+                  type: string
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        $ref: "#/definitions/ClusterBackup"
+                default:
+                    $ref: "#/responses/ApiError"
+    "/clusters/{clusterId}/backups":
+        get:
+            operationId: clusterBackupsGet
+            summary: List backups of cluster
+            description: Retrieves a list of all backups of the given PostgreSQL cluster.
+            produces:
+                - application/json
+            tags:
+                - Backups
+            parameters:
+                - name: clusterId
+                  description: The unique ID of the cluster.
+                  in: path
+                  required: true
+                  type: string
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        $ref: "#/definitions/ClusterBackupList"
+                default:
+                    $ref: "#/responses/ApiError"
+    "/clusters/{clusterId}/restore":
+        post:
+            operationId: clusterRestorePost
+            summary: In-place restore of a cluster
+            description: Triggers an in-place restore of the given PostgreSQL.
+            produces:
+                - application/json
+            tags:
+                - Restores
+            parameters:
+                - description: The unique ID of the cluster.
+                  in: path
+                  name: clusterId
+                  required: true
+                  type: string
+                - name: Restore
+                  in: body
+                  required: true
+                  description: The restore request to create.
+                  schema:
+                      $ref: "#/definitions/CreateRestoreRequest"
+            responses:
+                "202":
+                    description: successful operation
+                default:
+                    $ref: "#/responses/ApiError"
+    /clusters/postgresversions:
+        get:
+            operationId: postgresVersionsGet
+            summary: List PostgreSQL versions
+            description: Retrieves a list of all available PostgreSQL versions.
+            produces:
+                - application/json
+            tags:
+                - Clusters
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        type: array
+                        items:
+                            $ref: "#/definitions/PostgresVersionList"
+                default:
+                    $ref: "#/responses/ApiError"
+    "/clusters/{clusterId}/postgresversions":
+        get:
+            operationId: clusterPostgresVersionsGet
+            summary: List PostgreSQL versions
+            description: Retrieves a list of all PostgreSQL versions available for this
+                cluster.
+            produces:
+                - application/json
+            tags:
+                - Clusters
+            parameters:
+                - description: The unique ID of the cluster
+                  in: path
+                  name: clusterId
+                  required: true
+                  type: string
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        type: array
+                        items:
+                            $ref: "#/definitions/PostgresVersionList"
+                default:
+                    $ref: "#/responses/ApiError"
+    /infos/version:
+        get:
+            operationId: infosVersionGet
+            tags:
+                - Metadata
+            summary: Get the current API version
+            description: Retrieves the current version of the responding API.
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        type: array
+                        items:
+                            $ref: "#/definitions/APIVersion"
+                default:
+                    $ref: "#/responses/ApiError"
+    /infos/versions:
+        get:
+            operationId: infosVersionsGet
+            tags:
+                - Metadata
+            summary: Fetch all API versions
+            description: Retrieves all available versions of the responding API.
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: successful operation
+                    schema:
+                        type: array
+                        items:
+                            $ref: "#/definitions/APIVersion"
+                default:
+                    $ref: "#/responses/ApiError"
+responses:
+    ApiError:
+        description: "Any erroneous status code: 400 (parse error), 401 (auth error),
+            402 (trial access), 403 (insufficient permissions), 404 (not found),
+            405 (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), 503 (maintenance)"
+        headers:
+            Content-Type:
+                type: string
+                description: application/problem+json
+                default: application/problem+json
+        schema:
+            $ref: "#/definitions/ErrorResponse"
+definitions:
+    ErrorResponse:
+        properties:
+            httpStatus:
+                type: integer
+                description: HTTP status code of the operation
+                example: 400
+            messages:
+                type: array
+                items:
+                    $ref: "#/definitions/ErrorMessage"
+        type: object
+    ErrorMessage:
+        properties:
+            title:
+                type: string
+                description: >
+                    A short, summary of the problem type. Written in english and
+                    readable
+
+                    for engineers (usually not suited for non technical stakeholders and
+
+                    not localized)
+                example: Error summary
+            errorCode:
+                type: string
+                description: |
+                    Application internal error code
+                minimum: 100
+                maximum: 600
+                exclusiveMaximum: true
+                example: dbaas-err-api-123
+            message:
+                type: string
+                description: >
+                    A human readable explanation specific to this occurrence of
+                    the
+
+                    problem.
+                example: Error message example
+        type: object
+    ResourceId:
+        type: string
+        description: The unique ID of the resource.
+        example: 498ae72f-411f-11eb-9d07-046c59cc737e
+    PostgresVersion:
+        type: string
+        description: The PostgreSQL version of your cluster.
+        example: "13"
+    Replicas:
+        type: number
+        description: The number of replicas in your cluster.
+        example: 2
+    CpuCoreCount:
+        type: number
+        description: The number of CPU cores per replica.
+        example: 4
+    RamSize:
+        type: string
+        description: The amount of memory per replica.
+        example: 2Gi
+    StorageSize:
+        type: string
+        description: The amount of storage per replica.
+        example: 1Gi
+    Location:
+        type: string
+        description: The physical location where the cluster will be created. This will
+            be where all of your instances live. Property cannot be modified
+            after datacenter creation (disallowed in update requests)
+        example: de/fra
+    DisplayName:
+        type: string
+        description: The friendly name of your cluster.
+        example: PostgreSQL cluster
+    BackupEnabled:
+        type: boolean
+        description: Enables automatic backups of your cluster.
+        example: true
+    CreateClusterRequest:
+        description: Request payload with all data needed to create a new PostgreSQL
+            cluster
+        required:
+            - postgres_version
+            - replicas
+            - cpu_core_count
+            - ram_size
+            - storage_size
+            - storage_type
+            - vdc
+            - location
+            - display_name
+            - backup_enabled
+            - credentials
+        properties:
+            postgres_version:
+                $ref: "#/definitions/PostgresVersion"
+            replicas:
+                $ref: "#/definitions/Replicas"
+            cpu_core_count:
+                $ref: "#/definitions/CpuCoreCount"
+            ram_size:
+                $ref: "#/definitions/RamSize"
+            storage_size:
+                $ref: "#/definitions/StorageSize"
+            storage_type:
+                $ref: "#/definitions/StorageType"
+            vdc_connections:
+                type: array
+                minItems: 1
+                maxItems: 1
+                items:
+                    $ref: "#/definitions/VDCConnection"
+            location:
+                $ref: "#/definitions/Location"
+            display_name:
+                $ref: "#/definitions/DisplayName"
+            backup_enabled:
+                $ref: "#/definitions/BackupEnabled"
+            maintenance_window:
+                $ref: "#/definitions/MaintenanceWindow"
+            credentials:
+                $ref: "#/definitions/DBUser"
+        type: object
+    PatchClusterRequest:
+        description: payload to change a cluster
+        properties:
+            storage_size:
+                $ref: "#/definitions/StorageSize"
+            backup_enabled:
+                $ref: "#/definitions/BackupEnabled"
+            display_name:
+                $ref: "#/definitions/DisplayName"
+            maintenance_window:
+                $ref: "#/definitions/MaintenanceWindow"
+            postgres_version:
+                $ref: "#/definitions/PostgresVersion"
+        type: object
+    CreateRestoreRequest:
+        description: The restore request.
+        properties:
+            backup_id:
+                type: string
+                example: dcd31531-3ac8-11eb-9feb-046c59cc737e
+                description: The unique ID of the backup you want to restore.
+            recovery_target_time:
+                type: string
+                description: >
+                    If this value is supplied as ISO 8601 timestamp, the backup
+                    will be
+
+                    replayed up until the given timestamp. If empty, the backup will be
+
+                    applied completely.
+                example: 2020-12-10T13:37:50+01:00
+        required:
+            - backup_id
+        type: object
+    DBUser:
+        description: Credentials for the database user to be created.
+        properties:
+            username:
+                type: string
+                example: username
+            password:
+                type: string
+                example: password
+        required:
+            - username
+            - password
+        type: object
+    VDCConnection:
+        description: The VDC to connect to your cluster.
+        properties:
+            vdc_id:
+                type: string
+            lan_id:
+                type: string
+            ip_address:
+                type: string
+                description: |
+                    The IP and subnet for the database.
+                    Note the following unavailable IP ranges:
+                    10.233.64.0/18
+                    10.233.0.0/18
+                    10.233.114.0/24
+                example: 192.168.1.100/24
+        required:
+            - vdc_id
+            - lan_id
+        type: object
+    Metadata:
+        description: Metadata of the resource
+        properties:
+            created_date:
+                type: string
+                description: The ISO 8601 creation timestamp.
+                example: 2020-12-10T13:37:50+01:00
+            created_by:
+                type: string
+                example: John Doe
+            created_by_user_id:
+                type: string
+                example: 3
+            last_modified_date:
+                type: string
+                description: The ISO 8601 modified timestamp.
+                example: 2020-12-11T13:37:50+01:00
+            last_modified_by:
+                type: string
+                example: Jane Doe
+            last_modified_by_user_id:
+                type: string
+                example: 2
+        type: object
+    Cluster:
+        description: A database cluster
+        properties:
+            id:
+                $ref: "#/definitions/ResourceId"
+            backup_enabled:
+                $ref: "#/definitions/BackupEnabled"
+            lifecycle_status:
+                type: string
+                enum:
+                    - CREATED
+                    - PENDING
+                    - DELETING
+                    - ERROR
+            display_name:
+                $ref: "#/definitions/DisplayName"
+            postgres_version:
+                $ref: "#/definitions/PostgresVersion"
+            location:
+                $ref: "#/definitions/Location"
+            replicas:
+                $ref: "#/definitions/Replicas"
+            ram_size:
+                $ref: "#/definitions/RamSize"
+            cpu_core_count:
+                $ref: "#/definitions/CpuCoreCount"
+            storage_size:
+                $ref: "#/definitions/StorageSize"
+            storage_type:
+                $ref: "#/definitions/StorageType"
+            metadata:
+                $ref: "#/definitions/Metadata"
+            vdc_connections:
+                type: array
+                minItems: 1
+                maxItems: 1
+                items:
+                    $ref: "#/definitions/VDCConnection"
+            maintenance_window:
+                $ref: "#/definitions/MaintenanceWindow"
+        type: object
+    ClusterBackup:
+        description: a backup object
+        properties:
+            id:
+                $ref: "#/definitions/ResourceId"
+            cluster_id:
+                type: string
+                description: The unique ID of the cluster.
+                example: 498ae72f-411f-11eb-9d07-046c59cc737e
+            display_name:
+                $ref: "#/definitions/DisplayName"
+            type:
+                type: string
+                enum:
+                    - continuous
+                    - logical
+            metadata:
+                $ref: "#/definitions/Metadata"
+        type: object
+    MaintenanceWindow:
+        description: a weekly 4 hour-long window, during which maintenance might occur
+        properties:
+            time:
+                type: string
+                example: 16:30:59
+            weekday:
+                type: string
+                enum:
+                    - Sunday
+                    - Monday
+                    - Tuesday
+                    - Wednesday
+                    - Thursday
+                    - Friday
+                    - Saturday
+                example: Monday
+        required:
+            - time
+            - weekday
+        type: object
+    APIVersion:
+        properties:
+            version:
+                type: string
+                example: v2.1
+            swagger_url:
+                type: string
+                example: https://api.ionos.de/dbaas/postgres/infos/assets/swagger-v2.1.yml
+        type: object
+    StorageType:
+        description: The storage type used in your cluster.
+        type: string
+        enum:
+            - HDD
+            - SSD
+        example: HDD
+    PageNumber:
+        type: integer
+        example: 1
+    ClusterList:
+        description: list of clusters
+        properties:
+            page:
+                $ref: "#/definitions/PageNumber"
+            data:
+                type: array
+                items:
+                    $ref: "#/definitions/Cluster"
+        type: object
+    ClusterBackupList:
+        description: list of backups
+        properties:
+            page:
+                $ref: "#/definitions/PageNumber"
+            data:
+                type: array
+                items:
+                    $ref: "#/definitions/ClusterBackup"
+        type: object
+    PostgresVersionList:
+        description: list of PostgreSQL versions
+        properties:
+            data:
+                type: array
+                items:
+                    properties:
+                        name:
+                            type: string
+                            example: 12
+                    type: object
+        type: object
+securityDefinitions:
+    basicAuth:
+        type: basic
+        description: "You will need to base64 encode the string containing your
+            credentials. Separate your username and password with a colon, i.e.,
+            username:password and send it as 'Authorization' request header.
+            More details:
+            https://en.wikipedia.org/wiki/Basic_access_authentication"
+    tokenAuth:
+        type: apiKey
+        name: Authorization
+        in: header
+        description: Please provide header value as 'Bearer <token>' and don't forget to
+            add 'Bearer' HTTP Authorization Scheme before the token.
+security:
+    - basicAuth: []
+    - tokenAuth: []

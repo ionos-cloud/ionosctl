@@ -9,6 +9,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/cloudapi-dbaas-pgsql"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -119,6 +120,13 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 			if err = c.CloudApiV5Services.InitServices(computeClient); err != nil {
 				return err
 			}
+			dbaasPgsqlClient, err := c.CloudApiDbaasPgsqlServices.InitClient()
+			if err != nil {
+				return err
+			}
+			if err = c.CloudApiDbaasPgsqlServices.InitServices(dbaasPgsqlClient); err != nil {
+				return err
+			}
 			return nil
 		},
 	}
@@ -152,7 +160,8 @@ type CommandConfig struct {
 	initCfg func(commandConfig *CommandConfig) error
 
 	// Services
-	CloudApiV5Services cloudapi_v5.Services
+	CloudApiV5Services         cloudapi_v5.Services
+	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
 
 	// Context
 	Context context.Context
