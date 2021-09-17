@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/commands/cloudapi-dbaas-pgsql"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -193,6 +194,8 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv5.ShareCmd())
 	rootCmd.AddCommand(cloudapiv5.UserCmd())
 	rootCmd.AddCommand(cloudapiv5.VolumeCmd())
+	// Add CloudApiDBaaSPgsql Commands
+	rootCmd.AddCommand(cloudapidbaaspgsql.DBaaSPgsqlCmd())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}

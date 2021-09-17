@@ -30,7 +30,7 @@ type Response struct {
 type ClustersService interface {
 	List() (ClusterList, *Response, error)
 	Get(clusterId string) (*Cluster, *Response, error)
-	Create(input CreateClusterRequest) (*Cluster, *Response, error)
+	Create(input CreateClusterRequest, backupId string, recoveryTargetTime string) (*Cluster, *Response, error)
 	Update(clusterId string, input PatchClusterRequest) (*Cluster, *Response, error)
 	Delete(clusterId string) (*Response, error)
 }
@@ -61,8 +61,14 @@ func (cs *clustersService) Get(clusterId string) (*Cluster, *Response, error) {
 	return &Cluster{cluster}, &Response{*res}, err
 }
 
-func (cs *clustersService) Create(input CreateClusterRequest) (*Cluster, *Response, error) {
+func (cs *clustersService) Create(input CreateClusterRequest, backupId string, recoveryTargetTime string) (*Cluster, *Response, error) {
 	req := cs.client.ClustersApi.ClustersPost(cs.context).Cluster(input.CreateClusterRequest)
+	if backupId != "" {
+		req = req.FromBackup(backupId)
+	}
+	if recoveryTargetTime != "" {
+		req = req.FromRecoveryTargetTime(recoveryTargetTime)
+	}
 	cluster, res, err := cs.client.ClustersApi.ClustersPostExecute(req)
 	return &Cluster{cluster}, &Response{*res}, err
 }
