@@ -34,6 +34,23 @@ var (
 			},
 		},
 	}
+	groupTestId = v5.Group{
+		Group: ionoscloud.Group{
+			Id: &testGroupVar,
+			Properties: &ionoscloud.GroupProperties{
+				Name:                 &testGroupVar,
+				CreateDataCenter:     &testGroupBoolVar,
+				CreateSnapshot:       &testGroupBoolVar,
+				ReserveIp:            &testGroupBoolVar,
+				AccessActivityLog:    &testGroupBoolVar,
+				CreatePcc:            &testGroupBoolVar,
+				S3Privilege:          &testGroupBoolVar,
+				CreateBackupUnit:     &testGroupBoolVar,
+				CreateInternetAccess: &testGroupBoolVar,
+				CreateK8sCluster:     &testGroupBoolVar,
+			},
+		},
+	}
 	groupTestNew = v5.Group{
 		Group: ionoscloud.Group{
 			Properties: &ionoscloud.GroupProperties{
@@ -67,6 +84,15 @@ var (
 		Groups: ionoscloud.Groups{
 			Id:    &testGroupVar,
 			Items: &[]ionoscloud.Group{groupTest.Group},
+		},
+	}
+	groupsList = v5.Groups{
+		Groups: ionoscloud.Groups{
+			Id: &testGroupVar,
+			Items: &[]ionoscloud.Group{
+				groupTestId.Group,
+				groupTestId.Group,
+			},
 		},
 	}
 	testGroupType       = ionoscloud.Type(testGroupVar)
@@ -403,6 +429,24 @@ func TestRunGroupDelete(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testGroupVar)
+		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
+		err := RunGroupDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		rm.Group.EXPECT().List().Return(groupsList, &testResponse, nil)
+		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		rm.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		err := RunGroupDelete(cfg)
 		assert.NoError(t, err)

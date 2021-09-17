@@ -208,7 +208,7 @@ Required values to run command:
 * Data Center Id
 * Server Id`,
 		Example:    deleteServerExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunDcServerDelete,
 		CmdRun:     RunServerDelete,
 		InitClient: true,
 	})
@@ -337,6 +337,13 @@ func PreRunDcServerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgServerId)
 }
 
+func PreRunDcServerDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgDataCenterId, config.ArgServerId},
+		[]string{config.ArgDataCenterId, config.ArgAll},
+	)
+}
+
 func RunServerList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
 	servers, resp, err := c.Servers().List(viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
@@ -451,10 +458,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Servers?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Servers...")
+		fmt.Printf("Servers to be deleted:")
 		servers, resp, err = c.Servers().List(dcId)
 		if err != nil {
 			return err
@@ -462,8 +466,27 @@ func RunServerDelete(c *core.CommandConfig) error {
 		if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
 			for _, server := range *serversItems {
 				if id, ok := server.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Server with id: %v...", *id)
+					fmt.Printf("Server Id: \n" + *id)
+				}
+				if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("Server Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Servers...")
+
+			for _, server := range *serversItems {
+				if id, ok := server.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", *id, dcId)
 					resp, err = c.Servers().Delete(dcId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

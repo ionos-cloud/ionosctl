@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -177,21 +178,10 @@ func PreRunK8sClusterNodesIds(c *core.PreCommandConfig) error {
 }
 
 func PreRunK8sClusterNodesIdsAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgK8sNodePoolId, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgK8sClusterId, config.ArgK8sNodePoolId, config.ArgK8sNodeId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and ArgK8sNodeId")
-	}
-
-	return errors.New("neither All flag or ArgK8sNodeId was set or these are not set properly")
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgK8sClusterId, config.ArgK8sNodePoolId, config.ArgAll},
+		[]string{config.ArgK8sClusterId, config.ArgK8sNodePoolId, config.ArgK8sNodeId},
+	)
 }
 
 func RunK8sNodeList(c *core.CommandConfig) error {
@@ -262,10 +252,7 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 	nodeId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the K8sNodes?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the K8sNodes...")
+		fmt.Printf("K8sNodes to be deleted:")
 		k8sNodes, resp, err = c.K8s().ListNodes(clusterId, nodepoolId)
 		if err != nil {
 			return err
@@ -273,8 +260,29 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 		if k8sNodesItems, ok := k8sNodes.GetItemsOk(); ok && k8sNodesItems != nil {
 			for _, dc := range *k8sNodesItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting K8sNode with id: %v...", *id)
+					fmt.Printf("K8sNodes Id: \n" + *id)
+				}
+				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("K8sNodes Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodes"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the K8sNodes...")
+
+			for _, dc := range *k8sNodesItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...",
+						*id, nodepoolId, clusterId)
+
 					resp, err = c.K8s().DeleteNode(clusterId, nodepoolId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

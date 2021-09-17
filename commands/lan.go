@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -173,7 +174,7 @@ Required values to run command:
 * Data Center Id
 * LAN Id`,
 		Example:    deleteLanExample,
-		PreCmdRun:  PreRunDcLanIds,
+		PreCmdRun:  PreRunLanDelete,
 		CmdRun:     RunLanDelete,
 		InitClient: true,
 	})
@@ -190,6 +191,13 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
 
 	return lanCmd
+}
+
+func PreRunLanDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgDataCenterId, config.ArgLanId},
+		[]string{config.ArgDataCenterId, config.ArgAll},
+	)
 }
 
 func RunLanList(c *core.CommandConfig) error {
@@ -302,14 +310,11 @@ func RunLanDelete(c *core.CommandConfig) error {
 	var resp *v5.Response
 	var err error
 	var lans v5.Lans
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, config.ArgLanId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Lans?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Lans...")
+		fmt.Printf("Lans to be deleted:")
 		lans, resp, err = c.Lans().List(dcId)
 		if err != nil {
 			return err
@@ -317,8 +322,27 @@ func RunLanDelete(c *core.CommandConfig) error {
 		if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
 			for _, lan := range *lansItems {
 				if id, ok := lan.GetIdOk(); ok && id != nil {
+					fmt.Printf("Lan Id: \n" + *id)
+				}
+				if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("Lan Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Lans...")
+
+			for _, lan := range *lansItems {
+				if id, ok := lan.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting Lan with id: %v...", *id)
 					resp, err = c.Lans().Delete(dcId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}
@@ -332,8 +356,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Deleting LAN with ID: %v from Datacenter with ID: %v...",
-			viper.GetString(core.GetFlagName(c.NS, config.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+		c.Printer.Verbose("Deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 		resp, err := c.Lans().Delete(dcId, lanId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

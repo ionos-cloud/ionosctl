@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -153,7 +154,7 @@ Required values to run command:
 
 * Group Id`,
 		Example:    deleteGroupExample,
-		PreCmdRun:  PreRunGroupIdAll,
+		PreCmdRun:  PreRunGroupDelete,
 		CmdRun:     RunGroupDelete,
 		InitClient: true,
 	})
@@ -174,22 +175,11 @@ func PreRunGroupId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgGroupId)
 }
 
-func PreRunGroupIdAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgGroupId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and GroupId")
-	}
-
-	return errors.New("neither All flag or GroupId was set or these are not set properly")
+func PreRunGroupDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgGroupId},
+		[]string{config.ArgAll},
+	)
 }
 
 func PreRunGroupUserIds(c *core.PreCommandConfig) error {
@@ -272,10 +262,6 @@ func RunGroupDelete(c *core.CommandConfig) error {
 	var groups v5.Groups
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Groups?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Groups...")
 		groups, resp, err = c.Groups().List()
 		if err != nil {
 			return err
@@ -283,8 +269,27 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
 			for _, group := range *groupsItems {
 				if id, ok := group.GetIdOk(); ok && id != nil {
+					fmt.Printf("Group Id: \n" + *id)
+				}
+				if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("Group Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Groups...")
+
+			for _, group := range *groupsItems {
+				if id, ok := group.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting Group with id: %v...", *id)
 					resp, err = c.Groups().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

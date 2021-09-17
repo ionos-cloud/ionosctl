@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -163,7 +164,7 @@ Required values to run command:
 * Data Center Id
 * Load Balancer Id`,
 		Example:    deleteLoadbalancerExample,
-		PreCmdRun:  PreRunDcLoadBalancerIds,
+		PreCmdRun:  PreRunDcLoadBalancerDelete,
 		CmdRun:     RunLoadBalancerDelete,
 		InitClient: true,
 	})
@@ -186,6 +187,13 @@ Required values to run command:
 
 func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgLoadBalancerId)
+}
+
+func PreRunDcLoadBalancerDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgDataCenterId, config.ArgLoadBalancerId},
+		[]string{config.ArgDataCenterId, config.ArgAll},
+	)
 }
 
 func RunLoadBalancerList(c *core.CommandConfig) error {
@@ -283,10 +291,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 	loadBlanacerId := viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the LoadBalancers?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the LoadBalancers...")
+		fmt.Printf("LoadBalancers to be deleted:")
 		loadBalancers, resp, err = c.Loadbalancers().List(dcid)
 		if err != nil {
 			return err
@@ -294,8 +299,28 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
 			for _, lb := range *loadBalancersItems {
 				if id, ok := lb.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting LoadBalancer with id: %v...", *id)
+					fmt.Printf("LoadBalancer Id: \n" + *id)
+				}
+				if properties, ok := lb.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("LoadBalancer Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the LoadBalancers...")
+
+			for _, lb := range *loadBalancersItems {
+				if id, ok := lb.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Datacenter ID: %v", dcid)
+					c.Printer.Verbose("Load balancer with id: %v is deleting...", *id)
 					resp, err = c.Loadbalancers().Delete(dcid, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

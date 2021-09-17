@@ -174,7 +174,7 @@ Required values to run command:
 
 * K8s Cluster Id`,
 		Example:    deleteK8sClusterExample,
-		PreCmdRun:  PreRunK8sClusterIdAll,
+		PreCmdRun:  PreRunK8sClusterDelete,
 		CmdRun:     RunK8sClusterDelete,
 		InitClient: true,
 	})
@@ -191,6 +191,13 @@ Required values to run command:
 
 func PreRunK8sClusterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgK8sClusterId)
+}
+
+func PreRunK8sClusterDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgK8sClusterId},
+		[]string{config.ArgAll},
+	)
 }
 
 func RunK8sClusterList(c *core.CommandConfig) error {
@@ -282,10 +289,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 	var k8Clusters v5.K8sClusters
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the K8sClusters?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the K8sClusters...")
+		fmt.Printf("K8sClusters to be deleted:")
 		k8Clusters, resp, err = c.K8s().ListClusters()
 		if err != nil {
 			return err
@@ -293,8 +297,27 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
 			for _, k8sCluster := range *k8sClustersItems {
 				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
+					fmt.Printf("K8sCluster Id: \n" + *id)
+				}
+				if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("K8sCluster Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sClusters"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the K8sClusters...")
+
+			for _, k8sCluster := range *k8sClustersItems {
+				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting K8sCluster with id: %v...", *id)
 					resp, err = c.K8s().DeleteCluster(*id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

@@ -54,6 +54,15 @@ var (
 			Items: &[]ionoscloud.Server{s},
 		},
 	}
+	ssList = v5.Servers{
+		Servers: ionoscloud.Servers{
+			Id: &testServerVar,
+			Items: &[]ionoscloud.Server{
+				s,
+				s,
+			},
+		},
+	}
 	serverProperties = v5.ServerProperties{
 		ServerProperties: ionoscloud.ServerProperties{
 			Name:             &testServerNewVar,
@@ -474,6 +483,27 @@ func TestRunServerDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.Server.EXPECT().Delete(testServerVar, testServerVar).Return(&testResponse, nil)
+		err := RunServerDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		rm.Server.EXPECT().List(testServerVar).Return(ssList, &testResponse, nil)
+		rm.Server.EXPECT().Delete(testServerVar, testServerVar).Return(&testResponse, nil)
 		rm.Server.EXPECT().Delete(testServerVar, testServerVar).Return(&testResponse, nil)
 		err := RunServerDelete(cfg)
 		assert.NoError(t, err)

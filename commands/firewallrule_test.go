@@ -59,6 +59,15 @@ var (
 			Items: &[]ionoscloud.FirewallRule{testRule.FirewallRule},
 		},
 	}
+	testFirewallRulesList = v5.FirewallRules{
+		FirewallRules: ionoscloud.FirewallRules{
+			Id: &testFirewallRuleVar,
+			Items: &[]ionoscloud.FirewallRule{
+				testRule.FirewallRule,
+				testRule.FirewallRule,
+			},
+		},
+	}
 	testResponse = v5.Response{
 		APIResponse: ionoscloud.APIResponse{
 			Response: &http.Response{
@@ -364,6 +373,29 @@ func TestRunFirewallRuleDelete(t *testing.T) {
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgFirewallRuleId), testFirewallRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(&testResponse, nil)
+		err := RunFirewallRuleDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunFirewallRuleDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(testFirewallRulesList, &testResponse, nil)
+		rm.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(&testResponse, nil)
 		rm.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(&testResponse, nil)
 		err := RunFirewallRuleDelete(cfg)
 		assert.NoError(t, err)

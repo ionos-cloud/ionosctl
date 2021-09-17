@@ -26,6 +26,15 @@ var (
 			},
 		},
 	}
+	shareTestId = v5.GroupShare{
+		GroupShare: ionoscloud.GroupShare{
+			Id: &testShareVar,
+			Properties: &ionoscloud.GroupShareProperties{
+				EditPrivilege:  &testShareBoolVar,
+				SharePrivilege: &testShareBoolVar,
+			},
+		},
+	}
 	shareTestGet = v5.GroupShare{
 		GroupShare: ionoscloud.GroupShare{
 			Id: &testShareVar,
@@ -40,6 +49,15 @@ var (
 		GroupShares: ionoscloud.GroupShares{
 			Id:    &testShareVar,
 			Items: &[]ionoscloud.GroupShare{shareTest.GroupShare},
+		},
+	}
+	sharesList = v5.GroupShares{
+		GroupShares: ionoscloud.GroupShares{
+			Id: &testShareVar,
+			Items: &[]ionoscloud.GroupShare{
+				shareTestId.GroupShare,
+				shareTestId.GroupShare,
+			},
 		},
 	}
 	shareProperties = v5.GroupShareProperties{
@@ -321,6 +339,26 @@ func TestRunShareDelete(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgResourceId), testShareVar)
+		rm.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(&testResponse, nil)
+		err := RunShareDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunShareDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgGroupId), testShareVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		rm.Group.EXPECT().ListShares(testShareVar).Return(sharesList, &testResponse, nil)
+		rm.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(&testResponse, nil)
 		rm.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(&testResponse, nil)
 		err := RunShareDelete(cfg)
 		assert.NoError(t, err)

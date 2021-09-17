@@ -131,6 +131,15 @@ var (
 			Items: &[]ionoscloud.KubernetesCluster{clusterTest.KubernetesCluster},
 		},
 	}
+	clustersList = v5.K8sClusters{
+		KubernetesClusters: ionoscloud.KubernetesClusters{
+			Id: &testClusterVar,
+			Items: &[]ionoscloud.KubernetesCluster{
+				clusterTestId.KubernetesCluster,
+				clusterTestId.KubernetesCluster,
+			},
+		},
+	}
 	clusterProperties = v5.K8sClusterProperties{
 		KubernetesClusterProperties: ionoscloud.KubernetesClusterProperties{
 			Name:       &testClusterNewVar,
@@ -623,6 +632,26 @@ func TestRunK8sClusterDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgK8sClusterId), testClusterVar)
+		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(&testResponse, nil)
+		err := RunK8sClusterDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunK8sClusterDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		rm.K8s.EXPECT().ListClusters().Return(clustersList, &testResponse, nil)
+		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(&testResponse, nil)
 		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(&testResponse, nil)
 		err := RunK8sClusterDelete(cfg)
 		assert.NoError(t, err)

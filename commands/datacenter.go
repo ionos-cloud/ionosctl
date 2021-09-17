@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -146,7 +147,7 @@ Required values to run command:
 
 * Data Center Id`,
 		Example:    deleteDatacenterExample,
-		PreCmdRun:  PreRunDataCenterIdAll,
+		PreCmdRun:  PreRunDataCenterDelete,
 		CmdRun:     RunDataCenterDelete,
 		InitClient: true,
 	})
@@ -165,22 +166,11 @@ func PreRunDataCenterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId)
 }
 
-func PreRunDataCenterIdAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgDataCenterId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and DatacenterId")
-	}
-
-	return errors.New("neither All flag or DatacenterId was set or these are not set properly")
+func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgDataCenterId},
+		[]string{config.ArgAll},
+	)
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {
@@ -255,16 +245,17 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 	return c.Printer.Print(getDataCenterPrint(resp, c, []v5.Datacenter{*dc}))
 }
 
+// GetGlobalFlagName
+// doar sa nu uit, trebuie adauat numele langa uuid si
+// trebuie mai intai cand se ruleaza comanda sa afisez lista cu resurse ce urmeaza a fie sterse, apoi intrebarea cu y/n dupa care ce e acum pe verbose
+
 func RunDataCenterDelete(c *core.CommandConfig) error {
 	var resp *v5.Response
 	var err error
 	var datacenters v5.Datacenters
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Datacenters?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Datacenters...")
+		fmt.Printf("Datacenters to be deleted:")
 		datacenters, resp, err = c.DataCenters().List()
 		if err != nil {
 			return err
@@ -272,8 +263,27 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
 			for _, dc := range *datacentersItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
+					fmt.Printf("Datacenter Id: \n" + *id)
+				}
+				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("Datacenter Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Datacenters...")
+
+			for _, dc := range *datacentersItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting Datacenter with id: %v...", *id)
 					resp, err = c.DataCenters().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

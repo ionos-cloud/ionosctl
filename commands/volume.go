@@ -216,7 +216,7 @@ Required values to run command:
 * Data Center Id
 * Volume Id`,
 		Example:    deleteVolumeExample,
-		PreCmdRun:  PreRunDcVolumeIds,
+		PreCmdRun:  PreRunDcVolumeDelete,
 		CmdRun:     RunVolumeDelete,
 		InitClient: true,
 	})
@@ -237,6 +237,13 @@ Required values to run command:
 
 func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgVolumeId)
+}
+
+func PreRunDcVolumeDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgDataCenterId, config.ArgVolumeId},
+		[]string{config.ArgDataCenterId, config.ArgAll},
+	)
 }
 
 func RunVolumeList(c *core.CommandConfig) error {
@@ -319,14 +326,11 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 	var resp *v5.Response
 	var err error
 	var volumes v5.Volumes
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Volumes?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Volumes...")
+		fmt.Printf("Volumes to be deleted:")
 		volumes, resp, err = c.Volumes().List(dcId)
 		if err != nil {
 			return err
@@ -334,8 +338,28 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
 			for _, volume := range *volumesItems {
 				if id, ok := volume.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Volume with id: %v...", *id)
+					fmt.Printf("Volume Id: \n" + *id)
+				}
+				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("Volume Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Volumes...")
+
+			for _, volume := range *volumesItems {
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Datacenter ID: %v", dcId)
+					c.Printer.Verbose("Volume with id: %v is deleting...", *id)
 					resp, err = c.Volumes().Delete(dcId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

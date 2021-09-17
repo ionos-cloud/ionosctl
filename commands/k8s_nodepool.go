@@ -205,7 +205,7 @@ Required values to run command:
 * K8s Cluster Id
 * K8s NodePool Id`,
 		Example:    deleteK8sNodePoolExample,
-		PreCmdRun:  PreRunK8sClusterNodePoolIds,
+		PreCmdRun:  PreRunK8sClusterNodePoolDelete,
 		CmdRun:     RunK8sNodePoolDelete,
 		InitClient: true,
 	})
@@ -224,6 +224,13 @@ Required values to run command:
 
 func PreRunK8sClusterNodePoolIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgK8sClusterId, config.ArgK8sNodePoolId)
+}
+
+func PreRunK8sClusterNodePoolDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgK8sClusterId, config.ArgK8sNodePoolId},
+		[]string{config.ArgK8sClusterId, config.ArgAll},
+	)
 }
 
 func PreRunK8sClusterDcIds(c *core.PreCommandConfig) error {
@@ -318,10 +325,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 	nodepollId := viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the K8sNodePools?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the K8sNodePools")
+		fmt.Printf("K8sNodePools to be deleted:")
 		k8sNodePools, resp, err = c.K8s().ListNodePools(clusterId)
 		if err != nil {
 			return err
@@ -329,8 +333,27 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		if k8sNodePoolsItems, ok := k8sNodePools.GetItemsOk(); ok && k8sNodePoolsItems != nil {
 			for _, dc := range *k8sNodePoolsItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
+					fmt.Printf("K8sNodePool Id: \n" + *id)
+				}
+				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("K8sNodePool Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodePools"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the K8sNodePools")
+
+			for _, dc := range *k8sNodePoolsItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting K8sNodePool with id: %v...", *id)
 					resp, err = c.K8s().DeleteNodePool(clusterId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

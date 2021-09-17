@@ -51,6 +51,15 @@ var (
 			Items: &[]ionoscloud.User{userTestGet.User},
 		},
 	}
+	usersList = v5.Users{
+		Users: ionoscloud.Users{
+			Id: &testUserVar,
+			Items: &[]ionoscloud.User{
+				userTestGet.User,
+				userTestGet.User,
+			},
+		},
+	}
 	userProperties = v5.UserProperties{
 		UserProperties: ionoscloud.UserProperties{
 			Firstname:     &testUserNewVar,
@@ -335,6 +344,25 @@ func TestRunUserDelete(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserId), testUserVar)
+		rm.User.EXPECT().Delete(testUserVar).Return(&testResponse, nil)
+		err := RunUserDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunUserDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		rm.User.EXPECT().List().Return(usersList, &testResponse, nil)
+		rm.User.EXPECT().Delete(testUserVar).Return(&testResponse, nil)
 		rm.User.EXPECT().Delete(testUserVar).Return(&testResponse, nil)
 		err := RunUserDelete(cfg)
 		assert.NoError(t, err)

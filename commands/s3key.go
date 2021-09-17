@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -156,7 +157,7 @@ Required values to run command:
 		ShortDesc:  "Delete a S3Key",
 		LongDesc:   "Use this command to delete a specific S3Key of an User.\n\nRequired values to run command:\n\n* User Id\n* S3Key Id",
 		Example:    deleteS3KeyExample,
-		PreCmdRun:  PreRunUserKeyIds,
+		PreCmdRun:  PreRunUserKeyDelete,
 		CmdRun:     RunUserS3KeyDelete,
 		InitClient: true,
 	})
@@ -177,6 +178,13 @@ Required values to run command:
 
 func PreRunUserKeyIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgUserId, config.ArgS3KeyId)
+}
+
+func PreRunUserKeyDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgUserId, config.ArgS3KeyId},
+		[]string{config.ArgUserId, config.ArgAll},
+	)
 }
 
 func RunUserS3KeyList(c *core.CommandConfig) error {
@@ -258,10 +266,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	s3KeyId := viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the S3Keys?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the S3Keys...")
+		fmt.Printf("S3 keys to be deleted:")
 		s3Keys, resp, err = c.S3Keys().List(userId)
 		if err != nil {
 			return err
@@ -269,8 +274,22 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
 			for _, s3Key := range *s3KeysItems {
 				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting S3Key with id: %v...", *id)
+					fmt.Printf("S3 key Id: \n" + *id)
+				}
+			}
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the S3Keys...")
+
+			for _, s3Key := range *s3KeysItems {
+				if id, ok := s3Key.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("User ID: %v", userId)
+					c.Printer.Verbose("S3 keys with id: %v is deleting...", *id)
 					resp, err = c.S3Keys().Delete(userId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -196,7 +197,7 @@ Required values to run command:
 * Server Id
 * NIC Id`,
 		Example:    deleteNicExample,
-		PreCmdRun:  PreRunDcServerNicIds,
+		PreCmdRun:  PreRunNicDelete,
 		CmdRun:     RunNicDelete,
 		InitClient: true,
 	})
@@ -218,6 +219,13 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC deletion [seconds]")
 
 	return nicCmd
+}
+
+func PreRunNicDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgDataCenterId, config.ArgServerId, config.ArgNicId},
+		[]string{config.ArgDataCenterId, config.ArgServerId, config.ArgAll},
+	)
 }
 
 func RunNicList(c *core.CommandConfig) error {
@@ -330,15 +338,12 @@ func RunNicDelete(c *core.CommandConfig) error {
 	var resp *v5.Response
 	var err error
 	var nics v5.Nics
-	dcId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgDataCenterId))
-	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, config.ArgServerId))
+	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, config.ArgNicId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Nics?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Nics...")
+		fmt.Printf("Datacenters to be deleted:")
 		nics, resp, err = c.Nics().List(dcId, serverId)
 		if err != nil {
 			return err
@@ -346,8 +351,29 @@ func RunNicDelete(c *core.CommandConfig) error {
 		if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 			for _, nic := range *nicsItems {
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Nic with id: %v...", *id)
+					fmt.Printf("Datacenter Id: \n" + *id)
+				}
+				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("Datacenter Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Nics...")
+
+			for _, nic := range *nicsItems {
+				if id, ok := nic.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Datacenter ID: %v", dcId)
+					c.Printer.Verbose("Server ID: %v", serverId)
+					c.Printer.Verbose("ic with id: %v is deleting...", *id)
 					resp, err = c.Nics().Delete(dcId, serverId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}
@@ -361,8 +387,8 @@ func RunNicDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
-		c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)))
+		c.Printer.Verbose("Datacenter ID: %v", dcId)
+		c.Printer.Verbose("Server ID: %v", serverId)
 		c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
 		resp, err := c.Nics().Delete(dcId, serverId, nicId)
 		if resp != nil {

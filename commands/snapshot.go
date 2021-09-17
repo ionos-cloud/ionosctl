@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -197,7 +198,7 @@ Required values to run command:
 		ShortDesc:  "Delete a Snapshot",
 		LongDesc:   "Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		Example:    deleteSnapshotExample,
-		PreCmdRun:  PreRunSnapshotId,
+		PreCmdRun:  PreRunSnapshotDelete,
 		CmdRun:     RunSnapshotDelete,
 		InitClient: true,
 	})
@@ -214,6 +215,13 @@ Required values to run command:
 
 func PreRunSnapshotId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgSnapshotId)
+}
+
+func PreRunSnapshotDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgSnapshotId},
+		[]string{config.ArgAll},
+	)
 }
 
 func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
@@ -308,10 +316,7 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 	var snapshots v5.Snapshots
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Snapshots?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Snapshots...")
+		fmt.Printf("Snapshots to be deleted:")
 		snapshots, resp, err = c.Snapshots().List()
 		if err != nil {
 			return err
@@ -319,8 +324,27 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
 			for _, snapshot := range *snapshotsItems {
 				if id, ok := snapshot.GetIdOk(); ok && id != nil {
+					fmt.Printf("Snapshot Id: \n" + *id)
+				}
+				if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("Snapshot Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Snapshots...")
+
+			for _, snapshot := range *snapshotsItems {
+				if id, ok := snapshot.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting Snapshot with id: %v...", *id)
 					resp, err = c.Snapshots().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

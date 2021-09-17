@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -143,7 +144,7 @@ Required values to run command:
 
 * IpBlock Id`,
 		Example:    deleteIpBlockExample,
-		PreCmdRun:  PreRunIpBlockIdAll,
+		PreCmdRun:  PreRunIpBlockDelete,
 		CmdRun:     RunIpBlockDelete,
 		InitClient: true,
 	})
@@ -162,22 +163,11 @@ func PreRunIpBlockId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgIpBlockId)
 }
 
-func PreRunIpBlockIdAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgIpBlockId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and IpBlockId")
-	}
-
-	return errors.New("neither All flag or IpBlockId was set or these are not set properly")
+func PreRunIpBlockDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgIpBlockId},
+		[]string{config.ArgAll},
+	)
 }
 
 func RunIpBlockList(c *core.CommandConfig) error {
@@ -253,10 +243,6 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 	var ipBlocks v5.IpBlocks
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the IpBlocks?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the IpBlocks...")
 		ipBlocks, resp, err = c.IpBlocks().List()
 		if err != nil {
 			return err
@@ -264,8 +250,26 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 		if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
 			for _, dc := range *ipBlocksItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
+					fmt.Printf("IpBlock Id: \n" + *id)
+				}
+				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("IpBlock Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the IpBlocks...")
+			for _, dc := range *ipBlocksItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting IpBlock with id: %v...", *id)
 					resp, err = c.IpBlocks().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

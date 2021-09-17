@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -149,7 +150,7 @@ Required values to run command:
 
 * User Id`,
 		Example:    deleteUserExample,
-		PreCmdRun:  PreRunUserId,
+		PreCmdRun:  PreRunUserDelete,
 		CmdRun:     RunUserDelete,
 		InitClient: true,
 	})
@@ -166,6 +167,13 @@ Required values to run command:
 
 func PreRunUserId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgUserId)
+}
+
+func PreRunUserDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgUserId},
+		[]string{config.ArgAll},
+	)
 }
 
 func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
@@ -251,10 +259,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 	var users v5.Users
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Users?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Users...")
+		fmt.Printf("Users to be deleted:")
 		users, resp, err = c.Users().List()
 		if err != nil {
 			return err
@@ -262,8 +267,30 @@ func RunUserDelete(c *core.CommandConfig) error {
 		if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 			for _, user := range *usersItems {
 				if id, ok := user.GetIdOk(); ok && id != nil {
+					fmt.Printf("User Id: \n" + *id)
+				}
+				if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
+					if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
+						fmt.Printf("User First Name: \n" + *firstName)
+					}
+					if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
+						fmt.Printf("User Last Name: \n" + *lastName)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Users"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Users...")
+
+			for _, user := range *usersItems {
+				if id, ok := user.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting User with id: %v...", *id)
 					resp, err = c.Users().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

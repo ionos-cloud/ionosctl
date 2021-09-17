@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -235,7 +236,7 @@ Required values to run command:
 * Nic Id
 * Firewall Rule Id`,
 		Example:    deleteFirewallRuleExample,
-		PreCmdRun:  PreRunDcServerNicFRuleIds,
+		PreCmdRun:  PreRunGlobalDcServerNicIdsFRuleDelete,
 		CmdRun:     RunFirewallRuleDelete,
 		InitClient: true,
 	})
@@ -280,26 +281,11 @@ func PreRunDcServerNicFRuleIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId, config.ArgFirewallRuleId)
 }
 
-func PreRunGlobalDcServerNicIdsFRuleAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredGlobalFlags(c.Resource, config.ArgDataCenterId, config.ArgServerId, config.ArgNicId); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgFirewallRuleId); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
-		count++
-	}
-
-	if count == 2 {
-		return nil
-	}
-	if count == 3 {
-		return errors.New("you can not set both All flag and ArgFirewallRuleId id")
-	}
-
-	return errors.New("neither All flag or ArgFirewallRuleId was set or these are not set properly")
+func PreRunGlobalDcServerNicIdsFRuleDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgDataCenterId, config.ArgServerId, config.ArgNicId, config.ArgFirewallRuleId},
+		[]string{config.ArgDataCenterId, config.ArgServerId, config.ArgNicId, config.ArgAll},
+	)
 }
 
 func RunFirewallRuleList(c *core.CommandConfig) error {
@@ -392,10 +378,7 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 	firewallRuleId := viper.GetString(core.GetFlagName(c.NS, config.ArgFirewallRuleId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Firewallrules?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Firewallrules...")
+		fmt.Printf("Firewallrules to be deleted:")
 		firewallrules, resp, err = c.FirewallRules().List(dcId, serverId, nicId)
 		if err != nil {
 			return err
@@ -403,8 +386,26 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 		if firewallrulestems, ok := firewallrules.GetItemsOk(); ok && firewallrulestems != nil {
 			for _, firewall := range *firewallrulestems {
 				if id, ok := firewall.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Firewallrule with id: %v...", *id)
+					fmt.Printf("Firewallrule Id: \n" + *id)
+				}
+				if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("Firewallrule Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewallrules"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Firewallrules...")
+			for _, firewall := range *firewallrulestems {
+				if id, ok := firewall.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Firewall Rule with id: %v...", *id)
 					resp, err = c.FirewallRules().Delete(dcId, serverId, nicId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

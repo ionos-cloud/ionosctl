@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -170,7 +171,7 @@ Required values to run command:
 
 * BackupUnit Id`,
 		Example:    deleteBackupUnitExample,
-		PreCmdRun:  PreRunBackupUnitIdAll,
+		PreCmdRun:  PreRunBackupUnitDelete,
 		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,
 	})
@@ -189,22 +190,11 @@ func PreRunBackupUnitId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgBackupUnitId)
 }
 
-func PreRunBackupUnitIdAll(c *core.PreCommandConfig) error {
-	var count = 0
-	if err := core.CheckRequiredFlags(c.NS, config.ArgAll); err == nil {
-		count++
-	}
-	if err := core.CheckRequiredFlags(c.NS, config.ArgBackupUnitId); err == nil {
-		count++
-	}
-	if count == 1 {
-		return nil
-	}
-	if count == 2 {
-		return errors.New("you can not set both All flag and BackupUnitId")
-	}
-
-	return errors.New("neither All flag or BackupUnitId was set or these are not set properly")
+func PreRunBackupUnitDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgBackupUnitId},
+		[]string{config.ArgAll},
+	)
 }
 
 func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
@@ -299,10 +289,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	var backupUnits v5.BackupUnits
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the Backup units?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the BackupUnits...")
+		fmt.Printf("Backup Unitts to be deleted:")
 		backupUnits, resp, err = c.BackupUnit().List()
 		if err != nil {
 			return err
@@ -310,8 +297,26 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
 			for _, backupUnit := range *backupUnitsItems {
 				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+					fmt.Printf("BackupUnit Id: \n" + *id)
+				}
+				if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("BackupUnit Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the BackupUnits...")
+			for _, backupUnit := range *backupUnitsItems {
+				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting Backup unit with id: %v...", *id)
 					resp, err = c.BackupUnit().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

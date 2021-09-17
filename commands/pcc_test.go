@@ -26,6 +26,15 @@ var (
 			},
 		},
 	}
+	pccTestId = v5.PrivateCrossConnect{
+		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
+			Id: &testPccVar,
+			Properties: &ionoscloud.PrivateCrossConnectProperties{
+				Name:        &testPccVar,
+				Description: &testPccVar,
+			},
+		},
+	}
 	pccTestGet = v5.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Id:         &testPccVar,
@@ -46,6 +55,15 @@ var (
 		PrivateCrossConnects: ionoscloud.PrivateCrossConnects{
 			Id:    &testPccVar,
 			Items: &[]ionoscloud.PrivateCrossConnect{pccTest.PrivateCrossConnect},
+		},
+	}
+	pccsList = v5.PrivateCrossConnects{
+		PrivateCrossConnects: ionoscloud.PrivateCrossConnects{
+			Id: &testPccVar,
+			Items: &[]ionoscloud.PrivateCrossConnect{
+				pccTestId.PrivateCrossConnect,
+				pccTestId.PrivateCrossConnect,
+			},
 		},
 	}
 	pccProperties = v5.PrivateCrossConnectProperties{
@@ -344,6 +362,25 @@ func TestRunPccDelete(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPccId), testPccVar)
+		rm.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
+		err := RunPccDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunPccDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		rm.Pcc.EXPECT().List().Return(pccsList, &testResponse, nil)
+		rm.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
 		rm.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
 		err := RunPccDelete(cfg)
 		assert.NoError(t, err)

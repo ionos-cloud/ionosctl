@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -163,7 +164,7 @@ Required values to run command:
 * Resource Id
 * Group Id`,
 		Example:    deleteShareExample,
-		PreCmdRun:  PreRunGroupResourceIds,
+		PreCmdRun:  PreRunGroupResourceDelete,
 		CmdRun:     RunShareDelete,
 		InitClient: true,
 	})
@@ -184,6 +185,13 @@ Required values to run command:
 
 func PreRunGroupResourceIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgGroupId, config.ArgResourceId)
+}
+
+func PreRunGroupResourceDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgGroupId, config.ArgResourceId},
+		[]string{config.ArgGroupId, config.ArgAll},
+	)
 }
 
 func RunShareList(c *core.CommandConfig) error {
@@ -282,14 +290,11 @@ func RunShareDelete(c *core.CommandConfig) error {
 	var resp *v5.Response
 	var err error
 	var groupShares v5.GroupShares
-	groupId := viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId))
 	shareId := viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId))
+	groupId := viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the GroupShares?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the GroupShares...")
+		fmt.Printf("GroupShares to be deleted:")
 		groupShares, resp, err = c.Groups().ListShares(groupId)
 		if err != nil {
 			return err
@@ -297,8 +302,23 @@ func RunShareDelete(c *core.CommandConfig) error {
 		if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
 			for _, share := range *groupSharesItems {
 				if id, ok := share.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting GroupShare with id: %v...", *id)
+					fmt.Printf("GroupShare Id: \n" + *id)
+				}
+			}
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the GroupShares...")
+
+			for _, share := range *groupSharesItems {
+				if id, ok := share.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Share with Resource ID: %v from Group with ID: %v...",
+						*id,
+						groupId)
 					resp, err = c.Groups().RemoveShare(groupId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

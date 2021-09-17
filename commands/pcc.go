@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -134,7 +135,7 @@ Required values to run command:
 
 * Pcc Id`,
 		Example:    deletePccExample,
-		PreCmdRun:  PreRunPccId,
+		PreCmdRun:  PreRunPccDelete,
 		CmdRun:     RunPccDelete,
 		InitClient: true,
 	})
@@ -153,6 +154,13 @@ Required values to run command:
 
 func PreRunPccId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, config.ArgPccId)
+}
+
+func PreRunPccDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{config.ArgPccId},
+		[]string{config.ArgAll},
+	)
 }
 
 func RunPccList(c *core.CommandConfig) error {
@@ -232,10 +240,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 	var pccs v5.PrivateCrossConnects
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
 	if allFlag {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "Are you sure you want to delete all the PrivateCrossConnects?"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
+		fmt.Printf("PrivateCrossConnects to be deleted:")
 		pccs, resp, err = c.Pccs().List()
 		if err != nil {
 			return err
@@ -243,8 +248,27 @@ func RunPccDelete(c *core.CommandConfig) error {
 		if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
 			for _, pcc := range *pccsItems {
 				if id, ok := pcc.GetIdOk(); ok && id != nil {
+					fmt.Printf("PrivateCrossConnect Id: \n" + *id)
+				}
+				if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf("PrivateCrossConnect Name: \n" + *name)
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the PrivateCrossConnects"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
+
+			for _, pcc := range *pccsItems {
+				if id, ok := pcc.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting PrivateCrossConnect with id: %v...", *id)
 					resp, err = c.Pccs().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
 					if err != nil {
 						return err
 					}

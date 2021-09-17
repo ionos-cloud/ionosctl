@@ -49,6 +49,15 @@ var (
 			Items: &[]ionoscloud.IpBlock{testIpBlock},
 		},
 	}
+	testIpBlocksList = v5.IpBlocks{
+		IpBlocks: ionoscloud.IpBlocks{
+			Id: &testIpBlockVar,
+			Items: &[]ionoscloud.IpBlock{
+				testIpBlock,
+				testIpBlock,
+			},
+		},
+	}
 	newTestIpBlockProperties = v5.IpBlockProperties{
 		IpBlockProperties: ionoscloud.IpBlockProperties{
 			Name: &newTestIpBlockVar,
@@ -237,6 +246,26 @@ func TestRunIpBlockDelete(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
+		err := RunIpBlockDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunIpBlockDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.IpBlocks.EXPECT().List().Return(testIpBlocksList, &testResponse, nil)
+		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
 		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.NoError(t, err)
