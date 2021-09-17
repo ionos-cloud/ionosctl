@@ -5,9 +5,9 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
-	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
+	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,8 +15,18 @@ import (
 func TestRunVersion(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUpdates), false)
+		err := RunVersion(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunVersionUpdates(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUpdates), true)
 		err := RunVersion(cfg)
 		assert.NoError(t, err)
 	})
