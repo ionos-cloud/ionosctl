@@ -180,7 +180,7 @@ Required values to run command:
 		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Load Balancer deletion to be executed")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Loadblancers from a virtual Datacenter.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the Loadblancers from a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer deletion [seconds]")
 
 	loadbalancerCmd.AddCommand(LoadBalancerNicCmd())
@@ -194,8 +194,8 @@ func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {
 
 func PreRunDcLoadBalancerDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgDataCenterId, config.ArgLoadBalancerId},
-		[]string{config.ArgDataCenterId, config.ArgAll},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgLoadBalancerId},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgAll},
 	)
 }
 
@@ -287,14 +287,14 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var loadBalancers v5.Loadbalancers
+	var loadBalancers resources.Loadbalancers
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	loadBlanacerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLoadBalancerId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("LoadBalancers to be deleted:")
+		fmt.Printf("LoadBalancers to be deleted:\n")
 		loadBalancers, resp, err = c.CloudApiV5Services.Loadbalancers().List(dcid)
 		if err != nil {
 			return err
@@ -302,11 +302,11 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
 			for _, lb := range *loadBalancersItems {
 				if id, ok := lb.GetIdOk(); ok && id != nil {
-					fmt.Printf("LoadBalancer Id: \n" + *id)
+					fmt.Printf("LoadBalancer Id: " + *id)
 				}
 				if properties, ok := lb.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf("LoadBalancer Name: \n" + *name)
+						fmt.Printf(" LoadBalancer Name: " + *name + "\n")
 					}
 				}
 			}
@@ -337,8 +337,8 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
-		c.Printer.Verbose("Load balancer with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgLoadBalancerId)))
+		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
+		c.Printer.Verbose("Load balancer with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLoadBalancerId)))
 		resp, err := c.CloudApiV5Services.Loadbalancers().Delete(dcid, loadBlanacerId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -347,8 +347,9 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getLoadbalancerPrint(resp, c, nil))
 }

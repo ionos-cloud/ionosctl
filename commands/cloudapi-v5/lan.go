@@ -190,7 +190,7 @@ Required values to run command:
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for LAN deletion to be executed")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all Lans from a Virtual Data Center.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all Lans from a Virtual Data Center.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
 
 	return lanCmd
@@ -198,8 +198,8 @@ Required values to run command:
 
 func PreRunLanDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgDataCenterId, config.ArgLanId},
-		[]string{config.ArgDataCenterId, config.ArgAll},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgLanId},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgAll},
 	)
 }
 
@@ -310,26 +310,26 @@ func RunLanUpdate(c *core.CommandConfig) error {
 }
 
 func RunLanDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var lans v5.Lans
+	var lans resources.Lans
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLanId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("Lans to be deleted:")
-		lans, resp, err = c.Lans().List(dcId)
+		fmt.Printf("Lans to be deleted:\n")
+		lans, resp, err = c.CloudApiV5Services.Lans().List(dcId)
 		if err != nil {
 			return err
 		}
 		if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
 			for _, lan := range *lansItems {
 				if id, ok := lan.GetIdOk(); ok && id != nil {
-					fmt.Printf("Lan Id: \n" + *id)
+					fmt.Printf("Lan Id: " + *id)
 				}
 				if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf("Lan Name: \n" + *name)
+						fmt.Printf(" Lan Name: " + *name + "\n")
 					}
 				}
 			}
@@ -342,7 +342,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 			for _, lan := range *lansItems {
 				if id, ok := lan.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Deleting Lan with id: %v...", *id)
-					resp, err = c.Lans().Delete(dcId, *id)
+					resp, err = c.CloudApiV5Services.Lans().Delete(dcId, *id)
 					if resp != nil {
 						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 					}
@@ -360,7 +360,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
-		resp, err := c.Lans().Delete(dcId, lanId)
+		resp, err := c.CloudApiV5Services.Lans().Delete(dcId, lanId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -368,8 +368,9 @@ func RunLanDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getLanPrint(resp, c, nil))
 }

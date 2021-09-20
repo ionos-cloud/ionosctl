@@ -386,7 +386,7 @@ func TestRunSnapshotDelete(t *testing.T) {
 func TestRunSnapshotDeleteAll(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
@@ -394,10 +394,10 @@ func TestRunSnapshotDeleteAll(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
-		rm.Snapshot.EXPECT().List().Return(snapshots, &testResponse, nil)
-		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
-		rm.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Snapshot.EXPECT().List().Return(snapshots, &testResponse, nil)
+		rm.CloudApiV5Mocks.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
 		err := RunSnapshotDelete(cfg)
 		assert.NoError(t, err)
 	})

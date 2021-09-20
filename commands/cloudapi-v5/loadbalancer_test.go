@@ -324,18 +324,18 @@ func TestRunLoadBalancerDelete(t *testing.T) {
 func TestRunLoadBalancerDeleteAll(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgDataCenterId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
-		rm.Loadbalancer.EXPECT().List(testLoadbalancerVar).Return(lbList, &testResponse, nil)
-		rm.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
-		rm.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Loadbalancer.EXPECT().List(testLoadbalancerVar).Return(lbList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
 		err := RunLoadBalancerDelete(cfg)
 		assert.NoError(t, err)
 	})

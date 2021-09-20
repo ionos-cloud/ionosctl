@@ -186,7 +186,7 @@ Required values to run command:
 		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Cluster deletion to be executed")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Kubernetes clusters.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the Kubernetes clusters.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv5.K8sTimeoutSeconds, "Timeout option for waiting for Request [seconds]")
 
 	return k8sCmd
@@ -198,8 +198,8 @@ func PreRunK8sClusterId(c *core.PreCommandConfig) error {
 
 func PreRunK8sClusterDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgK8sClusterId},
-		[]string{config.ArgAll},
+		[]string{cloudapiv5.ArgK8sClusterId},
+		[]string{cloudapiv5.ArgAll},
 	)
 }
 
@@ -287,12 +287,12 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 }
 
 func RunK8sClusterDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var k8Clusters v5.K8sClusters
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	var k8Clusters resources.K8sClusters
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("K8sClusters to be deleted:")
+		fmt.Printf("K8sClusters to be deleted:\n")
 		k8Clusters, resp, err = c.CloudApiV5Services.K8s().ListClusters()
 		if err != nil {
 			return err
@@ -300,11 +300,11 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
 			for _, k8sCluster := range *k8sClustersItems {
 				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
-					fmt.Printf("K8sCluster Id: \n" + *id)
+					fmt.Printf("K8sCluster Id: " + *id)
 				}
 				if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf("K8sCluster Name: \n" + *name)
+						fmt.Printf(" K8sCluster Name: " + *name + "\n")
 					}
 				}
 			}
@@ -334,8 +334,8 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
-		resp, err := c.CloudApiV5Services.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
+		c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
+		resp, err := c.CloudApiV5Services.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}

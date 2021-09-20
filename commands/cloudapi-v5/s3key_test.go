@@ -26,8 +26,7 @@ var (
 			},
 		},
 	}
-	s3keyTestGet = resources.S3Key{
-	s3keyTestId = v5.S3Key{
+	s3keyTestId = resources.S3Key{
 		S3Key: ionoscloud.S3Key{
 			Id: &testS3keyVar,
 			Properties: &ionoscloud.S3KeyProperties{
@@ -50,7 +49,7 @@ var (
 			Items: &[]ionoscloud.S3Key{s3keyTest.S3Key},
 		},
 	}
-	s3keysList = v5.S3Keys{
+	s3keysList = resources.S3Keys{
 		S3Keys: ionoscloud.S3Keys{
 			Id: &testS3keyVar,
 			Items: &[]ionoscloud.S3Key{
@@ -327,18 +326,18 @@ func TestRunUserS3KeyDelete(t *testing.T) {
 func TestRunUserS3KeyDeleteAll(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgUserId), testS3keyVar)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
-		rm.S3Key.EXPECT().List(testS3keyVar).Return(s3keysList, &testResponse, nil)
-		rm.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(&testResponse, nil)
-		rm.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(&testResponse, nil)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgUserId), testS3keyVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.S3Key.EXPECT().List(testS3keyVar).Return(s3keysList, &testResponse, nil)
+		rm.CloudApiV5Mocks.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.S3Key.EXPECT().Delete(testS3keyVar, testS3keyVar).Return(&testResponse, nil)
 		err := RunUserS3KeyDelete(cfg)
 		assert.NoError(t, err)
 	})

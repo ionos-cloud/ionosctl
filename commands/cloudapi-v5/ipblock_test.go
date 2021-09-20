@@ -265,18 +265,18 @@ func TestRunIpBlockDelete(t *testing.T) {
 func TestRunIpBlockDeleteAll(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgIpBlockId), testIpBlockVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgIpBlockId), testIpBlockVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.IpBlocks.EXPECT().List().Return(testIpBlocksList, &testResponse, nil)
-		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
-		rm.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.IpBlocks.EXPECT().List().Return(testIpBlocksList, &testResponse, nil)
+		rm.CloudApiV5Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.IpBlocks.EXPECT().Delete(testIpBlockVar).Return(&testResponse, nil)
 		err := RunIpBlockDelete(cfg)
 		assert.NoError(t, err)
 	})

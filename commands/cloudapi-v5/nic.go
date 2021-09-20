@@ -218,7 +218,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC deletion to be executed")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Nics from a Server.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the Nics from a Server.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC deletion [seconds]")
 
 	return nicCmd
@@ -226,8 +226,8 @@ Required values to run command:
 
 func PreRunNicDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgDataCenterId, config.ArgServerId, config.ArgNicId},
-		[]string{config.ArgDataCenterId, config.ArgServerId, config.ArgAll},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId, cloudapiv5.ArgNicId},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId, cloudapiv5.ArgAll},
 	)
 }
 
@@ -338,15 +338,15 @@ func RunNicUpdate(c *core.CommandConfig) error {
 }
 
 func RunNicDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var nics v5.Nics
+	var nics resources.Nics
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgNicId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("Datacenters to be deleted:")
+		fmt.Printf("Nics to be deleted:\n")
 		nics, resp, err = c.CloudApiV5Services.Nics().List(dcId, serverId)
 		if err != nil {
 			return err
@@ -354,11 +354,11 @@ func RunNicDelete(c *core.CommandConfig) error {
 		if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 			for _, nic := range *nicsItems {
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					fmt.Printf("Datacenter Id: \n" + *id)
+					fmt.Printf("Nic Id: " + *id)
 				}
 				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf("Datacenter Name: \n" + *name)
+						fmt.Printf(" Nic Name: " + *name + "\n")
 					}
 				}
 			}
@@ -392,7 +392,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose("Datacenter ID: %v", dcId)
 		c.Printer.Verbose("Server ID: %v", serverId)
-		c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgNicId)))
+		c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgNicId)))
 		resp, err := c.CloudApiV5Services.Nics().Delete(dcId, serverId, nicId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

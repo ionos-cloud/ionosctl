@@ -166,7 +166,7 @@ Required values to run command:
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group deletion to be executed")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all Groups.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all Groups.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group deletion [seconds]")
 
 	groupCmd.AddCommand(GroupResourceCmd())
@@ -180,8 +180,8 @@ func PreRunGroupId(c *core.PreCommandConfig) error {
 
 func PreRunGroupDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgGroupId},
-		[]string{config.ArgAll},
+		[]string{cloudapiv5.ArgGroupId},
+		[]string{cloudapiv5.ArgAll},
 	)
 }
 
@@ -260,11 +260,12 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 }
 
 func RunGroupDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var groups v5.Groups
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	var groups resources.Groups
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
+		fmt.Printf("Groups to be deleted:")
 		groups, resp, err = c.CloudApiV5Services.Groups().List()
 		if err != nil {
 			return err
@@ -272,11 +273,11 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
 			for _, group := range *groupsItems {
 				if id, ok := group.GetIdOk(); ok && id != nil {
-					fmt.Printf("Group Id: \n" + *id)
+					fmt.Printf("Group Id: " + *id)
 				}
 				if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf("Group Name: \n" + *name)
+						fmt.Printf(" Group Name: " + *name + "\n")
 					}
 				}
 			}
@@ -306,8 +307,8 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
-		resp, err := c.CloudApiV5Services.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+		c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId)))
+		resp, err := c.CloudApiV5Services.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}

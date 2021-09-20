@@ -28,7 +28,7 @@ var (
 			},
 		},
 	}
-	backupUnitTestId = v5.BackupUnit{
+	backupUnitTestId = resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Id: &testBackUnitId,
 			Properties: &ionoscloud.BackupUnitProperties{
@@ -56,7 +56,7 @@ var (
 			Items: &[]ionoscloud.BackupUnit{backupUnitTest.BackupUnit},
 		},
 	}
-	backupUnitsList = v5.BackupUnits{
+	backupUnitsList = resources.BackupUnits{
 		BackupUnits: ionoscloud.BackupUnits{
 			Id: &testBackUnitId,
 			Items: &[]ionoscloud.BackupUnit{
@@ -372,16 +372,15 @@ func TestRunBackupUnitDelete(t *testing.T) {
 func TestRunBackupUnitDeleteAll(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(config.ArgAll, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
-		rm.BackupUnit.EXPECT().List().Return(backupUnitsList, &testResponse, nil)
-		rm.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
-		rm.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().List().Return(backupUnitsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
 	})

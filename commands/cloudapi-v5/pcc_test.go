@@ -383,17 +383,17 @@ func TestRunPccDelete(t *testing.T) {
 func TestRunPccDeleteAll(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
-		rm.Pcc.EXPECT().List().Return(pccsList, &testResponse, nil)
-		rm.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
-		rm.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List().Return(pccsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
 		err := RunPccDelete(cfg)
 		assert.NoError(t, err)
 	})

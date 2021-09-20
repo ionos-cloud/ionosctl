@@ -661,7 +661,7 @@ func TestRunK8sClusterDelete(t *testing.T) {
 func TestRunK8sClusterDeleteAll(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
-	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocks) {
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
@@ -669,10 +669,10 @@ func TestRunK8sClusterDeleteAll(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(config.ArgForce, true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
-		rm.K8s.EXPECT().ListClusters().Return(clustersList, &testResponse, nil)
-		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(&testResponse, nil)
-		rm.K8s.EXPECT().DeleteCluster(testClusterVar).Return(&testResponse, nil)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.K8s.EXPECT().ListClusters().Return(clustersList, &testResponse, nil)
+		rm.CloudApiV5Mocks.K8s.EXPECT().DeleteCluster(testClusterVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.K8s.EXPECT().DeleteCluster(testClusterVar).Return(&testResponse, nil)
 		err := RunK8sClusterDelete(cfg)
 		assert.NoError(t, err)
 	})

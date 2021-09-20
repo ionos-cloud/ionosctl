@@ -180,7 +180,7 @@ Required values to run command:
 		return completer.GroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Resource Share deletion to be executed")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Resources Share from a specified Group.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the Resources Share from a specified Group.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share deletion [seconds]")
 
 	return shareCmd
@@ -192,8 +192,8 @@ func PreRunGroupResourceIds(c *core.PreCommandConfig) error {
 
 func PreRunGroupResourceDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgGroupId, config.ArgResourceId},
-		[]string{config.ArgGroupId, config.ArgAll},
+		[]string{cloudapiv5.ArgGroupId, cloudapiv5.ArgResourceId},
+		[]string{cloudapiv5.ArgGroupId, cloudapiv5.ArgAll},
 	)
 }
 
@@ -290,14 +290,14 @@ func RunShareUpdate(c *core.CommandConfig) error {
 }
 
 func RunShareDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var groupShares v5.GroupShares
+	var groupShares resources.GroupShares
 	shareId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgResourceId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("GroupShares to be deleted:")
+		fmt.Printf("GroupShares to be deleted:\n")
 		groupShares, resp, err = c.CloudApiV5Services.Groups().ListShares(groupId)
 		if err != nil {
 			return err
@@ -305,7 +305,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 		if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
 			for _, share := range *groupSharesItems {
 				if id, ok := share.GetIdOk(); ok && id != nil {
-					fmt.Printf("GroupShare Id: \n" + *id)
+					fmt.Printf("GroupShare Id: " + *id + "\n")
 				}
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
@@ -336,8 +336,8 @@ func RunShareDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Deleting Share with Resource ID: %v from Group with ID: %v...",
-			viper.GetString(core.GetFlagName(c.NS, config.ArgResourceId)),
-			viper.GetString(core.GetFlagName(c.NS, config.ArgGroupId)))
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgResourceId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId)))
 		resp, err := c.CloudApiV5Services.Groups().RemoveShare(groupId, shareId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)

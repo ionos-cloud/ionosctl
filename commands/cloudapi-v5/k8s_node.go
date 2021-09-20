@@ -171,7 +171,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgK8sNodePoolId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Kubernetes Nodes within an existing Kubernetes NodePool in a Cluster.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the Kubernetes Nodes within an existing Kubernetes NodePool in a Cluster.")
 
 	return k8sCmd
 }
@@ -182,8 +182,8 @@ func PreRunK8sClusterNodesIds(c *core.PreCommandConfig) error {
 
 func PreRunK8sClusterNodesIdsAll(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgK8sClusterId, config.ArgK8sNodePoolId, config.ArgAll},
-		[]string{config.ArgK8sClusterId, config.ArgK8sNodePoolId, config.ArgK8sNodeId},
+		[]string{cloudapiv5.ArgK8sClusterId, cloudapiv5.ArgK8sNodePoolId, cloudapiv5.ArgAll},
+		[]string{cloudapiv5.ArgK8sClusterId, cloudapiv5.ArgK8sNodePoolId, cloudapiv5.ArgK8sNodeId},
 	)
 }
 
@@ -247,27 +247,27 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodeDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var k8sNodes v5.K8sNodes
+	var k8sNodes resources.K8sNodes
 	clusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId))
 	nodepoolId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId))
 	nodeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodeId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("K8sNodes to be deleted:")
-		k8sNodes, resp, err = c.K8s().ListNodes(clusterId, nodepoolId)
+		fmt.Printf("K8sNodes to be deleted:\n")
+		k8sNodes, resp, err = c.CloudApiV5Services.K8s().ListNodes(clusterId, nodepoolId)
 		if err != nil {
 			return err
 		}
 		if k8sNodesItems, ok := k8sNodes.GetItemsOk(); ok && k8sNodesItems != nil {
 			for _, dc := range *k8sNodesItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
-					fmt.Printf("K8sNodes Id: \n" + *id)
+					fmt.Printf("K8sNodes Id: " + *id)
 				}
 				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf("K8sNodes Name: \n" + *name)
+						fmt.Printf(" K8sNodes Name: " + *name + "\n")
 					}
 				}
 			}
@@ -282,14 +282,14 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 					c.Printer.Verbose("Deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...",
 						*id, nodepoolId, clusterId)
 
-					resp, err = c.K8s().DeleteNode(clusterId, nodepoolId, *id)
+					resp, err = c.CloudApiV5Services.K8s().DeleteNode(clusterId, nodepoolId, *id)
 					if resp != nil {
 						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 					}
 					if err != nil {
 						return err
 					}
-					if err = utils.WaitForRequest(c, printer.GetRequestPath(resp)); err != nil {
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 						return err
 					}
 				}
@@ -300,10 +300,8 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Deleting Node with ID: %v from K8s NodePool ID: %v from K8s Cluster ID: %v...",
-			viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodeId)),
-			viper.GetString(core.GetFlagName(c.NS, config.ArgK8sNodePoolId)),
-			viper.GetString(core.GetFlagName(c.NS, config.ArgK8sClusterId)))
-		resp, err := c.K8s().DeleteNode(clusterId, nodepoolId, nodeId)
+			nodeId, nodepoolId, clusterId)
+		resp, err := c.CloudApiV5Services.K8s().DeleteNode(clusterId, nodepoolId, nodeId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}

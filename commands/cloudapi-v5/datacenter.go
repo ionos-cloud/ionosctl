@@ -159,7 +159,7 @@ Required values to run command:
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center deletion")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the Datacenters.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the Datacenters.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
 
 	return datacenterCmd
@@ -171,8 +171,8 @@ func PreRunDataCenterId(c *core.PreCommandConfig) error {
 
 func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgDataCenterId},
-		[]string{config.ArgAll},
+		[]string{cloudapiv5.ArgDataCenterId},
+		[]string{cloudapiv5.ArgAll},
 	)
 }
 
@@ -249,24 +249,24 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var datacenters v5.Datacenters
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	var datacenters resources.Datacenters
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("Datacenters to be deleted:")
+		fmt.Printf("Datacenters to be deleted:\n")
 		datacenters, resp, err = c.CloudApiV5Services.DataCenters().List()
 		if err != nil {
 			return err
 		}
-		if datacentersItems, ok := datacenters.CloudApiV5Services.GetItemsOk(); ok && datacentersItems != nil {
+		if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
 			for _, dc := range *datacentersItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
-					fmt.Printf("Datacenter Id: \n" + *id)
+					fmt.Printf("Datacenter Id: " + *id)
 				}
 				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf("Datacenter Name: \n" + *name)
+						fmt.Printf(" Datacenter Name: " + *name + "\n")
 					}
 				}
 			}
@@ -296,7 +296,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
 			return err
 		}
-		dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
+		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 		c.Printer.Verbose("Datacenter with id: %v is deleting...", dcId)
 		resp, err := c.CloudApiV5Services.DataCenters().Delete(dcId)
 		if resp != nil {

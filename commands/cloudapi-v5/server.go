@@ -224,7 +224,7 @@ Required values to run command:
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server deletion to be executed")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all Servers form a virtual Datacenter.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all Servers form a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
 
 	/*
@@ -342,8 +342,8 @@ func PreRunDcServerIds(c *core.PreCommandConfig) error {
 
 func PreRunDcServerDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgDataCenterId, config.ArgServerId},
-		[]string{config.ArgDataCenterId, config.ArgAll},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgAll},
 	)
 }
 
@@ -454,14 +454,14 @@ func RunServerUpdate(c *core.CommandConfig) error {
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var servers v5.Servers
-	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, config.ArgServerId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	var servers resources.Servers
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("Servers to be deleted:")
+		fmt.Printf("Servers to be deleted:\n")
 		servers, resp, err = c.CloudApiV5Services.Servers().List(dcId)
 		if err != nil {
 			return err
@@ -469,11 +469,11 @@ func RunServerDelete(c *core.CommandConfig) error {
 		if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
 			for _, server := range *serversItems {
 				if id, ok := server.GetIdOk(); ok && id != nil {
-					fmt.Printf("Server Id: \n" + *id)
+					fmt.Printf("Server Id: " + *id)
 				}
 				if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf("Server Name: \n" + *name)
+						fmt.Printf(" Server Name: " + *name + "\n")
 					}
 				}
 			}
@@ -503,7 +503,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", viper.GetString(core.GetFlagName(c.NS, config.ArgServerId)), viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId)))
+		c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", serverId, dcId)
 		resp, err := c.CloudApiV5Services.Servers().Delete(dcId, serverId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -511,9 +511,9 @@ func RunServerDelete(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
 }

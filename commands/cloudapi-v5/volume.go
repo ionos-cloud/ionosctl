@@ -232,7 +232,7 @@ Required values to run command:
 		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume deletion to be executed")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all Volumes from a virtual Datacenter.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all Volumes from a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume deletion [seconds]")
 
 	return volumeCmd
@@ -244,8 +244,8 @@ func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
 
 func PreRunDcVolumeDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgDataCenterId, config.ArgVolumeId},
-		[]string{config.ArgDataCenterId, config.ArgAll},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgVolumeId},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgAll},
 	)
 }
 
@@ -326,14 +326,14 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 }
 
 func RunVolumeDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var volumes v5.Volumes
-	dcId := viper.GetString(core.GetFlagName(c.NS, config.ArgDataCenterId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, config.ArgVolumeId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	var volumes resources.Volumes
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
+	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgVolumeId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("Volumes to be deleted:")
+		fmt.Printf("Volumes to be deleted:\n")
 		volumes, resp, err = c.CloudApiV5Services.Volumes().List(dcId)
 		if err != nil {
 			return err
@@ -341,11 +341,11 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
 			for _, volume := range *volumesItems {
 				if id, ok := volume.GetIdOk(); ok && id != nil {
-					fmt.Printf("Volume Id: \n" + *id)
+					fmt.Printf("Volume Id: " + *id)
 				}
 				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf("Volume Name: \n" + *name)
+						fmt.Printf(" Volume Name: " + *name + "\n")
 					}
 				}
 			}
@@ -386,8 +386,9 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getVolumePrint(resp, c, nil))
 }

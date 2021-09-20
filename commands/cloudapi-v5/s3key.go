@@ -173,7 +173,7 @@ Required values to run command:
 		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for User S3Key deletion to be executed")
-	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "delete all the S3Keys of an User.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the S3Keys of an User.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key deletion [seconds]")
 
 	return s3keyCmd
@@ -185,8 +185,8 @@ func PreRunUserKeyIds(c *core.PreCommandConfig) error {
 
 func PreRunUserKeyDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{config.ArgUserId, config.ArgS3KeyId},
-		[]string{config.ArgUserId, config.ArgAll},
+		[]string{cloudapiv5.ArgUserId, cloudapiv5.ArgS3KeyId},
+		[]string{cloudapiv5.ArgUserId, cloudapiv5.ArgAll},
 	)
 }
 
@@ -262,14 +262,14 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 }
 
 func RunUserS3KeyDelete(c *core.CommandConfig) error {
-	var resp *v5.Response
+	var resp *resources.Response
 	var err error
-	var s3Keys v5.S3Keys
-	userId := viper.GetString(core.GetFlagName(c.NS, config.ArgUserId))
-	s3KeyId := viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, config.ArgAll))
+	var s3Keys resources.S3Keys
+	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
+	s3KeyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgS3KeyId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("S3 keys to be deleted:")
+		fmt.Printf("S3 keys to be deleted:\n")
 		s3Keys, resp, err = c.CloudApiV5Services.S3Keys().List(userId)
 		if err != nil {
 			return err
@@ -277,7 +277,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
 			for _, s3Key := range *s3KeysItems {
 				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					fmt.Printf("S3 key Id: \n" + *id)
+					fmt.Printf("S3 key Id: " + *id + "\n")
 				}
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {
@@ -306,8 +306,8 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("User ID: %v", viper.GetString(core.GetFlagName(c.NS, config.ArgUserId)))
-		c.Printer.Verbose("S3 keys with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, config.ArgS3KeyId)))
+		c.Printer.Verbose("User ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId)))
+		c.Printer.Verbose("S3 keys with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgS3KeyId)))
 		resp, err := c.CloudApiV5Services.S3Keys().Delete(userId, s3KeyId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -316,8 +316,9 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 			return err
 		}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, nil))
 }
