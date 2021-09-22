@@ -1,5 +1,8 @@
 .DEFAULT_GOAL := build
 
+## Include Services Makefile Targets
+include ./tools/cloudapi-v6/cloudapi_v6.mk
+
 export CGO_ENABLED = 0
 export GO111MODULE := on
 
@@ -13,11 +16,17 @@ DOCS_OUT?=$(shell pwd)/docs/subcommands/
 .PHONY: test_unit
 test_unit:
 	@echo "--- Run unit tests ---"
-	@go test -cover ./...
+	@go test -cover ./internal/...
 	@echo "DONE"
 
 .PHONY: test
-test: test_unit
+test: test_unit cloudapiv6_test
+
+.PHONY: mocks_update
+mocks_update: cloudapiv6_mocks_update
+	@echo "--- Update mocks ---"
+	@tools/regenerate_mocks.sh
+	@echo "DONE"
 
 .PHONY: docs_update
 docs_update:
@@ -47,12 +56,6 @@ vendor_update:
 	@echo "--- Update vendor dependencies ---"
 	@go mod vendor
 	@go mod tidy
-	@echo "DONE"
-
-.PHONY: mocks_update
-mocks_update:
-	@echo "--- Update mocks ---"
-	@tools/regenerate_mocks.sh
 	@echo "DONE"
 
 .PHONY: build

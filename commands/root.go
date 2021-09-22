@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -22,7 +24,6 @@ var (
 			TraverseChildren: true,
 		},
 	}
-	noPreRun  = func(c *core.PreCommandConfig) error { return nil }
 	ServerURL string
 	Output    string
 	Quiet     bool
@@ -53,9 +54,25 @@ func GetRootCmd() *core.Command {
 	return rootCmd
 }
 
+// Customize Help Command
+var helpCommand = &cobra.Command{
+	Use:   "help [command]",
+	Short: "Help about the command",
+	RunE: func(c *cobra.Command, args []string) error {
+		cmd, args, e := c.Root().Find(args)
+		if cmd == nil || e != nil || len(args) > 0 {
+			return fmt.Errorf("unknown help topic: %v", strings.Join(args, " "))
+		}
+		helpFunc := cmd.HelpFunc()
+		helpFunc(cmd, args)
+		return nil
+	},
+}
+
 func init() {
 	initConfig()
-	rootCmd.Command.SetUsageTemplate(usageTemplate)
+	rootCmd.Command.SetUsageTemplate(helpTemplate)
+	rootCmd.Command.SetHelpCommand(helpCommand)
 
 	// Init version
 	initVersion()
@@ -65,27 +82,26 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootPFlagSet := rootCmd.GlobalFlags()
+	// Customize Help Flag
+	rootPFlagSet.BoolP("help", "h", false, "Print usage")
+	// Add Custom Flags
 	rootPFlagSet.StringVarP(&cfgFile, config.ArgConfig, config.ArgConfigShort, config.GetConfigFile(), "Configuration file used for authentication")
 	_ = viper.BindPFlag(config.ArgConfig, rootPFlagSet.Lookup(config.ArgConfig))
-
 	rootPFlagSet.StringVarP(&ServerURL, config.ArgServerUrl, config.ArgServerUrlShort, config.DefaultApiURL, "Override default host url")
 	_ = viper.BindPFlag(config.ArgServerUrl, rootPFlagSet.Lookup(config.ArgServerUrl))
-
 	rootPFlagSet.StringVarP(&Output, config.ArgOutput, config.ArgOutputShort, config.DefaultOutputFormat, "Desired output format [text|json]")
 	_ = viper.BindPFlag(config.ArgOutput, rootPFlagSet.Lookup(config.ArgOutput))
 	_ = rootCmd.Command.RegisterFlagCompletionFunc(config.ArgOutput, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"json", "text"}, cobra.ShellCompDirectiveNoFileComp
 	})
-
 	rootPFlagSet.BoolVarP(&Quiet, config.ArgQuiet, config.ArgQuietShort, false, "Quiet output")
 	_ = viper.BindPFlag(config.ArgQuiet, rootPFlagSet.Lookup(config.ArgQuiet))
-
 	rootPFlagSet.BoolVarP(&Force, config.ArgForce, config.ArgForceShort, false, "Force command to execute without user input")
 	_ = viper.BindPFlag(config.ArgForce, rootPFlagSet.Lookup(config.ArgForce))
-
-	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, config.ArgVerboseShort, false, "see step by step process when running a command")
+	rootPFlagSet.BoolVarP(&Verbose, config.ArgVerbose, config.ArgVerboseShort, false, "Print step-by-step process when running command")
 	_ = viper.BindPFlag(config.ArgVerbose, rootPFlagSet.Lookup(config.ArgVerbose))
 
+	// Add SubCommands to RootCmd
 	addCommands()
 
 	cobra.OnInitialize(initConfig)
@@ -109,7 +125,11 @@ func initConfig() {
 		viper.SetConfigType("json")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	// Read Environment Variables.
+	// For authentication, there are used the following ENV:
+	// IONOS_USERNAME, IONOS_PASSWORD or IONOS_TOKEN
+	// The user can also overwrite the endpoint: IONOS_API_URL
+	viper.AutomaticEnv()
 }
 
 func initVersion() {
@@ -149,39 +169,39 @@ func (v cliVersion) GetVersion() string {
 
 // AddCommands adds sub commands to the base command.
 func addCommands() {
-	rootCmd.AddCommand(version())
+	rootCmd.AddCommand(VersionCmd())
+	rootCmd.AddCommand(LoginCmd())
 	// V6 Resources Commands
-	rootCmd.AddCommand(login())
-	rootCmd.AddCommand(location())
-	rootCmd.AddCommand(datacenter())
-	rootCmd.AddCommand(server())
-	rootCmd.AddCommand(volume())
-	rootCmd.AddCommand(lan())
-	rootCmd.AddCommand(natgateway())
-	rootCmd.AddCommand(networkloadbalancer())
-	rootCmd.AddCommand(nic())
-	rootCmd.AddCommand(loadBalancer())
-	rootCmd.AddCommand(ipblock())
-	rootCmd.AddCommand(ipconsumer())
-	rootCmd.AddCommand(ipfailover())
-	rootCmd.AddCommand(request())
-	rootCmd.AddCommand(snapshot())
-	rootCmd.AddCommand(image())
-	rootCmd.AddCommand(firewallrule())
-	rootCmd.AddCommand(flowlog())
-	rootCmd.AddCommand(label())
-	rootCmd.AddCommand(contract())
-	rootCmd.AddCommand(user())
-	rootCmd.AddCommand(group())
-	rootCmd.AddCommand(resource())
-	rootCmd.AddCommand(backupunit())
-	rootCmd.AddCommand(pcc())
-	rootCmd.AddCommand(share())
-	rootCmd.AddCommand(k8s())
-	rootCmd.AddCommand(template())
+	rootCmd.AddCommand(cloudapiv6.LocationCmd())
+	rootCmd.AddCommand(cloudapiv6.DatacenterCmd())
+	rootCmd.AddCommand(cloudapiv6.ServerCmd())
+	rootCmd.AddCommand(cloudapiv6.VolumeCmd())
+	rootCmd.AddCommand(cloudapiv6.LanCmd())
+	rootCmd.AddCommand(cloudapiv6.NatgatewayCmd())
+	rootCmd.AddCommand(cloudapiv6.NetworkloadbalancerCmd())
+	rootCmd.AddCommand(cloudapiv6.NicCmd())
+	rootCmd.AddCommand(cloudapiv6.LoadBalancerCmd())
+	rootCmd.AddCommand(cloudapiv6.IpblockCmd())
+	rootCmd.AddCommand(cloudapiv6.IpconsumerCmd())
+	rootCmd.AddCommand(cloudapiv6.IpfailoverCmd())
+	rootCmd.AddCommand(cloudapiv6.RequestCmd())
+	rootCmd.AddCommand(cloudapiv6.SnapshotCmd())
+	rootCmd.AddCommand(cloudapiv6.ImageCmd())
+	rootCmd.AddCommand(cloudapiv6.FirewallruleCmd())
+	rootCmd.AddCommand(cloudapiv6.FlowlogCmd())
+	rootCmd.AddCommand(cloudapiv6.LabelCmd())
+	rootCmd.AddCommand(cloudapiv6.ContractCmd())
+	rootCmd.AddCommand(cloudapiv6.UserCmd())
+	rootCmd.AddCommand(cloudapiv6.GroupCmd())
+	rootCmd.AddCommand(cloudapiv6.ResourceCmd())
+	rootCmd.AddCommand(cloudapiv6.BackupunitCmd())
+	rootCmd.AddCommand(cloudapiv6.PccCmd())
+	rootCmd.AddCommand(cloudapiv6.ShareCmd())
+	rootCmd.AddCommand(cloudapiv6.K8sCmd())
+	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
 }
 
-const usageTemplate = `USAGE: {{if .Runnable}}
+const helpTemplate = `USAGE: {{if .Runnable}}
   {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
   {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
 

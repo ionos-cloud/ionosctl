@@ -50,14 +50,14 @@ Required values to run command:
                            Available columns: [S3KeyId Active] (default [S3KeyId,Active])
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force              Force command to execute without user input
-  -h, --help               help for update
+  -h, --help               Print usage
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
       --s3key-active       Enable or disable an User S3Key
   -i, --s3key-id string    The unique User S3Key Id (required)
   -t, --timeout int        Timeout option for Request for User S3Key update [seconds] (default 60)
       --user-id string     The unique User Id (required)
-  -v, --verbose            see step by step process when running a command
+  -v, --verbose            Print step-by-step process when running command
   -w, --wait-for-request   Wait for the Request for User S3Key update to be executed
 ```
 

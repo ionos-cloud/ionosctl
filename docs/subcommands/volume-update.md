@@ -50,16 +50,16 @@ Required values to run command:
       --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required)
       --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
   -f, --force                    Force command to execute without user input
-  -h, --help                     help for update
+  -h, --help                     Print usage
   -n, --name string              Name of the Volume
       --nic-hot-plug             It is capable of nic hot plug (no reboot required)
       --nic-hot-unplug           It is capable of nic hot unplug (no reboot required)
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
       --ram-hot-plug             It is capable of memory hot plug (no reboot required)
-      --size string              The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit (required) (default "10")
+      --size string              The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit
   -t, --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
-  -v, --verbose                  see step by step process when running a command
+  -v, --verbose                  Print step-by-step process when running command
   -i, --volume-id string         The unique Volume Id (required)
   -w, --wait-for-request         Wait for the Request for Volume update to be executed
 ```

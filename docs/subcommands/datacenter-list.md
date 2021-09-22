@@ -15,7 +15,7 @@ ionosctl datacenter list [flags]
 For `datacenter` command:
 
 ```text
-[d dc]
+[d dc vdc]
 ```
 
 For `list` command:
@@ -36,10 +36,10 @@ Use this command to retrieve a complete list of Virtual Data Centers provisioned
                          Available columns: [DatacenterId Name Location State Description Version Features CpuFamily SecAuthProtection] (default [DatacenterId,Name,Location,CpuFamily,State])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
-  -h, --help             help for list
+  -h, --help             Print usage
   -o, --output string    Desired output format [text|json] (default "text")
   -q, --quiet            Quiet output
-  -v, --verbose          see step by step process when running a command
+  -v, --verbose          Print step-by-step process when running command
 ```
 
 ## Examples

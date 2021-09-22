@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/pkg/config"
-	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/core"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 )
@@ -19,7 +19,7 @@ const (
 	latestGhReleaseUrl    = "https://github.com/ionos-cloud/ionosctl/releases/latest"
 )
 
-func version() *core.Command {
+func VersionCmd() *core.Command {
 	ctx := context.TODO()
 	versionCmd := core.NewCommand(ctx, nil, core.CommandBuilder{
 		Namespace:  "version",
@@ -28,7 +28,7 @@ func version() *core.Command {
 		ShortDesc:  "Show the current version",
 		LongDesc:   "The `ionosctl version` command displays the current version of the ionosctl software and the latest Github release.",
 		Example:    "ionosctl version",
-		PreCmdRun:  noPreRun,
+		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunVersion,
 		InitClient: false,
 	})
