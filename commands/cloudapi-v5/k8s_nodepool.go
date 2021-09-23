@@ -208,7 +208,7 @@ Required values to run command:
 * K8s Cluster Id
 * K8s NodePool Id`,
 		Example:    deleteK8sNodePoolExample,
-		PreCmdRun:  PreRunK8sClusterNodePoolIds,
+		PreCmdRun:  PreRunK8sClusterNodePoolDelete,
 		CmdRun:     RunK8sNodePoolDelete,
 		InitClient: true,
 	})
@@ -220,12 +220,20 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the Kubernetes Node Pools within an existing Kubernetes Cluster.")
 
 	return k8sCmd
 }
 
 func PreRunK8sClusterNodePoolIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgK8sClusterId, cloudapiv5.ArgK8sNodePoolId)
+}
+
+func PreRunK8sClusterNodePoolDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv5.ArgK8sClusterId, cloudapiv5.ArgK8sNodePoolId},
+		[]string{cloudapiv5.ArgK8sClusterId, cloudapiv5.ArgAll},
+	)
 }
 
 func PreRunK8sClusterDcIds(c *core.PreCommandConfig) error {
@@ -313,19 +321,64 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolDelete(c *core.CommandConfig) error {
-	err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s node pool")
-	if err != nil {
-		return err
-	}
-	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId))
-	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId))
-	c.Printer.Verbose("Deleting K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId)
-	resp, err := c.CloudApiV5Services.K8s().DeleteNodePool(k8sClusterId, k8sNodePoolId)
-	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	var k8sNodePools resources.K8sNodePools
+	clusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId))
+	nodepollId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
+	if allFlag {
+		fmt.Printf("K8sNodePools to be deleted:\n")
+		k8sNodePools, resp, err = c.CloudApiV5Services.K8s().ListNodePools(clusterId)
+		if err != nil {
+			return err
+		}
+		if k8sNodePoolsItems, ok := k8sNodePools.GetItemsOk(); ok && k8sNodePoolsItems != nil {
+			for _, dc := range *k8sNodePoolsItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
+					fmt.Printf("K8sNodePool Id: " + *id)
+				}
+				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" K8sNodePool Name: " + *name + "\n")
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodePools"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the K8sNodePools")
+
+			for _, dc := range *k8sNodePoolsItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting K8sNodePool with id: %v...", *id)
+					resp, err = c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s node pool")
+		if err != nil {
+			return err
+		}
+		c.Printer.Verbose("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId)))
+		resp, err = c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, nodepollId)
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print("Status: Command node pool delete has been successfully executed")
 }

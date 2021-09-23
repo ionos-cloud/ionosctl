@@ -29,6 +29,7 @@ var (
 	Quiet     bool
 	Force     bool
 	Verbose   bool
+	All       bool
 
 	cfgFile string
 

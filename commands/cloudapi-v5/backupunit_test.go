@@ -28,6 +28,16 @@ var (
 			},
 		},
 	}
+	backupUnitTestId = resources.BackupUnit{
+		BackupUnit: ionoscloud.BackupUnit{
+			Id: &testBackUnitId,
+			Properties: &ionoscloud.BackupUnitProperties{
+				Email:    &testBackupUnitVar,
+				Name:     &testBackupUnitVar,
+				Password: &testBackupUnitVar,
+			},
+		},
+	}
 	backupUnitTestGet = resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Id:         &testBackupUnitVar,
@@ -44,6 +54,15 @@ var (
 		BackupUnits: ionoscloud.BackupUnits{
 			Id:    &testBackupUnitVar,
 			Items: &[]ionoscloud.BackupUnit{backupUnitTest.BackupUnit},
+		},
+	}
+	backupUnitsList = resources.BackupUnits{
+		BackupUnits: ionoscloud.BackupUnits{
+			Id: &testBackUnitId,
+			Items: &[]ionoscloud.BackupUnit{
+				backupUnitTestId.BackupUnit,
+				backupUnitTestId.BackupUnit,
+			},
 		},
 	}
 	backupUnitProperties = resources.BackupUnitProperties{
@@ -63,6 +82,7 @@ var (
 	}
 	testBackupUnitVar    = "test-backup-unit"
 	testBackupUnitNewVar = "test-new-backup-unit"
+	testBackUnitId       = "87aa25ec-5f74-4927-bd95-c8e42db06fe2"
 	testBackupUnitErr    = errors.New("backup-unit test error")
 )
 
@@ -344,6 +364,23 @@ func TestRunBackupUnitDelete(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgBackupUnitId), testBackupUnitVar)
 		rm.CloudApiV5Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar).Return(&testResponse, nil)
+		err := RunBackupUnitDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunBackupUnitDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().List().Return(backupUnitsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
 	})

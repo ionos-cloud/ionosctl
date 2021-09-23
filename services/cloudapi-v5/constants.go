@@ -11,6 +11,8 @@ const (
 
 // Flags
 const (
+	ArgAll                   = "all"
+	ArgAllShort              = "a"
 	ArgUserData              = "user-data"
 	ArgFirstName             = "first-name"
 	ArgLastName              = "last-name"

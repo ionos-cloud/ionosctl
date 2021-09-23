@@ -65,6 +65,15 @@ var (
 			Items: &[]ionoscloud.Lan{l},
 		},
 	}
+	lansList = resources.Lans{
+		Lans: ionoscloud.Lans{
+			Id: &testLanVar,
+			Items: &[]ionoscloud.Lan{
+				l,
+				l,
+			},
+		},
+	}
 	testLanVar    = "test-lan"
 	testLanNewVar = "test-new-lan"
 	testLanErr    = errors.New("lan test: error occurred")
@@ -301,6 +310,27 @@ func TestRunLanDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLanId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV5Mocks.Lan.EXPECT().Delete(testLanVar, testLanVar).Return(&testResponse, nil)
+		err := RunLanDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLanDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Lan.EXPECT().List(testLanVar).Return(lansList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Lan.EXPECT().Delete(testLanVar, testLanVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.Lan.EXPECT().Delete(testLanVar, testLanVar).Return(&testResponse, nil)
 		err := RunLanDelete(cfg)
 		assert.NoError(t, err)

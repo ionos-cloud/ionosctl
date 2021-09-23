@@ -3,6 +3,7 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -200,7 +201,7 @@ Required values to run command:
 		ShortDesc:  "Delete a Snapshot",
 		LongDesc:   "Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		Example:    deleteSnapshotExample,
-		PreCmdRun:  PreRunSnapshotId,
+		PreCmdRun:  PreRunSnapshotDelete,
 		CmdRun:     RunSnapshotDelete,
 		InitClient: true,
 	})
@@ -209,6 +210,7 @@ Required values to run command:
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the Snapshots.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
 
 	return snapshotCmd
@@ -216,6 +218,13 @@ Required values to run command:
 
 func PreRunSnapshotId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgSnapshotId)
+}
+
+func PreRunSnapshotDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv5.ArgSnapshotId},
+		[]string{cloudapiv5.ArgAll},
+	)
 }
 
 func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
@@ -305,16 +314,64 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 }
 
 func RunSnapshotDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId)))
-	resp, err := c.CloudApiV5Services.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId)))
-	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	var snapshots resources.Snapshots
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
+	if allFlag {
+		fmt.Printf("Snapshots to be deleted:\n")
+		snapshots, resp, err = c.CloudApiV5Services.Snapshots().List()
+		if err != nil {
+			return err
+		}
+		if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
+			for _, snapshot := range *snapshotsItems {
+				if id, ok := snapshot.GetIdOk(); ok && id != nil {
+					fmt.Printf("Snapshot Id: " + *id)
+				}
+				if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" Snapshot Name: " + *name + "\n")
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Snapshots...")
+
+			for _, snapshot := range *snapshotsItems {
+				if id, ok := snapshot.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Snapshot with id: %v...", *id)
+					resp, err = c.CloudApiV5Services.Snapshots().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId)))
+		resp, err := c.CloudApiV5Services.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId)))
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }

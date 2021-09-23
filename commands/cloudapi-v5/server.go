@@ -211,7 +211,7 @@ Required values to run command:
 * Data Center Id
 * Server Id`,
 		Example:    deleteServerExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunDcServerDelete,
 		CmdRun:     RunServerDelete,
 		InitClient: true,
 	})
@@ -224,6 +224,7 @@ Required values to run command:
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all Servers form a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
 
 	/*
@@ -339,6 +340,13 @@ func PreRunDcServerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId)
 }
 
+func PreRunDcServerDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgAll},
+	)
+}
+
 func RunServerList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
 	servers, resp, err := c.CloudApiV5Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
@@ -446,23 +454,66 @@ func RunServerUpdate(c *core.CommandConfig) error {
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
-	resp, err := c.CloudApiV5Services.Servers().Delete(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)),
-	)
-	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
+	var servers resources.Servers
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
+	if allFlag {
+		fmt.Printf("Servers to be deleted:\n")
+		servers, resp, err = c.CloudApiV5Services.Servers().List(dcId)
+		if err != nil {
+			return err
+		}
+		if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
+			for _, server := range *serversItems {
+				if id, ok := server.GetIdOk(); ok && id != nil {
+					fmt.Printf("Server Id: " + *id)
+				}
+				if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" Server Name: " + *name + "\n")
+					}
+				}
+			}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Servers...")
+
+			for _, server := range *serversItems {
+				if id, ok := server.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", *id, dcId)
+					resp, err = c.CloudApiV5Services.Servers().Delete(dcId, *id)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", serverId, dcId)
+		resp, err := c.CloudApiV5Services.Servers().Delete(dcId, serverId)
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
 }

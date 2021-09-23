@@ -308,6 +308,25 @@ func TestRunDataCenterDelete(t *testing.T) {
 	})
 }
 
+func TestRunDataCenterDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().List().Return(dcs, &testResponse, nil)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().Delete(testDatacenterVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().Delete(testDatacenterVar).Return(&testResponse, nil)
+		err := RunDataCenterDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunDataCenterDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
