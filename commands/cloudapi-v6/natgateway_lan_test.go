@@ -166,7 +166,7 @@ func TestRunNatGatewayLanAddResponseErr(t *testing.T) {
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar).Return(&natgatewayLanTest, nil, nil)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestProper).Return(&natgatewayLanTestUpdated, &testResponseErr, nil)
 		err := RunNatGatewayLanAdd(cfg)
-		assert.NoError(t, err)
+		assert.Error(t, err)
 	})
 }
 
