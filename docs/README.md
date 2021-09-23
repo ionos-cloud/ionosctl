@@ -79,7 +79,7 @@ You can provide your credentials:
 
 You can set the environment variables using the next commands:
 
-```
+```text
 export IONOS_USERNAME="ionos username"
 export IONOS_PASSWORD="ionos password"
 export IONOS_TOKEN="ionos token"
@@ -275,7 +275,7 @@ Note: When using `TAB` in autocompletion, on `--cols` option on a specific resou
 
 You will see step-by-step process when running a command.
 
-This flag can be used with any command(in general create, read, update, delete, but it's available also for the other specific command) of any resource. 
+This flag can be used with any command\(in general create, read, update, delete, but it's available also for the other specific command\) of any resource.
 
 ### Help Information
 

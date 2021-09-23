@@ -145,3 +145,10 @@
 * [VolumeUpdate](subcommands/volume-update.md)
 * [Version](subcommands/version.md)
 
+## Legal
+
+---
+
+* [Privacy policy](https://www.ionos.com/terms-gtc/terms-privacy/)
+* [Imprint](https://www.ionos.de/impressum)
+

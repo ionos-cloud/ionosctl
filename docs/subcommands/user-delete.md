@@ -1,5 +1,5 @@
 ---
-description: Blacklists the User, disabling them
+description: 'Blacklists the User, disabling them'
 ---
 
 # UserDelete

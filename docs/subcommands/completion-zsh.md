@@ -14,7 +14,7 @@ ionosctl completion zsh [flags]
 
 Generate the autocompletion script for the zsh shell.
 
-If shell completion is not already enabled in your environment you will need to enable it.  You can execute the following once:
+If shell completion is not already enabled in your environment you will need to enable it. You can execute the following once:
 
 ```text
 $ echo "autoload -U compinit; compinit" >> ~/.zshrc
@@ -23,9 +23,10 @@ $ echo "autoload -U compinit; compinit" >> ~/.zshrc
 To load completions for every new session, execute once:
 
 * Linux:
-```text
-$ ionosctl completion zsh > "${fpath[1]}/_ionosctl"
-```
+
+  ```text
+  $ ionosctl completion zsh > "${fpath[1]}/_ionosctl"
+  ```
 
 * MacOS:
 

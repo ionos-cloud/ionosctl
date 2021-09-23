@@ -4,18 +4,18 @@
 
 * Added `--verbose` flag to all commands to see step-by-step process when running a command
 * Updated Cobra version to [v1.2.1](https://github.com/spf13/cobra/releases/tag/v1.2.0), improving completions with descriptions
-* Fixed bug [#99](https://github.com/ionos-cloud/ionosctl/issues/99)
+* Fixed bug [\#99](https://github.com/ionos-cloud/ionosctl/issues/99)
 * Added support for `IONOS_API_URL` environment variable to overwrite default [URL](https://api.ionos.com)
 
 ## \[5.0.7\]
 
-- Added `api-subnets` and `s3bucket` options for `cluster` command
-- Updated `request` command to print target resources
-- Updated go version to 1.16
-- Updated authentication mechanism to first check environment variables over config file
-- Updated `sdk-go` version to v5.1.4
-- Updated `image`, `request` commands to support fetching the latest N Images/Requests
-- Updated `nodepool` command to be able to set multiple LAN Ids to a NodePool
+* Added `api-subnets` and `s3bucket` options for `cluster` command
+* Updated `request` command to print target resources
+* Updated go version to 1.16
+* Updated authentication mechanism to first check environment variables over config file
+* Updated `sdk-go` version to v5.1.4
+* Updated `image`, `request` commands to support fetching the latest N Images/Requests
+* Updated `nodepool` command to be able to set multiple LAN Ids to a NodePool
 
 ## \[5.0.6\]
 
