@@ -108,7 +108,10 @@ func PreRunImageId(c *core.PreCommandConfig) error {
 }
 
 func RunImageList(c *core.CommandConfig) error {
-	images, _, err := c.CloudApiV6Services.Images().List()
+	images, resp, err := c.CloudApiV6Services.Images().List()
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -137,7 +140,10 @@ func RunImageList(c *core.CommandConfig) error {
 
 func RunImageGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Image with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
-	img, _, err := c.CloudApiV6Services.Images().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
+	img, resp, err := c.CloudApiV6Services.Images().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

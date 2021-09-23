@@ -165,7 +165,10 @@ func PreRunIpBlockId(c *core.PreCommandConfig) error {
 }
 
 func RunIpBlockList(c *core.CommandConfig) error {
-	ipblocks, _, err := c.CloudApiV6Services.IpBlocks().List()
+	ipblocks, resp, err := c.CloudApiV6Services.IpBlocks().List()
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -174,7 +177,10 @@ func RunIpBlockList(c *core.CommandConfig) error {
 
 func RunIpBlockGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
-	i, _, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	i, resp, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -189,6 +195,7 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 	i, resp, err := c.CloudApiV6Services.IpBlocks().Create(name, loc, size)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 
 	if err != nil {
@@ -212,6 +219,9 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -228,6 +238,9 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Ip block with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	resp, err := c.CloudApiV6Services.IpBlocks().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

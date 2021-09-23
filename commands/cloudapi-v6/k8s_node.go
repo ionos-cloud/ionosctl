@@ -182,10 +182,13 @@ func RunK8sNodeList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Listing Nodes from K8s NodePool ID: %v from K8s Cluster ID: %v",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	k8ss, _, err := c.CloudApiV6Services.K8s().ListNodes(
+	k8ss, resp, err := c.CloudApiV6Services.K8s().ListNodes(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -200,10 +203,13 @@ func RunK8sNodeGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	u, _, err := c.CloudApiV6Services.K8s().GetNode(
+	u, resp, err := c.CloudApiV6Services.K8s().GetNode(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -223,6 +229,7 @@ func RunK8sNodeRecreate(c *core.CommandConfig) error {
 	resp, err := c.CloudApiV6Services.K8s().RecreateNode(k8sClusterId, k8sNodePoolId, k8sNodeId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -238,10 +245,13 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	_, err := c.CloudApiV6Services.K8s().DeleteNode(
+	resp, err := c.CloudApiV6Services.K8s().DeleteNode(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

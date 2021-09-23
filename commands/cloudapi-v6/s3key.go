@@ -182,7 +182,10 @@ func PreRunUserKeyIds(c *core.PreCommandConfig) error {
 }
 
 func RunUserS3KeyList(c *core.CommandConfig) error {
-	ss, _, err := c.CloudApiV6Services.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	ss, resp, err := c.CloudApiV6Services.S3Keys().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -191,9 +194,12 @@ func RunUserS3KeyList(c *core.CommandConfig) error {
 
 func RunUserS3KeyGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("S3 keys with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)))
-	s, _, err := c.CloudApiV6Services.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)),
+	s, resp, err := c.CloudApiV6Services.S3Keys().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -206,6 +212,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	s, resp, err := c.CloudApiV6Services.S3Keys().Create(userId)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -231,6 +238,9 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	keyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))
 	c.Printer.Verbose("Creating S3 Key with ID: %v for User with ID: %v", keyId, userId)
 	s, resp, err := c.CloudApiV6Services.S3Keys().Update(userId, keyId, newKey)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -250,6 +260,9 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	resp, err := c.CloudApiV6Services.S3Keys().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

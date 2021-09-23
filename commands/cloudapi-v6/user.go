@@ -174,7 +174,10 @@ func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunUserList(c *core.CommandConfig) error {
-	users, _, err := c.CloudApiV6Services.Users().List()
+	users, resp, err := c.CloudApiV6Services.Users().List()
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -183,7 +186,10 @@ func RunUserList(c *core.CommandConfig) error {
 
 func RunUserGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("User with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
-	u, _, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	u, resp, err := c.CloudApiV6Services.Users().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -215,6 +221,7 @@ func RunUserCreate(c *core.CommandConfig) error {
 	u, resp, err := c.CloudApiV6Services.Users().Create(newUser)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -230,6 +237,9 @@ func RunUserUpdate(c *core.CommandConfig) error {
 	newUser := getUserInfo(oldUser, c)
 	c.Printer.Verbose("Updating User with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
 	userUpd, resp, err := c.CloudApiV6Services.Users().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)), *newUser)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -242,6 +252,9 @@ func RunUserDelete(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("User with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
 	resp, err := c.CloudApiV6Services.Users().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -404,7 +417,10 @@ func GroupUserCmd() *core.Command {
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {
-	users, _, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -421,6 +437,9 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 		},
 	}
 	userAdded, resp, err := c.CloudApiV6Services.Groups().AddUser(groupId, u)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -438,6 +457,9 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		groupId,
 		userId,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

@@ -223,7 +223,10 @@ func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
 }
 
 func RunSnapshotList(c *core.CommandConfig) error {
-	ss, _, err := c.CloudApiV6Services.Snapshots().List()
+	ss, resp, err := c.CloudApiV6Services.Snapshots().List()
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -232,7 +235,10 @@ func RunSnapshotList(c *core.CommandConfig) error {
 
 func RunSnapshotGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
-	s, _, err := c.CloudApiV6Services.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	s, resp, err := c.CloudApiV6Services.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -252,6 +258,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 	s, resp, err := c.CloudApiV6Services.Snapshots().Create(dcId, volumeId, name, description, licenseType, secAuthProtection)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -266,6 +273,9 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 func RunSnapshotUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	s, resp, err := c.CloudApiV6Services.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)), getSnapshotPropertiesSet(c))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -286,6 +296,9 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -301,6 +314,9 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	resp, err := c.CloudApiV6Services.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

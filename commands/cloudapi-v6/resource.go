@@ -84,7 +84,10 @@ func PreRunResourceType(c *core.PreCommandConfig) error {
 }
 
 func RunResourceList(c *core.CommandConfig) error {
-	resourcesListed, _, err := c.CloudApiV6Services.Users().ListResources()
+	resourcesListed, resp, err := c.CloudApiV6Services.Users().ListResources()
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -94,16 +97,22 @@ func RunResourceList(c *core.CommandConfig) error {
 func RunResourceGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Resource with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)))
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)) {
-		resourceListed, _, err := c.CloudApiV6Services.Users().GetResourceByTypeAndId(
+		resourceListed, resp, err := c.CloudApiV6Services.Users().GetResourceByTypeAndId(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId)),
 		)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}
 		return c.Printer.Print(getResourcePrint(c, getResource(resourceListed)))
 	} else {
-		resourcesListed, _, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
+		resourcesListed, resp, err := c.CloudApiV6Services.Users().GetResourcesByType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}
@@ -154,7 +163,10 @@ func GroupResourceCmd() *core.Command {
 
 func RunGroupResourceList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Listing Resources from Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
-	resourcesListed, _, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	resourcesListed, resp, err := c.CloudApiV6Services.Groups().ListResources(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
