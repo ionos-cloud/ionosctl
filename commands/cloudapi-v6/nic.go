@@ -234,9 +234,12 @@ Required values to run command:
 }
 
 func RunNicList(c *core.CommandConfig) error {
-	nics, _, err := c.CloudApiV6Services.Nics().List(
+	nics, resp, err := c.CloudApiV6Services.Nics().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -245,11 +248,14 @@ func RunNicList(c *core.CommandConfig) error {
 
 func RunNicGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Nic with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)))
-	n, _, err := c.CloudApiV6Services.Nics().Get(
+	n, resp, err := c.CloudApiV6Services.Nics().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -285,6 +291,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 	n, resp, err := c.CloudApiV6Services.Nics().Create(dcId, serverId, input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -334,6 +341,9 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -354,6 +364,9 @@ func RunNicDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

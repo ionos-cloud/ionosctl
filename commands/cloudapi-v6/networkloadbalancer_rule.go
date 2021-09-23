@@ -243,10 +243,13 @@ func PreRunDcNetworkLoadBalancerForwardingRuleIds(c *core.PreCommandConfig) erro
 }
 
 func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
-	nlbForwardingRules, _, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(
+	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -255,11 +258,14 @@ func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 
 func RunNetworkLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("NetworkLoadBalancerForwardingRule with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
-	ng, _, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
+	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -292,6 +298,7 @@ func RunNetworkLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -314,6 +321,9 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -333,6 +343,9 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

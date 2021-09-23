@@ -200,7 +200,10 @@ func PreRunDcNetworkLoadBalancerIds(c *core.PreCommandConfig) error {
 }
 
 func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
-	networkloadbalancers, _, err := c.CloudApiV6Services.NetworkLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	networkloadbalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -212,10 +215,13 @@ func RunNetworkLoadBalancerGet(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("NetworkLoadBalancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)))
-	ng, _, err := c.CloudApiV6Services.NetworkLoadBalancers().Get(
+	ng, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -243,6 +249,7 @@ func RunNetworkLoadBalancerCreate(c *core.CommandConfig) error {
 	)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -260,6 +267,9 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		*input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -277,6 +287,9 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 	nlbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	c.Printer.Verbose("NetworkLoadBalancer with id: %v is deleting...", nlbId)
 	resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

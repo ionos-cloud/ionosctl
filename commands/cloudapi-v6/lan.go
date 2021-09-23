@@ -195,7 +195,10 @@ Required values to run command:
 }
 
 func RunLanList(c *core.CommandConfig) error {
-	lans, _, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -205,10 +208,13 @@ func RunLanList(c *core.CommandConfig) error {
 func RunLanGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Lan with id: %v from Datacenter with id: %v is getting...",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	l, _, err := c.CloudApiV6Services.Lans().Get(
+	l, resp, err := c.CloudApiV6Services.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -237,6 +243,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	l, resp, err := c.CloudApiV6Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -280,6 +287,9 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -302,6 +312,9 @@ func RunLanDelete(c *core.CommandConfig) error {
 		dcId,
 		lanId,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

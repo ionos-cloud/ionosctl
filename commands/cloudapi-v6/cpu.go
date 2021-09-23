@@ -67,7 +67,10 @@ func RunLocationCpuList(c *core.CommandConfig) error {
 	if len(ids) != 2 {
 		return errors.New("error getting location id & region id")
 	}
-	loc, _, err := c.CloudApiV6Services.Locations().GetByRegionAndLocationId(ids[0], ids[1])
+	loc, resp, err := c.CloudApiV6Services.Locations().GetByRegionAndLocationId(ids[0], ids[1])
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

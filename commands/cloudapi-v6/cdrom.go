@@ -191,10 +191,13 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 }
 
 func RunServerCdromsList(c *core.CommandConfig) error {
-	attachedCdroms, _, err := c.CloudApiV6Services.Servers().ListCdroms(
+	attachedCdroms, resp, err := c.CloudApiV6Services.Servers().ListCdroms(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -203,11 +206,14 @@ func RunServerCdromsList(c *core.CommandConfig) error {
 
 func RunServerCdromGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("CD-ROM with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)))
-	attachedCdrom, _, err := c.CloudApiV6Services.Servers().GetCdrom(
+	attachedCdrom, resp, err := c.CloudApiV6Services.Servers().GetCdrom(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -224,6 +230,9 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 
 	if err != nil {
 		return err

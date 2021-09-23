@@ -192,7 +192,10 @@ func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {
 
 func RunLoadBalancerList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting LoadBalancers from Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	lbs, _, err := c.CloudApiV6Services.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	lbs, resp, err := c.CloudApiV6Services.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -201,10 +204,13 @@ func RunLoadBalancerList(c *core.CommandConfig) error {
 
 func RunLoadBalancerGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Load balancer with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)))
-	lb, _, err := c.CloudApiV6Services.Loadbalancers().Get(
+	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -219,6 +225,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	lb, resp, err := c.CloudApiV6Services.Loadbalancers().Create(dcId, name, dhcp)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -252,6 +259,9 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 		input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -271,6 +281,9 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

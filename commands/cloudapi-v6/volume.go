@@ -243,7 +243,10 @@ func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
 
 func RunVolumeList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	volumes, _, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	volumes, resp, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -253,10 +256,13 @@ func RunVolumeList(c *core.CommandConfig) error {
 func RunVolumeGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	c.Printer.Verbose("Volume with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)))
-	vol, _, err := c.CloudApiV6Services.Volumes().Get(
+	vol, resp, err := c.CloudApiV6Services.Volumes().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -271,6 +277,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 	vol, resp, err := c.CloudApiV6Services.Volumes().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -288,6 +295,9 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 	}
 	vol, resp, err := c.CloudApiV6Services.Volumes().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)), *input)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -306,6 +316,9 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

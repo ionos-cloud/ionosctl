@@ -187,7 +187,10 @@ func PreRunGroupUserIds(c *core.PreCommandConfig) error {
 }
 
 func RunGroupList(c *core.CommandConfig) error {
-	groups, _, err := c.CloudApiV6Services.Groups().List()
+	groups, resp, err := c.CloudApiV6Services.Groups().List()
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -196,7 +199,10 @@ func RunGroupList(c *core.CommandConfig) error {
 
 func RunGroupGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
-	u, _, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -213,6 +219,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 	u, resp, err := c.CloudApiV6Services.Groups().Create(newGroup)
 	if resp != nil {
 		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -235,6 +242,9 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 		},
 	}
 	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -250,6 +260,9 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		return err
 	}
 	resp, err := c.CloudApiV6Services.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
