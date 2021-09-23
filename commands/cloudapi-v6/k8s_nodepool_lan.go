@@ -138,12 +138,12 @@ func PreRunK8sClusterNodePoolLanIds(c *core.PreCommandConfig) error {
 }
 
 func RunK8sNodePoolLanList(c *core.CommandConfig) error {
-	k8ss, _, err := c.CloudApiV6Services.K8s().GetNodePool(
+	k8ss, resp, err := c.CloudApiV6Services.K8s().GetNodePool(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -165,7 +165,7 @@ func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -194,13 +194,13 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 		return err
 	}
 	input := removeK8sNodePoolLanInfo(c, ng)
-	_, resp, err = c.CloudApiV6Services.K8s().UpdateNodePool(
+	_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 		input,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err

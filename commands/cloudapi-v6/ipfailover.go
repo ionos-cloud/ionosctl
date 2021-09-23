@@ -170,12 +170,12 @@ func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
 
 func RunIpFailoverList(c *core.CommandConfig) error {
 	ipsFailovers := make([]resources.IpFailover, 0)
-	obj, _, err := c.CloudApiV6Services.Lans().Get(
+	obj, resp, err := c.CloudApiV6Services.Lans().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -202,7 +202,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 	ipsFailovers := make([]resources.IpFailover, 0)
 	lanUpdated, resp, err := c.CloudApiV6Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c))
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -244,7 +244,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 				removeIpFailoverInfo(c, ipfailovers),
 			)
 			if resp != nil {
-				c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 			}
 			if err != nil {
 				return err
