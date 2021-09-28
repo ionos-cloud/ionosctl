@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -137,7 +138,7 @@ Required values to run command:
 
 * Pcc Id`,
 		Example:    deletePccExample,
-		PreCmdRun:  PreRunPccId,
+		PreCmdRun:  PreRunPccDelete,
 		CmdRun:     RunPccDelete,
 		InitClient: true,
 	})
@@ -146,6 +147,7 @@ Required values to run command:
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Private Cross-Connects.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect deletion [seconds]")
 
 	pccCmd.AddCommand(PeersCmd())
@@ -155,6 +157,13 @@ Required values to run command:
 
 func PreRunPccId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgPccId)
+}
+
+func PreRunPccDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgPccId},
+		[]string{cloudapiv6.ArgAll},
+	)
 }
 
 func RunPccList(c *core.CommandConfig) error {
@@ -227,19 +236,64 @@ func RunPccUpdate(c *core.CommandConfig) error {
 }
 
 func RunPccDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Private cross connect with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
-	resp, err := c.CloudApiV6Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	var pccs resources.PrivateCrossConnects
+	pccId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		fmt.Printf("PrivateCrossConnects to be deleted:\n")
+		pccs, resp, err = c.CloudApiV6Services.Pccs().List()
+		if err != nil {
+			return err
+		}
+		if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
+			for _, pcc := range *pccsItems {
+				if id, ok := pcc.GetIdOk(); ok && id != nil {
+					fmt.Printf("PrivateCrossConnect Id: " + *id)
+				}
+				if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" PrivateCrossConnect Name: " + *name + "\n")
+					}
+				}
+			}
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the PrivateCrossConnects"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
+
+			for _, pcc := range *pccsItems {
+				if id, ok := pcc.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting PrivateCrossConnect with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.Pccs().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Private cross connect with id: %v is deleting...", pccId)
+		resp, err := c.CloudApiV6Services.Pccs().Delete(pccId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getPccPrint(resp, c, nil))
 }

@@ -259,7 +259,7 @@ Required values to run command:
 * Data Center Id
 * Server Id`,
 		Example:    deleteServerExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunDcServerDelete,
 		CmdRun:     RunServerDelete,
 		InitClient: true,
 	})
@@ -272,6 +272,7 @@ Required values to run command:
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Servers form a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
 
 	/*
@@ -458,6 +459,13 @@ func PreRunDcServerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId)
 }
 
+func PreRunDcServerDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgAll},
+	)
+}
+
 func RunServerList(c *core.CommandConfig) error {
 	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
@@ -566,22 +574,66 @@ func RunServerUpdate(c *core.CommandConfig) error {
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
+	var servers resources.Servers
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", serverId, dcId)
-	resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		fmt.Printf("Servers to be deleted:\n")
+		servers, resp, err = c.CloudApiV6Services.Servers().List(dcId)
+		if err != nil {
+			return err
+		}
+		if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
+			for _, server := range *serversItems {
+				if id, ok := server.GetIdOk(); ok && id != nil {
+					fmt.Printf("Server Id: " + *id)
+				}
+				if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" Server Name: " + *name + "\n")
+					}
+				}
+			}
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Servers...")
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+			for _, server := range *serversItems {
+				if id, ok := server.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", *id, dcId)
+					resp, err = c.CloudApiV6Services.Servers().Delete(dcId, *id)
+					if resp != nil {
+						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", serverId, dcId)
+		resp, err := c.CloudApiV6Services.Servers().Delete(dcId, serverId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getServerPrint(resp, c, nil))
 }

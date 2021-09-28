@@ -39,6 +39,15 @@ var (
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
 	}
+	nicsList = resources.Nics{
+		Nics: ionoscloud.Nics{
+			Id: &testNicVar,
+			Items: &[]ionoscloud.Nic{
+				n,
+				n,
+			},
+		},
+	}
 	nicProperties = resources.NicProperties{
 		NicProperties: ionoscloud.NicProperties{
 			Name: &testNicNewVar,
@@ -300,6 +309,27 @@ func TestRunNicDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testNicVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV6Mocks.Nic.EXPECT().Delete(testNicVar, testNicVar, testNicVar).Return(&testResponse, nil)
+		err := RunNicDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNicDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar).Return(nicsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Nic.EXPECT().Delete(testNicVar, testNicVar, testNicVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Delete(testNicVar, testNicVar, testNicVar).Return(&testResponse, nil)
 		err := RunNicDelete(cfg)
 		assert.NoError(t, err)

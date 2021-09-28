@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -177,7 +178,7 @@ Required values to run command:
 * Nic Id
 * FlowLog Id`,
 		Example:    deleteFlowLogExample,
-		PreCmdRun:  PreRunDcServerNicFlowLogIds,
+		PreCmdRun:  PreRunFlowlogDelete,
 		CmdRun:     RunFlowLogDelete,
 		InitClient: true,
 	})
@@ -201,6 +202,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for FlowLog deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Flowlogs.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for FlowLog deletion [seconds]")
 
 	return flowLogCmd
@@ -212,6 +214,13 @@ func PreRunFlowLogCreate(c *core.PreCommandConfig) error {
 
 func PreRunDcServerNicFlowLogIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId, cloudapiv6.ArgFlowLogId)
+}
+
+func PreRunFlowlogDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId, cloudapiv6.ArgFlowLogId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunFlowLogList(c *core.CommandConfig) error {
@@ -273,26 +282,68 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 }
 
 func RunFlowLogDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete flow log"); err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
+	var flowlogs resources.FlowLogs
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
-	c.Printer.Verbose("FlowLog with id: %v is deleting...", flowLogId)
-	resp, err := c.CloudApiV6Services.FlowLogs().Delete(dcId,
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-		flowLogId,
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		fmt.Printf("Flowlogs to be deleted:\n")
+		flowlogs, resp, err = c.CloudApiV6Services.FlowLogs().List(dcId, serverId, nicId)
+		if err != nil {
+			return err
+		}
+		if flowlogsItems, ok := flowlogs.GetItemsOk(); ok && flowlogsItems != nil {
+			for _, backupUnit := range *flowlogsItems {
+				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+					fmt.Printf("Flowlog Id: " + *id)
+				}
+				if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" Flowlog Name: " + *name + "\n")
+					}
+				}
+			}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the flow log"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Flowlogs...")
+			for _, flowlog := range *flowlogsItems {
+				if id, ok := flowlog.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Flowlog with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id)
+					if resp != nil {
+						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete flow log"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("FlowLog with id: %v is deleting...", flowLogId)
+		resp, err := c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, flowLogId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getFlowLogPrint(resp, c, nil))
 }

@@ -43,6 +43,25 @@ var (
 			Items: &[]ionoscloud.GroupShare{shareTest.GroupShare},
 		},
 	}
+	shareTestId = resources.GroupShare{
+		GroupShare: ionoscloud.GroupShare{
+			Id: &testShareVar,
+			Properties: &ionoscloud.GroupShareProperties{
+				EditPrivilege:  &testShareBoolVar,
+				SharePrivilege: &testShareBoolVar,
+			},
+		},
+	}
+
+	sharesList = resources.GroupShares{
+		GroupShares: ionoscloud.GroupShares{
+			Id: &testShareVar,
+			Items: &[]ionoscloud.GroupShare{
+				shareTestId.GroupShare,
+				shareTestId.GroupShare,
+			},
+		},
+	}
 	shareProperties = resources.GroupShareProperties{
 		GroupShareProperties: ionoscloud.GroupShareProperties{
 			EditPrivilege:  &testShareBoolNewVar,
@@ -319,6 +338,26 @@ func TestRunShareDelete(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testShareVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgResourceId), testShareVar)
+		rm.CloudApiV6Mocks.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(&testResponse, nil)
+		err := RunShareDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunShareDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testShareVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Group.EXPECT().ListShares(testShareVar).Return(sharesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Group.EXPECT().RemoveShare(testShareVar, testShareVar).Return(&testResponse, nil)
 		err := RunShareDelete(cfg)
 		assert.NoError(t, err)

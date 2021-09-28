@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -250,7 +251,7 @@ Required values to run command:
 * Nic Id
 * Firewall Rule Id`,
 		Example:    deleteFirewallRuleExample,
-		PreCmdRun:  PreRunDcServerNicFRuleIds,
+		PreCmdRun:  PreRunFirewallDelete,
 		CmdRun:     RunFirewallRuleDelete,
 		InitClient: true,
 	})
@@ -277,6 +278,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the Firewalls.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
 
 	return firewallRuleCmd
@@ -284,6 +286,13 @@ Required values to run command:
 
 func PreRunDcServerNicIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId)
+}
+
+func PreRunFirewallDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgAll},
+	)
 }
 
 func PreRunDcServerNicIdsFRuleProtocol(c *core.PreCommandConfig) error {
@@ -381,25 +390,68 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleDelete(c *core.CommandConfig) error {
-	c.Printer.Verbose("Firewall Rule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)))
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
-		return err
-	}
-	resp, err := c.CloudApiV6Services.FirewallRules().Delete(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)),
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
+	var firewallrules resources.FirewallRules
+	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
+	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		fmt.Printf("Firewallrules to be deleted:\n")
+		firewallrules, resp, err = c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId)
+		if err != nil {
+			return err
+		}
+		if firewallrulestems, ok := firewallrules.GetItemsOk(); ok && firewallrulestems != nil {
+			for _, firewall := range *firewallrulestems {
+				if id, ok := firewall.GetIdOk(); ok && id != nil {
+					fmt.Printf("Firewallrule Id: " + *id)
+				}
+				if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" Firewallrule Name: " + *name + "\n")
+					}
+				}
+			}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewallrules"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Firewallrules...")
+			for _, firewall := range *firewallrulestems {
+				if id, ok := firewall.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Firewall Rule with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
+					if resp != nil {
+						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		c.Printer.Verbose("Firewall Rule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)))
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
+			return err
+		}
+		resp, err := c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, nil))
 }

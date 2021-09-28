@@ -177,7 +177,7 @@ Required values to run command:
 
 * K8s Cluster Id`,
 		Example:    deleteK8sClusterExample,
-		PreCmdRun:  PreRunK8sClusterId,
+		PreCmdRun:  PreRunK8sClusterDelete,
 		CmdRun:     RunK8sClusterDelete,
 		InitClient: true,
 	})
@@ -186,6 +186,7 @@ Required values to run command:
 		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Cluster deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the Kubernetes clusters.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Request [seconds]")
 
 	return k8sCmd
@@ -193,6 +194,13 @@ Required values to run command:
 
 func PreRunK8sClusterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgK8sClusterId)
+}
+
+func PreRunK8sClusterDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgK8sClusterId},
+		[]string{cloudapiv6.ArgAll},
+	)
 }
 
 func RunK8sClusterList(c *core.CommandConfig) error {
@@ -279,19 +287,64 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 }
 
 func RunK8sClusterDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	resp, err := c.CloudApiV6Services.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	var k8Clusters resources.K8sClusters
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		fmt.Printf("K8sClusters to be deleted:\n")
+		k8Clusters, resp, err = c.CloudApiV6Services.K8s().ListClusters()
+		if err != nil {
+			return err
+		}
+		if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
+			for _, k8sCluster := range *k8sClustersItems {
+				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
+					fmt.Printf("K8sCluster Id: " + *id)
+				}
+				if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" K8sCluster Name: " + *name + "\n")
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sClusters"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the K8sClusters...")
+
+			for _, k8sCluster := range *k8sClustersItems {
+				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting K8sCluster with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id)
+					if resp != nil {
+						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
+		resp, err := c.CloudApiV6Services.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
 }

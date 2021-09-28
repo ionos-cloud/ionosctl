@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -162,7 +163,7 @@ Required values to run command:
 
 * Group Id`,
 		Example:    deleteGroupExample,
-		PreCmdRun:  PreRunGroupId,
+		PreCmdRun:  PreRunGroupDelete,
 		CmdRun:     RunGroupDelete,
 		InitClient: true,
 	})
@@ -171,6 +172,7 @@ Required values to run command:
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Groups.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group deletion [seconds]")
 
 	groupCmd.AddCommand(GroupResourceCmd())
@@ -180,6 +182,13 @@ Required values to run command:
 
 func PreRunGroupId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgGroupId)
+}
+
+func PreRunGroupDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgGroupId},
+		[]string{cloudapiv6.ArgAll},
+	)
 }
 
 func PreRunGroupUserIds(c *core.PreCommandConfig) error {
@@ -255,19 +264,64 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 }
 
 func RunGroupDelete(c *core.CommandConfig) error {
-	c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
-		return err
-	}
-	resp, err := c.CloudApiV6Services.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	var groups resources.Groups
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		fmt.Printf("Groups to be deleted:")
+		groups, resp, err = c.CloudApiV6Services.Groups().List()
+		if err != nil {
+			return err
+		}
+		if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
+			for _, group := range *groupsItems {
+				if id, ok := group.GetIdOk(); ok && id != nil {
+					fmt.Printf("Group Id: " + *id)
+				}
+				if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" Group Name: " + *name + "\n")
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Groups...")
+
+			for _, group := range *groupsItems {
+				if id, ok := group.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Group with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.Groups().Delete(*id)
+					if resp != nil {
+						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+		resp, err := c.CloudApiV6Services.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getGroupPrint(resp, c, nil))
 }

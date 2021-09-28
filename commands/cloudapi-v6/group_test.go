@@ -38,6 +38,32 @@ var (
 			},
 		},
 	}
+	groupTestId = resources.Group{
+		Group: ionoscloud.Group{
+			Id: &testGroupVar,
+			Properties: &ionoscloud.GroupProperties{
+				Name:                 &testGroupVar,
+				CreateDataCenter:     &testGroupBoolVar,
+				CreateSnapshot:       &testGroupBoolVar,
+				ReserveIp:            &testGroupBoolVar,
+				AccessActivityLog:    &testGroupBoolVar,
+				CreatePcc:            &testGroupBoolVar,
+				S3Privilege:          &testGroupBoolVar,
+				CreateBackupUnit:     &testGroupBoolVar,
+				CreateInternetAccess: &testGroupBoolVar,
+				CreateK8sCluster:     &testGroupBoolVar,
+			},
+		},
+	}
+	groupsList = resources.Groups{
+		Groups: ionoscloud.Groups{
+			Id: &testGroupVar,
+			Items: &[]ionoscloud.Group{
+				groupTestId.Group,
+				groupTestId.Group,
+			},
+		},
+	}
 	groupTestNew = resources.Group{
 		Group: ionoscloud.Group{
 			Properties: &ionoscloud.GroupProperties{
@@ -421,6 +447,24 @@ func TestRunGroupDelete(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
+		rm.CloudApiV6Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
+		err := RunGroupDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Group.EXPECT().List().Return(groupsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		err := RunGroupDelete(cfg)
 		assert.NoError(t, err)

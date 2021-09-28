@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -174,7 +175,7 @@ Required values to run command:
 * Data Center Id
 * Network Load Balancer Id`,
 		Example:    deleteNetworkLoadBalancerExample,
-		PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
+		PreCmdRun:  PreRunDcNetworkLoadBalancerDelete,
 		CmdRun:     RunNetworkLoadBalancerDelete,
 		InitClient: true,
 	})
@@ -187,6 +188,7 @@ Required values to run command:
 		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all NetworkLoadBalancers.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer deletion [seconds]")
 
 	networkloadbalancerCmd.AddCommand(NetworkloadbalancerFlowLogCmd())
@@ -197,6 +199,13 @@ Required values to run command:
 
 func PreRunDcNetworkLoadBalancerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId)
+}
+
+func PreRunDcNetworkLoadBalancerDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
@@ -280,21 +289,65 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer"); err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
+	var networkLoadBalancers resources.NetworkLoadBalancers
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	nlbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
-	c.Printer.Verbose("NetworkLoadBalancer with id: %v is deleting...", nlbId)
-	resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		fmt.Printf("NetworkLoadBalancers to be deleted:\n")
+		networkLoadBalancers, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().List(dcId)
+		if err != nil {
+			return err
+		}
+		if nlbItems, ok := networkLoadBalancers.GetItemsOk(); ok && nlbItems != nil {
+			for _, networkLoadBalancer := range *nlbItems {
+				if id, ok := networkLoadBalancer.GetIdOk(); ok && id != nil {
+					fmt.Printf("NetworkLoadBalancer Id: " + *id)
+				}
+				if properties, ok := networkLoadBalancer.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						fmt.Printf(" NetworkLoadBalancer Name: " + *name + "\n")
+					}
+				}
+			}
+
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the BackupUnits...")
+			for _, networkLoadBalancer := range *nlbItems {
+				if id, ok := networkLoadBalancer.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Deleting Backup unit with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, *id)
+					if resp != nil {
+						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("NetworkLoadBalancer with id: %v is deleting...", nlbId)
+		resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getNetworkLoadBalancerPrint(resp, c, nil))
 }

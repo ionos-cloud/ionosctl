@@ -68,6 +68,14 @@ var (
 			Items: &[]ionoscloud.NetworkLoadBalancerForwardingRule{testNlbForwardingRuleGet.NetworkLoadBalancerForwardingRule},
 		},
 	}
+	testNlbForwardingRulesList = resources.NetworkLoadBalancerForwardingRules{
+		NetworkLoadBalancerForwardingRules: ionoscloud.NetworkLoadBalancerForwardingRules{
+			Items: &[]ionoscloud.NetworkLoadBalancerForwardingRule{
+				testNlbForwardingRuleGet.NetworkLoadBalancerForwardingRule,
+				testNlbForwardingRuleGet.NetworkLoadBalancerForwardingRule,
+			},
+		},
+	}
 	testNlbForwardingRuleIntVar              = int32(1)
 	testNlbForwardingRuleNewIntVar           = int32(2)
 	testNlbForwardingRuleProtocol            = "TCP"
@@ -379,6 +387,29 @@ func TestRunNetworkLoadBalancerForwardingRuleDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbForwardingRuleVar)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteForwardingRule(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testNlbForwardingRuleVar).
+			Return(&testResponse, nil)
+		err := RunNetworkLoadBalancerForwardingRuleDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNetworkLoadBalancerForwardingRuleDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbForwardingRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbForwardingRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbForwardingRuleVar, testNlbForwardingRuleVar).
+			Return(testNlbForwardingRulesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteForwardingRule(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testNlbForwardingRuleVar).
+			Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteForwardingRule(testNlbForwardingRuleVar, testNlbForwardingRuleVar, testNlbForwardingRuleVar).
 			Return(&testResponse, nil)
 		err := RunNetworkLoadBalancerForwardingRuleDelete(cfg)
