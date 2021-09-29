@@ -475,7 +475,7 @@ func TestRunGroupDeleteResponseErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgGroupId), testGroupVar)
-		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponseErr, nil)
+		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, testGroupErr)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
 	})
