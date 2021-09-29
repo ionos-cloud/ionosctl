@@ -42,6 +42,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                delete all the S3Keys of an User.
   -u, --api-url string     Override default host url (default "https://api.ionos.com")
       --cols strings       Set of columns to be printed on output 
                            Available columns: [S3KeyId Active] (default [S3KeyId,Active])

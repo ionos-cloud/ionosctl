@@ -36,6 +36,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                  delete all the Kubernetes Node Pools within an existing Kubernetes Cluster.
   -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cluster-id string    The unique K8s Cluster Id (required)
       --cols strings         Set of columns to be printed on output 
