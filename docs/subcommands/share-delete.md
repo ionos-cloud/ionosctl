@@ -30,6 +30,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                  delete all the Resources Share from a specified Group.
   -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [ShareId EditPrivilege SharePrivilege Type] (default [ShareId,EditPrivilege,SharePrivilege,Type])
