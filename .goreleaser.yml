@@ -13,9 +13,7 @@ builds:
       - -trimpath
       - -mod=vendor
     ldflags:
-      - "-X github.com/ionos-cloud/ionosctl/commands.Major={{ .Major }}"
-      - "-X github.com/ionos-cloud/ionosctl/commands.Minor={{ .Minor }}"
-      - "-X github.com/ionos-cloud/ionosctl/commands.Patch={{ .Patch }}"
+      - "-X github.com/ionos-cloud/ionosctl/commands.Version={{ .Version }}"
       - "-X github.com/ionos-cloud/ionosctl/commands.Label=release"
     goos:
       - windows
