@@ -3,8 +3,8 @@ package commands
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
+	"strconv"
 
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/internal/config"
@@ -32,9 +32,7 @@ var (
 
 	cfgFile string
 
-	Major string
-	Minor string
-	Patch string
+	Version string
 	// Label - If label is not set, the version will be: DEV
 	// If label is set as `release`, it will show the version released
 	Label string
@@ -133,17 +131,8 @@ func initConfig() {
 }
 
 func initVersion() {
-	if Major != "" {
-		i, _ := strconv.Atoi(Major)
-		IonosctlVersion.major = i
-	}
-	if Minor != "" {
-		i, _ := strconv.Atoi(Minor)
-		IonosctlVersion.minor = i
-	}
-	if Patch != "" {
-		i, _ := strconv.Atoi(Patch)
-		IonosctlVersion.patch = i
+	if Version != "" {
+		IonosctlVersion.version = Version
 	}
 	if Label == "" {
 		IonosctlVersion.label = "DEV"
@@ -153,17 +142,15 @@ func initVersion() {
 }
 
 type cliVersion struct {
-	major int
-	minor int
-	patch int
-	label string
+	version string
+	label   string
 }
 
 func (v cliVersion) GetVersion() string {
 	if v.label != "release" {
 		return fmt.Sprintf("%s", v.label)
 	} else {
-		return fmt.Sprintf("%d.%d.%d", v.major, v.minor, v.patch)
+		return fmt.Sprintf("%s", v.version)
 	}
 }
 
