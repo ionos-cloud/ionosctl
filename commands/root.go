@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"strconv"
 
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/internal/config"
