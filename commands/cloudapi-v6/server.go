@@ -272,7 +272,7 @@ Required values to run command:
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Servers form a virtual Datacenter.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Servers form a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server deletion [seconds]")
 
 	/*
@@ -581,7 +581,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Servers to be deleted:\n")
+		_ = c.Printer.Print("Servers to be deleted:")
 		servers, resp, err = c.CloudApiV6Services.Servers().List(dcId)
 		if err != nil {
 			return err
@@ -589,11 +589,11 @@ func RunServerDelete(c *core.CommandConfig) error {
 		if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
 			for _, server := range *serversItems {
 				if id, ok := server.GetIdOk(); ok && id != nil {
-					fmt.Printf("Server Id: " + *id)
+					_ = c.Printer.Print("Server Id: " + *id)
 				}
 				if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Server Name: " + *name + "\n")
+						_ = c.Printer.Print("Server Name: " + *name)
 					}
 				}
 			}

@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -156,7 +155,7 @@ Required values to run command:
 		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IpBlock deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the IpBlocks.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the IpBlocks.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock deletion [seconds]")
 
 	return ipblockCmd
@@ -247,7 +246,7 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 	var ipBlocks resources.IpBlocks
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("IpBlocks to be deleted:\n")
+		_ = c.Printer.Print("IpBlocks to be deleted:")
 		ipBlocks, resp, err = c.CloudApiV6Services.IpBlocks().List()
 		if err != nil {
 			return err
@@ -255,11 +254,11 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 		if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
 			for _, dc := range *ipBlocksItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
-					fmt.Printf("IpBlock Id: " + *id)
+					_ = c.Printer.Print("IpBlock Id: " + *id)
 				}
 				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" IpBlock Name: " + *name + "\n")
+						_ = c.Printer.Print("IpBlock Name: " + *name)
 					}
 				}
 			}

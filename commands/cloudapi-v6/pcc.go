@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -147,7 +146,7 @@ Required values to run command:
 		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Private Cross-Connects.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Private Cross-Connects.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect deletion [seconds]")
 
 	pccCmd.AddCommand(PeersCmd())
@@ -242,7 +241,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 	pccId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("PrivateCrossConnects to be deleted:\n")
+		_ = c.Printer.Print("PrivateCrossConnects to be deleted:")
 		pccs, resp, err = c.CloudApiV6Services.Pccs().List()
 		if err != nil {
 			return err
@@ -250,11 +249,11 @@ func RunPccDelete(c *core.CommandConfig) error {
 		if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
 			for _, pcc := range *pccsItems {
 				if id, ok := pcc.GetIdOk(); ok && id != nil {
-					fmt.Printf("PrivateCrossConnect Id: " + *id)
+					_ = c.Printer.Print("PrivateCrossConnect Id: " + *id)
 				}
 				if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" PrivateCrossConnect Name: " + *name + "\n")
+						_ = c.Printer.Print("PrivateCrossConnect Name: " + *name)
 					}
 				}
 			}

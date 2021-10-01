@@ -230,7 +230,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sNodePoolId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the Kubernetes Node Pools within an existing Kubernetes Nodepools.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Kubernetes Node Pools within an existing Kubernetes Nodepools.")
 
 	k8sCmd.AddCommand(K8sNodePoolLanCmd())
 
@@ -341,7 +341,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("K8sNodePools to be deleted:\n")
+		_ = c.Printer.Print("K8sNodePools to be deleted:")
 		k8sNodePools, resp, err = c.CloudApiV6Services.K8s().ListNodePools(k8sClusterId)
 		if err != nil {
 			return err
@@ -349,11 +349,11 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		if k8sNodePoolsItems, ok := k8sNodePools.GetItemsOk(); ok && k8sNodePoolsItems != nil {
 			for _, dc := range *k8sNodePoolsItems {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
-					fmt.Printf("K8sNodePool Id: " + *id)
+					_ = c.Printer.Print("K8sNodePool Id: " + *id)
 				}
 				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" K8sNodePool Name: " + *name + "\n")
+						_ = c.Printer.Print("K8sNodePool Name: " + *name)
 					}
 				}
 			}

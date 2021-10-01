@@ -232,7 +232,7 @@ Required values to run command:
 		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Volumes from a virtual Datacenter.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Volumes from a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume deletion [seconds]")
 
 	return volumeCmd
@@ -323,7 +323,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Volumes to be deleted:\n")
+		fmt.Printf("Volumes to be deleted:")
 		volumes, resp, err = c.CloudApiV6Services.Volumes().List(dcId)
 		if err != nil {
 			return err
@@ -331,11 +331,11 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
 			for _, volume := range *volumesItems {
 				if id, ok := volume.GetIdOk(); ok && id != nil {
-					fmt.Printf("Volume Id: " + *id)
+					_ = c.Printer.Print("Volume Id: " + *id)
 				}
 				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Volume Name: " + *name + "\n")
+						_ = c.Printer.Print("Volume Name: " + *name)
 					}
 				}
 			}

@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"io"
 	"os"
@@ -161,7 +160,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the Users.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Users.")
 
 	userCmd.AddCommand(UserS3keyCmd())
 
@@ -263,7 +262,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Users to be deleted:\n")
+		_ = c.Printer.Print("Users to be deleted:")
 		users, resp, err = c.CloudApiV6Services.Users().List()
 		if err != nil {
 			return err
@@ -271,14 +270,14 @@ func RunUserDelete(c *core.CommandConfig) error {
 		if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 			for _, user := range *usersItems {
 				if id, ok := user.GetIdOk(); ok && id != nil {
-					fmt.Printf("User Id: " + *id)
+					_ = c.Printer.Print("User Id: " + *id)
 				}
 				if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
 					if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
-						fmt.Printf(" User First Name: " + *firstName)
+						_ = c.Printer.Print("User First Name: " + *firstName)
 					}
 					if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
-						fmt.Printf(" User Last Name: " + *lastName + "\n")
+						_ = c.Printer.Print("User Last Name: " + *lastName)
 					}
 				}
 			}

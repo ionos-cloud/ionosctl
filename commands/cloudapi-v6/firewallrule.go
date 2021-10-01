@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -278,7 +277,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the Firewalls.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Firewalls.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
 
 	return firewallRuleCmd
@@ -399,7 +398,7 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Firewallrules to be deleted:\n")
+		_ = c.Printer.Print("Firewallrules to be deleted:")
 		firewallrules, resp, err = c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId)
 		if err != nil {
 			return err
@@ -407,11 +406,11 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 		if firewallrulestems, ok := firewallrules.GetItemsOk(); ok && firewallrulestems != nil {
 			for _, firewall := range *firewallrulestems {
 				if id, ok := firewall.GetIdOk(); ok && id != nil {
-					fmt.Printf("Firewallrule Id: " + *id)
+					_ = c.Printer.Print("Firewallrule Id: " + *id)
 				}
 				if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Firewallrule Name: " + *name + "\n")
+						_ = c.Printer.Print("Firewallrule Name: " + *name)
 					}
 				}
 			}

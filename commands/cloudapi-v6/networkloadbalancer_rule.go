@@ -227,7 +227,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Network Load Balancer Forwarding Rule.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Network Load Balancer Forwarding Rule.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule deletion [seconds]")
 
 	nlbRuleCmd.AddCommand(NlbRuleTargetCmd())
@@ -350,7 +350,7 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("NetworkLoadBalancerForwardingRules to be deleted:\n")
+		_ = c.Printer.Print("NetworkLoadBalancerForwardingRules to be deleted:")
 		nlbForwardingRules, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId)
 		if err != nil {
 			return err
@@ -358,11 +358,11 @@ func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 		if nlbForwardingRulesItems, ok := nlbForwardingRules.GetItemsOk(); ok && nlbForwardingRulesItems != nil {
 			for _, nlbForwardingRule := range *nlbForwardingRulesItems {
 				if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
-					fmt.Printf("NetworkLoadBalancerForwardingRule Id: " + *id)
+					_ = c.Printer.Print("NetworkLoadBalancerForwardingRule Id: " + *id)
 				}
 				if properties, ok := nlbForwardingRule.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" NetworkLoadBalancerForwardingRule Name: " + *name + "\n")
+						_ = c.Printer.Print("NetworkLoadBalancerForwardingRule Name: " + *name)
 					}
 				}
 			}

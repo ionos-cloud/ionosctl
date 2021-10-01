@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -190,7 +189,7 @@ Required values to run command:
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for LAN deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Lans from a Virtual Data Center.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Lans from a Virtual Data Center.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
 
 	return lanCmd
@@ -317,7 +316,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Lans to be deleted:\n")
+		_ = c.Printer.Print("Lans to be deleted:")
 		lans, resp, err = c.CloudApiV6Services.Lans().List(dcId)
 		if err != nil {
 			return err
@@ -325,11 +324,11 @@ func RunLanDelete(c *core.CommandConfig) error {
 		if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
 			for _, lan := range *lansItems {
 				if id, ok := lan.GetIdOk(); ok && id != nil {
-					fmt.Printf("Lan Id: " + *id)
+					_ = c.Printer.Print("Lan Id: " + *id)
 				}
 				if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Lan Name: " + *name + "\n")
+						_ = c.Printer.Print("Lan Name: " + *name)
 					}
 				}
 			}

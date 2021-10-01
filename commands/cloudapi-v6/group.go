@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -172,7 +171,7 @@ Required values to run command:
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Groups.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Groups.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group deletion [seconds]")
 
 	groupCmd.AddCommand(GroupResourceCmd())
@@ -269,7 +268,7 @@ func RunGroupDelete(c *core.CommandConfig) error {
 	var groups resources.Groups
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Groups to be deleted:")
+		_ = c.Printer.Print("Groups to be deleted:")
 		groups, resp, err = c.CloudApiV6Services.Groups().List()
 		if err != nil {
 			return err
@@ -277,11 +276,11 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
 			for _, group := range *groupsItems {
 				if id, ok := group.GetIdOk(); ok && id != nil {
-					fmt.Printf("Group Id: " + *id)
+					_ = c.Printer.Print("Group Id: " + *id)
 				}
 				if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Group Name: " + *name + "\n")
+						_ = c.Printer.Print("Group Name: " + *name)
 					}
 				}
 			}

@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -183,7 +182,7 @@ Required values to run command:
 		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NAT Gateway deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Natgateways.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Natgateways.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway deletion [seconds]")
 
 	natgatewayCmd.AddCommand(NatgatewayRuleCmd())
@@ -290,7 +289,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("NatGateways to be deleted:\n")
+		_ = c.Printer.Print("NatGateways to be deleted:")
 		natGateways, resp, err = c.CloudApiV6Services.NatGateways().List(dcId)
 		if err != nil {
 			return err
@@ -298,11 +297,11 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 		if natGatewayItems, ok := natGateways.GetItemsOk(); ok && natGatewayItems != nil {
 			for _, natGateway := range *natGatewayItems {
 				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					fmt.Printf("NatGateway Id: " + *id)
+					_ = c.Printer.Print("NatGateway Id: " + *id)
 				}
 				if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" NatGateway Name: " + *name + "\n")
+						_ = c.Printer.Print("NatGateway Name: " + *name)
 					}
 				}
 			}

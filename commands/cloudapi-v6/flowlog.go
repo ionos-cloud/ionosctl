@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -202,7 +201,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for FlowLog deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Flowlogs.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Flowlogs.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for FlowLog deletion [seconds]")
 
 	return flowLogCmd
@@ -291,7 +290,7 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Flowlogs to be deleted:\n")
+		_ = c.Printer.Print("Flowlogs to be deleted:")
 		flowlogs, resp, err = c.CloudApiV6Services.FlowLogs().List(dcId, serverId, nicId)
 		if err != nil {
 			return err
@@ -299,11 +298,11 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 		if flowlogsItems, ok := flowlogs.GetItemsOk(); ok && flowlogsItems != nil {
 			for _, backupUnit := range *flowlogsItems {
 				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-					fmt.Printf("Flowlog Id: " + *id)
+					_ = c.Printer.Print("Flowlog Id: " + *id)
 				}
 				if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Flowlog Name: " + *name + "\n")
+						_ = c.Printer.Print("Flowlog Name: " + *name)
 					}
 				}
 			}

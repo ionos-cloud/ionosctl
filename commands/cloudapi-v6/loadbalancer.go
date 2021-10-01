@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -180,7 +179,7 @@ Required values to run command:
 		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Load Balancer deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the Loadblancers from a virtual Datacenter.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Loadblancers from a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer deletion [seconds]")
 
 	loadbalancerCmd.AddCommand(LoadBalancerNicCmd())
@@ -289,7 +288,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 	loadBlanacerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("LoadBalancers to be deleted:\n")
+		_ = c.Printer.Print("LoadBalancers to be deleted:")
 		loadBalancers, resp, err = c.CloudApiV6Services.Loadbalancers().List(dcid)
 		if err != nil {
 			return err
@@ -297,11 +296,11 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
 			for _, lb := range *loadBalancersItems {
 				if id, ok := lb.GetIdOk(); ok && id != nil {
-					fmt.Printf("LoadBalancer Id: " + *id)
+					_ = c.Printer.Print("LoadBalancer Id: " + *id)
 				}
 				if properties, ok := lb.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" LoadBalancer Name: " + *name + "\n")
+						_ = c.Printer.Print("LoadBalancer Name: " + *name)
 					}
 				}
 			}

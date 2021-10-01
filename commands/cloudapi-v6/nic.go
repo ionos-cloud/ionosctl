@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -229,7 +228,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the Nics from a Server.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Nics from a Server.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC deletion [seconds]")
 
 	return nicCmd
@@ -372,7 +371,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Nics to be deleted:\n")
+		_ = c.Printer.Print("Nics to be deleted:")
 		nics, resp, err = c.CloudApiV6Services.Nics().List(dcId, serverId)
 		if err != nil {
 			return err
@@ -380,11 +379,11 @@ func RunNicDelete(c *core.CommandConfig) error {
 		if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 			for _, nic := range *nicsItems {
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					fmt.Printf("Nic Id: " + *id)
+					_ = c.Printer.Print("Nic Id: " + *id)
 				}
 				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Nic Name: " + *name + "\n")
+						_ = c.Printer.Print("Nic Name: " + *name)
 					}
 				}
 			}

@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -183,7 +182,7 @@ Required values to run command:
 		return completer.BackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all BackupUnits.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all BackupUnits.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit deletion [seconds]")
 
 	return backupUnitCmd
@@ -292,7 +291,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 	var backupUnits resources.BackupUnits
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Backup Unitts to be deleted:\n")
+		_ = c.Printer.Print("Backup Unitts to be deleted:")
 		backupUnits, resp, err = c.CloudApiV6Services.BackupUnit().List()
 		if err != nil {
 			return err
@@ -300,11 +299,12 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
 			for _, backupUnit := range *backupUnitsItems {
 				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-					fmt.Printf("BackupUnit Id: " + *id)
+					//fmt.Printf("BackupUnit Id: " + *id)
+					_ = c.Printer.Print("BackupUnit Id: " + *id)
 				}
 				if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" BackupUnit Name: " + *name + "\n")
+						_ = c.Printer.Print("BackupUnit Name: " + *name)
 					}
 				}
 			}

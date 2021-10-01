@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -229,7 +228,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer FlowLog deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all Network Load Balancer FlowLogs.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Network Load Balancer FlowLogs.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer FlowLog deletion [seconds]")
 
 	return networkloadbalancerFlowLogCmd
@@ -336,7 +335,7 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("NetworkLoadBalancerFlowLogs to be deleted:\n")
+		_ = c.Printer.Print("NetworkLoadBalancerFlowLogs to be deleted:")
 		flowLogs, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId)
 		if err != nil {
 			return err
@@ -344,11 +343,11 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 		if flowLogsItems, ok := flowLogs.GetItemsOk(); ok && flowLogsItems != nil {
 			for _, flowLog := range *flowLogsItems {
 				if id, ok := flowLog.GetIdOk(); ok && id != nil {
-					fmt.Printf("NetworkLoadBalancerFlowLog Id: " + *id)
+					_ = c.Printer.Print("NetworkLoadBalancerFlowLog Id: " + *id)
 				}
 				if properties, ok := flowLog.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" NetworkLoadBalancerFlowLog Name: " + *name + "\n")
+						_ = c.Printer.Print("NetworkLoadBalancerFlowLog Name: " + *name)
 					}
 				}
 			}

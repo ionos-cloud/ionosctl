@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -210,7 +209,7 @@ Required values to run command:
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the Snapshots.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Snapshots.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
 
 	return snapshotCmd
@@ -323,7 +322,7 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 	var snapshots resources.Snapshots
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Snapshots to be deleted:\n")
+		_ = c.Printer.Print("Snapshots to be deleted:")
 		snapshots, resp, err = c.CloudApiV6Services.Snapshots().List()
 		if err != nil {
 			return err
@@ -331,11 +330,11 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
 			for _, snapshot := range *snapshotsItems {
 				if id, ok := snapshot.GetIdOk(); ok && id != nil {
-					fmt.Printf("Snapshot Id: " + *id)
+					_ = c.Printer.Print("Snapshot Id: " + *id)
 				}
 				if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Snapshot Name: " + *name + "\n")
+						_ = c.Printer.Print("Snapshot Name: " + *name)
 					}
 				}
 			}

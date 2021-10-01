@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -180,7 +179,7 @@ Required values to run command:
 		return completer.GroupResourcesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Resource Share deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "delete all the Resources Share from a specified Group.")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Resources Share from a specified Group.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Resource Share deletion [seconds]")
 
 	return shareCmd
@@ -297,7 +296,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("GroupShares to be deleted:\n")
+		_ = c.Printer.Print("GroupShares to be deleted:")
 		groupShares, resp, err = c.CloudApiV6Services.Groups().ListShares(groupId)
 		if err != nil {
 			return err
@@ -305,7 +304,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 		if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
 			for _, share := range *groupSharesItems {
 				if id, ok := share.GetIdOk(); ok && id != nil {
-					fmt.Printf("GroupShare Id: " + *id + "\n")
+					_ = c.Printer.Print("GroupShare Id: " + *id)
 				}
 			}
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
@@ -315,9 +314,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 
 			for _, share := range *groupSharesItems {
 				if id, ok := share.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Share with Resource ID: %v from Group with ID: %v...",
-						*id,
-						groupId)
+					c.Printer.Verbose("Deleting Share with Resource ID: %v from Group with ID: %v...", *id, groupId)
 					resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id)
 					if resp != nil {
 						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
