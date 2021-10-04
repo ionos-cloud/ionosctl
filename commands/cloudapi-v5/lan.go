@@ -3,7 +3,6 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -190,7 +189,7 @@ Required values to run command:
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for LAN deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all Lans from a Virtual Data Center.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "Delete all Lans from a Virtual Data Center.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
 
 	return lanCmd
@@ -311,49 +310,13 @@ func RunLanUpdate(c *core.CommandConfig) error {
 
 func RunLanDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var lans resources.Lans
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLanId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("Lans to be deleted:\n")
-		lans, resp, err = c.CloudApiV5Services.Lans().List(dcId)
+		err := DeleteAllLans(c)
 		if err != nil {
 			return err
-		}
-		if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
-			for _, lan := range *lansItems {
-				if id, ok := lan.GetIdOk(); ok && id != nil {
-					fmt.Printf("Lan Id: " + *id)
-				}
-				if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Lan Name: " + *name + "\n")
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Lans...")
-
-			for _, lan := range *lansItems {
-				if id, ok := lan.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Lan with id: %v...", *id)
-					resp, err = c.CloudApiV5Services.Lans().Delete(dcId, *id)
-					if resp != nil {
-						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
@@ -373,6 +336,49 @@ func RunLanDelete(c *core.CommandConfig) error {
 		}
 	}
 	return c.Printer.Print(getLanPrint(resp, c, nil))
+}
+
+func DeleteAllLans(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
+	_ = c.Printer.Print("Lans to be deleted:")
+	lans, resp, err := c.CloudApiV5Services.Lans().List(dcId)
+	if err != nil {
+		return err
+	}
+	if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
+		for _, lan := range *lansItems {
+			if id, ok := lan.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Lan Id: " + *id)
+			}
+			if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" Lan Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Lans...")
+
+		for _, lan := range *lansItems {
+			if id, ok := lan.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting Lan with id: %v...", *id)
+				resp, err = c.CloudApiV5Services.Lans().Delete(dcId, *id)
+				if resp != nil {
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

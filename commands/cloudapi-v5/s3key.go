@@ -3,7 +3,6 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -173,7 +172,7 @@ Required values to run command:
 		return completer.S3KeyIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv5.ArgUserId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for User S3Key deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the S3Keys of an User.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "Delete all the S3Keys of an User.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for User S3Key deletion [seconds]")
 
 	return s3keyCmd
@@ -263,44 +262,13 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 
 func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var s3Keys resources.S3Keys
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
 	s3KeyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgS3KeyId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("S3 keys to be deleted:\n")
-		s3Keys, resp, err = c.CloudApiV5Services.S3Keys().List(userId)
+		err := DeleteAllS3Keys(c)
 		if err != nil {
 			return err
-		}
-		if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
-			for _, s3Key := range *s3KeysItems {
-				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					fmt.Printf("S3 key Id: " + *id + "\n")
-				}
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the S3Keys...")
-
-			for _, s3Key := range *s3KeysItems {
-				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("User ID: %v", userId)
-					c.Printer.Verbose("S3 keys with id: %v is deleting...", *id)
-					resp, err = c.CloudApiV5Services.S3Keys().Delete(userId, *id)
-					if resp != nil {
-						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
@@ -321,6 +289,44 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		}
 	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, nil))
+}
+
+func DeleteAllS3Keys(c *core.CommandConfig) error {
+	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
+	_ = c.Printer.Print("S3 keys to be deleted:")
+	s3Keys, resp, err := c.CloudApiV5Services.S3Keys().List(userId)
+	if err != nil {
+		return err
+	}
+	if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
+		for _, s3Key := range *s3KeysItems {
+			if id, ok := s3Key.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("S3 key Id: " + *id)
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the S3Keys...")
+
+		for _, s3Key := range *s3KeysItems {
+			if id, ok := s3Key.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("User ID: %v", userId)
+				c.Printer.Verbose("S3 keys with id: %v is deleting...", *id)
+				resp, err = c.CloudApiV5Services.S3Keys().Delete(userId, *id)
+				if resp != nil {
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

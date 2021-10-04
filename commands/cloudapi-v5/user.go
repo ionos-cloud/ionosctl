@@ -3,7 +3,6 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/waiter"
 	"io"
 	"os"
@@ -161,7 +160,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all the Users.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "Delete all the Users.")
 
 	userCmd.AddCommand(UserS3keyCmd())
 
@@ -258,50 +257,11 @@ func RunUserUpdate(c *core.CommandConfig) error {
 
 func RunUserDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var users resources.Users
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("Users to be deleted:\n")
-		users, resp, err = c.CloudApiV5Services.Users().List()
+		err := DeleteAllUsers(c)
 		if err != nil {
 			return err
-		}
-		if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
-			for _, user := range *usersItems {
-				if id, ok := user.GetIdOk(); ok && id != nil {
-					fmt.Printf("User Id: " + *id)
-				}
-				if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
-					if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
-						fmt.Printf(" User First Name: " + *firstName)
-					}
-					if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
-						fmt.Printf(" User Last Name: " + *lastName + "\n")
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Users"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Users...")
-
-			for _, user := range *usersItems {
-				if id, ok := user.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting User with id: %v...", *id)
-					resp, err = c.CloudApiV5Services.Users().Delete(*id)
-					if resp != nil {
-						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
@@ -380,6 +340,51 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 			},
 		},
 	}
+}
+
+func DeleteAllUsers(c *core.CommandConfig) error {
+	_ = c.Printer.Print("Users to be deleted:")
+	users, resp, err := c.CloudApiV5Services.Users().List()
+	if err != nil {
+		return err
+	}
+	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("User Id: " + *id)
+			}
+			if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
+				if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
+					_ = c.Printer.Print(" User First Name: " + *firstName)
+				}
+				if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
+					_ = c.Printer.Print(" User Last Name: " + *lastName)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Users"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Users...")
+
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting User with id: %v...", *id)
+				resp, err = c.CloudApiV5Services.Users().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func GroupUserCmd() *core.Command {

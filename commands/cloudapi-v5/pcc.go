@@ -3,7 +3,6 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -147,7 +146,7 @@ Required values to run command:
 		return completer.PccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all Private Cross-Connects.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "Delete all Private Cross-Connects.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect deletion [seconds]")
 
 	pccCmd.AddCommand(peers())
@@ -239,47 +238,11 @@ func RunPccUpdate(c *core.CommandConfig) error {
 
 func RunPccDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var pccs resources.PrivateCrossConnects
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("PrivateCrossConnects to be deleted:\n")
-		pccs, resp, err = c.CloudApiV5Services.Pccs().List()
+		err := DeleteAllPccs(c)
 		if err != nil {
 			return err
-		}
-		if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
-			for _, pcc := range *pccsItems {
-				if id, ok := pcc.GetIdOk(); ok && id != nil {
-					fmt.Printf("PrivateCrossConnect Id: " + *id)
-				}
-				if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" PrivateCrossConnect Name: " + *name + "\n")
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the PrivateCrossConnects"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
-
-			for _, pcc := range *pccsItems {
-				if id, ok := pcc.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting PrivateCrossConnect with id: %v...", *id)
-					resp, err = c.CloudApiV5Services.Pccs().Delete(*id)
-					if resp != nil {
-						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
@@ -299,6 +262,48 @@ func RunPccDelete(c *core.CommandConfig) error {
 		}
 	}
 	return c.Printer.Print(getPccPrint(resp, c, nil))
+}
+
+func DeleteAllPccs(c *core.CommandConfig) error {
+	_ = c.Printer.Print("PrivateCrossConnects to be deleted:")
+	pccs, resp, err := c.CloudApiV5Services.Pccs().List()
+	if err != nil {
+		return err
+	}
+	if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
+		for _, pcc := range *pccsItems {
+			if id, ok := pcc.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("PrivateCrossConnect Id: " + *id)
+			}
+			if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" PrivateCrossConnect Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the PrivateCrossConnects"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
+
+		for _, pcc := range *pccsItems {
+			if id, ok := pcc.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting PrivateCrossConnect with id: %v...", *id)
+				resp, err = c.CloudApiV5Services.Pccs().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *resources.PrivateCrossConnectProperties {

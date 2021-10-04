@@ -3,7 +3,6 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -166,7 +165,7 @@ Required values to run command:
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Group deletion to be executed")
-	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "delete all Groups.")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "Delete all Groups.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Group deletion [seconds]")
 
 	groupCmd.AddCommand(GroupResourceCmd())
@@ -261,47 +260,11 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 
 func RunGroupDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var groups resources.Groups
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		fmt.Printf("Groups to be deleted:")
-		groups, resp, err = c.CloudApiV5Services.Groups().List()
+		err := DeleteAllGroups(c)
 		if err != nil {
 			return err
-		}
-		if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
-			for _, group := range *groupsItems {
-				if id, ok := group.GetIdOk(); ok && id != nil {
-					fmt.Printf("Group Id: " + *id)
-				}
-				if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						fmt.Printf(" Group Name: " + *name + "\n")
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Groups...")
-
-			for _, group := range *groupsItems {
-				if id, ok := group.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Group with id: %v...", *id)
-					resp, err = c.CloudApiV5Services.Groups().Delete(*id)
-					if resp != nil {
-						c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
@@ -454,6 +417,48 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			CreateK8sCluster:     &createK8s,
 		},
 	}
+}
+
+func DeleteAllGroups(c *core.CommandConfig) error {
+	_ = c.Printer.Print("Groups to be deleted:")
+	groups, resp, err := c.CloudApiV5Services.Groups().List()
+	if err != nil {
+		return err
+	}
+	if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
+		for _, group := range *groupsItems {
+			if id, ok := group.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Group Id: " + *id)
+			}
+			if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" Group Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Groups...")
+
+		for _, group := range *groupsItems {
+			if id, ok := group.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting Group with id: %v...", *id)
+				resp, err = c.CloudApiV5Services.Groups().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing
