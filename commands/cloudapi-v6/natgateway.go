@@ -283,48 +283,13 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 
 func RunNatGatewayDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var natGateways resources.NatGateways
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("NatGateways to be deleted:")
-		natGateways, resp, err = c.CloudApiV6Services.NatGateways().List(dcId)
+		err := DeleteAllNatgateways(c)
 		if err != nil {
 			return err
-		}
-		if natGatewayItems, ok := natGateways.GetItemsOk(); ok && natGatewayItems != nil {
-			for _, natGateway := range *natGatewayItems {
-				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("NatGateway Id: " + *id)
-				}
-				if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print(" NatGateway Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGateways"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the BackupUnits...")
-			for _, natGateway := range *natGatewayItems {
-				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting NatGateway with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway"); err != nil {
@@ -360,6 +325,48 @@ func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties
 	return &resources.NatGatewayProperties{
 		NatGatewayProperties: input,
 	}
+}
+
+func DeleteAllNatgateways(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	_ = c.Printer.Print("NatGateways to be deleted:")
+	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId)
+	if err != nil {
+		return err
+	}
+	if natGatewayItems, ok := natGateways.GetItemsOk(); ok && natGatewayItems != nil {
+		for _, natGateway := range *natGatewayItems {
+			if id, ok := natGateway.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("NatGateway Id: " + *id)
+			}
+			if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" NatGateway Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGateways"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the BackupUnits...")
+		for _, natGateway := range *natGatewayItems {
+			if id, ok := natGateway.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting NatGateway with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

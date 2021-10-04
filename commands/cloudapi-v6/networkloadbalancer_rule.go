@@ -343,49 +343,14 @@ func RunNetworkLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
 
 func RunNetworkLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var nlbForwardingRules resources.NetworkLoadBalancerForwardingRules
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("NetworkLoadBalancerForwardingRules to be deleted:")
-		nlbForwardingRules, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId)
+		err := DeleteAllNetworkLoadBalancerForwardingRules(c)
 		if err != nil {
 			return err
-		}
-		if nlbForwardingRulesItems, ok := nlbForwardingRules.GetItemsOk(); ok && nlbForwardingRulesItems != nil {
-			for _, nlbForwardingRule := range *nlbForwardingRulesItems {
-				if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("NetworkLoadBalancerForwardingRule Id: " + *id)
-				}
-				if properties, ok := nlbForwardingRule.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("NetworkLoadBalancerForwardingRule Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the NetworkLoadBalancerForwardingRules...")
-			for _, nlbForwardingRule := range *nlbForwardingRulesItems {
-				if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting NetworkLoadBalancerForwardingRule with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer forwarding rule"); err != nil {
@@ -450,6 +415,49 @@ func getForwardingRuleHealthCheckPropertiesSet(c *core.CommandConfig) *resources
 	return &resources.NetworkLoadBalancerForwardingRuleHealthCheck{
 		NetworkLoadBalancerForwardingRuleHealthCheck: inputHealth,
 	}
+}
+
+func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
+	_ = c.Printer.Print("NetworkLoadBalancerForwardingRules to be deleted:")
+	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId)
+	if err != nil {
+		return err
+	}
+	if nlbForwardingRulesItems, ok := nlbForwardingRules.GetItemsOk(); ok && nlbForwardingRulesItems != nil {
+		for _, nlbForwardingRule := range *nlbForwardingRulesItems {
+			if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("NetworkLoadBalancerForwardingRule Id: " + *id)
+			}
+			if properties, ok := nlbForwardingRule.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("NetworkLoadBalancerForwardingRule Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the NetworkLoadBalancerForwardingRules...")
+		for _, nlbForwardingRule := range *nlbForwardingRulesItems {
+			if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting NetworkLoadBalancerForwardingRule with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

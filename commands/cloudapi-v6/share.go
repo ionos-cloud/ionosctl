@@ -290,45 +290,13 @@ func RunShareUpdate(c *core.CommandConfig) error {
 
 func RunShareDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var groupShares resources.GroupShares
 	shareId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("GroupShares to be deleted:")
-		groupShares, resp, err = c.CloudApiV6Services.Groups().ListShares(groupId)
+		err := DeleteAllShares(c)
 		if err != nil {
 			return err
-		}
-		if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
-			for _, share := range *groupSharesItems {
-				if id, ok := share.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("GroupShare Id: " + *id)
-				}
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the GroupShares...")
-
-			for _, share := range *groupSharesItems {
-				if id, ok := share.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Share with Resource ID: %v from Group with ID: %v...",
-						*id,
-						groupId)
-					resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
@@ -375,6 +343,45 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 			SharePrivilege: &sharePrivilege,
 		},
 	}
+}
+
+func DeleteAllShares(c *core.CommandConfig) error {
+	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	_ = c.Printer.Print("GroupShares to be deleted:")
+	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId)
+	if err != nil {
+		return err
+	}
+	if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
+		for _, share := range *groupSharesItems {
+			if id, ok := share.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("GroupShare Id: " + *id)
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the GroupShares...")
+
+		for _, share := range *groupSharesItems {
+			if id, ok := share.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting Share with Resource ID: %v from Group with ID: %v...",
+					*id,
+					groupId)
+				resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

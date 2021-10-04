@@ -328,49 +328,14 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 
 func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var flowLogs resources.FlowLogs
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("NetworkLoadBalancerFlowLogs to be deleted:")
-		flowLogs, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId)
+		err := DeleteAllNetworkLoadBalancerFlowLogs(c)
 		if err != nil {
 			return err
-		}
-		if flowLogsItems, ok := flowLogs.GetItemsOk(); ok && flowLogsItems != nil {
-			for _, flowLog := range *flowLogsItems {
-				if id, ok := flowLog.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("NetworkLoadBalancerFlowLog Id: " + *id)
-				}
-				if properties, ok := flowLog.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("NetworkLoadBalancerFlowLog Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NetworkLoadBalancerFlowLogs"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the NetworkLoadBalancerFlowLogs...")
-			for _, flowLog := range *flowLogsItems {
-				if id, ok := flowLog.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting NetworkLoadBalancerFlowLog with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer flowlog"); err != nil {
@@ -389,4 +354,47 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 		}
 	}
 	return c.Printer.Print(getFlowLogPrint(resp, c, nil))
+}
+
+func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
+	_ = c.Printer.Print("NetworkLoadBalancerFlowLogs to be deleted:")
+	flowLogs, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId)
+	if err != nil {
+		return err
+	}
+	if flowLogsItems, ok := flowLogs.GetItemsOk(); ok && flowLogsItems != nil {
+		for _, flowLog := range *flowLogsItems {
+			if id, ok := flowLog.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("NetworkLoadBalancerFlowLog Id: " + *id)
+			}
+			if properties, ok := flowLog.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("NetworkLoadBalancerFlowLog Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NetworkLoadBalancerFlowLogs"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the NetworkLoadBalancerFlowLogs...")
+		for _, flowLog := range *flowLogsItems {
+			if id, ok := flowLog.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting NetworkLoadBalancerFlowLog with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }

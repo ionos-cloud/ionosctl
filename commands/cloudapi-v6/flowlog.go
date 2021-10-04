@@ -282,50 +282,15 @@ func RunFlowLogCreate(c *core.CommandConfig) error {
 
 func RunFlowLogDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var flowlogs resources.FlowLogs
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("Flowlogs to be deleted:")
-		flowlogs, resp, err = c.CloudApiV6Services.FlowLogs().List(dcId, serverId, nicId)
+		err := DeleteAllFlowlogs(c)
 		if err != nil {
 			return err
-		}
-		if flowlogsItems, ok := flowlogs.GetItemsOk(); ok && flowlogsItems != nil {
-			for _, backupUnit := range *flowlogsItems {
-				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("Flowlog Id: " + *id)
-				}
-				if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("Flowlog Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the flow log"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Flowlogs...")
-			for _, flowlog := range *flowlogsItems {
-				if id, ok := flowlog.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Flowlog with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete flow log"); err != nil {
@@ -391,6 +356,50 @@ func getFlowLogPropertiesUpdate(c *core.CommandConfig) resources.FlowLogProperti
 		c.Printer.Verbose("Property Bucket set: %v", bucketName)
 	}
 	return properties
+}
+
+func DeleteAllFlowlogs(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+	_ = c.Printer.Print("Flowlogs to be deleted:")
+	flowlogs, resp, err := c.CloudApiV6Services.FlowLogs().List(dcId, serverId, nicId)
+	if err != nil {
+		return err
+	}
+	if flowlogsItems, ok := flowlogs.GetItemsOk(); ok && flowlogsItems != nil {
+		for _, backupUnit := range *flowlogsItems {
+			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Flowlog Id: " + *id)
+			}
+			if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Flowlog Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the flow log"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Flowlogs...")
+		for _, flowlog := range *flowlogsItems {
+			if id, ok := flowlog.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting Flowlog with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

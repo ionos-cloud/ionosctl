@@ -261,44 +261,13 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 
 func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var s3Keys resources.S3Keys
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	s3KeyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("S3 keys to be deleted:")
-		s3Keys, resp, err = c.CloudApiV6Services.S3Keys().List(userId)
+		err := DeleteAllS3keys(c)
 		if err != nil {
 			return err
-		}
-		if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
-			for _, s3Key := range *s3KeysItems {
-				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("S3 key Id: " + *id)
-				}
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the S3Keys...")
-
-			for _, s3Key := range *s3KeysItems {
-				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("User ID: %v", userId)
-					c.Printer.Verbose("S3 keys with id: %v is deleting...", *id)
-					resp, err = c.CloudApiV6Services.S3Keys().Delete(userId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete s3key"); err != nil {
@@ -319,6 +288,44 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		}
 	}
 	return c.Printer.Print(getS3KeyPrint(resp, c, nil))
+}
+
+func DeleteAllS3keys(c *core.CommandConfig) error {
+	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
+	_ = c.Printer.Print("S3 keys to be deleted:")
+	s3Keys, resp, err := c.CloudApiV6Services.S3Keys().List(userId)
+	if err != nil {
+		return err
+	}
+	if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
+		for _, s3Key := range *s3KeysItems {
+			if id, ok := s3Key.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("S3 key Id: " + *id)
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the S3Keys...")
+
+		for _, s3Key := range *s3KeysItems {
+			if id, ok := s3Key.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("User ID: %v", userId)
+				c.Printer.Verbose("S3 keys with id: %v is deleting...", *id)
+				resp, err = c.CloudApiV6Services.S3Keys().Delete(userId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

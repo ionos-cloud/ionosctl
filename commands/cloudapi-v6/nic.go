@@ -364,52 +364,14 @@ func RunNicUpdate(c *core.CommandConfig) error {
 
 func RunNicDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var nics resources.Nics
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("Nics to be deleted:")
-		nics, resp, err = c.CloudApiV6Services.Nics().List(dcId, serverId)
+		err := DeleteAllNics(c)
 		if err != nil {
 			return err
-		}
-		if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
-			for _, nic := range *nicsItems {
-				if id, ok := nic.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("Nic Id: " + *id)
-				}
-				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("Nic Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Nics...")
-
-			for _, nic := range *nicsItems {
-				if id, ok := nic.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Datacenter ID: %v", dcId)
-					c.Printer.Verbose("Server ID: %v", serverId)
-					c.Printer.Verbose("ic with id: %v is deleting...", *id)
-					resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
@@ -429,6 +391,52 @@ func RunNicDelete(c *core.CommandConfig) error {
 		}
 	}
 	return c.Printer.Print(getNicPrint(resp, c, nil))
+}
+
+func DeleteAllNics(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	_ = c.Printer.Print("Nics to be deleted:")
+	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId)
+	if err != nil {
+		return err
+	}
+	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
+		for _, nic := range *nicsItems {
+			if id, ok := nic.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Nic Id: " + *id)
+			}
+			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Nic Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Nics...")
+
+		for _, nic := range *nicsItems {
+			if id, ok := nic.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Datacenter ID: %v", dcId)
+				c.Printer.Verbose("Server ID: %v", serverId)
+				c.Printer.Verbose("ic with id: %v is deleting...", *id)
+				resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // LoadBalancer Nic Commands

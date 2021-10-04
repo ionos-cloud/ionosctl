@@ -257,51 +257,12 @@ func RunUserUpdate(c *core.CommandConfig) error {
 
 func RunUserDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var users resources.Users
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("Users to be deleted:")
-		users, resp, err = c.CloudApiV6Services.Users().List()
+		err := DeleteAllUsers(c)
 		if err != nil {
 			return err
-		}
-		if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
-			for _, user := range *usersItems {
-				if id, ok := user.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("User Id: " + *id)
-				}
-				if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
-					if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
-						_ = c.Printer.Print("User First Name: " + *firstName)
-					}
-					if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
-						_ = c.Printer.Print("User Last Name: " + *lastName)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Users"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Users...")
-
-			for _, user := range *usersItems {
-				if id, ok := user.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting User with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Users().Delete(*id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
@@ -377,6 +338,51 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 			},
 		},
 	}
+}
+
+func DeleteAllUsers(c *core.CommandConfig) error {
+	_ = c.Printer.Print("Users to be deleted:")
+	users, resp, err := c.CloudApiV6Services.Users().List()
+	if err != nil {
+		return err
+	}
+	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("User Id: " + *id)
+			}
+			if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
+				if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
+					_ = c.Printer.Print("User First Name: " + *firstName)
+				}
+				if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
+					_ = c.Printer.Print("User Last Name: " + *lastName)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Users"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Users...")
+
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting User with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Users().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func GroupUserCmd() *core.Command {

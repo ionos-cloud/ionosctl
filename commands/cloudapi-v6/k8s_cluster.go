@@ -288,47 +288,11 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 
 func RunK8sClusterDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var k8Clusters resources.K8sClusters
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("K8sClusters to be deleted:")
-		k8Clusters, resp, err = c.CloudApiV6Services.K8s().ListClusters()
+		err := DeleteAllK8sClusters(c)
 		if err != nil {
 			return err
-		}
-		if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
-			for _, k8sCluster := range *k8sClustersItems {
-				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("K8sCluster Id: " + *id)
-				}
-				if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("K8sCluster Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sClusters"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the K8sClusters...")
-
-			for _, k8sCluster := range *k8sClustersItems {
-				if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting K8sCluster with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
@@ -454,6 +418,48 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 			Properties: &propertiesUpdated.KubernetesClusterPropertiesForPut,
 		},
 	}
+}
+
+func DeleteAllK8sClusters(c *core.CommandConfig) error {
+	_ = c.Printer.Print("K8sClusters to be deleted:")
+	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters()
+	if err != nil {
+		return err
+	}
+	if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
+		for _, k8sCluster := range *k8sClustersItems {
+			if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("K8sCluster Id: " + *id)
+			}
+			if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("K8sCluster Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sClusters"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the K8sClusters...")
+
+		for _, k8sCluster := range *k8sClustersItems {
+			if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting K8sCluster with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

@@ -249,46 +249,11 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var datacenters resources.Datacenters
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("Datacenters to be deleted:")
-		datacenters, resp, err = c.CloudApiV6Services.DataCenters().List()
+		err := DeleteAllDatacenters(c)
 		if err != nil {
 			return err
-		}
-		if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
-			for _, dc := range *datacentersItems {
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("Datacenter Id: " + *id)
-				}
-				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("Datacenter Name: " + *name)
-					}
-				}
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Datacenters...")
-
-			for _, dc := range *datacentersItems {
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Datacenter with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.DataCenters().Delete(*id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
@@ -309,6 +274,47 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		}
 	}
 	return c.Printer.Print(getDataCenterPrint(resp, c, nil))
+}
+
+func DeleteAllDatacenters(c *core.CommandConfig) error {
+	_ = c.Printer.Print("Datacenters to be deleted:")
+	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List()
+	if err != nil {
+		return err
+	}
+	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
+		for _, dc := range *datacentersItems {
+			if id, ok := dc.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Datacenter Id: " + *id)
+			}
+			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Datacenter Name: " + *name)
+				}
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Datacenters...")
+
+		for _, dc := range *datacentersItems {
+			if id, ok := dc.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting Datacenter with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.DataCenters().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

@@ -317,49 +317,13 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 
 func RunVolumeDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var volumes resources.Volumes
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		fmt.Printf("Volumes to be deleted:")
-		volumes, resp, err = c.CloudApiV6Services.Volumes().List(dcId)
+		err := DeleteAllVolumes(c)
 		if err != nil {
 			return err
-		}
-		if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
-			for _, volume := range *volumesItems {
-				if id, ok := volume.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("Volume Id: " + *id)
-				}
-				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("Volume Name: " + *name)
-					}
-				}
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Volumes...")
-
-			for _, volume := range *volumesItems {
-				if id, ok := volume.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Datacenter ID: %v", dcId)
-					c.Printer.Verbose("Volume with id: %v is deleting...", *id)
-					resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
@@ -530,6 +494,49 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 		c.Printer.Verbose("Property DiscVirtioHotUnplug set: %v", discVirtioHotUnplug)
 	}
 	return &input, nil
+}
+
+func DeleteAllVolumes(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	fmt.Printf("Volumes to be deleted:")
+	volumes, resp, err := c.CloudApiV6Services.Volumes().List(dcId)
+	if err != nil {
+		return err
+	}
+	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
+		for _, volume := range *volumesItems {
+			if id, ok := volume.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Volume Id: " + *id)
+			}
+			if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Volume Name: " + *name)
+				}
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Volumes...")
+
+		for _, volume := range *volumesItems {
+			if id, ok := volume.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Datacenter ID: %v", dcId)
+				c.Printer.Verbose("Volume with id: %v is deleting...", *id)
+				resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Server Volume Commands

@@ -242,46 +242,11 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 
 func RunIpBlockDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var ipBlocks resources.IpBlocks
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("IpBlocks to be deleted:")
-		ipBlocks, resp, err = c.CloudApiV6Services.IpBlocks().List()
+		err := DeleteAllIpBlocks(c)
 		if err != nil {
 			return err
-		}
-		if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
-			for _, dc := range *ipBlocksItems {
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("IpBlock Id: " + *id)
-				}
-				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("IpBlock Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the IpBlocks...")
-			for _, dc := range *ipBlocksItems {
-				if id, ok := dc.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting IpBlock with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.IpBlocks().Delete(*id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
@@ -301,6 +266,47 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 		}
 	}
 	return c.Printer.Print(getIpBlockPrint(resp, c, nil))
+}
+
+func DeleteAllIpBlocks(c *core.CommandConfig) error {
+	_ = c.Printer.Print("IpBlocks to be deleted:")
+	ipBlocks, resp, err := c.CloudApiV6Services.IpBlocks().List()
+	if err != nil {
+		return err
+	}
+	if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
+		for _, dc := range *ipBlocksItems {
+			if id, ok := dc.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("IpBlock Id: " + *id)
+			}
+			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("IpBlock Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the IpBlocks...")
+		for _, dc := range *ipBlocksItems {
+			if id, ok := dc.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting IpBlock with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.IpBlocks().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

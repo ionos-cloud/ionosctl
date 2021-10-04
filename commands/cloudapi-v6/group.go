@@ -264,47 +264,11 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 
 func RunGroupDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var groups resources.Groups
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("Groups to be deleted:")
-		groups, resp, err = c.CloudApiV6Services.Groups().List()
+		err := DeleteAllGroups(c)
 		if err != nil {
 			return err
-		}
-		if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
-			for _, group := range *groupsItems {
-				if id, ok := group.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("Group Id: " + *id)
-				}
-				if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("Group Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Groups...")
-
-			for _, group := range *groupsItems {
-				if id, ok := group.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Group with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Groups().Delete(*id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
@@ -491,6 +455,48 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 			AccessAndManageCertificates: &certs,
 		},
 	}
+}
+
+func DeleteAllGroups(c *core.CommandConfig) error {
+	_ = c.Printer.Print("Groups to be deleted:")
+	groups, resp, err := c.CloudApiV6Services.Groups().List()
+	if err != nil {
+		return err
+	}
+	if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
+		for _, group := range *groupsItems {
+			if id, ok := group.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Group Id: " + *id)
+			}
+			if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Group Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Groups...")
+
+		for _, group := range *groupsItems {
+			if id, ok := group.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting Group with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Groups().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

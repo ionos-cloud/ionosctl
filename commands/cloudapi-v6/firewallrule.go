@@ -390,50 +390,15 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 
 func RunFirewallRuleDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var firewallrules resources.FirewallRules
 	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
 	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("Firewallrules to be deleted:")
-		firewallrules, resp, err = c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId)
+		err := DeleteAllFirewallRuses(c)
 		if err != nil {
 			return err
-		}
-		if firewallrulestems, ok := firewallrules.GetItemsOk(); ok && firewallrulestems != nil {
-			for _, firewall := range *firewallrulestems {
-				if id, ok := firewall.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("Firewallrule Id: " + *id)
-				}
-				if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("Firewallrule Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewallrules"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Firewallrules...")
-			for _, firewall := range *firewallrulestems {
-				if id, ok := firewall.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Firewall Rule with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		c.Printer.Verbose("Firewall Rule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)))
@@ -509,6 +474,50 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 		c.Printer.Verbose("Property Type set: %v", firewallruleType)
 	}
 	return properties
+}
+
+func DeleteAllFirewallRuses(c *core.CommandConfig) error {
+	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
+	_ = c.Printer.Print("Firewallrules to be deleted:")
+	firewallrules, resp, err := c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId)
+	if err != nil {
+		return err
+	}
+	if firewallrulestems, ok := firewallrules.GetItemsOk(); ok && firewallrulestems != nil {
+		for _, firewall := range *firewallrulestems {
+			if id, ok := firewall.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Firewallrule Id: " + *id)
+			}
+			if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Firewallrule Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewallrules"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Firewallrules...")
+		for _, firewall := range *firewallrulestems {
+			if id, ok := firewall.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting Firewall Rule with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

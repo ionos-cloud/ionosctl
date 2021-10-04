@@ -329,49 +329,14 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 
 func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var natGatewayRules resources.NatGatewayRules
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("NatGatewayRules to be deleted:")
-		natGatewayRules, resp, err = c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId)
+		err := DeleteAllNatgatewayRules(c)
 		if err != nil {
 			return err
-		}
-		if natGatewayRuleItems, ok := natGatewayRules.GetItemsOk(); ok && natGatewayRuleItems != nil {
-			for _, natGateway := range *natGatewayRuleItems {
-				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("NatGatewayRule Id: " + *id)
-				}
-				if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print("NatGatewayRule Name: " + *name)
-					}
-				}
-			}
-
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGatewayRules"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the NatGatewayRules...")
-			for _, natGateway := range *natGatewayRuleItems {
-				if id, ok := natGateway.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting NatGatewayRule with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway rule"); err != nil {
@@ -432,6 +397,49 @@ func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRulePr
 	return &resources.NatGatewayRuleProperties{
 		NatGatewayRuleProperties: input,
 	}
+}
+
+func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
+	_ = c.Printer.Print("NatGatewayRules to be deleted:")
+	natGatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId)
+	if err != nil {
+		return err
+	}
+	if natGatewayRuleItems, ok := natGatewayRules.GetItemsOk(); ok && natGatewayRuleItems != nil {
+		for _, natGateway := range *natGatewayRuleItems {
+			if id, ok := natGateway.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("NatGatewayRule Id: " + *id)
+			}
+			if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("NatGatewayRule Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGatewayRules"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the NatGatewayRules...")
+		for _, natGateway := range *natGatewayRuleItems {
+			if id, ok := natGateway.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting NatGatewayRule with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // Output Printing

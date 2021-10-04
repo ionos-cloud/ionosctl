@@ -310,48 +310,13 @@ func RunLanUpdate(c *core.CommandConfig) error {
 
 func RunLanDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
-	var err error
-	var lans resources.Lans
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		_ = c.Printer.Print("Lans to be deleted:")
-		lans, resp, err = c.CloudApiV6Services.Lans().List(dcId)
+		err := DeleteAllLans(c)
 		if err != nil {
 			return err
-		}
-		if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
-			for _, lan := range *lansItems {
-				if id, ok := lan.GetIdOk(); ok && id != nil {
-					_ = c.Printer.Print("Lan Id: " + *id)
-				}
-				if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
-					if name, ok := properties.GetNameOk(); ok && name != nil {
-						_ = c.Printer.Print(" Lan Name: " + *name)
-					}
-				}
-			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
-				return err
-			}
-			c.Printer.Verbose("Deleting all the Lans...")
-
-			for _, lan := range *lansItems {
-				if id, ok := lan.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Deleting Lan with id: %v...", *id)
-					resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id)
-					if resp != nil {
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-					}
-					if err != nil {
-						return err
-					}
-					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-						return err
-					}
-				}
-			}
 		}
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
@@ -487,4 +452,46 @@ func getLanPostsKVMaps(ls []resources.LanPost) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
+}
+
+func DeleteAllLans(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	_ = c.Printer.Print("Lans to be deleted:")
+	lans, resp, err := c.CloudApiV6Services.Lans().List(dcId)
+	if err != nil {
+		return err
+	}
+	if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
+		for _, lan := range *lansItems {
+			if id, ok := lan.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Lan Id: " + *id)
+			}
+			if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" Lan Name: " + *name)
+				}
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting all the Lans...")
+
+		for _, lan := range *lansItems {
+			if id, ok := lan.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Deleting Lan with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id)
+				if resp != nil {
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
