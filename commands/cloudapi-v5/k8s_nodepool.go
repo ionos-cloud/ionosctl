@@ -326,7 +326,10 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 	nodepollId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-
+		err := DeleteAllK8sNodepools(c)
+		if err != nil {
+			return err
+		}
 	} else {
 		err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s node pool")
 		if err != nil {
