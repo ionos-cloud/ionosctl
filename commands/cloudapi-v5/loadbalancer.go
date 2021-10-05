@@ -357,7 +357,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getLoadbalancerPrint(resp, c, nil))
 }
 
 // Output Printing

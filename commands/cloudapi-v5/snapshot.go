@@ -453,7 +453,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 
 // Output Printing

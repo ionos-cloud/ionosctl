@@ -315,7 +315,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getDataCenterPrint(resp, c, nil))
 }
 
 // Output Printing

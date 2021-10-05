@@ -412,7 +412,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getNicPrint(resp, c, nil))
 }
 
 // LoadBalancer Nic Commands

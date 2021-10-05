@@ -378,7 +378,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getLanPrint(resp, c, nil))
 }
 
 // Output Printing

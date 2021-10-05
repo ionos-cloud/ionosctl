@@ -495,7 +495,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getFirewallRulePrint(resp, c, nil))
 }
 
 // Output Printing

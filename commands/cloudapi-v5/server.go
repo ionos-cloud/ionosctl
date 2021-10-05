@@ -663,7 +663,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 // Output Printing

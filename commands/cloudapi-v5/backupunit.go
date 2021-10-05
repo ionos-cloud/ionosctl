@@ -365,7 +365,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getBackupUnitPrint(resp, c, nil))
 }
 
 // Output Printing

@@ -251,7 +251,7 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Ip block with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgIpBlockId)))
+		c.Printer.Verbose("Ip block with ID: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgIpBlockId)))
 		resp, err := c.CloudApiV5Services.IpBlocks().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgIpBlockId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -305,7 +305,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getIpBlockPrint(resp, c, nil))
 }
 
 // Output Printing
