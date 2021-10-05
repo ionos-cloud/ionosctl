@@ -536,7 +536,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getVolumePrint(resp, c, nil))
 }
 
 // Server Volume Commands

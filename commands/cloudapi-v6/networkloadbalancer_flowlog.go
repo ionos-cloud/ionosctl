@@ -396,5 +396,5 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getFlowLogPrint(resp, c, nil))
 }

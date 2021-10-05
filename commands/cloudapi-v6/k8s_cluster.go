@@ -459,7 +459,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
 }
 
 // Output Printing

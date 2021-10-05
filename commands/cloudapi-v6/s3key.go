@@ -325,7 +325,7 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getS3KeyPrint(resp, c, nil))
 }
 
 // Output Printing

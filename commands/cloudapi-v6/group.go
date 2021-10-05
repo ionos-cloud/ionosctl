@@ -496,7 +496,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getGroupPrint(resp, c, nil))
 }
 
 // Output Printing

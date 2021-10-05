@@ -366,7 +366,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getNatGatewayPrint(resp, c, nil))
 }
 
 // Output Printing

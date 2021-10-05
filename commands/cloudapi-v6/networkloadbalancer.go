@@ -388,7 +388,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getNetworkLoadBalancerPrint(resp, c, nil))
 }
 
 // Output Printing

@@ -566,7 +566,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print("Status: Command node pool delete has been successfully executed")
 }
 
 // Output Printing

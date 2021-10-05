@@ -457,7 +457,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getForwardingRulePrint(resp, c, nil))
 }
 
 // Output Printing

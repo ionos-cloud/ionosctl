@@ -439,7 +439,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getNatGatewayRulePrint(resp, c, nil))
 }
 
 // Output Printing

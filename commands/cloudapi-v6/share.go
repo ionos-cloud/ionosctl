@@ -381,7 +381,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getGroupSharePrint(resp, c, nil))
 }
 
 // Output Printing

@@ -306,7 +306,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getIpBlockPrint(resp, c, nil))
 }
 
 // Output Printing

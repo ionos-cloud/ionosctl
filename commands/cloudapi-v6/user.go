@@ -382,7 +382,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print(getUserPrint(resp, c, nil))
 }
 
 func GroupUserCmd() *core.Command {

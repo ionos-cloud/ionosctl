@@ -313,7 +313,7 @@ func DelteAllK8sNodes(c *core.CommandConfig) error {
 			}
 		}
 	}
-	return nil
+	return c.Printer.Print("Status: Command node delete has been successfully executed")
 }
 
 // Output Printing
