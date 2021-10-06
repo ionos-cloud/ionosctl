@@ -8,6 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
+	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/cloudapi-dbaas-pgsql"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,10 +29,10 @@ type PreCmdRunTest func(c *PreCommandConfig)
 func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	p, _ := printer.NewPrinterRegistry(writer, writer)
 	if viper.GetString(config.ArgOutput) == "" {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	}
+	p, _ := printer.NewPrinterRegistry(writer, writer)
 	prt := p[viper.GetString(config.ArgOutput)]
 	preCmdCfg := &PreCommandConfig{
 		Command: &Command{
@@ -52,16 +53,17 @@ type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocksTest)
 
 type ResourcesMocksTest struct {
 	// Add New Services Resources Mocks
-	CloudApiV6Mocks cloudapi_v6.ResourcesMocks
+	CloudApiV6Mocks         cloudapi_v6.ResourcesMocks
+	CloudApiDbaasPgsqlMocks cloudapidbaaspgsql.ResourcesMocks
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	printReg, _ := printer.NewPrinterRegistry(writer, writer)
 	if viper.GetString(config.ArgOutput) == "" {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	}
+	printReg, _ := printer.NewPrinterRegistry(writer, writer)
 	prt := printReg[viper.GetString(config.ArgOutput)]
 	// Init Test Mock Resources and Services
 	testMocks := initMockResources(ctrl)
@@ -81,12 +83,14 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 // Init Mock Resources for Test
 func initMockResources(ctrl *gomock.Controller) *ResourcesMocksTest {
 	return &ResourcesMocksTest{
-		CloudApiV6Mocks: *cloudapi_v6.InitMocksResources(ctrl),
+		CloudApiV6Mocks:         *cloudapi_v6.InitMocksResources(ctrl),
+		CloudApiDbaasPgsqlMocks: *cloudapidbaaspgsql.InitMocksResources(ctrl),
 	}
 }
 
 // Init Mock Services for Command Test
 func initMockServices(c *CommandConfig, tm *ResourcesMocksTest) *CommandConfig {
 	c.CloudApiV6Services = *cloudapi_v6.InitMockServices(&c.CloudApiV6Services, &tm.CloudApiV6Mocks)
+	c.CloudApiDbaasPgsqlServices = *cloudapidbaaspgsql.InitMockServices(&c.CloudApiDbaasPgsqlServices, &tm.CloudApiDbaasPgsqlMocks)
 	return c
 }
