@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	dir := os.Getenv("DOCS_OUT")
+	dir := os.Getenv("DOCS_OUT_V6")
 	if dir == "" {
-		fmt.Printf("DOCS_OUT environment variable not set.\n")
+		fmt.Printf("DOCS_OUT_V6 environment variable not set.\n")
 		os.Exit(1)
 	}
 	if _, err := os.Stat(dir); err != nil {
@@ -20,7 +20,7 @@ func main() {
 	}
 
 	for _, cmd := range commands.GetRootCmd().SubCommands() {
-		if cmd.Name() == "version" || cmd.Name() == "login" {
+		if cmd.Name() != "dbaas-pgsql" && cmd.Name() != "version" && cmd.Name() != "login" {
 			err := internal.WriteDocs(cmd, dir)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)

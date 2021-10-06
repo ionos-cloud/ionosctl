@@ -29,7 +29,7 @@ mocks_update: cloudapiv6_mocks_update
 	@echo "DONE"
 
 .PHONY: docs_update
-docs_update:
+docs_update: cloudapiv6_docs_update
 	@echo "--- Generate Markdown documentation in ${DOCS_OUT} ---"
 	@mkdir -p ${DOCS_OUT}
 	@DOCS_OUT=${DOCS_OUT} go run tools/doc.go
