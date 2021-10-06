@@ -23,7 +23,7 @@ func ClusterBackupCmd() *core.Command {
 	backupCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "backup",
-			Aliases:          []string{"c"},
+			Aliases:          []string{"b"},
 			Short:            "PostgreSQL Backup Operations",
 			Long:             "The sub-commands of `ionosctl dbaas-pgsql backup` allow you to create, list, get, update and delete PostgreSQL Backups.",
 			TraverseChildren: true,

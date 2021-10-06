@@ -9,6 +9,7 @@ func DBaaSPgsqlCmd() *core.Command {
 	dbaasPgsqlCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "dbaas-pgsql",
+			Aliases:          []string{"pgsql"},
 			Short:            "DBaaS PostgreSQL Operations",
 			Long:             "The sub-commands of `ionosctl dbaas-pgsql` allow you to perform operations on DBaaS PostgreSQL resources.",
 			TraverseChildren: true,

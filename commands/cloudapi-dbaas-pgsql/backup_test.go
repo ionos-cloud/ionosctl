@@ -80,7 +80,7 @@ func TestRunBackupList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgCols), defaultBackupCols)
+		viper.Set(core.GetGlobalFlagName(cfg.NS, config.ArgCols), defaultBackupCols)
 		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().List().Return(testBackups, nil, nil)
 		err := RunBackupList(cfg)
 		assert.NoError(t, err)

@@ -102,6 +102,9 @@ Required values to run command:
 		InitClient: true,
 	})
 	create.AddStringFlag(cloudapidbaaspgsql.ArgPostgresVersion, cloudapidbaaspgsql.ArgPostgresVersionShort, "", "The PostgreSQL version of your Cluster", core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgPostgresVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddFloat32Flag(cloudapidbaaspgsql.ArgReplicas, cloudapidbaaspgsql.ArgReplicasShort, 1, "The number of replicas in your cluster. Minimum: 1. Maximum: 5")
 	create.AddFloat32Flag(cloudapidbaaspgsql.ArgCpuCoreCount, "", 4, "The number of CPU cores per replica")
 	create.AddStringFlag(cloudapidbaaspgsql.ArgRamSize, "", "2Gi", "The amount of memory per replica in IEC format. Value must be a multiple of 1024Mi and at least 2048Mi")
@@ -122,15 +125,15 @@ Required values to run command:
 		return []string{"de/fra", "de/txl", "gb/lhr"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapidbaaspgsql.ArgName, cloudapidbaaspgsql.ArgNameShort, "UnnamedCluster", "The friendly name of your cluster")
-	create.AddStringFlag(cloudapidbaaspgsql.ArgVdcId, cloudapidbaaspgsql.ArgVdcIdShort, "", "The unique ID of the VDC to connect to your cluster")
+	create.AddStringFlag(cloudapidbaaspgsql.ArgVdcId, cloudapidbaaspgsql.ArgVdcIdShort, "", "The unique ID of the VDC to connect to your cluster", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgVdcId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapidbaaspgsql.ArgLanId, "", "", "The unique Lan ID")
+	create.AddStringFlag(cloudapidbaaspgsql.ArgLanId, "", "", "The unique Lan ID", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapidbaaspgsql.ArgVdcId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapidbaaspgsql.ArgIpAddress, "", "", "The private IP and subnet for the database. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. Example: 192.168.1.100/24")
+	create.AddStringFlag(cloudapidbaaspgsql.ArgIpAddress, "", "", "The private IP and subnet for the database. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. Example: 192.168.1.100/24", core.RequiredFlagOption())
 	create.AddStringFlag(cloudapidbaaspgsql.ArgBackupId, cloudapidbaaspgsql.ArgBackupIdShort, "", "The unique ID of the backup you want to restore")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -170,7 +173,9 @@ Required values to run command:
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapidbaaspgsql.ArgPostgresVersion, cloudapidbaaspgsql.ArgPostgresVersionShort, "", "The PostgreSQL version of your cluster")
-	update.AddFloat32Flag(cloudapidbaaspgsql.ArgReplicas, cloudapidbaaspgsql.ArgReplicasShort, 0, "The number of replicas in your cluster. Minimum: 1. Maximum: 5")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgPostgresVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	update.AddFloat32Flag(cloudapidbaaspgsql.ArgCpuCoreCount, "", 0, "The number of CPU cores per replica")
 	update.AddStringFlag(cloudapidbaaspgsql.ArgRamSize, "", "", "The amount of memory per replica in IEC format. Value must be a multiple of 1024Mi and at least 2048Mi")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgRamSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -212,7 +217,7 @@ Required values to run command:
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	restoreCmd.AddStringFlag(cloudapidbaaspgsql.ArgBackupId, "", "", "The unique ID of the backup you want to restore", core.RequiredFlagOption())
-	_ = restoreCmd.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	_ = restoreCmd.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	restoreCmd.AddStringFlag(cloudapidbaaspgsql.ArgTime, "", "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
@@ -276,11 +281,11 @@ func RunClusterGet(c *core.CommandConfig) error {
 	if err := utils.WaitForState(c, waiter.ClusterStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId))); err != nil {
 		return err
 	}
-	cluster, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)))
+	cluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)))
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getClusterPrint(resp, c, []resources.Cluster{*cluster}))
+	return c.Printer.Print(getClusterPrint(nil, c, []resources.Cluster{*cluster}))
 }
 
 func RunClusterCreate(c *core.CommandConfig) error {

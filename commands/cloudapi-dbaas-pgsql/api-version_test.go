@@ -48,7 +48,7 @@ func TestRunAPIVersionList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgCols), defaultAPIVersionCols)
+		viper.Set(core.GetGlobalFlagName(cfg.NS, config.ArgCols), defaultAPIVersionCols)
 		rm.CloudApiDbaasPgsqlMocks.Info.EXPECT().List().Return(testAPIVersions, nil, nil)
 		err := RunAPIVersionList(cfg)
 		assert.NoError(t, err)

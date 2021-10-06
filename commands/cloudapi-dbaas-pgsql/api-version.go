@@ -20,7 +20,7 @@ func APIVersionCmd() *core.Command {
 	apiversionCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "api-version",
-			Aliases:          []string{"api"},
+			Aliases:          []string{"api", "info"},
 			Short:            "DBaaS Postgres API Version Operations",
 			Long:             "The sub-commands of `ionosctl dbaas-pgsql api-version` allow you to get information available DBaaS Postgres API Versions.",
 			TraverseChildren: true,
