@@ -314,9 +314,10 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 
 		for _, pcc := range *pccsItems {
 			if id, ok := pcc.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting PrivateCrossConnect with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting PrivateCrossConnect with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.Pccs().Delete(*id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

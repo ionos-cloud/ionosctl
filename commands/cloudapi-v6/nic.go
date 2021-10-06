@@ -422,9 +422,10 @@ func DeleteAllNics(c *core.CommandConfig) error {
 			if id, ok := nic.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Datacenter ID: %v", dcId)
 				c.Printer.Verbose("Server ID: %v", serverId)
-				c.Printer.Verbose("ic with id: %v is deleting...", *id)
+				c.Printer.Verbose("Starting deleting Nic with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

@@ -365,11 +365,11 @@ func DeleteAllShares(c *core.CommandConfig) error {
 
 		for _, share := range *groupSharesItems {
 			if id, ok := share.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting Share with Resource ID: %v from Group with ID: %v...",
-					*id,
-					groupId)
+				c.Printer.Verbose("Starting deleting Share with Resource ID: %v from Group with ID: %v...",
+					*id, groupId)
 				resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

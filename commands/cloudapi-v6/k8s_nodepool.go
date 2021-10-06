@@ -552,9 +552,10 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 
 		for _, dc := range *k8sNodePoolsItems {
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting K8sNodePool with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting K8sNodePool with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

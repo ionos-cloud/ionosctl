@@ -425,9 +425,10 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 		c.Printer.Verbose("Deleting all the NatGatewayRules...")
 		for _, natGateway := range *natGatewayRuleItems {
 			if id, ok := natGateway.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting NatGatewayRule with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting NatGatewayRule with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

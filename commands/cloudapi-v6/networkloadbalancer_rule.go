@@ -443,9 +443,10 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) error {
 		c.Printer.Verbose("Deleting all the NetworkLoadBalancerForwardingRules...")
 		for _, nlbForwardingRule := range *nlbForwardingRulesItems {
 			if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting NetworkLoadBalancerForwardingRule with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting NetworkLoadBalancerForwardingRule with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteForwardingRule(dcId, loadBalancerId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

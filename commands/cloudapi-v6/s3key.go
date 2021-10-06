@@ -311,9 +311,10 @@ func DeleteAllS3keys(c *core.CommandConfig) error {
 		for _, s3Key := range *s3KeysItems {
 			if id, ok := s3Key.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("User ID: %v", userId)
-				c.Printer.Verbose("S3 keys with id: %v is deleting...", *id)
+				c.Printer.Verbose("Staring deleting S3 keys with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.S3Keys().Delete(userId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

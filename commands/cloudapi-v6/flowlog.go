@@ -385,9 +385,10 @@ func DeleteAllFlowlogs(c *core.CommandConfig) error {
 		c.Printer.Verbose("Deleting all the Flowlogs...")
 		for _, flowlog := range *flowlogsItems {
 			if id, ok := flowlog.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting Flowlog with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting Flowlog with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

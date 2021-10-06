@@ -368,9 +368,10 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 
 		for _, user := range *usersItems {
 			if id, ok := user.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting User with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting User with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.Users().Delete(*id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

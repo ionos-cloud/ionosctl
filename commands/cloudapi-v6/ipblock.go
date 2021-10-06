@@ -292,9 +292,10 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		c.Printer.Verbose("Deleting all the IpBlocks...")
 		for _, dc := range *ipBlocksItems {
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting IpBlock with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting IpBlock with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.IpBlocks().Delete(*id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

@@ -383,9 +383,10 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 		c.Printer.Verbose("Deleting all the NatGatewayFlowLogs...")
 		for _, natgateway := range *natgatewaysItems {
 			if id, ok := natgateway.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting NatGatewayFlowLog with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting NatGatewayFlowLog with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

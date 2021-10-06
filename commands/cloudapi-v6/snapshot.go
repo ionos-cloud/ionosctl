@@ -443,9 +443,10 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 
 		for _, snapshot := range *snapshotsItems {
 			if id, ok := snapshot.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting Snapshot with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting Snapshot with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.Snapshots().Delete(*id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

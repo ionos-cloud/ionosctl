@@ -445,9 +445,10 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 
 		for _, k8sCluster := range *k8sClustersItems {
 			if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting K8sCluster with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting K8sCluster with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

@@ -352,9 +352,10 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		c.Printer.Verbose("Deleting all the BackupUnits...")
 		for _, natGateway := range *natGatewayItems {
 			if id, ok := natGateway.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting NatGateway with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting NatGateway with id: %v...", *id)
 				resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

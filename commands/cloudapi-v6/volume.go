@@ -522,9 +522,10 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		for _, volume := range *volumesItems {
 			if id, ok := volume.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Datacenter ID: %v", dcId)
-				c.Printer.Verbose("Volume with id: %v is deleting...", *id)
+				c.Printer.Verbose("Starting deleting Volume with id: %v is...", *id)
 				resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

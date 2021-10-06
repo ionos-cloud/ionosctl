@@ -335,9 +335,10 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 		for _, lb := range *loadBalancersItems {
 			if id, ok := lb.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Datacenter ID: %v", dcid)
-				c.Printer.Verbose("Load balancer with id: %v is deleting...", *id)
+				c.Printer.Verbose("Starting deleting Load balancer with id: %v ...", *id)
 				resp, err = c.CloudApiV6Services.Loadbalancers().Delete(dcid, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
