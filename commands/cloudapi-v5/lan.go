@@ -322,7 +322,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
+		c.Printer.Verbose("Starting deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 		resp, err := c.CloudApiV5Services.Lans().Delete(dcId, lanId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -364,9 +364,10 @@ func DeleteAllLans(c *core.CommandConfig) error {
 
 		for _, lan := range *lansItems {
 			if id, ok := lan.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting Lan with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting Lan with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Lans().Delete(dcId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

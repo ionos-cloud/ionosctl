@@ -335,7 +335,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		c.Printer.Verbose("Datacenter with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId)))
+		c.Printer.Verbose("Starting deleting K8s Nodepool with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId)))
 		resp, err = c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, nodepollId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -528,9 +528,10 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 
 		for _, dc := range *k8sNodePoolsItems {
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting K8sNodePool with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting K8sNodePool with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

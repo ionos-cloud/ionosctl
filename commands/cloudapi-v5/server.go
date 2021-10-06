@@ -467,7 +467,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", serverId, dcId)
+		c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId)
 		resp, err := c.CloudApiV5Services.Servers().Delete(dcId, serverId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -649,9 +649,10 @@ func DeleteAllServers(c *core.CommandConfig) error {
 
 		for _, server := range *serversItems {
 			if id, ok := server.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Server with id: %v from datacenter with id: %v is deleting... ", *id, dcId)
+				c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", *id, dcId)
 				resp, err = c.CloudApiV5Services.Servers().Delete(dcId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

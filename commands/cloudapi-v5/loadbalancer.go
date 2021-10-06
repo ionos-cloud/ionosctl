@@ -300,7 +300,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Datacenter ID: %v", dcid)
-		c.Printer.Verbose("Load balancer with id: %v is deleting...", loadBlanacerId)
+		c.Printer.Verbose("Starting deleting Load balancer with id: %v...", loadBlanacerId)
 		resp, err := c.CloudApiV5Services.Loadbalancers().Delete(dcid, loadBlanacerId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -343,9 +343,10 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 		for _, lb := range *loadBalancersItems {
 			if id, ok := lb.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Datacenter ID: %v", dcid)
-				c.Printer.Verbose("Load balancer with id: %v is deleting...", *id)
+				c.Printer.Verbose("Starting deleting Load balancer with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Loadbalancers().Delete(dcid, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

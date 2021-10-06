@@ -321,11 +321,12 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 			return err
 		}
 	} else {
+		snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId))
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId)))
-		resp, err := c.CloudApiV5Services.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId)))
+		c.Printer.Verbose("Starting deleting Snapshot with id: %v...", snapshotId)
+		resp, err := c.CloudApiV5Services.Snapshots().Delete(snapshotId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -439,9 +440,10 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 
 		for _, snapshot := range *snapshotsItems {
 			if id, ok := snapshot.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting Snapshot with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting Snapshot with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Snapshots().Delete(*id)
 				if resp != nil {
+					viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

@@ -248,7 +248,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Private cross connect with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
+		c.Printer.Verbose("Starting deleting Private cross connect with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
 		resp, err := c.CloudApiV5Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -289,9 +289,10 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 
 		for _, pcc := range *pccsItems {
 			if id, ok := pcc.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting PrivateCrossConnect with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting PrivateCrossConnect with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Pccs().Delete(*id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

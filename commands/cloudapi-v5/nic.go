@@ -353,7 +353,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose("Datacenter ID: %v", dcId)
 		c.Printer.Verbose("Server ID: %v", serverId)
-		c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgNicId)))
+		c.Printer.Verbose("Starting deleting Nic with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgNicId)))
 		resp, err := c.CloudApiV5Services.Nics().Delete(dcId, serverId, nicId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -398,9 +398,10 @@ func DeleteAllNics(c *core.CommandConfig) error {
 			if id, ok := nic.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Datacenter ID: %v", dcId)
 				c.Printer.Verbose("Server ID: %v", serverId)
-				c.Printer.Verbose("ic with id: %v is deleting...", *id)
+				c.Printer.Verbose("Starting deleting Nic with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Nics().Delete(dcId, serverId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

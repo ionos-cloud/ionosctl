@@ -297,7 +297,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Deleting Backup unit with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgBackupUnitId)))
+		c.Printer.Verbose("Starting deleting Backup unit with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgBackupUnitId)))
 		resp, err := c.CloudApiV5Services.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgBackupUnitId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -351,9 +351,10 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		c.Printer.Verbose("Deleting all the BackupUnits...")
 		for _, backupUnit := range *backupUnitsItems {
 			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Deleting Backup unit with id: %v...", *id)
+				c.Printer.Verbose("Starting deleting Backup unit with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.BackupUnit().Delete(*id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

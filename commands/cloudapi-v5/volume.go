@@ -339,8 +339,8 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
-		c.Printer.Verbose("Volume with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgVolumeId)))
+		c.Printer.Verbose("Datacenter ID: %v", dcId)
+		c.Printer.Verbose("Starting deleting Volume with id: %v...", volumeId)
 		resp, err := c.CloudApiV5Services.Volumes().Delete(dcId, volumeId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -540,9 +540,10 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		for _, volume := range *volumesItems {
 			if id, ok := volume.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Datacenter ID: %v", dcId)
-				c.Printer.Verbose("Volume with id: %v is deleting...", *id)
+				c.Printer.Verbose("Starting deleting Volume with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Volumes().Delete(dcId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {

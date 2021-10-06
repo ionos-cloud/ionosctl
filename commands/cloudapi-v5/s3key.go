@@ -275,7 +275,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("User ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId)))
-		c.Printer.Verbose("S3 keys with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgS3KeyId)))
+		c.Printer.Verbose("Starting deleting S3 keys with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgS3KeyId)))
 		resp, err := c.CloudApiV5Services.S3Keys().Delete(userId, s3KeyId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
@@ -312,9 +312,10 @@ func DeleteAllS3Keys(c *core.CommandConfig) error {
 		for _, s3Key := range *s3KeysItems {
 			if id, ok := s3Key.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("User ID: %v", userId)
-				c.Printer.Verbose("S3 keys with id: %v is deleting...", *id)
+				c.Printer.Verbose("Starting deleting S3 keys with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.S3Keys().Delete(userId, *id)
 				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
