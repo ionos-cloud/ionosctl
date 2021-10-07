@@ -30,10 +30,10 @@ func ClusterBackupCmd() *core.Command {
 		},
 	}
 	globalFlags := backupCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultBackupCols, printer.ColsMessage(defaultBackupCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(backupCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = backupCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultBackupCols, cobra.ShellCompDirectiveNoFileComp
+		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -101,14 +101,17 @@ func RunBackupGet(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultBackupCols = []string{"BackupId", "ClusterId", "DisplayName", "Type"}
+	defaultBackupCols = []string{"BackupId", "ClusterId", "DisplayName", "Type", "CreatedDate"}
+	allBackupCols     = []string{"BackupId", "ClusterId", "DisplayName", "Type", "CreatedDate", "LastModifiedDate"}
 )
 
 type BackupPrint struct {
-	BackupId    string `json:"BackupId,omitempty"`
-	ClusterId   string `json:"ClusterId,omitempty"`
-	DisplayName string `json:"DisplayName,omitempty"`
-	Type        string `json:"Type,omitempty"`
+	BackupId         string `json:"BackupId,omitempty"`
+	ClusterId        string `json:"ClusterId,omitempty"`
+	DisplayName      string `json:"DisplayName,omitempty"`
+	Type             string `json:"Type,omitempty"`
+	CreatedDate      string `json:"CreatedDate,omitempty"`
+	LastModifiedDate string `json:"LastModifiedDate,omitempty"`
 }
 
 func getBackupPrint(c *core.CommandConfig, dcs []resources.ClusterBackup) printer.Result {
@@ -132,10 +135,12 @@ func getBackupCols(flagName string, outErr io.Writer) []string {
 	}
 
 	columnsMap := map[string]string{
-		"BackupId":    "BackupId",
-		"DisplayName": "DisplayName",
-		"ClusterId":   "ClusterId",
-		"Type":        "Type",
+		"BackupId":         "BackupId",
+		"DisplayName":      "DisplayName",
+		"ClusterId":        "ClusterId",
+		"Type":             "Type",
+		"CreatedDate":      "CreatedDate",
+		"LastModifiedDate": "LastModifiedDate",
 	}
 	var BackupCols []string
 	for _, k := range cols {
@@ -149,9 +154,9 @@ func getBackupCols(flagName string, outErr io.Writer) []string {
 	return BackupCols
 }
 
-func getBackups(Backups resources.ClusterBackupList) []resources.ClusterBackup {
+func getBackups(backups resources.ClusterBackupList) []resources.ClusterBackup {
 	c := make([]resources.ClusterBackup, 0)
-	if data, ok := Backups.GetDataOk(); ok && data != nil {
+	if data, ok := backups.GetDataOk(); ok && data != nil {
 		for _, d := range *data {
 			c = append(c, resources.ClusterBackup{ClusterBackup: d})
 		}
@@ -159,21 +164,29 @@ func getBackups(Backups resources.ClusterBackupList) []resources.ClusterBackup {
 	return c
 }
 
-func getBackupsKVMaps(Backups []resources.ClusterBackup) []map[string]interface{} {
-	out := make([]map[string]interface{}, 0, len(Backups))
-	for _, Backup := range Backups {
+func getBackupsKVMaps(backups []resources.ClusterBackup) []map[string]interface{} {
+	out := make([]map[string]interface{}, 0, len(backups))
+	for _, backup := range backups {
 		var backupPrint BackupPrint
-		if idOk, ok := Backup.GetIdOk(); ok && idOk != nil {
+		if idOk, ok := backup.GetIdOk(); ok && idOk != nil {
 			backupPrint.BackupId = *idOk
 		}
-		if displayNameOk, ok := Backup.GetDisplayNameOk(); ok && displayNameOk != nil {
+		if displayNameOk, ok := backup.GetDisplayNameOk(); ok && displayNameOk != nil {
 			backupPrint.DisplayName = *displayNameOk
 		}
-		if clusterIdOk, ok := Backup.GetClusterIdOk(); ok && clusterIdOk != nil {
+		if clusterIdOk, ok := backup.GetClusterIdOk(); ok && clusterIdOk != nil {
 			backupPrint.ClusterId = *clusterIdOk
 		}
-		if typeOk, ok := Backup.GetTypeOk(); ok && typeOk != nil {
+		if typeOk, ok := backup.GetTypeOk(); ok && typeOk != nil {
 			backupPrint.Type = *typeOk
+		}
+		if metadataOk, ok := backup.GetMetadataOk(); ok && metadataOk != nil {
+			if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
+				backupPrint.CreatedDate = *createdDateOk
+			}
+			if lastModifiedDateOk, ok := metadataOk.GetLastModifiedDateOk(); ok && lastModifiedDateOk != nil {
+				backupPrint.LastModifiedDate = *lastModifiedDateOk
+			}
 		}
 		o := structs.Map(backupPrint)
 		out = append(out, o)

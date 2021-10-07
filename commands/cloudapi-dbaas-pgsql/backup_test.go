@@ -24,6 +24,10 @@ var (
 			ClusterId:   &testBackupVar,
 			DisplayName: &testBackupVar,
 			Type:        &testBackupVar,
+			Metadata: &sdkgo.Metadata{
+				CreatedDate:      &testBackupVar,
+				LastModifiedDate: &testBackupVar,
+			},
 		},
 	}
 	testBackups = resources.ClusterBackupList{
