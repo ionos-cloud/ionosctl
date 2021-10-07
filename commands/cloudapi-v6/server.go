@@ -172,12 +172,13 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage")
 	create.AddStringFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "abcde12345", "[CUBE Server] Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
-	create.AddStringSliceFlag(cloudapiv6.ArgSshKeys, "", []string{""}, "SSH Keys of the Direct Attached Storage")
+	create.AddStringSliceFlag(cloudapiv6.ArgSshKeyPaths, "", []string{""}, "Absolute paths for the SSH Keys of the Direct Attached Storage")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server creation to be executed")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for new Server to be in AVAILABLE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]")
@@ -495,7 +496,10 @@ func RunServerCreate(c *core.CommandConfig) error {
 	// If Server is of type CUBE, it will create an attached Volume
 	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverCubeType {
 		// Volume Properties
-		volumeDAS := getNewDAS(c)
+		volumeDAS, err := getNewDAS(c)
+		if err != nil {
+			return err
+		}
 		// Attach Storage
 		input.SetEntities(ionoscloud.ServerEntities{
 			Volumes: &ionoscloud.AttachedVolumes{
@@ -790,7 +794,7 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	}, nil
 }
 
-func getNewDAS(c *core.CommandConfig) *resources.Volume {
+func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 	volumeProper := resources.VolumeProperties{}
 	volumeProper.SetType("DAS")
 	volumeProper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeName)))
@@ -799,17 +803,33 @@ func getNewDAS(c *core.CommandConfig) *resources.Volume {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) {
 		volumeProper.SetImage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
+		volumeProper.SetImageAlias(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
 		volumeProper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgPassword)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeys)) {
-		volumeProper.SetSshKeys(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeys)))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths)) {
+		sshKeysPaths := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths))
+		if len(sshKeysPaths) != 0 {
+			sshKeys := make([]string, 0)
+			for _, sshKeyPath := range sshKeysPaths {
+				c.Printer.Verbose("SSH Key Path: %v", sshKeyPath)
+				publicKey, err := utils.ReadPublicKey(sshKeyPath)
+				if err != nil {
+					return nil, err
+				}
+				sshKeys = append(sshKeys, publicKey)
+			}
+			volumeProper.SetSshKeys(sshKeys)
+			c.Printer.Verbose("Property SshKeys set")
+		}
 	}
 	return &resources.Volume{
 		Volume: ionoscloud.Volume{
 			Properties: &volumeProper.VolumeProperties,
 		},
-	}
+	}, nil
 }
 
 // Output Printing

@@ -150,7 +150,7 @@ Required values to run command:
 	create.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
 	create.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
 	create.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
-	create.AddStringSliceFlag(cloudapiv6.ArgSshKeys, cloudapiv6.ArgSshKeysShort, []string{""}, "SSH Keys of the Volume")
+	create.AddStringFlag(cloudapiv6.ArgSshKeyPaths, cloudapiv6.ArgSshKeyPathsShort, "", "Absolute paths of the SSH Keys for the Volume")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume creation [seconds]")
 
@@ -381,10 +381,21 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 		proper.SetImagePassword(imagePassword)
 		c.Printer.Verbose("Property ImagePassword set")
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeys)) {
-		sshKeys := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeys))
-		proper.SetSshKeys(sshKeys)
-		c.Printer.Verbose("Property SshKeys set: %v", sshKeys)
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths)) {
+		sshKeysPaths := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths))
+		if len(sshKeysPaths) != 0 {
+			sshKeys := make([]string, 0)
+			for _, sshKeyPath := range sshKeysPaths {
+				c.Printer.Verbose("SSH Key Path: %v", sshKeyPath)
+				publicKey, err := utils.ReadPublicKey(sshKeyPath)
+				if err != nil {
+					return nil, err
+				}
+				sshKeys = append(sshKeys, publicKey)
+			}
+			proper.SetSshKeys(sshKeys)
+			c.Printer.Verbose("Property SshKeys set")
+		}
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgUserData)) {
 		userData := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserData))
