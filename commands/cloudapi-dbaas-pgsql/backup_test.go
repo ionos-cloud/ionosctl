@@ -43,6 +43,15 @@ var (
 
 func TestBackupCmd(t *testing.T) {
 	var err error
+	core.RootCmdTest.AddCommand(BackupCmd())
+	if ok := BackupCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
+func TestClusterBackupCmd(t *testing.T) {
+	var err error
 	core.RootCmdTest.AddCommand(ClusterBackupCmd())
 	if ok := ClusterBackupCmd().IsAvailableCommand(); !ok {
 		err = errors.New("non-available cmd")
@@ -132,6 +141,38 @@ func TestRunBackupGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgBackupId), testBackupVar)
 		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().Get(testBackupVar).Return(&testBackup, nil, testBackupErr)
 		err := RunBackupGet(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunClusterBackupList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCols), defaultBackupCols)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testBackupVar)
+		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().ListBackups(testBackupVar).Return(testBackups, nil, nil)
+		err := RunClusterBackupList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunClusterBackupListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testBackupVar)
+		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().ListBackups(testBackupVar).Return(testBackups, nil, testBackupErr)
+		err := RunClusterBackupList(cfg)
 		assert.Error(t, err)
 	})
 }

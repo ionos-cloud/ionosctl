@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-dbaas-pgsql/completer"
@@ -18,7 +19,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func ClusterBackupCmd() *core.Command {
+func BackupCmd() *core.Command {
 	ctx := context.TODO()
 	backupCmd := &core.Command{
 		Command: &cobra.Command{
@@ -81,21 +82,70 @@ func PreRunBackupId(c *core.PreCommandConfig) error {
 
 func RunBackupList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Backups...")
-	Backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().List()
+	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().List()
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getBackupPrint(c, getBackups(Backups)))
+	return c.Printer.Print(getBackupPrint(c, getBackups(backups)))
 }
 
 func RunBackupGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)))
 	c.Printer.Verbose("Getting Backup...")
-	dc, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)))
+	backup, _, err := c.CloudApiDbaasPgsqlServices.Backups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)))
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getBackupPrint(c, []resources.ClusterBackup{*dc}))
+	return c.Printer.Print(getBackupPrint(c, []resources.ClusterBackup{*backup}))
+}
+
+func ClusterBackupCmd() *core.Command {
+	ctx := context.TODO()
+	clusterBackupCmd := &core.Command{
+		Command: &cobra.Command{
+			Use:              "backup",
+			Aliases:          []string{"b"},
+			Short:            "PostgreSQL Backup Operations",
+			Long:             "The sub-commands of `ionosctl dbaas-pgsql cluster backup` allow you to list PostgreSQL Backups from a specified Cluster.",
+			TraverseChildren: true,
+		},
+	}
+
+	/*
+		List Command
+	*/
+	list := core.NewCommand(ctx, clusterBackupCmd, core.CommandBuilder{
+		Namespace:  "dbaas-pgsql.cluster",
+		Resource:   "backup",
+		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
+		ShortDesc:  "List Cluster Backups from a Cluster",
+		LongDesc:   "Use this command to retrieve a list of PostgreSQL Cluster Backups from a specified Cluster.",
+		Example:    listBackupExample,
+		PreCmdRun:  PreRunClusterId,
+		CmdRun:     RunClusterBackupList,
+		InitClient: true,
+	})
+	list.AddStringFlag(cloudapidbaaspgsql.ArgClusterId, cloudapidbaaspgsql.ArgIdShort, "", cloudapidbaaspgsql.ClusterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(config.ArgCols, "", defaultBackupCols, printer.ColsMessage(allBackupCols))
+	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
+	})
+
+	return clusterBackupCmd
+}
+
+func RunClusterBackupList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)))
+	c.Printer.Verbose("Getting Backups from Cluster...")
+	backups, _, err := c.CloudApiDbaasPgsqlServices.Backups().ListBackups(viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)))
+	if err != nil {
+		return err
+	}
+	return c.Printer.Print(getBackupPrint(c, getBackups(backups)))
 }
 
 // Output Printing
@@ -120,7 +170,11 @@ func getBackupPrint(c *core.CommandConfig, dcs []resources.ClusterBackup) printe
 		if dcs != nil {
 			r.OutputJSON = dcs
 			r.KeyValue = getBackupsKVMaps(dcs)
-			r.Columns = getBackupCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			if strings.Contains(c.Namespace, "cluster") {
+				r.Columns = getBackupCols(core.GetFlagName(c.NS, config.ArgCols), c.Printer.GetStderr())
+			} else {
+				r.Columns = getBackupCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+			}
 		}
 	}
 	return r
@@ -133,7 +187,6 @@ func getBackupCols(flagName string, outErr io.Writer) []string {
 	} else {
 		return defaultBackupCols
 	}
-
 	columnsMap := map[string]string{
 		"BackupId":         "BackupId",
 		"DisplayName":      "DisplayName",
@@ -142,16 +195,16 @@ func getBackupCols(flagName string, outErr io.Writer) []string {
 		"CreatedDate":      "CreatedDate",
 		"LastModifiedDate": "LastModifiedDate",
 	}
-	var BackupCols []string
+	var backupCols []string
 	for _, k := range cols {
 		col := columnsMap[k]
 		if col != "" {
-			BackupCols = append(BackupCols, col)
+			backupCols = append(backupCols, col)
 		} else {
 			clierror.CheckError(errors.New("unknown column "+k), outErr)
 		}
 	}
-	return BackupCols
+	return backupCols
 }
 
 func getBackups(backups resources.ClusterBackupList) []resources.ClusterBackup {

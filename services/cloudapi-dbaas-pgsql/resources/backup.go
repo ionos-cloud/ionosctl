@@ -18,7 +18,7 @@ type ClusterBackupList struct {
 type BackupsService interface {
 	List() (ClusterBackupList, *Response, error)
 	Get(backupId string) (*ClusterBackup, *Response, error)
-	ListBackups(clusterId string) (*ClusterBackupList, *Response, error)
+	ListBackups(clusterId string) (ClusterBackupList, *Response, error)
 }
 
 type backupsService struct {
@@ -47,8 +47,8 @@ func (svc *backupsService) Get(backupId string) (*ClusterBackup, *Response, erro
 	return &ClusterBackup{backup}, &Response{*res}, err
 }
 
-func (svc *backupsService) ListBackups(clusterId string) (*ClusterBackupList, *Response, error) {
+func (svc *backupsService) ListBackups(clusterId string) (ClusterBackupList, *Response, error) {
 	req := svc.client.BackupsApi.ClusterBackupsGet(svc.context, clusterId)
 	clusterBackups, res, err := svc.client.BackupsApi.ClusterBackupsGetExecute(req)
-	return &ClusterBackupList{clusterBackups}, &Response{*res}, err
+	return ClusterBackupList{clusterBackups}, &Response{*res}, err
 }

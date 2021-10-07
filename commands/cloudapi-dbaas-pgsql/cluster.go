@@ -250,6 +250,8 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "Delete all Clusters")
 	deleteCmd.AddStringFlag(cloudapidbaaspgsql.ArgName, cloudapidbaaspgsql.ArgNameShort, "", "Delete all Clusters after filtering based on name. Can be used with --all flag")
 
+	clusterCmd.AddCommand(ClusterBackupCmd())
+
 	return clusterCmd
 }
 

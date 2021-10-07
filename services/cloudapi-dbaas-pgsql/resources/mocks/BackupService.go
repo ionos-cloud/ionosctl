@@ -67,10 +67,10 @@ func (mr *MockBackupsServiceMockRecorder) List() *gomock.Call {
 }
 
 // ListBackups mocks base method.
-func (m *MockBackupsService) ListBackups(clusterId string) (*resources.ClusterBackupList, *resources.Response, error) {
+func (m *MockBackupsService) ListBackups(clusterId string) (resources.ClusterBackupList, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListBackups", clusterId)
-	ret0, _ := ret[0].(*resources.ClusterBackupList)
+	ret0, _ := ret[0].(resources.ClusterBackupList)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2

@@ -17,7 +17,7 @@ func DBaaSPgsqlCmd() *core.Command {
 	}
 	dbaasPgsqlCmd.AddCommand(ClusterCmd())
 	dbaasPgsqlCmd.AddCommand(LogsCmd())
-	dbaasPgsqlCmd.AddCommand(ClusterBackupCmd())
+	dbaasPgsqlCmd.AddCommand(BackupCmd())
 	dbaasPgsqlCmd.AddCommand(PgsqlVersionCmd())
 	dbaasPgsqlCmd.AddCommand(APIVersionCmd())
 	dbaasPgsqlCmd.AddCommand(QuotaCmd())
