@@ -13,6 +13,8 @@ const (
 	ArgVerboseShort        = "v"
 	ArgServerUrl           = "api-url"
 	ArgServerUrlShort      = "u"
+	ArgAll                 = "all"
+	ArgAllShort            = "a"
 	ArgForce               = "force"
 	ArgForceShort          = "f"
 	ArgWaitForRequest      = "wait-for-request"

@@ -239,7 +239,7 @@ Required values to run command:
 
 * Cluster Id`,
 		Example:    deleteClusterExample,
-		PreCmdRun:  PreRunClusterId,
+		PreCmdRun:  PreRunClusterDelete,
 		CmdRun:     RunClusterDelete,
 		InitClient: true,
 	})
@@ -247,12 +247,28 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	deleteCmd.AddBoolFlag(config.ArgAll, config.ArgAllShort, false, "Delete all Clusters")
+	deleteCmd.AddStringFlag(cloudapidbaaspgsql.ArgName, cloudapidbaaspgsql.ArgNameShort, "", "Delete all Clusters after filtering based on name. Can be used with --all flag")
 
 	return clusterCmd
 }
 
 func PreRunClusterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapidbaaspgsql.ArgClusterId)
+}
+
+func PreRunClusterDelete(c *core.PreCommandConfig) error {
+	err := core.CheckRequiredFlagsSets(c.Command, c.NS, []string{cloudapidbaaspgsql.ArgClusterId}, []string{config.ArgAll})
+	if err != nil {
+		return err
+	}
+	// Validate Flags
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgName)) {
+		if !viper.IsSet(core.GetFlagName(c.NS, config.ArgAll)) {
+			return errors.New("error: name flag can to be used with the --all flag")
+		}
+	}
+	return nil
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
@@ -263,7 +279,7 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	// Validate Flags
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)) {
 		if !viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)) {
-			return errors.New("error: recovery target time needs to be set with backup id")
+			return errors.New("error: recovery target can be used with --backup-id flag")
 		}
 	}
 	return nil
@@ -345,13 +361,13 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 }
 
 func RunClusterRestore(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore cluster"); err != nil {
-		return err
-	}
 	clusterId := viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId))
 	backupId := viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId))
 	c.Printer.Verbose("Cluster ID: %v", clusterId)
 	c.Printer.Verbose("Backup ID: %v", backupId)
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore cluster"); err != nil {
+		return err
+	}
 	input := resources.CreateRestoreRequest{
 		CreateRestoreRequest: sdkgo.CreateRestoreRequest{
 			BackupId: &backupId,
@@ -373,17 +389,65 @@ func RunClusterRestore(c *core.CommandConfig) error {
 }
 
 func RunClusterDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete cluster"); err != nil {
-		return err
-	}
-	clusterId := viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId))
-	c.Printer.Verbose("Cluster ID: %v", clusterId)
-	c.Printer.Verbose("Deleting Cluster...")
-	resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Delete(clusterId)
-	if err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	if viper.GetBool(core.GetFlagName(c.NS, config.ArgAll)) {
+		resp, err = ClusterDeleteAll(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		clusterId := viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId))
+		c.Printer.Verbose("Cluster ID: %v", clusterId)
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete cluster"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting Cluster...")
+		resp, err = c.CloudApiDbaasPgsqlServices.Clusters().Delete(clusterId)
+		if err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getClusterPrint(resp, c, nil))
+}
+
+func ClusterDeleteAll(c *core.CommandConfig) (resp *resources.Response, err error) {
+	c.Printer.Verbose("Getting all Clusters...")
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgName)) {
+		c.Printer.Verbose("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgName)))
+	}
+	clusters, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgName)))
+	if err != nil {
+		return nil, err
+	}
+	if dataOk, ok := clusters.GetDataOk(); ok && dataOk != nil {
+		for _, cluster := range *dataOk {
+			var log string
+			if nameOk, ok := cluster.GetDisplayNameOk(); ok && nameOk != nil {
+				log = fmt.Sprintf("Cluster Name: %s", *nameOk)
+			}
+			if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
+				log = fmt.Sprintf("%s; Cluster Id: %s", log, *idOk)
+			}
+			c.Printer.Verbose(log)
+		}
+	}
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all clusters"); err != nil {
+		return nil, err
+	}
+	if dataOk, ok := clusters.GetDataOk(); ok && dataOk != nil {
+		for _, cluster := range *dataOk {
+			if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
+				c.Printer.Verbose("Cluster ID: %v", *idOk)
+				c.Printer.Verbose("Deleting Cluster...")
+				resp, err = c.CloudApiDbaasPgsqlServices.Clusters().Delete(*idOk)
+				if err != nil {
+					return resp, err
+				}
+			}
+		}
+	}
+	return resp, err
 }
 
 func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterRequest, error) {
