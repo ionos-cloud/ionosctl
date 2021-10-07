@@ -377,7 +377,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Nic with id: %v is deleting...", nicId)
+		c.Printer.Verbose("Starting deleting Nic with id: %v...", nicId)
 		resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

@@ -295,7 +295,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("NatGateway with id: %v is deleting...", natGatewayId)
+		c.Printer.Verbose("Starring deleting NatGateway with id: %v...", natGatewayId)
 		resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

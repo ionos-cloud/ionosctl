@@ -342,7 +342,7 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway flowlog"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("NatGatewayFlowLog with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)))
+		c.Printer.Verbose("Starting deleting NatGatewayFlowLog with id: %v...", flowlogId)
 		resp, err := c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, flowlogId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

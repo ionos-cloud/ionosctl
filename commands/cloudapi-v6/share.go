@@ -302,7 +302,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete share from group"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId)
+		c.Printer.Verbose("Starting deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId)
 		resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

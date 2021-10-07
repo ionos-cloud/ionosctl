@@ -319,6 +319,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 func RunSnapshotDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
 	if allFlag {
 		err := DeleteAllSnapshots(c)
 		if err != nil {
@@ -328,8 +329,8 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
-		resp, err := c.CloudApiV6Services.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
+		c.Printer.Verbose("Starting deleting Snapshot with id: %v...", snapshotId)
+		resp, err := c.CloudApiV6Services.Snapshots().Delete(snapshotId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}

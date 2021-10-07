@@ -265,6 +265,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 func RunGroupDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	if allFlag {
 		err := DeleteAllGroups(c)
 		if err != nil {
@@ -274,8 +275,8 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Group with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
-		resp, err := c.CloudApiV6Services.Groups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
+		c.Printer.Verbose("Starting deleting Group with id: %v...", groupId)
+		resp, err := c.CloudApiV6Services.Groups().Delete(groupId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}

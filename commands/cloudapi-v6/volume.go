@@ -329,7 +329,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Volume with id: %v is deleting...", volumeId)
+		c.Printer.Verbose("Starting deleting Volume with id: %v...", volumeId)
 		resp, err := c.CloudApiV6Services.Volumes().Delete(dcId, volumeId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

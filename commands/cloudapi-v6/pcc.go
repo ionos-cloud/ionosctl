@@ -247,7 +247,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Private cross connect with id: %v is deleting...", pccId)
+		c.Printer.Verbose("Starting deleting Private cross connect with id: %v...", pccId)
 		resp, err := c.CloudApiV6Services.Pccs().Delete(pccId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

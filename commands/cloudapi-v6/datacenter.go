@@ -260,7 +260,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 			return err
 		}
 		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-		c.Printer.Verbose("Deleting Datacenter with ID: %v...", dcId)
+		c.Printer.Verbose("Starting deleting Datacenter with ID: %v...", dcId)
 		resp, err := c.CloudApiV6Services.DataCenters().Delete(dcId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

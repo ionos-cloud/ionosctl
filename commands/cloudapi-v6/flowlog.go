@@ -296,7 +296,7 @@ func RunFlowLogDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete flow log"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("FlowLog with id: %v is deleting...", flowLogId)
+		c.Printer.Verbose("Starting deleting FlowLog with id: %v...", flowLogId)
 		resp, err := c.CloudApiV6Services.FlowLogs().Delete(dcId, serverId, nicId, flowLogId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

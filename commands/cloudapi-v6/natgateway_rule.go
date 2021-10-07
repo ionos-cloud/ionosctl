@@ -342,7 +342,7 @@ func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway rule"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("NatGatewayRule with id: %v is deleting...", ruleId)
+		c.Printer.Verbose("Starting deleting NatGatewayRule with id: %v...", ruleId)
 		resp, err := c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, ruleId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

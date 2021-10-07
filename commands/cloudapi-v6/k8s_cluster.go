@@ -289,6 +289,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 func RunK8sClusterDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
 	if allFlag {
 		err := DeleteAllK8sClusters(c)
 		if err != nil {
@@ -298,8 +299,8 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-		resp, err := c.CloudApiV6Services.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
+		c.Printer.Verbose("Starting deleting K8s cluster with id: %v...", k8sClusterId)
+		resp, err := c.CloudApiV6Services.K8s().DeleteCluster(k8sClusterId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}

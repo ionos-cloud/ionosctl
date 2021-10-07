@@ -294,7 +294,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Load balancer with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)))
+		c.Printer.Verbose("Starting deleting Load balancer with id: %v is deleting...", loadBlanacerId)
 		resp, err := c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBlanacerId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

@@ -294,11 +294,12 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 			return err
 		}
 	} else {
+		backupunitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
-		resp, err := c.CloudApiV6Services.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
+		c.Printer.Verbose("Starting deleting Backup unit with id: %v...", backupunitId)
+		resp, err := c.CloudApiV6Services.BackupUnit().Delete(backupunitId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}

@@ -301,7 +301,7 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("NetworkLoadBalancer with id: %v is deleting...", nlbId)
+		c.Printer.Verbose("Starting deleting NetworkLoadBalancer with id: %v...", nlbId)
 		resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

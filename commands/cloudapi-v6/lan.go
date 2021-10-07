@@ -322,7 +322,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
+		c.Printer.Verbose("Starting deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 		resp, err := c.CloudApiV6Services.Lans().Delete(dcId, lanId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

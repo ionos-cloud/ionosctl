@@ -274,7 +274,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("User ID: %v", userId)
-		c.Printer.Verbose("Deleting S3 Key with ID: %v...", s3KeyId)
+		c.Printer.Verbose("Starting deleting S3 Key with ID: %v...", s3KeyId)
 		resp, err := c.CloudApiV6Services.S3Keys().Delete(userId, s3KeyId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

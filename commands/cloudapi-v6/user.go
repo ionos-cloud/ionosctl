@@ -268,7 +268,7 @@ func RunUserDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("User with id: %v is deleting...", userId)
+		c.Printer.Verbose("Starting deleting User with id: %v...", userId)
 		resp, err := c.CloudApiV6Services.Users().Delete(userId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
