@@ -313,16 +313,6 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 		}
 	}
 	proper.SetK8sVersion(k8sversion)
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)) {
-		public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
-		proper.SetPublic(public)
-		c.Printer.Verbose("Property Public set: %v", public)
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)) {
-		gatewayIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp))
-		proper.SetGatewayIp(gatewayIp)
-		c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
-	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
 		s3buckets := make([]ionoscloud.S3Bucket, 0)
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket))
@@ -405,9 +395,9 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 
 // Output Printing
 
-var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "Public", "State", "MaintenanceWindow"}
+var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow"}
 
-var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "Public", "GatewayIp", "S3Bucket", "ApiSubnetAllowList"}
+var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
 
 type K8sClusterPrint struct {
 	ClusterId                string   `json:"ClusterId,omitempty"`
@@ -417,8 +407,6 @@ type K8sClusterPrint struct {
 	ViableNodePoolVersions   []string `json:"ViableNodePoolVersions,omitempty"`
 	MaintenanceWindow        string   `json:"MaintenanceWindow,omitempty"`
 	State                    string   `json:"State,omitempty"`
-	GatewayIps               string   `json:"GatewayIps,omitempty"`
-	Public                   bool     `json:"Public,omitempty"`
 	S3Bucket                 []string `json:"S3Bucket,omitempty"`
 	ApiSubnetAllowList       []string `json:"ApiSubnetAllowList,omitempty"`
 }
@@ -452,8 +440,9 @@ func getK8sClusterCols(flagName string, outErr io.Writer) []string {
 			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
 			"ViableNodePoolVersions":   "ViableNodePoolVersions",
 			"MaintenanceWindow":        "MaintenanceWindow",
-			"Public":                   "Public",
-			"GatewayIps":               "GatewayIps",
+			"State":                    "State",
+			"S3Bucket":                 "S3Bucket",
+			"ApiSubnetAllowList":       "ApiSubnetAllowList",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -514,12 +503,6 @@ func getK8sClustersKVMaps(us []resources.K8sCluster) []map[string]interface{} {
 				if time, ok := maintenance.GetTimeOk(); ok && time != nil {
 					uPrint.MaintenanceWindow = fmt.Sprintf("%s %s", uPrint.MaintenanceWindow, *time)
 				}
-			}
-			if pub, ok := properties.GetPublicOk(); ok && pub != nil {
-				uPrint.Public = *pub
-			}
-			if gatewayIps, ok := properties.GetGatewayIpOk(); ok && gatewayIps != nil {
-				uPrint.GatewayIps = *gatewayIps
 			}
 			if apiSubnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && apiSubnetAllowListOk != nil {
 				uPrint.ApiSubnetAllowList = *apiSubnetAllowListOk
