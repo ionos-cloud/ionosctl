@@ -245,6 +245,41 @@ func TestPreRunClusterCreate(t *testing.T) {
 	})
 }
 
+func TestPreRunClusterCreateRecoveryTime(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgVdcId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLanId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgIpAddress), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgTime), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgBackupId), testClusterVar)
+		err := PreRunClusterCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunClusterCreateRecoveryTimeErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgVdcId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLanId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgIpAddress), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgTime), testClusterVar)
+		err := PreRunClusterCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunClusterCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

@@ -256,7 +256,17 @@ func PreRunClusterId(c *core.PreCommandConfig) error {
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapidbaaspgsql.ArgPostgresVersion, cloudapidbaaspgsql.ArgVdcId, cloudapidbaaspgsql.ArgLanId, cloudapidbaaspgsql.ArgIpAddress)
+	err := core.CheckRequiredFlags(c.Command, c.NS, cloudapidbaaspgsql.ArgPostgresVersion, cloudapidbaaspgsql.ArgVdcId, cloudapidbaaspgsql.ArgLanId, cloudapidbaaspgsql.ArgIpAddress)
+	if err != nil {
+		return err
+	}
+	// Validate Flags
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)) {
+		if !viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)) {
+			return errors.New("error: recovery target time needs to be set with backup id")
+		}
+	}
+	return nil
 }
 
 func PreRunClusterBackupIds(c *core.PreCommandConfig) error {
