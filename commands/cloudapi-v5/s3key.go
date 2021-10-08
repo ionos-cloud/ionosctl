@@ -262,11 +262,12 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 
 func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
 	s3KeyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgS3KeyId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		err := DeleteAllS3Keys(c)
+		resp, err = DeleteAllS3Keys(c)
 		if err != nil {
 			return err
 		}
@@ -276,7 +277,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose("User ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId)))
 		c.Printer.Verbose("Starting deleting S3 keys with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgS3KeyId)))
-		resp, err := c.CloudApiV5Services.S3Keys().Delete(userId, s3KeyId)
+		resp, err = c.CloudApiV5Services.S3Keys().Delete(userId, s3KeyId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -291,12 +292,12 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getS3KeyPrint(resp, c, nil))
 }
 
-func DeleteAllS3Keys(c *core.CommandConfig) error {
+func DeleteAllS3Keys(c *core.CommandConfig) (*resources.Response, error) {
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
 	_ = c.Printer.Print("S3 keys to be deleted:")
 	s3Keys, resp, err := c.CloudApiV5Services.S3Keys().List(userId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if s3KeysItems, ok := s3Keys.GetItemsOk(); ok && s3KeysItems != nil {
 		for _, s3Key := range *s3KeysItems {
@@ -305,7 +306,7 @@ func DeleteAllS3Keys(c *core.CommandConfig) error {
 			}
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the S3Keys"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the S3Keys...")
 
@@ -319,15 +320,15 @@ func DeleteAllS3Keys(c *core.CommandConfig) error {
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getS3KeyPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

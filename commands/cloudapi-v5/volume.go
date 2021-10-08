@@ -327,11 +327,12 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 
 func RunVolumeDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgVolumeId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		err := DeleteAllVolumes(c)
+		resp, err = DeleteAllVolumes(c)
 		if err != nil {
 			return err
 		}
@@ -341,7 +342,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose("Datacenter ID: %v", dcId)
 		c.Printer.Verbose("Starting deleting Volume with id: %v...", volumeId)
-		resp, err := c.CloudApiV5Services.Volumes().Delete(dcId, volumeId)
+		resp, err = c.CloudApiV5Services.Volumes().Delete(dcId, volumeId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -513,12 +514,12 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 	return &input, nil
 }
 
-func DeleteAllVolumes(c *core.CommandConfig) error {
+func DeleteAllVolumes(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	_ = c.Printer.Print("Volumes to be deleted:")
 	volumes, resp, err := c.CloudApiV5Services.Volumes().List(dcId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
 		for _, volume := range *volumesItems {
@@ -533,7 +534,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Volumes...")
 
@@ -547,15 +548,15 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getVolumePrint(resp, c, nil))
+	return resp, err
 }
 
 // Server Volume Commands

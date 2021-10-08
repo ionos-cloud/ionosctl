@@ -372,13 +372,14 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 
 func RunFirewallRuleDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgServerId))
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgNicId))
 	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgFirewallRuleId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		err := DeleteAllFirewallRules(c)
+		resp, err = DeleteAllFirewallRules(c)
 		if err != nil {
 			return err
 		}
@@ -387,7 +388,7 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
-		resp, err := c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId)
+		resp, err = c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -454,14 +455,14 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 	return properties
 }
 
-func DeleteAllFirewallRules(c *core.CommandConfig) error {
+func DeleteAllFirewallRules(c *core.CommandConfig) (*resources.Response, error) {
 	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgServerId))
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgNicId))
 	_ = c.Printer.Print("Firewallrules to be deleted:")
 	firewallrules, resp, err := c.CloudApiV5Services.FirewallRules().List(datacenterId, serverId, nicId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if firewallrulestems, ok := firewallrules.GetItemsOk(); ok && firewallrulestems != nil {
 		for _, firewall := range *firewallrulestems {
@@ -476,7 +477,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewallrules"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Firewallrules...")
 		for _, firewall := range *firewallrulestems {
@@ -488,15 +489,15 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getFirewallRulePrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

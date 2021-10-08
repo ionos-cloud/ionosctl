@@ -314,9 +314,10 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 
 func RunSnapshotDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		err := DeleteAllSnapshots(c)
+		resp, err = DeleteAllSnapshots(c)
 		if err != nil {
 			return err
 		}
@@ -326,7 +327,7 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Snapshot with id: %v...", snapshotId)
-		resp, err := c.CloudApiV5Services.Snapshots().Delete(snapshotId)
+		resp, err = c.CloudApiV5Services.Snapshots().Delete(snapshotId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -415,11 +416,11 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 	return input
 }
 
-func DeleteAllSnapshots(c *core.CommandConfig) error {
+func DeleteAllSnapshots(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Snapshots to be deleted:")
 	snapshots, resp, err := c.CloudApiV5Services.Snapshots().List()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
 		for _, snapshot := range *snapshotsItems {
@@ -434,7 +435,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Snapshots...")
 
@@ -447,15 +448,15 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

@@ -287,9 +287,10 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 
 func RunBackupUnitDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		err := DeleteAllBackupUnits(c)
+		resp, err = DeleteAllBackupUnits(c)
 		if err != nil {
 			return err
 		}
@@ -298,7 +299,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Backup unit with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgBackupUnitId)))
-		resp, err := c.CloudApiV5Services.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgBackupUnitId)))
+		resp, err = c.CloudApiV5Services.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgBackupUnitId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -327,11 +328,11 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 	return &properties
 }
 
-func DeleteAllBackupUnits(c *core.CommandConfig) error {
+func DeleteAllBackupUnits(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Backup Unitts to be deleted:")
 	backupUnits, resp, err := c.CloudApiV5Services.BackupUnit().List()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
 		for _, backupUnit := range *backupUnitsItems {
@@ -346,7 +347,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the BackupUnits...")
 		for _, backupUnit := range *backupUnitsItems {
@@ -358,15 +359,15 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getBackupUnitPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

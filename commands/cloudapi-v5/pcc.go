@@ -238,9 +238,10 @@ func RunPccUpdate(c *core.CommandConfig) error {
 
 func RunPccDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		err := DeleteAllPccs(c)
+		resp, err = DeleteAllPccs(c)
 		if err != nil {
 			return err
 		}
@@ -249,7 +250,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Private cross connect with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
-		resp, err := c.CloudApiV5Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
+		resp, err = c.CloudApiV5Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -264,11 +265,11 @@ func RunPccDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getPccPrint(resp, c, nil))
 }
 
-func DeleteAllPccs(c *core.CommandConfig) error {
+func DeleteAllPccs(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("PrivateCrossConnects to be deleted:")
 	pccs, resp, err := c.CloudApiV5Services.Pccs().List()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
 		for _, pcc := range *pccsItems {
@@ -283,7 +284,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the PrivateCrossConnects"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
 
@@ -296,15 +297,15 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getPccPrint(resp, c, nil))
+	return resp, err
 }
 
 func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *resources.PrivateCrossConnectProperties {

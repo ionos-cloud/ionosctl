@@ -249,9 +249,10 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		err := DeleteAllDatacenters(c)
+		resp, err = DeleteAllDatacenters(c)
 		if err != nil {
 			return err
 		}
@@ -261,7 +262,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		}
 		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 		c.Printer.Verbose("Starting deleting Datacenter with id: %v...", dcId)
-		resp, err := c.CloudApiV5Services.DataCenters().Delete(dcId)
+		resp, err = c.CloudApiV5Services.DataCenters().Delete(dcId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -276,11 +277,11 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getDataCenterPrint(resp, c, nil))
 }
 
-func DeleteAllDatacenters(c *core.CommandConfig) error {
+func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Datacenters to be deleted:")
 	datacenters, resp, err := c.CloudApiV5Services.DataCenters().List()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
 		for _, dc := range *datacentersItems {
@@ -295,7 +296,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Datacenters...")
 
@@ -308,15 +309,15 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getDataCenterPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

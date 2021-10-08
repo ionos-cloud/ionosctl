@@ -455,11 +455,12 @@ func RunServerUpdate(c *core.CommandConfig) error {
 
 func RunServerDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
 	if allFlag {
-		err := DeleteAllServers(c)
+		resp, err = DeleteAllServers(c)
 		if err != nil {
 			return err
 		}
@@ -468,7 +469,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId)
-		resp, err := c.CloudApiV5Services.Servers().Delete(dcId, serverId)
+		resp, err = c.CloudApiV5Services.Servers().Delete(dcId, serverId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
@@ -623,12 +624,12 @@ func getServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
 	}, nil
 }
 
-func DeleteAllServers(c *core.CommandConfig) error {
+func DeleteAllServers(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	_ = c.Printer.Print("Servers to be deleted:")
 	servers, resp, err := c.CloudApiV5Services.Servers().List(dcId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
 		for _, server := range *serversItems {
@@ -643,7 +644,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Servers...")
 
@@ -656,15 +657,15 @@ func DeleteAllServers(c *core.CommandConfig) error {
 					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getServerPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing
