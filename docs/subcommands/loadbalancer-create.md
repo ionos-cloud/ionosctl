@@ -42,7 +42,7 @@ Required values to run command:
                                Available columns: [LoadBalancerId Name Dhcp State Ip] (default [LoadBalancerId,Name,Dhcp,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --dhcp                   Indicates if the Load Balancer will reserve an IP using DHCP (default true)
+      --dhcp                   Indicates if the Load Balancer will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
   -n, --name string            Name of the Load Balancer (default "Load Balancer")

@@ -33,7 +33,7 @@ Use this command to get a list of existing Kubernetes Clusters.
 ```text
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
       --cols strings     Set of columns to be printed on output 
-                         Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions Public GatewayIp S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,Public,State,MaintenanceWindow])
+                         Available columns: [ClusterId Name K8sVersion State MaintenanceWindow AvailableUpgradeVersions ViableNodePoolVersions S3Bucket ApiSubnetAllowList] (default [ClusterId,Name,K8sVersion,State,MaintenanceWindow])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage

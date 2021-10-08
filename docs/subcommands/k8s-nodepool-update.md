@@ -47,7 +47,7 @@ Required values to run command:
       --cols strings              Set of columns to be printed on output 
                                   Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --dhcp                      Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP (default true)
+      --dhcp                      Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
       --k8s-version string        The K8s version for the NodePool. K8s version downgrade is not supported

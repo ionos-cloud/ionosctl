@@ -42,9 +42,11 @@ Required values to run command:
 ```text
   -u, --api-url string           Override default host url (default "https://api.ionos.com")
       --cols strings             Set of columns to be printed on output 
-                                 Available columns: [FirewallRuleId Name Protocol SourceMac SourceIP TargetIP PortRangeStart PortRangeEnd IcmpCode IcmpType Type State] (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,Type,State])
+                                 Available columns: [FirewallRuleId Name Protocol SourceMac SourceIP DestinationIP PortRangeStart PortRangeEnd IcmpCode IcmpType Direction State] (default [FirewallRuleId,Name,Protocol,PortRangeStart,PortRangeEnd,Direction,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
+  -D, --destination-ip string    In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target/destination IPs
+  -d, --direction string         The type/direction of Firewall Rule
   -i, --firewallrule-id string   The unique FirewallRule Id (required)
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
@@ -59,9 +61,7 @@ Required values to run command:
       --server-id string         The unique Server Id (required)
       --source-ip string         Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs
       --source-mac string        Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses
-      --target-ip string         In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs
   -t, --timeout int              Timeout option for Request for Firewall Rule update [seconds] (default 60)
-      --type string              The type of Firewall Rule
   -v, --verbose                  Print step-by-step process when running command
   -w, --wait-for-request         Wait for Request for Firewall Rule update to be executed
 ```

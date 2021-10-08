@@ -53,7 +53,7 @@ Required values to create a Server of type CUBE:
 * Type
 * Template Id
 
-By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the `--licence-type` option or set an Image Id. For Image Id, it is recommended to set a password or SSH keys.
+By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the `--licence-type` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
 You can wait for the Request to be executed using `--wait-for-request` option. You can also wait for Server to be in AVAILABLE state using `--wait-for-state` option. It is recommended to use both options together for this command.
 
@@ -64,21 +64,22 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
   -z, --availability-zone string   Availability zone of the Server (default "AUTO")
       --bus string                 [CUBE Server] The bus type of the Direct Attached Storage (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State TemplateId Type BootCdromId BootVolumeId] (default [ServerId,Name,Type,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
       --cpu-family string          CPU Family for the Server. For CUBE Servers, the CPU Family is INTEL_SKYLAKE (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
+  -a, --image-alias string         [CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage
       --image-id string            [CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage
   -l, --licence-type string        [CUBE Server] Licence Type of the Direct Attached Storage (default "LINUX")
   -n, --name string                Name of the Server (default "Unnamed Server")
   -o, --output string              Desired output format [text|json] (default "text")
-  -p, --password string            [CUBE Server] Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9 (default "abcde12345")
+  -p, --password string            [CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
-      --ssh-keys strings           SSH Keys of the Direct Attached Storage
+      --ssh-key-paths strings      Absolute paths for the SSH Keys of the Direct Attached Storage
       --template-id string         [CUBE Server] The unique Template Id (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
       --type string                Type usages for the Server (default "ENTERPRISE")
@@ -95,6 +96,6 @@ ionosctl server create --datacenter-id DATACENTER_ID --cores 2 --ram 512MB -w -W
 
 ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --licence-type LICENCE_TYPE -w -W
 
-ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID -w -W
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password IMAGE_PASSWORD -w -W
 ```
 
