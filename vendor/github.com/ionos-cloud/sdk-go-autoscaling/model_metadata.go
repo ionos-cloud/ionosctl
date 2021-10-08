@@ -12,16 +12,17 @@ package ionoscloud
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // Metadata Metadata of the resource
 type Metadata struct {
 	// The ISO 8601 creation timestamp.
-	CreatedDate *string `json:"created_date,omitempty"`
+	CreatedDate *IonosTime
 	CreatedBy *string `json:"created_by,omitempty"`
 	CreatedByUserId *string `json:"created_by_user_id,omitempty"`
 	// The ISO 8601 modified timestamp.
-	LastModifiedDate *string `json:"last_modified_date,omitempty"`
+	LastModifiedDate *IonosTime
 	LastModifiedBy *string `json:"last_modified_by,omitempty"`
 	LastModifiedByUserId *string `json:"last_modified_by_user_id,omitempty"`
 }
@@ -29,34 +30,40 @@ type Metadata struct {
 
 
 // GetCreatedDate returns the CreatedDate field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *Metadata) GetCreatedDate() *string {
+// If the value is explicit nil, the zero value for time.Time will be returned
+func (o *Metadata) GetCreatedDate() *time.Time {
 	if o == nil {
 		return nil
 	}
 
+	if o.CreatedDate == nil {
+		return nil
+	}
+	return &o.CreatedDate.Time
 
-	return o.CreatedDate
 
 }
 
 // GetCreatedDateOk returns a tuple with the CreatedDate field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Metadata) GetCreatedDateOk() (*string, bool) {
+func (o *Metadata) GetCreatedDateOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
 
+	if o.CreatedDate == nil {
+		return nil, false
+	}
+	return &o.CreatedDate.Time, true
 
-	return o.CreatedDate, true
 }
 
 // SetCreatedDate sets field value
-func (o *Metadata) SetCreatedDate(v string) {
+func (o *Metadata) SetCreatedDate(v time.Time) {
 
+	o.CreatedDate = &IonosTime{v}
 
-	o.CreatedDate = &v
 
 }
 
@@ -158,34 +165,40 @@ func (o *Metadata) HasCreatedByUserId() bool {
 
 
 // GetLastModifiedDate returns the LastModifiedDate field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *Metadata) GetLastModifiedDate() *string {
+// If the value is explicit nil, the zero value for time.Time will be returned
+func (o *Metadata) GetLastModifiedDate() *time.Time {
 	if o == nil {
 		return nil
 	}
 
+	if o.LastModifiedDate == nil {
+		return nil
+	}
+	return &o.LastModifiedDate.Time
 
-	return o.LastModifiedDate
 
 }
 
 // GetLastModifiedDateOk returns a tuple with the LastModifiedDate field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Metadata) GetLastModifiedDateOk() (*string, bool) {
+func (o *Metadata) GetLastModifiedDateOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
 
+	if o.LastModifiedDate == nil {
+		return nil, false
+	}
+	return &o.LastModifiedDate.Time, true
 
-	return o.LastModifiedDate, true
 }
 
 // SetLastModifiedDate sets field value
-func (o *Metadata) SetLastModifiedDate(v string) {
+func (o *Metadata) SetLastModifiedDate(v time.Time) {
 
+	o.LastModifiedDate = &IonosTime{v}
 
-	o.LastModifiedDate = &v
 
 }
 

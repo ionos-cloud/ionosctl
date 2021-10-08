@@ -17,6 +17,7 @@ import (
 	_nethttp "net/http"
 	_neturl "net/url"
 	"strings"
+	"time"
 )
 
 // Linger please
@@ -32,19 +33,19 @@ type ApiClusterLogsGetRequest struct {
 	ApiService *LogsApiService
 	clusterId string
 	limit *int32
-	start *string
-	end *string
+	start *time.Time
+	end *time.Time
 }
 
 func (r ApiClusterLogsGetRequest) Limit(limit int32) ApiClusterLogsGetRequest {
 	r.limit = &limit
 	return r
 }
-func (r ApiClusterLogsGetRequest) Start(start string) ApiClusterLogsGetRequest {
+func (r ApiClusterLogsGetRequest) Start(start time.Time) ApiClusterLogsGetRequest {
 	r.start = &start
 	return r
 }
-func (r ApiClusterLogsGetRequest) End(end string) ApiClusterLogsGetRequest {
+func (r ApiClusterLogsGetRequest) End(end time.Time) ApiClusterLogsGetRequest {
 	r.end = &end
 	return r
 }

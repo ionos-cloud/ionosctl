@@ -19,7 +19,7 @@ type VDCConnection struct {
 	VdcId *string `json:"vdc_id"`
 	LanId *string `json:"lan_id"`
 	// The IP and subnet for the database. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24 
-	IpAddress *string `json:"ip_address,omitempty"`
+	IpAddress *string `json:"ip_address"`
 }
 
 

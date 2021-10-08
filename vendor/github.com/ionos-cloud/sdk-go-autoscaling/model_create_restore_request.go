@@ -12,6 +12,7 @@ package ionoscloud
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // CreateRestoreRequest The restore request.
@@ -19,7 +20,7 @@ type CreateRestoreRequest struct {
 	// The unique ID of the backup you want to restore.
 	BackupId *string `json:"backup_id"`
 	// If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely. 
-	RecoveryTargetTime *string `json:"recovery_target_time,omitempty"`
+	RecoveryTargetTime *IonosTime
 }
 
 
@@ -68,34 +69,40 @@ func (o *CreateRestoreRequest) HasBackupId() bool {
 
 
 // GetRecoveryTargetTime returns the RecoveryTargetTime field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *CreateRestoreRequest) GetRecoveryTargetTime() *string {
+// If the value is explicit nil, the zero value for time.Time will be returned
+func (o *CreateRestoreRequest) GetRecoveryTargetTime() *time.Time {
 	if o == nil {
 		return nil
 	}
 
+	if o.RecoveryTargetTime == nil {
+		return nil
+	}
+	return &o.RecoveryTargetTime.Time
 
-	return o.RecoveryTargetTime
 
 }
 
 // GetRecoveryTargetTimeOk returns a tuple with the RecoveryTargetTime field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreateRestoreRequest) GetRecoveryTargetTimeOk() (*string, bool) {
+func (o *CreateRestoreRequest) GetRecoveryTargetTimeOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
 
+	if o.RecoveryTargetTime == nil {
+		return nil, false
+	}
+	return &o.RecoveryTargetTime.Time, true
 
-	return o.RecoveryTargetTime, true
 }
 
 // SetRecoveryTargetTime sets field value
-func (o *CreateRestoreRequest) SetRecoveryTargetTime(v string) {
+func (o *CreateRestoreRequest) SetRecoveryTargetTime(v time.Time) {
 
+	o.RecoveryTargetTime = &IonosTime{v}
 
-	o.RecoveryTargetTime = &v
 
 }
 

@@ -18,13 +18,13 @@ import (
 type CreateClusterRequest struct {
 	// The PostgreSQL version of your cluster.
 	PostgresVersion *string `json:"postgres_version"`
-	// The number of replicas in your cluster.
+	// The total number of instances in the cluster (one master and n-1 standbys).
 	Replicas *float32 `json:"replicas"`
-	// The number of CPU cores per replica.
+	// The number of CPU cores per instance.
 	CpuCoreCount *float32 `json:"cpu_core_count"`
-	// The amount of memory per replica.
+	// The amount of memory per instance.
 	RamSize *string `json:"ram_size"`
-	// The amount of storage per replica.
+	// The amount of storage per instance.
 	StorageSize *string `json:"storage_size"`
 	StorageType *StorageType `json:"storage_type"`
 	VdcConnections *[]VDCConnection `json:"vdc_connections,omitempty"`

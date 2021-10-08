@@ -16,11 +16,11 @@ import (
 
 // PatchClusterRequest payload to change a cluster
 type PatchClusterRequest struct {
-	// The number of CPU cores per replica.
+	// The number of CPU cores per instance.
 	CpuCoreCount *float32 `json:"cpu_core_count,omitempty"`
-	// The amount of memory per replica.
+	// The amount of memory per instance.
 	RamSize *string `json:"ram_size,omitempty"`
-	// The amount of storage per replica.
+	// The amount of storage per instance.
 	StorageSize *string `json:"storage_size,omitempty"`
 	// Deprecated: backup is always enabled. Enables automatic backups of your cluster. 
 	BackupEnabled *bool `json:"backup_enabled,omitempty"`

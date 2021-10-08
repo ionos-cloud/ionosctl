@@ -28,13 +28,13 @@ type Cluster struct {
 	PostgresVersion *string `json:"postgres_version,omitempty"`
 	// The physical location where the cluster will be created. This will be where all of your instances live. Property cannot be modified after datacenter creation (disallowed in update requests)
 	Location *string `json:"location,omitempty"`
-	// The number of replicas in your cluster.
+	// The total number of instances in the cluster (one master and n-1 standbys).
 	Replicas *float32 `json:"replicas,omitempty"`
-	// The amount of memory per replica.
+	// The amount of memory per instance.
 	RamSize *string `json:"ram_size,omitempty"`
-	// The number of CPU cores per replica.
+	// The number of CPU cores per instance.
 	CpuCoreCount *float32 `json:"cpu_core_count,omitempty"`
-	// The amount of storage per replica.
+	// The amount of storage per instance.
 	StorageSize *string `json:"storage_size,omitempty"`
 	StorageType *StorageType `json:"storage_type,omitempty"`
 	Metadata *Metadata `json:"metadata,omitempty"`

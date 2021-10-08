@@ -12,45 +12,52 @@ package ionoscloud
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // ClusterLogsMessages struct for ClusterLogsMessages
 type ClusterLogsMessages struct {
-	Time *string `json:"time,omitempty"`
+	Time *IonosTime
 	Message *string `json:"message,omitempty"`
 }
 
 
 
 // GetTime returns the Time field value
-// If the value is explicit nil, the zero value for string will be returned
-func (o *ClusterLogsMessages) GetTime() *string {
+// If the value is explicit nil, the zero value for time.Time will be returned
+func (o *ClusterLogsMessages) GetTime() *time.Time {
 	if o == nil {
 		return nil
 	}
 
+	if o.Time == nil {
+		return nil
+	}
+	return &o.Time.Time
 
-	return o.Time
 
 }
 
 // GetTimeOk returns a tuple with the Time field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClusterLogsMessages) GetTimeOk() (*string, bool) {
+func (o *ClusterLogsMessages) GetTimeOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
 
+	if o.Time == nil {
+		return nil, false
+	}
+	return &o.Time.Time, true
 
-	return o.Time, true
 }
 
 // SetTime sets field value
-func (o *ClusterLogsMessages) SetTime(v string) {
+func (o *ClusterLogsMessages) SetTime(v time.Time) {
 
+	o.Time = &IonosTime{v}
 
-	o.Time = &v
 
 }
 

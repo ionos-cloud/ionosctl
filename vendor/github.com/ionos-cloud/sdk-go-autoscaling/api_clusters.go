@@ -17,6 +17,7 @@ import (
 	_nethttp "net/http"
 	_neturl "net/url"
 	"strings"
+	"time"
 )
 
 // Linger please
@@ -40,7 +41,9 @@ func (r ApiClusterPostgresVersionsGetRequest) Execute() (PostgresVersionList, *A
 
 /*
  * ClusterPostgresVersionsGet List PostgreSQL versions
- * Retrieves a list of all PostgreSQL versions available for this cluster.
+ * Retrieves a list of all PostgreSQL versions available for this cluster
+including the current version.
+
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param clusterId The unique ID of the cluster
  * @return ApiClusterPostgresVersionsGetRequest
@@ -731,7 +734,7 @@ type ApiClustersPostRequest struct {
 	ApiService *ClustersApiService
 	cluster *CreateClusterRequest
 	fromBackup *string
-	fromRecoveryTargetTime *string
+	fromRecoveryTargetTime *time.Time
 }
 
 func (r ApiClustersPostRequest) Cluster(cluster CreateClusterRequest) ApiClustersPostRequest {
@@ -742,7 +745,7 @@ func (r ApiClustersPostRequest) FromBackup(fromBackup string) ApiClustersPostReq
 	r.fromBackup = &fromBackup
 	return r
 }
-func (r ApiClustersPostRequest) FromRecoveryTargetTime(fromRecoveryTargetTime string) ApiClustersPostRequest {
+func (r ApiClustersPostRequest) FromRecoveryTargetTime(fromRecoveryTargetTime time.Time) ApiClustersPostRequest {
 	r.fromRecoveryTargetTime = &fromRecoveryTargetTime
 	return r
 }
