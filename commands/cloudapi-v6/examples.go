@@ -32,7 +32,7 @@ ionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-requ
 
 ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --licence-type LICENCE_TYPE -w -W
 
-ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID -w -W`
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password IMAGE_PASSWORD -w -W`
 	updateServerExample = `ionosctl server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4`
 	deleteServerExample = `ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID
 
@@ -52,7 +52,9 @@ ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --for
 	/*
 		Volume Examples
 	*/
-	createVolumeExample = `ionosctl volume create --datacenter-id DATACENTER_ID --name NAME`
+	createVolumeExample = `ionosctl volume create --datacenter-id DATACENTER_ID --name NAME
+
+ionosctl volume create --datacenter-id DATACENTER_ID --name NAME --image-alias IMAGE_ALIAS --ssh-keys-path "SSH_KEY_PATH1,SSH_KEY_PATH2"`
 	updateVolumeExample = `ionosctl volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20`
 	listVolumeExample   = `ionosctl volume list --datacenter-id DATACENTER_ID`
 	getVolumeExample    = `ionosctl volume get --datacenter-id DATACENTER_ID --volume-id VOLUME_ID`

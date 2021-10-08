@@ -42,6 +42,7 @@ var (
 			NicHotUnplug:        &testVolumeBoolVar,
 			DiscVirtioHotPlug:   &testVolumeBoolVar,
 			DiscVirtioHotUnplug: &testVolumeBoolVar,
+			DeviceNumber:        &testDeviceNumberVolumeVar,
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &testVolumeVar,
@@ -133,11 +134,12 @@ var (
 			Items: &[]ionoscloud.Volume{v},
 		},
 	}
-	testVolumeVar      = "test-volume"
-	testVolumeBoolVar  = false
-	testVolumeSliceVar = []string{"test-volume"}
-	testVolumeNewVar   = "test-new-volume"
-	testVolumeErr      = errors.New("volume test: error occurred")
+	testDeviceNumberVolumeVar = int64(1)
+	testVolumeVar             = "test-volume"
+	testVolumeBoolVar         = false
+	testVolumeSliceVar        = []string{"test-volume"}
+	testVolumeNewVar          = "test-new-volume"
+	testVolumeErr             = errors.New("volume test: error occurred")
 )
 
 func TestVolumeCmd(t *testing.T) {
@@ -171,6 +173,47 @@ func TestPreRunDcVolumeIdsErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		err := PreRunDcVolumeIds(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunVolumeCreate(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		err := PreRunVolumeCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeCreateImg(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSshKeyPaths), []string{testVolumeVar})
+		err := PreRunVolumeCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeCreateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunVolumeCreate(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -293,6 +336,36 @@ func TestRunVolumeCreateImg(t *testing.T) {
 		rm.CloudApiV6Mocks.Volume.EXPECT().Create(testVolumeVar, testVolumeImg).Return(&resources.Volume{Volume: v}, nil, nil)
 		err := RunVolumeCreate(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunVolumeCreateSshKeyErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSize), sizeVolume)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSshKeyPaths), []string{testVolumeVar})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserData), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		err := RunVolumeCreate(cfg)
+		assert.Error(t, err)
 	})
 }
 
