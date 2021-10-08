@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-dbaas-pgsql/completer"
@@ -377,7 +378,11 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	}
 	if viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)) != "" {
 		c.Printer.Verbose("Setting RecoveryTargetTime: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
-		input.SetRecoveryTargetTime(viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
+		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
+		if err != nil {
+			return err
+		}
+		input.SetRecoveryTargetTime(recoveryTargetTime)
 	}
 	c.Printer.Verbose("Restoring Cluster from Backup...")
 	resp, err := c.CloudApiDbaasPgsqlServices.Restores().Restore(clusterId, input)

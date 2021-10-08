@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"time"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
 )
@@ -72,7 +73,11 @@ func (svc *clustersService) Create(input CreateClusterRequest, backupId, recover
 	}
 	if recoveryTargetTime != "" {
 		// Create Cluster from a specified Backup from a specific timestamp
-		req = req.FromRecoveryTargetTime(recoveryTargetTime)
+		recoveryTargetTimeFormat, err := time.Parse(time.RFC3339, recoveryTargetTime)
+		if err != nil {
+			return nil, nil, err
+		}
+		req = req.FromRecoveryTargetTime(recoveryTargetTimeFormat)
 	}
 	cluster, res, err := svc.client.ClustersApi.ClustersPostExecute(req)
 	return &Cluster{cluster}, &Response{*res}, err

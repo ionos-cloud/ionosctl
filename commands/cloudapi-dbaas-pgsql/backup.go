@@ -235,10 +235,12 @@ func getBackupsKVMaps(backups []resources.ClusterBackup) []map[string]interface{
 		}
 		if metadataOk, ok := backup.GetMetadataOk(); ok && metadataOk != nil {
 			if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
-				backupPrint.CreatedDate = *createdDateOk
+				createdDate := *createdDateOk
+				backupPrint.CreatedDate = createdDate.String()
 			}
 			if lastModifiedDateOk, ok := metadataOk.GetLastModifiedDateOk(); ok && lastModifiedDateOk != nil {
-				backupPrint.LastModifiedDate = *lastModifiedDateOk
+				lastModifiedDate := *lastModifiedDateOk
+				backupPrint.LastModifiedDate = lastModifiedDate.String()
 			}
 		}
 		o := structs.Map(backupPrint)

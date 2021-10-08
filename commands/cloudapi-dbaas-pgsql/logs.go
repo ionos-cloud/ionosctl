@@ -67,10 +67,10 @@ func LogsCmd() *core.Command {
 func RunClusterLogsGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)))
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)) {
-		c.Printer.Verbose("Start Time [RFC3339 format]: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)))
+		c.Printer.Verbose("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)) {
-		c.Printer.Verbose("End Time [RFC3339 format]: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)))
+		c.Printer.Verbose("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgLimit)) {
 		c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgLimit)))
@@ -84,7 +84,7 @@ func RunClusterLogsGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getClusterLogsPrint(c, &clusterLogs))
+	return c.Printer.Print(getClusterLogsPrint(c, clusterLogs))
 }
 
 // Output Printing
