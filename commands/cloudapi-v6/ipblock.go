@@ -242,10 +242,11 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 
 func RunIpBlockDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	if allFlag {
-		err := DeleteAllIpBlocks(c)
+		resp, err = DeleteAllIpBlocks(c)
 		if err != nil {
 			return err
 		}
@@ -254,7 +255,7 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Ip block with ID: %v...", ipBlockId)
-		resp, err := c.CloudApiV6Services.IpBlocks().Delete(ipBlockId)
+		resp, err = c.CloudApiV6Services.IpBlocks().Delete(ipBlockId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -269,11 +270,11 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getIpBlockPrint(resp, c, nil))
 }
 
-func DeleteAllIpBlocks(c *core.CommandConfig) error {
+func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("IpBlocks to be deleted:")
 	ipBlocks, resp, err := c.CloudApiV6Services.IpBlocks().List()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
 		for _, dc := range *ipBlocksItems {
@@ -288,7 +289,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the IpBlocks...")
 		for _, dc := range *ipBlocksItems {
@@ -300,15 +301,15 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getIpBlockPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

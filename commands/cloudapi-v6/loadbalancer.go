@@ -282,11 +282,12 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	loadBlanacerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		err := DeleteAllLoadBalancers(c)
+		resp, err = DeleteAllLoadBalancers(c)
 		if err != nil {
 			return err
 		}
@@ -295,7 +296,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Load balancer with id: %v is deleting...", loadBlanacerId)
-		resp, err := c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBlanacerId)
+		resp, err = c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBlanacerId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -309,12 +310,12 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getLoadbalancerPrint(resp, c, nil))
 }
 
-func DeleteAllLoadBalancers(c *core.CommandConfig) error {
+func DeleteAllLoadBalancers(c *core.CommandConfig) (*resources.Response, error) {
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	_ = c.Printer.Print("LoadBalancers to be deleted:")
 	loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(dcid)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
 		for _, lb := range *loadBalancersItems {
@@ -328,7 +329,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 			}
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the LoadBalancers...")
 
@@ -342,15 +343,15 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getLoadbalancerPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

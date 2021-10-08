@@ -290,11 +290,12 @@ func RunShareUpdate(c *core.CommandConfig) error {
 
 func RunShareDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	shareId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResourceId))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		err := DeleteAllShares(c)
+		resp, err = DeleteAllShares(c)
 		if err != nil {
 			return err
 		}
@@ -303,7 +304,7 @@ func RunShareDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Share with Resource ID: %v from Group with ID: %v...", shareId, groupId)
-		resp, err := c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId)
+		resp, err = c.CloudApiV6Services.Groups().RemoveShare(groupId, shareId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -345,12 +346,12 @@ func getShareUpdateInfo(oldShare *resources.GroupShare, c *core.CommandConfig) *
 	}
 }
 
-func DeleteAllShares(c *core.CommandConfig) error {
+func DeleteAllShares(c *core.CommandConfig) (*resources.Response, error) {
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	_ = c.Printer.Print("GroupShares to be deleted:")
 	groupShares, resp, err := c.CloudApiV6Services.Groups().ListShares(groupId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if groupSharesItems, ok := groupShares.GetItemsOk(); ok && groupSharesItems != nil {
 		for _, share := range *groupSharesItems {
@@ -359,7 +360,7 @@ func DeleteAllShares(c *core.CommandConfig) error {
 			}
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the GroupShares"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the GroupShares...")
 
@@ -373,15 +374,15 @@ func DeleteAllShares(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getGroupSharePrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

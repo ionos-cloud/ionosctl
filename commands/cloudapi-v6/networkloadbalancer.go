@@ -289,11 +289,12 @@ func RunNetworkLoadBalancerUpdate(c *core.CommandConfig) error {
 
 func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	nlbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		err := DeleteAllNetworkLoadBalancers(c)
+		resp, err = DeleteAllNetworkLoadBalancers(c)
 		if err != nil {
 			return err
 		}
@@ -302,7 +303,7 @@ func RunNetworkLoadBalancerDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting NetworkLoadBalancer with id: %v...", nlbId)
-		resp, err := c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId)
+		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().Delete(dcId, nlbId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -349,12 +350,12 @@ func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoad
 	}
 }
 
-func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
+func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	_ = c.Printer.Print("NetworkLoadBalancers to be deleted:")
 	networkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(dcId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if nlbItems, ok := networkLoadBalancers.GetItemsOk(); ok && nlbItems != nil {
 		for _, networkLoadBalancer := range *nlbItems {
@@ -369,7 +370,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the BackupUnits...")
 		for _, networkLoadBalancer := range *nlbItems {
@@ -381,15 +382,15 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getNetworkLoadBalancerPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

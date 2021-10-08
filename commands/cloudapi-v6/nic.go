@@ -364,12 +364,13 @@ func RunNicUpdate(c *core.CommandConfig) error {
 
 func RunNicDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		err := DeleteAllNics(c)
+		resp, err = DeleteAllNics(c)
 		if err != nil {
 			return err
 		}
@@ -378,7 +379,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Nic with id: %v...", nicId)
-		resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId)
+		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -393,13 +394,13 @@ func RunNicDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getNicPrint(resp, c, nil))
 }
 
-func DeleteAllNics(c *core.CommandConfig) error {
+func DeleteAllNics(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	_ = c.Printer.Print("Nics to be deleted:")
 	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 		for _, nic := range *nicsItems {
@@ -414,7 +415,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Nics...")
 
@@ -429,15 +430,15 @@ func DeleteAllNics(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getNicPrint(resp, c, nil))
+	return resp, err
 }
 
 // LoadBalancer Nic Commands

@@ -283,11 +283,12 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 
 func RunNatGatewayDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		err := DeleteAllNatgateways(c)
+		resp, err = DeleteAllNatgateways(c)
 		if err != nil {
 			return err
 		}
@@ -296,7 +297,7 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starring deleting NatGateway with id: %v...", natGatewayId)
-		resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId)
+		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -327,12 +328,12 @@ func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties
 	}
 }
 
-func DeleteAllNatgateways(c *core.CommandConfig) error {
+func DeleteAllNatgateways(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	_ = c.Printer.Print("NatGateways to be deleted:")
 	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if natGatewayItems, ok := natGateways.GetItemsOk(); ok && natGatewayItems != nil {
 		for _, natGateway := range *natGatewayItems {
@@ -347,7 +348,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGateways"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the BackupUnits...")
 		for _, natGateway := range *natGatewayItems {
@@ -359,15 +360,15 @@ func DeleteAllNatgateways(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getNatGatewayPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

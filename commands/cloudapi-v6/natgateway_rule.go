@@ -329,12 +329,13 @@ func RunNatGatewayRuleUpdate(c *core.CommandConfig) error {
 
 func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		err := DeleteAllNatgatewayRules(c)
+		resp, err = DeleteAllNatgatewayRules(c)
 		if err != nil {
 			return err
 		}
@@ -343,7 +344,7 @@ func RunNatGatewayRuleDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting NatGatewayRule with id: %v...", ruleId)
-		resp, err := c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, ruleId)
+		resp, err = c.CloudApiV6Services.NatGateways().DeleteRule(dcId, natGatewayId, ruleId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -399,13 +400,13 @@ func getNewNatGatewayRuleInfo(c *core.CommandConfig) *resources.NatGatewayRulePr
 	}
 }
 
-func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
+func DeleteAllNatgatewayRules(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	_ = c.Printer.Print("NatGatewayRules to be deleted:")
 	natGatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if natGatewayRuleItems, ok := natGatewayRules.GetItemsOk(); ok && natGatewayRuleItems != nil {
 		for _, natGateway := range *natGatewayRuleItems {
@@ -420,7 +421,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGatewayRules"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the NatGatewayRules...")
 		for _, natGateway := range *natGatewayRuleItems {
@@ -432,15 +433,15 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getNatGatewayRulePrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

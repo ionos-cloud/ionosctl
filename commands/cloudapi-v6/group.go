@@ -264,10 +264,11 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 
 func RunGroupDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	if allFlag {
-		err := DeleteAllGroups(c)
+		resp, err = DeleteAllGroups(c)
 		if err != nil {
 			return err
 		}
@@ -276,7 +277,7 @@ func RunGroupDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Group with id: %v...", groupId)
-		resp, err := c.CloudApiV6Services.Groups().Delete(groupId)
+		resp, err = c.CloudApiV6Services.Groups().Delete(groupId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -458,11 +459,11 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 	}
 }
 
-func DeleteAllGroups(c *core.CommandConfig) error {
+func DeleteAllGroups(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Groups to be deleted:")
 	groups, resp, err := c.CloudApiV6Services.Groups().List()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
 		for _, group := range *groupsItems {
@@ -477,7 +478,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Groups...")
 
@@ -490,15 +491,15 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getGroupPrint(resp, c, nil))
+	return resp, err
 }
 
 // Output Printing

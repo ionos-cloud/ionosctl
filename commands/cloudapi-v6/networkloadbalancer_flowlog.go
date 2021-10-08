@@ -328,12 +328,13 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 
 func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		err := DeleteAllNetworkLoadBalancerFlowLogs(c)
+		resp, err = DeleteAllNetworkLoadBalancerFlowLogs(c)
 		if err != nil {
 			return err
 		}
@@ -342,7 +343,7 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting NetworkLoadBalancerFlowLog with id: %v...", flowLogId)
-		resp, err := c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, flowLogId)
+		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, flowLogId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -356,13 +357,13 @@ func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 	return c.Printer.Print(getFlowLogPrint(resp, c, nil))
 }
 
-func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
+func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	_ = c.Printer.Print("NetworkLoadBalancerFlowLogs to be deleted:")
 	flowLogs, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if flowLogsItems, ok := flowLogs.GetItemsOk(); ok && flowLogsItems != nil {
 		for _, flowLog := range *flowLogsItems {
@@ -377,7 +378,7 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NetworkLoadBalancerFlowLogs"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the NetworkLoadBalancerFlowLogs...")
 		for _, flowLog := range *flowLogsItems {
@@ -389,13 +390,13 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getFlowLogPrint(resp, c, nil))
+	return resp, err
 }

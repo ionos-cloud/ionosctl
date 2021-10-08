@@ -236,10 +236,11 @@ func RunPccUpdate(c *core.CommandConfig) error {
 
 func RunPccDelete(c *core.CommandConfig) error {
 	var resp *resources.Response
+	var err error
 	pccId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		err := DeleteAllPccs(c)
+		resp, err = DeleteAllPccs(c)
 		if err != nil {
 			return err
 		}
@@ -248,7 +249,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Private cross connect with id: %v...", pccId)
-		resp, err := c.CloudApiV6Services.Pccs().Delete(pccId)
+		resp, err = c.CloudApiV6Services.Pccs().Delete(pccId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -290,11 +291,11 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 	}
 }
 
-func DeleteAllPccs(c *core.CommandConfig) error {
+func DeleteAllPccs(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("PrivateCrossConnects to be deleted:")
 	pccs, resp, err := c.CloudApiV6Services.Pccs().List()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
 		for _, pcc := range *pccsItems {
@@ -308,7 +309,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 			}
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the PrivateCrossConnects"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
 
@@ -321,15 +322,15 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print(getPccPrint(resp, c, nil))
+	return resp, err
 }
 
 func PeersCmd() *core.Command {

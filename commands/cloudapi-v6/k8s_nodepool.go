@@ -334,11 +334,13 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolDelete(c *core.CommandConfig) error {
+	var resp *resources.Response
+	var err error
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
 	k8sNodePoolId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId))
 	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	if allFlag {
-		err := DeleteAllK8sNodepools(c)
+		resp, err = DeleteAllK8sNodepools(c)
 		if err != nil {
 			return err
 		}
@@ -348,7 +350,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId)
-		resp, err := c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, k8sNodePoolId)
+		resp, err = c.CloudApiV6Services.K8s().DeleteNodePool(k8sClusterId, k8sNodePoolId)
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}
@@ -526,12 +528,12 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 	}
 }
 
-func DeleteAllK8sNodepools(c *core.CommandConfig) error {
+func DeleteAllK8sNodepools(c *core.CommandConfig) (*resources.Response, error) {
 	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
 	_ = c.Printer.Print("K8sNodePools to be deleted:")
 	k8sNodePools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(k8sClusterId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if k8sNodePoolsItems, ok := k8sNodePools.GetItemsOk(); ok && k8sNodePoolsItems != nil {
 		for _, dc := range *k8sNodePoolsItems {
@@ -546,7 +548,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodePools"); err != nil {
-			return err
+			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the K8sNodePools")
 
@@ -559,15 +561,15 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
-					return err
+					return nil, err
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 	}
-	return c.Printer.Print("Status: Command node pool delete has been successfully executed")
+	return resp, err
 }
 
 // Output Printing
