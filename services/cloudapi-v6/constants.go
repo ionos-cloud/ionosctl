@@ -85,6 +85,8 @@ const (
 	ArgTargetSubnet          = "target-subnet"
 	ArgSourceMac             = "source-mac"
 	ArgSourceIp              = "source-ip"
+	ArgDestinationIp         = "destination-ip"
+	ArgDestinationIpShort    = "D"
 	ArgTargetIp              = "target-ip"
 	ArgTargetPort            = "target-port"
 	ArgWeight                = "weight"
