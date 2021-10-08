@@ -85,8 +85,8 @@ ionosctl volume create --datacenter-id DATACENTER_ID --name NAME --image-alias I
 	/*
 		Lan Examples
 	*/
-	createLanExample = `ionosctl lan create --datacenter-id DATACENTER_ID --name NAMEd`
-	updateLanExample = `ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=true`
+	createLanExample = `ionosctl lan create --datacenter-id DATACENTER_ID --name NAME --public=true`
+	updateLanExample = `ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=false`
 	listLanExample   = `ionosctl lan list --datacenter-id DATACENTER_ID`
 	getLanExample    = `ionosctl lan get --datacenter-id DATACENTER_ID --lan-id LAN_ID`
 	deleteLanExample = `ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID

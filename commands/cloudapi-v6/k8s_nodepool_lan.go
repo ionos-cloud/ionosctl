@@ -91,7 +91,7 @@ Required values to run a command:
 		return completer.K8sNodePoolsIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgK8sClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	add.AddIntFlag(cloudapiv6.ArgLanId, cloudapiv6.ArgIdShort, 0, "The unique LAN Id of existing LANs to be attached to worker Nodes", core.RequiredFlagOption())
-	add.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP")
+	add.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LAN will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	add.AddStringFlag(cloudapiv6.ArgNetwork, "", "", "IPv4 or IPv6 CIDR to be routed via the interface. Must be set with --gateway-ip flag")
 	add.AddStringFlag(cloudapiv6.ArgGatewayIp, "", "", "IPv4 or IPv6 Gateway IP for the route. Must be set with --network flag")
 	add.AddStringSliceFlag(cloudapiv6.ArgCols, "", defaultK8sNodePoolLanCols, printer.ColsMessage(defaultK8sNodePoolLanCols))

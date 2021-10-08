@@ -110,7 +110,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
+	create.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
@@ -145,17 +145,17 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", false, "This volume is capable of CPU hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgCpuHotUnplug, "", false, "This volume is capable of CPU hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "This volume is capable of memory hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "This volume is capable of memory hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "This volume is capable of NIC hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "This volume is capable of NIC hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "This volume is capable of VirtIO drive hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "This volume is capable of VirtIO drive hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
+	update.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", false, "This volume is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgCpuHotUnplug, "", false, "This volume is capable of CPU hot unplug (no reboot required). E.g.: --cpu-hot-unplug=true, --cpu-hot-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "This volume is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "This volume is capable of memory hot unplug (no reboot required). E.g.: --ram-hot-unplug=true, --ram-hot-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "This volume is capable of NIC hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "This volume is capable of NIC hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "This volume is capable of VirtIO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "This volume is capable of VirtIO drive hot unplug (no reboot required). E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required). E.g.: --disc-scsi-plug=true, --disc-scsi-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required). E.g.: --disc-scsi-unplug=true, --disc-scsi-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 

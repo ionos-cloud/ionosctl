@@ -47,6 +47,7 @@ const (
 	ArgSshKeyPaths           = "ssh-key-paths"
 	ArgSshKeyPathsShort      = "k"
 	ArgPublic                = "public"
+	ArgPublicShort           = "p"
 	ArgIps                   = "ips"
 	ArgIp                    = "ip"
 	ArgDhcp                  = "dhcp"
