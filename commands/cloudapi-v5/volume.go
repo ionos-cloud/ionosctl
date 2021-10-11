@@ -113,7 +113,7 @@ Required values to run command:
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv5.ArgName, cloudapiv5.ArgNameShort, "Unnamed Volume", "Name of the Volume")
-	create.AddStringFlag(cloudapiv5.ArgSize, "", strconv.Itoa(cloudapiv5.DefaultVolumeSize), "The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
+	create.AddStringFlag(cloudapiv5.ArgSize, cloudapiv5.ArgSizeShort, strconv.Itoa(cloudapiv5.DefaultVolumeSize), "The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -141,15 +141,15 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv5.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
+	create.AddStringFlag(cloudapiv5.ArgImageAlias, cloudapiv5.ArgImageAliasShort, "", "The Image Alias to set instead of Image Id")
 	create.AddStringFlag(cloudapiv5.ArgPassword, cloudapiv5.ArgPasswordShort, "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringFlag(cloudapiv5.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
-	create.AddBoolFlag(cloudapiv5.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
-	create.AddBoolFlag(cloudapiv5.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
-	create.AddBoolFlag(cloudapiv5.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
-	create.AddBoolFlag(cloudapiv5.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
-	create.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
-	create.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
+	create.AddBoolFlag(cloudapiv5.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false")
+	create.AddBoolFlag(cloudapiv5.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false")
+	create.AddBoolFlag(cloudapiv5.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false")
+	create.AddBoolFlag(cloudapiv5.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false")
+	create.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false")
+	create.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false")
 	create.AddStringSliceFlag(cloudapiv5.ArgSshKeyPaths, cloudapiv5.ArgSshKeyPathsShort, []string{""}, "Absolut path of SSH Keys files for the Volume")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume creation [seconds]")
@@ -192,12 +192,12 @@ Required values to run command:
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv5.ArgBus, "", "VIRTIO", "Bus of the Volume")
-	update.AddBoolFlag(cloudapiv5.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv5.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv5.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv5.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
+	update.AddBoolFlag(cloudapiv5.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false")
+	update.AddBoolFlag(cloudapiv5.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false")
+	update.AddBoolFlag(cloudapiv5.ArgNicHotPlug, "", false, "It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false")
+	update.AddBoolFlag(cloudapiv5.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false")
+	update.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false")
+	update.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machiness. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume update [seconds]")
 

@@ -108,7 +108,7 @@ Required values to run command:
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv5.ArgName, cloudapiv5.ArgNameShort, "Load Balancer", "Name of the Load Balancer")
-	create.AddBoolFlag(cloudapiv5.ArgDhcp, "", cloudapiv5.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
+	create.AddBoolFlag(cloudapiv5.ArgDhcp, "", cloudapiv5.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Load Balancer creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer creation [seconds]")
 
@@ -144,7 +144,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(cloudapiv5.ArgName, cloudapiv5.ArgNameShort, "", "Name of the Load Balancer")
 	update.AddStringFlag(cloudapiv5.ArgIp, "", "", "The IP of the Load Balancer")
-	update.AddBoolFlag(cloudapiv5.ArgDhcp, "", cloudapiv5.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
+	update.AddBoolFlag(cloudapiv5.ArgDhcp, "", cloudapiv5.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Load Balancer update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer update [seconds]")
 

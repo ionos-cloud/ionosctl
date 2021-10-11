@@ -123,7 +123,7 @@ Required values to run a command:
 	})
 	create.AddStringFlag(cloudapiv5.ArgName, cloudapiv5.ArgNameShort, "Internet Access", "The name of the NIC")
 	create.AddStringSliceFlag(cloudapiv5.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
-	create.AddBoolFlag(cloudapiv5.ArgDhcp, "", cloudapiv5.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC")
+	create.AddBoolFlag(cloudapiv5.ArgDhcp, "", cloudapiv5.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC. E.g.: --dhcp=true, --dhcp=false")
 	create.AddIntFlag(cloudapiv5.ArgLanId, "", cloudapiv5.DefaultNicLanId, "The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
@@ -175,7 +175,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapiv5.ArgDhcp, "", cloudapiv5.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
+	update.AddBoolFlag(cloudapiv5.ArgDhcp, "", cloudapiv5.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false). E.g.: --dhcp=true, --dhcp=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
 	update.AddStringSliceFlag(cloudapiv5.ArgIps, "", []string{""}, "IPs assigned to the NIC")
