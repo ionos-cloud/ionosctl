@@ -39,7 +39,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    delete all the Nics from a Server.
+  -a, --all                    Delete all the Nics from a Server.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [NicId Name Dhcp LanId Ips State FirewallActive FirewallType DeviceNumber PciSlot Mac] (default [NicId,Name,Dhcp,LanId,Ips,State])

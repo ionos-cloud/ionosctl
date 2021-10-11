@@ -35,7 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                delete all Groups.
+  -a, --all                Delete all Groups.
   -u, --api-url string     Override default host url (default "https://api.ionos.com")
       --cols strings       Set of columns to be printed on output 
                            Available columns: [GroupId Name CreateDataCenter CreateSnapshot ReserveIp AccessActivityLog CreatePcc S3Privilege CreateBackupUnit CreateInternetAccess CreateK8s CreateFlowLog AccessAndManageMonitoring AccessAndManageCertificates] (default [GroupId,Name,CreateDataCenter,CreateSnapshot,CreatePcc,CreateBackupUnit,CreateInternetAccess,CreateK8s,ReserveIp])

@@ -35,7 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                  delete all the Snapshots.
+  -a, --all                  Delete all the Snapshots.
   -u, --api-url string       Override default host url (default "https://api.ionos.com")
       --cols strings         Set of columns to be printed on output 
                              Available columns: [SnapshotId Name LicenceType Size State] (default [SnapshotId,Name,LicenceType,Size,State])

@@ -38,7 +38,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    delete all Natgateways.
+  -a, --all                    Delete all Natgateways.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [NatGatewayId Name PublicIps State] (default [NatGatewayId,Name,PublicIps,State])

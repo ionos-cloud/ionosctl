@@ -45,7 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                             delete all Network Load Balancer Forwarding Rule.
+  -a, --all                             Delete all Network Load Balancer Forwarding Rule.
   -u, --api-url string                  Override default host url (default "https://api.ionos.com")
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [ForwardingRuleId Name Algorithm Protocol ListenerIp ListenerPort State ClientTimeout ConnectTimeout TargetTimeout Retries] (default [ForwardingRuleId,Name,Algorithm,Protocol,ListenerIp,ListenerPort,State])

@@ -35,7 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all              delete all the Users.
+  -a, --all              Delete all the Users.
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
       --cols strings     Set of columns to be printed on output 
                          Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active] (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
