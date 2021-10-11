@@ -104,7 +104,7 @@ Required values to run command:
 
 * Data Center Id`,
 		Example:    createVolumeExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunVolumeCreate,
 		CmdRun:     RunVolumeCreate,
 		InitClient: true,
 	})
@@ -142,7 +142,7 @@ Required values to run command:
 		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv5.ArgImageAlias, "", "", "The Image Alias to set instead of Image Id")
-	create.AddStringFlag(cloudapiv5.ArgPassword, cloudapiv5.ArgPasswordShort, "abcde12345", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
+	create.AddStringFlag(cloudapiv5.ArgPassword, cloudapiv5.ArgPasswordShort, "", "Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
 	create.AddStringFlag(cloudapiv5.ArgUserData, "", "", "The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property")
 	create.AddBoolFlag(cloudapiv5.ArgCpuHotPlug, "", false, "It is capable of CPU hot plug (no reboot required)")
 	create.AddBoolFlag(cloudapiv5.ArgRamHotPlug, "", false, "It is capable of memory hot plug (no reboot required)")
@@ -150,7 +150,7 @@ Required values to run command:
 	create.AddBoolFlag(cloudapiv5.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required)")
 	create.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required)")
 	create.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines")
-	create.AddStringSliceFlag(cloudapiv5.ArgSshKeys, "", []string{""}, "SSH Keys of the Volume")
+	create.AddStringSliceFlag(cloudapiv5.ArgSshKeyPaths, cloudapiv5.ArgSshKeyPathsShort, []string{""}, "Absolut path of SSH Keys files for the Volume")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume creation [seconds]")
 
@@ -240,6 +240,22 @@ Required values to run command:
 
 func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgVolumeId)
+}
+
+func PreRunVolumeCreate(c *core.PreCommandConfig) error {
+	err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId)
+	if err != nil {
+		return err
+	}
+	// Validate flags
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgImageAlias)) {
+		return core.CheckRequiredFlagsSets(c.Command, c.NS,
+			[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgImageId, cloudapiv5.ArgPassword},
+			[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgImageId, cloudapiv5.ArgSshKeyPaths},
+			[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgImageAlias, cloudapiv5.ArgPassword},
+			[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgImageAlias, cloudapiv5.ArgSshKeyPaths})
+	}
+	return nil
 }
 
 func PreRunDcVolumeDelete(c *core.PreCommandConfig) error {
@@ -386,8 +402,8 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 		proper.SetBackupunitId(backupUnitId)
 		c.Printer.Verbose("Property BackupUnitId set: %v", backupUnitId)
 	}
-	if !viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgImageId)) &&
-		!viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgImageAlias)) ||
+	if (!viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgImageId)) &&
+		!viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgImageAlias))) ||
 		viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgLicenceType)) {
 		licenceType := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLicenceType))
 		proper.SetLicenceType(licenceType)
@@ -403,17 +419,19 @@ func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
 		proper.SetImageAlias(imageAlias)
 		c.Printer.Verbose("Property ImageAlias set: %v", imageAlias)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgImageId)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgImageAlias)) ||
-		viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgPassword)) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgPassword)) {
 		password := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPassword))
 		proper.SetImagePassword(password)
 		c.Printer.Verbose("Property Password set")
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgSshKeys)) {
-		sshKeys := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv5.ArgSshKeys))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgSshKeyPaths)) {
+		sshKeyPaths := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv5.ArgSshKeyPaths))
+		sshKeys, err := getSshKeysFromPaths(sshKeyPaths)
+		if err != nil {
+			return nil, err
+		}
 		proper.SetSshKeys(sshKeys)
-		c.Printer.Verbose("Property SshKeys set: %v", sshKeys)
+		c.Printer.Verbose("Property SshKeys set from paths: %v", sshKeyPaths)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgUserData)) {
 		userData := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserData))
@@ -791,25 +809,24 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 
 var (
 	defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
-	allVolumeCols     = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image", "Bus", "AvailabilityZone", "BackupunitId", "SshKeys",
+	allVolumeCols     = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image", "Bus", "AvailabilityZone", "BackupunitId",
 		"ImageAlias", "DeviceNumber", "UserData"}
 )
 
 type VolumePrint struct {
-	VolumeId         string   `json:"VolumeId,omitempty"`
-	Name             string   `json:"Name,omitempty"`
-	Size             string   `json:"Size,omitempty"`
-	Type             string   `json:"Type,omitempty"`
-	LicenceType      string   `json:"LicenceType,omitempty"`
-	Bus              string   `json:"Bus,omitempty"`
-	AvailabilityZone string   `json:"AvailabilityZone,omitempty"`
-	State            string   `json:"State,omitempty"`
-	Image            string   `json:"Image,omitempty"`
-	ImageAlias       string   `json:"ImageAlias,omitempty"`
-	SshKeys          []string `json:"SshKeys,omitempty"`
-	DeviceNumber     int64    `json:"DeviceNumber,omitempty"`
-	BackupunitId     string   `json:"BackupunitId,omitempty"`
-	UserData         string   `json:"UserData,omitempty"`
+	VolumeId         string `json:"VolumeId,omitempty"`
+	Name             string `json:"Name,omitempty"`
+	Size             string `json:"Size,omitempty"`
+	Type             string `json:"Type,omitempty"`
+	LicenceType      string `json:"LicenceType,omitempty"`
+	Bus              string `json:"Bus,omitempty"`
+	AvailabilityZone string `json:"AvailabilityZone,omitempty"`
+	State            string `json:"State,omitempty"`
+	Image            string `json:"Image,omitempty"`
+	ImageAlias       string `json:"ImageAlias,omitempty"`
+	DeviceNumber     int64  `json:"DeviceNumber,omitempty"`
+	BackupunitId     string `json:"BackupunitId,omitempty"`
+	UserData         string `json:"UserData,omitempty"`
 }
 
 func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []resources.Volume) printer.Result {
@@ -853,7 +870,6 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 		"State":            "State",
 		"Image":            "Image",
 		"ImageAlias":       "ImageAlias",
-		"SshKeys":          "SshKeys",
 		"DeviceNumber":     "DeviceNumber",
 		"BackupunitId":     "BackupunitId",
 		"UserData":         "UserData",
@@ -897,53 +913,66 @@ func getAttachedVolumes(volumes resources.AttachedVolumes) []resources.Volume {
 func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(vs))
 	for _, v := range vs {
-		properties := v.GetProperties()
-		metadata := v.GetMetadata()
 		var volumePrint VolumePrint
-		if id, ok := v.GetIdOk(); ok && id != nil {
-			volumePrint.VolumeId = *id
+		if propertiesOk, ok := v.GetPropertiesOk(); ok && propertiesOk != nil {
+			if idOk, ok := v.GetIdOk(); ok && idOk != nil {
+				volumePrint.VolumeId = *idOk
+			}
+			if nameOk, ok := propertiesOk.GetNameOk(); ok && nameOk != nil {
+				volumePrint.Name = *nameOk
+			}
+			if licenceTypeOk, ok := propertiesOk.GetLicenceTypeOk(); ok && licenceTypeOk != nil {
+				volumePrint.LicenceType = *licenceTypeOk
+			}
+			if sizeOk, ok := propertiesOk.GetSizeOk(); ok && sizeOk != nil {
+				volumePrint.Size = fmt.Sprintf("%vGB", *sizeOk)
+			}
+			if busOk, ok := propertiesOk.GetBusOk(); ok && busOk != nil {
+				volumePrint.Bus = *busOk
+			}
+			if typeOk, ok := propertiesOk.GetTypeOk(); ok && typeOk != nil {
+				volumePrint.Type = *typeOk
+			}
+			if zoneOk, ok := propertiesOk.GetAvailabilityZoneOk(); ok && zoneOk != nil {
+				volumePrint.AvailabilityZone = *zoneOk
+			}
+			if backupunitIdOk, ok := propertiesOk.GetBackupunitIdOk(); ok && backupunitIdOk != nil {
+				volumePrint.BackupunitId = *backupunitIdOk
+			}
+			if imageOk, ok := propertiesOk.GetImageOk(); ok && imageOk != nil {
+				volumePrint.Image = *imageOk
+			}
+			if imageAliasOk, ok := propertiesOk.GetImageAliasOk(); ok && imageAliasOk != nil {
+				volumePrint.ImageAlias = *imageAliasOk
+			}
+			if userDataOk, ok := propertiesOk.GetUserDataOk(); ok && userDataOk != nil {
+				volumePrint.UserData = *userDataOk
+			}
+			if deviceNumberOk, ok := propertiesOk.GetDeviceNumberOk(); ok && deviceNumberOk != nil {
+				volumePrint.DeviceNumber = *deviceNumberOk
+			}
 		}
-		if name, ok := properties.GetNameOk(); ok && name != nil {
-			volumePrint.Name = *name
-		}
-		if licenceType, ok := properties.GetLicenceTypeOk(); ok && licenceType != nil {
-			volumePrint.LicenceType = *licenceType
-		}
-		if size, ok := properties.GetSizeOk(); ok && size != nil {
-			volumePrint.Size = fmt.Sprintf("%vGB", *size)
-		}
-		if bus, ok := properties.GetBusOk(); ok && bus != nil {
-			volumePrint.Bus = *bus
-		}
-		if volumetype, ok := properties.GetTypeOk(); ok && volumetype != nil {
-			volumePrint.Type = *volumetype
-		}
-		if zone, ok := properties.GetAvailabilityZoneOk(); ok && zone != nil {
-			volumePrint.AvailabilityZone = *zone
-		}
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			volumePrint.State = *state
-		}
-		if backUpUnitId, ok := properties.GetBackupunitIdOk(); ok && backUpUnitId != nil {
-			volumePrint.BackupunitId = *backUpUnitId
-		}
-		if img, ok := properties.GetImageOk(); ok && img != nil {
-			volumePrint.Image = *img
-		}
-		if imgA, ok := properties.GetImageAliasOk(); ok && imgA != nil {
-			volumePrint.ImageAlias = *imgA
-		}
-		if userData, ok := properties.GetUserDataOk(); ok && userData != nil {
-			volumePrint.UserData = *userData
-		}
-		if no, ok := properties.GetDeviceNumberOk(); ok && no != nil {
-			volumePrint.DeviceNumber = *no
-		}
-		if sshKeys, ok := properties.GetSshKeysOk(); ok && sshKeys != nil {
-			volumePrint.SshKeys = *sshKeys
+		if metadataOk, ok := v.GetMetadataOk(); ok && metadataOk != nil {
+			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
+				volumePrint.State = *stateOk
+			}
 		}
 		o := structs.Map(volumePrint)
 		out = append(out, o)
 	}
 	return out
+}
+
+func getSshKeysFromPaths(paths []string) ([]string, error) {
+	sshKeys := make([]string, 0)
+	if len(paths) != 0 {
+		for _, sshKeyPath := range paths {
+			publicKey, err := utils.ReadPublicKey(sshKeyPath)
+			if err != nil {
+				return sshKeys, err
+			}
+			sshKeys = append(sshKeys, publicKey)
+		}
+	}
+	return sshKeys, nil
 }
