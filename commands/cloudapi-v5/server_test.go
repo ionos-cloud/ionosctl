@@ -47,6 +47,12 @@ var (
 			CpuFamily:        &testServerVar,
 			AvailabilityZone: &testServerVar,
 			VmState:          &state,
+			BootVolume: &ionoscloud.ResourceReference{
+				Id: &testServerVar,
+			},
+			BootCdrom: &ionoscloud.ResourceReference{
+				Id: &testServerVar,
+			},
 		},
 	}
 	ss = resources.Servers{
@@ -71,6 +77,12 @@ var (
 			Ram:              &ramNew,
 			CpuFamily:        &testServerNewVar,
 			AvailabilityZone: &testServerNewVar,
+			BootVolume: &ionoscloud.ResourceReference{
+				Id: &testServerVar,
+			},
+			BootCdrom: &ionoscloud.ResourceReference{
+				Id: &testServerVar,
+			},
 		},
 	}
 	serverNew = resources.Server{
@@ -85,6 +97,12 @@ var (
 				Ram:              serverProperties.ServerProperties.Ram,
 				CpuFamily:        serverProperties.ServerProperties.CpuFamily,
 				AvailabilityZone: serverProperties.ServerProperties.AvailabilityZone,
+				BootVolume: &ionoscloud.ResourceReference{
+					Id: &testServerVar,
+				},
+				BootCdrom: &ionoscloud.ResourceReference{
+					Id: &testServerVar,
+				},
 			},
 		},
 	}
@@ -359,6 +377,8 @@ func TestRunServerUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCpuFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV5Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponse, nil)
 		err := RunServerUpdate(cfg)
@@ -381,6 +401,8 @@ func TestRunServerUpdateWaitStateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCpuFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		rm.CloudApiV5Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, nil)
@@ -405,6 +427,8 @@ func TestRunServerUpdateWaitState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCpuFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		rm.CloudApiV5Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, nil)
@@ -430,6 +454,8 @@ func TestRunServerUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCpuFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV5Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, testServerErr)
 		err := RunServerUpdate(cfg)
@@ -452,6 +478,8 @@ func TestRunServerUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCpuFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV5Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponseErr, nil)
 		err := RunServerUpdate(cfg)
@@ -474,6 +502,8 @@ func TestRunServerUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCpuFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.CloudApiV5Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponse, nil)
 		rm.CloudApiV5Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
