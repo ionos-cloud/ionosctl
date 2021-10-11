@@ -3172,6 +3172,8 @@ type ApiUmUsersGetRequest struct {
 	pretty *bool
 	depth *int32
 	xContractNumber *int32
+	offset *int32
+	limit *int32
 }
 
 func (r ApiUmUsersGetRequest) Pretty(pretty bool) ApiUmUsersGetRequest {
@@ -3184,6 +3186,14 @@ func (r ApiUmUsersGetRequest) Depth(depth int32) ApiUmUsersGetRequest {
 }
 func (r ApiUmUsersGetRequest) XContractNumber(xContractNumber int32) ApiUmUsersGetRequest {
 	r.xContractNumber = &xContractNumber
+	return r
+}
+func (r ApiUmUsersGetRequest) Offset(offset int32) ApiUmUsersGetRequest {
+	r.offset = &offset
+	return r
+}
+func (r ApiUmUsersGetRequest) Limit(limit int32) ApiUmUsersGetRequest {
+	r.limit = &limit
 	return r
 }
 
@@ -3234,6 +3244,12 @@ func (a *UserManagementApiService) UmUsersGetExecute(r ApiUmUsersGetRequest) (Us
 	}
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
+	}
+	if r.offset != nil {
+		localVarQueryParams.Add("offset", parameterToString(*r.offset, ""))
+	}
+	if r.limit != nil {
+		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

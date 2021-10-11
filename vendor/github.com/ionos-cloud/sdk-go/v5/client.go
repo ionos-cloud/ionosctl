@@ -50,7 +50,7 @@ const (
    RequestStatusFailed  = "FAILED"
    RequestStatusDone    = "DONE"
 
-   Version              = "5.1.5"
+   Version              = "5.1.7"
 )
 
 // APIClient manages communication with the CLOUD API API v5.0
