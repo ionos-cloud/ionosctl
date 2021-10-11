@@ -41,6 +41,15 @@ var (
 			Items: &[]ionoscloud.Snapshot{snapshotTest.Snapshot},
 		},
 	}
+	snapshotsList = resources.Snapshots{
+		Snapshots: ionoscloud.Snapshots{
+			Id: &testSnapshotVar,
+			Items: &[]ionoscloud.Snapshot{
+				snapshotTest.Snapshot,
+				snapshotTest.Snapshot,
+			},
+		},
+	}
 	snapshotProperties = resources.SnapshotProperties{
 		SnapshotProperties: ionoscloud.SnapshotProperties{
 			Name:                &testSnapshotNewVar,
@@ -360,6 +369,26 @@ func TestRunSnapshotDelete(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testSnapshotVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV6Mocks.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
+		err := RunSnapshotDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunSnapshotDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Snapshot.EXPECT().List().Return(snapshotsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
 		err := RunSnapshotDelete(cfg)
 		assert.NoError(t, err)

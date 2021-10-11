@@ -93,6 +93,15 @@ var (
 			Items: &[]ionoscloud.Volume{v},
 		},
 	}
+	vsList = resources.Volumes{
+		Volumes: ionoscloud.Volumes{
+			Id: &testVolumeVar,
+			Items: &[]ionoscloud.Volume{
+				v,
+				v,
+			},
+		},
+	}
 	volumeProperties = resources.VolumeProperties{
 		VolumeProperties: ionoscloud.VolumeProperties{
 			Name:                &testVolumeNewVar,
@@ -442,6 +451,26 @@ func TestRunVolumeDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV6Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(&testResponse, nil)
+		err := RunVolumeDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunVolumeDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar).Return(vsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(&testResponse, nil)
 		err := RunVolumeDelete(cfg)
 		assert.NoError(t, err)

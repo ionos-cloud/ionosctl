@@ -173,7 +173,7 @@ Required values to run command:
 
 * BackupUnit Id`,
 		Example:    deleteBackupUnitExample,
-		PreCmdRun:  PreRunBackupUnitId,
+		PreCmdRun:  PreRunBackupUnitDelete,
 		CmdRun:     RunBackupUnitDelete,
 		InitClient: true,
 	})
@@ -182,6 +182,7 @@ Required values to run command:
 		return completer.BackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for BackupUnit deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all BackupUnits.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit deletion [seconds]")
 
 	return backupUnitCmd
@@ -189,6 +190,13 @@ Required values to run command:
 
 func PreRunBackupUnitId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgBackupUnitId)
+}
+
+func PreRunBackupUnitDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgBackupUnitId},
+		[]string{cloudapiv6.ArgAll},
+	)
 }
 
 func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
@@ -278,19 +286,30 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Backup unit with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
-	resp, err := c.CloudApiV6Services.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DeleteAllBackupUnits(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		backupunitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting Backup unit with id: %v...", backupunitId)
+		resp, err = c.CloudApiV6Services.BackupUnit().Delete(backupunitId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getBackupUnitPrint(resp, c, nil))
 }
@@ -308,6 +327,48 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 		c.Printer.Verbose("Property Email set: %v", email)
 	}
 	return &properties
+}
+
+func DeleteAllBackupUnits(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("Backup Unitts to be deleted:")
+	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List()
+	if err != nil {
+		return nil, err
+	}
+	if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
+		for _, backupUnit := range *backupUnitsItems {
+			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("BackupUnit Id: " + *id)
+			}
+			if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("BackupUnit Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the BackupUnits...")
+		for _, backupUnit := range *backupUnitsItems {
+			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting Backup unit with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.BackupUnit().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, err
 }
 
 // Output Printing

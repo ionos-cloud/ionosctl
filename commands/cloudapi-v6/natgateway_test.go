@@ -27,6 +27,15 @@ var (
 			},
 		},
 	}
+	natgatewayTestId = resources.NatGateway{
+		NatGateway: ionoscloud.NatGateway{
+			Id: &testNatGatewayVar,
+			Properties: &ionoscloud.NatGatewayProperties{
+				Name:      &testNatGatewayVar,
+				PublicIps: &[]string{testNatGatewayVar},
+			},
+		},
+	}
 	natgatewayTestGet = resources.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
 			Id:         &testNatGatewayVar,
@@ -38,6 +47,15 @@ var (
 		NatGateways: ionoscloud.NatGateways{
 			Id:    &testNatGatewayVar,
 			Items: &[]ionoscloud.NatGateway{natgatewayTest.NatGateway},
+		},
+	}
+	natgatewaysList = resources.NatGateways{
+		NatGateways: ionoscloud.NatGateways{
+			Id: &testNatGatewayVar,
+			Items: &[]ionoscloud.NatGateway{
+				natgatewayTestId.NatGateway,
+				natgatewayTestId.NatGateway,
+			},
 		},
 	}
 	natgatewayProperties = resources.NatGatewayProperties{
@@ -343,6 +361,25 @@ func TestRunNatGatewayDelete(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayVar)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().Delete(testNatGatewayVar, testNatGatewayVar).Return(&testResponse, nil)
+		err := RunNatGatewayDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNatGatewayDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().List(testNatGatewayVar).Return(natgatewaysList, &testResponse, nil)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().Delete(testNatGatewayVar, testNatGatewayVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Delete(testNatGatewayVar, testNatGatewayVar).Return(&testResponse, nil)
 		err := RunNatGatewayDelete(cfg)
 		assert.NoError(t, err)

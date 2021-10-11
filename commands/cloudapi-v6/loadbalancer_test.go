@@ -35,6 +35,15 @@ var (
 			Items: &[]ionoscloud.Loadbalancer{loadb},
 		},
 	}
+	lbList = resources.Loadbalancers{
+		Loadbalancers: ionoscloud.Loadbalancers{
+			Id: &testLoadbalancerVar,
+			Items: &[]ionoscloud.Loadbalancer{
+				loadb,
+				loadb,
+			},
+		},
+	}
 	loadbalancerProperties = resources.LoadbalancerProperties{
 		LoadbalancerProperties: ionoscloud.LoadbalancerProperties{
 			Name: &testLoadbalancerNewVar,
@@ -294,6 +303,26 @@ func TestRunLoadBalancerDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
+		err := RunLoadBalancerDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLoadBalancerDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().List(testLoadbalancerVar).Return(lbList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().Delete(testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
 		err := RunLoadBalancerDelete(cfg)
 		assert.NoError(t, err)

@@ -38,6 +38,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                      Delete all the LoadBlancers from a virtual Datacenter.
   -u, --api-url string           Override default host url (default "https://api.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [LoadBalancerId Name Dhcp State Ip] (default [LoadBalancerId,Name,Dhcp,State])

@@ -210,7 +210,7 @@ Required values to run command:
 * Network Load Balancer Id
 * Network Load Balancer FlowLog Id`,
 		Example:    deleteNetworkLoadBalancerFlowLogExample,
-		PreCmdRun:  PreRunDcNetworkLoadBalancerFlowLogIds,
+		PreCmdRun:  PreRunNetworkLoadBalancerFlowLogDelete,
 		CmdRun:     RunNetworkLoadBalancerFlowLogDelete,
 		InitClient: true,
 	})
@@ -228,6 +228,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNetworkLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Network Load Balancer FlowLog deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Network Load Balancer FlowLogs.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer FlowLog deletion [seconds]")
 
 	return networkloadbalancerFlowLogCmd
@@ -235,6 +236,13 @@ Required values to run command:
 
 func PreRunNetworkLoadBalancerFlowLogCreate(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgS3Bucket)
+}
+
+func PreRunNetworkLoadBalancerFlowLogDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgFlowLogId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgAll},
+	)
 }
 
 func PreRunDcNetworkLoadBalancerFlowLogIds(c *core.PreCommandConfig) error {
@@ -319,23 +327,76 @@ func RunNetworkLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 }
 
 func RunNetworkLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer flowlog"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("NetworkLoadBalancerFlowLog with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)))
-	resp, err := c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
+	flowLogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DeleteAllNetworkLoadBalancerFlowLogs(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete network load balancer flowlog"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting NetworkLoadBalancerFlowLog with id: %v...", flowLogId)
+		resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, flowLogId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getFlowLogPrint(resp, c, nil))
+}
+
+func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) (*resources.Response, error) {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	networkLoadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
+	_ = c.Printer.Print("NetworkLoadBalancerFlowLogs to be deleted:")
+	flowLogs, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListFlowLogs(dcId, networkLoadBalancerId)
+	if err != nil {
+		return nil, err
+	}
+	if flowLogsItems, ok := flowLogs.GetItemsOk(); ok && flowLogsItems != nil {
+		for _, flowLog := range *flowLogsItems {
+			if id, ok := flowLog.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("NetworkLoadBalancerFlowLog Id: " + *id)
+			}
+			if properties, ok := flowLog.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("NetworkLoadBalancerFlowLog Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NetworkLoadBalancerFlowLogs"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the NetworkLoadBalancerFlowLogs...")
+		for _, flowLog := range *flowLogsItems {
+			if id, ok := flowLog.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting NetworkLoadBalancerFlowLog with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.NetworkLoadBalancers().DeleteFlowLog(dcId, networkLoadBalancerId, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, err
 }
