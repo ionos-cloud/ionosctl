@@ -44,26 +44,26 @@ Required values to run command:
       --backupunit-id string       The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property
       --bus string                 The bus type of the Volume (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId SshKeys ImageAlias DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
+                                   Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId ImageAlias DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --cpu-hot-plug               It is capable of CPU hot plug (no reboot required)
+      --cpu-hot-plug               It is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false
       --datacenter-id string       The unique Data Center Id (required)
-      --disc-virtio-hot-plug       It is capable of Virt-IO drive hot plug (no reboot required)
-      --disc-virtio-hot-unplug     It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
+      --disc-virtio-hot-plug       It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
+      --disc-virtio-hot-unplug     It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
-      --image-alias string         The Image Alias to set instead of Image Id
+  -a, --image-alias string         The Image Alias to set instead of Image Id
       --image-id string            The Image Id or Snapshot Id to be used as template for the new Volume
       --licence-type string        Licence Type of the Volume (default "LINUX")
   -n, --name string                Name of the Volume (default "Unnamed Volume")
-      --nic-hot-plug               It is capable of nic hot plug (no reboot required)
-      --nic-hot-unplug             It is capable of nic hot unplug (no reboot required)
+      --nic-hot-plug               It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
+      --nic-hot-unplug             It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false
   -o, --output string              Desired output format [text|json] (default "text")
-  -p, --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9 (default "abcde12345")
+  -p, --password string            Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output
-      --ram-hot-plug               It is capable of memory hot plug (no reboot required)
-      --size string                The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
-      --ssh-keys strings           SSH Keys of the Volume
+      --ram-hot-plug               It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
+  -s, --size string                The size of the Volume in GB. e.g.: --size 10 or --size 10GB. The maximum Volume size is determined by your contract limit (default "10")
+  -k, --ssh-key-paths strings      Absolut path of SSH Keys files for the Volume
   -t, --timeout int                Timeout option for Request for Volume creation [seconds] (default 60)
       --type string                Type of the Volume (default "HDD")
       --user-data string           The cloud-init configuration for the Volume as base64 encoded string. It is mandatory to provide either 'public image' or 'imageAlias' that has cloud-init compatibility in conjunction with this property

@@ -43,20 +43,20 @@ Required values to run command:
   -u, --api-url string           Override default host url (default "https://api.ionos.com")
       --bus string               Bus of the Volume (default "VIRTIO")
       --cols strings             Set of columns to be printed on output 
-                                 Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId SshKeys ImageAlias DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
+                                 Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId ImageAlias DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
-      --cpu-hot-plug             It is capable of CPU hot plug (no reboot required)
+      --cpu-hot-plug             It is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false
       --datacenter-id string     The unique Data Center Id (required)
-      --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required)
-      --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines
+      --disc-virtio-hot-plug     It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false
+      --disc-virtio-hot-unplug   It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machiness. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
   -n, --name string              Name of the Volume
-      --nic-hot-plug             It is capable of nic hot plug (no reboot required)
-      --nic-hot-unplug           It is capable of nic hot unplug (no reboot required)
+      --nic-hot-plug             It is capable of nic hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false
+      --nic-hot-unplug           It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
-      --ram-hot-plug             It is capable of memory hot plug (no reboot required)
+      --ram-hot-plug             It is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false
       --size string              The size of the Volume in GB. e.g. 10 or 10GB. The maximum volume size is determined by your contract limit (default "10")
   -t, --timeout int              Timeout option for Request for Volume update [seconds] (default 60)
   -v, --verbose                  Print step-by-step process when running command
