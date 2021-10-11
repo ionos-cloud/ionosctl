@@ -92,7 +92,6 @@ const (
 	ArgK8sAnnotationKey      = "annotation-key"
 	ArgK8sAnnotationValue    = "annotation-value"
 	ArgPublicIps             = "public-ips"
-	ArgGatewayIp             = "gateway-ip"
 	ArgLatest                = "latest"
 	ArgMethod                = "method"
 )

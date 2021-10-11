@@ -117,8 +117,6 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 	create.AddStringFlag(cloudapiv5.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, the default one will be used")
 	create.AddStringFlag(cloudapiv5.ArgS3Bucket, "", "", "S3 Bucket name configured for K8s usage")
 	create.AddStringSliceFlag(cloudapiv5.ArgApiSubnets, "", []string{""}, "Access to the K8s API server is restricted to these CIDRs. Cluster-internal traffic is not affected by this restriction. If no allowlist is specified, access is not restricted. If an IP without subnet mask is provided, the default value will be used: 32 for IPv4 and 128 for IPv6")
-	create.AddBoolFlag(cloudapiv5.ArgPublic, "", true, "The indicator if the Cluster is public or private")
-	create.AddStringFlag(cloudapiv5.ArgGatewayIp, "", "", "The IP address of the gateway used by the Cluster. This is mandatory when `public` is set to `false` and should not be provided otherwise")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Cluster creation to be executed")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new Cluster to be in ACTIVE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv5.K8sTimeoutSeconds, "Timeout option for waiting for Cluster/Request [seconds]")
@@ -331,16 +329,6 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 		}
 	}
 	proper.SetK8sVersion(k8sversion)
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgPublic)) {
-		public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgPublic))
-		proper.SetPublic(public)
-		c.Printer.Verbose("Property Public set: %v", public)
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgGatewayIp)) {
-		gatewayIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGatewayIp))
-		proper.SetGatewayIp(gatewayIp)
-		c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
-	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgS3Bucket)) {
 		s3buckets := make([]ionoscloud.S3Bucket, 0)
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgS3Bucket))
@@ -470,7 +458,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) (*resources.Response, error) {
 
 var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "Public", "State", "MaintenanceWindow"}
 
-var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "Public", "GatewayIp", "S3Bucket", "ApiSubnetAllowList"}
+var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
 
 type K8sClusterPrint struct {
 	ClusterId                string   `json:"ClusterId,omitempty"`
@@ -480,8 +468,6 @@ type K8sClusterPrint struct {
 	ViableNodePoolVersions   []string `json:"ViableNodePoolVersions,omitempty"`
 	MaintenanceWindow        string   `json:"MaintenanceWindow,omitempty"`
 	State                    string   `json:"State,omitempty"`
-	GatewayIps               string   `json:"GatewayIps,omitempty"`
-	Public                   bool     `json:"Public,omitempty"`
 	S3Bucket                 []string `json:"S3Bucket,omitempty"`
 	ApiSubnetAllowList       []string `json:"ApiSubnetAllowList,omitempty"`
 }
@@ -515,8 +501,6 @@ func getK8sClusterCols(flagName string, outErr io.Writer) []string {
 			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
 			"ViableNodePoolVersions":   "ViableNodePoolVersions",
 			"MaintenanceWindow":        "MaintenanceWindow",
-			"Public":                   "Public",
-			"GatewayIps":               "GatewayIps",
 			"S3Bucket":                 "S3Bucket",
 			"ApiSubnetAllowList":       "ApiSubnetAllowList",
 		}
@@ -579,12 +563,6 @@ func getK8sClustersKVMaps(us []resources.K8sCluster) []map[string]interface{} {
 				if time, ok := maintenance.GetTimeOk(); ok && time != nil {
 					uPrint.MaintenanceWindow = fmt.Sprintf("%s %s", uPrint.MaintenanceWindow, *time)
 				}
-			}
-			if pub, ok := properties.GetPublicOk(); ok && pub != nil {
-				uPrint.Public = *pub
-			}
-			if gatewayIps, ok := properties.GetGatewayIpOk(); ok && gatewayIps != nil {
-				uPrint.GatewayIps = *gatewayIps
 			}
 			if apiSubnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && apiSubnetAllowListOk != nil {
 				uPrint.ApiSubnetAllowList = *apiSubnetAllowListOk
