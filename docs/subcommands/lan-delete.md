@@ -38,7 +38,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    delete all Lans from a Virtual Data Center.
+  -a, --all                    Delete all Lans from a Virtual Data Center.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [LanId Name Public PccId State] (default [LanId,Name,Public,PccId,State])

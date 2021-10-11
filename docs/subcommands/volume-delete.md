@@ -38,7 +38,7 @@ Required values to run command:
 ## Options
 
 ```text
-  -a, --all                    delete all Volumes from a virtual Datacenter.
+  -a, --all                    Delete all Volumes from a virtual Datacenter.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId SshKeys ImageAlias DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
