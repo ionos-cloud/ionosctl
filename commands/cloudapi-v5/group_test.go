@@ -35,6 +35,23 @@ var (
 			},
 		},
 	}
+	groupTestId = resources.Group{
+		Group: ionoscloud.Group{
+			Id: &testGroupVar,
+			Properties: &ionoscloud.GroupProperties{
+				Name:                 &testGroupVar,
+				CreateDataCenter:     &testGroupBoolVar,
+				CreateSnapshot:       &testGroupBoolVar,
+				ReserveIp:            &testGroupBoolVar,
+				AccessActivityLog:    &testGroupBoolVar,
+				CreatePcc:            &testGroupBoolVar,
+				S3Privilege:          &testGroupBoolVar,
+				CreateBackupUnit:     &testGroupBoolVar,
+				CreateInternetAccess: &testGroupBoolVar,
+				CreateK8sCluster:     &testGroupBoolVar,
+			},
+		},
+	}
 	groupTestNew = resources.Group{
 		Group: ionoscloud.Group{
 			Properties: &ionoscloud.GroupProperties{
@@ -68,6 +85,15 @@ var (
 		Groups: ionoscloud.Groups{
 			Id:    &testGroupVar,
 			Items: &[]ionoscloud.Group{groupTest.Group},
+		},
+	}
+	groupsList = resources.Groups{
+		Groups: ionoscloud.Groups{
+			Id: &testGroupVar,
+			Items: &[]ionoscloud.Group{
+				groupTestId.Group,
+				groupTestId.Group,
+			},
 		},
 	}
 	testGroupType       = ionoscloud.Type(testGroupVar)
@@ -421,6 +447,24 @@ func TestRunGroupDelete(t *testing.T) {
 	})
 }
 
+func TestRunGroupDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Group.EXPECT().List().Return(groupsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
+		err := RunGroupDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunGroupDeleteResponseErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -431,7 +475,7 @@ func TestRunGroupDeleteResponseErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgGroupId), testGroupVar)
-		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponseErr, nil)
+		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, testGroupErr)
 		err := RunGroupDelete(cfg)
 		assert.Error(t, err)
 	})

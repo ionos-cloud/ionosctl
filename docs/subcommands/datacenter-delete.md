@@ -37,6 +37,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                    Delete all the Datacenters.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [DatacenterId Name Location State Description Version Features SecAuthProtection] (default [DatacenterId,Name,Location,Features,State])

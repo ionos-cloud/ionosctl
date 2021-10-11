@@ -27,6 +27,15 @@ var (
 			},
 		},
 	}
+	pccTestId = resources.PrivateCrossConnect{
+		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
+			Id: &testPccVar,
+			Properties: &ionoscloud.PrivateCrossConnectProperties{
+				Name:        &testPccVar,
+				Description: &testPccVar,
+			},
+		},
+	}
 	pccTestGet = resources.PrivateCrossConnect{
 		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
 			Id:         &testPccVar,
@@ -47,6 +56,15 @@ var (
 		PrivateCrossConnects: ionoscloud.PrivateCrossConnects{
 			Id:    &testPccVar,
 			Items: &[]ionoscloud.PrivateCrossConnect{pccTest.PrivateCrossConnect},
+		},
+	}
+	pccsList = resources.PrivateCrossConnects{
+		PrivateCrossConnects: ionoscloud.PrivateCrossConnects{
+			Id: &testPccVar,
+			Items: &[]ionoscloud.PrivateCrossConnect{
+				pccTestId.PrivateCrossConnect,
+				pccTestId.PrivateCrossConnect,
+			},
 		},
 	}
 	pccProperties = resources.PrivateCrossConnectProperties{
@@ -356,6 +374,25 @@ func TestRunPccDelete(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgPccId), testPccVar)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
+		err := RunPccDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunPccDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List().Return(pccsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
 		err := RunPccDelete(cfg)
 		assert.NoError(t, err)

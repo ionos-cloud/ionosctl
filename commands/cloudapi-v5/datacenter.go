@@ -149,7 +149,7 @@ Required values to run command:
 
 * Data Center Id`,
 		Example:    deleteDatacenterExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunDataCenterDelete,
 		CmdRun:     RunDataCenterDelete,
 		InitClient: true,
 	})
@@ -158,6 +158,7 @@ Required values to run command:
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Data Center deletion")
+	deleteCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "Delete all the Datacenters.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Data Center deletion [seconds]")
 
 	return datacenterCmd
@@ -165,6 +166,13 @@ Required values to run command:
 
 func PreRunDataCenterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId)
+}
+
+func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv5.ArgDataCenterId},
+		[]string{cloudapiv5.ArgAll},
+	)
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {
@@ -240,23 +248,76 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
-		return err
-	}
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
-	c.Printer.Verbose("Deleting Datacenter with ID: %v...", dcId)
-	resp, err := c.CloudApiV5Services.DataCenters().Delete(dcId)
-	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
+	if allFlag {
+		resp, err = DeleteAllDatacenters(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
+			return err
+		}
+		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
+		c.Printer.Verbose("Starting deleting Datacenter with id: %v...", dcId)
+		resp, err = c.CloudApiV5Services.DataCenters().Delete(dcId)
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getDataCenterPrint(resp, c, nil))
+}
+
+func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("Datacenters to be deleted:")
+	datacenters, resp, err := c.CloudApiV5Services.DataCenters().List()
+	if err != nil {
+		return nil, err
+	}
+	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
+		for _, dc := range *datacentersItems {
+			if id, ok := dc.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Datacenter Id: " + *id)
+			}
+			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" Datacenter Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Datacenters...")
+
+		for _, dc := range *datacentersItems {
+			if id, ok := dc.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
+				resp, err = c.CloudApiV5Services.DataCenters().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, err
 }
 
 // Output Printing
