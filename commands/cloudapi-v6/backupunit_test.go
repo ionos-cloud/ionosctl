@@ -28,6 +28,25 @@ var (
 			},
 		},
 	}
+	backupUnitTestId = resources.BackupUnit{
+		BackupUnit: ionoscloud.BackupUnit{
+			Id: &testBackUnitId,
+			Properties: &ionoscloud.BackupUnitProperties{
+				Email:    &testBackupUnitVar,
+				Name:     &testBackupUnitVar,
+				Password: &testBackupUnitVar,
+			},
+		},
+	}
+	backupUnitsList = resources.BackupUnits{
+		BackupUnits: ionoscloud.BackupUnits{
+			Id: &testBackUnitId,
+			Items: &[]ionoscloud.BackupUnit{
+				backupUnitTestId.BackupUnit,
+				backupUnitTestId.BackupUnit,
+			},
+		},
+	}
 	backupUnitTestGet = resources.BackupUnit{
 		BackupUnit: ionoscloud.BackupUnit{
 			Id:         &testBackupUnitVar,
@@ -62,6 +81,7 @@ var (
 		},
 	}
 	testBackupUnitVar    = "test-backup-unit"
+	testBackUnitId       = "87aa25ec-5f74-4927-bd95-c8e42db06fe2"
 	testBackupUnitNewVar = "test-new-backup-unit"
 	testBackupUnitErr    = errors.New("backup-unit test error")
 )
@@ -340,6 +360,23 @@ func TestRunBackupUnitDelete(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar).Return(&testResponse, nil)
+		err := RunBackupUnitDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunBackupUnitDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List().Return(backupUnitsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
 	})

@@ -29,6 +29,26 @@ var (
 			},
 		},
 	}
+	nodeTestId = resources.K8sNode{
+		KubernetesNode: ionoscloud.KubernetesNode{
+			Id: &testNodeVar,
+			Properties: &ionoscloud.KubernetesNodeProperties{
+				Name:       &testNodeVar,
+				K8sVersion: &testNodeVar,
+				PublicIP:   &testNodeVar,
+				PrivateIP:  &testNodeVar,
+			},
+		},
+	}
+	nodesTestList = resources.K8sNodes{
+		KubernetesNodes: ionoscloud.KubernetesNodes{
+			Id: &testNodeVar,
+			Items: &[]ionoscloud.KubernetesNode{
+				nodeTestId.KubernetesNode,
+				nodeTestId.KubernetesNode,
+			},
+		},
+	}
 	nodeTestGet = resources.K8sNode{
 		KubernetesNode: ionoscloud.KubernetesNode{
 			Id:         &testNodeVar,
@@ -259,6 +279,25 @@ func TestRunK8sNodeDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodePoolId), testNodeVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testNodeVar)
+		rm.CloudApiV6Mocks.K8s.EXPECT().DeleteNode(testNodeVar, testNodeVar, testNodeVar).Return(&testResponse, nil)
+		err := RunK8sNodeDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunK8sNodeDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodePoolId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodes(testNodeVar, testNodeVar).Return(nodesTestList, &testResponse, nil)
+		rm.CloudApiV6Mocks.K8s.EXPECT().DeleteNode(testNodeVar, testNodeVar, testNodeVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().DeleteNode(testNodeVar, testNodeVar, testNodeVar).Return(&testResponse, nil)
 		err := RunK8sNodeDelete(cfg)
 		assert.NoError(t, err)

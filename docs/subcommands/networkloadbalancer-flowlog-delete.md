@@ -45,6 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                             Delete all Network Load Balancer FlowLogs.
   -u, --api-url string                  Override default host url (default "https://api.ionos.com")
       --cols strings                    Set of columns to be printed on output 
                                         Available columns: [NetworkLoadBalancerId Name ListenerLan Ips TargetLan LbPrivateIps State] (default [NetworkLoadBalancerId,Name,ListenerLan,Ips,TargetLan,LbPrivateIps,State])
