@@ -24,8 +24,6 @@ var (
 			Properties: &ionoscloud.KubernetesClusterPropertiesForPost{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
-				Public:     &testClusterBoolVar,
-				GatewayIp:  &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
 					{
 						Name: &testClusterVar,
@@ -72,8 +70,6 @@ var (
 			Properties: &ionoscloud.KubernetesClusterProperties{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
-				Public:     &testClusterBoolVar,
-				GatewayIp:  &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
 					{
 						Name: &testClusterVar,
@@ -98,8 +94,6 @@ var (
 			Properties: &ionoscloud.KubernetesClusterProperties{
 				Name:       &testClusterVar,
 				K8sVersion: &testClusterVar,
-				Public:     &testClusterBoolVar,
-				GatewayIp:  &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
 					{
 						Name: &testClusterVar,
@@ -121,8 +115,6 @@ var (
 					DayOfTheWeek: &testClusterVar,
 					Time:         &testClusterVar,
 				},
-				Public:    &testClusterBoolVar,
-				GatewayIp: &testClusterVar,
 				S3Buckets: &[]ionoscloud.S3Bucket{
 					{
 						Name: &testClusterVar,
@@ -325,8 +317,6 @@ func TestRunK8sClusterCreateWaitIdErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), testClusterBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApiSubnets), []string{testClusterVar})
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, nil, nil)
@@ -346,8 +336,6 @@ func TestRunK8sClusterCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), testClusterBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApiSubnets), []string{testClusterVar})
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTestId, nil, nil)
@@ -368,8 +356,6 @@ func TestRunK8sClusterCreateWaitState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), testClusterBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApiSubnets), []string{testClusterVar})
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTestId, nil, nil)
@@ -391,8 +377,6 @@ func TestRunK8sClusterCreateWaitReqErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), testClusterBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApiSubnets), []string{testClusterVar})
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTestId, &testResponse, nil)
@@ -410,8 +394,6 @@ func TestRunK8sClusterCreateVersion(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), testClusterBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApiSubnets), []string{testClusterVar})
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetVersion().Return(testClusterVar, nil, nil)
@@ -429,8 +411,6 @@ func TestRunK8sClusterCreateVersionErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), testClusterBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApiSubnets), []string{testClusterVar})
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetVersion().Return(testClusterVar, nil, testClusterErr)
@@ -450,8 +430,6 @@ func TestRunK8sClusterCreateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), testClusterBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApiSubnets), []string{testClusterVar})
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, &testResponse, testClusterErr)
@@ -471,8 +449,6 @@ func TestRunK8sClusterCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPublic), testClusterBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGatewayIp), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgS3Bucket), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApiSubnets), []string{testClusterVar})
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateCluster(clusterTestPost).Return(&clusterTest, nil, testClusterErr)

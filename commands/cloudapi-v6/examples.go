@@ -32,7 +32,7 @@ ionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-requ
 
 ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --licence-type LICENCE_TYPE -w -W
 
-ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID -w -W`
+ionosctl server create --datacenter-id DATACENTER_ID --type CUBE --template-id TEMPLATE_ID --image-id IMAGE_ID --password IMAGE_PASSWORD -w -W`
 	updateServerExample = `ionosctl server update --datacenter-id DATACENTER_ID --server-id SERVER_ID --cores 4`
 	deleteServerExample = `ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID
 
@@ -52,7 +52,9 @@ ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --for
 	/*
 		Volume Examples
 	*/
-	createVolumeExample = `ionosctl volume create --datacenter-id DATACENTER_ID --name NAME`
+	createVolumeExample = `ionosctl volume create --datacenter-id DATACENTER_ID --name NAME
+
+ionosctl volume create --datacenter-id DATACENTER_ID --name NAME --image-alias IMAGE_ALIAS --ssh-keys-path "SSH_KEY_PATH1,SSH_KEY_PATH2"`
 	updateVolumeExample = `ionosctl volume update --datacenter-id DATACENTER_ID --volume-id VOLUME_ID --size 20`
 	listVolumeExample   = `ionosctl volume list --datacenter-id DATACENTER_ID`
 	getVolumeExample    = `ionosctl volume get --datacenter-id DATACENTER_ID --volume-id VOLUME_ID`
@@ -83,8 +85,8 @@ ionosctl server delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --for
 	/*
 		Lan Examples
 	*/
-	createLanExample = `ionosctl lan create --datacenter-id DATACENTER_ID --name NAMEd`
-	updateLanExample = `ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=true`
+	createLanExample = `ionosctl lan create --datacenter-id DATACENTER_ID --name NAME --public=true`
+	updateLanExample = `ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=false`
 	listLanExample   = `ionosctl lan list --datacenter-id DATACENTER_ID`
 	getLanExample    = `ionosctl lan get --datacenter-id DATACENTER_ID --lan-id LAN_ID`
 	deleteLanExample = `ionosctl lan delete --datacenter-id DATACENTER_ID --lan-id LAN_ID
@@ -138,7 +140,7 @@ ionosctl image list --location us/las --type HDD --licence-type LINUX`
 	*/
 	listFirewallRuleExample   = `ionosctl firewallrule list --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID`
 	getFirewallRuleExample    = `ionosctl firewallrule get --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID`
-	createFirewallRuleExample = `ionosctl firewallrule create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --protocol PROTOCOL --name NAME --port-range-start PORT_START --port-range-end PORT_END`
+	createFirewallRuleExample = `ionosctl firewallrule create --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --protocol PROTOCOL --direction DIRECTION --destination-ip DESTINATION_IP`
 	updateFirewallRuleExample = `ionosctl firewallrule update --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID --name NAME --wait-for-request`
 	deleteFirewallRuleExample = `ionosctl firewallrule delete --datacenter-id DATACENTER_ID --server-id SERVER_ID --nic-id NIC_ID --firewallrule-id FIREWALLRULE_ID`
 

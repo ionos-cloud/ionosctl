@@ -127,7 +127,7 @@ Required values to create a Server of type CUBE:
 * Type
 * Template Id
 
-By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the ` + "`" + `--licence-type` + "`" + ` option or set an Image Id. For Image Id, it is recommended to set a password or SSH keys.
+By default, Licence Type for Direct Attached Storage is set to LINUX. You can set it using the ` + "`" + `--licence-type` + "`" + ` option or set an Image Id. For Image Id, it is needed to set a password or SSH keys.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can also wait for Server to be in AVAILABLE state using ` + "`" + `--wait-for-state` + "`" + ` option. It is recommended to use both options together for this command.`,
 		Example:    createServerExample,
@@ -172,12 +172,13 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"LINUX", "WINDOWS", "WINDOWS2016", "UNKNOWN", "OTHER"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddStringFlag(cloudapiv6.ArgImageAlias, cloudapiv6.ArgImageAliasShort, "", "[CUBE Server] The Image Alias to use instead of Image Id for the Direct Attached Storage")
 	create.AddStringFlag(cloudapiv6.ArgImageId, "", "", "[CUBE Server] The Image Id or snapshot Id to be used as for the Direct Attached Storage")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "abcde12345", "[CUBE Server] Initial password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
-	create.AddStringSliceFlag(cloudapiv6.ArgSshKeys, "", []string{""}, "SSH Keys of the Direct Attached Storage")
+	create.AddStringFlag(config.ArgPassword, config.ArgPasswordShort, "", "[CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9")
+	create.AddStringSliceFlag(cloudapiv6.ArgSshKeyPaths, cloudapiv6.ArgSshKeyPathsShort, []string{""}, "[CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server creation to be executed")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for new Server to be in AVAILABLE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds]")
@@ -220,6 +221,14 @@ Required values to run command:
 	update.AddStringFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(cloudapiv6.ArgVolumeId, "", "", "The unique Volume Id for the BootVolume. The Volume needs to be already attached to the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(cloudapiv6.ArgCdromId, "", "", "The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getImagesCdromIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Server")
 	update.AddStringFlag(cloudapiv6.ArgCPUFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family of the Server")
@@ -448,11 +457,29 @@ Required values to run command:
 }
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+	err := core.CheckRequiredFlagsSets(c.Command, c.NS,
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam},
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId},
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId},
-	)
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId})
+	if err != nil {
+		return err
+	}
+	// Validate flags
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
+		err = core.CheckRequiredFlagsSets(c.Command, c.NS,
+			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
+			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
+			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
+			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgCores, cloudapiv6.ArgRam, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
+			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgPassword},
+			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageId, cloudapiv6.ArgSshKeyPaths},
+			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgPassword},
+			[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgType, cloudapiv6.ArgTemplateId, cloudapiv6.ArgImageAlias, cloudapiv6.ArgSshKeyPaths},
+		)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func PreRunDcServerIds(c *core.PreCommandConfig) error {
@@ -503,7 +530,10 @@ func RunServerCreate(c *core.CommandConfig) error {
 	// If Server is of type CUBE, it will create an attached Volume
 	if viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) == serverCubeType {
 		// Volume Properties
-		volumeDAS := getNewDAS(c)
+		volumeDAS, err := getNewDAS(c)
+		if err != nil {
+			return err
+		}
 		// Attach Storage
 		input.SetEntities(ionoscloud.ServerEntities{
 			Volumes: &ionoscloud.AttachedVolumes{
@@ -736,6 +766,20 @@ func getUpdateServerInfo(c *core.CommandConfig) (*resources.ServerProperties, er
 		c.Printer.Verbose("Property Cores set: %v ", cores)
 		input.SetCores(cores)
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)) {
+		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+		c.Printer.Verbose("Property BootVolume set: %v ", volumeId)
+		input.SetBootVolume(ionoscloud.ResourceReference{
+			Id: &volumeId,
+		})
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId)) {
+		cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCdromId))
+		c.Printer.Verbose("Property BootCdrom set: %v ", cdromId)
+		input.SetBootCdrom(ionoscloud.ResourceReference{
+			Id: &cdromId,
+		})
+	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRam)) {
 		size, err := utils.ConvertSize(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRam)),
@@ -808,26 +852,40 @@ func getNewServer(c *core.CommandConfig) (*resources.Server, error) {
 	}, nil
 }
 
-func getNewDAS(c *core.CommandConfig) *resources.Volume {
+func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 	volumeProper := resources.VolumeProperties{}
 	volumeProper.SetType("DAS")
 	volumeProper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeName)))
 	volumeProper.SetBus(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBus)))
-	volumeProper.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)))
+	if (!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) &&
+		!viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias))) ||
+		viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)) {
+		volumeProper.SetLicenceType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLicenceType)))
+	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) {
 		volumeProper.SetImage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageId)) || viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)) {
+		volumeProper.SetImageAlias(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgImageAlias)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) {
 		volumeProper.SetImagePassword(viper.GetString(core.GetFlagName(c.NS, config.ArgPassword)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeys)) {
-		volumeProper.SetSshKeys(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeys)))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths)) {
+		sshKeysPaths := viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgSshKeyPaths))
+		c.Printer.Verbose("SSH Key Paths: %v", sshKeysPaths)
+		sshKeys, err := getSshKeysFromPaths(sshKeysPaths)
+		if err != nil {
+			return nil, err
+		}
+		volumeProper.SetSshKeys(sshKeys)
+		c.Printer.Verbose("Property SshKeys set")
 	}
 	return &resources.Volume{
 		Volume: ionoscloud.Volume{
 			Properties: &volumeProper.VolumeProperties,
 		},
-	}
+	}, nil
 }
 
 func DeleteAllServers(c *core.CommandConfig) (*resources.Response, error) {
@@ -876,7 +934,7 @@ func DeleteAllServers(c *core.CommandConfig) (*resources.Response, error) {
 
 var (
 	defaultServerCols = []string{"ServerId", "Name", "Type", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
-	allServerCols     = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type"}
+	allServerCols     = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "TemplateId", "Type", "BootCdromId", "BootVolumeId"}
 )
 
 type ServerPrint struct {
@@ -888,6 +946,8 @@ type ServerPrint struct {
 	Ram              string `json:"Ram,omitempty"`
 	CpuFamily        string `json:"CpuFamily,omitempty"`
 	VmState          string `json:"VmState,omitempty"`
+	BootVolumeId     string `json:"BootVolumeId,omitempty"`
+	BootCdromId      string `json:"BootCdromId,omitempty"`
 	TemplateId       string `json:"TemplateId,omitempty"`
 	Type             string `json:"Type,omitempty"`
 }
@@ -930,6 +990,8 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 		"CpuFamily":        "CpuFamily",
 		"TemplateId":       "TemplateId",
 		"Type":             "Type",
+		"BootVolumeId":     "BootVolumeId",
+		"BootCdromId":      "BootCdromId",
 	}
 	var serverCols []string
 	for _, k := range cols {
@@ -955,38 +1017,48 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var serverPrint ServerPrint
-		if id, ok := s.GetIdOk(); ok && id != nil {
-			serverPrint.ServerId = *id
+		if idOk, ok := s.GetIdOk(); ok && idOk != nil {
+			serverPrint.ServerId = *idOk
 		}
 		if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				serverPrint.Name = *name
+			if nameOk, ok := properties.GetNameOk(); ok && nameOk != nil {
+				serverPrint.Name = *nameOk
 			}
-			if cores, ok := properties.GetCoresOk(); ok && cores != nil {
-				serverPrint.Cores = *cores
+			if coresOk, ok := properties.GetCoresOk(); ok && coresOk != nil {
+				serverPrint.Cores = *coresOk
 			}
-			if ram, ok := properties.GetRamOk(); ok && ram != nil {
-				serverPrint.Ram = fmt.Sprintf("%vMB", *ram)
+			if ramOk, ok := properties.GetRamOk(); ok && ramOk != nil {
+				serverPrint.Ram = fmt.Sprintf("%vMB", *ramOk)
 			}
-			if cpuFamily, ok := properties.GetCpuFamilyOk(); ok && cpuFamily != nil {
-				serverPrint.CpuFamily = *cpuFamily
+			if cpuFamilyOk, ok := properties.GetCpuFamilyOk(); ok && cpuFamilyOk != nil {
+				serverPrint.CpuFamily = *cpuFamilyOk
 			}
-			if zone, ok := properties.GetAvailabilityZoneOk(); ok && zone != nil {
-				serverPrint.AvailabilityZone = *zone
+			if zoneOk, ok := properties.GetAvailabilityZoneOk(); ok && zoneOk != nil {
+				serverPrint.AvailabilityZone = *zoneOk
 			}
-			if vmState, ok := properties.GetVmStateOk(); ok && vmState != nil {
-				serverPrint.VmState = *vmState
+			if vmStateOk, ok := properties.GetVmStateOk(); ok && vmStateOk != nil {
+				serverPrint.VmState = *vmStateOk
 			}
-			if templateId, ok := properties.GetTemplateUuidOk(); ok && templateId != nil {
-				serverPrint.TemplateId = *templateId
+			if templateUuidOk, ok := properties.GetTemplateUuidOk(); ok && templateUuidOk != nil {
+				serverPrint.TemplateId = *templateUuidOk
 			}
-			if t, ok := properties.GetTypeOk(); ok && t != nil {
-				serverPrint.Type = *t
+			if typeOk, ok := properties.GetTypeOk(); ok && typeOk != nil {
+				serverPrint.Type = *typeOk
+			}
+			if bootVolumeOk, ok := properties.GetBootVolumeOk(); ok && bootVolumeOk != nil {
+				if idOk, ok := bootVolumeOk.GetIdOk(); ok && idOk != nil {
+					serverPrint.BootVolumeId = *idOk
+				}
+			}
+			if bootCdromOk, ok := properties.GetBootCdromOk(); ok && bootCdromOk != nil {
+				if idOk, ok := bootCdromOk.GetIdOk(); ok && idOk != nil {
+					serverPrint.BootCdromId = *idOk
+				}
 			}
 		}
-		if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
-			if state, ok := metadata.GetStateOk(); ok && state != nil {
-				serverPrint.State = *state
+		if metadataOk, ok := s.GetMetadataOk(); ok && metadataOk != nil {
+			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
+				serverPrint.State = *stateOk
 			}
 		}
 		o := structs.Map(serverPrint)

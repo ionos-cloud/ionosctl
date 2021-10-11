@@ -53,7 +53,7 @@ Required values to run command:
   -h, --help               Print usage
   -o, --output string      Desired output format [text|json] (default "text")
   -q, --quiet              Quiet output
-      --s3key-active       Enable or disable an User S3Key
+      --s3key-active       Enable or disable an User S3Key. E.g.: --s3key-active=true, --s3key-active=false
   -i, --s3key-id string    The unique User S3Key Id (required)
   -t, --timeout int        Timeout option for Request for User S3Key update [seconds] (default 60)
       --user-id string     The unique User Id (required)

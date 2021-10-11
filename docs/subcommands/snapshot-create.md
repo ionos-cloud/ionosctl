@@ -50,7 +50,7 @@ Required values to run command:
   -n, --name string            Name of the Snapshot (default "Unnamed Snapshot")
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
-      --sec-auth-protection    Enable secure authentication protection
+      --sec-auth-protection    Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false
   -t, --timeout int            Timeout option for Request for Snapshot creation [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command
       --volume-id string       The unique Volume Id (required)

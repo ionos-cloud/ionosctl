@@ -49,7 +49,7 @@ Required values to run command:
   -n, --name string            The name of the LAN
   -o, --output string          Desired output format [text|json] (default "text")
       --pcc-id string          The unique Id of the Private Cross-Connect the LAN will connect to
-      --public                 Public option for LAN
+      --public                 Public option for LAN. E.g.: --public=true, --public=false
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for LAN update [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command
@@ -59,6 +59,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=true
+ionosctl lan update --datacenter-id DATACENTER_ID --lan-id LAN_ID --name NAME --public=false
 ```
 
