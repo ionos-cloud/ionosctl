@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-dbaas-pgsql/completer"
@@ -65,22 +66,31 @@ func LogsCmd() *core.Command {
 }
 
 func RunClusterLogsGet(c *core.CommandConfig) error {
+	var (
+		startTime, endTime time.Time
+		err                error
+	)
 	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)))
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)) {
 		c.Printer.Verbose("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)))
+		startTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)))
+		if err != nil {
+			return err
+		}
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)) {
 		c.Printer.Verbose("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)))
+		endTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)))
+		if err != nil {
+			return err
+		}
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgLimit)) {
 		c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgLimit)))
 	}
 	c.Printer.Verbose("Getting Logs for the specified Cluster...")
-	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)),
-		viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgLimit)))
+	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)),
+		viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgLimit)), startTime, endTime)
 	if err != nil {
 		return err
 	}
@@ -155,8 +165,9 @@ func getClusterLogsKVMaps(clusterLogs resources.ClusterLogs) []map[string]interf
 						logs = fmt.Sprintf("%sMessage: %s ", logs, *messageOk)
 					}
 					if timeOk, ok := msg.GetTimeOk(); ok && timeOk != nil {
-						times = fmt.Sprintf("%s%s\n", times, *timeOk)
-						logs = fmt.Sprintf("%sTime: %s\n", logs, *timeOk)
+						timeOkRFC := timeOk.Format(time.RFC3339)
+						times = fmt.Sprintf("%s%s\n", times, timeOkRFC)
+						logs = fmt.Sprintf("%sTime: %s\n", logs, timeOkRFC)
 					}
 				}
 				clusterPrint.Logs = strings.TrimSuffix(logs, "\n")

@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-dbaas-pgsql/completer"
@@ -235,12 +236,12 @@ func getBackupsKVMaps(backups []resources.ClusterBackup) []map[string]interface{
 		}
 		if metadataOk, ok := backup.GetMetadataOk(); ok && metadataOk != nil {
 			if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
-				createdDate := *createdDateOk
-				backupPrint.CreatedDate = createdDate.String()
+				createdDateOkRfc := createdDateOk.Format(time.RFC3339)
+				backupPrint.CreatedDate = createdDateOkRfc
 			}
 			if lastModifiedDateOk, ok := metadataOk.GetLastModifiedDateOk(); ok && lastModifiedDateOk != nil {
-				lastModifiedDate := *lastModifiedDateOk
-				backupPrint.LastModifiedDate = lastModifiedDate.String()
+				lastModifiedDateOkRfc := lastModifiedDateOk.Format(time.RFC3339)
+				backupPrint.LastModifiedDate = lastModifiedDateOkRfc
 			}
 		}
 		o := structs.Map(backupPrint)

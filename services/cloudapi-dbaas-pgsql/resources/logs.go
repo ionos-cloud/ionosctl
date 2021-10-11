@@ -13,7 +13,7 @@ type ClusterLogs struct {
 
 // LogsService is a wrapper around ionoscloud.ClusterLogs
 type LogsService interface {
-	Get(clusterId string, start, end string, limit int32) (*ClusterLogs, *Response, error)
+	Get(clusterId string, limit int32, startTime, endTime time.Time) (*ClusterLogs, *Response, error)
 }
 
 type logsService struct {
@@ -30,21 +30,13 @@ func NewLogsService(client *Client, ctx context.Context) LogsService {
 	}
 }
 
-func (svc *logsService) Get(clusterId string, start, end string, limit int32) (*ClusterLogs, *Response, error) {
+func (svc *logsService) Get(clusterId string, limit int32, startTime, endTime time.Time) (*ClusterLogs, *Response, error) {
 	req := svc.client.LogsApi.ClusterLogsGet(svc.context, clusterId)
-	if start != "" {
-		startFormat, err := time.Parse(time.RFC3339, start)
-		if err != nil {
-			return nil, nil, err
-		}
-		req = req.Start(startFormat)
+	if !startTime.IsZero() {
+		req = req.Start(startTime)
 	}
-	if end != "" {
-		endFormat, err := time.Parse(time.RFC3339, end)
-		if err != nil {
-			return nil, nil, err
-		}
-		req = req.End(endFormat)
+	if !endTime.IsZero() {
+		req = req.End(endTime)
 	}
 	if limit != 0 {
 		req = req.Limit(limit)

@@ -6,6 +6,7 @@ package mock_resources
 
 import (
 	reflect "reflect"
+	time "time"
 
 	gomock "github.com/golang/mock/gomock"
 	resources "github.com/ionos-cloud/ionosctl/services/cloudapi-dbaas-pgsql/resources"
@@ -35,7 +36,7 @@ func (m *MockClustersService) EXPECT() *MockClustersServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockClustersService) Create(input resources.CreateClusterRequest, backupId, recoveryTargetTime string) (*resources.Cluster, *resources.Response, error) {
+func (m *MockClustersService) Create(input resources.CreateClusterRequest, backupId string, recoveryTargetTime time.Time) (*resources.Cluster, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", input, backupId, recoveryTargetTime)
 	ret0, _ := ret[0].(*resources.Cluster)

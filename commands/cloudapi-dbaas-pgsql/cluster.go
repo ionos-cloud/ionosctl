@@ -50,7 +50,7 @@ func ClusterCmd() *core.Command {
 		Resource:   "cluster",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Clusters",
+		ShortDesc:  "List PostgreSQL Clusters",
 		LongDesc:   "Use this command to retrieve a list of PostgreSQL Clusters provisioned under your account. You can filter the result based on Cluster Name using `--name` option.",
 		Example:    listClusterExample,
 		PreCmdRun:  core.NoPreRun,
@@ -67,7 +67,7 @@ func ClusterCmd() *core.Command {
 		Resource:   "cluster",
 		Verb:       "get",
 		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Cluster",
+		ShortDesc:  "Get a PostgreSQL Cluster",
 		Example:    getClusterExample,
 		LongDesc:   "Use this command to retrieve details about a PostgreSQL Cluster by using its ID.\n\nRequired values to run command:\n\n* Cluster Id",
 		PreCmdRun:  PreRunClusterId,
@@ -158,7 +158,7 @@ Required values to run command:
 		Resource:  "cluster",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Cluster",
+		ShortDesc: "Update a PostgreSQL Cluster",
 		LongDesc: `Use this command to update attributes of a PostgreSQL Cluster.
 
 Required values to run command:
@@ -318,6 +318,7 @@ func RunClusterGet(c *core.CommandConfig) error {
 }
 
 func RunClusterCreate(c *core.CommandConfig) error {
+	var recoveryTargetTime time.Time
 	input, err := getCreateClusterRequest(c)
 	if err != nil {
 		return err
@@ -326,13 +327,14 @@ func RunClusterCreate(c *core.CommandConfig) error {
 		c.Printer.Verbose("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)) {
-		c.Printer.Verbose("RecoveryTargetTime: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
+		c.Printer.Verbose("RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
+		recoveryTargetTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
+		if err != nil {
+			return err
+		}
 	}
 	c.Printer.Verbose("Creating Cluster...")
-	cluster, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(
-		*input,
-		viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
+	cluster, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(*input, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)), recoveryTargetTime)
 	if err != nil {
 		return err
 	}
@@ -377,7 +379,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 		},
 	}
 	if viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)) != "" {
-		c.Printer.Verbose("Setting RecoveryTargetTime: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
+		c.Printer.Verbose("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
 		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgTime)))
 		if err != nil {
 			return err

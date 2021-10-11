@@ -31,7 +31,7 @@ type Response struct {
 type ClustersService interface {
 	List(filterName string) (ClusterList, *Response, error)
 	Get(clusterId string) (*Cluster, *Response, error)
-	Create(input CreateClusterRequest, backupId, recoveryTargetTime string) (*Cluster, *Response, error)
+	Create(input CreateClusterRequest, backupId string, recoveryTargetTime time.Time) (*Cluster, *Response, error)
 	Update(clusterId string, input PatchClusterRequest) (*Cluster, *Response, error)
 	Delete(clusterId string) (*Response, error)
 }
@@ -65,19 +65,15 @@ func (svc *clustersService) Get(clusterId string) (*Cluster, *Response, error) {
 	return &Cluster{cluster}, &Response{*res}, err
 }
 
-func (svc *clustersService) Create(input CreateClusterRequest, backupId, recoveryTargetTime string) (*Cluster, *Response, error) {
+func (svc *clustersService) Create(input CreateClusterRequest, backupId string, recoveryTargetTime time.Time) (*Cluster, *Response, error) {
 	req := svc.client.ClustersApi.ClustersPost(svc.context).Cluster(input.CreateClusterRequest)
 	if backupId != "" {
 		// Create Cluster from a specified Backup
 		req = req.FromBackup(backupId)
 	}
-	if recoveryTargetTime != "" {
+	if !recoveryTargetTime.IsZero() {
 		// Create Cluster from a specified Backup from a specific timestamp
-		recoveryTargetTimeFormat, err := time.Parse(time.RFC3339, recoveryTargetTime)
-		if err != nil {
-			return nil, nil, err
-		}
-		req = req.FromRecoveryTargetTime(recoveryTargetTimeFormat)
+		req = req.FromRecoveryTargetTime(recoveryTargetTime)
 	}
 	cluster, res, err := svc.client.ClustersApi.ClustersPostExecute(req)
 	return &Cluster{cluster}, &Response{*res}, err
