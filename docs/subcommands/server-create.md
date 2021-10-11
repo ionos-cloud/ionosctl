@@ -79,7 +79,7 @@ You can wait for the Request to be executed using `--wait-for-request` option. Y
   -p, --password string            [CUBE Server] Initial image password to be set for installed OS. Works with public Images only. Not modifiable. Password rules allows all characters from a-z, A-Z, 0-9
   -q, --quiet                      Quiet output
       --ram string                 The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB (required)
-      --ssh-key-paths strings      Absolute paths for the SSH Keys of the Direct Attached Storage
+  -k, --ssh-key-paths strings      [CUBE Server] Absolute paths for the SSH Keys of the Direct Attached Storage
       --template-id string         [CUBE Server] The unique Template Id (required)
   -t, --timeout int                Timeout option for Request for Server creation/for Server to be in AVAILABLE state [seconds] (default 60)
       --type string                Type usages for the Server (default "ENTERPRISE")
