@@ -47,7 +47,7 @@ Required values to run command:
   -u, --api-url string             Override default host url (default "https://api.ionos.com")
   -z, --availability-zone string   Availability zone of the Server (default "AUTO")
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State BootVolumeId BootCdromId] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (required) (default 2)
       --cpu-family string          CPU Family for the Server (default "AMD_OPTERON")

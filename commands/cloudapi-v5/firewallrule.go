@@ -136,9 +136,12 @@ Required values to run command:
 	})
 	create.AddStringFlag(cloudapiv5.ArgName, cloudapiv5.ArgNameShort, "Unnamed Rule", "The name for the Firewall Rule")
 	create.AddStringFlag(cloudapiv5.ArgProtocol, "", "", "The Protocol for Firewall Rule: TCP, UDP, ICMP, ANY", core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"TCP", "UDP", "ICMP", "ANY"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(cloudapiv5.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses.")
 	create.AddStringFlag(cloudapiv5.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs.")
-	create.AddStringFlag(cloudapiv5.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs.")
+	create.AddStringFlag(cloudapiv5.ArgDestinationIp, cloudapiv5.ArgDestinationIpShort, "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target/destination IPs.")
 	create.AddIntFlag(cloudapiv5.ArgIcmpType, "", 0, "Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types.")
 	create.AddIntFlag(cloudapiv5.ArgIcmpCode, "", 0, "Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes.")
 	create.AddIntFlag(cloudapiv5.ArgPortRangeStart, "", 1, "Define the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports.")
@@ -427,10 +430,10 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 		properties.SetSourceMac(sourceMac)
 		c.Printer.Verbose("Property SourceMac set: %v", sourceMac)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgTargetIp)) {
-		targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgTargetIp))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgDestinationIp)) {
+		targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDestinationIp))
 		properties.SetTargetIp(targetIp)
-		c.Printer.Verbose("Property TargetIp set: %v", targetIp)
+		c.Printer.Verbose("Property TargetIp/DestinationIp set: %v", targetIp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgIcmpCode)) {
 		icmpCode := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv5.ArgIcmpCode))
@@ -504,7 +507,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) (*resources.Response, error) 
 
 var (
 	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "State"}
-	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "TargetIP", "PortRangeStart", "PortRangeEnd", "State"}
+	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "DestinationIP", "PortRangeStart", "PortRangeEnd", "State"}
 )
 
 type FirewallRulePrint struct {
@@ -513,7 +516,7 @@ type FirewallRulePrint struct {
 	Protocol       string `json:"Protocol,omitempty"`
 	SourceMac      string `json:"SourceMac,omitempty"`
 	SourceIP       string `json:"SourceIP,omitempty"`
-	TargetIP       string `json:"TargetIP,omitempty"`
+	DestinationIP  string `json:"DestinationIP,omitempty"`
 	PortRangeStart int32  `json:"PortRangeStart,omitempty"`
 	PortRangeEnd   int32  `json:"PortRangeEnd,omitempty"`
 	State          string `json:"State,omitempty"`
@@ -546,7 +549,7 @@ func getFirewallRulesCols(flagName string, outErr io.Writer) []string {
 			"Protocol":       "Protocol",
 			"SourceMac":      "SourceMac",
 			"SourceIP":       "SourceIP",
-			"TargetIP":       "TargetIP",
+			"DestinationIP":  "DestinationIP",
 			"PortRangeStart": "PortRangeStart",
 			"PortRangeEnd":   "PortRangeEnd",
 			"State":          "State",
@@ -619,7 +622,7 @@ func getFirewallRuleKVMap(l resources.FirewallRule) map[string]interface{} {
 			firewallRulePrint.SourceIP = *sourceIp
 		}
 		if targetIp, ok := properties.GetTargetIpOk(); ok && targetIp != nil {
-			firewallRulePrint.TargetIP = *targetIp
+			firewallRulePrint.DestinationIP = *targetIp
 		}
 	}
 	if metadata, ok := l.GetMetadataOk(); ok && metadata != nil {

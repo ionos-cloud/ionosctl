@@ -43,7 +43,7 @@ Required values to run a command:
                                Available columns: [NicId Name Dhcp LanId Ips State FirewallActive Mac] (default [NicId,Name,Dhcp,LanId,Ips,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --dhcp                   Set to false if you wish to disable DHCP on the NIC (default true)
+      --dhcp                   Set to false if you wish to disable DHCP on the NIC. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ips strings            IPs assigned to the NIC. This can be a collection

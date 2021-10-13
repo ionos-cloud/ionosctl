@@ -33,7 +33,6 @@ var (
 			Image:               &testVolumeVar,
 			ImageAlias:          &testVolumeVar,
 			AvailabilityZone:    &zoneVolume,
-			SshKeys:             &testVolumeSliceVar,
 			BackupunitId:        &testVolumeVar,
 			UserData:            &testVolumeVar,
 			CpuHotPlug:          &testVolumeBoolVar,
@@ -64,7 +63,6 @@ var (
 				NicHotUnplug:        &testVolumeBoolVar,
 				DiscVirtioHotPlug:   &testVolumeBoolVar,
 				DiscVirtioHotUnplug: &testVolumeBoolVar,
-				SshKeys:             &testVolumeSliceVar,
 			},
 		},
 	}
@@ -157,6 +155,47 @@ func TestVolumeCmd(t *testing.T) {
 		err = errors.New("non-available cmd")
 	}
 	assert.NoError(t, err)
+}
+
+func TestPreRunVolumeCreate(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
+		err := PreRunVolumeCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeCreateImg(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgImageId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgPassword), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgSshKeyPaths), []string{testVolumeVar})
+		err := PreRunVolumeCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeCreateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunVolumeCreate(cfg)
+		assert.Error(t, err)
+	})
 }
 
 func TestServerVolumeCmd(t *testing.T) {
@@ -282,7 +321,6 @@ func TestRunVolumeCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgNicHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgSshKeys), testVolumeSliceVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV5Mocks.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&resources.Volume{Volume: v}, &testResponse, nil)
 		err := RunVolumeCreate(cfg)
@@ -322,6 +360,36 @@ func TestRunVolumeCreateImg(t *testing.T) {
 	})
 }
 
+func TestRunVolumeCreateSshKeyErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgName), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgSize), sizeVolume)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgImageId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgImageAlias), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgSshKeyPaths), []string{testVolumeVar})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgType), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgBus), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAvailabilityZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgBackupUnitId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgUserData), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		err := RunVolumeCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunVolumeCreateErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -345,7 +413,6 @@ func TestRunVolumeCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgNicHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgSshKeys), testVolumeSliceVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV5Mocks.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&resources.Volume{Volume: v}, nil, testVolumeErr)
 		err := RunVolumeCreate(cfg)
@@ -376,7 +443,6 @@ func TestRunVolumeCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgNicHotUnplug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDiscVirtioHotPlug), testVolumeBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgSshKeys), testVolumeSliceVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.CloudApiV5Mocks.Volume.EXPECT().Create(testVolumeVar, testVolume).Return(&resources.Volume{Volume: v}, &testResponse, nil)
 		rm.CloudApiV5Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)

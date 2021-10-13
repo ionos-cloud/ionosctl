@@ -49,7 +49,7 @@ Required values to run command:
   -n, --name string            The name of the LAN (default "Unnamed LAN")
   -o, --output string          Desired output format [text|json] (default "text")
       --pcc-id string          The unique Id of the Private Cross-Connect the LAN will connect to
-      --public                 Indicates if the LAN faces the public Internet (true) or not (false)
+  -p, --public                 Indicates if the LAN faces the public Internet (true) or not (false). E.g.: --public=true, --public=false
   -q, --quiet                  Quiet output
   -t, --timeout int            Timeout option for Request for LAN creation [seconds] (default 60)
   -v, --verbose                Print step-by-step process when running command

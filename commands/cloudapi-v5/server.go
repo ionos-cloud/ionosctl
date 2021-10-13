@@ -34,10 +34,10 @@ func ServerCmd() *core.Command {
 		},
 	}
 	globalFlags := serverCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultServerCols, printer.ColsMessage(defaultServerCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultServerCols, printer.ColsMessage(allServerCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(serverCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = serverCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultServerCols, cobra.ShellCompDirectiveNoFileComp
+		return allServerCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -186,6 +186,14 @@ Required values to run command:
 	update.AddStringFlag(cloudapiv5.ArgRam, "", "", "The amount of memory for the Server. Size must be specified in multiples of 256. e.g. --ram 256 or --ram 256MB")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(cloudapiv5.ArgVolumeId, "", "", "The unique Volume Id for the BootVolume. The Volume needs to be already attached to the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(cloudapiv5.ArgCdromId, "", "", "The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getImagesCdromIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server update to be executed")
 	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the updated Server to be in AVAILABLE state")
@@ -608,6 +616,20 @@ func getServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
 		c.Printer.Verbose("Property Cores set: %v ", cores)
 		input.SetCores(cores)
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgVolumeId)) {
+		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgVolumeId))
+		c.Printer.Verbose("Property BootVolume set: %v ", volumeId)
+		input.SetBootVolume(ionoscloud.ResourceReference{
+			Id: &volumeId,
+		})
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgCdromId)) {
+		cdromId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgCdromId))
+		c.Printer.Verbose("Property BootCdrom set: %v ", cdromId)
+		input.SetBootCdrom(ionoscloud.ResourceReference{
+			Id: &cdromId,
+		})
+	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgRam)) {
 		size, err := utils.ConvertSize(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgRam)),
@@ -670,7 +692,10 @@ func DeleteAllServers(c *core.CommandConfig) (*resources.Response, error) {
 
 // Output Printing
 
-var defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
+var (
+	defaultServerCols = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State"}
+	allServerCols     = []string{"ServerId", "Name", "AvailabilityZone", "Cores", "Ram", "CpuFamily", "VmState", "State", "BootVolumeId", "BootCdromId"}
+)
 
 type ServerPrint struct {
 	ServerId         string `json:"ServerId,omitempty"`
@@ -679,6 +704,8 @@ type ServerPrint struct {
 	State            string `json:"State,omitempty"`
 	Cores            int32  `json:"Cores,omitempty"`
 	Ram              string `json:"Ram,omitempty"`
+	BootVolumeId     string `json:"BootVolumeId,omitempty"`
+	BootCdromId      string `json:"BootCdromId,omitempty"`
 	CpuFamily        string `json:"CpuFamily,omitempty"`
 	VmState          string `json:"VmState,omitempty"`
 }
@@ -719,6 +746,8 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 		"Cores":            "Cores",
 		"Ram":              "Ram",
 		"CpuFamily":        "CpuFamily",
+		"BootVolumeId":     "BootVolumeId",
+		"BootCdromId":      "BootCdromId",
 	}
 	var serverCols []string
 	for _, k := range cols {
@@ -744,32 +773,42 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(ss))
 	for _, s := range ss {
 		var serverPrint ServerPrint
-		if id, ok := s.GetIdOk(); ok && id != nil {
-			serverPrint.ServerId = *id
+		if idOk, ok := s.GetIdOk(); ok && idOk != nil {
+			serverPrint.ServerId = *idOk
 		}
-		if properties, ok := s.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				serverPrint.Name = *name
+		if propertiesOk, ok := s.GetPropertiesOk(); ok && propertiesOk != nil {
+			if nameOk, ok := propertiesOk.GetNameOk(); ok && nameOk != nil {
+				serverPrint.Name = *nameOk
 			}
-			if cores, ok := properties.GetCoresOk(); ok && cores != nil {
-				serverPrint.Cores = *cores
+			if coresOk, ok := propertiesOk.GetCoresOk(); ok && coresOk != nil {
+				serverPrint.Cores = *coresOk
 			}
-			if ram, ok := properties.GetRamOk(); ok && ram != nil {
-				serverPrint.Ram = fmt.Sprintf("%vMB", *ram)
+			if ramOk, ok := propertiesOk.GetRamOk(); ok && ramOk != nil {
+				serverPrint.Ram = fmt.Sprintf("%vMB", *ramOk)
 			}
-			if cpuFamily, ok := properties.GetCpuFamilyOk(); ok && cpuFamily != nil {
-				serverPrint.CpuFamily = *cpuFamily
+			if cpuFamilyOk, ok := propertiesOk.GetCpuFamilyOk(); ok && cpuFamilyOk != nil {
+				serverPrint.CpuFamily = *cpuFamilyOk
 			}
-			if zone, ok := properties.GetAvailabilityZoneOk(); ok && zone != nil {
-				serverPrint.AvailabilityZone = *zone
+			if zoneOk, ok := propertiesOk.GetAvailabilityZoneOk(); ok && zoneOk != nil {
+				serverPrint.AvailabilityZone = *zoneOk
 			}
-			if vmState, ok := properties.GetVmStateOk(); ok && vmState != nil {
-				serverPrint.VmState = *vmState
+			if vmStateOk, ok := propertiesOk.GetVmStateOk(); ok && vmStateOk != nil {
+				serverPrint.VmState = *vmStateOk
+			}
+			if bootVolumeOk, ok := propertiesOk.GetBootVolumeOk(); ok && bootVolumeOk != nil {
+				if idOk, ok := bootVolumeOk.GetIdOk(); ok && idOk != nil {
+					serverPrint.BootVolumeId = *idOk
+				}
+			}
+			if bootCdromOk, ok := propertiesOk.GetBootCdromOk(); ok && bootCdromOk != nil {
+				if idOk, ok := bootCdromOk.GetIdOk(); ok && idOk != nil {
+					serverPrint.BootCdromId = *idOk
+				}
 			}
 		}
-		if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {
-			if state, ok := metadata.GetStateOk(); ok && state != nil {
-				serverPrint.State = *state
+		if metadataOk, ok := s.GetMetadataOk(); ok && metadataOk != nil {
+			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
+				serverPrint.State = *stateOk
 			}
 		}
 		o := structs.Map(serverPrint)

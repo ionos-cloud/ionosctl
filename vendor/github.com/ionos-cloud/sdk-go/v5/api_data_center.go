@@ -388,7 +388,7 @@ func (r ApiDatacentersGetRequest) Execute() (Datacenters, *APIResponse, error) {
 
 /*
  * DatacentersGet List Data Centers under your account
- * You can retrieve a complete list of data centers provisioned under your account
+ * You can retrieve a list of data centers provisioned under your account. Default list will contain first 100 items. For more items use pagination query parameters
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @return ApiDatacentersGetRequest
  */

@@ -47,8 +47,9 @@ Required values to run command:
 ```text
   -u, --api-url string             Override default host url (default "https://api.ionos.com")
   -z, --availability-zone string   Availability zone of the Server
+      --cdrom-id string            The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
+                                   Available columns: [ServerId Name AvailabilityZone Cores Ram CpuFamily VmState State BootVolumeId BootCdromId] (default [ServerId,Name,AvailabilityZone,Cores,Ram,CpuFamily,VmState,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  The total number of cores for the Server, e.g. 4. Maximum: depends on contract resource limits (default 2)
       --cpu-family string          CPU Family of the Server
@@ -62,6 +63,7 @@ Required values to run command:
   -i, --server-id string           The unique Server Id (required)
   -t, --timeout int                Timeout option for Request for Server update/for Server to be in AVAILABLE state [seconds] (default 60)
   -v, --verbose                    Print step-by-step process when running command
+      --volume-id string           The unique Volume Id for the BootVolume. The Volume needs to be already attached to the Server
   -w, --wait-for-request           Wait for the Request for Server update to be executed
   -W, --wait-for-state             Wait for the updated Server to be in AVAILABLE state
 ```
