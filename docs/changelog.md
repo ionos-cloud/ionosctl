@@ -1,5 +1,15 @@
 # Changelog
 
+## \[5.0.9\]
+
+* feature: added `--all` option on delete commands
+* feature: added BootVolume via `--volume-id` and BootCdrom via `--cdrom-id` to server update command
+* api-change: removed `--public`, `--gateway-ip` options from k8s cluster commands
+* enhancement: renamed `--target-ip` to `--destination-ip` for firewall rule commands
+* enhancement: renamed `--ssh-keys` to `--ssh-key-paths` for volume commands and support uploading SSH Keys from files
+* enhancement: updated documentation with usage of boolean flags
+* dependency-update: SDK-Go version from v5.1.5 to v5.1.7
+
 ## \[5.0.8\]
 
 * Added `--verbose` flag to all commands to see step-by-step process when running a command
