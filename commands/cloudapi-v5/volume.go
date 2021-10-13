@@ -150,7 +150,7 @@ Required values to run command:
 	create.AddBoolFlag(cloudapiv5.ArgNicHotUnplug, "", false, "It is capable of nic hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false")
 	create.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotPlug, "", false, "It is capable of Virt-IO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false")
 	create.AddBoolFlag(cloudapiv5.ArgDiscVirtioHotUnplug, "", false, "It is capable of Virt-IO drive hot unplug (no reboot required). This works only for non-Windows virtual Machines. E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false")
-	create.AddStringSliceFlag(cloudapiv5.ArgSshKeyPaths, cloudapiv5.ArgSshKeyPathsShort, []string{""}, "Absolut path of SSH Keys files for the Volume")
+	create.AddStringSliceFlag(cloudapiv5.ArgSshKeyPaths, cloudapiv5.ArgSshKeyPathsShort, []string{""}, "Absolute path of SSH Keys files for the Volume")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume creation [seconds]")
 
