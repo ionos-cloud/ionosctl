@@ -24,6 +24,7 @@ const (
 	ArgCols                = "cols"
 	ArgUpdates             = "updates"
 	ArgToken               = "token"
+	ArgTokenShort          = "t"
 	ArgUser                = "user"
 	ArgPassword            = "password"
 	ArgPasswordShort       = "p"
