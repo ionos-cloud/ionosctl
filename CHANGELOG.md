@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.0.10]
+
+- bug-fix: fixed `login` command to support username and password or token authentication
+
 ## [5.0.9]
 
 - feature: added `--all` option on delete commands
