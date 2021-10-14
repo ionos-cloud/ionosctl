@@ -79,7 +79,7 @@ from the folder where you cloned the ionosctl git.
 
 ### Authenticating with Ionos Cloud
 
-Before using `ionosctl` to perform any operations, you will need to set your credentials for IONOS Cloud account. The authenticating mechanism is first checking the environment variables and if these are not set, it is checking if a configuration file exists and if the user has the right permissions for it.
+Before using `ionosctl` to perform any operations, you will need to set your credentials for IONOS Cloud account. The authentication mechanism is first checking the environment variables and if these are not set, it is checking if a configuration file exists and if the user has the right permissions for it.
 
 You can provide your credentials:
 
@@ -109,7 +109,13 @@ username
 Enter your password:
 ```
 
-You can also use token for authentication. After providing credentials, you will be notified if you logged in successfully or not:
+You can also authenticate via `--token` flag exclusively:
+
+```text
+ionosctl login --token IONOS_TOKEN
+```
+
+After providing credentials, you will be notified if you logged in successfully or not:
 
 ```text
 Status: Authentication successful!

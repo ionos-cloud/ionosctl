@@ -28,10 +28,10 @@ type PreCmdRunTest func(c *PreCommandConfig)
 func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	p, _ := printer.NewPrinterRegistry(writer, writer)
 	if viper.GetString(config.ArgOutput) == "" {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	}
+	p, _ := printer.NewPrinterRegistry(writer, writer)
 	prt := p[viper.GetString(config.ArgOutput)]
 	preCmdCfg := &PreCommandConfig{
 		Command: &Command{
@@ -58,10 +58,10 @@ type ResourcesMocksTest struct {
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	printReg, _ := printer.NewPrinterRegistry(writer, writer)
 	if viper.GetString(config.ArgOutput) == "" {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	}
+	printReg, _ := printer.NewPrinterRegistry(writer, writer)
 	prt := printReg[viper.GetString(config.ArgOutput)]
 	// Init Test Mock Resources and Services
 	testMocks := initMockResources(ctrl)

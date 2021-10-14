@@ -14,10 +14,15 @@ import (
 )
 
 func GetUserData() map[string]string {
+	if viper.GetString(Token) != "" {
+		return map[string]string{
+			Token:     viper.GetString(Token),
+			ServerUrl: viper.GetString(ServerUrl),
+		}
+	}
 	return map[string]string{
 		Username:  viper.GetString(Username),
 		Password:  viper.GetString(Password),
-		Token:     viper.GetString(Token),
 		ServerUrl: viper.GetString(ServerUrl),
 	}
 }

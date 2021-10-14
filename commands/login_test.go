@@ -15,13 +15,51 @@ import (
 
 const (
 	testUsername = "test@ionos.com"
-	testPassword = "test"
+	testPassword = "testPwd"
+	testToken    = "testToken"
 )
+
+func TestPreRunLoginCmd(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), testUsername)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
+		err := PreRunLoginCmd(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunLoginCmdErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), testUsername)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgToken), testToken)
+		err := PreRunLoginCmd(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunLoginUserTokenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgToken), testToken)
+		err := RunLoginUser(cfg)
+		assert.Error(t, err)
+	})
+}
 
 func TestRunLoginUserBufferUserErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), "")
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
 		cfg.Stdin = bytes.NewReader([]byte(testUsername + "\n"))
@@ -34,6 +72,7 @@ func TestRunLoginUserBufferErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), "")
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
 		cfg.Stdin = bytes.NewReader([]byte(testUsername))
@@ -46,6 +85,7 @@ func TestRunLoginUserUnauthorizedErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), testUsername)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
 		err := RunLoginUser(cfg)
@@ -57,6 +97,7 @@ func TestRunLoginUserBufferPwdErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), testUsername)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), "")
 		err := RunLoginUser(cfg)
@@ -68,6 +109,7 @@ func TestRunLoginUserConfigSet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
 		err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
 		assert.NoError(t, err)
 		err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")

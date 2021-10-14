@@ -16,7 +16,7 @@ DOCS_OUT?=$(shell pwd)/docs/subcommands/
 .PHONY: test_unit
 test_unit:
 	@echo "--- Run unit tests ---"
-	@go test -cover ./internal/...
+	@go test -cover ./commands/ ./internal/...
 	@echo "DONE"
 
 .PHONY: test
