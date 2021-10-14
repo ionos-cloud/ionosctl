@@ -1,5 +1,9 @@
 # Changelog
 
+## \[6.0.0-beta.6\]
+
+* bug-fix: fixed `login` command to support username and password or token authentication
+
 ## \[6.0.0-beta.5\]
 
 * Added `--all` option on delete commands
