@@ -15,7 +15,8 @@ import (
 
 const (
 	testUsername = "test@ionos.com"
-	testPassword = "test"
+	testPassword = "testPwd"
+	testToken    = "testToken"
 )
 
 func TestPreRunLoginCmd(t *testing.T) {
@@ -37,8 +38,19 @@ func TestPreRunLoginCmdErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgUser), testUsername)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgPassword), testPassword)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgToken), testPassword)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgToken), testToken)
 		err := PreRunLoginCmd(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunLoginUserTokenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgToken), testToken)
+		err := RunLoginUser(cfg)
 		assert.Error(t, err)
 	})
 }
