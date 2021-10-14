@@ -11,6 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
+	sdk "github.com/ionos-cloud/sdk-go/v5"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
 )
@@ -46,7 +47,7 @@ By default, the user data after running this command will be saved in:
 * Linux: ` + "`" + `${XDG_CONFIG_HOME}/ionosctl/config.json` + "`" + `
 * Windows: ` + "`" + `%APPDATA%\ionosctl\config.json` + "`" + `.
 
-You can use another configuration file for authentication with ` + "`" + `--config` + "`" + ` global option.
+You can use another configuration file for authentication with the ` + "`" + `--config` + "`" + ` global option.
 
 Note: The IONOS Cloud CLI supports also authentication with environment variables: $IONOS_USERNAME, $IONOS_PASSWORD or $IONOS_TOKEN.`,
 		Example:    loginExamples,
@@ -62,13 +63,16 @@ Note: The IONOS Cloud CLI supports also authentication with environment variable
 }
 
 func PreRunLoginCmd(c *core.PreCommandConfig) error {
-	if viper.IsSet(config.ArgUser) && viper.IsSet(config.ArgPassword) && viper.IsSet(config.ArgToken) {
-		return errors.New("error: it is recommended to use either username + password, either token")
+	if viper.IsSet(core.GetFlagName(c.NS, config.ArgUser)) && viper.IsSet(core.GetFlagName(c.NS, config.ArgPassword)) && viper.IsSet(core.GetFlagName(c.NS, config.ArgToken)) {
+		return errors.New("it is recommended to use either username + password, either token")
 	}
 	return nil
 }
 
 func RunLoginUser(c *core.CommandConfig) error {
+	c.Printer.Verbose("Note: The login command will save the credentials in a configuration file after the authentication is successful!")
+	c.Printer.Verbose("Note: As an alternative to this, ionosctl offers support for environment variables: $%s, $%s or $%s.",
+		sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar)
 	username := viper.GetString(core.GetFlagName(c.NS, config.ArgUser))
 	pwd := viper.GetString(core.GetFlagName(c.NS, config.ArgPassword))
 	token := viper.GetString(core.GetFlagName(c.NS, config.ArgToken))
@@ -108,6 +112,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 		c.Printer.Verbose("Password is set.")
 	}
 	c.Printer.Verbose("ServerUrl: %s", config.GetServerUrl())
+	viper.Set(config.ServerUrl, viper.GetString(config.ArgServerUrl))
 	clientSvc, err := resources.NewClientService(
 		viper.GetString(config.Username),
 		viper.GetString(config.Password),
@@ -126,7 +131,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	}
 
 	// Store credentials
-	c.Printer.Verbose("Storing credentials to config file: %v", viper.GetString(config.ArgConfig))
+	c.Printer.Verbose("Storing credentials to the configuration file: %v", viper.GetString(config.ArgConfig))
 	err = config.WriteFile()
 	if err != nil {
 		return err

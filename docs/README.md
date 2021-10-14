@@ -101,7 +101,7 @@ username
 Enter your password:
 ```
 
-You can also use token for authentication. After providing credentials, you will be notified if you logged in successfully or not:
+You can also use token for authentication via `--token` flag. After providing credentials, you will be notified if you logged in successfully or not:
 
 ```text
 Status: Authentication successful!
