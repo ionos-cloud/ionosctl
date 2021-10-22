@@ -24,6 +24,36 @@ var (
 			Items: &[]ionoscloud.Image{testImage.Image},
 		},
 	}
+	testCdromsList = resources.Cdroms{
+		Cdroms: ionoscloud.Cdroms{
+			Id: &testCdromVar,
+			Items: &[]ionoscloud.Image{
+				testImageCdRoms.Image,
+				testImageCdRoms.Image,
+			},
+		},
+	}
+	testImageCdRoms = resources.Image{
+		Image: ionoscloud.Image{
+			Id: &testCdromVar,
+			Properties: &ionoscloud.ImageProperties{
+				Name:         &testImageVar,
+				Location:     &testImageVar,
+				Description:  &testImageVar,
+				Size:         &testImageSize,
+				LicenceType:  &testImageUpperVar,
+				ImageType:    &testImageUpperVar,
+				Public:       &testImagePublic,
+				ImageAliases: &[]string{testImageVar},
+				CloudInit:    &testImageVar,
+			},
+			Metadata: &ionoscloud.DatacenterElementMetadata{
+				CreatedDate:     &testIonosTime,
+				CreatedBy:       &testImageVar,
+				CreatedByUserId: &testImageVar,
+			},
+		},
+	}
 	testCdromVar = "test-cdrom"
 	testCdromErr = errors.New("cdrom test error")
 )
@@ -195,6 +225,26 @@ func TestRunServerCdromDetach(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCdromId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV5Mocks.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(nil, nil)
+		err := RunServerCdromDetach(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerCdromDetachAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Server.EXPECT().ListCdroms(testCdromVar, testCdromVar).Return(testCdromsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testResponse, nil)
+		rm.CloudApiV5Mocks.Server.EXPECT().DetachCdrom(testCdromVar, testCdromVar, testCdromVar).Return(&testResponse, nil)
 		err := RunServerCdromDetach(cfg)
 		assert.NoError(t, err)
 	})

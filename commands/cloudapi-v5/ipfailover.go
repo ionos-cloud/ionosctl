@@ -132,7 +132,7 @@ Required values to run command:
 * Nic Id
 * IP address`,
 		Example:    removeIpFailoverExample,
-		PreCmdRun:  PreRunDcLanServerNicIdsIp,
+		PreCmdRun:  PreRunDcLanServerNicIpRemove,
 		CmdRun:     RunIpFailoverRemove,
 		InitClient: true,
 	})
@@ -156,6 +156,7 @@ Required values to run command:
 	removeCmd.AddStringFlag(cloudapiv5.ArgIp, "", "", "Allocated IP", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for IP Failover deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IP Failover deletion [seconds]")
+	removeCmd.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "Remove all IP Failovers.")
 
 	return ipfailoverCmd
 }
@@ -166,6 +167,13 @@ func PreRunDcLanIds(c *core.PreCommandConfig) error {
 
 func PreRunDcLanServerNicIdsIp(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgLanId, cloudapiv5.ArgServerId, cloudapiv5.ArgNicId, cloudapiv5.ArgIp)
+}
+
+func PreRunDcLanServerNicIpRemove(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgLanId, cloudapiv5.ArgServerId, cloudapiv5.ArgNicId, cloudapiv5.ArgIp},
+		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgLanId, cloudapiv5.ArgServerId, cloudapiv5.ArgNicId, cloudapiv5.ArgAll},
+	)
 }
 
 func RunIpFailoverList(c *core.CommandConfig) error {
@@ -226,40 +234,104 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 }
 
 func RunIpFailoverRemove(c *core.CommandConfig) error {
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
+	if allFlag {
+		resp, err = RemoveAllIpFailovers(c)
+		if err != nil {
+			return err
+		}
+		return c.Printer.Print(getIpFailoverPrint(resp, c, nil))
+	} else {
+		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
+		lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLanId))
+		c.Printer.Verbose("Removing IP Failover group from LAN with ID: %v from Datacenter with id: %v...", lanId, dcId)
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
+			return err
+		}
+		oldLan, _, err := c.CloudApiV5Services.Lans().Get(dcId, lanId)
+		if err != nil {
+			return err
+		}
+		if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
+			if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
+				_, resp, err = c.CloudApiV5Services.Lans().Update(
+					dcId, lanId, removeIpFailoverInfo(c, ipfailovers))
+				if resp != nil {
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+				return c.Printer.Print(getIpFailoverPrint(resp, c, nil))
+			} else {
+				return errors.New("error getting ipfailovers to update")
+			}
+		} else {
+			return errors.New("error getting lan properties to update")
+		}
+	}
+}
+
+func RemoveAllIpFailovers(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLanId))
-	c.Printer.Verbose("Removing IP Failover group from LAN with ID: %v from Datacenter with id: %v...", lanId, dcId)
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove ip failover group from lan"); err != nil {
-		return err
-	}
-	oldLan, _, err := c.CloudApiV5Services.Lans().Get(dcId, lanId)
-	if err != nil {
-		return err
-	}
-	if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
-		if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
-			_, resp, err := c.CloudApiV5Services.Lans().Update(
-				viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)),
-				viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLanId)),
-				removeIpFailoverInfo(c, ipfailovers),
-			)
-			if resp != nil {
-				c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-			}
-			if err != nil {
-				return err
-			}
 
-			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-				return err
-			}
-			return c.Printer.Print(getIpFailoverPrint(resp, c, nil))
-		} else {
-			return errors.New("error getting ipfailovers to update")
-		}
-	} else {
-		return errors.New("error getting lan properties to update")
+	newIpFailover := make([]ionoscloud.IPFailover, 0)
+	lanProperties := resources.LanProperties{
+		LanProperties: ionoscloud.LanProperties{
+			IpFailover: &newIpFailover,
+		},
 	}
+
+	_ = c.Printer.Print("IP Failovers to be removed:")
+	ipFailovers, resp, err := c.CloudApiV5Services.Lans().List(dcId)
+	if err != nil {
+		return nil, err
+	}
+	if ipFailoversItems, ok := ipFailovers.GetItemsOk(); ok && ipFailoversItems != nil {
+		for _, ipFailover := range *ipFailoversItems {
+			if id, ok := ipFailover.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("IP Failover Id: " + *id)
+			}
+			if properties, ok := ipFailover.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" IP Failover Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove all the IP Failovers"); err != nil {
+			return nil, err
+		}
+		oldLan, _, err := c.CloudApiV5Services.Lans().Get(dcId, lanId)
+		if err != nil {
+			return nil, err
+		}
+
+		c.Printer.Verbose("Removing all the IP Failovers...")
+		if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
+			if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
+				_, resp, err = c.CloudApiV5Services.Lans().Update(dcId, lanId, lanProperties)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, err
 }
 
 func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {

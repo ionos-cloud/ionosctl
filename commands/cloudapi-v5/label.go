@@ -182,7 +182,7 @@ func LabelCmd() *core.Command {
 		ShortDesc:  "Remove a Label from a Resource",
 		LongDesc:   "Use this command to remove a Label from a Resource.\n\nRequired values to run command:\n\n* Resource Type\n* Resource Id: Datacenter Id, Server Id, Volume Id, IpBlock Id or Snapshot Id\n* Label Key",
 		Example:    removeLabelExample,
-		PreCmdRun:  PreRunResourceTypeLabelKey,
+		PreCmdRun:  PreRunResourceTypeLabelKeyRemove,
 		CmdRun:     RunLabelRemove,
 		InitClient: true,
 	})
@@ -211,6 +211,7 @@ func LabelCmd() *core.Command {
 	_ = removeLabel.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{cloudapiv5.DatacenterResource, cloudapiv5.VolumeResource, cloudapiv5.ServerResource, cloudapiv5.SnapshotResource, cloudapiv5.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
 	})
+	removeLabel.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "Remove all Labels.")
 
 	return labelCmd
 }
@@ -222,6 +223,22 @@ func PreRunResourceTypeLabelKey(c *core.PreCommandConfig) error {
 		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId, cloudapiv5.ArgLabelKey},
 		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgSnapshotId, cloudapiv5.ArgLabelKey},
 		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgIpBlockId, cloudapiv5.ArgLabelKey},
+	)
+}
+
+func PreRunResourceTypeLabelKeyRemove(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgLabelKey},
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgVolumeId, cloudapiv5.ArgLabelKey},
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId, cloudapiv5.ArgLabelKey},
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgSnapshotId, cloudapiv5.ArgLabelKey},
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgIpBlockId, cloudapiv5.ArgLabelKey},
+
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgAll},
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgVolumeId, cloudapiv5.ArgAll},
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId, cloudapiv5.ArgAll},
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgSnapshotId, cloudapiv5.ArgAll},
+		[]string{cloudapiv5.ArgResourceType, cloudapiv5.ArgIpBlockId, cloudapiv5.ArgAll},
 	)
 }
 
