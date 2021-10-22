@@ -23,13 +23,6 @@ var (
 			Value: &testLabelResourceVar,
 		},
 	}
-	//testLabelResourceId = ionoscloud.LabelResource{
-	//	Id: &testLabelResourceVar,
-	//	Properties: &ionoscloud.LabelResourceProperties{
-	//		Key:   &testLabelResourceVar,
-	//		Value: &testLabelResourceVar,
-	//	},
-	//}
 	testLabelResources = resources.LabelResources{
 		LabelResources: ionoscloud.LabelResources{
 			Id:    &testLabelVar,
