@@ -28,11 +28,11 @@ var (
 type ImageApiService service
 
 type ApiImagesDeleteRequest struct {
-	ctx _context.Context
-	ApiService *ImageApiService
-	imageId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *ImageApiService
+	imageId         string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -63,8 +63,8 @@ func (r ApiImagesDeleteRequest) Execute() (map[string]interface{}, *APIResponse,
 func (a *ImageApiService) ImagesDelete(ctx _context.Context, imageId string) ApiImagesDeleteRequest {
 	return ApiImagesDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		imageId: imageId,
+		ctx:        ctx,
+		imageId:    imageId,
 	}
 }
 
@@ -100,6 +100,7 @@ func (a *ImageApiService) ImagesDeleteExecute(r ApiImagesDeleteRequest) (map[str
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -141,12 +142,12 @@ func (a *ImageApiService) ImagesDeleteExecute(r ApiImagesDeleteRequest) (map[str
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "ImagesDelete",
+		Operation:   "ImagesDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -160,19 +161,21 @@ func (a *ImageApiService) ImagesDeleteExecute(r ApiImagesDeleteRequest) (map[str
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -180,8 +183,8 @@ func (a *ImageApiService) ImagesDeleteExecute(r ApiImagesDeleteRequest) (map[str
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -190,11 +193,11 @@ func (a *ImageApiService) ImagesDeleteExecute(r ApiImagesDeleteRequest) (map[str
 }
 
 type ApiImagesFindByIdRequest struct {
-	ctx _context.Context
-	ApiService *ImageApiService
-	imageId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *ImageApiService
+	imageId         string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -225,8 +228,8 @@ func (r ApiImagesFindByIdRequest) Execute() (Image, *APIResponse, error) {
 func (a *ImageApiService) ImagesFindById(ctx _context.Context, imageId string) ApiImagesFindByIdRequest {
 	return ApiImagesFindByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		imageId: imageId,
+		ctx:        ctx,
+		imageId:    imageId,
 	}
 }
 
@@ -262,6 +265,7 @@ func (a *ImageApiService) ImagesFindByIdExecute(r ApiImagesFindByIdRequest) (Ima
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -303,12 +307,12 @@ func (a *ImageApiService) ImagesFindByIdExecute(r ApiImagesFindByIdRequest) (Ima
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "ImagesFindById",
+		Operation:   "ImagesFindById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -322,19 +326,21 @@ func (a *ImageApiService) ImagesFindByIdExecute(r ApiImagesFindByIdRequest) (Ima
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -342,8 +348,8 @@ func (a *ImageApiService) ImagesFindByIdExecute(r ApiImagesFindByIdRequest) (Ima
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -352,10 +358,12 @@ func (a *ImageApiService) ImagesFindByIdExecute(r ApiImagesFindByIdRequest) (Ima
 }
 
 type ApiImagesGetRequest struct {
-	ctx _context.Context
-	ApiService *ImageApiService
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *ImageApiService
+	filters         _neturl.Values
+	orderBy         *string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -372,12 +380,25 @@ func (r ApiImagesGetRequest) XContractNumber(xContractNumber int32) ApiImagesGet
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiImagesGetRequest) Filter(key string, value string) ApiImagesGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiImagesGetRequest) OrderBy(orderBy string) ApiImagesGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiImagesGetRequest) Execute() (Images, *APIResponse, error) {
 	return r.ApiService.ImagesGetExecute(r)
 }
 
 /*
- * ImagesGet List Images 
+ * ImagesGet List Images
  * Retrieve a list of images within the datacenter
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @return ApiImagesGetRequest
@@ -385,7 +406,8 @@ func (r ApiImagesGetRequest) Execute() (Images, *APIResponse, error) {
 func (a *ImageApiService) ImagesGet(ctx _context.Context) ApiImagesGetRequest {
 	return ApiImagesGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -420,6 +442,17 @@ func (a *ImageApiService) ImagesGetExecute(r ApiImagesGetRequest) (Images, *APIR
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -461,12 +494,12 @@ func (a *ImageApiService) ImagesGetExecute(r ApiImagesGetRequest) (Images, *APIR
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "ImagesGet",
+		Operation:   "ImagesGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -480,19 +513,21 @@ func (a *ImageApiService) ImagesGetExecute(r ApiImagesGetRequest) (Images, *APIR
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -500,8 +535,8 @@ func (a *ImageApiService) ImagesGetExecute(r ApiImagesGetRequest) (Images, *APIR
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -510,12 +545,12 @@ func (a *ImageApiService) ImagesGetExecute(r ApiImagesGetRequest) (Images, *APIR
 }
 
 type ApiImagesPatchRequest struct {
-	ctx _context.Context
-	ApiService *ImageApiService
-	imageId string
-	image *ImageProperties
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *ImageApiService
+	imageId         string
+	image           *ImageProperties
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -550,8 +585,8 @@ func (r ApiImagesPatchRequest) Execute() (Image, *APIResponse, error) {
 func (a *ImageApiService) ImagesPatch(ctx _context.Context, imageId string) ApiImagesPatchRequest {
 	return ApiImagesPatchRequest{
 		ApiService: a,
-		ctx: ctx,
-		imageId: imageId,
+		ctx:        ctx,
+		imageId:    imageId,
 	}
 }
 
@@ -590,6 +625,7 @@ func (a *ImageApiService) ImagesPatchExecute(r ApiImagesPatchRequest) (Image, *A
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -633,12 +669,12 @@ func (a *ImageApiService) ImagesPatchExecute(r ApiImagesPatchRequest) (Image, *A
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "ImagesPatch",
+		Operation:   "ImagesPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -652,19 +688,21 @@ func (a *ImageApiService) ImagesPatchExecute(r ApiImagesPatchRequest) (Image, *A
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -672,8 +710,8 @@ func (a *ImageApiService) ImagesPatchExecute(r ApiImagesPatchRequest) (Image, *A
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -682,12 +720,12 @@ func (a *ImageApiService) ImagesPatchExecute(r ApiImagesPatchRequest) (Image, *A
 }
 
 type ApiImagesPutRequest struct {
-	ctx _context.Context
-	ApiService *ImageApiService
-	imageId string
-	image *Image
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *ImageApiService
+	imageId         string
+	image           *Image
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -722,8 +760,8 @@ func (r ApiImagesPutRequest) Execute() (Image, *APIResponse, error) {
 func (a *ImageApiService) ImagesPut(ctx _context.Context, imageId string) ApiImagesPutRequest {
 	return ApiImagesPutRequest{
 		ApiService: a,
-		ctx: ctx,
-		imageId: imageId,
+		ctx:        ctx,
+		imageId:    imageId,
 	}
 }
 
@@ -762,6 +800,7 @@ func (a *ImageApiService) ImagesPutExecute(r ApiImagesPutRequest) (Image, *APIRe
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -805,12 +844,12 @@ func (a *ImageApiService) ImagesPutExecute(r ApiImagesPutRequest) (Image, *APIRe
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "ImagesPut",
+		Operation:   "ImagesPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -824,19 +863,21 @@ func (a *ImageApiService) ImagesPutExecute(r ApiImagesPutRequest) (Image, *APIRe
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -844,8 +885,8 @@ func (a *ImageApiService) ImagesPutExecute(r ApiImagesPutRequest) (Image, *APIRe
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}

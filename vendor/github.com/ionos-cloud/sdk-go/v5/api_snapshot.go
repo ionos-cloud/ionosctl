@@ -28,11 +28,11 @@ var (
 type SnapshotApiService service
 
 type ApiSnapshotsDeleteRequest struct {
-	ctx _context.Context
-	ApiService *SnapshotApiService
-	snapshotId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *SnapshotApiService
+	snapshotId      string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -63,7 +63,7 @@ func (r ApiSnapshotsDeleteRequest) Execute() (map[string]interface{}, *APIRespon
 func (a *SnapshotApiService) SnapshotsDelete(ctx _context.Context, snapshotId string) ApiSnapshotsDeleteRequest {
 	return ApiSnapshotsDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		snapshotId: snapshotId,
 	}
 }
@@ -100,6 +100,7 @@ func (a *SnapshotApiService) SnapshotsDeleteExecute(r ApiSnapshotsDeleteRequest)
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -141,12 +142,12 @@ func (a *SnapshotApiService) SnapshotsDeleteExecute(r ApiSnapshotsDeleteRequest)
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "SnapshotsDelete",
+		Operation:   "SnapshotsDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -160,19 +161,21 @@ func (a *SnapshotApiService) SnapshotsDeleteExecute(r ApiSnapshotsDeleteRequest)
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -180,8 +183,8 @@ func (a *SnapshotApiService) SnapshotsDeleteExecute(r ApiSnapshotsDeleteRequest)
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -190,11 +193,11 @@ func (a *SnapshotApiService) SnapshotsDeleteExecute(r ApiSnapshotsDeleteRequest)
 }
 
 type ApiSnapshotsFindByIdRequest struct {
-	ctx _context.Context
-	ApiService *SnapshotApiService
-	snapshotId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *SnapshotApiService
+	snapshotId      string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -225,7 +228,7 @@ func (r ApiSnapshotsFindByIdRequest) Execute() (Snapshot, *APIResponse, error) {
 func (a *SnapshotApiService) SnapshotsFindById(ctx _context.Context, snapshotId string) ApiSnapshotsFindByIdRequest {
 	return ApiSnapshotsFindByIdRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		snapshotId: snapshotId,
 	}
 }
@@ -262,6 +265,7 @@ func (a *SnapshotApiService) SnapshotsFindByIdExecute(r ApiSnapshotsFindByIdRequ
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -303,12 +307,12 @@ func (a *SnapshotApiService) SnapshotsFindByIdExecute(r ApiSnapshotsFindByIdRequ
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "SnapshotsFindById",
+		Operation:   "SnapshotsFindById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -322,19 +326,21 @@ func (a *SnapshotApiService) SnapshotsFindByIdExecute(r ApiSnapshotsFindByIdRequ
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -342,8 +348,8 @@ func (a *SnapshotApiService) SnapshotsFindByIdExecute(r ApiSnapshotsFindByIdRequ
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -352,10 +358,12 @@ func (a *SnapshotApiService) SnapshotsFindByIdExecute(r ApiSnapshotsFindByIdRequ
 }
 
 type ApiSnapshotsGetRequest struct {
-	ctx _context.Context
-	ApiService *SnapshotApiService
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *SnapshotApiService
+	filters         _neturl.Values
+	orderBy         *string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -372,12 +380,25 @@ func (r ApiSnapshotsGetRequest) XContractNumber(xContractNumber int32) ApiSnapsh
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiSnapshotsGetRequest) Filter(key string, value string) ApiSnapshotsGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiSnapshotsGetRequest) OrderBy(orderBy string) ApiSnapshotsGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiSnapshotsGetRequest) Execute() (Snapshots, *APIResponse, error) {
 	return r.ApiService.SnapshotsGetExecute(r)
 }
 
 /*
- * SnapshotsGet List Snapshots 
+ * SnapshotsGet List Snapshots
  * Retrieve a list of available snapshots.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @return ApiSnapshotsGetRequest
@@ -385,7 +406,8 @@ func (r ApiSnapshotsGetRequest) Execute() (Snapshots, *APIResponse, error) {
 func (a *SnapshotApiService) SnapshotsGet(ctx _context.Context) ApiSnapshotsGetRequest {
 	return ApiSnapshotsGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -420,6 +442,17 @@ func (a *SnapshotApiService) SnapshotsGetExecute(r ApiSnapshotsGetRequest) (Snap
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -461,12 +494,12 @@ func (a *SnapshotApiService) SnapshotsGetExecute(r ApiSnapshotsGetRequest) (Snap
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "SnapshotsGet",
+		Operation:   "SnapshotsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -480,19 +513,21 @@ func (a *SnapshotApiService) SnapshotsGetExecute(r ApiSnapshotsGetRequest) (Snap
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -500,8 +535,8 @@ func (a *SnapshotApiService) SnapshotsGetExecute(r ApiSnapshotsGetRequest) (Snap
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -510,12 +545,12 @@ func (a *SnapshotApiService) SnapshotsGetExecute(r ApiSnapshotsGetRequest) (Snap
 }
 
 type ApiSnapshotsPatchRequest struct {
-	ctx _context.Context
-	ApiService *SnapshotApiService
-	snapshotId string
-	snapshot *SnapshotProperties
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *SnapshotApiService
+	snapshotId      string
+	snapshot        *SnapshotProperties
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -550,7 +585,7 @@ func (r ApiSnapshotsPatchRequest) Execute() (Snapshot, *APIResponse, error) {
 func (a *SnapshotApiService) SnapshotsPatch(ctx _context.Context, snapshotId string) ApiSnapshotsPatchRequest {
 	return ApiSnapshotsPatchRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		snapshotId: snapshotId,
 	}
 }
@@ -590,6 +625,7 @@ func (a *SnapshotApiService) SnapshotsPatchExecute(r ApiSnapshotsPatchRequest) (
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -633,12 +669,12 @@ func (a *SnapshotApiService) SnapshotsPatchExecute(r ApiSnapshotsPatchRequest) (
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "SnapshotsPatch",
+		Operation:   "SnapshotsPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -652,19 +688,21 @@ func (a *SnapshotApiService) SnapshotsPatchExecute(r ApiSnapshotsPatchRequest) (
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -672,8 +710,8 @@ func (a *SnapshotApiService) SnapshotsPatchExecute(r ApiSnapshotsPatchRequest) (
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -682,12 +720,12 @@ func (a *SnapshotApiService) SnapshotsPatchExecute(r ApiSnapshotsPatchRequest) (
 }
 
 type ApiSnapshotsPutRequest struct {
-	ctx _context.Context
-	ApiService *SnapshotApiService
-	snapshotId string
-	snapshot *Snapshot
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *SnapshotApiService
+	snapshotId      string
+	snapshot        *Snapshot
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -722,7 +760,7 @@ func (r ApiSnapshotsPutRequest) Execute() (Snapshot, *APIResponse, error) {
 func (a *SnapshotApiService) SnapshotsPut(ctx _context.Context, snapshotId string) ApiSnapshotsPutRequest {
 	return ApiSnapshotsPutRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 		snapshotId: snapshotId,
 	}
 }
@@ -762,6 +800,7 @@ func (a *SnapshotApiService) SnapshotsPutExecute(r ApiSnapshotsPutRequest) (Snap
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -805,12 +844,12 @@ func (a *SnapshotApiService) SnapshotsPutExecute(r ApiSnapshotsPutRequest) (Snap
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "SnapshotsPut",
+		Operation:   "SnapshotsPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -824,19 +863,21 @@ func (a *SnapshotApiService) SnapshotsPutExecute(r ApiSnapshotsPutRequest) (Snap
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -844,8 +885,8 @@ func (a *SnapshotApiService) SnapshotsPutExecute(r ApiSnapshotsPutRequest) (Snap
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}

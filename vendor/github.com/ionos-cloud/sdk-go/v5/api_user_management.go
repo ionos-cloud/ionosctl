@@ -28,11 +28,11 @@ var (
 type UserManagementApiService service
 
 type ApiUmGroupsDeleteRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	groupId         string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -63,8 +63,8 @@ func (r ApiUmGroupsDeleteRequest) Execute() (map[string]interface{}, *APIRespons
 func (a *UserManagementApiService) UmGroupsDelete(ctx _context.Context, groupId string) ApiUmGroupsDeleteRequest {
 	return ApiUmGroupsDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
 	}
 }
 
@@ -100,6 +100,7 @@ func (a *UserManagementApiService) UmGroupsDeleteExecute(r ApiUmGroupsDeleteRequ
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -141,12 +142,12 @@ func (a *UserManagementApiService) UmGroupsDeleteExecute(r ApiUmGroupsDeleteRequ
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsDelete",
+		Operation:   "UmGroupsDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -160,19 +161,21 @@ func (a *UserManagementApiService) UmGroupsDeleteExecute(r ApiUmGroupsDeleteRequ
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -180,8 +183,8 @@ func (a *UserManagementApiService) UmGroupsDeleteExecute(r ApiUmGroupsDeleteRequ
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -190,11 +193,11 @@ func (a *UserManagementApiService) UmGroupsDeleteExecute(r ApiUmGroupsDeleteRequ
 }
 
 type ApiUmGroupsFindByIdRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	groupId         string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -225,8 +228,8 @@ func (r ApiUmGroupsFindByIdRequest) Execute() (Group, *APIResponse, error) {
 func (a *UserManagementApiService) UmGroupsFindById(ctx _context.Context, groupId string) ApiUmGroupsFindByIdRequest {
 	return ApiUmGroupsFindByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
 	}
 }
 
@@ -262,6 +265,7 @@ func (a *UserManagementApiService) UmGroupsFindByIdExecute(r ApiUmGroupsFindById
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -303,12 +307,12 @@ func (a *UserManagementApiService) UmGroupsFindByIdExecute(r ApiUmGroupsFindById
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsFindById",
+		Operation:   "UmGroupsFindById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -322,19 +326,21 @@ func (a *UserManagementApiService) UmGroupsFindByIdExecute(r ApiUmGroupsFindById
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -342,8 +348,8 @@ func (a *UserManagementApiService) UmGroupsFindByIdExecute(r ApiUmGroupsFindById
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -352,10 +358,12 @@ func (a *UserManagementApiService) UmGroupsFindByIdExecute(r ApiUmGroupsFindById
 }
 
 type ApiUmGroupsGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -372,6 +380,19 @@ func (r ApiUmGroupsGetRequest) XContractNumber(xContractNumber int32) ApiUmGroup
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmGroupsGetRequest) Filter(key string, value string) ApiUmGroupsGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmGroupsGetRequest) OrderBy(orderBy string) ApiUmGroupsGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiUmGroupsGetRequest) Execute() (Groups, *APIResponse, error) {
 	return r.ApiService.UmGroupsGetExecute(r)
 }
@@ -385,7 +406,8 @@ func (r ApiUmGroupsGetRequest) Execute() (Groups, *APIResponse, error) {
 func (a *UserManagementApiService) UmGroupsGet(ctx _context.Context) ApiUmGroupsGetRequest {
 	return ApiUmGroupsGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -420,6 +442,17 @@ func (a *UserManagementApiService) UmGroupsGetExecute(r ApiUmGroupsGetRequest) (
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -461,12 +494,12 @@ func (a *UserManagementApiService) UmGroupsGetExecute(r ApiUmGroupsGetRequest) (
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsGet",
+		Operation:   "UmGroupsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -480,19 +513,21 @@ func (a *UserManagementApiService) UmGroupsGetExecute(r ApiUmGroupsGetRequest) (
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -500,8 +535,8 @@ func (a *UserManagementApiService) UmGroupsGetExecute(r ApiUmGroupsGetRequest) (
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -510,11 +545,11 @@ func (a *UserManagementApiService) UmGroupsGetExecute(r ApiUmGroupsGetRequest) (
 }
 
 type ApiUmGroupsPostRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	group *Group
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	group           *Group
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -548,7 +583,7 @@ func (r ApiUmGroupsPostRequest) Execute() (Group, *APIResponse, error) {
 func (a *UserManagementApiService) UmGroupsPost(ctx _context.Context) ApiUmGroupsPostRequest {
 	return ApiUmGroupsPostRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -586,6 +621,7 @@ func (a *UserManagementApiService) UmGroupsPostExecute(r ApiUmGroupsPostRequest)
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -629,12 +665,12 @@ func (a *UserManagementApiService) UmGroupsPostExecute(r ApiUmGroupsPostRequest)
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsPost",
+		Operation:   "UmGroupsPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -648,19 +684,21 @@ func (a *UserManagementApiService) UmGroupsPostExecute(r ApiUmGroupsPostRequest)
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -668,8 +706,8 @@ func (a *UserManagementApiService) UmGroupsPostExecute(r ApiUmGroupsPostRequest)
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -678,12 +716,12 @@ func (a *UserManagementApiService) UmGroupsPostExecute(r ApiUmGroupsPostRequest)
 }
 
 type ApiUmGroupsPutRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	group *Group
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	groupId         string
+	group           *Group
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -718,8 +756,8 @@ func (r ApiUmGroupsPutRequest) Execute() (Group, *APIResponse, error) {
 func (a *UserManagementApiService) UmGroupsPut(ctx _context.Context, groupId string) ApiUmGroupsPutRequest {
 	return ApiUmGroupsPutRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
 	}
 }
 
@@ -758,6 +796,7 @@ func (a *UserManagementApiService) UmGroupsPutExecute(r ApiUmGroupsPutRequest) (
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -801,12 +840,12 @@ func (a *UserManagementApiService) UmGroupsPutExecute(r ApiUmGroupsPutRequest) (
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsPut",
+		Operation:   "UmGroupsPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -820,19 +859,21 @@ func (a *UserManagementApiService) UmGroupsPutExecute(r ApiUmGroupsPutRequest) (
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -840,8 +881,8 @@ func (a *UserManagementApiService) UmGroupsPutExecute(r ApiUmGroupsPutRequest) (
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -850,11 +891,13 @@ func (a *UserManagementApiService) UmGroupsPutExecute(r ApiUmGroupsPutRequest) (
 }
 
 type ApiUmGroupsResourcesGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	groupId         string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -871,6 +914,19 @@ func (r ApiUmGroupsResourcesGetRequest) XContractNumber(xContractNumber int32) A
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmGroupsResourcesGetRequest) Filter(key string, value string) ApiUmGroupsResourcesGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmGroupsResourcesGetRequest) OrderBy(orderBy string) ApiUmGroupsResourcesGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiUmGroupsResourcesGetRequest) Execute() (ResourceGroups, *APIResponse, error) {
 	return r.ApiService.UmGroupsResourcesGetExecute(r)
 }
@@ -884,8 +940,9 @@ func (r ApiUmGroupsResourcesGetRequest) Execute() (ResourceGroups, *APIResponse,
 func (a *UserManagementApiService) UmGroupsResourcesGet(ctx _context.Context, groupId string) ApiUmGroupsResourcesGetRequest {
 	return ApiUmGroupsResourcesGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -921,6 +978,17 @@ func (a *UserManagementApiService) UmGroupsResourcesGetExecute(r ApiUmGroupsReso
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -962,12 +1030,12 @@ func (a *UserManagementApiService) UmGroupsResourcesGetExecute(r ApiUmGroupsReso
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsResourcesGet",
+		Operation:   "UmGroupsResourcesGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -981,19 +1049,21 @@ func (a *UserManagementApiService) UmGroupsResourcesGetExecute(r ApiUmGroupsReso
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1001,8 +1071,8 @@ func (a *UserManagementApiService) UmGroupsResourcesGetExecute(r ApiUmGroupsReso
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1011,12 +1081,12 @@ func (a *UserManagementApiService) UmGroupsResourcesGetExecute(r ApiUmGroupsReso
 }
 
 type ApiUmGroupsSharesDeleteRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	resourceId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	groupId         string
+	resourceId      string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -1048,8 +1118,8 @@ func (r ApiUmGroupsSharesDeleteRequest) Execute() (map[string]interface{}, *APIR
 func (a *UserManagementApiService) UmGroupsSharesDelete(ctx _context.Context, groupId string, resourceId string) ApiUmGroupsSharesDeleteRequest {
 	return ApiUmGroupsSharesDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
 		resourceId: resourceId,
 	}
 }
@@ -1087,6 +1157,7 @@ func (a *UserManagementApiService) UmGroupsSharesDeleteExecute(r ApiUmGroupsShar
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -1128,12 +1199,12 @@ func (a *UserManagementApiService) UmGroupsSharesDeleteExecute(r ApiUmGroupsShar
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsSharesDelete",
+		Operation:   "UmGroupsSharesDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1147,19 +1218,21 @@ func (a *UserManagementApiService) UmGroupsSharesDeleteExecute(r ApiUmGroupsShar
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1167,8 +1240,8 @@ func (a *UserManagementApiService) UmGroupsSharesDeleteExecute(r ApiUmGroupsShar
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1177,12 +1250,12 @@ func (a *UserManagementApiService) UmGroupsSharesDeleteExecute(r ApiUmGroupsShar
 }
 
 type ApiUmGroupsSharesFindByResourceIdRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	resourceId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	groupId         string
+	resourceId      string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -1214,8 +1287,8 @@ func (r ApiUmGroupsSharesFindByResourceIdRequest) Execute() (GroupShare, *APIRes
 func (a *UserManagementApiService) UmGroupsSharesFindByResourceId(ctx _context.Context, groupId string, resourceId string) ApiUmGroupsSharesFindByResourceIdRequest {
 	return ApiUmGroupsSharesFindByResourceIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
 		resourceId: resourceId,
 	}
 }
@@ -1253,6 +1326,7 @@ func (a *UserManagementApiService) UmGroupsSharesFindByResourceIdExecute(r ApiUm
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -1294,12 +1368,12 @@ func (a *UserManagementApiService) UmGroupsSharesFindByResourceIdExecute(r ApiUm
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsSharesFindByResourceId",
+		Operation:   "UmGroupsSharesFindByResourceId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1313,19 +1387,21 @@ func (a *UserManagementApiService) UmGroupsSharesFindByResourceIdExecute(r ApiUm
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1333,8 +1409,8 @@ func (a *UserManagementApiService) UmGroupsSharesFindByResourceIdExecute(r ApiUm
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1343,11 +1419,13 @@ func (a *UserManagementApiService) UmGroupsSharesFindByResourceIdExecute(r ApiUm
 }
 
 type ApiUmGroupsSharesGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	groupId         string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -1364,12 +1442,25 @@ func (r ApiUmGroupsSharesGetRequest) XContractNumber(xContractNumber int32) ApiU
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmGroupsSharesGetRequest) Filter(key string, value string) ApiUmGroupsSharesGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmGroupsSharesGetRequest) OrderBy(orderBy string) ApiUmGroupsSharesGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiUmGroupsSharesGetRequest) Execute() (GroupShares, *APIResponse, error) {
 	return r.ApiService.UmGroupsSharesGetExecute(r)
 }
 
 /*
- * UmGroupsSharesGet List Group Shares 
+ * UmGroupsSharesGet List Group Shares
  * You can retrieve a list of all resources along with their permissions of the group
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param groupId
@@ -1378,8 +1469,9 @@ func (r ApiUmGroupsSharesGetRequest) Execute() (GroupShares, *APIResponse, error
 func (a *UserManagementApiService) UmGroupsSharesGet(ctx _context.Context, groupId string) ApiUmGroupsSharesGetRequest {
 	return ApiUmGroupsSharesGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -1415,6 +1507,17 @@ func (a *UserManagementApiService) UmGroupsSharesGetExecute(r ApiUmGroupsSharesG
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -1456,12 +1559,12 @@ func (a *UserManagementApiService) UmGroupsSharesGetExecute(r ApiUmGroupsSharesG
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsSharesGet",
+		Operation:   "UmGroupsSharesGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1475,19 +1578,21 @@ func (a *UserManagementApiService) UmGroupsSharesGetExecute(r ApiUmGroupsSharesG
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1495,8 +1600,8 @@ func (a *UserManagementApiService) UmGroupsSharesGetExecute(r ApiUmGroupsSharesG
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1505,13 +1610,13 @@ func (a *UserManagementApiService) UmGroupsSharesGetExecute(r ApiUmGroupsSharesG
 }
 
 type ApiUmGroupsSharesPostRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	resourceId string
-	resource *GroupShare
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	groupId         string
+	resourceId      string
+	resource        *GroupShare
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -1538,7 +1643,7 @@ func (r ApiUmGroupsSharesPostRequest) Execute() (GroupShare, *APIResponse, error
 
 /*
  * UmGroupsSharesPost Add a resource to a group
- * This will add a resource to the group. 
+ * This will add a resource to the group.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param groupId
  * @param resourceId
@@ -1547,8 +1652,8 @@ func (r ApiUmGroupsSharesPostRequest) Execute() (GroupShare, *APIResponse, error
 func (a *UserManagementApiService) UmGroupsSharesPost(ctx _context.Context, groupId string, resourceId string) ApiUmGroupsSharesPostRequest {
 	return ApiUmGroupsSharesPostRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
 		resourceId: resourceId,
 	}
 }
@@ -1589,6 +1694,7 @@ func (a *UserManagementApiService) UmGroupsSharesPostExecute(r ApiUmGroupsShares
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -1632,12 +1738,12 @@ func (a *UserManagementApiService) UmGroupsSharesPostExecute(r ApiUmGroupsShares
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsSharesPost",
+		Operation:   "UmGroupsSharesPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1651,19 +1757,21 @@ func (a *UserManagementApiService) UmGroupsSharesPostExecute(r ApiUmGroupsShares
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1671,8 +1779,8 @@ func (a *UserManagementApiService) UmGroupsSharesPostExecute(r ApiUmGroupsShares
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1681,13 +1789,13 @@ func (a *UserManagementApiService) UmGroupsSharesPostExecute(r ApiUmGroupsShares
 }
 
 type ApiUmGroupsSharesPutRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	resourceId string
-	resource *GroupShare
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	groupId         string
+	resourceId      string
+	resource        *GroupShare
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -1723,8 +1831,8 @@ func (r ApiUmGroupsSharesPutRequest) Execute() (GroupShare, *APIResponse, error)
 func (a *UserManagementApiService) UmGroupsSharesPut(ctx _context.Context, groupId string, resourceId string) ApiUmGroupsSharesPutRequest {
 	return ApiUmGroupsSharesPutRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
 		resourceId: resourceId,
 	}
 }
@@ -1765,6 +1873,7 @@ func (a *UserManagementApiService) UmGroupsSharesPutExecute(r ApiUmGroupsSharesP
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -1808,12 +1917,12 @@ func (a *UserManagementApiService) UmGroupsSharesPutExecute(r ApiUmGroupsSharesP
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsSharesPut",
+		Operation:   "UmGroupsSharesPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1827,19 +1936,21 @@ func (a *UserManagementApiService) UmGroupsSharesPutExecute(r ApiUmGroupsSharesP
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1847,8 +1958,8 @@ func (a *UserManagementApiService) UmGroupsSharesPutExecute(r ApiUmGroupsSharesP
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1857,12 +1968,12 @@ func (a *UserManagementApiService) UmGroupsSharesPutExecute(r ApiUmGroupsSharesP
 }
 
 type ApiUmGroupsUsersDeleteRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	userId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	groupId         string
+	userId          string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -1894,9 +2005,9 @@ func (r ApiUmGroupsUsersDeleteRequest) Execute() (map[string]interface{}, *APIRe
 func (a *UserManagementApiService) UmGroupsUsersDelete(ctx _context.Context, groupId string, userId string) ApiUmGroupsUsersDeleteRequest {
 	return ApiUmGroupsUsersDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
-		userId: userId,
+		ctx:        ctx,
+		groupId:    groupId,
+		userId:     userId,
 	}
 }
 
@@ -1933,6 +2044,7 @@ func (a *UserManagementApiService) UmGroupsUsersDeleteExecute(r ApiUmGroupsUsers
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -1974,12 +2086,12 @@ func (a *UserManagementApiService) UmGroupsUsersDeleteExecute(r ApiUmGroupsUsers
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsUsersDelete",
+		Operation:   "UmGroupsUsersDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1993,19 +2105,21 @@ func (a *UserManagementApiService) UmGroupsUsersDeleteExecute(r ApiUmGroupsUsers
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -2013,8 +2127,8 @@ func (a *UserManagementApiService) UmGroupsUsersDeleteExecute(r ApiUmGroupsUsers
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -2023,11 +2137,13 @@ func (a *UserManagementApiService) UmGroupsUsersDeleteExecute(r ApiUmGroupsUsers
 }
 
 type ApiUmGroupsUsersGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	groupId         string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -2044,12 +2160,25 @@ func (r ApiUmGroupsUsersGetRequest) XContractNumber(xContractNumber int32) ApiUm
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmGroupsUsersGetRequest) Filter(key string, value string) ApiUmGroupsUsersGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmGroupsUsersGetRequest) OrderBy(orderBy string) ApiUmGroupsUsersGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiUmGroupsUsersGetRequest) Execute() (GroupMembers, *APIResponse, error) {
 	return r.ApiService.UmGroupsUsersGetExecute(r)
 }
 
 /*
- * UmGroupsUsersGet List Group Members 
+ * UmGroupsUsersGet List Group Members
  * You can retrieve a list of users who are members of the group
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param groupId
@@ -2058,8 +2187,9 @@ func (r ApiUmGroupsUsersGetRequest) Execute() (GroupMembers, *APIResponse, error
 func (a *UserManagementApiService) UmGroupsUsersGet(ctx _context.Context, groupId string) ApiUmGroupsUsersGetRequest {
 	return ApiUmGroupsUsersGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -2095,6 +2225,17 @@ func (a *UserManagementApiService) UmGroupsUsersGetExecute(r ApiUmGroupsUsersGet
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -2136,12 +2277,12 @@ func (a *UserManagementApiService) UmGroupsUsersGetExecute(r ApiUmGroupsUsersGet
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsUsersGet",
+		Operation:   "UmGroupsUsersGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2155,19 +2296,21 @@ func (a *UserManagementApiService) UmGroupsUsersGetExecute(r ApiUmGroupsUsersGet
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -2175,8 +2318,8 @@ func (a *UserManagementApiService) UmGroupsUsersGetExecute(r ApiUmGroupsUsersGet
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -2185,12 +2328,12 @@ func (a *UserManagementApiService) UmGroupsUsersGetExecute(r ApiUmGroupsUsersGet
 }
 
 type ApiUmGroupsUsersPostRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	groupId string
-	user *User
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	groupId         string
+	user            *User
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -2217,7 +2360,7 @@ func (r ApiUmGroupsUsersPostRequest) Execute() (User, *APIResponse, error) {
 
 /*
  * UmGroupsUsersPost Add a user to a group
- * This will attach a pre-existing user to a group. 
+ * This will attach a pre-existing user to a group.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param groupId
  * @return ApiUmGroupsUsersPostRequest
@@ -2225,8 +2368,8 @@ func (r ApiUmGroupsUsersPostRequest) Execute() (User, *APIResponse, error) {
 func (a *UserManagementApiService) UmGroupsUsersPost(ctx _context.Context, groupId string) ApiUmGroupsUsersPostRequest {
 	return ApiUmGroupsUsersPostRequest{
 		ApiService: a,
-		ctx: ctx,
-		groupId: groupId,
+		ctx:        ctx,
+		groupId:    groupId,
 	}
 }
 
@@ -2265,6 +2408,7 @@ func (a *UserManagementApiService) UmGroupsUsersPostExecute(r ApiUmGroupsUsersPo
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -2308,12 +2452,12 @@ func (a *UserManagementApiService) UmGroupsUsersPostExecute(r ApiUmGroupsUsersPo
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmGroupsUsersPost",
+		Operation:   "UmGroupsUsersPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2327,19 +2471,21 @@ func (a *UserManagementApiService) UmGroupsUsersPostExecute(r ApiUmGroupsUsersPo
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -2347,8 +2493,8 @@ func (a *UserManagementApiService) UmGroupsUsersPostExecute(r ApiUmGroupsUsersPo
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -2357,11 +2503,11 @@ func (a *UserManagementApiService) UmGroupsUsersPostExecute(r ApiUmGroupsUsersPo
 }
 
 type ApiUmResourcesFindByTypeRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	resourceType string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	resourceType    string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -2391,8 +2537,8 @@ func (r ApiUmResourcesFindByTypeRequest) Execute() (Resources, *APIResponse, err
  */
 func (a *UserManagementApiService) UmResourcesFindByType(ctx _context.Context, resourceType string) ApiUmResourcesFindByTypeRequest {
 	return ApiUmResourcesFindByTypeRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		resourceType: resourceType,
 	}
 }
@@ -2429,6 +2575,7 @@ func (a *UserManagementApiService) UmResourcesFindByTypeExecute(r ApiUmResources
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -2470,12 +2617,12 @@ func (a *UserManagementApiService) UmResourcesFindByTypeExecute(r ApiUmResources
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmResourcesFindByType",
+		Operation:   "UmResourcesFindByType",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2489,19 +2636,21 @@ func (a *UserManagementApiService) UmResourcesFindByTypeExecute(r ApiUmResources
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -2509,8 +2658,8 @@ func (a *UserManagementApiService) UmResourcesFindByTypeExecute(r ApiUmResources
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -2519,12 +2668,12 @@ func (a *UserManagementApiService) UmResourcesFindByTypeExecute(r ApiUmResources
 }
 
 type ApiUmResourcesFindByTypeAndIdRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	resourceType string
-	resourceId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	resourceType    string
+	resourceId      string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -2555,10 +2704,10 @@ func (r ApiUmResourcesFindByTypeAndIdRequest) Execute() (Resource, *APIResponse,
  */
 func (a *UserManagementApiService) UmResourcesFindByTypeAndId(ctx _context.Context, resourceType string, resourceId string) ApiUmResourcesFindByTypeAndIdRequest {
 	return ApiUmResourcesFindByTypeAndIdRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		resourceType: resourceType,
-		resourceId: resourceId,
+		resourceId:   resourceId,
 	}
 }
 
@@ -2595,6 +2744,7 @@ func (a *UserManagementApiService) UmResourcesFindByTypeAndIdExecute(r ApiUmReso
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -2636,12 +2786,12 @@ func (a *UserManagementApiService) UmResourcesFindByTypeAndIdExecute(r ApiUmReso
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmResourcesFindByTypeAndId",
+		Operation:   "UmResourcesFindByTypeAndId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2655,19 +2805,21 @@ func (a *UserManagementApiService) UmResourcesFindByTypeAndIdExecute(r ApiUmReso
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -2675,8 +2827,8 @@ func (a *UserManagementApiService) UmResourcesFindByTypeAndIdExecute(r ApiUmReso
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -2685,10 +2837,12 @@ func (a *UserManagementApiService) UmResourcesFindByTypeAndIdExecute(r ApiUmReso
 }
 
 type ApiUmResourcesGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -2705,6 +2859,19 @@ func (r ApiUmResourcesGetRequest) XContractNumber(xContractNumber int32) ApiUmRe
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmResourcesGetRequest) Filter(key string, value string) ApiUmResourcesGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmResourcesGetRequest) OrderBy(orderBy string) ApiUmResourcesGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiUmResourcesGetRequest) Execute() (Resources, *APIResponse, error) {
 	return r.ApiService.UmResourcesGetExecute(r)
 }
@@ -2718,7 +2885,8 @@ func (r ApiUmResourcesGetRequest) Execute() (Resources, *APIResponse, error) {
 func (a *UserManagementApiService) UmResourcesGet(ctx _context.Context) ApiUmResourcesGetRequest {
 	return ApiUmResourcesGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -2753,6 +2921,17 @@ func (a *UserManagementApiService) UmResourcesGetExecute(r ApiUmResourcesGetRequ
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -2794,12 +2973,12 @@ func (a *UserManagementApiService) UmResourcesGetExecute(r ApiUmResourcesGetRequ
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmResourcesGet",
+		Operation:   "UmResourcesGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2813,19 +2992,21 @@ func (a *UserManagementApiService) UmResourcesGetExecute(r ApiUmResourcesGetRequ
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -2833,8 +3014,8 @@ func (a *UserManagementApiService) UmResourcesGetExecute(r ApiUmResourcesGetRequ
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -2843,11 +3024,11 @@ func (a *UserManagementApiService) UmResourcesGetExecute(r ApiUmResourcesGetRequ
 }
 
 type ApiUmUsersDeleteRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	userId          string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -2878,8 +3059,8 @@ func (r ApiUmUsersDeleteRequest) Execute() (map[string]interface{}, *APIResponse
 func (a *UserManagementApiService) UmUsersDelete(ctx _context.Context, userId string) ApiUmUsersDeleteRequest {
 	return ApiUmUsersDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
+		ctx:        ctx,
+		userId:     userId,
 	}
 }
 
@@ -2915,6 +3096,7 @@ func (a *UserManagementApiService) UmUsersDeleteExecute(r ApiUmUsersDeleteReques
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -2956,12 +3138,12 @@ func (a *UserManagementApiService) UmUsersDeleteExecute(r ApiUmUsersDeleteReques
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersDelete",
+		Operation:   "UmUsersDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2975,19 +3157,21 @@ func (a *UserManagementApiService) UmUsersDeleteExecute(r ApiUmUsersDeleteReques
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -2995,8 +3179,8 @@ func (a *UserManagementApiService) UmUsersDeleteExecute(r ApiUmUsersDeleteReques
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -3005,11 +3189,11 @@ func (a *UserManagementApiService) UmUsersDeleteExecute(r ApiUmUsersDeleteReques
 }
 
 type ApiUmUsersFindByIdRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	userId          string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -3040,8 +3224,8 @@ func (r ApiUmUsersFindByIdRequest) Execute() (User, *APIResponse, error) {
 func (a *UserManagementApiService) UmUsersFindById(ctx _context.Context, userId string) ApiUmUsersFindByIdRequest {
 	return ApiUmUsersFindByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
+		ctx:        ctx,
+		userId:     userId,
 	}
 }
 
@@ -3077,6 +3261,7 @@ func (a *UserManagementApiService) UmUsersFindByIdExecute(r ApiUmUsersFindByIdRe
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -3118,12 +3303,12 @@ func (a *UserManagementApiService) UmUsersFindByIdExecute(r ApiUmUsersFindByIdRe
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersFindById",
+		Operation:   "UmUsersFindById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -3137,19 +3322,21 @@ func (a *UserManagementApiService) UmUsersFindByIdExecute(r ApiUmUsersFindByIdRe
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -3157,8 +3344,8 @@ func (a *UserManagementApiService) UmUsersFindByIdExecute(r ApiUmUsersFindByIdRe
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -3167,13 +3354,15 @@ func (a *UserManagementApiService) UmUsersFindByIdExecute(r ApiUmUsersFindByIdRe
 }
 
 type ApiUmUsersGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
-	offset *int32
-	limit *int32
+	offset          *int32
+	limit           *int32
 }
 
 func (r ApiUmUsersGetRequest) Pretty(pretty bool) ApiUmUsersGetRequest {
@@ -3197,12 +3386,25 @@ func (r ApiUmUsersGetRequest) Limit(limit int32) ApiUmUsersGetRequest {
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmUsersGetRequest) Filter(key string, value string) ApiUmUsersGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmUsersGetRequest) OrderBy(orderBy string) ApiUmUsersGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiUmUsersGetRequest) Execute() (Users, *APIResponse, error) {
 	return r.ApiService.UmUsersGetExecute(r)
 }
 
 /*
- * UmUsersGet List all Users 
+ * UmUsersGet List all Users
  * You can retrieve a complete list of users under your account
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @return ApiUmUsersGetRequest
@@ -3210,7 +3412,8 @@ func (r ApiUmUsersGetRequest) Execute() (Users, *APIResponse, error) {
 func (a *UserManagementApiService) UmUsersGet(ctx _context.Context) ApiUmUsersGetRequest {
 	return ApiUmUsersGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -3251,6 +3454,17 @@ func (a *UserManagementApiService) UmUsersGetExecute(r ApiUmUsersGetRequest) (Us
 	if r.limit != nil {
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -3292,12 +3506,12 @@ func (a *UserManagementApiService) UmUsersGetExecute(r ApiUmUsersGetRequest) (Us
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersGet",
+		Operation:   "UmUsersGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -3311,19 +3525,21 @@ func (a *UserManagementApiService) UmUsersGetExecute(r ApiUmUsersGetRequest) (Us
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -3331,8 +3547,8 @@ func (a *UserManagementApiService) UmUsersGetExecute(r ApiUmUsersGetRequest) (Us
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -3341,11 +3557,13 @@ func (a *UserManagementApiService) UmUsersGetExecute(r ApiUmUsersGetRequest) (Us
 }
 
 type ApiUmUsersGroupsGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	userId          string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -3359,6 +3577,19 @@ func (r ApiUmUsersGroupsGetRequest) Depth(depth int32) ApiUmUsersGroupsGetReques
 }
 func (r ApiUmUsersGroupsGetRequest) XContractNumber(xContractNumber int32) ApiUmUsersGroupsGetRequest {
 	r.xContractNumber = &xContractNumber
+	return r
+}
+
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmUsersGroupsGetRequest) Filter(key string, value string) ApiUmUsersGroupsGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmUsersGroupsGetRequest) OrderBy(orderBy string) ApiUmUsersGroupsGetRequest {
+	r.orderBy = &orderBy
 	return r
 }
 
@@ -3376,8 +3607,9 @@ func (r ApiUmUsersGroupsGetRequest) Execute() (ResourceGroups, *APIResponse, err
 func (a *UserManagementApiService) UmUsersGroupsGet(ctx _context.Context, userId string) ApiUmUsersGroupsGetRequest {
 	return ApiUmUsersGroupsGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
+		ctx:        ctx,
+		userId:     userId,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -3413,6 +3645,17 @@ func (a *UserManagementApiService) UmUsersGroupsGetExecute(r ApiUmUsersGroupsGet
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -3454,12 +3697,12 @@ func (a *UserManagementApiService) UmUsersGroupsGetExecute(r ApiUmUsersGroupsGet
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersGroupsGet",
+		Operation:   "UmUsersGroupsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -3473,19 +3716,21 @@ func (a *UserManagementApiService) UmUsersGroupsGetExecute(r ApiUmUsersGroupsGet
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -3493,8 +3738,8 @@ func (a *UserManagementApiService) UmUsersGroupsGetExecute(r ApiUmUsersGroupsGet
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -3503,11 +3748,13 @@ func (a *UserManagementApiService) UmUsersGroupsGetExecute(r ApiUmUsersGroupsGet
 }
 
 type ApiUmUsersOwnsGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	userId          string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -3521,6 +3768,19 @@ func (r ApiUmUsersOwnsGetRequest) Depth(depth int32) ApiUmUsersOwnsGetRequest {
 }
 func (r ApiUmUsersOwnsGetRequest) XContractNumber(xContractNumber int32) ApiUmUsersOwnsGetRequest {
 	r.xContractNumber = &xContractNumber
+	return r
+}
+
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmUsersOwnsGetRequest) Filter(key string, value string) ApiUmUsersOwnsGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmUsersOwnsGetRequest) OrderBy(orderBy string) ApiUmUsersOwnsGetRequest {
+	r.orderBy = &orderBy
 	return r
 }
 
@@ -3538,8 +3798,9 @@ func (r ApiUmUsersOwnsGetRequest) Execute() (ResourcesUsers, *APIResponse, error
 func (a *UserManagementApiService) UmUsersOwnsGet(ctx _context.Context, userId string) ApiUmUsersOwnsGetRequest {
 	return ApiUmUsersOwnsGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
+		ctx:        ctx,
+		userId:     userId,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -3575,6 +3836,17 @@ func (a *UserManagementApiService) UmUsersOwnsGetExecute(r ApiUmUsersOwnsGetRequ
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -3616,12 +3888,12 @@ func (a *UserManagementApiService) UmUsersOwnsGetExecute(r ApiUmUsersOwnsGetRequ
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersOwnsGet",
+		Operation:   "UmUsersOwnsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -3635,19 +3907,21 @@ func (a *UserManagementApiService) UmUsersOwnsGetExecute(r ApiUmUsersOwnsGetRequ
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -3655,8 +3929,8 @@ func (a *UserManagementApiService) UmUsersOwnsGetExecute(r ApiUmUsersOwnsGetRequ
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -3665,11 +3939,11 @@ func (a *UserManagementApiService) UmUsersOwnsGetExecute(r ApiUmUsersOwnsGetRequ
 }
 
 type ApiUmUsersPostRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	user *UserPost
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	user            *UserPost
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -3703,7 +3977,7 @@ func (r ApiUmUsersPostRequest) Execute() (User, *APIResponse, error) {
 func (a *UserManagementApiService) UmUsersPost(ctx _context.Context) ApiUmUsersPostRequest {
 	return ApiUmUsersPostRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -3741,6 +4015,7 @@ func (a *UserManagementApiService) UmUsersPostExecute(r ApiUmUsersPostRequest) (
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -3784,12 +4059,12 @@ func (a *UserManagementApiService) UmUsersPostExecute(r ApiUmUsersPostRequest) (
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersPost",
+		Operation:   "UmUsersPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -3803,19 +4078,21 @@ func (a *UserManagementApiService) UmUsersPostExecute(r ApiUmUsersPostRequest) (
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -3823,8 +4100,8 @@ func (a *UserManagementApiService) UmUsersPostExecute(r ApiUmUsersPostRequest) (
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -3833,12 +4110,12 @@ func (a *UserManagementApiService) UmUsersPostExecute(r ApiUmUsersPostRequest) (
 }
 
 type ApiUmUsersPutRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	user *UserPut
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	userId          string
+	user            *UserPut
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -3873,8 +4150,8 @@ func (r ApiUmUsersPutRequest) Execute() (User, *APIResponse, error) {
 func (a *UserManagementApiService) UmUsersPut(ctx _context.Context, userId string) ApiUmUsersPutRequest {
 	return ApiUmUsersPutRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
+		ctx:        ctx,
+		userId:     userId,
 	}
 }
 
@@ -3913,6 +4190,7 @@ func (a *UserManagementApiService) UmUsersPutExecute(r ApiUmUsersPutRequest) (Us
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -3956,12 +4234,12 @@ func (a *UserManagementApiService) UmUsersPutExecute(r ApiUmUsersPutRequest) (Us
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersPut",
+		Operation:   "UmUsersPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -3975,19 +4253,21 @@ func (a *UserManagementApiService) UmUsersPutExecute(r ApiUmUsersPutRequest) (Us
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -3995,8 +4275,8 @@ func (a *UserManagementApiService) UmUsersPutExecute(r ApiUmUsersPutRequest) (Us
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -4005,12 +4285,12 @@ func (a *UserManagementApiService) UmUsersPutExecute(r ApiUmUsersPutRequest) (Us
 }
 
 type ApiUmUsersS3keysDeleteRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	keyId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	userId          string
+	keyId           string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -4042,9 +4322,9 @@ func (r ApiUmUsersS3keysDeleteRequest) Execute() (map[string]interface{}, *APIRe
 func (a *UserManagementApiService) UmUsersS3keysDelete(ctx _context.Context, userId string, keyId string) ApiUmUsersS3keysDeleteRequest {
 	return ApiUmUsersS3keysDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
-		keyId: keyId,
+		ctx:        ctx,
+		userId:     userId,
+		keyId:      keyId,
 	}
 }
 
@@ -4081,6 +4361,7 @@ func (a *UserManagementApiService) UmUsersS3keysDeleteExecute(r ApiUmUsersS3keys
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -4122,12 +4403,12 @@ func (a *UserManagementApiService) UmUsersS3keysDeleteExecute(r ApiUmUsersS3keys
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersS3keysDelete",
+		Operation:   "UmUsersS3keysDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -4141,19 +4422,21 @@ func (a *UserManagementApiService) UmUsersS3keysDeleteExecute(r ApiUmUsersS3keys
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -4161,8 +4444,8 @@ func (a *UserManagementApiService) UmUsersS3keysDeleteExecute(r ApiUmUsersS3keys
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -4171,12 +4454,12 @@ func (a *UserManagementApiService) UmUsersS3keysDeleteExecute(r ApiUmUsersS3keys
 }
 
 type ApiUmUsersS3keysFindByKeyIdRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	keyId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	userId          string
+	keyId           string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -4208,9 +4491,9 @@ func (r ApiUmUsersS3keysFindByKeyIdRequest) Execute() (S3Key, *APIResponse, erro
 func (a *UserManagementApiService) UmUsersS3keysFindByKeyId(ctx _context.Context, userId string, keyId string) ApiUmUsersS3keysFindByKeyIdRequest {
 	return ApiUmUsersS3keysFindByKeyIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
-		keyId: keyId,
+		ctx:        ctx,
+		userId:     userId,
+		keyId:      keyId,
 	}
 }
 
@@ -4247,6 +4530,7 @@ func (a *UserManagementApiService) UmUsersS3keysFindByKeyIdExecute(r ApiUmUsersS
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -4288,12 +4572,12 @@ func (a *UserManagementApiService) UmUsersS3keysFindByKeyIdExecute(r ApiUmUsersS
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersS3keysFindByKeyId",
+		Operation:   "UmUsersS3keysFindByKeyId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -4307,19 +4591,21 @@ func (a *UserManagementApiService) UmUsersS3keysFindByKeyIdExecute(r ApiUmUsersS
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -4327,8 +4613,8 @@ func (a *UserManagementApiService) UmUsersS3keysFindByKeyIdExecute(r ApiUmUsersS
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -4337,11 +4623,13 @@ func (a *UserManagementApiService) UmUsersS3keysFindByKeyIdExecute(r ApiUmUsersS
 }
 
 type ApiUmUsersS3keysGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	userId          string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -4355,6 +4643,19 @@ func (r ApiUmUsersS3keysGetRequest) Depth(depth int32) ApiUmUsersS3keysGetReques
 }
 func (r ApiUmUsersS3keysGetRequest) XContractNumber(xContractNumber int32) ApiUmUsersS3keysGetRequest {
 	r.xContractNumber = &xContractNumber
+	return r
+}
+
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmUsersS3keysGetRequest) Filter(key string, value string) ApiUmUsersS3keysGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmUsersS3keysGetRequest) OrderBy(orderBy string) ApiUmUsersS3keysGetRequest {
+	r.orderBy = &orderBy
 	return r
 }
 
@@ -4372,8 +4673,9 @@ func (r ApiUmUsersS3keysGetRequest) Execute() (S3Keys, *APIResponse, error) {
 func (a *UserManagementApiService) UmUsersS3keysGet(ctx _context.Context, userId string) ApiUmUsersS3keysGetRequest {
 	return ApiUmUsersS3keysGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
+		ctx:        ctx,
+		userId:     userId,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -4409,6 +4711,17 @@ func (a *UserManagementApiService) UmUsersS3keysGetExecute(r ApiUmUsersS3keysGet
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -4450,12 +4763,12 @@ func (a *UserManagementApiService) UmUsersS3keysGetExecute(r ApiUmUsersS3keysGet
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersS3keysGet",
+		Operation:   "UmUsersS3keysGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -4469,19 +4782,21 @@ func (a *UserManagementApiService) UmUsersS3keysGetExecute(r ApiUmUsersS3keysGet
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -4489,8 +4804,8 @@ func (a *UserManagementApiService) UmUsersS3keysGetExecute(r ApiUmUsersS3keysGet
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -4499,11 +4814,11 @@ func (a *UserManagementApiService) UmUsersS3keysGetExecute(r ApiUmUsersS3keysGet
 }
 
 type ApiUmUsersS3keysPostRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	userId          string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -4534,8 +4849,8 @@ func (r ApiUmUsersS3keysPostRequest) Execute() (S3Key, *APIResponse, error) {
 func (a *UserManagementApiService) UmUsersS3keysPost(ctx _context.Context, userId string) ApiUmUsersS3keysPostRequest {
 	return ApiUmUsersS3keysPostRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
+		ctx:        ctx,
+		userId:     userId,
 	}
 }
 
@@ -4571,6 +4886,7 @@ func (a *UserManagementApiService) UmUsersS3keysPostExecute(r ApiUmUsersS3keysPo
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -4612,12 +4928,12 @@ func (a *UserManagementApiService) UmUsersS3keysPostExecute(r ApiUmUsersS3keysPo
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersS3keysPost",
+		Operation:   "UmUsersS3keysPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -4631,19 +4947,21 @@ func (a *UserManagementApiService) UmUsersS3keysPostExecute(r ApiUmUsersS3keysPo
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -4651,8 +4969,8 @@ func (a *UserManagementApiService) UmUsersS3keysPostExecute(r ApiUmUsersS3keysPo
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -4661,13 +4979,13 @@ func (a *UserManagementApiService) UmUsersS3keysPostExecute(r ApiUmUsersS3keysPo
 }
 
 type ApiUmUsersS3keysPutRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	keyId string
-	s3Key *S3Key
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	userId          string
+	keyId           string
+	s3Key           *S3Key
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -4703,9 +5021,9 @@ func (r ApiUmUsersS3keysPutRequest) Execute() (S3Key, *APIResponse, error) {
 func (a *UserManagementApiService) UmUsersS3keysPut(ctx _context.Context, userId string, keyId string) ApiUmUsersS3keysPutRequest {
 	return ApiUmUsersS3keysPutRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
-		keyId: keyId,
+		ctx:        ctx,
+		userId:     userId,
+		keyId:      keyId,
 	}
 }
 
@@ -4745,6 +5063,7 @@ func (a *UserManagementApiService) UmUsersS3keysPutExecute(r ApiUmUsersS3keysPut
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -4788,12 +5107,12 @@ func (a *UserManagementApiService) UmUsersS3keysPutExecute(r ApiUmUsersS3keysPut
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersS3keysPut",
+		Operation:   "UmUsersS3keysPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -4807,19 +5126,21 @@ func (a *UserManagementApiService) UmUsersS3keysPutExecute(r ApiUmUsersS3keysPut
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -4827,8 +5148,8 @@ func (a *UserManagementApiService) UmUsersS3keysPutExecute(r ApiUmUsersS3keysPut
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -4837,10 +5158,12 @@ func (a *UserManagementApiService) UmUsersS3keysPutExecute(r ApiUmUsersS3keysPut
 }
 
 type ApiUmUsersS3ssourlGetRequest struct {
-	ctx _context.Context
-	ApiService *UserManagementApiService
-	userId string
-	pretty *bool
+	ctx             _context.Context
+	ApiService      *UserManagementApiService
+	filters         _neturl.Values
+	orderBy         *string
+	userId          string
+	pretty          *bool
 	xContractNumber *int32
 }
 
@@ -4850,6 +5173,19 @@ func (r ApiUmUsersS3ssourlGetRequest) Pretty(pretty bool) ApiUmUsersS3ssourlGetR
 }
 func (r ApiUmUsersS3ssourlGetRequest) XContractNumber(xContractNumber int32) ApiUmUsersS3ssourlGetRequest {
 	r.xContractNumber = &xContractNumber
+	return r
+}
+
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiUmUsersS3ssourlGetRequest) Filter(key string, value string) ApiUmUsersS3ssourlGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiUmUsersS3ssourlGetRequest) OrderBy(orderBy string) ApiUmUsersS3ssourlGetRequest {
+	r.orderBy = &orderBy
 	return r
 }
 
@@ -4867,8 +5203,9 @@ func (r ApiUmUsersS3ssourlGetRequest) Execute() (S3ObjectStorageSSO, *APIRespons
 func (a *UserManagementApiService) UmUsersS3ssourlGet(ctx _context.Context, userId string) ApiUmUsersS3ssourlGetRequest {
 	return ApiUmUsersS3ssourlGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		userId: userId,
+		ctx:        ctx,
+		userId:     userId,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -4901,6 +5238,17 @@ func (a *UserManagementApiService) UmUsersS3ssourlGetExecute(r ApiUmUsersS3ssour
 	if r.pretty != nil {
 		localVarQueryParams.Add("pretty", parameterToString(*r.pretty, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -4942,12 +5290,12 @@ func (a *UserManagementApiService) UmUsersS3ssourlGetExecute(r ApiUmUsersS3ssour
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "UmUsersS3ssourlGet",
+		Operation:   "UmUsersS3ssourlGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -4961,19 +5309,21 @@ func (a *UserManagementApiService) UmUsersS3ssourlGetExecute(r ApiUmUsersS3ssour
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -4981,8 +5331,8 @@ func (a *UserManagementApiService) UmUsersS3ssourlGetExecute(r ApiUmUsersS3ssour
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
