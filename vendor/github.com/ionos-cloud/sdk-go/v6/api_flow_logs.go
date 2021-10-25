@@ -28,14 +28,14 @@ var (
 type FlowLogsApiService service
 
 type ApiDatacentersServersNicsFlowlogsDeleteRequest struct {
-	ctx _context.Context
-	ApiService *FlowLogsApiService
+	ctx          _context.Context
+	ApiService   *FlowLogsApiService
 	datacenterId string
-	serverId string
-	nicId string
-	flowlogId string
-	pretty *bool
-	depth *int32
+	serverId     string
+	nicId        string
+	flowlogId    string
+	pretty       *bool
+	depth        *int32
 }
 
 func (r ApiDatacentersServersNicsFlowlogsDeleteRequest) Pretty(pretty bool) ApiDatacentersServersNicsFlowlogsDeleteRequest {
@@ -63,12 +63,12 @@ func (r ApiDatacentersServersNicsFlowlogsDeleteRequest) Execute() (*APIResponse,
  */
 func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsDelete(ctx _context.Context, datacenterId string, serverId string, nicId string, flowlogId string) ApiDatacentersServersNicsFlowlogsDeleteRequest {
 	return ApiDatacentersServersNicsFlowlogsDeleteRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		datacenterId: datacenterId,
-		serverId: serverId,
-		nicId: nicId,
-		flowlogId: flowlogId,
+		serverId:     serverId,
+		nicId:        nicId,
+		flowlogId:    flowlogId,
 	}
 }
 
@@ -105,6 +105,7 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsDeleteExecute(r ApiDa
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -143,12 +144,12 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsDeleteExecute(r ApiDa
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersServersNicsFlowlogsDelete",
+		Operation:   "DatacentersServersNicsFlowlogsDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -162,19 +163,21 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsDeleteExecute(r ApiDa
 		return localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarAPIResponse, newErr
 	}
 
@@ -182,14 +185,14 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsDeleteExecute(r ApiDa
 }
 
 type ApiDatacentersServersNicsFlowlogsFindByIdRequest struct {
-	ctx _context.Context
-	ApiService *FlowLogsApiService
+	ctx          _context.Context
+	ApiService   *FlowLogsApiService
 	datacenterId string
-	serverId string
-	nicId string
-	flowlogId string
-	pretty *bool
-	depth *int32
+	serverId     string
+	nicId        string
+	flowlogId    string
+	pretty       *bool
+	depth        *int32
 }
 
 func (r ApiDatacentersServersNicsFlowlogsFindByIdRequest) Pretty(pretty bool) ApiDatacentersServersNicsFlowlogsFindByIdRequest {
@@ -217,12 +220,12 @@ func (r ApiDatacentersServersNicsFlowlogsFindByIdRequest) Execute() (FlowLog, *A
  */
 func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsFindById(ctx _context.Context, datacenterId string, serverId string, nicId string, flowlogId string) ApiDatacentersServersNicsFlowlogsFindByIdRequest {
 	return ApiDatacentersServersNicsFlowlogsFindByIdRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		datacenterId: datacenterId,
-		serverId: serverId,
-		nicId: nicId,
-		flowlogId: flowlogId,
+		serverId:     serverId,
+		nicId:        nicId,
+		flowlogId:    flowlogId,
 	}
 }
 
@@ -261,6 +264,7 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsFindByIdExecute(r Api
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -299,12 +303,12 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsFindByIdExecute(r Api
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersServersNicsFlowlogsFindById",
+		Operation:   "DatacentersServersNicsFlowlogsFindById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -318,19 +322,21 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsFindByIdExecute(r Api
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -338,8 +344,8 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsFindByIdExecute(r Api
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -348,15 +354,17 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsFindByIdExecute(r Api
 }
 
 type ApiDatacentersServersNicsFlowlogsGetRequest struct {
-	ctx _context.Context
-	ApiService *FlowLogsApiService
+	ctx          _context.Context
+	ApiService   *FlowLogsApiService
+	filters      _neturl.Values
+	orderBy      *string
 	datacenterId string
-	serverId string
-	nicId string
-	pretty *bool
-	depth *int32
-	offset *int32
-	limit *int32
+	serverId     string
+	nicId        string
+	pretty       *bool
+	depth        *int32
+	offset       *int32
+	limit        *int32
 }
 
 func (r ApiDatacentersServersNicsFlowlogsGetRequest) Pretty(pretty bool) ApiDatacentersServersNicsFlowlogsGetRequest {
@@ -376,6 +384,19 @@ func (r ApiDatacentersServersNicsFlowlogsGetRequest) Limit(limit int32) ApiDatac
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiDatacentersServersNicsFlowlogsGetRequest) Filter(key string, value string) ApiDatacentersServersNicsFlowlogsGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiDatacentersServersNicsFlowlogsGetRequest) OrderBy(orderBy string) ApiDatacentersServersNicsFlowlogsGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiDatacentersServersNicsFlowlogsGetRequest) Execute() (FlowLogs, *APIResponse, error) {
 	return r.ApiService.DatacentersServersNicsFlowlogsGetExecute(r)
 }
@@ -391,11 +412,12 @@ func (r ApiDatacentersServersNicsFlowlogsGetRequest) Execute() (FlowLogs, *APIRe
  */
 func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsGet(ctx _context.Context, datacenterId string, serverId string, nicId string) ApiDatacentersServersNicsFlowlogsGetRequest {
 	return ApiDatacentersServersNicsFlowlogsGetRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		datacenterId: datacenterId,
-		serverId: serverId,
-		nicId: nicId,
+		serverId:     serverId,
+		nicId:        nicId,
+		filters:      _neturl.Values{},
 	}
 }
 
@@ -439,6 +461,17 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsGetExecute(r ApiDatac
 	if r.limit != nil {
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -477,12 +510,12 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsGetExecute(r ApiDatac
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersServersNicsFlowlogsGet",
+		Operation:   "DatacentersServersNicsFlowlogsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -496,19 +529,21 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsGetExecute(r ApiDatac
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -516,8 +551,8 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsGetExecute(r ApiDatac
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -526,15 +561,15 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsGetExecute(r ApiDatac
 }
 
 type ApiDatacentersServersNicsFlowlogsPatchRequest struct {
-	ctx _context.Context
-	ApiService *FlowLogsApiService
+	ctx          _context.Context
+	ApiService   *FlowLogsApiService
 	datacenterId string
-	serverId string
-	nicId string
-	flowlogId string
-	flowlog *FlowLogProperties
-	pretty *bool
-	depth *int32
+	serverId     string
+	nicId        string
+	flowlogId    string
+	flowlog      *FlowLogProperties
+	pretty       *bool
+	depth        *int32
 }
 
 func (r ApiDatacentersServersNicsFlowlogsPatchRequest) Flowlog(flowlog FlowLogProperties) ApiDatacentersServersNicsFlowlogsPatchRequest {
@@ -566,12 +601,12 @@ func (r ApiDatacentersServersNicsFlowlogsPatchRequest) Execute() (FlowLog, *APIR
  */
 func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPatch(ctx _context.Context, datacenterId string, serverId string, nicId string, flowlogId string) ApiDatacentersServersNicsFlowlogsPatchRequest {
 	return ApiDatacentersServersNicsFlowlogsPatchRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		datacenterId: datacenterId,
-		serverId: serverId,
-		nicId: nicId,
-		flowlogId: flowlogId,
+		serverId:     serverId,
+		nicId:        nicId,
+		flowlogId:    flowlogId,
 	}
 }
 
@@ -613,6 +648,7 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPatchExecute(r ApiDat
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -653,12 +689,12 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPatchExecute(r ApiDat
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersServersNicsFlowlogsPatch",
+		Operation:   "DatacentersServersNicsFlowlogsPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -672,19 +708,21 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPatchExecute(r ApiDat
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -692,8 +730,8 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPatchExecute(r ApiDat
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -702,14 +740,14 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPatchExecute(r ApiDat
 }
 
 type ApiDatacentersServersNicsFlowlogsPostRequest struct {
-	ctx _context.Context
-	ApiService *FlowLogsApiService
+	ctx          _context.Context
+	ApiService   *FlowLogsApiService
 	datacenterId string
-	serverId string
-	nicId string
-	flowlog *FlowLog
-	pretty *bool
-	depth *int32
+	serverId     string
+	nicId        string
+	flowlog      *FlowLog
+	pretty       *bool
+	depth        *int32
 }
 
 func (r ApiDatacentersServersNicsFlowlogsPostRequest) Flowlog(flowlog FlowLog) ApiDatacentersServersNicsFlowlogsPostRequest {
@@ -740,11 +778,11 @@ func (r ApiDatacentersServersNicsFlowlogsPostRequest) Execute() (FlowLog, *APIRe
  */
 func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPost(ctx _context.Context, datacenterId string, serverId string, nicId string) ApiDatacentersServersNicsFlowlogsPostRequest {
 	return ApiDatacentersServersNicsFlowlogsPostRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		datacenterId: datacenterId,
-		serverId: serverId,
-		nicId: nicId,
+		serverId:     serverId,
+		nicId:        nicId,
 	}
 }
 
@@ -785,6 +823,7 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPostExecute(r ApiData
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -825,12 +864,12 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPostExecute(r ApiData
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersServersNicsFlowlogsPost",
+		Operation:   "DatacentersServersNicsFlowlogsPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -844,19 +883,21 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPostExecute(r ApiData
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -864,8 +905,8 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPostExecute(r ApiData
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -874,15 +915,15 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPostExecute(r ApiData
 }
 
 type ApiDatacentersServersNicsFlowlogsPutRequest struct {
-	ctx _context.Context
-	ApiService *FlowLogsApiService
+	ctx          _context.Context
+	ApiService   *FlowLogsApiService
 	datacenterId string
-	serverId string
-	nicId string
-	flowlogId string
-	flowlog *FlowLogPut
-	pretty *bool
-	depth *int32
+	serverId     string
+	nicId        string
+	flowlogId    string
+	flowlog      *FlowLogPut
+	pretty       *bool
+	depth        *int32
 }
 
 func (r ApiDatacentersServersNicsFlowlogsPutRequest) Flowlog(flowlog FlowLogPut) ApiDatacentersServersNicsFlowlogsPutRequest {
@@ -914,12 +955,12 @@ func (r ApiDatacentersServersNicsFlowlogsPutRequest) Execute() (FlowLog, *APIRes
  */
 func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPut(ctx _context.Context, datacenterId string, serverId string, nicId string, flowlogId string) ApiDatacentersServersNicsFlowlogsPutRequest {
 	return ApiDatacentersServersNicsFlowlogsPutRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		datacenterId: datacenterId,
-		serverId: serverId,
-		nicId: nicId,
-		flowlogId: flowlogId,
+		serverId:     serverId,
+		nicId:        nicId,
+		flowlogId:    flowlogId,
 	}
 }
 
@@ -961,6 +1002,7 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPutExecute(r ApiDatac
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -1001,12 +1043,12 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPutExecute(r ApiDatac
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersServersNicsFlowlogsPut",
+		Operation:   "DatacentersServersNicsFlowlogsPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1020,19 +1062,21 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPutExecute(r ApiDatac
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1040,8 +1084,8 @@ func (a *FlowLogsApiService) DatacentersServersNicsFlowlogsPutExecute(r ApiDatac
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}

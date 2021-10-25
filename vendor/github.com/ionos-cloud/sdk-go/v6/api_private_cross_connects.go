@@ -28,11 +28,11 @@ var (
 type PrivateCrossConnectsApiService service
 
 type ApiPccsDeleteRequest struct {
-	ctx _context.Context
-	ApiService *PrivateCrossConnectsApiService
-	pccId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *PrivateCrossConnectsApiService
+	pccId           string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -63,8 +63,8 @@ func (r ApiPccsDeleteRequest) Execute() (*APIResponse, error) {
 func (a *PrivateCrossConnectsApiService) PccsDelete(ctx _context.Context, pccId string) ApiPccsDeleteRequest {
 	return ApiPccsDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		pccId: pccId,
+		ctx:        ctx,
+		pccId:      pccId,
 	}
 }
 
@@ -98,6 +98,7 @@ func (a *PrivateCrossConnectsApiService) PccsDeleteExecute(r ApiPccsDeleteReques
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -139,12 +140,12 @@ func (a *PrivateCrossConnectsApiService) PccsDeleteExecute(r ApiPccsDeleteReques
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "PccsDelete",
+		Operation:   "PccsDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -158,19 +159,21 @@ func (a *PrivateCrossConnectsApiService) PccsDeleteExecute(r ApiPccsDeleteReques
 		return localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarAPIResponse, newErr
 	}
 
@@ -178,11 +181,11 @@ func (a *PrivateCrossConnectsApiService) PccsDeleteExecute(r ApiPccsDeleteReques
 }
 
 type ApiPccsFindByIdRequest struct {
-	ctx _context.Context
-	ApiService *PrivateCrossConnectsApiService
-	pccId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *PrivateCrossConnectsApiService
+	pccId           string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -213,8 +216,8 @@ func (r ApiPccsFindByIdRequest) Execute() (PrivateCrossConnect, *APIResponse, er
 func (a *PrivateCrossConnectsApiService) PccsFindById(ctx _context.Context, pccId string) ApiPccsFindByIdRequest {
 	return ApiPccsFindByIdRequest{
 		ApiService: a,
-		ctx: ctx,
-		pccId: pccId,
+		ctx:        ctx,
+		pccId:      pccId,
 	}
 }
 
@@ -250,6 +253,7 @@ func (a *PrivateCrossConnectsApiService) PccsFindByIdExecute(r ApiPccsFindByIdRe
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -291,12 +295,12 @@ func (a *PrivateCrossConnectsApiService) PccsFindByIdExecute(r ApiPccsFindByIdRe
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "PccsFindById",
+		Operation:   "PccsFindById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -310,19 +314,21 @@ func (a *PrivateCrossConnectsApiService) PccsFindByIdExecute(r ApiPccsFindByIdRe
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -330,8 +336,8 @@ func (a *PrivateCrossConnectsApiService) PccsFindByIdExecute(r ApiPccsFindByIdRe
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -340,10 +346,12 @@ func (a *PrivateCrossConnectsApiService) PccsFindByIdExecute(r ApiPccsFindByIdRe
 }
 
 type ApiPccsGetRequest struct {
-	ctx _context.Context
-	ApiService *PrivateCrossConnectsApiService
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *PrivateCrossConnectsApiService
+	filters         _neturl.Values
+	orderBy         *string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -360,6 +368,19 @@ func (r ApiPccsGetRequest) XContractNumber(xContractNumber int32) ApiPccsGetRequ
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiPccsGetRequest) Filter(key string, value string) ApiPccsGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiPccsGetRequest) OrderBy(orderBy string) ApiPccsGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiPccsGetRequest) Execute() (PrivateCrossConnects, *APIResponse, error) {
 	return r.ApiService.PccsGetExecute(r)
 }
@@ -373,7 +394,8 @@ func (r ApiPccsGetRequest) Execute() (PrivateCrossConnects, *APIResponse, error)
 func (a *PrivateCrossConnectsApiService) PccsGet(ctx _context.Context) ApiPccsGetRequest {
 	return ApiPccsGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -408,6 +430,17 @@ func (a *PrivateCrossConnectsApiService) PccsGetExecute(r ApiPccsGetRequest) (Pr
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -449,12 +482,12 @@ func (a *PrivateCrossConnectsApiService) PccsGetExecute(r ApiPccsGetRequest) (Pr
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "PccsGet",
+		Operation:   "PccsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -468,19 +501,21 @@ func (a *PrivateCrossConnectsApiService) PccsGetExecute(r ApiPccsGetRequest) (Pr
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -488,8 +523,8 @@ func (a *PrivateCrossConnectsApiService) PccsGetExecute(r ApiPccsGetRequest) (Pr
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -498,12 +533,12 @@ func (a *PrivateCrossConnectsApiService) PccsGetExecute(r ApiPccsGetRequest) (Pr
 }
 
 type ApiPccsPatchRequest struct {
-	ctx _context.Context
-	ApiService *PrivateCrossConnectsApiService
-	pccId string
-	pcc *PrivateCrossConnectProperties
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *PrivateCrossConnectsApiService
+	pccId           string
+	pcc             *PrivateCrossConnectProperties
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -538,8 +573,8 @@ func (r ApiPccsPatchRequest) Execute() (PrivateCrossConnect, *APIResponse, error
 func (a *PrivateCrossConnectsApiService) PccsPatch(ctx _context.Context, pccId string) ApiPccsPatchRequest {
 	return ApiPccsPatchRequest{
 		ApiService: a,
-		ctx: ctx,
-		pccId: pccId,
+		ctx:        ctx,
+		pccId:      pccId,
 	}
 }
 
@@ -578,6 +613,7 @@ func (a *PrivateCrossConnectsApiService) PccsPatchExecute(r ApiPccsPatchRequest)
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -621,12 +657,12 @@ func (a *PrivateCrossConnectsApiService) PccsPatchExecute(r ApiPccsPatchRequest)
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "PccsPatch",
+		Operation:   "PccsPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -640,19 +676,21 @@ func (a *PrivateCrossConnectsApiService) PccsPatchExecute(r ApiPccsPatchRequest)
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -660,8 +698,8 @@ func (a *PrivateCrossConnectsApiService) PccsPatchExecute(r ApiPccsPatchRequest)
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -670,11 +708,11 @@ func (a *PrivateCrossConnectsApiService) PccsPatchExecute(r ApiPccsPatchRequest)
 }
 
 type ApiPccsPostRequest struct {
-	ctx _context.Context
-	ApiService *PrivateCrossConnectsApiService
-	pcc *PrivateCrossConnect
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *PrivateCrossConnectsApiService
+	pcc             *PrivateCrossConnect
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -708,7 +746,7 @@ func (r ApiPccsPostRequest) Execute() (PrivateCrossConnect, *APIResponse, error)
 func (a *PrivateCrossConnectsApiService) PccsPost(ctx _context.Context) ApiPccsPostRequest {
 	return ApiPccsPostRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -746,6 +784,7 @@ func (a *PrivateCrossConnectsApiService) PccsPostExecute(r ApiPccsPostRequest) (
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -789,12 +828,12 @@ func (a *PrivateCrossConnectsApiService) PccsPostExecute(r ApiPccsPostRequest) (
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "PccsPost",
+		Operation:   "PccsPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -808,19 +847,21 @@ func (a *PrivateCrossConnectsApiService) PccsPostExecute(r ApiPccsPostRequest) (
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -828,8 +869,8 @@ func (a *PrivateCrossConnectsApiService) PccsPostExecute(r ApiPccsPostRequest) (
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
