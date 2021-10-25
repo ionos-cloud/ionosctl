@@ -28,13 +28,13 @@ var (
 type LoadBalancersApiService service
 
 type ApiDatacentersLoadbalancersBalancednicsDeleteRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	loadbalancerId string
-	nicId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	datacenterId    string
+	loadbalancerId  string
+	nicId           string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -66,11 +66,11 @@ func (r ApiDatacentersLoadbalancersBalancednicsDeleteRequest) Execute() (*APIRes
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsDelete(ctx _context.Context, datacenterId string, loadbalancerId string, nicId string) ApiDatacentersLoadbalancersBalancednicsDeleteRequest {
 	return ApiDatacentersLoadbalancersBalancednicsDeleteRequest{
-		ApiService: a,
-		ctx: ctx,
-		datacenterId: datacenterId,
+		ApiService:     a,
+		ctx:            ctx,
+		datacenterId:   datacenterId,
 		loadbalancerId: loadbalancerId,
-		nicId: nicId,
+		nicId:          nicId,
 	}
 }
 
@@ -106,6 +106,7 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsDeleteExec
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -147,12 +148,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsDeleteExec
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersBalancednicsDelete",
+		Operation:   "DatacentersLoadbalancersBalancednicsDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -166,19 +167,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsDeleteExec
 		return localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarAPIResponse, newErr
 	}
 
@@ -186,13 +189,13 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsDeleteExec
 }
 
 type ApiDatacentersLoadbalancersBalancednicsFindByNicIdRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	loadbalancerId string
-	nicId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	datacenterId    string
+	loadbalancerId  string
+	nicId           string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -224,11 +227,11 @@ func (r ApiDatacentersLoadbalancersBalancednicsFindByNicIdRequest) Execute() (Ni
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsFindByNicId(ctx _context.Context, datacenterId string, loadbalancerId string, nicId string) ApiDatacentersLoadbalancersBalancednicsFindByNicIdRequest {
 	return ApiDatacentersLoadbalancersBalancednicsFindByNicIdRequest{
-		ApiService: a,
-		ctx: ctx,
-		datacenterId: datacenterId,
+		ApiService:     a,
+		ctx:            ctx,
+		datacenterId:   datacenterId,
 		loadbalancerId: loadbalancerId,
-		nicId: nicId,
+		nicId:          nicId,
 	}
 }
 
@@ -266,6 +269,7 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsFindByNicI
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -307,12 +311,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsFindByNicI
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersBalancednicsFindByNicId",
+		Operation:   "DatacentersLoadbalancersBalancednicsFindByNicId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -326,19 +330,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsFindByNicI
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -346,8 +352,8 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsFindByNicI
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -356,12 +362,14 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsFindByNicI
 }
 
 type ApiDatacentersLoadbalancersBalancednicsGetRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	loadbalancerId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	filters         _neturl.Values
+	orderBy         *string
+	datacenterId    string
+	loadbalancerId  string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -375,6 +383,19 @@ func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) Depth(depth int32) Ap
 }
 func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) XContractNumber(xContractNumber int32) ApiDatacentersLoadbalancersBalancednicsGetRequest {
 	r.xContractNumber = &xContractNumber
+	return r
+}
+
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) Filter(key string, value string) ApiDatacentersLoadbalancersBalancednicsGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) OrderBy(orderBy string) ApiDatacentersLoadbalancersBalancednicsGetRequest {
+	r.orderBy = &orderBy
 	return r
 }
 
@@ -392,10 +413,11 @@ func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) Execute() (BalancedNi
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsGet(ctx _context.Context, datacenterId string, loadbalancerId string) ApiDatacentersLoadbalancersBalancednicsGetRequest {
 	return ApiDatacentersLoadbalancersBalancednicsGetRequest{
-		ApiService: a,
-		ctx: ctx,
-		datacenterId: datacenterId,
+		ApiService:     a,
+		ctx:            ctx,
+		datacenterId:   datacenterId,
 		loadbalancerId: loadbalancerId,
+		filters:        _neturl.Values{},
 	}
 }
 
@@ -432,6 +454,17 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsGetExecute
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -473,12 +506,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsGetExecute
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersBalancednicsGet",
+		Operation:   "DatacentersLoadbalancersBalancednicsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -492,19 +525,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsGetExecute
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -512,8 +547,8 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsGetExecute
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -522,13 +557,13 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsGetExecute
 }
 
 type ApiDatacentersLoadbalancersBalancednicsPostRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	loadbalancerId string
-	nic *Nic
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	datacenterId    string
+	loadbalancerId  string
+	nic             *Nic
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -563,9 +598,9 @@ func (r ApiDatacentersLoadbalancersBalancednicsPostRequest) Execute() (Nic, *API
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsPost(ctx _context.Context, datacenterId string, loadbalancerId string) ApiDatacentersLoadbalancersBalancednicsPostRequest {
 	return ApiDatacentersLoadbalancersBalancednicsPostRequest{
-		ApiService: a,
-		ctx: ctx,
-		datacenterId: datacenterId,
+		ApiService:     a,
+		ctx:            ctx,
+		datacenterId:   datacenterId,
 		loadbalancerId: loadbalancerId,
 	}
 }
@@ -606,6 +641,7 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsPostExecut
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -649,12 +685,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsPostExecut
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersBalancednicsPost",
+		Operation:   "DatacentersLoadbalancersBalancednicsPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -668,19 +704,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsPostExecut
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -688,8 +726,8 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsPostExecut
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -698,12 +736,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersBalancednicsPostExecut
 }
 
 type ApiDatacentersLoadbalancersDeleteRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	loadbalancerId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	datacenterId    string
+	loadbalancerId  string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -734,9 +772,9 @@ func (r ApiDatacentersLoadbalancersDeleteRequest) Execute() (*APIResponse, error
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersDelete(ctx _context.Context, datacenterId string, loadbalancerId string) ApiDatacentersLoadbalancersDeleteRequest {
 	return ApiDatacentersLoadbalancersDeleteRequest{
-		ApiService: a,
-		ctx: ctx,
-		datacenterId: datacenterId,
+		ApiService:     a,
+		ctx:            ctx,
+		datacenterId:   datacenterId,
 		loadbalancerId: loadbalancerId,
 	}
 }
@@ -772,6 +810,7 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersDeleteExecute(r ApiDat
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -813,12 +852,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersDeleteExecute(r ApiDat
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersDelete",
+		Operation:   "DatacentersLoadbalancersDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -832,19 +871,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersDeleteExecute(r ApiDat
 		return localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarAPIResponse, newErr
 	}
 
@@ -852,12 +893,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersDeleteExecute(r ApiDat
 }
 
 type ApiDatacentersLoadbalancersFindByIdRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	loadbalancerId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	datacenterId    string
+	loadbalancerId  string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -888,9 +929,9 @@ func (r ApiDatacentersLoadbalancersFindByIdRequest) Execute() (Loadbalancer, *AP
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersFindById(ctx _context.Context, datacenterId string, loadbalancerId string) ApiDatacentersLoadbalancersFindByIdRequest {
 	return ApiDatacentersLoadbalancersFindByIdRequest{
-		ApiService: a,
-		ctx: ctx,
-		datacenterId: datacenterId,
+		ApiService:     a,
+		ctx:            ctx,
+		datacenterId:   datacenterId,
 		loadbalancerId: loadbalancerId,
 	}
 }
@@ -928,6 +969,7 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersFindByIdExecute(r ApiD
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -969,12 +1011,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersFindByIdExecute(r ApiD
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersFindById",
+		Operation:   "DatacentersLoadbalancersFindById",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -988,19 +1030,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersFindByIdExecute(r ApiD
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1008,8 +1052,8 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersFindByIdExecute(r ApiD
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1018,14 +1062,16 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersFindByIdExecute(r ApiD
 }
 
 type ApiDatacentersLoadbalancersGetRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	filters         _neturl.Values
+	orderBy         *string
+	datacenterId    string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
-	offset *int32
-	limit *int32
+	offset          *int32
+	limit           *int32
 }
 
 func (r ApiDatacentersLoadbalancersGetRequest) Pretty(pretty bool) ApiDatacentersLoadbalancersGetRequest {
@@ -1049,6 +1095,19 @@ func (r ApiDatacentersLoadbalancersGetRequest) Limit(limit int32) ApiDatacenters
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiDatacentersLoadbalancersGetRequest) Filter(key string, value string) ApiDatacentersLoadbalancersGetRequest {
+	filterKey := fmt.Sprintf("filter.%s", key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiDatacentersLoadbalancersGetRequest) OrderBy(orderBy string) ApiDatacentersLoadbalancersGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiDatacentersLoadbalancersGetRequest) Execute() (Loadbalancers, *APIResponse, error) {
 	return r.ApiService.DatacentersLoadbalancersGetExecute(r)
 }
@@ -1062,9 +1121,10 @@ func (r ApiDatacentersLoadbalancersGetRequest) Execute() (Loadbalancers, *APIRes
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersGet(ctx _context.Context, datacenterId string) ApiDatacentersLoadbalancersGetRequest {
 	return ApiDatacentersLoadbalancersGetRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		datacenterId: datacenterId,
+		filters:      _neturl.Values{},
 	}
 }
 
@@ -1106,6 +1166,17 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersGetExecute(r ApiDatace
 	if r.limit != nil {
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -1147,12 +1218,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersGetExecute(r ApiDatace
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersGet",
+		Operation:   "DatacentersLoadbalancersGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1166,19 +1237,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersGetExecute(r ApiDatace
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1186,8 +1259,8 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersGetExecute(r ApiDatace
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1196,13 +1269,13 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersGetExecute(r ApiDatace
 }
 
 type ApiDatacentersLoadbalancersPatchRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	loadbalancerId string
-	loadbalancer *LoadbalancerProperties
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	datacenterId    string
+	loadbalancerId  string
+	loadbalancer    *LoadbalancerProperties
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -1237,9 +1310,9 @@ func (r ApiDatacentersLoadbalancersPatchRequest) Execute() (Loadbalancer, *APIRe
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersPatch(ctx _context.Context, datacenterId string, loadbalancerId string) ApiDatacentersLoadbalancersPatchRequest {
 	return ApiDatacentersLoadbalancersPatchRequest{
-		ApiService: a,
-		ctx: ctx,
-		datacenterId: datacenterId,
+		ApiService:     a,
+		ctx:            ctx,
+		datacenterId:   datacenterId,
 		loadbalancerId: loadbalancerId,
 	}
 }
@@ -1280,6 +1353,7 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPatchExecute(r ApiData
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -1323,12 +1397,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPatchExecute(r ApiData
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersPatch",
+		Operation:   "DatacentersLoadbalancersPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1342,19 +1416,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPatchExecute(r ApiData
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1362,8 +1438,8 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPatchExecute(r ApiData
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1372,12 +1448,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPatchExecute(r ApiData
 }
 
 type ApiDatacentersLoadbalancersPostRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	loadbalancer *Loadbalancer
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	datacenterId    string
+	loadbalancer    *Loadbalancer
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -1411,8 +1487,8 @@ func (r ApiDatacentersLoadbalancersPostRequest) Execute() (Loadbalancer, *APIRes
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersPost(ctx _context.Context, datacenterId string) ApiDatacentersLoadbalancersPostRequest {
 	return ApiDatacentersLoadbalancersPostRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		datacenterId: datacenterId,
 	}
 }
@@ -1452,6 +1528,7 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPostExecute(r ApiDatac
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -1495,12 +1572,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPostExecute(r ApiDatac
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersPost",
+		Operation:   "DatacentersLoadbalancersPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1514,19 +1591,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPostExecute(r ApiDatac
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1534,8 +1613,8 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPostExecute(r ApiDatac
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -1544,13 +1623,13 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPostExecute(r ApiDatac
 }
 
 type ApiDatacentersLoadbalancersPutRequest struct {
-	ctx _context.Context
-	ApiService *LoadBalancersApiService
-	datacenterId string
-	loadbalancerId string
-	loadbalancer *Loadbalancer
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *LoadBalancersApiService
+	datacenterId    string
+	loadbalancerId  string
+	loadbalancer    *Loadbalancer
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -1585,9 +1664,9 @@ func (r ApiDatacentersLoadbalancersPutRequest) Execute() (Loadbalancer, *APIResp
  */
 func (a *LoadBalancersApiService) DatacentersLoadbalancersPut(ctx _context.Context, datacenterId string, loadbalancerId string) ApiDatacentersLoadbalancersPutRequest {
 	return ApiDatacentersLoadbalancersPutRequest{
-		ApiService: a,
-		ctx: ctx,
-		datacenterId: datacenterId,
+		ApiService:     a,
+		ctx:            ctx,
+		datacenterId:   datacenterId,
 		loadbalancerId: loadbalancerId,
 	}
 }
@@ -1628,6 +1707,7 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPutExecute(r ApiDatace
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -1671,12 +1751,12 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPutExecute(r ApiDatace
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "DatacentersLoadbalancersPut",
+		Operation:   "DatacentersLoadbalancersPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1690,19 +1770,21 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPutExecute(r ApiDatace
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
+	const FORMAT_STRING = "%s: %s"
+
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1710,8 +1792,8 @@ func (a *LoadBalancersApiService) DatacentersLoadbalancersPutExecute(r ApiDatace
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
