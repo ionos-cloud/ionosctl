@@ -86,19 +86,29 @@ You can provide your credentials:
 
 * Using environment variables
 
-You can set the environment variables using the next commands:
+You can set the environment variables for HTTP basic authentication:
 
+```text
+export IONOS_USERNAME="username"
+export IONOS_PASSWORD="password"
 ```
-export IONOS_USERNAME="ionos username"
-export IONOS_PASSWORD="ionos password"
-export IONOS_TOKEN="ionos token"
-export IONOS_API_URL="ionos api url"
+
+Or you can use token authentication:
+
+```text
+export IONOS_TOKEN="token"
+```
+
+Also, you can overwrite the api endpoint: `api.ionos.com` via the `--api-url` global flag or via the following environment variable:
+
+```text
+export IONOS_API_URL="api-url"
 ```
 
 * Using `login` command
 
 ```text
-ionosctl login --user username --password password
+ionosctl login --user username --password password -v
 ```
 
 The command can also be used without setting the `--user` and `--password` flags:

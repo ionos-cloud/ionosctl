@@ -16,7 +16,7 @@ func TestGetServerUrl(t *testing.T) {
 	viper.Reset()
 
 	// use env
-	assert.NoError(t, os.Setenv(IonosServerUrlEnvVar, "url"))
+	assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, "url"))
 	_ = Load() // ignore error since we just want to load the URL
 	assert.Equal(t, "url", GetServerUrl())
 
@@ -60,7 +60,7 @@ func TestLoadEnvFallback(t *testing.T) {
 	assert.NoError(t, os.Setenv(sdk.IonosUsernameEnvVar, "user"))
 	assert.NoError(t, os.Setenv(sdk.IonosPasswordEnvVar, "pass"))
 	assert.NoError(t, os.Setenv(sdk.IonosTokenEnvVar, "token"))
-	assert.NoError(t, os.Setenv(IonosServerUrlEnvVar, "url"))
+	assert.NoError(t, os.Setenv(sdk.IonosApiUrlEnvVar, "url"))
 	assert.NoError(t, Load())
 	assert.Equal(t, "user", viper.GetString(Username))
 	assert.Equal(t, "pass", viper.GetString(Password))
