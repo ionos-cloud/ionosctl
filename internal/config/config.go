@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -63,7 +64,8 @@ func LoadFile() error {
 	}
 	fileInfo, statErr := os.Stat(path)
 	if statErr != nil {
-		return statErr
+		return errors.New(fmt.Sprintf("error getting credentials: nor $%s, $%s, $%s set, nor config file: %s",
+			sdk.IonosUsernameEnvVar, sdk.IonosPasswordEnvVar, sdk.IonosTokenEnvVar, statErr.Error()))
 	}
 
 	perm := fileInfo.Mode().Perm()
