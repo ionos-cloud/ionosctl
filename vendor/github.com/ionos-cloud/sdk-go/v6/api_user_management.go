@@ -159,13 +159,11 @@ func (a *UserManagementApiService) UmGroupsDeleteExecute(r ApiUmGroupsDeleteRequ
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -314,13 +312,11 @@ func (a *UserManagementApiService) UmGroupsFindByIdExecute(r ApiUmGroupsFindById
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -370,7 +366,7 @@ func (r ApiUmGroupsGetRequest) XContractNumber(xContractNumber int32) ApiUmGroup
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiUmGroupsGetRequest) Filter(key string, value string) ApiUmGroupsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -501,13 +497,11 @@ func (a *UserManagementApiService) UmGroupsGetExecute(r ApiUmGroupsGetRequest) (
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -672,13 +666,11 @@ func (a *UserManagementApiService) UmGroupsPostExecute(r ApiUmGroupsPostRequest)
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -847,13 +839,11 @@ func (a *UserManagementApiService) UmGroupsPutExecute(r ApiUmGroupsPutRequest) (
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -904,7 +894,7 @@ func (r ApiUmGroupsResourcesGetRequest) XContractNumber(xContractNumber int32) A
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiUmGroupsResourcesGetRequest) Filter(key string, value string) ApiUmGroupsResourcesGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -1037,13 +1027,11 @@ func (a *UserManagementApiService) UmGroupsResourcesGetExecute(r ApiUmGroupsReso
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1204,13 +1192,11 @@ func (a *UserManagementApiService) UmGroupsSharesDeleteExecute(r ApiUmGroupsShar
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1363,13 +1349,11 @@ func (a *UserManagementApiService) UmGroupsSharesFindByResourceIdExecute(r ApiUm
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1420,7 +1404,7 @@ func (r ApiUmGroupsSharesGetRequest) XContractNumber(xContractNumber int32) ApiU
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiUmGroupsSharesGetRequest) Filter(key string, value string) ApiUmGroupsSharesGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -1554,13 +1538,11 @@ func (a *UserManagementApiService) UmGroupsSharesGetExecute(r ApiUmGroupsSharesG
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1733,13 +1715,11 @@ func (a *UserManagementApiService) UmGroupsSharesPostExecute(r ApiUmGroupsShares
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1912,13 +1892,11 @@ func (a *UserManagementApiService) UmGroupsSharesPutExecute(r ApiUmGroupsSharesP
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2079,13 +2057,11 @@ func (a *UserManagementApiService) UmGroupsUsersDeleteExecute(r ApiUmGroupsUsers
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2126,7 +2102,7 @@ func (r ApiUmGroupsUsersGetRequest) XContractNumber(xContractNumber int32) ApiUm
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiUmGroupsUsersGetRequest) Filter(key string, value string) ApiUmGroupsUsersGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -2260,13 +2236,11 @@ func (a *UserManagementApiService) UmGroupsUsersGetExecute(r ApiUmGroupsUsersGet
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2435,13 +2409,11 @@ func (a *UserManagementApiService) UmGroupsUsersPostExecute(r ApiUmGroupsUsersPo
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2600,13 +2572,11 @@ func (a *UserManagementApiService) UmResourcesFindByTypeExecute(r ApiUmResources
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2769,13 +2739,11 @@ func (a *UserManagementApiService) UmResourcesFindByTypeAndIdExecute(r ApiUmReso
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2825,7 +2793,7 @@ func (r ApiUmResourcesGetRequest) XContractNumber(xContractNumber int32) ApiUmRe
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiUmResourcesGetRequest) Filter(key string, value string) ApiUmResourcesGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -2956,13 +2924,11 @@ func (a *UserManagementApiService) UmResourcesGetExecute(r ApiUmResourcesGetRequ
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3119,13 +3085,11 @@ func (a *UserManagementApiService) UmUsersDeleteExecute(r ApiUmUsersDeleteReques
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3274,13 +3238,11 @@ func (a *UserManagementApiService) UmUsersFindByIdExecute(r ApiUmUsersFindByIdRe
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3340,7 +3302,7 @@ func (r ApiUmUsersGetRequest) Limit(limit int32) ApiUmUsersGetRequest {
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiUmUsersGetRequest) Filter(key string, value string) ApiUmUsersGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -3477,13 +3439,11 @@ func (a *UserManagementApiService) UmUsersGetExecute(r ApiUmUsersGetRequest) (Us
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3534,7 +3494,7 @@ func (r ApiUmUsersGroupsGetRequest) XContractNumber(xContractNumber int32) ApiUm
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiUmUsersGroupsGetRequest) Filter(key string, value string) ApiUmUsersGroupsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -3668,13 +3628,11 @@ func (a *UserManagementApiService) UmUsersGroupsGetExecute(r ApiUmUsersGroupsGet
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3725,7 +3683,7 @@ func (r ApiUmUsersOwnsGetRequest) XContractNumber(xContractNumber int32) ApiUmUs
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiUmUsersOwnsGetRequest) Filter(key string, value string) ApiUmUsersOwnsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -3859,13 +3817,11 @@ func (a *UserManagementApiService) UmUsersOwnsGetExecute(r ApiUmUsersOwnsGetRequ
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -4030,13 +3986,11 @@ func (a *UserManagementApiService) UmUsersPostExecute(r ApiUmUsersPostRequest) (
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -4205,13 +4159,11 @@ func (a *UserManagementApiService) UmUsersPutExecute(r ApiUmUsersPutRequest) (Us
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))

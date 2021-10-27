@@ -167,13 +167,11 @@ func (a *ServersApiService) DatacentersServersCdromsDeleteExecute(r ApiDatacente
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -330,13 +328,11 @@ func (a *ServersApiService) DatacentersServersCdromsFindByIdExecute(r ApiDatacen
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -398,7 +394,7 @@ func (r ApiDatacentersServersCdromsGetRequest) Limit(limit int32) ApiDatacenters
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersServersCdromsGetRequest) Filter(key string, value string) ApiDatacentersServersCdromsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -541,13 +537,11 @@ func (a *ServersApiService) DatacentersServersCdromsGetExecute(r ApiDatacentersS
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -720,13 +714,11 @@ func (a *ServersApiService) DatacentersServersCdromsPostExecute(r ApiDatacenters
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -887,13 +879,11 @@ func (a *ServersApiService) DatacentersServersDeleteExecute(r ApiDatacentersServ
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1046,13 +1036,11 @@ func (a *ServersApiService) DatacentersServersFindByIdExecute(r ApiDatacentersSe
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1118,7 +1106,7 @@ func (r ApiDatacentersServersGetRequest) Limit(limit int32) ApiDatacentersServer
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersServersGetRequest) Filter(key string, value string) ApiDatacentersServersGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -1261,13 +1249,11 @@ func (a *ServersApiService) DatacentersServersGetExecute(r ApiDatacentersServers
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1440,13 +1426,11 @@ func (a *ServersApiService) DatacentersServersPatchExecute(r ApiDatacentersServe
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1615,13 +1599,11 @@ func (a *ServersApiService) DatacentersServersPostExecute(r ApiDatacentersServer
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1794,13 +1776,11 @@ func (a *ServersApiService) DatacentersServersPutExecute(r ApiDatacentersServers
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1961,13 +1941,11 @@ func (a *ServersApiService) DatacentersServersRebootPostExecute(r ApiDatacenters
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2009,7 +1987,7 @@ func (r ApiDatacentersServersRemoteConsoleGetRequest) XContractNumber(xContractN
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersServersRemoteConsoleGetRequest) Filter(key string, value string) ApiDatacentersServersRemoteConsoleGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -2146,13 +2124,11 @@ func (a *ServersApiService) DatacentersServersRemoteConsoleGetExecute(r ApiDatac
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2313,13 +2289,11 @@ func (a *ServersApiService) DatacentersServersResumePostExecute(r ApiDatacenters
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2470,13 +2444,11 @@ func (a *ServersApiService) DatacentersServersStartPostExecute(r ApiDatacentersS
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2627,13 +2599,11 @@ func (a *ServersApiService) DatacentersServersStopPostExecute(r ApiDatacentersSe
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2784,13 +2754,11 @@ func (a *ServersApiService) DatacentersServersSuspendPostExecute(r ApiDatacenter
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2832,7 +2800,7 @@ func (r ApiDatacentersServersTokenGetRequest) XContractNumber(xContractNumber in
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersServersTokenGetRequest) Filter(key string, value string) ApiDatacentersServersTokenGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -2969,13 +2937,11 @@ func (a *ServersApiService) DatacentersServersTokenGetExecute(r ApiDatacentersSe
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3136,13 +3102,11 @@ func (a *ServersApiService) DatacentersServersUpgradePostExecute(r ApiDatacenter
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3297,13 +3261,11 @@ func (a *ServersApiService) DatacentersServersVolumesDeleteExecute(r ApiDatacent
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3460,13 +3422,11 @@ func (a *ServersApiService) DatacentersServersVolumesFindByIdExecute(r ApiDatace
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3528,7 +3488,7 @@ func (r ApiDatacentersServersVolumesGetRequest) Limit(limit int32) ApiDatacenter
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersServersVolumesGetRequest) Filter(key string, value string) ApiDatacentersServersVolumesGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -3657,13 +3617,11 @@ func (a *ServersApiService) DatacentersServersVolumesGetExecute(r ApiDatacenters
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3822,13 +3780,11 @@ func (a *ServersApiService) DatacentersServersVolumesPostExecute(r ApiDatacenter
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))

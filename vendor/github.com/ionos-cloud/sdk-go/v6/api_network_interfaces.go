@@ -167,13 +167,11 @@ func (a *NetworkInterfacesApiService) DatacentersServersNicsDeleteExecute(r ApiD
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -330,13 +328,11 @@ func (a *NetworkInterfacesApiService) DatacentersServersNicsFindByIdExecute(r Ap
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -398,7 +394,7 @@ func (r ApiDatacentersServersNicsGetRequest) Limit(limit int32) ApiDatacentersSe
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersServersNicsGetRequest) Filter(key string, value string) ApiDatacentersServersNicsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -541,13 +537,11 @@ func (a *NetworkInterfacesApiService) DatacentersServersNicsGetExecute(r ApiData
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -724,13 +718,11 @@ func (a *NetworkInterfacesApiService) DatacentersServersNicsPatchExecute(r ApiDa
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -903,13 +895,11 @@ func (a *NetworkInterfacesApiService) DatacentersServersNicsPostExecute(r ApiDat
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1086,13 +1076,11 @@ func (a *NetworkInterfacesApiService) DatacentersServersNicsPutExecute(r ApiData
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))

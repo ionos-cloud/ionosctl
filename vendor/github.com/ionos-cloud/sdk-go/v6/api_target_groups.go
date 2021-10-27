@@ -1,7 +1,7 @@
 /*
  * CLOUD API
  *
- * An enterprise-grade Infrastructure is provided as a Service (IaaS) solution that can be managed through a browser-based \"Data Center Designer\" (DCD) tool or via an easy to use API.   The API allows you to perform a variety of management tasks such as spinning up additional servers, adding volumes, adjusting networking, and so forth. It is designed to allow users to leverage the same power and flexibility found within the DCD visual tool. Both tools are consistent with their concepts and lend well to making the experience smooth and intuitive.
+ * IONOS Enterprise-grade Infrastructure as a Service (IaaS) solutions can be managed through the Cloud API, in addition or as an alternative to the \"Data Center Designer\" (DCD) browser-based tool.    Both methods employ consistent concepts and features, deliver similar power and flexibility, and can be used to perform a multitude of management tasks, including adding servers, volumes, configuring networks, and so on.
  *
  * API version: 6.0-SDK.3
  */
@@ -28,11 +28,11 @@ var (
 type TargetGroupsApiService service
 
 type ApiTargetGroupsDeleteRequest struct {
-	ctx _context.Context
-	ApiService *TargetGroupsApiService
-	targetGroupId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *TargetGroupsApiService
+	targetGroupId   string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -62,8 +62,8 @@ func (r ApiTargetGroupsDeleteRequest) Execute() (*APIResponse, error) {
  */
 func (a *TargetGroupsApiService) TargetGroupsDelete(ctx _context.Context, targetGroupId string) ApiTargetGroupsDeleteRequest {
 	return ApiTargetGroupsDeleteRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:    a,
+		ctx:           ctx,
 		targetGroupId: targetGroupId,
 	}
 }
@@ -98,6 +98,7 @@ func (a *TargetGroupsApiService) TargetGroupsDeleteExecute(r ApiTargetGroupsDele
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -139,12 +140,12 @@ func (a *TargetGroupsApiService) TargetGroupsDeleteExecute(r ApiTargetGroupsDele
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "TargetGroupsDelete",
+		Operation:   "TargetGroupsDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -161,16 +162,16 @@ func (a *TargetGroupsApiService) TargetGroupsDeleteExecute(r ApiTargetGroupsDele
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarAPIResponse, newErr
 	}
 
@@ -178,11 +179,11 @@ func (a *TargetGroupsApiService) TargetGroupsDeleteExecute(r ApiTargetGroupsDele
 }
 
 type ApiTargetgroupsFindByTargetGroupIdRequest struct {
-	ctx _context.Context
-	ApiService *TargetGroupsApiService
-	targetGroupId string
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *TargetGroupsApiService
+	targetGroupId   string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -212,8 +213,8 @@ func (r ApiTargetgroupsFindByTargetGroupIdRequest) Execute() (TargetGroup, *APIR
  */
 func (a *TargetGroupsApiService) TargetgroupsFindByTargetGroupId(ctx _context.Context, targetGroupId string) ApiTargetgroupsFindByTargetGroupIdRequest {
 	return ApiTargetgroupsFindByTargetGroupIdRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:    a,
+		ctx:           ctx,
 		targetGroupId: targetGroupId,
 	}
 }
@@ -250,6 +251,7 @@ func (a *TargetGroupsApiService) TargetgroupsFindByTargetGroupIdExecute(r ApiTar
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -291,12 +293,12 @@ func (a *TargetGroupsApiService) TargetgroupsFindByTargetGroupIdExecute(r ApiTar
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "TargetgroupsFindByTargetGroupId",
+		Operation:   "TargetgroupsFindByTargetGroupId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -313,16 +315,16 @@ func (a *TargetGroupsApiService) TargetgroupsFindByTargetGroupIdExecute(r ApiTar
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -330,8 +332,8 @@ func (a *TargetGroupsApiService) TargetgroupsFindByTargetGroupIdExecute(r ApiTar
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -340,10 +342,12 @@ func (a *TargetGroupsApiService) TargetgroupsFindByTargetGroupIdExecute(r ApiTar
 }
 
 type ApiTargetgroupsGetRequest struct {
-	ctx _context.Context
-	ApiService *TargetGroupsApiService
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *TargetGroupsApiService
+	filters         _neturl.Values
+	orderBy         *string
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -360,6 +364,19 @@ func (r ApiTargetgroupsGetRequest) XContractNumber(xContractNumber int32) ApiTar
 	return r
 }
 
+// Filters query parameters limit results to those containing a matching value for a specific property.
+func (r ApiTargetgroupsGetRequest) Filter(key string, value string) ApiTargetgroupsGetRequest {
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
+	r.filters[filterKey] = []string{value}
+	return r
+}
+
+// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
+func (r ApiTargetgroupsGetRequest) OrderBy(orderBy string) ApiTargetgroupsGetRequest {
+	r.orderBy = &orderBy
+	return r
+}
+
 func (r ApiTargetgroupsGetRequest) Execute() (TargetGroups, *APIResponse, error) {
 	return r.ApiService.TargetgroupsGetExecute(r)
 }
@@ -373,7 +390,8 @@ func (r ApiTargetgroupsGetRequest) Execute() (TargetGroups, *APIResponse, error)
 func (a *TargetGroupsApiService) TargetgroupsGet(ctx _context.Context) ApiTargetgroupsGetRequest {
 	return ApiTargetgroupsGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
+		filters:    _neturl.Values{},
 	}
 }
 
@@ -408,6 +426,17 @@ func (a *TargetGroupsApiService) TargetgroupsGetExecute(r ApiTargetgroupsGetRequ
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+	if r.orderBy != nil {
+		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if len(r.filters) > 0 {
+		for k, v := range r.filters {
+			for _, iv := range v {
+				localVarQueryParams.Add(k, iv)
+			}
+		}
+	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -449,12 +478,12 @@ func (a *TargetGroupsApiService) TargetgroupsGetExecute(r ApiTargetgroupsGetRequ
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "TargetgroupsGet",
+		Operation:   "TargetgroupsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -471,16 +500,16 @@ func (a *TargetGroupsApiService) TargetgroupsGetExecute(r ApiTargetgroupsGetRequ
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -488,8 +517,8 @@ func (a *TargetGroupsApiService) TargetgroupsGetExecute(r ApiTargetgroupsGetRequ
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -498,13 +527,13 @@ func (a *TargetGroupsApiService) TargetgroupsGetExecute(r ApiTargetgroupsGetRequ
 }
 
 type ApiTargetgroupsPatchRequest struct {
-	ctx _context.Context
-	ApiService *TargetGroupsApiService
-	targetGroupId string
+	ctx                   _context.Context
+	ApiService            *TargetGroupsApiService
+	targetGroupId         string
 	targetGroupProperties *TargetGroupProperties
-	pretty *bool
-	depth *int32
-	xContractNumber *int32
+	pretty                *bool
+	depth                 *int32
+	xContractNumber       *int32
 }
 
 func (r ApiTargetgroupsPatchRequest) TargetGroupProperties(targetGroupProperties TargetGroupProperties) ApiTargetgroupsPatchRequest {
@@ -537,8 +566,8 @@ func (r ApiTargetgroupsPatchRequest) Execute() (TargetGroup, *APIResponse, error
  */
 func (a *TargetGroupsApiService) TargetgroupsPatch(ctx _context.Context, targetGroupId string) ApiTargetgroupsPatchRequest {
 	return ApiTargetgroupsPatchRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:    a,
+		ctx:           ctx,
 		targetGroupId: targetGroupId,
 	}
 }
@@ -578,6 +607,7 @@ func (a *TargetGroupsApiService) TargetgroupsPatchExecute(r ApiTargetgroupsPatch
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -621,12 +651,12 @@ func (a *TargetGroupsApiService) TargetgroupsPatchExecute(r ApiTargetgroupsPatch
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "TargetgroupsPatch",
+		Operation:   "TargetgroupsPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -643,16 +673,16 @@ func (a *TargetGroupsApiService) TargetgroupsPatchExecute(r ApiTargetgroupsPatch
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -660,8 +690,8 @@ func (a *TargetGroupsApiService) TargetgroupsPatchExecute(r ApiTargetgroupsPatch
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -670,11 +700,11 @@ func (a *TargetGroupsApiService) TargetgroupsPatchExecute(r ApiTargetgroupsPatch
 }
 
 type ApiTargetgroupsPostRequest struct {
-	ctx _context.Context
-	ApiService *TargetGroupsApiService
-	targetGroup *TargetGroup
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *TargetGroupsApiService
+	targetGroup     *TargetGroup
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -708,7 +738,7 @@ func (r ApiTargetgroupsPostRequest) Execute() (TargetGroup, *APIResponse, error)
 func (a *TargetGroupsApiService) TargetgroupsPost(ctx _context.Context) ApiTargetgroupsPostRequest {
 	return ApiTargetgroupsPostRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -746,6 +776,7 @@ func (a *TargetGroupsApiService) TargetgroupsPostExecute(r ApiTargetgroupsPostRe
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -789,12 +820,12 @@ func (a *TargetGroupsApiService) TargetgroupsPostExecute(r ApiTargetgroupsPostRe
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "TargetgroupsPost",
+		Operation:   "TargetgroupsPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -811,16 +842,16 @@ func (a *TargetGroupsApiService) TargetgroupsPostExecute(r ApiTargetgroupsPostRe
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -828,8 +859,8 @@ func (a *TargetGroupsApiService) TargetgroupsPostExecute(r ApiTargetgroupsPostRe
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -838,12 +869,12 @@ func (a *TargetGroupsApiService) TargetgroupsPostExecute(r ApiTargetgroupsPostRe
 }
 
 type ApiTargetgroupsPutRequest struct {
-	ctx _context.Context
-	ApiService *TargetGroupsApiService
-	targetGroupId string
-	targetGroup *TargetGroupPut
-	pretty *bool
-	depth *int32
+	ctx             _context.Context
+	ApiService      *TargetGroupsApiService
+	targetGroupId   string
+	targetGroup     *TargetGroupPut
+	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
@@ -877,8 +908,8 @@ func (r ApiTargetgroupsPutRequest) Execute() (TargetGroup, *APIResponse, error) 
  */
 func (a *TargetGroupsApiService) TargetgroupsPut(ctx _context.Context, targetGroupId string) ApiTargetgroupsPutRequest {
 	return ApiTargetgroupsPutRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:    a,
+		ctx:           ctx,
 		targetGroupId: targetGroupId,
 	}
 }
@@ -918,6 +949,7 @@ func (a *TargetGroupsApiService) TargetgroupsPutExecute(r ApiTargetgroupsPutRequ
 	if r.depth != nil {
 		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
+
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -961,12 +993,12 @@ func (a *TargetGroupsApiService) TargetgroupsPutExecute(r ApiTargetgroupsPutRequ
 
 	localVarHTTPResponse, httpRequestTime, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
-		RequestURL: localVarPath,
+	localVarAPIResponse := &APIResponse{
+		Response:    localVarHTTPResponse,
+		Method:      localVarHTTPMethod,
+		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation: "TargetgroupsPut",
+		Operation:   "TargetgroupsPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -983,16 +1015,16 @@ func (a *TargetGroupsApiService) TargetgroupsPutExecute(r ApiTargetgroupsPutRequ
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v Error
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -1000,8 +1032,8 @@ func (a *TargetGroupsApiService) TargetgroupsPutExecute(r ApiTargetgroupsPutRequ
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}

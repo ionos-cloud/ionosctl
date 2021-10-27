@@ -1,7 +1,7 @@
 /*
  * CLOUD API
  *
- * An enterprise-grade Infrastructure is provided as a Service (IaaS) solution that can be managed through a browser-based \"Data Center Designer\" (DCD) tool or via an easy to use API.   The API allows you to perform a variety of management tasks such as spinning up additional servers, adding volumes, adjusting networking, and so forth. It is designed to allow users to leverage the same power and flexibility found within the DCD visual tool. Both tools are consistent with their concepts and lend well to making the experience smooth and intuitive.
+ * IONOS Enterprise-grade Infrastructure as a Service (IaaS) solutions can be managed through the Cloud API, in addition or as an alternative to the \"Data Center Designer\" (DCD) browser-based tool.    Both methods employ consistent concepts and features, deliver similar power and flexibility, and can be used to perform a multitude of management tasks, including adding servers, volumes, configuring networks, and so on.
  *
  * API version: 6.0-SDK.3
  */
@@ -33,10 +33,8 @@ type ApplicationLoadBalancerHttpRule struct {
 	// Valid only for action STATIC
 	ContentType *string `json:"contentType,omitempty"`
 	// Array of items in that collection
-	Conditions *[]ApplicationLoadBalancerHttpRuleCondition `json:"conditions"`
+	Conditions *[]ApplicationLoadBalancerHttpRuleCondition `json:"conditions,omitempty"`
 }
-
-
 
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -44,7 +42,6 @@ func (o *ApplicationLoadBalancerHttpRule) GetName() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Name
 
@@ -58,13 +55,11 @@ func (o *ApplicationLoadBalancerHttpRule) GetNameOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Name, true
 }
 
 // SetName sets field value
 func (o *ApplicationLoadBalancerHttpRule) SetName(v string) {
-
 
 	o.Name = &v
 
@@ -79,15 +74,12 @@ func (o *ApplicationLoadBalancerHttpRule) HasName() bool {
 	return false
 }
 
-
-
 // GetType returns the Type field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetType() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Type
 
@@ -101,13 +93,11 @@ func (o *ApplicationLoadBalancerHttpRule) GetTypeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Type, true
 }
 
 // SetType sets field value
 func (o *ApplicationLoadBalancerHttpRule) SetType(v string) {
-
 
 	o.Type = &v
 
@@ -122,15 +112,12 @@ func (o *ApplicationLoadBalancerHttpRule) HasType() bool {
 	return false
 }
 
-
-
 // GetTargetGroup returns the TargetGroup field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetTargetGroup() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.TargetGroup
 
@@ -144,13 +131,11 @@ func (o *ApplicationLoadBalancerHttpRule) GetTargetGroupOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.TargetGroup, true
 }
 
 // SetTargetGroup sets field value
 func (o *ApplicationLoadBalancerHttpRule) SetTargetGroup(v string) {
-
 
 	o.TargetGroup = &v
 
@@ -165,15 +150,12 @@ func (o *ApplicationLoadBalancerHttpRule) HasTargetGroup() bool {
 	return false
 }
 
-
-
 // GetDropQuery returns the DropQuery field value
 // If the value is explicit nil, the zero value for bool will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetDropQuery() *bool {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.DropQuery
 
@@ -187,13 +169,11 @@ func (o *ApplicationLoadBalancerHttpRule) GetDropQueryOk() (*bool, bool) {
 		return nil, false
 	}
 
-
 	return o.DropQuery, true
 }
 
 // SetDropQuery sets field value
 func (o *ApplicationLoadBalancerHttpRule) SetDropQuery(v bool) {
-
 
 	o.DropQuery = &v
 
@@ -208,15 +188,12 @@ func (o *ApplicationLoadBalancerHttpRule) HasDropQuery() bool {
 	return false
 }
 
-
-
 // GetLocation returns the Location field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetLocation() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Location
 
@@ -230,13 +207,11 @@ func (o *ApplicationLoadBalancerHttpRule) GetLocationOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Location, true
 }
 
 // SetLocation sets field value
 func (o *ApplicationLoadBalancerHttpRule) SetLocation(v string) {
-
 
 	o.Location = &v
 
@@ -251,15 +226,12 @@ func (o *ApplicationLoadBalancerHttpRule) HasLocation() bool {
 	return false
 }
 
-
-
 // GetStatusCode returns the StatusCode field value
 // If the value is explicit nil, the zero value for int32 will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetStatusCode() *int32 {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.StatusCode
 
@@ -273,13 +245,11 @@ func (o *ApplicationLoadBalancerHttpRule) GetStatusCodeOk() (*int32, bool) {
 		return nil, false
 	}
 
-
 	return o.StatusCode, true
 }
 
 // SetStatusCode sets field value
 func (o *ApplicationLoadBalancerHttpRule) SetStatusCode(v int32) {
-
 
 	o.StatusCode = &v
 
@@ -294,15 +264,12 @@ func (o *ApplicationLoadBalancerHttpRule) HasStatusCode() bool {
 	return false
 }
 
-
-
 // GetResponseMessage returns the ResponseMessage field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetResponseMessage() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.ResponseMessage
 
@@ -316,13 +283,11 @@ func (o *ApplicationLoadBalancerHttpRule) GetResponseMessageOk() (*string, bool)
 		return nil, false
 	}
 
-
 	return o.ResponseMessage, true
 }
 
 // SetResponseMessage sets field value
 func (o *ApplicationLoadBalancerHttpRule) SetResponseMessage(v string) {
-
 
 	o.ResponseMessage = &v
 
@@ -337,15 +302,12 @@ func (o *ApplicationLoadBalancerHttpRule) HasResponseMessage() bool {
 	return false
 }
 
-
-
 // GetContentType returns the ContentType field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetContentType() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.ContentType
 
@@ -359,13 +321,11 @@ func (o *ApplicationLoadBalancerHttpRule) GetContentTypeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.ContentType, true
 }
 
 // SetContentType sets field value
 func (o *ApplicationLoadBalancerHttpRule) SetContentType(v string) {
-
 
 	o.ContentType = &v
 
@@ -380,15 +340,12 @@ func (o *ApplicationLoadBalancerHttpRule) HasContentType() bool {
 	return false
 }
 
-
-
 // GetConditions returns the Conditions field value
 // If the value is explicit nil, the zero value for []ApplicationLoadBalancerHttpRuleCondition will be returned
 func (o *ApplicationLoadBalancerHttpRule) GetConditions() *[]ApplicationLoadBalancerHttpRuleCondition {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Conditions
 
@@ -402,13 +359,11 @@ func (o *ApplicationLoadBalancerHttpRule) GetConditionsOk() (*[]ApplicationLoadB
 		return nil, false
 	}
 
-
 	return o.Conditions, true
 }
 
 // SetConditions sets field value
 func (o *ApplicationLoadBalancerHttpRule) SetConditions(v []ApplicationLoadBalancerHttpRuleCondition) {
-
 
 	o.Conditions = &v
 
@@ -423,54 +378,44 @@ func (o *ApplicationLoadBalancerHttpRule) HasConditions() bool {
 	return false
 }
 
-
 func (o ApplicationLoadBalancerHttpRule) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-	
 
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-	
 
 	if o.TargetGroup != nil {
 		toSerialize["targetGroup"] = o.TargetGroup
 	}
-	
 
 	if o.DropQuery != nil {
 		toSerialize["dropQuery"] = o.DropQuery
 	}
-	
 
 	if o.Location != nil {
 		toSerialize["location"] = o.Location
 	}
-	
 
 	if o.StatusCode != nil {
 		toSerialize["statusCode"] = o.StatusCode
 	}
-	
 
 	if o.ResponseMessage != nil {
 		toSerialize["responseMessage"] = o.ResponseMessage
 	}
-	
 
 	if o.ContentType != nil {
 		toSerialize["contentType"] = o.ContentType
 	}
-	
 
 	if o.Conditions != nil {
 		toSerialize["conditions"] = o.Conditions
 	}
-	
 	return json.Marshal(toSerialize)
 }
 
@@ -509,5 +454,3 @@ func (v *NullableApplicationLoadBalancerHttpRule) UnmarshalJSON(src []byte) erro
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

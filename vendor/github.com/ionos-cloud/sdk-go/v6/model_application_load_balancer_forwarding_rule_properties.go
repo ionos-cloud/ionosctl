@@ -1,7 +1,7 @@
 /*
  * CLOUD API
  *
- * An enterprise-grade Infrastructure is provided as a Service (IaaS) solution that can be managed through a browser-based \"Data Center Designer\" (DCD) tool or via an easy to use API.   The API allows you to perform a variety of management tasks such as spinning up additional servers, adding volumes, adjusting networking, and so forth. It is designed to allow users to leverage the same power and flexibility found within the DCD visual tool. Both tools are consistent with their concepts and lend well to making the experience smooth and intuitive.
+ * IONOS Enterprise-grade Infrastructure as a Service (IaaS) solutions can be managed through the Cloud API, in addition or as an alternative to the \"Data Center Designer\" (DCD) browser-based tool.    Both methods employ consistent concepts and features, deliver similar power and flexibility, and can be used to perform a multitude of management tasks, including adding servers, volumes, configuring networks, and so on.
  *
  * API version: 6.0-SDK.3
  */
@@ -23,15 +23,13 @@ type ApplicationLoadBalancerForwardingRuleProperties struct {
 	// Listening IP. (inbound)
 	ListenerIp *string `json:"listenerIp"`
 	// Listening port number. (inbound) (range: 1 to 65535)
-	ListenerPort *int32 `json:"listenerPort"`
-	HealthCheck *ApplicationLoadBalancerForwardingRuleHealthCheck `json:"healthCheck,omitempty"`
+	ListenerPort *int32                                            `json:"listenerPort"`
+	HealthCheck  *ApplicationLoadBalancerForwardingRuleHealthCheck `json:"healthCheck,omitempty"`
 	// Array of items in that collection
 	ServerCertificates *[]string `json:"serverCertificates,omitempty"`
 	// Array of items in that collection
 	HttpRules *[]ApplicationLoadBalancerHttpRule `json:"httpRules,omitempty"`
 }
-
-
 
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -39,7 +37,6 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) GetName() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Name
 
@@ -53,13 +50,11 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) GetNameOk() (*string, 
 		return nil, false
 	}
 
-
 	return o.Name, true
 }
 
 // SetName sets field value
 func (o *ApplicationLoadBalancerForwardingRuleProperties) SetName(v string) {
-
 
 	o.Name = &v
 
@@ -74,15 +69,12 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) HasName() bool {
 	return false
 }
 
-
-
 // GetProtocol returns the Protocol field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerForwardingRuleProperties) GetProtocol() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Protocol
 
@@ -96,13 +88,11 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) GetProtocolOk() (*stri
 		return nil, false
 	}
 
-
 	return o.Protocol, true
 }
 
 // SetProtocol sets field value
 func (o *ApplicationLoadBalancerForwardingRuleProperties) SetProtocol(v string) {
-
 
 	o.Protocol = &v
 
@@ -117,15 +107,12 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) HasProtocol() bool {
 	return false
 }
 
-
-
 // GetListenerIp returns the ListenerIp field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerForwardingRuleProperties) GetListenerIp() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.ListenerIp
 
@@ -139,13 +126,11 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) GetListenerIpOk() (*st
 		return nil, false
 	}
 
-
 	return o.ListenerIp, true
 }
 
 // SetListenerIp sets field value
 func (o *ApplicationLoadBalancerForwardingRuleProperties) SetListenerIp(v string) {
-
 
 	o.ListenerIp = &v
 
@@ -160,15 +145,12 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) HasListenerIp() bool {
 	return false
 }
 
-
-
 // GetListenerPort returns the ListenerPort field value
 // If the value is explicit nil, the zero value for int32 will be returned
 func (o *ApplicationLoadBalancerForwardingRuleProperties) GetListenerPort() *int32 {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.ListenerPort
 
@@ -182,13 +164,11 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) GetListenerPortOk() (*
 		return nil, false
 	}
 
-
 	return o.ListenerPort, true
 }
 
 // SetListenerPort sets field value
 func (o *ApplicationLoadBalancerForwardingRuleProperties) SetListenerPort(v int32) {
-
 
 	o.ListenerPort = &v
 
@@ -203,15 +183,12 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) HasListenerPort() bool
 	return false
 }
 
-
-
 // GetHealthCheck returns the HealthCheck field value
 // If the value is explicit nil, the zero value for ApplicationLoadBalancerForwardingRuleHealthCheck will be returned
 func (o *ApplicationLoadBalancerForwardingRuleProperties) GetHealthCheck() *ApplicationLoadBalancerForwardingRuleHealthCheck {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.HealthCheck
 
@@ -225,13 +202,11 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) GetHealthCheckOk() (*A
 		return nil, false
 	}
 
-
 	return o.HealthCheck, true
 }
 
 // SetHealthCheck sets field value
 func (o *ApplicationLoadBalancerForwardingRuleProperties) SetHealthCheck(v ApplicationLoadBalancerForwardingRuleHealthCheck) {
-
 
 	o.HealthCheck = &v
 
@@ -246,15 +221,12 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) HasHealthCheck() bool 
 	return false
 }
 
-
-
 // GetServerCertificates returns the ServerCertificates field value
 // If the value is explicit nil, the zero value for []string will be returned
 func (o *ApplicationLoadBalancerForwardingRuleProperties) GetServerCertificates() *[]string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.ServerCertificates
 
@@ -268,13 +240,11 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) GetServerCertificatesO
 		return nil, false
 	}
 
-
 	return o.ServerCertificates, true
 }
 
 // SetServerCertificates sets field value
 func (o *ApplicationLoadBalancerForwardingRuleProperties) SetServerCertificates(v []string) {
-
 
 	o.ServerCertificates = &v
 
@@ -289,15 +259,12 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) HasServerCertificates(
 	return false
 }
 
-
-
 // GetHttpRules returns the HttpRules field value
 // If the value is explicit nil, the zero value for []ApplicationLoadBalancerHttpRule will be returned
 func (o *ApplicationLoadBalancerForwardingRuleProperties) GetHttpRules() *[]ApplicationLoadBalancerHttpRule {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.HttpRules
 
@@ -311,13 +278,11 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) GetHttpRulesOk() (*[]A
 		return nil, false
 	}
 
-
 	return o.HttpRules, true
 }
 
 // SetHttpRules sets field value
 func (o *ApplicationLoadBalancerForwardingRuleProperties) SetHttpRules(v []ApplicationLoadBalancerHttpRule) {
-
 
 	o.HttpRules = &v
 
@@ -332,44 +297,36 @@ func (o *ApplicationLoadBalancerForwardingRuleProperties) HasHttpRules() bool {
 	return false
 }
 
-
 func (o ApplicationLoadBalancerForwardingRuleProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-	
 
 	if o.Protocol != nil {
 		toSerialize["protocol"] = o.Protocol
 	}
-	
 
 	if o.ListenerIp != nil {
 		toSerialize["listenerIp"] = o.ListenerIp
 	}
-	
 
 	if o.ListenerPort != nil {
 		toSerialize["listenerPort"] = o.ListenerPort
 	}
-	
 
 	if o.HealthCheck != nil {
 		toSerialize["healthCheck"] = o.HealthCheck
 	}
-	
 
 	if o.ServerCertificates != nil {
 		toSerialize["serverCertificates"] = o.ServerCertificates
 	}
-	
 
 	if o.HttpRules != nil {
 		toSerialize["httpRules"] = o.HttpRules
 	}
-	
 	return json.Marshal(toSerialize)
 }
 
@@ -408,5 +365,3 @@ func (v *NullableApplicationLoadBalancerForwardingRuleProperties) UnmarshalJSON(
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

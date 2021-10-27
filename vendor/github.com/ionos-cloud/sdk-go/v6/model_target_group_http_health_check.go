@@ -1,7 +1,7 @@
 /*
  * CLOUD API
  *
- * An enterprise-grade Infrastructure is provided as a Service (IaaS) solution that can be managed through a browser-based \"Data Center Designer\" (DCD) tool or via an easy to use API.   The API allows you to perform a variety of management tasks such as spinning up additional servers, adding volumes, adjusting networking, and so forth. It is designed to allow users to leverage the same power and flexibility found within the DCD visual tool. Both tools are consistent with their concepts and lend well to making the experience smooth and intuitive.
+ * IONOS Enterprise-grade Infrastructure as a Service (IaaS) solutions can be managed through the Cloud API, in addition or as an alternative to the \"Data Center Designer\" (DCD) browser-based tool.    Both methods employ consistent concepts and features, deliver similar power and flexibility, and can be used to perform a multitude of management tasks, including adding servers, volumes, configuring networks, and so on.
  *
  * API version: 6.0-SDK.3
  */
@@ -20,17 +20,15 @@ type TargetGroupHttpHealthCheck struct {
 	Path *string `json:"path,omitempty"`
 	// The method for the HTTP health check.
 	Method *string `json:"method,omitempty"`
-	// 
+	//
 	MatchType *string `json:"matchType"`
 	// The response returned by the request
 	Response *string `json:"response"`
-	// 
+	//
 	Regex *bool `json:"regex,omitempty"`
-	// 
+	//
 	Negate *bool `json:"negate,omitempty"`
 }
-
-
 
 // GetPath returns the Path field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -38,7 +36,6 @@ func (o *TargetGroupHttpHealthCheck) GetPath() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Path
 
@@ -52,13 +49,11 @@ func (o *TargetGroupHttpHealthCheck) GetPathOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Path, true
 }
 
 // SetPath sets field value
 func (o *TargetGroupHttpHealthCheck) SetPath(v string) {
-
 
 	o.Path = &v
 
@@ -73,15 +68,12 @@ func (o *TargetGroupHttpHealthCheck) HasPath() bool {
 	return false
 }
 
-
-
 // GetMethod returns the Method field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *TargetGroupHttpHealthCheck) GetMethod() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Method
 
@@ -95,13 +87,11 @@ func (o *TargetGroupHttpHealthCheck) GetMethodOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Method, true
 }
 
 // SetMethod sets field value
 func (o *TargetGroupHttpHealthCheck) SetMethod(v string) {
-
 
 	o.Method = &v
 
@@ -116,15 +106,12 @@ func (o *TargetGroupHttpHealthCheck) HasMethod() bool {
 	return false
 }
 
-
-
 // GetMatchType returns the MatchType field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *TargetGroupHttpHealthCheck) GetMatchType() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.MatchType
 
@@ -138,13 +125,11 @@ func (o *TargetGroupHttpHealthCheck) GetMatchTypeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.MatchType, true
 }
 
 // SetMatchType sets field value
 func (o *TargetGroupHttpHealthCheck) SetMatchType(v string) {
-
 
 	o.MatchType = &v
 
@@ -159,15 +144,12 @@ func (o *TargetGroupHttpHealthCheck) HasMatchType() bool {
 	return false
 }
 
-
-
 // GetResponse returns the Response field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *TargetGroupHttpHealthCheck) GetResponse() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Response
 
@@ -181,13 +163,11 @@ func (o *TargetGroupHttpHealthCheck) GetResponseOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Response, true
 }
 
 // SetResponse sets field value
 func (o *TargetGroupHttpHealthCheck) SetResponse(v string) {
-
 
 	o.Response = &v
 
@@ -202,15 +182,12 @@ func (o *TargetGroupHttpHealthCheck) HasResponse() bool {
 	return false
 }
 
-
-
 // GetRegex returns the Regex field value
 // If the value is explicit nil, the zero value for bool will be returned
 func (o *TargetGroupHttpHealthCheck) GetRegex() *bool {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Regex
 
@@ -224,13 +201,11 @@ func (o *TargetGroupHttpHealthCheck) GetRegexOk() (*bool, bool) {
 		return nil, false
 	}
 
-
 	return o.Regex, true
 }
 
 // SetRegex sets field value
 func (o *TargetGroupHttpHealthCheck) SetRegex(v bool) {
-
 
 	o.Regex = &v
 
@@ -245,15 +220,12 @@ func (o *TargetGroupHttpHealthCheck) HasRegex() bool {
 	return false
 }
 
-
-
 // GetNegate returns the Negate field value
 // If the value is explicit nil, the zero value for bool will be returned
 func (o *TargetGroupHttpHealthCheck) GetNegate() *bool {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Negate
 
@@ -267,13 +239,11 @@ func (o *TargetGroupHttpHealthCheck) GetNegateOk() (*bool, bool) {
 		return nil, false
 	}
 
-
 	return o.Negate, true
 }
 
 // SetNegate sets field value
 func (o *TargetGroupHttpHealthCheck) SetNegate(v bool) {
-
 
 	o.Negate = &v
 
@@ -288,39 +258,32 @@ func (o *TargetGroupHttpHealthCheck) HasNegate() bool {
 	return false
 }
 
-
 func (o TargetGroupHttpHealthCheck) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Path != nil {
 		toSerialize["path"] = o.Path
 	}
-	
 
 	if o.Method != nil {
 		toSerialize["method"] = o.Method
 	}
-	
 
 	if o.MatchType != nil {
 		toSerialize["matchType"] = o.MatchType
 	}
-	
 
 	if o.Response != nil {
 		toSerialize["response"] = o.Response
 	}
-	
 
 	if o.Regex != nil {
 		toSerialize["regex"] = o.Regex
 	}
-	
 
 	if o.Negate != nil {
 		toSerialize["negate"] = o.Negate
 	}
-	
 	return json.Marshal(toSerialize)
 }
 
@@ -359,5 +322,3 @@ func (v *NullableTargetGroupHttpHealthCheck) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

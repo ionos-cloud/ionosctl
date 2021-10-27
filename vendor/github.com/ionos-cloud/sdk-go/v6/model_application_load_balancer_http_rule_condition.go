@@ -1,7 +1,7 @@
 /*
  * CLOUD API
  *
- * An enterprise-grade Infrastructure is provided as a Service (IaaS) solution that can be managed through a browser-based \"Data Center Designer\" (DCD) tool or via an easy to use API.   The API allows you to perform a variety of management tasks such as spinning up additional servers, adding volumes, adjusting networking, and so forth. It is designed to allow users to leverage the same power and flexibility found within the DCD visual tool. Both tools are consistent with their concepts and lend well to making the experience smooth and intuitive.
+ * IONOS Enterprise-grade Infrastructure as a Service (IaaS) solutions can be managed through the Cloud API, in addition or as an alternative to the \"Data Center Designer\" (DCD) browser-based tool.    Both methods employ consistent concepts and features, deliver similar power and flexibility, and can be used to perform a multitude of management tasks, including adding servers, volumes, configuring networks, and so on.
  *
  * API version: 6.0-SDK.3
  */
@@ -28,15 +28,12 @@ type ApplicationLoadBalancerHttpRuleCondition struct {
 	Value *string `json:"value,omitempty"`
 }
 
-
-
 // GetType returns the Type field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRuleCondition) GetType() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Type
 
@@ -50,13 +47,11 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) GetTypeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Type, true
 }
 
 // SetType sets field value
 func (o *ApplicationLoadBalancerHttpRuleCondition) SetType(v string) {
-
 
 	o.Type = &v
 
@@ -71,15 +66,12 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) HasType() bool {
 	return false
 }
 
-
-
 // GetCondition returns the Condition field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRuleCondition) GetCondition() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Condition
 
@@ -93,13 +85,11 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) GetConditionOk() (*string, bo
 		return nil, false
 	}
 
-
 	return o.Condition, true
 }
 
 // SetCondition sets field value
 func (o *ApplicationLoadBalancerHttpRuleCondition) SetCondition(v string) {
-
 
 	o.Condition = &v
 
@@ -114,15 +104,12 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) HasCondition() bool {
 	return false
 }
 
-
-
 // GetNegate returns the Negate field value
 // If the value is explicit nil, the zero value for bool will be returned
 func (o *ApplicationLoadBalancerHttpRuleCondition) GetNegate() *bool {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Negate
 
@@ -136,13 +123,11 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) GetNegateOk() (*bool, bool) {
 		return nil, false
 	}
 
-
 	return o.Negate, true
 }
 
 // SetNegate sets field value
 func (o *ApplicationLoadBalancerHttpRuleCondition) SetNegate(v bool) {
-
 
 	o.Negate = &v
 
@@ -157,15 +142,12 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) HasNegate() bool {
 	return false
 }
 
-
-
 // GetKey returns the Key field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRuleCondition) GetKey() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Key
 
@@ -179,13 +161,11 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) GetKeyOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Key, true
 }
 
 // SetKey sets field value
 func (o *ApplicationLoadBalancerHttpRuleCondition) SetKey(v string) {
-
 
 	o.Key = &v
 
@@ -200,15 +180,12 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) HasKey() bool {
 	return false
 }
 
-
-
 // GetValue returns the Value field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ApplicationLoadBalancerHttpRuleCondition) GetValue() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Value
 
@@ -222,13 +199,11 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) GetValueOk() (*string, bool) 
 		return nil, false
 	}
 
-
 	return o.Value, true
 }
 
 // SetValue sets field value
 func (o *ApplicationLoadBalancerHttpRuleCondition) SetValue(v string) {
-
 
 	o.Value = &v
 
@@ -243,34 +218,28 @@ func (o *ApplicationLoadBalancerHttpRuleCondition) HasValue() bool {
 	return false
 }
 
-
 func (o ApplicationLoadBalancerHttpRuleCondition) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-	
 
 	if o.Condition != nil {
 		toSerialize["condition"] = o.Condition
 	}
-	
 
 	if o.Negate != nil {
 		toSerialize["negate"] = o.Negate
 	}
-	
 
 	if o.Key != nil {
 		toSerialize["key"] = o.Key
 	}
-	
 
 	if o.Value != nil {
 		toSerialize["value"] = o.Value
 	}
-	
 	return json.Marshal(toSerialize)
 }
 
@@ -309,5 +278,3 @@ func (v *NullableApplicationLoadBalancerHttpRuleCondition) UnmarshalJSON(src []b
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

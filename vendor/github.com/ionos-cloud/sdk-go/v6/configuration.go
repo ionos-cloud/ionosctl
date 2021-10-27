@@ -124,8 +124,7 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 	cfg := &Configuration{
 		DefaultHeader:      make(map[string]string),
 		DefaultQueryParams: url.Values{},
-<<<<<<< HEAD
-		UserAgent:          "ionos-cloud-sdk-go/v6.0.0-beta.7",
+		UserAgent:          "ionos-cloud-sdk-go/1.0.0",
 		Debug:              false,
 		Username:           username,
 		Password:           password,
@@ -134,17 +133,6 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 		MaxWaitTime:        defaultMaxWaitTime,
 		WaitTime:           defaultWaitTime,
 		Servers: ServerConfigurations{
-=======
-		UserAgent:        "ionos-cloud-sdk-go/v6",
-		Debug:            false,
-		Username:      username,
-        Password:      password,
-        Token:         token,
-        MaxRetries:    defaultMaxRetries,
-        MaxWaitTime:   defaultMaxWaitTime,
-        WaitTime:      defaultWaitTime,
-		Servers:          ServerConfigurations{
->>>>>>> feat: add ALB cmds
 			{
 				URL:         getServerUrl(hostUrl),
 				Description: "No description provided",
