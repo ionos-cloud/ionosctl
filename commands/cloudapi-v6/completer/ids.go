@@ -656,6 +656,82 @@ func AttachedVolumesIds(outErr io.Writer, datacenterId, serverId string) []strin
 	return attachedVolumesIds
 }
 
+func ApplicationLoadBalancersIds(outErr io.Writer, datacenterId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
+	applicationloadbalancers, _, err := applicationloadbalancerSvc.List(datacenterId)
+	clierror.CheckError(err, outErr)
+	albIds := make([]string, 0)
+	if items, ok := applicationloadbalancers.ApplicationLoadBalancers.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				albIds = append(albIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return albIds
+}
+
+func ApplicationLoadBalancerFlowLogsIds(outErr io.Writer, datacenterId, applicationloadbalancerId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	applicationloadbalancerSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
+	natFlowLogs, _, err := applicationloadbalancerSvc.ListFlowLogs(datacenterId, applicationloadbalancerId)
+	clierror.CheckError(err, outErr)
+	ssIds := make([]string, 0)
+	if items, ok := natFlowLogs.FlowLogs.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
+
+func AlbForwardingRulesIds(outErr io.Writer, datacenterId, albId string) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	albSvc := resources.NewApplicationLoadBalancerService(client, context.TODO())
+	natForwardingRules, _, err := albSvc.ListForwardingRules(datacenterId, albId)
+	clierror.CheckError(err, outErr)
+	ssIds := make([]string, 0)
+	if items, ok := natForwardingRules.ApplicationLoadBalancerForwardingRules.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
+
+func TargetGroupIds(outErr io.Writer) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	targetGroupSvc := resources.NewTargetGroupService(client, context.TODO())
+	targetGroups, _, err := targetGroupSvc.List()
+	clierror.CheckError(err, outErr)
+	ssIds := make([]string, 0)
+	if items, ok := targetGroups.TargetGroups.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ssIds = append(ssIds, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ssIds
+}
+
 // Get Client for Completion Functions
 func getClient() (*resources.Client, error) {
 	if err := config.Load(); err != nil {
