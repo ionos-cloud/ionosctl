@@ -185,7 +185,7 @@ func TestRunAlbRuleHttpRuleAdd(t *testing.T) {
 	})
 }
 
-func TestRunAlbRuleHttpRuleAddResponseErr(t *testing.T) {
+func TestRunAlbRuleHttpRuleAddResponse(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
@@ -211,7 +211,7 @@ func TestRunAlbRuleHttpRuleAddResponseErr(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, nil)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, &testAlbRuleHttpRuleProperties).Return(&testAlbRuleHttpRuleGetUpdated, &testResponse, nil)
 		err := RunAlbRuleHttpRuleAdd(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -299,7 +299,8 @@ func TestRunAlbRuleHttpRuleAddWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgConditionValue), testAlbRuleHttpRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNegate), testAlbRuleHttpRuleBoolVar)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().GetForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar).Return(&testAlbRuleHttpRuleGet, nil, nil)
-		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, &testAlbRuleHttpRuleProperties).Return(&testAlbRuleHttpRuleGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().UpdateForwardingRule(testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, testAlbRuleHttpRuleVar, &testAlbRuleHttpRuleProperties).Return(&testAlbRuleHttpRuleGetUpdated, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunAlbRuleHttpRuleAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -432,7 +433,8 @@ func TestRunAlbRuleHttpRuleRemoveWaitErr(t *testing.T) {
 				ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
 					HttpRules: &[]ionoscloud.ApplicationLoadBalancerHttpRule{},
 				},
-			}).Return(&testAlbRuleHttpRuleGet, nil, nil)
+			}).Return(&testAlbRuleHttpRuleGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunAlbRuleHttpRuleRemove(cfg)
 		assert.Error(t, err)
 	})

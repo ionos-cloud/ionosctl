@@ -157,7 +157,7 @@ func TestRunTargetGroupTargetAdd(t *testing.T) {
 	})
 }
 
-func TestRunTargetGroupTargetAddResponseErr(t *testing.T) {
+func TestRunTargetGroupTargetAddResponse(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
@@ -174,7 +174,7 @@ func TestRunTargetGroupTargetAddResponseErr(t *testing.T) {
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGet, nil, nil)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar, &testTargetGroupTargetProperties).Return(&testTargetGroupTargetGetUpdated, &testResponse, nil)
 		err := RunTargetGroupTargetAdd(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
@@ -235,7 +235,8 @@ func TestRunTargetGroupTargetAddWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCheck), testTargetGroupTargetBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaintenance), testTargetGroupTargetBoolVar)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGet, nil, nil)
-		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar, &testTargetGroupTargetProperties).Return(&testTargetGroupTargetGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar, &testTargetGroupTargetProperties).Return(&testTargetGroupTargetGetUpdated, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunTargetGroupTargetAdd(cfg)
 		assert.Error(t, err)
 	})
@@ -356,7 +357,8 @@ func TestRunTargetGroupTargetRemoveWaitErr(t *testing.T) {
 				TargetGroupProperties: ionoscloud.TargetGroupProperties{
 					Targets: &[]ionoscloud.TargetGroupTarget{},
 				},
-			}).Return(&testTargetGroupTargetGet, nil, nil)
+			}).Return(&testTargetGroupTargetGet, &testResponse, nil)
+		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
 		err := RunTargetGroupTargetRemove(cfg)
 		assert.Error(t, err)
 	})

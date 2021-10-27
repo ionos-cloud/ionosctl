@@ -234,7 +234,7 @@ func TestRunTargetGroupCreate(t *testing.T) {
 	})
 }
 
-func TestRunTargetGroupCreateErr(t *testing.T) {
+func TestRunTargetGroupCreateResponse(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
@@ -257,7 +257,7 @@ func TestRunTargetGroupCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Create(targetGroupTest).Return(&targetGroupTestGet, &testResponse, nil)
 		err := RunTargetGroupCreate(cfg)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 	})
 }
 
