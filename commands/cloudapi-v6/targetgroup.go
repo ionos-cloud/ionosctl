@@ -206,7 +206,10 @@ func PreRunTargetGroupId(c *core.PreCommandConfig) error {
 }
 
 func RunTargetGroupList(c *core.CommandConfig) error {
-	ss, _, err := c.CloudApiV6Services.TargetGroups().List()
+	ss, resp, err := c.CloudApiV6Services.TargetGroups().List()
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -215,7 +218,10 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 
 func RunTargetGroupGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	s, _, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	s, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -225,10 +231,12 @@ func RunTargetGroupGet(c *core.CommandConfig) error {
 func RunTargetGroupCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating TargetGroup")
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Create(getTargetGroupNew(c))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
@@ -238,10 +246,12 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 func RunTargetGroupUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), getTargetGroupPropertiesSet(c))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
@@ -254,10 +264,12 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Deleting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	resp, err := c.CloudApiV6Services.TargetGroups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}

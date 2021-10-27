@@ -137,7 +137,10 @@ func PreRunTargetGroupIdTargetIpPort(c *core.PreCommandConfig) error {
 
 func RunTargetGroupTargetList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Targets from TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	targetGroups, _, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -180,6 +183,9 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -217,6 +223,9 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 	// Update Target Group with the new Targets
 	c.Printer.Verbose("Updating TargetGroup with the new Targets")
 	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

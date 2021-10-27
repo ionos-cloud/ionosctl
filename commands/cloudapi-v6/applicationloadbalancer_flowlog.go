@@ -244,10 +244,13 @@ func PreRunDcApplicationLoadBalancerFlowLogIds(c *core.PreCommandConfig) error {
 func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting FlowLogs for ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	applicationloadbalancerFlowLogs, _, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
+	applicationloadbalancerFlowLogs, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListFlowLogs(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -257,11 +260,14 @@ func RunApplicationLoadBalancerFlowLogList(c *core.CommandConfig) error {
 func RunApplicationLoadBalancerFlowLogGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting FlowLog with ID: %v for ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	ng, _, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetFlowLog(
+	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetFlowLog(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -293,6 +299,9 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -313,6 +322,9 @@ func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
 		&input,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -334,6 +346,9 @@ func RunApplicationLoadBalancerFlowLogDelete(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}

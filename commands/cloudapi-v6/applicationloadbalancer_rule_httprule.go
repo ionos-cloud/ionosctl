@@ -194,11 +194,14 @@ func PreRunApplicationLoadBalancerRuleHttpRule(c *core.PreCommandConfig) error {
 func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting HttpRules from ForwardingRule with ID: %v from ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	ng, _, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
+	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -244,6 +247,9 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 			},
 		},
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -279,6 +285,9 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 		proper,
 	)
+	if resp != nil {
+		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
