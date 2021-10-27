@@ -211,7 +211,7 @@ func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
 func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	if err := utils.WaitForState(c, GetStateApplicationLoadBalancer, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))); err != nil {
+	if err := utils.WaitForState(c, waiter.ApplicationLoadBalancerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))); err != nil {
 		return err
 	}
 	ng, _, err := c.CloudApiV6Services.ApplicationLoadBalancers().Get(
@@ -321,21 +321,6 @@ func getNewApplicationLoadBalancerInfo(c *core.CommandConfig) *resources.Applica
 	return &resources.ApplicationLoadBalancerProperties{
 		ApplicationLoadBalancerProperties: input,
 	}
-}
-
-// Wait for State
-
-func GetStateApplicationLoadBalancer(c *core.CommandConfig, objId string) (*string, error) {
-	obj, _, err := c.CloudApiV6Services.ApplicationLoadBalancers().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), objId)
-	if err != nil {
-		return nil, err
-	}
-	if metadata, ok := obj.GetMetadataOk(); ok && metadata != nil {
-		if state, ok := metadata.GetStateOk(); ok && state != nil {
-			return state, nil
-		}
-	}
-	return nil, nil
 }
 
 // Output Printing
