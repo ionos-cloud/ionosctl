@@ -53,6 +53,15 @@ var (
 	testTargetGroupTargetErr     = errors.New("targetgroup-target test error")
 )
 
+func TestTargetGroupTargetCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(TargetGroupTargetCmd())
+	if ok := TargetGroupTargetCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunTargetGroupIdTargetIpPort(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -80,6 +89,48 @@ func TestPreRunTargetGroupIdTargetIpPortErr(t *testing.T) {
 	})
 }
 
+func TestPreRunTargetGroupTargetRemove(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testTargetGroupTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testTargetGroupTargetIntVar)
+		err := PreRunTargetGroupTargetRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunTargetGroupTargetRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		err := PreRunTargetGroupTargetRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunTargetGroupTargetRemoveErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
+		err := PreRunTargetGroupTargetRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunTargetGroupTargetList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -89,6 +140,21 @@ func TestRunTargetGroupTargetList(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
 		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGetUpdated, nil, nil)
+		err := RunTargetGroupTargetList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunTargetGroupTargetListResponse(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGetUpdated, &testResponse, nil)
 		err := RunTargetGroupTargetList(cfg)
 		assert.NoError(t, err)
 	})
@@ -262,6 +328,22 @@ func TestRunTargetGroupTargetRemove(t *testing.T) {
 			}).Return(&testTargetGroupTargetGet, nil, nil)
 		err := RunTargetGroupTargetRemove(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunTargetGroupTargetRemoveAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGetUpdated, nil, testTargetGroupTargetErr)
+		err := RunTargetGroupTargetRemove(cfg)
+		assert.Error(t, err)
 	})
 }
 

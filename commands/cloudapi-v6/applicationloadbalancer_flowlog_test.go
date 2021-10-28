@@ -16,6 +16,15 @@ import (
 
 var testApplicationLoadBalancerFlowLogErr = errors.New("applicationloadbalancer-rule test error")
 
+func TestApplicationLoadBalancerFlowLogCmd(t *testing.T) {
+	var err error
+	core.RootCmdTest.AddCommand(ApplicationLoadBalancerFlowLogCmd())
+	if ok := ApplicationLoadBalancerFlowLogCmd().IsAvailableCommand(); !ok {
+		err = errors.New("non-available cmd")
+	}
+	assert.NoError(t, err)
+}
+
 func TestPreRunApplicationLoadBalancerFlowLogCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -39,6 +48,49 @@ func TestPreRunApplicationLoadBalancerFlowLogCreateErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		err := PreRunApplicationLoadBalancerFlowLogCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunApplicationLoadBalancerFlowLogDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFlowLogId), testFlowLogVar)
+		err := PreRunApplicationLoadBalancerFlowLogDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunApplicationLoadBalancerFlowLogDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		err := PreRunApplicationLoadBalancerFlowLogDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunApplicationLoadBalancerFlowLogDeleteErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		err := PreRunApplicationLoadBalancerFlowLogDelete(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -80,6 +132,22 @@ func TestRunApplicationLoadBalancerFlowLogList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testFlowLogVar)
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, nil, nil)
+		err := RunApplicationLoadBalancerFlowLogList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunApplicationLoadBalancerFlowLogListResponse(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testFlowLogVar)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, &testResponse, nil)
 		err := RunApplicationLoadBalancerFlowLogList(cfg)
 		assert.NoError(t, err)
 	})
@@ -286,6 +354,60 @@ func TestRunApplicationLoadBalancerFlowLogDelete(t *testing.T) {
 		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(nil, nil)
 		err := RunApplicationLoadBalancerFlowLogDelete(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunApplicationLoadBalancerFlowLogDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, &testResponse, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, nil)
+		err := RunApplicationLoadBalancerFlowLogDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunApplicationLoadBalancerFlowLogDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, &testResponse, testFlowLogErr)
+		err := RunApplicationLoadBalancerFlowLogDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunApplicationLoadBalancerFlowLogDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgApplicationLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, &testResponse, nil)
+		rm.CloudApiV6Mocks.ApplicationLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, testFlowLogErr)
+		err := RunApplicationLoadBalancerFlowLogDelete(cfg)
+		assert.Error(t, err)
 	})
 }
 
