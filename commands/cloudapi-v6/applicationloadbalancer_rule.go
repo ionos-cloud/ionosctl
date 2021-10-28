@@ -204,7 +204,7 @@ Required values to run command:
 * Application Load Balancer Id
 * Forwarding Rule Id`,
 		Example:    deleteApplicationLoadBalancerForwardingRuleExample,
-		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
+		PreCmdRun:  PreRunApplicationLoadBalancerForwardingRuleDelete,
 		CmdRun:     RunApplicationLoadBalancerForwardingRuleDelete,
 		InitClient: true,
 	})
@@ -221,12 +221,20 @@ Required values to run command:
 		return completer.AlbForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Forwarding Rules")
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule deletion [seconds]")
 
 	albRuleCmd.AddCommand(AlbRuleHttpRuleCmd())
 
 	return albRuleCmd
+}
+
+func PreRunApplicationLoadBalancerForwardingRuleDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgAll},
+	)
 }
 
 func PreRunApplicationLoadBalancerForwardingRuleCreate(c *core.PreCommandConfig) error {
@@ -326,26 +334,83 @@ func RunApplicationLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error
 }
 
 func RunApplicationLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete application load balancer forwarding rule"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Deleting ForwardingRule with ID: %v from ApplicationLoadBalancer with ID: %v in Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().DeleteForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+	var (
+		resp *resources.Response
+		err  error
 	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		resp, err = DeleteAllApplicationLoadBalancerForwardingRule(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete application load balancer forwarding rule"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting ForwardingRule with ID: %v from ApplicationLoadBalancer with ID: %v in Datacenter with ID: %v",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteForwardingRule(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getAlbForwardingRulePrint(resp, c, nil))
+}
+
+func DeleteAllApplicationLoadBalancerForwardingRule(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("Application Load Balancer Forwarding Rules to be deleted:")
+	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListForwardingRules(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+	)
+	if err != nil {
+		return nil, err
+	}
+	if itemsOk, ok := applicationLoadBalancerRules.GetItemsOk(); ok && itemsOk != nil {
+		for _, alb := range *itemsOk {
+			if idOk, ok := alb.GetIdOk(); ok && idOk != nil {
+				_ = c.Printer.Print("Forwarding Rule Id: " + *idOk)
+			}
+			if propertiesOk, ok := alb.GetPropertiesOk(); ok && propertiesOk != nil {
+				if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Forwarding Rule Name: " + *name)
+				}
+			}
+		}
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Forwarding Rules"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Application Load Balancer Forwarding Rules...")
+		for _, itemOk := range *itemsOk {
+			if idOk, ok := itemOk.GetIdOk(); ok && idOk != nil {
+				c.Printer.Verbose("Starting deleting Application Load Balancer Forwarding Rule with id: %v...", *idOk)
+				resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteForwardingRule(
+					viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+					viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), *idOk)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, err
 }
 
 func getAlbForwardingRulePropertiesSet(c *core.CommandConfig) *resources.ApplicationLoadBalancerForwardingRuleProperties {

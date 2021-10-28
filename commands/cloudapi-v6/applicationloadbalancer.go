@@ -174,7 +174,7 @@ Required values to run command:
 * Data Center Id
 * Application Load Balancer Id`,
 		Example:    deleteApplicationLoadBalancerExample,
-		PreCmdRun:  PreRunDcApplicationLoadBalancerIds,
+		PreCmdRun:  PreRunApplicationLoadBalancerDelete,
 		CmdRun:     RunApplicationLoadBalancerDelete,
 		InitClient: true,
 	})
@@ -186,6 +186,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgApplicationLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ApplicationLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Application Load Balancers")
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Application Load Balancer deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Application Load Balancer deletion [seconds]")
 
@@ -197,6 +198,13 @@ Required values to run command:
 
 func PreRunDcApplicationLoadBalancerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId)
+}
+
+func PreRunApplicationLoadBalancerDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
@@ -288,25 +296,78 @@ func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete application load balancer"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Deleting ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Delete(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+	var (
+		resp *resources.Response
+		err  error
 	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		resp, err = DeleteAllApplicationLoadBalancer(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete application load balancer"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getApplicationLoadBalancerPrint(resp, c, nil))
+}
+
+func DeleteAllApplicationLoadBalancer(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("Application Load Balancers to be deleted:")
+	applicationLoadBalancers, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	if err != nil {
+		return nil, err
+	}
+	if itemsOk, ok := applicationLoadBalancers.GetItemsOk(); ok && itemsOk != nil {
+		for _, alb := range *itemsOk {
+			if idOk, ok := alb.GetIdOk(); ok && idOk != nil {
+				_ = c.Printer.Print("Application Load Balancer Id: " + *idOk)
+			}
+			if propertiesOk, ok := alb.GetPropertiesOk(); ok && propertiesOk != nil {
+				if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Application Load Balancer Name: " + *name)
+				}
+			}
+		}
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Application Load Balancers"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Application Load Balancers...")
+		for _, itemOk := range *itemsOk {
+			if idOk, ok := itemOk.GetIdOk(); ok && idOk != nil {
+				c.Printer.Verbose("Starting deleting Application Load Balancer with id: %v...", *idOk)
+				resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *idOk)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, err
 }
 
 func getNewApplicationLoadBalancerInfo(c *core.CommandConfig) *resources.ApplicationLoadBalancerProperties {

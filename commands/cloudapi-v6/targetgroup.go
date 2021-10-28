@@ -185,7 +185,7 @@ Required values to run command:
 		ShortDesc:  "Delete a Target Group",
 		LongDesc:   "Use this command to delete the specified Target Group.\n\nRequired values to run command:\n\n* Target Group Id",
 		Example:    deleteTargetGroupExample,
-		PreCmdRun:  PreRunTargetGroupId,
+		PreCmdRun:  PreRunTargetGroupDelete,
 		CmdRun:     RunTargetGroupDelete,
 		InitClient: true,
 	})
@@ -193,6 +193,7 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Target Groups")
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Target Group deletion to be executed")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Target Group deletion [seconds]")
 
@@ -203,6 +204,13 @@ Required values to run command:
 
 func PreRunTargetGroupId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgTargetGroupId)
+}
+
+func PreRunTargetGroupDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgTargetGroupId},
+		[]string{cloudapiv6.ArgAll},
+	)
 }
 
 func RunTargetGroupList(c *core.CommandConfig) error {
@@ -259,21 +267,73 @@ func RunTargetGroupUpdate(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete target group"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Deleting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	resp, err := c.CloudApiV6Services.TargetGroups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var (
+		resp *resources.Response
+		err  error
+	)
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		resp, err = DeleteAllTargetGroup(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete target group"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Deleting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		resp, err = c.CloudApiV6Services.TargetGroups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getTargetGroupPrint(resp, c, nil))
+}
+
+func DeleteAllTargetGroup(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("Target Groups to be deleted:")
+	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().List()
+	if err != nil {
+		return nil, err
+	}
+	if itemsOk, ok := targetGroups.GetItemsOk(); ok && itemsOk != nil {
+		for _, alb := range *itemsOk {
+			if idOk, ok := alb.GetIdOk(); ok && idOk != nil {
+				_ = c.Printer.Print("Target Group Id: " + *idOk)
+			}
+			if propertiesOk, ok := alb.GetPropertiesOk(); ok && propertiesOk != nil {
+				if name, ok := propertiesOk.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Target Group Name: " + *name)
+				}
+			}
+		}
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Target Groups"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Target Groups...")
+		for _, itemOk := range *itemsOk {
+			if idOk, ok := itemOk.GetIdOk(); ok && idOk != nil {
+				c.Printer.Verbose("Starting deleting Target Group with id: %v...", *idOk)
+				resp, err = c.CloudApiV6Services.TargetGroups().Delete(*idOk)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, err
 }
 
 func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {

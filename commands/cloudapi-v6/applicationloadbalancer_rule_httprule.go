@@ -157,7 +157,7 @@ Required values to run command:
 * Http Rule Name
 * Http Rule Type`,
 		Example:    "",
-		PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRule,
+		PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRuleDelete,
 		CmdRun:     RunAlbRuleHttpRuleRemove,
 		InitClient: true,
 	})
@@ -180,6 +180,7 @@ Required values to run command:
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"FORWARD", "STATIC", "REDIRECT"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all HTTP Rules")
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Http Rule deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Http Rule deletion [seconds]")
 
@@ -189,6 +190,13 @@ Required values to run command:
 func PreRunApplicationLoadBalancerRuleHttpRule(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId,
 		cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgName, cloudapiv6.ArgType)
+}
+
+func PreRunApplicationLoadBalancerRuleHttpRuleDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgName, cloudapiv6.ArgType},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunAlbRuleHttpRuleList(c *core.CommandConfig) error {
@@ -260,41 +268,102 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 }
 
 func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove forwarding rule http rule"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Getting HttpRules from ForwardingRule with ID: %v from ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	frOld, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+	var (
+		resp *resources.Response
+		err  error
 	)
-	if err != nil {
-		return err
-	}
-	c.Printer.Verbose("Removing the HttpRule from the existing HttpRules")
-	proper, err := getRuleHttpRulesRemove(c, frOld)
-	if err != nil {
-		return err
-	}
-	c.Printer.Verbose("Updating ForwardingRule with the new HttpRules")
-	_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
-		proper,
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		resp, err = RemoveAllHTTPRules(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove forwarding rule http rule"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Getting HttpRules from ForwardingRule with ID: %v from ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		frOld, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		)
+		if err != nil {
+			return err
+		}
+		c.Printer.Verbose("Removing the HttpRule from the existing HttpRules")
+		proper, err := getRuleHttpRulesRemove(c, frOld)
+		if err != nil {
+			return err
+		}
+		c.Printer.Verbose("Updating ForwardingRule with the new HttpRules")
+		_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+			proper,
+		)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getAlbRuleHttpRulePrint(resp, c, nil))
+}
+
+func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("Forwarding Rule HTTP Rules to be deleted:")
+	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+	)
+	if err != nil {
+		return nil, err
+	}
+	if propertiesOk, ok := applicationLoadBalancerRules.GetPropertiesOk(); ok && propertiesOk != nil {
+		if httpRulesOk, ok := propertiesOk.GetHttpRulesOk(); ok && httpRulesOk != nil {
+			for _, httpRuleOk := range *httpRulesOk {
+				if nameOk, ok := httpRuleOk.GetNameOk(); ok && nameOk != nil {
+					_ = c.Printer.Print("Forwarding Rule HTTP Rule Name: " + *nameOk)
+				}
+				if typeOk, ok := httpRuleOk.GetTypeOk(); ok && typeOk != nil {
+					_ = c.Printer.Print("Forwarding Rule HTTP Rule Type: " + *typeOk)
+				}
+			}
+
+		}
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Forwarding Rule HTTP Rules"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Forwarding Rule HTTP Rules...")
+		propertiesOk.SetHttpRules(nil)
+		_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+			&resources.ApplicationLoadBalancerForwardingRuleProperties{
+				ApplicationLoadBalancerForwardingRuleProperties: *propertiesOk,
+			})
+		if resp != nil {
+			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return nil, err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return nil, err
+		}
+	}
+	return resp, err
 }
 
 func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalancerHttpRule {

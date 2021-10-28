@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -111,7 +112,7 @@ Required values to run command:
 		ShortDesc:  "Remove a Target from a Target Group",
 		LongDesc:   "Use this command to delete the specified Target from Target Group.\n\nRequired values to run command:\n\n* Target Group Id\n* Target Ip\n* Target Port",
 		Example:    removeTargetGroupTargetExample,
-		PreCmdRun:  PreRunTargetGroupIdTargetIpPort,
+		PreCmdRun:  PreRunTargetGroupTargetRemove,
 		CmdRun:     RunTargetGroupTargetRemove,
 		InitClient: true,
 	})
@@ -121,6 +122,7 @@ Required values to run command:
 	})
 	remove.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
 	remove.AddIntFlag(cloudapiv6.ArgTargetPort, "", 8080, "Port of the balanced target service. (range: 1 to 65535)", core.RequiredFlagOption())
+	remove.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Target Group Targets")
 	remove.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Target Group Target deletion to be executed")
 	remove.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Target Group Target deletion [seconds]")
 	remove.AddStringSliceFlag(config.ArgCols, "", defaultTargetGroupTargetCols, printer.ColsMessage(defaultTargetGroupTargetCols))
@@ -133,6 +135,13 @@ Required values to run command:
 
 func PreRunTargetGroupIdTargetIpPort(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgTargetIp, cloudapiv6.ArgTargetPort)
+}
+
+func PreRunTargetGroupTargetRemove(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgTargetIp, cloudapiv6.ArgTargetPort},
+		[]string{cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunTargetGroupTargetList(c *core.CommandConfig) error {
@@ -196,43 +205,93 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove target from target group"); err != nil {
-		return err
-	}
-	var propertiesUpdated resources.TargetGroupProperties
+	var (
+		resp *resources.Response
+		err  error
+	)
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		resp, err = RemoveAllTargetGroupTarget(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove target from target group"); err != nil {
+			return err
+		}
+		var propertiesUpdated resources.TargetGroupProperties
 
-	// Get existing Targets from the specified Target Group
-	c.Printer.Verbose("Getting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	targetGroupOld, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	if err != nil {
-		return err
-	}
-	if propertiesOk, ok := targetGroupOld.GetPropertiesOk(); ok && propertiesOk != nil {
-		if itemsOk, ok := propertiesOk.GetTargetsOk(); ok && itemsOk != nil {
-			// Remove specified Target from Target Group
-			c.Printer.Verbose("Removing Target from existing Targets")
-			newTargets, err := getTargetGroupTargetsRemove(c, itemsOk)
-			if err != nil {
-				return err
+		// Get existing Targets from the specified Target Group
+		c.Printer.Verbose("Getting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		targetGroupOld, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		if err != nil {
+			return err
+		}
+		if propertiesOk, ok := targetGroupOld.GetPropertiesOk(); ok && propertiesOk != nil {
+			if itemsOk, ok := propertiesOk.GetTargetsOk(); ok && itemsOk != nil {
+				// Remove specified Target from Target Group
+				c.Printer.Verbose("Removing Target from existing Targets")
+				newTargets, err := getTargetGroupTargetsRemove(c, itemsOk)
+				if err != nil {
+					return err
+				}
+				// Set new Targets for Target Group
+				propertiesUpdated.SetTargets(*newTargets)
 			}
-			// Set new Targets for Target Group
-			propertiesUpdated.SetTargets(*newTargets)
+		}
+
+		// Update Target Group with the new Targets
+		c.Printer.Verbose("Updating TargetGroup with the new Targets")
+		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
 		}
 	}
-
-	// Update Target Group with the new Targets
-	c.Printer.Verbose("Updating TargetGroup with the new Targets")
-	_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
-	}
 	return c.Printer.Print(getTargetGroupPrint(resp, c, nil))
+}
+
+func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("Target Group Targets to be deleted:")
+	applicationLoadBalancerRules, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	if err != nil {
+		return nil, err
+	}
+	if propertiesOk, ok := applicationLoadBalancerRules.GetPropertiesOk(); ok && propertiesOk != nil {
+		if httpRulesOk, ok := propertiesOk.GetTargetsOk(); ok && httpRulesOk != nil {
+			for _, httpRuleOk := range *httpRulesOk {
+				if nameOk, ok := httpRuleOk.GetIpOk(); ok && nameOk != nil {
+					_ = c.Printer.Print("Target IP: " + *nameOk)
+				}
+				if typeOk, ok := httpRuleOk.GetPortOk(); ok && typeOk != nil {
+					_ = c.Printer.Print("Target Port: " + strconv.Itoa(int(*typeOk)))
+				}
+			}
+		}
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Targets from Target Group"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Target Group Targets...")
+		propertiesOk.SetTargets(nil)
+		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
+			&resources.TargetGroupProperties{TargetGroupProperties: *propertiesOk})
+		if resp != nil {
+			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return nil, err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return nil, err
+		}
+	}
+	return resp, err
 }
 
 func getTargetGroupTargetInfo(c *core.CommandConfig) resources.TargetGroupTarget {
