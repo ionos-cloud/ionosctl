@@ -48,23 +48,23 @@ Required values to run command:
 
 ```text
   -u, --api-url string          Override default host url (default "https://api.ionos.com")
-      --check                   [Health Check] Check specifies whether the target VM's health is checked
+      --check                   [Health Check] Check specifies whether the target VM's health is checked (default true)
       --check-interval int      [Health Check] CheckInterval determines the duration (in milliseconds) between consecutive health checks (default 2000)
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [TargetIp TargetPort Weight Check CheckInterval Maintenance] (default [TargetIp,TargetPort,Weight,Check,CheckInterval,Maintenance])
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
-      --maintenance             [HTTP Health Check] Maintenance specifies if a target VM should be marked as down, even if it is not
+      --ip string               IP of a balanced target VM (required)
+  -m, --maintenance             [HTTP Health Check] Maintenance specifies if a target VM should be marked as down, even if it is not
   -o, --output string           Desired output format [text|json] (default "text")
+  -P, --port int                Port of the balanced target service. (range: 1 to 65535) (required) (default 8080)
   -q, --quiet                   Quiet output
-      --target-ip string        IP of a balanced target VM (required)
-      --target-port int         Port of the balanced target service. (range: 1 to 65535) (required) (default 8080)
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout option for Request for Target Group Target addition [seconds] (default 60)
   -v, --verbose                 Print step-by-step process when running command
   -w, --wait-for-request        Wait for the Request for Target Group Target addition to be executed
-      --weight int              Weight parameter is used to adjust the target VM's weight relative to other target VMs. The default weight is 1, and the maximal value is 256. A value of 0 means the target VM will not participate in load-balancing but will still accept persistent connections (default 1)
+  -W, --weight int              Weight parameter is used to adjust the target VM's weight relative to other target VMs. The default weight is 1, and the maximal value is 256. A value of 0 means the target VM will not participate in load-balancing but will still accept persistent connections (default 1)
 ```
 
 ## Examples

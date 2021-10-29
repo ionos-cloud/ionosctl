@@ -42,26 +42,31 @@ Required values to run command:
 * Application Load Balancer Id
 * Forwarding Rule Id
 * Http Rule Name
-* Http Rule Type
 
 ## Options
 
 ```text
+  -a, --all                                 Remove all HTTP Rules
   -u, --api-url string                      Override default host url (default "https://api.ionos.com")
       --applicationloadbalancer-id string   The unique ApplicationLoadBalancer Id (required)
       --cols strings                        Set of columns to be printed on output 
-                                            Available columns: [Name Type TargetGroupId DropQuery Location StatusCode ResponseMessage ContentType Condition] (default [Name,Type,TargetGroupId,DropQuery,Location,StatusCode,ResponseMessage,ContentType,Condition])
+                                            Available columns: [Name Type TargetGroupId DropQuery Location StatusCode ResponseMessage ContentType Condition] (default [Name,Type,TargetGroupId,DropQuery,Condition])
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string                The unique Data Center Id (required)
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
-  -n, --name string                         A name of that Application Load Balancer Http Rule (required) (default "Unnamed Http Rule")
+  -n, --name string                         A name of that Application Load Balancer Http Rule (required)
   -o, --output string                       Desired output format [text|json] (default "text")
   -q, --quiet                               Quiet output
       --rule-id string                      The unique ForwardingRule Id (required)
   -t, --timeout int                         Timeout option for Request for Forwarding Rule Http Rule deletion [seconds] (default 300)
-      --type string                         Type of the Http Rule (required)
   -v, --verbose                             Print step-by-step process when running command
   -w, --wait-for-request                    Wait for the Request for Forwarding Rule Http Rule deletion to be executed
+```
+
+## Examples
+
+```text
+ionosctl alb rule httprule remove --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME
 ```
 

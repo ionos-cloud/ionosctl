@@ -43,16 +43,17 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                     Delete all Target Group Targets
   -u, --api-url string          Override default host url (default "https://api.ionos.com")
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [TargetIp TargetPort Weight Check CheckInterval Maintenance] (default [TargetIp,TargetPort,Weight,Check,CheckInterval,Maintenance])
   -c, --config string           Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force                   Force command to execute without user input
   -h, --help                    Print usage
+      --ip string               IP of a balanced target VM (required)
   -o, --output string           Desired output format [text|json] (default "text")
+  -P, --port int                Port of the balanced target service. (range: 1 to 65535) (required) (default 8080)
   -q, --quiet                   Quiet output
-      --target-ip string        IP of a balanced target VM (required)
-      --target-port int         Port of the balanced target service. (range: 1 to 65535) (required) (default 8080)
   -i, --targetgroup-id string   The unique Target Group Id (required)
   -t, --timeout int             Timeout option for Request for Target Group Target deletion [seconds] (default 60)
   -v, --verbose                 Print step-by-step process when running command

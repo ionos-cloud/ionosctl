@@ -47,14 +47,15 @@ Required values to run command:
 ```text
   -u, --api-url string                      Override default host url (default "https://api.ionos.com")
       --applicationloadbalancer-id string   The unique ApplicationLoadBalancer Id (required)
+      --client-timeout int                  [Health Check] ClientTimeout is expressed in milliseconds. This inactivity timeout applies when the client is expected to acknowledge or send data (default 50)
       --cols strings                        Set of columns to be printed on output 
                                             Available columns: [ForwardingRuleId Name Protocol ListenerIp ListenerPort ServerCertificates State] (default [ForwardingRuleId,Name,Protocol,ListenerIp,ListenerPort,ServerCertificates,State])
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string                The unique Data Center Id (required)
   -f, --force                               Force command to execute without user input
   -h, --help                                Print usage
-      --listener-ip string                  Listening IP
-      --listener-port int                   Listening port number. Range: 1 to 65535 (default 8080)
+      --listener-ip string                  Listening IP (inbound)
+      --listener-port int                   Listening port number. (inbound) Range: 1 to 65535 (default 8080)
   -n, --name string                         The name for the Forwarding Rule
   -o, --output string                       Desired output format [text|json] (default "text")
   -q, --quiet                               Quiet output

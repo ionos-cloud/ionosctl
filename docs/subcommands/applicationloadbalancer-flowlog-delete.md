@@ -45,10 +45,11 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                                 Delete all Application Load Balancer FlowLogs
   -u, --api-url string                      Override default host url (default "https://api.ionos.com")
       --applicationloadbalancer-id string   The unique ApplicationLoadBalancer Id (required)
       --cols strings                        Set of columns to be printed on output 
-                                            Available columns: [ApplicationLoadBalancerId Name ListenerLan Ips TargetLan LbPrivateIps State] (default [ApplicationLoadBalancerId,Name,ListenerLan,Ips,TargetLan,LbPrivateIps,State])
+                                            Available columns: [ApplicationLoadBalancerId Name ListenerLan Ips TargetLan PrivateIps State] (default [ApplicationLoadBalancerId,Name,ListenerLan,Ips,TargetLan,PrivateIps,State])
   -c, --config string                       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string                The unique Data Center Id (required)
   -i, --flowlog-id string                   The unique FlowLog Id (required)

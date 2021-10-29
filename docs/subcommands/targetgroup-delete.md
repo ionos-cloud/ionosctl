@@ -35,6 +35,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                     Delete all Target Groups
   -u, --api-url string          Override default host url (default "https://api.ionos.com")
       --cols strings            Set of columns to be printed on output 
                                 Available columns: [TargetGroupId Name Algorithm Protocol CheckTimeout ConnectTimeout TargetTimeout Retries Path Method MatchType Response Regex Negate State] (default [TargetGroupId,Name,Algorithm,Protocol,CheckTimeout,ConnectTimeout,TargetTimeout,State])

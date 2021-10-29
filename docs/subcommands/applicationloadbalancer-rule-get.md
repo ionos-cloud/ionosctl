@@ -60,6 +60,6 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl alb rule get --datacenter-id DATACENTER_ID --networkloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID
+ionosctl alb rule get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID
 ```
 
