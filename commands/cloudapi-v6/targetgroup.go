@@ -102,12 +102,12 @@ You can wait for the Request to be executed using ` + "`" + `--wait-for-request`
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HTTP"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(cloudapiv6.ArgCheckTimeout, "", 2000, "[Health Check] The time (in milliseconds) for a target VM in this pool to answer the check")
-	create.AddIntFlag(cloudapiv6.ArgConnectionTimeout, "", 5000, "[Health Check] The maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed")
+	create.AddIntFlag(cloudapiv6.ArgCheckTimeout, "", 2000, "[Health Check] It specifies the time (in milliseconds) for a target VM in this pool to answer the check. If a target VM has CheckInterval set and CheckTimeout is set too, then the smaller value of the two is used after the TCP connection is established")
+	create.AddIntFlag(cloudapiv6.ArgConnectionTimeout, "", 5000, "[Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed")
 	create.AddIntFlag(cloudapiv6.ArgTargetTimeout, "", 50000, "[Health Check] The maximum inactivity time (in milliseconds) on the target VM side")
 	create.AddIntFlag(cloudapiv6.ArgRetries, "", 3, "[Health Check] The number of retries to perform on a target VM after a connection failure. (valid range: [0, 65535])")
-	create.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] Path for the HTTP health check")
-	create.AddStringFlag(cloudapiv6.ArgMethod, "", "GET", "[HTTP Health Check] Method for the HTTP health check")
+	create.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] The path for the HTTP health check")
+	create.AddStringFlag(cloudapiv6.ArgMethod, "", "GET", "[HTTP Health Check] The method for the HTTP health check")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HEAD", "PUT", "POST", "GET", "TRACE", "PATCH", "OPTIONS"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -155,12 +155,12 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HTTP"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddIntFlag(cloudapiv6.ArgCheckTimeout, "", 2000, "[Health Check] The time (in milliseconds) for a target VM in this pool to answer the check")
-	update.AddIntFlag(cloudapiv6.ArgConnectionTimeout, "", 5000, "[Health Check] The maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed")
+	update.AddIntFlag(cloudapiv6.ArgCheckTimeout, "", 2000, "[Health Check] It specifies the time (in milliseconds) for a target VM in this pool to answer the check. If a target VM has CheckInterval set and CheckTimeout is set too, then the smaller value of the two is used after the TCP connection is established")
+	update.AddIntFlag(cloudapiv6.ArgConnectionTimeout, "", 5000, "[Health Check] It specifies the maximum time (in milliseconds) to wait for a connection attempt to a target VM to succeed")
 	update.AddIntFlag(cloudapiv6.ArgTargetTimeout, "", 50000, "[Health Check] The maximum inactivity time (in milliseconds) on the target VM side")
 	update.AddIntFlag(cloudapiv6.ArgRetries, "", 3, "[Health Check] The number of retries to perform on a target VM after a connection failure. (valid range: [0, 65535])")
-	update.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] Path for the HTTP health check")
-	update.AddStringFlag(cloudapiv6.ArgMethod, "", "GET", "[HTTP Health Check] Method for the HTTP health check")
+	update.AddStringFlag(cloudapiv6.ArgPath, "", "/.", "[HTTP Health Check] The path for the HTTP health check")
+	update.AddStringFlag(cloudapiv6.ArgMethod, "", "GET", "[HTTP Health Check] The method for the HTTP health check")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HEAD", "PUT", "POST", "GET", "TRACE", "PATCH", "OPTIONS"}, cobra.ShellCompDirectiveNoFileComp
 	})

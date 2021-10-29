@@ -128,8 +128,9 @@ Required values to run command:
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Forwarding Rule", "The name for the Forwarding Rule")
 	create.AddStringFlag(cloudapiv6.ArgProtocol, cloudapiv6.ArgProtocolShort, "HTTP", "Protocol of the balancing")
-	create.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening IP - must be assigned to the listener NIC of the Application Load Balancer", core.RequiredFlagOption())
-	create.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening port number. Range: 1 to 65535", core.RequiredFlagOption())
+	create.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening IP (inbound)", core.RequiredFlagOption())
+	create.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening port number. (inbound) Range: 1 to 65535", core.RequiredFlagOption())
+	create.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "[Health Check] ClientTimeout is expressed in milliseconds. This inactivity timeout applies when the client is expected to acknowledge or send data")
 	create.AddStringSliceFlag(cloudapiv6.ArgServerCertificates, "", []string{""}, "Server Certificates")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule creation [seconds]")
@@ -175,8 +176,9 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the Forwarding Rule")
-	update.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening IP")
-	update.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening port number. Range: 1 to 65535")
+	update.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening IP (inbound)")
+	update.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening port number. (inbound) Range: 1 to 65535")
+	update.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "[Health Check] ClientTimeout is expressed in milliseconds. This inactivity timeout applies when the client is expected to acknowledge or send data")
 	update.AddStringSliceFlag(cloudapiv6.ArgServerCertificates, "", []string{""}, "Server Certificates")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, cloudapiv6.DefaultWait, "Wait for the Request for Forwarding Rule update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule update [seconds]")
@@ -434,6 +436,13 @@ func getAlbForwardingRulePropertiesSet(c *core.CommandConfig) *resources.Applica
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)) {
 		input.SetServerCertificates(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)))
 		c.Printer.Verbose("Property ServerCertificates set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)))
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)) {
+		inputHealthCheck := ionoscloud.ApplicationLoadBalancerForwardingRuleHealthCheck{}
+		inputHealthCheck.SetClientTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)))
+		c.Printer.Verbose("Property Health Check - Client Timeout set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)))
+		input.SetHealthCheck(inputHealthCheck)
+		c.Printer.Verbose("Setting Health Check to Forwarding Rule")
 	}
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: input,

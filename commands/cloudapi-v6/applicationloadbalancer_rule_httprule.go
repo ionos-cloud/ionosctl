@@ -51,7 +51,7 @@ func AlbRuleHttpRuleCmd() *core.Command {
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Application Load Balancer Forwarding Rule Http Rules",
 		LongDesc:   "Use this command to list Http Rules of a Application Load Balancer Forwarding Rule.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Forwarding Rule Id",
-		Example:    "",
+		Example:    listApplicationLoadBalancerForwardingRuleHttpExample,
 		PreCmdRun:  PreRunDcApplicationLoadBalancerForwardingRuleIds,
 		CmdRun:     RunAlbRuleHttpRuleList,
 		InitClient: true,
@@ -92,7 +92,7 @@ Required values to run command:
 * Forwarding Rule Id
 * Http Rule Name
 * Http Rule Type`,
-		Example:    "",
+		Example:    addApplicationLoadBalancerForwardingRuleHttpExample,
 		PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRule,
 		CmdRun:     RunAlbRuleHttpRuleAdd,
 		InitClient: true,
@@ -161,9 +161,8 @@ Required values to run command:
 * Data Center Id
 * Application Load Balancer Id
 * Forwarding Rule Id
-* Http Rule Name
-* Http Rule Type`,
-		Example:    "",
+* Http Rule Name`,
+		Example:    removeApplicationLoadBalancerForwardingRuleHttpExample,
 		PreCmdRun:  PreRunApplicationLoadBalancerRuleHttpRuleDelete,
 		CmdRun:     RunAlbRuleHttpRuleRemove,
 		InitClient: true,
@@ -182,11 +181,7 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	// TODO: check if the name is unique, that means type is not needed
-	removeCmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Http Rule", "A name of that Application Load Balancer Http Rule", core.RequiredFlagOption())
-	removeCmd.AddStringFlag(cloudapiv6.ArgType, "", "", "Type of the Http Rule", core.RequiredFlagOption())
-	_ = removeCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"FORWARD", "STATIC", "REDIRECT"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	removeCmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "A name of that Application Load Balancer Http Rule", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all HTTP Rules")
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Http Rule deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Http Rule deletion [seconds]")
@@ -201,7 +196,7 @@ func PreRunApplicationLoadBalancerRuleHttpRule(c *core.PreCommandConfig) error {
 
 func PreRunApplicationLoadBalancerRuleHttpRuleDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgName, cloudapiv6.ArgType},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgName},
 		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgApplicationLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgAll},
 	)
 }

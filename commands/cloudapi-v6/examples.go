@@ -382,10 +382,17 @@ ionosctl natgateway lan add --datacenter-id DATACENTER_ID --natgateway-id NATGAT
 		Application Load Balancer ForwardingRule Example
 	*/
 	listApplicationLoadBalancerForwardingRuleExample   = `ionosctl applicationloadbalancer rule list --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID`
-	getApplicationLoadBalancerForwardingRuleExample    = `ionosctl alb rule get --datacenter-id DATACENTER_ID --networkloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID`
+	getApplicationLoadBalancerForwardingRuleExample    = `ionosctl alb rule get --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID`
 	createApplicationLoadBalancerForwardingRuleExample = `ionosctl applicationloadbalancer rule create --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --listener-ip LISTENER_IP --listener-port LISTENER_PORT`
 	updateApplicationLoadBalancerForwardingRuleExample = `ionosctl alb rule update --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID --name NAME`
 	deleteApplicationLoadBalancerForwardingRuleExample = `ionosctl applicationloadbalancer rule delete --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID -i FORWARDINGRULE_ID`
+
+	/*
+		Application Load Balancer ForwardingRule HttpRule Example
+	*/
+	listApplicationLoadBalancerForwardingRuleHttpExample   = `ionosctl alb rule http list --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID`
+	addApplicationLoadBalancerForwardingRuleHttpExample    = `ionosctl alb rule http add --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME --type TYPE`
+	removeApplicationLoadBalancerForwardingRuleHttpExample = `ionosctl alb rule httprule remove --datacenter-id DATACENTER_ID --applicationloadbalancer-id APPLICATIONLOADBALANCER_ID --rule-id FORWARDINGRULE_ID -n NAME`
 
 	/*
 		Application Load Balancer FlowLog Example

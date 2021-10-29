@@ -66,6 +66,7 @@ const (
 	ArgCheck                 = "check"
 	ArgCheckInterval         = "check-interval"
 	ArgMaintenance           = "maintenance"
+	ArgMaintenanceShort      = "m"
 	ArgFirewallActive        = "firewall-active"
 	ArgFirewallType          = "firewall-type"
 	ArgCpuHotPlug            = "cpu-hot-plug"
