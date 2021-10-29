@@ -3,4 +3,10 @@ updates:
   - package-ecosystem: gomod
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
+      day: wednesday
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "go.mod"
+      include: scope
