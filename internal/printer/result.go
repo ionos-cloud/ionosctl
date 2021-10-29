@@ -180,7 +180,7 @@ func GetId(r *resources.Response) string {
 }
 
 func GetRequestPath(r *resources.Response) string {
-	if r != nil {
+	if r != nil && r.Header != nil && len(r.Header) > 0 {
 		return r.Header.Get("location")
 	}
 	return ""

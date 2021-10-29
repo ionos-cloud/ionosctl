@@ -88,9 +88,9 @@ Required values to run command:
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
-	add.AddIntFlag(cloudapiv6.ArgTargetPort, "", 8080, "Port of the balanced target service. (range: 1 to 65535)", core.RequiredFlagOption())
-	add.AddIntFlag(cloudapiv6.ArgWeight, "", 1, "Weight parameter is used to adjust the target VM's weight relative to other target VMs. The default weight is 1, and the maximal value is 256. A value of 0 means the target VM will not participate in load-balancing but will still accept persistent connections")
+	add.AddStringFlag(cloudapiv6.ArgIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
+	add.AddIntFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, 8080, "Port of the balanced target service. (range: 1 to 65535)", core.RequiredFlagOption())
+	add.AddIntFlag(cloudapiv6.ArgWeight, cloudapiv6.ArgWeightShort, 1, "Weight parameter is used to adjust the target VM's weight relative to other target VMs. The default weight is 1, and the maximal value is 256. A value of 0 means the target VM will not participate in load-balancing but will still accept persistent connections")
 	add.AddBoolFlag(cloudapiv6.ArgCheck, "", false, "[Health Check] Check specifies whether the target VM's health is checked")
 	add.AddIntFlag(cloudapiv6.ArgCheckInterval, "", 2000, "[Health Check] CheckInterval determines the duration (in milliseconds) between consecutive health checks")
 	add.AddBoolFlag(cloudapiv6.ArgMaintenance, "", false, "[HTTP Health Check] Maintenance specifies if a target VM should be marked as down, even if it is not")
@@ -120,8 +120,8 @@ Required values to run command:
 	_ = remove.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	remove.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
-	remove.AddIntFlag(cloudapiv6.ArgTargetPort, "", 8080, "Port of the balanced target service. (range: 1 to 65535)", core.RequiredFlagOption())
+	remove.AddStringFlag(cloudapiv6.ArgIp, "", "", "IP of a balanced target VM", core.RequiredFlagOption())
+	remove.AddIntFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, 8080, "Port of the balanced target service. (range: 1 to 65535)", core.RequiredFlagOption())
 	remove.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Target Group Targets")
 	remove.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Target Group Target deletion to be executed")
 	remove.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Target Group Target deletion [seconds]")
@@ -134,12 +134,12 @@ Required values to run command:
 }
 
 func PreRunTargetGroupIdTargetIpPort(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgTargetIp, cloudapiv6.ArgTargetPort)
+	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIp, cloudapiv6.ArgPort)
 }
 
 func PreRunTargetGroupTargetRemove(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
-		[]string{cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgTargetIp, cloudapiv6.ArgTargetPort},
+		[]string{cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgIp, cloudapiv6.ArgPort},
 		[]string{cloudapiv6.ArgTargetGroupId, cloudapiv6.ArgAll},
 	)
 }
@@ -276,7 +276,7 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Target Group Targets...")
-		propertiesOk.SetTargets(nil)
+		propertiesOk.SetTargets([]ionoscloud.TargetGroupTarget{})
 		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)),
 			&resources.TargetGroupProperties{TargetGroupProperties: *propertiesOk})
@@ -296,10 +296,10 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 
 func getTargetGroupTargetInfo(c *core.CommandConfig) resources.TargetGroupTarget {
 	target := resources.TargetGroupTarget{}
-	target.SetIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp)))
-	c.Printer.Verbose("Property Ip for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp)))
-	target.SetPort(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetPort)))
-	c.Printer.Verbose("Property Port for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetPort)))
+	target.SetIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
+	c.Printer.Verbose("Property Ip for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
+	target.SetPort(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
+	c.Printer.Verbose("Property Port for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
 	target.SetWeight(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
 	c.Printer.Verbose("Property Weight for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
 	targetHealth := resources.TargetGroupTargetHealthCheck{}
@@ -326,13 +326,13 @@ func getTargetGroupTargetsRemove(c *core.CommandConfig, targetsOld *[]ionoscloud
 			removeIp := false
 			removePort := false
 			if ip, ok := targetItem.GetIpOk(); ok && ip != nil {
-				if *ip == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp)) {
+				if *ip == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)) {
 					removeIp = true
 					foundIp = true
 				}
 			}
 			if port, ok := targetItem.GetPortOk(); ok && port != nil {
-				if *port == viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetPort)) {
+				if *port == viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgPort)) {
 					removePort = true
 					foundPort = true
 				}

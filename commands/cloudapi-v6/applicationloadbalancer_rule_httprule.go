@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -34,10 +35,10 @@ func AlbRuleHttpRuleCmd() *core.Command {
 		},
 	}
 	globalFlags := albRuleHttpRuleCmd.GlobalFlags()
-	globalFlags.StringSliceP(config.ArgCols, "", defaultAlbRuleHttpRuleCols, printer.ColsMessage(defaultAlbRuleHttpRuleCols))
+	globalFlags.StringSliceP(config.ArgCols, "", defaultAlbRuleHttpRuleCols, printer.ColsMessage(allAlbRuleHttpRuleCols))
 	_ = viper.BindPFlag(core.GetGlobalFlagName(albRuleHttpRuleCmd.Name(), config.ArgCols), globalFlags.Lookup(config.ArgCols))
 	_ = albRuleHttpRuleCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultAlbRuleHttpRuleCols, cobra.ShellCompDirectiveNoFileComp
+		return allAlbRuleHttpRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -108,31 +109,37 @@ Required values to run command:
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.AlbForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId)), viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Http Rule", "A name of that Application Load Balancer Http Rule", core.RequiredFlagOption())
+	add.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name of a Application Load Balancer http rule; unique per forwarding rule", core.RequiredFlagOption())
 	add.AddStringFlag(cloudapiv6.ArgType, "", "", "Type of the Http Rule", core.RequiredFlagOption())
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"FORWARD", "STATIC", "REDIRECT"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgTargetGroupId, "", "", "The Id of the Target Group; mandatory for FORWARD action")
+	add.AddStringFlag(cloudapiv6.ArgTargetGroupId, "", "", "The ID of the target group; mandatory and only valid for FORWARD action")
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddBoolFlag(cloudapiv6.ArgDropQuery, "", false, "Default is false; must be true for REDIRECT action")
-	add.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "www.ionos.com", "The location for redirecting; mandatory for REDIRECT action")
-	add.AddStringFlag(cloudapiv6.ArgStatusCode, "", "301", "On REDIRECT action it can take the value 301, 302, 303, 307, 308; on STATIC action it is between 200 and 599")
-	add.AddStringFlag(cloudapiv6.ArgResponse, "", "", "The response message of the request; mandatory for STATIC action")
-	add.AddStringFlag(cloudapiv6.ArgContentType, "", "application/json", "")
-	add.AddStringFlag(cloudapiv6.ArgCondition, "", "", "Condition of the Http Rule condition")
+	add.AddBoolFlag(cloudapiv6.ArgQuery, cloudapiv6.ArgQueryShort, false, "Default is false; must be true for REDIRECT action")
+	add.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "www.ionos.com", "The location for redirecting; mandatory and valid only for REDIRECT action")
+	add.AddIntFlag(cloudapiv6.ArgStatusCode, "", 301, "Valid only for action REDIRECT and STATIC; on REDIRECT action default is 301 and it can take the values 301, 302, 303, 307, 308; on STATIC action default is 503 and it can take a value between 200 and 599")
+	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgStatusCode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"301", "302", "303", "308", "200", "503", "599"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	add.AddStringFlag(cloudapiv6.ArgMessage, cloudapiv6.ArgMessageShort, "Application Down", "The response message of the request; mandatory for STATIC action")
+	add.AddStringFlag(cloudapiv6.ArgContentType, "", "application/json", "Valid only for action STATIC")
+	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgContentType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"application/json", "text/html"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	add.AddStringFlag(cloudapiv6.ArgCondition, cloudapiv6.ArgConditionShort, "STARTS_WITH", "Matching rule for the Http Rule condition attribute; mandatory for HEADER, PATH, QUERY, METHOD, HOST and COOKIE types; must be null when type is SOURCE_IP")
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCondition, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"EXISTS", "CONTAINS", "EQUALS", "MATCHES", "STARTS_WITH", "ENDS_WITH"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgConditionType, "", "HEADER", "Type of the Http Rule condition")
+	add.AddStringFlag(cloudapiv6.ArgConditionType, cloudapiv6.ArgConditionTypeShort, "HEADER", "Type of the Http Rule condition")
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgConditionType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HEADER", "PATH", "QUERY", "METHOD", "HOST", "COOKIE", "SOURCE_IP"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	add.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "Specifies whether the condition is negated or not; default: false")
-	add.AddStringFlag(cloudapiv6.ArgConditionKey, "", "forward-at", "")
-	add.AddStringFlag(cloudapiv6.ArgConditionValue, "", "Friday", "")
+	add.AddStringFlag(cloudapiv6.ArgConditionKey, cloudapiv6.ArgConditionKeyShort, "forward-at", "Must be null when type is PATH, METHOD, HOST or SOURCE_IP. Key can only be set when type is COOKIES, HEADER, QUERY")
+	add.AddStringFlag(cloudapiv6.ArgConditionValue, cloudapiv6.ArgConditionValueShort, "Friday", "Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS; should be a valid CIDR if provided and if type is SOURCE_IP")
 	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Http Rule creation to be executed")
 	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Http Rule creation [seconds]")
 
@@ -268,17 +275,14 @@ func RunAlbRuleHttpRuleAdd(c *core.CommandConfig) error {
 }
 
 func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
-	var (
-		resp *resources.Response
-		err  error
-	)
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		resp, err = RemoveAllHTTPRules(c)
+		resp, err := RemoveAllHTTPRules(c)
 		if err != nil {
 			return err
 		}
+		return c.Printer.Print(getAlbRuleHttpRulePrint(resp, c, nil))
 	} else {
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove forwarding rule http rule"); err != nil {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove forwarding rule http rule"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Getting HttpRules from ForwardingRule with ID: %v from ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
@@ -314,8 +318,8 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getAlbRuleHttpRulePrint(resp, c, nil))
 	}
-	return c.Printer.Print(getAlbRuleHttpRulePrint(resp, c, nil))
 }
 
 func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
@@ -344,7 +348,7 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Forwarding Rule HTTP Rules...")
-		propertiesOk.SetHttpRules(nil)
+		propertiesOk.SetHttpRules([]ionoscloud.ApplicationLoadBalancerHttpRule{})
 		_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -367,37 +371,67 @@ func RemoveAllHTTPRules(c *core.CommandConfig) (*resources.Response, error) {
 }
 
 func getRuleHttpRuleInfo(c *core.CommandConfig) resources.ApplicationLoadBalancerHttpRule {
+	// Set Application Load Balancer HTTP Rule Properties
 	httprule := resources.ApplicationLoadBalancerHttpRule{}
 	httprule.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	httprule.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
 	c.Printer.Verbose("Property Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
-	httprule.SetTargetGroup(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	c.Printer.Verbose("Property TargetGroup set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-	httprule.SetDropQuery(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDropQuery)))
-	c.Printer.Verbose("Property DropQuery set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDropQuery)))
-	httprule.SetLocation(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
-	c.Printer.Verbose("Property Location set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
-	httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
-	c.Printer.Verbose("Property StatusCode set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
-	httprule.SetResponseMessage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
-	c.Printer.Verbose("Property ResponseMessage set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgResponse)))
-	httprule.SetContentType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
-	c.Printer.Verbose("Property ContentType set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
-	httpRuleCondition := resources.ApplicationLoadBalancerHttpRuleCondition{}
-	httpRuleCondition.SetCondition(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
-	c.Printer.Verbose("Property Condition set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
-	httpRuleCondition.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
-	c.Printer.Verbose("Property Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
-	httpRuleCondition.SetNegate(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
-	c.Printer.Verbose("Property Negate set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
-	httpRuleCondition.SetKey(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
-	c.Printer.Verbose("Property Key set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
-	httpRuleCondition.SetValue(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
-	c.Printer.Verbose("Property Value set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
-	httprule.SetConditions([]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{httpRuleCondition.ApplicationLoadBalancerHttpRuleCondition})
-	c.Printer.Verbose("Setting Conditions to HttpRule")
+	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "FORWARD") {
+		httprule.SetTargetGroup(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		c.Printer.Verbose("Property TargetGroup set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	}
+	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "REDIRECT") {
+		httprule.SetLocation(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
+		c.Printer.Verbose("Property Location set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation)))
+		httprule.SetDropQuery(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgQuery)))
+		c.Printer.Verbose("Property DropQuery set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgQuery)))
+		httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+		c.Printer.Verbose("Property StatusCode set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+	}
+	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)), "STATIC") {
+		httprule.SetResponseMessage(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
+		c.Printer.Verbose("Property ResponseMessage set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMessage)))
+		httprule.SetContentType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
+		c.Printer.Verbose("Property ContentType set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgContentType)))
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)) {
+			httprule.SetStatusCode(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+			c.Printer.Verbose("Property StatusCode set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgStatusCode)))
+		} else {
+			httprule.SetStatusCode(503)
+			c.Printer.Verbose("Property StatusCode set with the default value: %v", 503)
+		}
+	}
+	httpRuleCondition := getRuleHttpRuleConditionInfo(c)
+	httprule.SetConditions([]ionoscloud.ApplicationLoadBalancerHttpRuleCondition{
+		httpRuleCondition.ApplicationLoadBalancerHttpRuleCondition,
+	})
+	c.Printer.Verbose("Setting Condition to HttpRule")
 	return httprule
+}
+
+func getRuleHttpRuleConditionInfo(c *core.CommandConfig) resources.ApplicationLoadBalancerHttpRuleCondition {
+	// Set Application Load Balancer HTTP Rule Condition Properties
+	httpRuleCondition := resources.ApplicationLoadBalancerHttpRuleCondition{}
+	httpRuleCondition.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)))
+	c.Printer.Verbose("Property Condition Type set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)))
+	if !strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "SOURCE_IP") {
+		httpRuleCondition.SetCondition(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
+		c.Printer.Verbose("Property Condition set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)))
+	}
+	httpRuleCondition.SetNegate(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+	c.Printer.Verbose("Property Condition Negate set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNegate)))
+	if strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "COOKIES") ||
+		strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "HEADER") ||
+		strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionType)), "QUERY") {
+		httpRuleCondition.SetKey(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
+		c.Printer.Verbose("Property Condition Key set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionKey)))
+	}
+	if !strings.EqualFold(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgCondition)), "EXISTS") {
+		httpRuleCondition.SetValue(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
+		c.Printer.Verbose("Property Condition Value set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgConditionValue)))
+	}
+	return httpRuleCondition
 }
 
 func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationLoadBalancerForwardingRule) (*resources.ApplicationLoadBalancerForwardingRuleProperties, error) {
@@ -447,7 +481,10 @@ func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationL
 
 // Output Printing
 
-var defaultAlbRuleHttpRuleCols = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Location", "StatusCode", "ResponseMessage", "ContentType", "Condition"}
+var (
+	defaultAlbRuleHttpRuleCols = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Condition"}
+	allAlbRuleHttpRuleCols     = []string{"Name", "Type", "TargetGroupId", "DropQuery", "Location", "StatusCode", "ResponseMessage", "ContentType", "Condition"}
+)
 
 type AlbRuleHttpRulePrint struct {
 	Name            string   `json:"Name,omitempty"`

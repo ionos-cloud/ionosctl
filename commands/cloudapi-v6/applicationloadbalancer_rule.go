@@ -128,7 +128,7 @@ Required values to run command:
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Forwarding Rule", "The name for the Forwarding Rule")
 	create.AddStringFlag(cloudapiv6.ArgProtocol, cloudapiv6.ArgProtocolShort, "HTTP", "Protocol of the balancing")
-	create.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening IP", core.RequiredFlagOption())
+	create.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening IP - must be assigned to the listener NIC of the Application Load Balancer", core.RequiredFlagOption())
 	create.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening port number. Range: 1 to 65535", core.RequiredFlagOption())
 	create.AddStringSliceFlag(cloudapiv6.ArgServerCertificates, "", []string{""}, "Server Certificates")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule creation to be executed")
@@ -429,11 +429,11 @@ func getAlbForwardingRulePropertiesSet(c *core.CommandConfig) *resources.Applica
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort)) {
 		input.SetListenerPort(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort)))
-		c.Printer.Verbose("Property ListenerPort set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort)))
+		c.Printer.Verbose("Property ListenerPort set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerPort)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)) {
 		input.SetServerCertificates(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)))
-		c.Printer.Verbose("Property ServerCertificates set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)))
+		c.Printer.Verbose("Property ServerCertificates set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)))
 	}
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: input,

@@ -399,7 +399,7 @@ func getNewApplicationLoadBalancerInfo(c *core.CommandConfig) *resources.Applica
 
 // Output Printing
 
-var defaultApplicationLoadBalancerCols = []string{"ApplicationLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "LbPrivateIps", "State"}
+var defaultApplicationLoadBalancerCols = []string{"ApplicationLoadBalancerId", "Name", "ListenerLan", "Ips", "TargetLan", "PrivateIps", "State"}
 
 type ApplicationLoadBalancerPrint struct {
 	ApplicationLoadBalancerId string   `json:"ApplicationLoadBalancerId,omitempty"`
@@ -407,7 +407,7 @@ type ApplicationLoadBalancerPrint struct {
 	ListenerLan               int32    `json:"ListenerLan,omitempty"`
 	Ips                       []string `json:"Ips,omitempty"`
 	TargetLan                 int32    `json:"TargetLan,omitempty"`
-	LbPrivateIps              []string `json:"LbPrivateIps,omitempty"`
+	PrivateIps                []string `json:"PrivateIps,omitempty"`
 	State                     string   `json:"State,omitempty"`
 }
 
@@ -488,7 +488,7 @@ func getApplicationLoadBalancersKVMaps(ss []resources.ApplicationLoadBalancer) [
 				applicationloadbalancerPrint.TargetLan = *targetLan
 			}
 			if lbPrivateIps, ok := properties.GetLbPrivateIpsOk(); ok && lbPrivateIps != nil {
-				applicationloadbalancerPrint.LbPrivateIps = *lbPrivateIps
+				applicationloadbalancerPrint.PrivateIps = *lbPrivateIps
 			}
 		}
 		if metadata, ok := s.GetMetadataOk(); ok && metadata != nil {

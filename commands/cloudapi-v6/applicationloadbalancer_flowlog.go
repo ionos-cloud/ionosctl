@@ -320,7 +320,7 @@ func RunApplicationLoadBalancerFlowLogCreate(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerFlowLogUpdate(c *core.CommandConfig) error {
-	input := getFlowLogPropertiesSet(c)
+	input := getFlowLogPropertiesUpdate(c)
 	c.Printer.Verbose("Updating FlowLog with ID: %v from ApplicationLoadBalancer with ID: %v in Datacenter with ID: %v",
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
