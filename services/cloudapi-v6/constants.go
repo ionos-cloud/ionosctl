@@ -145,7 +145,7 @@ const (
 	ArgNegate                = "negate"
 	ArgServerCertificates    = "server-certificates"
 	ArgQuery                 = "query"
-	ArgQueryShort            = "q"
+	ArgQueryShort            = "Q"
 	ArgStatusCode            = "status-code"
 	ArgContentType           = "content-type"
 	ArgCondition             = "condition"

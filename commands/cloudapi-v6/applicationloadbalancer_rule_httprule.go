@@ -180,7 +180,6 @@ Required values to run command:
 		return completer.AlbForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(removeCmd.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	// TODO: check if the name is unique, that means type is not needed
 	removeCmd.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "A name of that Application Load Balancer Http Rule", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all HTTP Rules")
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Http Rule deletion to be executed")
@@ -292,12 +291,12 @@ func RunAlbRuleHttpRuleRemove(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		c.Printer.Verbose("Removing the HttpRule from the existing HttpRules")
+		c.Printer.Verbose("Removing the HTTP Rule from the existing HTTP Rules")
 		proper, err := getRuleHttpRulesRemove(c, frOld)
 		if err != nil {
 			return err
 		}
-		c.Printer.Verbose("Updating ForwardingRule with the new HttpRules")
+		c.Printer.Verbose("Updating ForwardingRule with the new HTTP Rules")
 		_, resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -430,46 +429,32 @@ func getRuleHttpRuleConditionInfo(c *core.CommandConfig) resources.ApplicationLo
 }
 
 func getRuleHttpRulesRemove(c *core.CommandConfig, frOld *resources.ApplicationLoadBalancerForwardingRule) (*resources.ApplicationLoadBalancerForwardingRuleProperties, error) {
-	var (
-		foundIp   = false
-		foundPort = false
-	)
-	httpruleItems := make([]ionoscloud.ApplicationLoadBalancerHttpRule, 0)
+	httpRuleItems := make([]ionoscloud.ApplicationLoadBalancerHttpRule, 0)
 	if properties, ok := frOld.GetPropertiesOk(); ok && properties != nil {
-		if httprules, ok := properties.GetHttpRulesOk(); ok && httprules != nil {
-			// Iterate trough all httprules
-			for _, httpruleItem := range *httprules {
+		c.Printer.Verbose("Getting Properties from the Forwarding Rule")
+		if httpRules, ok := properties.GetHttpRulesOk(); ok && httpRules != nil {
+			c.Printer.Verbose("Getting HTTP Rules from the Forwarding Rule Properties")
+			for _, httpRuleItem := range *httpRules {
 				removeName := false
-				removeType := false
-				if nameOk, ok := httpruleItem.GetNameOk(); ok && nameOk != nil {
+				if nameOk, ok := httpRuleItem.GetNameOk(); ok && nameOk != nil {
 					if *nameOk == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)) {
 						removeName = true
-						foundIp = true
+						c.Printer.Verbose("Found HTTP Rule with Name: %v", *nameOk)
 					}
 				}
-				if typeOk, ok := httpruleItem.GetTypeOk(); ok && typeOk != nil {
-					if *typeOk == viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)) {
-						removeType = true
-						foundPort = true
-					}
-				}
-				if removeName && removeType {
+				// If the Http rule with the unique name is found, continue.
+				// If not, add it to the Forwarding Rule properties.
+				if removeName {
 					continue
 				} else {
-					httpruleItems = append(httpruleItems, httpruleItem)
+					httpRuleItems = append(httpRuleItems, httpRuleItem)
 				}
 			}
 		}
 	}
-	if !foundIp {
-		return nil, errors.New("no forwarding rule http rule with the specified IP found")
-	}
-	if !foundPort {
-		return nil, errors.New("no forwarding rule http rule with the specified port found")
-	}
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: ionoscloud.ApplicationLoadBalancerForwardingRuleProperties{
-			HttpRules: &httpruleItems,
+			HttpRules: &httpRuleItems,
 		},
 	}, nil
 }

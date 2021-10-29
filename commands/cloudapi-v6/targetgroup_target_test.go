@@ -470,6 +470,29 @@ func TestRunTargetGroupTargetRemoveAskForConfirm(t *testing.T) {
 	})
 }
 
+func TestRunTargetGroupTargetRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetGroupId), testTargetGroupTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Get(testTargetGroupTargetVar).Return(&testTargetGroupTargetGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.TargetGroup.EXPECT().Update(testTargetGroupTargetVar,
+			&resources.TargetGroupProperties{
+				TargetGroupProperties: ionoscloud.TargetGroupProperties{
+					Targets: &[]ionoscloud.TargetGroupTarget{},
+				},
+			}).Return(&testTargetGroupTargetGet, &testResponse, nil)
+		err := RunTargetGroupTargetRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunTargetGroupTargetRemoveAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
