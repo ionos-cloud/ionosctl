@@ -248,8 +248,9 @@ func PreRunDcApplicationLoadBalancerForwardingRuleIds(c *core.PreCommandConfig) 
 }
 
 func RunApplicationLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting ForwardingRules for ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Printer.Verbose("Getting ForwardingRules")
 	albForwardingRules, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().ListForwardingRules(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -264,8 +265,9 @@ func RunApplicationLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting ForwardingRule with ID: %v for ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Printer.Verbose("Getting ForwardingRule with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
 	applicationLoadBalancerForwardingRule, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().GetForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -281,6 +283,8 @@ func RunApplicationLoadBalancerForwardingRuleGet(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
 	proper := getAlbForwardingRulePropertiesSet(c)
 	if !proper.HasProtocol() {
 		proper.SetProtocol(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgProtocol)))
@@ -290,8 +294,7 @@ func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error
 		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 		c.Printer.Verbose("Property Name set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	}
-	c.Printer.Verbose("Creating ForwardingRule for ApplicationLoadBalancer with ID: %v in Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("Creating ForwardingRule")
 	applicationLoadBalancerForwardingRule, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().CreateForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -314,9 +317,11 @@ func RunApplicationLoadBalancerForwardingRuleCreate(c *core.CommandConfig) error
 }
 
 func RunApplicationLoadBalancerForwardingRuleUpdate(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+	c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
 	input := getAlbForwardingRulePropertiesSet(c)
-	c.Printer.Verbose("Updating ForwardingRule with ID: %v from ApplicationLoadBalancer with ID: %v in Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("Updating ForwardingRule")
 	applicationLoadBalancerForwardingRule, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().UpdateForwardingRule(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -341,16 +346,20 @@ func RunApplicationLoadBalancerForwardingRuleDelete(c *core.CommandConfig) error
 		err  error
 	)
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
 		resp, err = DeleteAllApplicationLoadBalancerForwardingRule(c)
 		if err != nil {
 			return err
 		}
 	} else {
+		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
+		c.Printer.Verbose("ForwardingRule ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
 		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete application load balancer forwarding rule"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Deleting ForwardingRule with ID: %v from ApplicationLoadBalancer with ID: %v in Datacenter with ID: %v",
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		c.Printer.Verbose("Deleting ForwardingRule with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
 		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().DeleteForwardingRule(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),

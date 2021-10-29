@@ -220,8 +220,8 @@ func RunApplicationLoadBalancerList(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("Getting ApplicationLoadBalancer with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
 	if err := utils.WaitForState(c, waiter.ApplicationLoadBalancerStateInterrogator, viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId))); err != nil {
 		return err
 	}
@@ -239,6 +239,7 @@ func RunApplicationLoadBalancerGet(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	proper := getNewApplicationLoadBalancerInfo(c)
 	if !proper.HasName() {
 		proper.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
@@ -252,7 +253,7 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 		proper.SetListenerLan(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
 		c.Printer.Verbose("Property ListenerLan set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgListenerLan)))
 	}
-	c.Printer.Verbose("Creating ApplicationLoadBalancer in Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("Creating ApplicationLoadBalancer")
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Create(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		resources.ApplicationLoadBalancer{
@@ -275,9 +276,9 @@ func RunApplicationLoadBalancerCreate(c *core.CommandConfig) error {
 }
 
 func RunApplicationLoadBalancerUpdate(c *core.CommandConfig) error {
+	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	input := getNewApplicationLoadBalancerInfo(c)
-	c.Printer.Verbose("Updating ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	c.Printer.Verbose("Updating ApplicationLoadBalancer with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
 	ng, resp, err := c.CloudApiV6Services.ApplicationLoadBalancers().Update(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
@@ -301,21 +302,20 @@ func RunApplicationLoadBalancerDelete(c *core.CommandConfig) error {
 		err  error
 	)
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 		resp, err = DeleteAllApplicationLoadBalancer(c)
 		if err != nil {
 			return err
 		}
 	} else {
+		c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+		c.Printer.Verbose("ApplicationLoadBalancer ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
 		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete application load balancer"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Deleting ApplicationLoadBalancer with ID: %v from Datacenter with ID: %v",
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)),
-		)
+		c.Printer.Verbose("Starting deleting ApplicationLoadBalancer")
+		resp, err = c.CloudApiV6Services.ApplicationLoadBalancers().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgApplicationLoadBalancerId)))
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 		}

@@ -214,6 +214,7 @@ func PreRunTargetGroupDelete(c *core.PreCommandConfig) error {
 }
 
 func RunTargetGroupList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting TargetGroups")
 	ss, resp, err := c.CloudApiV6Services.TargetGroups().List()
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
@@ -225,7 +226,8 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupGet(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Printer.Verbose("Getting TargetGroup")
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
@@ -252,7 +254,8 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 }
 
 func RunTargetGroupUpdate(c *core.CommandConfig) error {
-	c.Printer.Verbose("Updating TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Printer.Verbose("Updating TargetGroup")
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), getTargetGroupPropertiesSet(c))
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
@@ -272,15 +275,17 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 		err  error
 	)
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 		resp, err = DeleteAllTargetGroup(c)
 		if err != nil {
 			return err
 		}
 	} else {
+		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete target group"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Deleting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		c.Printer.Verbose("Deleting TargetGroup")
 		resp, err = c.CloudApiV6Services.TargetGroups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 		if resp != nil {
 			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)

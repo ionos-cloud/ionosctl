@@ -145,7 +145,8 @@ func PreRunTargetGroupTargetRemove(c *core.PreCommandConfig) error {
 }
 
 func RunTargetGroupTargetList(c *core.CommandConfig) error {
-	c.Printer.Verbose("Getting Targets from TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Printer.Verbose("Getting Targets from TargetGroup")
 	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
@@ -168,12 +169,14 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 	var targetItems []ionoscloud.TargetGroupTarget
 
 	// Get existing Targets from the specified Target Group
-	c.Printer.Verbose("Getting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+	c.Printer.Verbose("Getting TargetGroup")
 	targetGroupOld, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	if err != nil {
 		return err
 	}
 	if properties, ok := targetGroupOld.GetPropertiesOk(); ok && properties != nil {
+		c.Printer.Verbose("Getting Targets from TargetGroup")
 		if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
 			targetItems = *targets
 		}
@@ -210,19 +213,23 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 		err  error
 	)
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 		resp, err = RemoveAllTargetGroupTarget(c)
 		if err != nil {
 			return err
 		}
 	} else {
+		c.Printer.Verbose("TargetGroup ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		c.Printer.Verbose("Target IP: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIp)))
+		c.Printer.Verbose("Target Port: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove target from target group"); err != nil {
 			return err
 		}
 		var propertiesUpdated resources.TargetGroupProperties
 
 		// Get existing Targets from the specified Target Group
-		c.Printer.Verbose("Getting TargetGroup with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
-		targetGroupOld, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
+		c.Printer.Verbose("Getting TargetGroup")
+		targetGroupOld, _, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 		if err != nil {
 			return err
 		}
