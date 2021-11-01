@@ -15,7 +15,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
-	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
+	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -54,11 +54,11 @@ func LogsCmd() *core.Command {
 		CmdRun:     RunClusterLogsGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapidbaaspgsql.ArgStartTime, cloudapidbaaspgsql.ArgStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	get.AddStringFlag(cloudapidbaaspgsql.ArgEndTime, cloudapidbaaspgsql.ArgEndTimeShort, "", " The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	get.AddIntFlag(cloudapidbaaspgsql.ArgLimit, cloudapidbaaspgsql.ArgLimitShort, 0, "The maximal number of log lines to return. The command will print all logs, if this is not set")
-	get.AddStringFlag(cloudapidbaaspgsql.ArgClusterId, cloudapidbaaspgsql.ArgIdShort, "", cloudapidbaaspgsql.ClusterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(dbaaspg.ArgStartTime, dbaaspg.ArgStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
+	get.AddStringFlag(dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "", " The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
+	get.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 0, "The maximal number of log lines to return. The command will print all logs, if this is not set")
+	get.AddStringFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -70,27 +70,27 @@ func RunClusterLogsGet(c *core.CommandConfig) error {
 		startTime, endTime time.Time
 		err                error
 	)
-	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)))
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)) {
-		c.Printer.Verbose("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)))
-		startTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgStartTime)))
+	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
+		c.Printer.Verbose("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
+		startTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
 		if err != nil {
 			return err
 		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)) {
-		c.Printer.Verbose("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)))
-		endTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgEndTime)))
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)) {
+		c.Printer.Verbose("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)))
+		endTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)))
 		if err != nil {
 			return err
 		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgLimit)) {
-		c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgLimit)))
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLimit)) {
+		c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)))
 	}
 	c.Printer.Verbose("Getting Logs for the specified Cluster...")
-	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)),
-		viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgLimit)), startTime, endTime)
+	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)),
+		viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)), startTime, endTime)
 	if err != nil {
 		return err
 	}

@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
-	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
+	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
 	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
 	"github.com/spf13/viper"
@@ -66,7 +66,7 @@ func TestPreBackupId(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgBackupId), testBackupVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testBackupVar)
 		err := PreRunBackupId(cfg)
 		assert.NoError(t, err)
 	})
@@ -123,7 +123,7 @@ func TestRunBackupGet(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgBackupId), testBackupVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testBackupVar)
 		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().Get(testBackupVar).Return(&testBackup, nil, nil)
 		err := RunBackupGet(cfg)
 		assert.NoError(t, err)
@@ -138,7 +138,7 @@ func TestRunBackupGetErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgBackupId), testBackupVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testBackupVar)
 		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().Get(testBackupVar).Return(&testBackup, nil, testBackupErr)
 		err := RunBackupGet(cfg)
 		assert.Error(t, err)
@@ -155,7 +155,7 @@ func TestRunClusterBackupList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCols), defaultBackupCols)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testBackupVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testBackupVar)
 		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().ListBackups(testBackupVar).Return(testBackups, nil, nil)
 		err := RunClusterBackupList(cfg)
 		assert.NoError(t, err)
@@ -170,7 +170,7 @@ func TestRunClusterBackupListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testBackupVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testBackupVar)
 		rm.CloudApiDbaasPgsqlMocks.Backup.EXPECT().ListBackups(testBackupVar).Return(testBackups, nil, testBackupErr)
 		err := RunClusterBackupList(cfg)
 		assert.Error(t, err)

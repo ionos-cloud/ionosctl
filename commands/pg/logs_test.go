@@ -11,7 +11,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
-	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
+	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
 	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
 	"github.com/spf13/viper"
@@ -59,10 +59,10 @@ func TestRunClusterLogsGet(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStartTime), testStartTimeVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgEndTime), testEndTimeVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLimit), testLimitVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStartTime), testStartTimeVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLimit), testLimitVar)
 		rm.CloudApiDbaasPgsqlMocks.Log.EXPECT().Get(testLogVar, testLimitVar, testStartTime, testEndTime).Return(&testLogs, nil, nil)
 		err := RunClusterLogsGet(cfg)
 		assert.NoError(t, err)
@@ -77,10 +77,10 @@ func TestRunClusterLogsGetErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testLogVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStartTime), testStartTimeVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgEndTime), testEndTimeVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLimit), testLimitVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStartTime), testStartTimeVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLimit), testLimitVar)
 		rm.CloudApiDbaasPgsqlMocks.Log.EXPECT().Get(testLogVar, testLimitVar, testStartTime, testEndTime).Return(&testLogs, nil, testLogErr)
 		err := RunClusterLogsGet(cfg)
 		assert.Error(t, err)

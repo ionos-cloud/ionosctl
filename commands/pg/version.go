@@ -12,7 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
-	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
+	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	pgsqlresources "github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -67,8 +67,8 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionGet,
 		InitClient: true,
 	})
-	get.AddStringFlag(cloudapidbaaspgsql.ArgClusterId, cloudapidbaaspgsql.ArgIdShort, "", cloudapidbaaspgsql.ClusterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	get.AddStringFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return pgsqlcompleter.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
@@ -85,7 +85,7 @@ func RunPgsqlVersionList(c *core.CommandConfig) error {
 
 func RunPgsqlVersionGet(c *core.CommandConfig) error {
 	versionList, _, err := c.CloudApiDbaasPgsqlServices.Versions().Get(
-		viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgClusterId)),
+		viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)),
 	)
 	if err != nil {
 		return err

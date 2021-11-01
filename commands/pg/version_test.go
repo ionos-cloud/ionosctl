@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
-	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
+	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
 	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
 	"github.com/spf13/viper"
@@ -48,7 +48,7 @@ func TestRunPgsqlVersionGet(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.NS, config.ArgCols), defaultPgsqlVersionCols)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testVersionVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testVersionVar)
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, nil)
 		err := RunPgsqlVersionGet(cfg)
 		assert.NoError(t, err)
@@ -65,7 +65,7 @@ func TestRunPgsqlVersionGetErr(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetGlobalFlagName(cfg.NS, config.ArgCols), defaultPgsqlVersionCols)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testVersionVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testVersionVar)
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().Get(testVersionVar).Return(testVersions, nil, testVersionErr)
 		err := RunPgsqlVersionGet(cfg)
 		assert.Error(t, err)
@@ -96,7 +96,7 @@ func TestRunPgsqlVersionListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testVersionVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testVersionVar)
 		rm.CloudApiDbaasPgsqlMocks.Version.EXPECT().List().Return(testVersions, nil, testVersionErr)
 		err := RunPgsqlVersionList(cfg)
 		assert.Error(t, err)
