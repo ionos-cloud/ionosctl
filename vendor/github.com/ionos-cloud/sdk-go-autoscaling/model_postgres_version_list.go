@@ -19,15 +19,12 @@ type PostgresVersionList struct {
 	Data *[]PostgresVersionListData `json:"data,omitempty"`
 }
 
-
-
 // GetData returns the Data field value
 // If the value is explicit nil, the zero value for []PostgresVersionListData will be returned
 func (o *PostgresVersionList) GetData() *[]PostgresVersionListData {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Data
 
@@ -41,13 +38,11 @@ func (o *PostgresVersionList) GetDataOk() (*[]PostgresVersionListData, bool) {
 		return nil, false
 	}
 
-
 	return o.Data, true
 }
 
 // SetData sets field value
 func (o *PostgresVersionList) SetData(v []PostgresVersionListData) {
-
 
 	o.Data = &v
 
@@ -62,14 +57,13 @@ func (o *PostgresVersionList) HasData() bool {
 	return false
 }
 
-
 func (o PostgresVersionList) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Data != nil {
 		toSerialize["data"] = o.Data
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -108,5 +102,3 @@ func (v *NullablePostgresVersionList) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

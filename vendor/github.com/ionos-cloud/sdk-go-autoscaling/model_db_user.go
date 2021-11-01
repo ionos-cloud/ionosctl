@@ -16,12 +16,10 @@ import (
 
 // DBUser Credentials for the database user to be created.
 type DBUser struct {
-	// the username for the initial postgres user. some system usernames are restricted (e.g. \"postgres\", \"admin\", \"standby\") 
+	// the username for the initial postgres user. some system usernames are restricted (e.g. \"postgres\", \"admin\", \"standby\")
 	Username *string `json:"username"`
 	Password *string `json:"password"`
 }
-
-
 
 // GetUsername returns the Username field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -29,7 +27,6 @@ func (o *DBUser) GetUsername() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Username
 
@@ -43,13 +40,11 @@ func (o *DBUser) GetUsernameOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Username, true
 }
 
 // SetUsername sets field value
 func (o *DBUser) SetUsername(v string) {
-
 
 	o.Username = &v
 
@@ -64,15 +59,12 @@ func (o *DBUser) HasUsername() bool {
 	return false
 }
 
-
-
 // GetPassword returns the Password field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *DBUser) GetPassword() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Password
 
@@ -86,13 +78,11 @@ func (o *DBUser) GetPasswordOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Password, true
 }
 
 // SetPassword sets field value
 func (o *DBUser) SetPassword(v string) {
-
 
 	o.Password = &v
 
@@ -107,19 +97,17 @@ func (o *DBUser) HasPassword() bool {
 	return false
 }
 
-
 func (o DBUser) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Username != nil {
 		toSerialize["username"] = o.Username
 	}
-	
 
 	if o.Password != nil {
 		toSerialize["password"] = o.Password
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -158,5 +146,3 @@ func (v *NullableDBUser) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -16,11 +16,9 @@ import (
 
 // MaintenanceWindow a weekly 4 hour-long window, during which maintenance might occur
 type MaintenanceWindow struct {
-	Time *string `json:"time"`
+	Time    *string `json:"time"`
 	Weekday *string `json:"weekday"`
 }
-
-
 
 // GetTime returns the Time field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -28,7 +26,6 @@ func (o *MaintenanceWindow) GetTime() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Time
 
@@ -42,13 +39,11 @@ func (o *MaintenanceWindow) GetTimeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Time, true
 }
 
 // SetTime sets field value
 func (o *MaintenanceWindow) SetTime(v string) {
-
 
 	o.Time = &v
 
@@ -63,15 +58,12 @@ func (o *MaintenanceWindow) HasTime() bool {
 	return false
 }
 
-
-
 // GetWeekday returns the Weekday field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *MaintenanceWindow) GetWeekday() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Weekday
 
@@ -85,13 +77,11 @@ func (o *MaintenanceWindow) GetWeekdayOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Weekday, true
 }
 
 // SetWeekday sets field value
 func (o *MaintenanceWindow) SetWeekday(v string) {
-
 
 	o.Weekday = &v
 
@@ -106,19 +96,17 @@ func (o *MaintenanceWindow) HasWeekday() bool {
 	return false
 }
 
-
 func (o MaintenanceWindow) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Time != nil {
 		toSerialize["time"] = o.Time
 	}
-	
 
 	if o.Weekday != nil {
 		toSerialize["weekday"] = o.Weekday
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -157,5 +145,3 @@ func (v *NullableMaintenanceWindow) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

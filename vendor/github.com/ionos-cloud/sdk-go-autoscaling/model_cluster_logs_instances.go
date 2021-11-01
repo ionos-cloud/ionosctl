@@ -17,11 +17,9 @@ import (
 // ClusterLogsInstances struct for ClusterLogsInstances
 type ClusterLogsInstances struct {
 	// The name of the PostgreSQL instance.
-	Name *string `json:"name,omitempty"`
+	Name     *string                `json:"name,omitempty"`
 	Messages *[]ClusterLogsMessages `json:"messages,omitempty"`
 }
-
-
 
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -29,7 +27,6 @@ func (o *ClusterLogsInstances) GetName() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Name
 
@@ -43,13 +40,11 @@ func (o *ClusterLogsInstances) GetNameOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Name, true
 }
 
 // SetName sets field value
 func (o *ClusterLogsInstances) SetName(v string) {
-
 
 	o.Name = &v
 
@@ -64,15 +59,12 @@ func (o *ClusterLogsInstances) HasName() bool {
 	return false
 }
 
-
-
 // GetMessages returns the Messages field value
 // If the value is explicit nil, the zero value for []ClusterLogsMessages will be returned
 func (o *ClusterLogsInstances) GetMessages() *[]ClusterLogsMessages {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Messages
 
@@ -86,13 +78,11 @@ func (o *ClusterLogsInstances) GetMessagesOk() (*[]ClusterLogsMessages, bool) {
 		return nil, false
 	}
 
-
 	return o.Messages, true
 }
 
 // SetMessages sets field value
 func (o *ClusterLogsInstances) SetMessages(v []ClusterLogsMessages) {
-
 
 	o.Messages = &v
 
@@ -107,19 +97,17 @@ func (o *ClusterLogsInstances) HasMessages() bool {
 	return false
 }
 
-
 func (o ClusterLogsInstances) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-	
 
 	if o.Messages != nil {
 		toSerialize["messages"] = o.Messages
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -158,5 +146,3 @@ func (v *NullableClusterLogsInstances) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

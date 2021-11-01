@@ -18,16 +18,14 @@ import (
 // Metadata Metadata of the resource
 type Metadata struct {
 	// The ISO 8601 creation timestamp.
-	CreatedDate *IonosTime
-	CreatedBy *string `json:"created_by,omitempty"`
+	CreatedDate     *IonosTime
+	CreatedBy       *string `json:"created_by,omitempty"`
 	CreatedByUserId *string `json:"created_by_user_id,omitempty"`
 	// The ISO 8601 modified timestamp.
-	LastModifiedDate *IonosTime
-	LastModifiedBy *string `json:"last_modified_by,omitempty"`
+	LastModifiedDate     *IonosTime
+	LastModifiedBy       *string `json:"last_modified_by,omitempty"`
 	LastModifiedByUserId *string `json:"last_modified_by_user_id,omitempty"`
 }
-
-
 
 // GetCreatedDate returns the CreatedDate field value
 // If the value is explicit nil, the zero value for time.Time will be returned
@@ -40,7 +38,6 @@ func (o *Metadata) GetCreatedDate() *time.Time {
 		return nil
 	}
 	return &o.CreatedDate.Time
-
 
 }
 
@@ -64,7 +61,6 @@ func (o *Metadata) SetCreatedDate(v time.Time) {
 
 	o.CreatedDate = &IonosTime{v}
 
-
 }
 
 // HasCreatedDate returns a boolean if a field has been set.
@@ -76,15 +72,12 @@ func (o *Metadata) HasCreatedDate() bool {
 	return false
 }
 
-
-
 // GetCreatedBy returns the CreatedBy field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *Metadata) GetCreatedBy() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.CreatedBy
 
@@ -98,13 +91,11 @@ func (o *Metadata) GetCreatedByOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.CreatedBy, true
 }
 
 // SetCreatedBy sets field value
 func (o *Metadata) SetCreatedBy(v string) {
-
 
 	o.CreatedBy = &v
 
@@ -119,15 +110,12 @@ func (o *Metadata) HasCreatedBy() bool {
 	return false
 }
 
-
-
 // GetCreatedByUserId returns the CreatedByUserId field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *Metadata) GetCreatedByUserId() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.CreatedByUserId
 
@@ -141,13 +129,11 @@ func (o *Metadata) GetCreatedByUserIdOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.CreatedByUserId, true
 }
 
 // SetCreatedByUserId sets field value
 func (o *Metadata) SetCreatedByUserId(v string) {
-
 
 	o.CreatedByUserId = &v
 
@@ -162,8 +148,6 @@ func (o *Metadata) HasCreatedByUserId() bool {
 	return false
 }
 
-
-
 // GetLastModifiedDate returns the LastModifiedDate field value
 // If the value is explicit nil, the zero value for time.Time will be returned
 func (o *Metadata) GetLastModifiedDate() *time.Time {
@@ -175,7 +159,6 @@ func (o *Metadata) GetLastModifiedDate() *time.Time {
 		return nil
 	}
 	return &o.LastModifiedDate.Time
-
 
 }
 
@@ -199,7 +182,6 @@ func (o *Metadata) SetLastModifiedDate(v time.Time) {
 
 	o.LastModifiedDate = &IonosTime{v}
 
-
 }
 
 // HasLastModifiedDate returns a boolean if a field has been set.
@@ -211,15 +193,12 @@ func (o *Metadata) HasLastModifiedDate() bool {
 	return false
 }
 
-
-
 // GetLastModifiedBy returns the LastModifiedBy field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *Metadata) GetLastModifiedBy() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.LastModifiedBy
 
@@ -233,13 +212,11 @@ func (o *Metadata) GetLastModifiedByOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.LastModifiedBy, true
 }
 
 // SetLastModifiedBy sets field value
 func (o *Metadata) SetLastModifiedBy(v string) {
-
 
 	o.LastModifiedBy = &v
 
@@ -254,15 +231,12 @@ func (o *Metadata) HasLastModifiedBy() bool {
 	return false
 }
 
-
-
 // GetLastModifiedByUserId returns the LastModifiedByUserId field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *Metadata) GetLastModifiedByUserId() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.LastModifiedByUserId
 
@@ -276,13 +250,11 @@ func (o *Metadata) GetLastModifiedByUserIdOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.LastModifiedByUserId, true
 }
 
 // SetLastModifiedByUserId sets field value
 func (o *Metadata) SetLastModifiedByUserId(v string) {
-
 
 	o.LastModifiedByUserId = &v
 
@@ -297,39 +269,33 @@ func (o *Metadata) HasLastModifiedByUserId() bool {
 	return false
 }
 
-
 func (o Metadata) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.CreatedDate != nil {
 		toSerialize["created_date"] = o.CreatedDate
 	}
-	
 
 	if o.CreatedBy != nil {
 		toSerialize["created_by"] = o.CreatedBy
 	}
-	
 
 	if o.CreatedByUserId != nil {
 		toSerialize["created_by_user_id"] = o.CreatedByUserId
 	}
-	
 
 	if o.LastModifiedDate != nil {
 		toSerialize["last_modified_date"] = o.LastModifiedDate
 	}
-	
 
 	if o.LastModifiedBy != nil {
 		toSerialize["last_modified_by"] = o.LastModifiedBy
 	}
-	
 
 	if o.LastModifiedByUserId != nil {
 		toSerialize["last_modified_by_user_id"] = o.LastModifiedByUserId
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -368,5 +334,3 @@ func (v *NullableMetadata) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

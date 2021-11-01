@@ -19,15 +19,12 @@ type ClusterLogs struct {
 	Instances *[]ClusterLogsInstances `json:"instances,omitempty"`
 }
 
-
-
 // GetInstances returns the Instances field value
 // If the value is explicit nil, the zero value for []ClusterLogsInstances will be returned
 func (o *ClusterLogs) GetInstances() *[]ClusterLogsInstances {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Instances
 
@@ -41,13 +38,11 @@ func (o *ClusterLogs) GetInstancesOk() (*[]ClusterLogsInstances, bool) {
 		return nil, false
 	}
 
-
 	return o.Instances, true
 }
 
 // SetInstances sets field value
 func (o *ClusterLogs) SetInstances(v []ClusterLogsInstances) {
-
 
 	o.Instances = &v
 
@@ -62,14 +57,13 @@ func (o *ClusterLogs) HasInstances() bool {
 	return false
 }
 
-
 func (o ClusterLogs) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Instances != nil {
 		toSerialize["instances"] = o.Instances
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -108,5 +102,3 @@ func (v *NullableClusterLogs) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -27,10 +27,9 @@ var (
 type MetadataApiService service
 
 type ApiInfosVersionGetRequest struct {
-	ctx _context.Context
+	ctx        _context.Context
 	ApiService *MetadataApiService
 }
-
 
 func (r ApiInfosVersionGetRequest) Execute() (APIVersion, *APIResponse, error) {
 	return r.ApiService.InfosVersionGetExecute(r)
@@ -45,7 +44,7 @@ func (r ApiInfosVersionGetRequest) Execute() (APIVersion, *APIResponse, error) {
 func (a *MetadataApiService) InfosVersionGet(ctx _context.Context) ApiInfosVersionGetRequest {
 	return ApiInfosVersionGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -112,11 +111,11 @@ func (a *MetadataApiService) InfosVersionGetExecute(r ApiInfosVersionGetRequest)
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
+	localVarAPIResponse := &APIResponse{
+		Response:   localVarHTTPResponse,
+		Method:     localVarHTTPMethod,
 		RequestURL: localVarPath,
-		Operation: "InfosVersionGet",
+		Operation:  "InfosVersionGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -133,16 +132,16 @@ func (a *MetadataApiService) InfosVersionGetExecute(r ApiInfosVersionGetRequest)
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v ErrorResponse
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -150,8 +149,8 @@ func (a *MetadataApiService) InfosVersionGetExecute(r ApiInfosVersionGetRequest)
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
@@ -160,10 +159,9 @@ func (a *MetadataApiService) InfosVersionGetExecute(r ApiInfosVersionGetRequest)
 }
 
 type ApiInfosVersionsGetRequest struct {
-	ctx _context.Context
+	ctx        _context.Context
 	ApiService *MetadataApiService
 }
-
 
 func (r ApiInfosVersionsGetRequest) Execute() ([]APIVersion, *APIResponse, error) {
 	return r.ApiService.InfosVersionsGetExecute(r)
@@ -178,7 +176,7 @@ func (r ApiInfosVersionsGetRequest) Execute() ([]APIVersion, *APIResponse, error
 func (a *MetadataApiService) InfosVersionsGet(ctx _context.Context) ApiInfosVersionsGetRequest {
 	return ApiInfosVersionsGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -245,11 +243,11 @@ func (a *MetadataApiService) InfosVersionsGetExecute(r ApiInfosVersionsGetReques
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
+	localVarAPIResponse := &APIResponse{
+		Response:   localVarHTTPResponse,
+		Method:     localVarHTTPMethod,
 		RequestURL: localVarPath,
-		Operation: "InfosVersionsGet",
+		Operation:  "InfosVersionsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -266,16 +264,16 @@ func (a *MetadataApiService) InfosVersionsGetExecute(r ApiInfosVersionsGetReques
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v ErrorResponse
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -283,8 +281,8 @@ func (a *MetadataApiService) InfosVersionsGetExecute(r ApiInfosVersionsGetReques
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}

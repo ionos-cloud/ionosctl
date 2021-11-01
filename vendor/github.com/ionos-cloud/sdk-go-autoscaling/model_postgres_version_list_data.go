@@ -19,15 +19,12 @@ type PostgresVersionListData struct {
 	Name *string `json:"name,omitempty"`
 }
 
-
-
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *PostgresVersionListData) GetName() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Name
 
@@ -41,13 +38,11 @@ func (o *PostgresVersionListData) GetNameOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Name, true
 }
 
 // SetName sets field value
 func (o *PostgresVersionListData) SetName(v string) {
-
 
 	o.Name = &v
 
@@ -62,14 +57,13 @@ func (o *PostgresVersionListData) HasName() bool {
 	return false
 }
 
-
 func (o PostgresVersionListData) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -108,5 +102,3 @@ func (v *NullablePostgresVersionListData) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -31,7 +31,7 @@ func (v *StorageType) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumTypeValue := StorageType(value)
-	for _, existing := range []StorageType{ "HDD", "SSD",   } {
+	for _, existing := range []StorageType{"HDD", "SSD"} {
 		if existing == enumTypeValue {
 			*v = enumTypeValue
 			return nil
@@ -81,4 +81,3 @@ func (v *NullableStorageType) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

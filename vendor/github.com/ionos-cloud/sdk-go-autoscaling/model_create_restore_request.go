@@ -19,11 +19,9 @@ import (
 type CreateRestoreRequest struct {
 	// The unique ID of the backup you want to restore.
 	BackupId *string `json:"backup_id"`
-	// If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely. 
+	// If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely.
 	RecoveryTargetTime *IonosTime
 }
-
-
 
 // GetBackupId returns the BackupId field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -31,7 +29,6 @@ func (o *CreateRestoreRequest) GetBackupId() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.BackupId
 
@@ -45,13 +42,11 @@ func (o *CreateRestoreRequest) GetBackupIdOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.BackupId, true
 }
 
 // SetBackupId sets field value
 func (o *CreateRestoreRequest) SetBackupId(v string) {
-
 
 	o.BackupId = &v
 
@@ -66,8 +61,6 @@ func (o *CreateRestoreRequest) HasBackupId() bool {
 	return false
 }
 
-
-
 // GetRecoveryTargetTime returns the RecoveryTargetTime field value
 // If the value is explicit nil, the zero value for time.Time will be returned
 func (o *CreateRestoreRequest) GetRecoveryTargetTime() *time.Time {
@@ -79,7 +72,6 @@ func (o *CreateRestoreRequest) GetRecoveryTargetTime() *time.Time {
 		return nil
 	}
 	return &o.RecoveryTargetTime.Time
-
 
 }
 
@@ -103,7 +95,6 @@ func (o *CreateRestoreRequest) SetRecoveryTargetTime(v time.Time) {
 
 	o.RecoveryTargetTime = &IonosTime{v}
 
-
 }
 
 // HasRecoveryTargetTime returns a boolean if a field has been set.
@@ -115,19 +106,17 @@ func (o *CreateRestoreRequest) HasRecoveryTargetTime() bool {
 	return false
 }
 
-
 func (o CreateRestoreRequest) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.BackupId != nil {
 		toSerialize["backup_id"] = o.BackupId
 	}
-	
 
 	if o.RecoveryTargetTime != nil {
 		toSerialize["recovery_target_time"] = o.RecoveryTargetTime
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -166,5 +155,3 @@ func (v *NullableCreateRestoreRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -16,11 +16,9 @@ import (
 
 // APIVersion struct for APIVersion
 type APIVersion struct {
-	Name *string `json:"name,omitempty"`
+	Name       *string `json:"name,omitempty"`
 	SwaggerUrl *string `json:"swagger_url,omitempty"`
 }
-
-
 
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -28,7 +26,6 @@ func (o *APIVersion) GetName() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Name
 
@@ -42,13 +39,11 @@ func (o *APIVersion) GetNameOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Name, true
 }
 
 // SetName sets field value
 func (o *APIVersion) SetName(v string) {
-
 
 	o.Name = &v
 
@@ -63,15 +58,12 @@ func (o *APIVersion) HasName() bool {
 	return false
 }
 
-
-
 // GetSwaggerUrl returns the SwaggerUrl field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *APIVersion) GetSwaggerUrl() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.SwaggerUrl
 
@@ -85,13 +77,11 @@ func (o *APIVersion) GetSwaggerUrlOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.SwaggerUrl, true
 }
 
 // SetSwaggerUrl sets field value
 func (o *APIVersion) SetSwaggerUrl(v string) {
-
 
 	o.SwaggerUrl = &v
 
@@ -106,19 +96,17 @@ func (o *APIVersion) HasSwaggerUrl() bool {
 	return false
 }
 
-
 func (o APIVersion) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-	
 
 	if o.SwaggerUrl != nil {
 		toSerialize["swagger_url"] = o.SwaggerUrl
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -157,5 +145,3 @@ func (v *NullableAPIVersion) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

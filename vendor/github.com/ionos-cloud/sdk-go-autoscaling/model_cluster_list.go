@@ -16,11 +16,9 @@ import (
 
 // ClusterList list of clusters
 type ClusterList struct {
-	Page *int32 `json:"page,omitempty"`
+	Page *int32     `json:"page,omitempty"`
 	Data *[]Cluster `json:"data,omitempty"`
 }
-
-
 
 // GetPage returns the Page field value
 // If the value is explicit nil, the zero value for int32 will be returned
@@ -28,7 +26,6 @@ func (o *ClusterList) GetPage() *int32 {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Page
 
@@ -42,13 +39,11 @@ func (o *ClusterList) GetPageOk() (*int32, bool) {
 		return nil, false
 	}
 
-
 	return o.Page, true
 }
 
 // SetPage sets field value
 func (o *ClusterList) SetPage(v int32) {
-
 
 	o.Page = &v
 
@@ -63,15 +58,12 @@ func (o *ClusterList) HasPage() bool {
 	return false
 }
 
-
-
 // GetData returns the Data field value
 // If the value is explicit nil, the zero value for []Cluster will be returned
 func (o *ClusterList) GetData() *[]Cluster {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Data
 
@@ -85,13 +77,11 @@ func (o *ClusterList) GetDataOk() (*[]Cluster, bool) {
 		return nil, false
 	}
 
-
 	return o.Data, true
 }
 
 // SetData sets field value
 func (o *ClusterList) SetData(v []Cluster) {
-
 
 	o.Data = &v
 
@@ -106,19 +96,17 @@ func (o *ClusterList) HasData() bool {
 	return false
 }
 
-
 func (o ClusterList) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Page != nil {
 		toSerialize["page"] = o.Page
 	}
-	
 
 	if o.Data != nil {
 		toSerialize["data"] = o.Data
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -157,5 +145,3 @@ func (v *NullableClusterList) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

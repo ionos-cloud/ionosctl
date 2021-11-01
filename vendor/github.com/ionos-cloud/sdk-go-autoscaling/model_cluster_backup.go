@@ -21,12 +21,10 @@ type ClusterBackup struct {
 	// The unique ID of the cluster.
 	ClusterId *string `json:"cluster_id,omitempty"`
 	// The friendly name of your cluster.
-	DisplayName *string `json:"display_name,omitempty"`
-	Type *string `json:"type,omitempty"`
-	Metadata *Metadata `json:"metadata,omitempty"`
+	DisplayName *string   `json:"display_name,omitempty"`
+	Type        *string   `json:"type,omitempty"`
+	Metadata    *Metadata `json:"metadata,omitempty"`
 }
-
-
 
 // GetId returns the Id field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -34,7 +32,6 @@ func (o *ClusterBackup) GetId() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Id
 
@@ -48,13 +45,11 @@ func (o *ClusterBackup) GetIdOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Id, true
 }
 
 // SetId sets field value
 func (o *ClusterBackup) SetId(v string) {
-
 
 	o.Id = &v
 
@@ -69,15 +64,12 @@ func (o *ClusterBackup) HasId() bool {
 	return false
 }
 
-
-
 // GetClusterId returns the ClusterId field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ClusterBackup) GetClusterId() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.ClusterId
 
@@ -91,13 +83,11 @@ func (o *ClusterBackup) GetClusterIdOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.ClusterId, true
 }
 
 // SetClusterId sets field value
 func (o *ClusterBackup) SetClusterId(v string) {
-
 
 	o.ClusterId = &v
 
@@ -112,15 +102,12 @@ func (o *ClusterBackup) HasClusterId() bool {
 	return false
 }
 
-
-
 // GetDisplayName returns the DisplayName field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ClusterBackup) GetDisplayName() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.DisplayName
 
@@ -134,13 +121,11 @@ func (o *ClusterBackup) GetDisplayNameOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.DisplayName, true
 }
 
 // SetDisplayName sets field value
 func (o *ClusterBackup) SetDisplayName(v string) {
-
 
 	o.DisplayName = &v
 
@@ -155,15 +140,12 @@ func (o *ClusterBackup) HasDisplayName() bool {
 	return false
 }
 
-
-
 // GetType returns the Type field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ClusterBackup) GetType() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Type
 
@@ -177,13 +159,11 @@ func (o *ClusterBackup) GetTypeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Type, true
 }
 
 // SetType sets field value
 func (o *ClusterBackup) SetType(v string) {
-
 
 	o.Type = &v
 
@@ -198,15 +178,12 @@ func (o *ClusterBackup) HasType() bool {
 	return false
 }
 
-
-
 // GetMetadata returns the Metadata field value
 // If the value is explicit nil, the zero value for Metadata will be returned
 func (o *ClusterBackup) GetMetadata() *Metadata {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Metadata
 
@@ -220,13 +197,11 @@ func (o *ClusterBackup) GetMetadataOk() (*Metadata, bool) {
 		return nil, false
 	}
 
-
 	return o.Metadata, true
 }
 
 // SetMetadata sets field value
 func (o *ClusterBackup) SetMetadata(v Metadata) {
-
 
 	o.Metadata = &v
 
@@ -241,34 +216,29 @@ func (o *ClusterBackup) HasMetadata() bool {
 	return false
 }
 
-
 func (o ClusterBackup) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-	
 
 	if o.ClusterId != nil {
 		toSerialize["cluster_id"] = o.ClusterId
 	}
-	
 
 	if o.DisplayName != nil {
 		toSerialize["display_name"] = o.DisplayName
 	}
-	
 
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-	
 
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -307,5 +277,3 @@ func (v *NullableClusterBackup) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

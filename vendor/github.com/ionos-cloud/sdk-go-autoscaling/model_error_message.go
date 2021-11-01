@@ -16,15 +16,13 @@ import (
 
 // ErrorMessage struct for ErrorMessage
 type ErrorMessage struct {
-	// A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized) 
+	// A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized)
 	Title *string `json:"title,omitempty"`
-	// Application internal error code 
+	// Application internal error code
 	ErrorCode *string `json:"errorCode,omitempty"`
-	// A human readable explanation specific to this occurrence of the problem. 
+	// A human readable explanation specific to this occurrence of the problem.
 	Message *string `json:"message,omitempty"`
 }
-
-
 
 // GetTitle returns the Title field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -32,7 +30,6 @@ func (o *ErrorMessage) GetTitle() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Title
 
@@ -46,13 +43,11 @@ func (o *ErrorMessage) GetTitleOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Title, true
 }
 
 // SetTitle sets field value
 func (o *ErrorMessage) SetTitle(v string) {
-
 
 	o.Title = &v
 
@@ -67,15 +62,12 @@ func (o *ErrorMessage) HasTitle() bool {
 	return false
 }
 
-
-
 // GetErrorCode returns the ErrorCode field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ErrorMessage) GetErrorCode() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.ErrorCode
 
@@ -89,13 +81,11 @@ func (o *ErrorMessage) GetErrorCodeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.ErrorCode, true
 }
 
 // SetErrorCode sets field value
 func (o *ErrorMessage) SetErrorCode(v string) {
-
 
 	o.ErrorCode = &v
 
@@ -110,15 +100,12 @@ func (o *ErrorMessage) HasErrorCode() bool {
 	return false
 }
 
-
-
 // GetMessage returns the Message field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ErrorMessage) GetMessage() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Message
 
@@ -132,13 +119,11 @@ func (o *ErrorMessage) GetMessageOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Message, true
 }
 
 // SetMessage sets field value
 func (o *ErrorMessage) SetMessage(v string) {
-
 
 	o.Message = &v
 
@@ -153,24 +138,21 @@ func (o *ErrorMessage) HasMessage() bool {
 	return false
 }
 
-
 func (o ErrorMessage) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Title != nil {
 		toSerialize["title"] = o.Title
 	}
-	
 
 	if o.ErrorCode != nil {
 		toSerialize["errorCode"] = o.ErrorCode
 	}
-	
 
 	if o.Message != nil {
 		toSerialize["message"] = o.Message
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -209,5 +191,3 @@ func (v *NullableErrorMessage) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

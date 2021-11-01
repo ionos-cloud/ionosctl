@@ -93,7 +93,6 @@ Class | Method | HTTP request | Description
 *LogsApi* | [**ClusterLogsGet**](docs/api/LogsApi.md#clusterlogsget) | **Get** /clusters/{clusterId}/logs | Get logs of your cluster
 *MetadataApi* | [**InfosVersionGet**](docs/api/MetadataApi.md#infosversionget) | **Get** /infos/version | Get the current API version
 *MetadataApi* | [**InfosVersionsGet**](docs/api/MetadataApi.md#infosversionsget) | **Get** /infos/versions | Fetch all API versions
-*QuotaApi* | [**QuotaGet**](docs/api/QuotaApi.md#quotaget) | **Get** /quota | Get the current quota
 *RestoresApi* | [**ClusterRestorePost**](docs/api/RestoresApi.md#clusterrestorepost) | **Post** /clusters/{clusterId}/restore | In-place restore of a cluster
 
 
@@ -117,8 +116,8 @@ Class | Method | HTTP request | Description
  - [PatchClusterRequest](docs/models/PatchClusterRequest.md)
  - [PostgresVersionList](docs/models/PostgresVersionList.md)
  - [PostgresVersionListData](docs/models/PostgresVersionListData.md)
- - [QuotaList](docs/models/QuotaList.md)
  - [StorageType](docs/models/StorageType.md)
+ - [SynchronizationMode](docs/models/SynchronizationMode.md)
  - [VDCConnection](docs/models/VDCConnection.md)
 
 

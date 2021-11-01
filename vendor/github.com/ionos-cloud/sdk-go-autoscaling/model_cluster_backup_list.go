@@ -16,11 +16,9 @@ import (
 
 // ClusterBackupList list of backups
 type ClusterBackupList struct {
-	Page *int32 `json:"page,omitempty"`
+	Page *int32           `json:"page,omitempty"`
 	Data *[]ClusterBackup `json:"data,omitempty"`
 }
-
-
 
 // GetPage returns the Page field value
 // If the value is explicit nil, the zero value for int32 will be returned
@@ -28,7 +26,6 @@ func (o *ClusterBackupList) GetPage() *int32 {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Page
 
@@ -42,13 +39,11 @@ func (o *ClusterBackupList) GetPageOk() (*int32, bool) {
 		return nil, false
 	}
 
-
 	return o.Page, true
 }
 
 // SetPage sets field value
 func (o *ClusterBackupList) SetPage(v int32) {
-
 
 	o.Page = &v
 
@@ -63,15 +58,12 @@ func (o *ClusterBackupList) HasPage() bool {
 	return false
 }
 
-
-
 // GetData returns the Data field value
 // If the value is explicit nil, the zero value for []ClusterBackup will be returned
 func (o *ClusterBackupList) GetData() *[]ClusterBackup {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Data
 
@@ -85,13 +77,11 @@ func (o *ClusterBackupList) GetDataOk() (*[]ClusterBackup, bool) {
 		return nil, false
 	}
 
-
 	return o.Data, true
 }
 
 // SetData sets field value
 func (o *ClusterBackupList) SetData(v []ClusterBackup) {
-
 
 	o.Data = &v
 
@@ -106,19 +96,17 @@ func (o *ClusterBackupList) HasData() bool {
 	return false
 }
 
-
 func (o ClusterBackupList) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Page != nil {
 		toSerialize["page"] = o.Page
 	}
-	
 
 	if o.Data != nil {
 		toSerialize["data"] = o.Data
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -157,5 +145,3 @@ func (v *NullableClusterBackupList) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

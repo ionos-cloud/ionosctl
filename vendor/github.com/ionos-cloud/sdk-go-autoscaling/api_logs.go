@@ -29,12 +29,12 @@ var (
 type LogsApiService service
 
 type ApiClusterLogsGetRequest struct {
-	ctx _context.Context
+	ctx        _context.Context
 	ApiService *LogsApiService
-	clusterId string
-	limit *int32
-	start *time.Time
-	end *time.Time
+	clusterId  string
+	limit      *int32
+	start      *time.Time
+	end        *time.Time
 }
 
 func (r ApiClusterLogsGetRequest) Limit(limit int32) ApiClusterLogsGetRequest {
@@ -63,8 +63,8 @@ func (r ApiClusterLogsGetRequest) Execute() (ClusterLogs, *APIResponse, error) {
 func (a *LogsApiService) ClusterLogsGet(ctx _context.Context, clusterId string) ApiClusterLogsGetRequest {
 	return ApiClusterLogsGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
@@ -141,11 +141,11 @@ func (a *LogsApiService) ClusterLogsGetExecute(r ApiClusterLogsGetRequest) (Clus
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
+	localVarAPIResponse := &APIResponse{
+		Response:   localVarHTTPResponse,
+		Method:     localVarHTTPMethod,
 		RequestURL: localVarPath,
-		Operation: "ClusterLogsGet",
+		Operation:  "ClusterLogsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -162,16 +162,16 @@ func (a *LogsApiService) ClusterLogsGetExecute(r ApiClusterLogsGetRequest) (Clus
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v ErrorResponse
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}
 
@@ -179,8 +179,8 @@ func (a *LogsApiService) ClusterLogsGetExecute(r ApiClusterLogsGetRequest) (Clus
 	if err != nil {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: err.Error(),
+			body:       localVarBody,
+			error:      err.Error(),
 		}
 		return localVarReturnValue, localVarAPIResponse, newErr
 	}

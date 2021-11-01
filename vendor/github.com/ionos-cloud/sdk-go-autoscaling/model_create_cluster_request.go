@@ -19,26 +19,25 @@ type CreateClusterRequest struct {
 	// The PostgreSQL version of your cluster.
 	PostgresVersion *string `json:"postgres_version"`
 	// The total number of instances in the cluster (one master and n-1 standbys).
-	Replicas *float32 `json:"replicas"`
+	Replicas *int32 `json:"replicas"`
 	// The number of CPU cores per instance.
-	CpuCoreCount *float32 `json:"cpu_core_count"`
+	CpuCoreCount *int32 `json:"cpu_core_count"`
 	// The amount of memory per instance.
 	RamSize *string `json:"ram_size"`
 	// The amount of storage per instance.
-	StorageSize *string `json:"storage_size"`
-	StorageType *StorageType `json:"storage_type"`
+	StorageSize    *string          `json:"storage_size"`
+	StorageType    *StorageType     `json:"storage_type"`
 	VdcConnections *[]VDCConnection `json:"vdc_connections,omitempty"`
 	// The physical location where the cluster will be created. This will be where all of your instances live. Property cannot be modified after datacenter creation (disallowed in update requests)
 	Location *string `json:"location"`
 	// The friendly name of your cluster.
 	DisplayName *string `json:"display_name"`
-	// Deprecated: backup is always enabled. Enables automatic backups of your cluster. 
-	BackupEnabled *bool `json:"backup_enabled,omitempty"`
-	MaintenanceWindow *MaintenanceWindow `json:"maintenance_window,omitempty"`
-	Credentials *DBUser `json:"credentials"`
+	// Deprecated: backup is always enabled. Enables automatic backups of your cluster.
+	BackupEnabled       *bool                `json:"backup_enabled,omitempty"`
+	MaintenanceWindow   *MaintenanceWindow   `json:"maintenance_window,omitempty"`
+	Credentials         *DBUser              `json:"credentials"`
+	SynchronizationMode *SynchronizationMode `json:"synchronization_mode"`
 }
-
-
 
 // GetPostgresVersion returns the PostgresVersion field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -46,7 +45,6 @@ func (o *CreateClusterRequest) GetPostgresVersion() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.PostgresVersion
 
@@ -60,13 +58,11 @@ func (o *CreateClusterRequest) GetPostgresVersionOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.PostgresVersion, true
 }
 
 // SetPostgresVersion sets field value
 func (o *CreateClusterRequest) SetPostgresVersion(v string) {
-
 
 	o.PostgresVersion = &v
 
@@ -81,15 +77,12 @@ func (o *CreateClusterRequest) HasPostgresVersion() bool {
 	return false
 }
 
-
-
 // GetReplicas returns the Replicas field value
-// If the value is explicit nil, the zero value for float32 will be returned
-func (o *CreateClusterRequest) GetReplicas() *float32 {
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *CreateClusterRequest) GetReplicas() *int32 {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Replicas
 
@@ -98,18 +91,16 @@ func (o *CreateClusterRequest) GetReplicas() *float32 {
 // GetReplicasOk returns a tuple with the Replicas field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreateClusterRequest) GetReplicasOk() (*float32, bool) {
+func (o *CreateClusterRequest) GetReplicasOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
-
 
 	return o.Replicas, true
 }
 
 // SetReplicas sets field value
-func (o *CreateClusterRequest) SetReplicas(v float32) {
-
+func (o *CreateClusterRequest) SetReplicas(v int32) {
 
 	o.Replicas = &v
 
@@ -124,15 +115,12 @@ func (o *CreateClusterRequest) HasReplicas() bool {
 	return false
 }
 
-
-
 // GetCpuCoreCount returns the CpuCoreCount field value
-// If the value is explicit nil, the zero value for float32 will be returned
-func (o *CreateClusterRequest) GetCpuCoreCount() *float32 {
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *CreateClusterRequest) GetCpuCoreCount() *int32 {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.CpuCoreCount
 
@@ -141,18 +129,16 @@ func (o *CreateClusterRequest) GetCpuCoreCount() *float32 {
 // GetCpuCoreCountOk returns a tuple with the CpuCoreCount field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreateClusterRequest) GetCpuCoreCountOk() (*float32, bool) {
+func (o *CreateClusterRequest) GetCpuCoreCountOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
-
 
 	return o.CpuCoreCount, true
 }
 
 // SetCpuCoreCount sets field value
-func (o *CreateClusterRequest) SetCpuCoreCount(v float32) {
-
+func (o *CreateClusterRequest) SetCpuCoreCount(v int32) {
 
 	o.CpuCoreCount = &v
 
@@ -167,15 +153,12 @@ func (o *CreateClusterRequest) HasCpuCoreCount() bool {
 	return false
 }
 
-
-
 // GetRamSize returns the RamSize field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *CreateClusterRequest) GetRamSize() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.RamSize
 
@@ -189,13 +172,11 @@ func (o *CreateClusterRequest) GetRamSizeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.RamSize, true
 }
 
 // SetRamSize sets field value
 func (o *CreateClusterRequest) SetRamSize(v string) {
-
 
 	o.RamSize = &v
 
@@ -210,15 +191,12 @@ func (o *CreateClusterRequest) HasRamSize() bool {
 	return false
 }
 
-
-
 // GetStorageSize returns the StorageSize field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *CreateClusterRequest) GetStorageSize() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.StorageSize
 
@@ -232,13 +210,11 @@ func (o *CreateClusterRequest) GetStorageSizeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.StorageSize, true
 }
 
 // SetStorageSize sets field value
 func (o *CreateClusterRequest) SetStorageSize(v string) {
-
 
 	o.StorageSize = &v
 
@@ -253,15 +229,12 @@ func (o *CreateClusterRequest) HasStorageSize() bool {
 	return false
 }
 
-
-
 // GetStorageType returns the StorageType field value
 // If the value is explicit nil, the zero value for StorageType will be returned
 func (o *CreateClusterRequest) GetStorageType() *StorageType {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.StorageType
 
@@ -275,13 +248,11 @@ func (o *CreateClusterRequest) GetStorageTypeOk() (*StorageType, bool) {
 		return nil, false
 	}
 
-
 	return o.StorageType, true
 }
 
 // SetStorageType sets field value
 func (o *CreateClusterRequest) SetStorageType(v StorageType) {
-
 
 	o.StorageType = &v
 
@@ -296,15 +267,12 @@ func (o *CreateClusterRequest) HasStorageType() bool {
 	return false
 }
 
-
-
 // GetVdcConnections returns the VdcConnections field value
 // If the value is explicit nil, the zero value for []VDCConnection will be returned
 func (o *CreateClusterRequest) GetVdcConnections() *[]VDCConnection {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.VdcConnections
 
@@ -318,13 +286,11 @@ func (o *CreateClusterRequest) GetVdcConnectionsOk() (*[]VDCConnection, bool) {
 		return nil, false
 	}
 
-
 	return o.VdcConnections, true
 }
 
 // SetVdcConnections sets field value
 func (o *CreateClusterRequest) SetVdcConnections(v []VDCConnection) {
-
 
 	o.VdcConnections = &v
 
@@ -339,15 +305,12 @@ func (o *CreateClusterRequest) HasVdcConnections() bool {
 	return false
 }
 
-
-
 // GetLocation returns the Location field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *CreateClusterRequest) GetLocation() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Location
 
@@ -361,13 +324,11 @@ func (o *CreateClusterRequest) GetLocationOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Location, true
 }
 
 // SetLocation sets field value
 func (o *CreateClusterRequest) SetLocation(v string) {
-
 
 	o.Location = &v
 
@@ -382,15 +343,12 @@ func (o *CreateClusterRequest) HasLocation() bool {
 	return false
 }
 
-
-
 // GetDisplayName returns the DisplayName field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *CreateClusterRequest) GetDisplayName() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.DisplayName
 
@@ -404,13 +362,11 @@ func (o *CreateClusterRequest) GetDisplayNameOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.DisplayName, true
 }
 
 // SetDisplayName sets field value
 func (o *CreateClusterRequest) SetDisplayName(v string) {
-
 
 	o.DisplayName = &v
 
@@ -425,15 +381,12 @@ func (o *CreateClusterRequest) HasDisplayName() bool {
 	return false
 }
 
-
-
 // GetBackupEnabled returns the BackupEnabled field value
 // If the value is explicit nil, the zero value for bool will be returned
 func (o *CreateClusterRequest) GetBackupEnabled() *bool {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.BackupEnabled
 
@@ -447,13 +400,11 @@ func (o *CreateClusterRequest) GetBackupEnabledOk() (*bool, bool) {
 		return nil, false
 	}
 
-
 	return o.BackupEnabled, true
 }
 
 // SetBackupEnabled sets field value
 func (o *CreateClusterRequest) SetBackupEnabled(v bool) {
-
 
 	o.BackupEnabled = &v
 
@@ -468,15 +419,12 @@ func (o *CreateClusterRequest) HasBackupEnabled() bool {
 	return false
 }
 
-
-
 // GetMaintenanceWindow returns the MaintenanceWindow field value
 // If the value is explicit nil, the zero value for MaintenanceWindow will be returned
 func (o *CreateClusterRequest) GetMaintenanceWindow() *MaintenanceWindow {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.MaintenanceWindow
 
@@ -490,13 +438,11 @@ func (o *CreateClusterRequest) GetMaintenanceWindowOk() (*MaintenanceWindow, boo
 		return nil, false
 	}
 
-
 	return o.MaintenanceWindow, true
 }
 
 // SetMaintenanceWindow sets field value
 func (o *CreateClusterRequest) SetMaintenanceWindow(v MaintenanceWindow) {
-
 
 	o.MaintenanceWindow = &v
 
@@ -511,15 +457,12 @@ func (o *CreateClusterRequest) HasMaintenanceWindow() bool {
 	return false
 }
 
-
-
 // GetCredentials returns the Credentials field value
 // If the value is explicit nil, the zero value for DBUser will be returned
 func (o *CreateClusterRequest) GetCredentials() *DBUser {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Credentials
 
@@ -533,13 +476,11 @@ func (o *CreateClusterRequest) GetCredentialsOk() (*DBUser, bool) {
 		return nil, false
 	}
 
-
 	return o.Credentials, true
 }
 
 // SetCredentials sets field value
 func (o *CreateClusterRequest) SetCredentials(v DBUser) {
-
 
 	o.Credentials = &v
 
@@ -554,6 +495,43 @@ func (o *CreateClusterRequest) HasCredentials() bool {
 	return false
 }
 
+// GetSynchronizationMode returns the SynchronizationMode field value
+// If the value is explicit nil, the zero value for SynchronizationMode will be returned
+func (o *CreateClusterRequest) GetSynchronizationMode() *SynchronizationMode {
+	if o == nil {
+		return nil
+	}
+
+	return o.SynchronizationMode
+
+}
+
+// GetSynchronizationModeOk returns a tuple with the SynchronizationMode field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CreateClusterRequest) GetSynchronizationModeOk() (*SynchronizationMode, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.SynchronizationMode, true
+}
+
+// SetSynchronizationMode sets field value
+func (o *CreateClusterRequest) SetSynchronizationMode(v SynchronizationMode) {
+
+	o.SynchronizationMode = &v
+
+}
+
+// HasSynchronizationMode returns a boolean if a field has been set.
+func (o *CreateClusterRequest) HasSynchronizationMode() bool {
+	if o != nil && o.SynchronizationMode != nil {
+		return true
+	}
+
+	return false
+}
 
 func (o CreateClusterRequest) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
@@ -561,62 +539,55 @@ func (o CreateClusterRequest) MarshalJSON() ([]byte, error) {
 	if o.PostgresVersion != nil {
 		toSerialize["postgres_version"] = o.PostgresVersion
 	}
-	
 
 	if o.Replicas != nil {
 		toSerialize["replicas"] = o.Replicas
 	}
-	
 
 	if o.CpuCoreCount != nil {
 		toSerialize["cpu_core_count"] = o.CpuCoreCount
 	}
-	
 
 	if o.RamSize != nil {
 		toSerialize["ram_size"] = o.RamSize
 	}
-	
 
 	if o.StorageSize != nil {
 		toSerialize["storage_size"] = o.StorageSize
 	}
-	
 
 	if o.StorageType != nil {
 		toSerialize["storage_type"] = o.StorageType
 	}
-	
 
 	if o.VdcConnections != nil {
 		toSerialize["vdc_connections"] = o.VdcConnections
 	}
-	
 
 	if o.Location != nil {
 		toSerialize["location"] = o.Location
 	}
-	
 
 	if o.DisplayName != nil {
 		toSerialize["display_name"] = o.DisplayName
 	}
-	
 
 	if o.BackupEnabled != nil {
 		toSerialize["backup_enabled"] = o.BackupEnabled
 	}
-	
 
 	if o.MaintenanceWindow != nil {
 		toSerialize["maintenance_window"] = o.MaintenanceWindow
 	}
-	
 
 	if o.Credentials != nil {
 		toSerialize["credentials"] = o.Credentials
 	}
-	
+
+	if o.SynchronizationMode != nil {
+		toSerialize["synchronization_mode"] = o.SynchronizationMode
+	}
+
 	return json.Marshal(toSerialize)
 }
 
@@ -655,5 +626,3 @@ func (v *NullableCreateClusterRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

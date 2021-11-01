@@ -17,11 +17,9 @@ import (
 
 // ClusterLogsMessages struct for ClusterLogsMessages
 type ClusterLogsMessages struct {
-	Time *IonosTime
+	Time    *IonosTime
 	Message *string `json:"message,omitempty"`
 }
-
-
 
 // GetTime returns the Time field value
 // If the value is explicit nil, the zero value for time.Time will be returned
@@ -34,7 +32,6 @@ func (o *ClusterLogsMessages) GetTime() *time.Time {
 		return nil
 	}
 	return &o.Time.Time
-
 
 }
 
@@ -58,7 +55,6 @@ func (o *ClusterLogsMessages) SetTime(v time.Time) {
 
 	o.Time = &IonosTime{v}
 
-
 }
 
 // HasTime returns a boolean if a field has been set.
@@ -70,15 +66,12 @@ func (o *ClusterLogsMessages) HasTime() bool {
 	return false
 }
 
-
-
 // GetMessage returns the Message field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ClusterLogsMessages) GetMessage() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.Message
 
@@ -92,13 +85,11 @@ func (o *ClusterLogsMessages) GetMessageOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.Message, true
 }
 
 // SetMessage sets field value
 func (o *ClusterLogsMessages) SetMessage(v string) {
-
 
 	o.Message = &v
 
@@ -113,19 +104,17 @@ func (o *ClusterLogsMessages) HasMessage() bool {
 	return false
 }
 
-
 func (o ClusterLogsMessages) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.Time != nil {
 		toSerialize["time"] = o.Time
 	}
-	
 
 	if o.Message != nil {
 		toSerialize["message"] = o.Message
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -164,5 +153,3 @@ func (v *NullableClusterLogsMessages) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -17,29 +17,28 @@ import (
 // PatchClusterRequest payload to change a cluster
 type PatchClusterRequest struct {
 	// The number of CPU cores per instance.
-	CpuCoreCount *float32 `json:"cpu_core_count,omitempty"`
+	CpuCoreCount *int32 `json:"cpu_core_count,omitempty"`
 	// The amount of memory per instance.
 	RamSize *string `json:"ram_size,omitempty"`
 	// The amount of storage per instance.
 	StorageSize *string `json:"storage_size,omitempty"`
-	// Deprecated: backup is always enabled. Enables automatic backups of your cluster. 
+	// Deprecated: backup is always enabled. Enables automatic backups of your cluster.
 	BackupEnabled *bool `json:"backup_enabled,omitempty"`
 	// The friendly name of your cluster.
-	DisplayName *string `json:"display_name,omitempty"`
+	DisplayName       *string            `json:"display_name,omitempty"`
 	MaintenanceWindow *MaintenanceWindow `json:"maintenance_window,omitempty"`
 	// The PostgreSQL version of your cluster.
 	PostgresVersion *string `json:"postgres_version,omitempty"`
+	// The total number of instances in the cluster (one master and n-1 standbys).
+	Replicas *int32 `json:"replicas,omitempty"`
 }
 
-
-
 // GetCpuCoreCount returns the CpuCoreCount field value
-// If the value is explicit nil, the zero value for float32 will be returned
-func (o *PatchClusterRequest) GetCpuCoreCount() *float32 {
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *PatchClusterRequest) GetCpuCoreCount() *int32 {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.CpuCoreCount
 
@@ -48,18 +47,16 @@ func (o *PatchClusterRequest) GetCpuCoreCount() *float32 {
 // GetCpuCoreCountOk returns a tuple with the CpuCoreCount field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *PatchClusterRequest) GetCpuCoreCountOk() (*float32, bool) {
+func (o *PatchClusterRequest) GetCpuCoreCountOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
-
 
 	return o.CpuCoreCount, true
 }
 
 // SetCpuCoreCount sets field value
-func (o *PatchClusterRequest) SetCpuCoreCount(v float32) {
-
+func (o *PatchClusterRequest) SetCpuCoreCount(v int32) {
 
 	o.CpuCoreCount = &v
 
@@ -74,15 +71,12 @@ func (o *PatchClusterRequest) HasCpuCoreCount() bool {
 	return false
 }
 
-
-
 // GetRamSize returns the RamSize field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *PatchClusterRequest) GetRamSize() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.RamSize
 
@@ -96,13 +90,11 @@ func (o *PatchClusterRequest) GetRamSizeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.RamSize, true
 }
 
 // SetRamSize sets field value
 func (o *PatchClusterRequest) SetRamSize(v string) {
-
 
 	o.RamSize = &v
 
@@ -117,15 +109,12 @@ func (o *PatchClusterRequest) HasRamSize() bool {
 	return false
 }
 
-
-
 // GetStorageSize returns the StorageSize field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *PatchClusterRequest) GetStorageSize() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.StorageSize
 
@@ -139,13 +128,11 @@ func (o *PatchClusterRequest) GetStorageSizeOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.StorageSize, true
 }
 
 // SetStorageSize sets field value
 func (o *PatchClusterRequest) SetStorageSize(v string) {
-
 
 	o.StorageSize = &v
 
@@ -160,15 +147,12 @@ func (o *PatchClusterRequest) HasStorageSize() bool {
 	return false
 }
 
-
-
 // GetBackupEnabled returns the BackupEnabled field value
 // If the value is explicit nil, the zero value for bool will be returned
 func (o *PatchClusterRequest) GetBackupEnabled() *bool {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.BackupEnabled
 
@@ -182,13 +166,11 @@ func (o *PatchClusterRequest) GetBackupEnabledOk() (*bool, bool) {
 		return nil, false
 	}
 
-
 	return o.BackupEnabled, true
 }
 
 // SetBackupEnabled sets field value
 func (o *PatchClusterRequest) SetBackupEnabled(v bool) {
-
 
 	o.BackupEnabled = &v
 
@@ -203,15 +185,12 @@ func (o *PatchClusterRequest) HasBackupEnabled() bool {
 	return false
 }
 
-
-
 // GetDisplayName returns the DisplayName field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *PatchClusterRequest) GetDisplayName() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.DisplayName
 
@@ -225,13 +204,11 @@ func (o *PatchClusterRequest) GetDisplayNameOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.DisplayName, true
 }
 
 // SetDisplayName sets field value
 func (o *PatchClusterRequest) SetDisplayName(v string) {
-
 
 	o.DisplayName = &v
 
@@ -246,15 +223,12 @@ func (o *PatchClusterRequest) HasDisplayName() bool {
 	return false
 }
 
-
-
 // GetMaintenanceWindow returns the MaintenanceWindow field value
 // If the value is explicit nil, the zero value for MaintenanceWindow will be returned
 func (o *PatchClusterRequest) GetMaintenanceWindow() *MaintenanceWindow {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.MaintenanceWindow
 
@@ -268,13 +242,11 @@ func (o *PatchClusterRequest) GetMaintenanceWindowOk() (*MaintenanceWindow, bool
 		return nil, false
 	}
 
-
 	return o.MaintenanceWindow, true
 }
 
 // SetMaintenanceWindow sets field value
 func (o *PatchClusterRequest) SetMaintenanceWindow(v MaintenanceWindow) {
-
 
 	o.MaintenanceWindow = &v
 
@@ -289,15 +261,12 @@ func (o *PatchClusterRequest) HasMaintenanceWindow() bool {
 	return false
 }
 
-
-
 // GetPostgresVersion returns the PostgresVersion field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *PatchClusterRequest) GetPostgresVersion() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.PostgresVersion
 
@@ -311,13 +280,11 @@ func (o *PatchClusterRequest) GetPostgresVersionOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.PostgresVersion, true
 }
 
 // SetPostgresVersion sets field value
 func (o *PatchClusterRequest) SetPostgresVersion(v string) {
-
 
 	o.PostgresVersion = &v
 
@@ -332,6 +299,43 @@ func (o *PatchClusterRequest) HasPostgresVersion() bool {
 	return false
 }
 
+// GetReplicas returns the Replicas field value
+// If the value is explicit nil, the zero value for int32 will be returned
+func (o *PatchClusterRequest) GetReplicas() *int32 {
+	if o == nil {
+		return nil
+	}
+
+	return o.Replicas
+
+}
+
+// GetReplicasOk returns a tuple with the Replicas field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *PatchClusterRequest) GetReplicasOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Replicas, true
+}
+
+// SetReplicas sets field value
+func (o *PatchClusterRequest) SetReplicas(v int32) {
+
+	o.Replicas = &v
+
+}
+
+// HasReplicas returns a boolean if a field has been set.
+func (o *PatchClusterRequest) HasReplicas() bool {
+	if o != nil && o.Replicas != nil {
+		return true
+	}
+
+	return false
+}
 
 func (o PatchClusterRequest) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
@@ -339,37 +343,35 @@ func (o PatchClusterRequest) MarshalJSON() ([]byte, error) {
 	if o.CpuCoreCount != nil {
 		toSerialize["cpu_core_count"] = o.CpuCoreCount
 	}
-	
 
 	if o.RamSize != nil {
 		toSerialize["ram_size"] = o.RamSize
 	}
-	
 
 	if o.StorageSize != nil {
 		toSerialize["storage_size"] = o.StorageSize
 	}
-	
 
 	if o.BackupEnabled != nil {
 		toSerialize["backup_enabled"] = o.BackupEnabled
 	}
-	
 
 	if o.DisplayName != nil {
 		toSerialize["display_name"] = o.DisplayName
 	}
-	
 
 	if o.MaintenanceWindow != nil {
 		toSerialize["maintenance_window"] = o.MaintenanceWindow
 	}
-	
 
 	if o.PostgresVersion != nil {
 		toSerialize["postgres_version"] = o.PostgresVersion
 	}
-	
+
+	if o.Replicas != nil {
+		toSerialize["replicas"] = o.Replicas
+	}
+
 	return json.Marshal(toSerialize)
 }
 
@@ -408,5 +410,3 @@ func (v *NullablePatchClusterRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

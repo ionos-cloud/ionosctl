@@ -18,11 +18,9 @@ import (
 type VDCConnection struct {
 	VdcId *string `json:"vdc_id"`
 	LanId *string `json:"lan_id"`
-	// The IP and subnet for the database. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24 
+	// The IP and subnet for the database. Note the following unavailable IP ranges: 10.233.64.0/18 10.233.0.0/18 10.233.114.0/24
 	IpAddress *string `json:"ip_address"`
 }
-
-
 
 // GetVdcId returns the VdcId field value
 // If the value is explicit nil, the zero value for string will be returned
@@ -30,7 +28,6 @@ func (o *VDCConnection) GetVdcId() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.VdcId
 
@@ -44,13 +41,11 @@ func (o *VDCConnection) GetVdcIdOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.VdcId, true
 }
 
 // SetVdcId sets field value
 func (o *VDCConnection) SetVdcId(v string) {
-
 
 	o.VdcId = &v
 
@@ -65,15 +60,12 @@ func (o *VDCConnection) HasVdcId() bool {
 	return false
 }
 
-
-
 // GetLanId returns the LanId field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *VDCConnection) GetLanId() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.LanId
 
@@ -87,13 +79,11 @@ func (o *VDCConnection) GetLanIdOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.LanId, true
 }
 
 // SetLanId sets field value
 func (o *VDCConnection) SetLanId(v string) {
-
 
 	o.LanId = &v
 
@@ -108,15 +98,12 @@ func (o *VDCConnection) HasLanId() bool {
 	return false
 }
 
-
-
 // GetIpAddress returns the IpAddress field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *VDCConnection) GetIpAddress() *string {
 	if o == nil {
 		return nil
 	}
-
 
 	return o.IpAddress
 
@@ -130,13 +117,11 @@ func (o *VDCConnection) GetIpAddressOk() (*string, bool) {
 		return nil, false
 	}
 
-
 	return o.IpAddress, true
 }
 
 // SetIpAddress sets field value
 func (o *VDCConnection) SetIpAddress(v string) {
-
 
 	o.IpAddress = &v
 
@@ -151,24 +136,21 @@ func (o *VDCConnection) HasIpAddress() bool {
 	return false
 }
 
-
 func (o VDCConnection) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 
 	if o.VdcId != nil {
 		toSerialize["vdc_id"] = o.VdcId
 	}
-	
 
 	if o.LanId != nil {
 		toSerialize["lan_id"] = o.LanId
 	}
-	
 
 	if o.IpAddress != nil {
 		toSerialize["ip_address"] = o.IpAddress
 	}
-	
+
 	return json.Marshal(toSerialize)
 }
 
@@ -207,5 +189,3 @@ func (v *NullableVDCConnection) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

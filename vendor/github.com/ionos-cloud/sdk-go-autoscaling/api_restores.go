@@ -28,10 +28,10 @@ var (
 type RestoresApiService service
 
 type ApiClusterRestorePostRequest struct {
-	ctx _context.Context
+	ctx        _context.Context
 	ApiService *RestoresApiService
-	clusterId string
-	restore *CreateRestoreRequest
+	clusterId  string
+	restore    *CreateRestoreRequest
 }
 
 func (r ApiClusterRestorePostRequest) Restore(restore CreateRestoreRequest) ApiClusterRestorePostRequest {
@@ -53,8 +53,8 @@ func (r ApiClusterRestorePostRequest) Execute() (*APIResponse, error) {
 func (a *RestoresApiService) ClusterRestorePost(ctx _context.Context, clusterId string) ApiClusterRestorePostRequest {
 	return ApiClusterRestorePostRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
@@ -125,11 +125,11 @@ func (a *RestoresApiService) ClusterRestorePostExecute(r ApiClusterRestorePostRe
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 
-	localVarAPIResponse := &APIResponse {
-		Response: localVarHTTPResponse,
-		Method: localVarHTTPMethod,
+	localVarAPIResponse := &APIResponse{
+		Response:   localVarHTTPResponse,
+		Method:     localVarHTTPMethod,
 		RequestURL: localVarPath,
-		Operation: "ClusterRestorePost",
+		Operation:  "ClusterRestorePost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -146,16 +146,16 @@ func (a *RestoresApiService) ClusterRestorePostExecute(r ApiClusterRestorePostRe
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
-			body:  localVarBody,
-			error: fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
+			body:       localVarBody,
+			error:      fmt.Sprintf("%s: %s", localVarHTTPResponse.Status, string(localVarBody)),
 		}
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarAPIResponse, newErr
-			}
-			newErr.model = v
+		var v ErrorResponse
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarAPIResponse, newErr
+		}
+		newErr.model = v
 		return localVarAPIResponse, newErr
 	}
 
