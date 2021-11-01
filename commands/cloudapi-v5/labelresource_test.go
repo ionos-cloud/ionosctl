@@ -162,7 +162,6 @@ func TestRunDatacenterLabelRemoveAll(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLabelResourceVar)
-		//viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLabelKey), testLabelResourceVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
 		rm.CloudApiV5Mocks.Label.EXPECT().DatacenterList(testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
 		rm.CloudApiV5Mocks.Label.EXPECT().DatacenterDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
