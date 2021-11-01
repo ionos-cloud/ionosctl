@@ -2,7 +2,7 @@
 ## for CloudApiDBaaSPgsql resources:
 ## Tests, Mocks, Documentation
 
-DOCS_OUT_DBAAS_PGSQL?=$(shell pwd)/docs/cloudapi-dbaas-pgsql/
+DOCS_OUT_DBAAS_PGSQL?=$(shell pwd)/docs/dbaas-pg/
 
 .PHONY: dbaas_pg_test_unit
 dbaas_pg_test_unit:
