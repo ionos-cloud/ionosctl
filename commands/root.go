@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/commands/cloudapi-dbaas-pgsql"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
+	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/commands/pg"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/mitchellh/go-homedir"
@@ -187,7 +187,7 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.K8sCmd())
 	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
 	// Add CloudApiDBaaSPgsql Commands
-	rootCmd.AddCommand(cloudapidbaaspgsql.DBaaSPgsqlCmd())
+	rootCmd.AddCommand(cloudapidbaaspgsql.DBaaSPgCmd())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}
