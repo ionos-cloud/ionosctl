@@ -3,11 +3,13 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -41,17 +43,28 @@ func DatacenterCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
 		Namespace:  "datacenter",
 		Resource:   "datacenter",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Data Centers",
-		LongDesc:   "Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.",
+		LongDesc:   `Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account. You can setup multiple query parameters.
+
+You can filter the output of the command based on properties, getting only datacenters with specific properties - using the filters option. In order to setup filters, use the following format: ` + "`" + `KEY:VALUE` + "`" + `. Example: ` + "`" + `--filters location:us/las,state:AVAILABLE` + "`" + ``,
 		Example:    listDatacenterExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunDataCenterList,
 		InitClient: true,
+	})
+	list.AddBoolFlag(cloudapiv6.ArgPretty, cloudapiv6.ArgPrettyShort, false, "Controls whether the response is pretty-printed (with indentations and new lines)")
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, 0, "Controls the detail depth of the response objects")
+	list.AddIntFlag(cloudapiv6.ArgLimit, cloudapiv6.ArgLimitShort, 0, "The maximum number of elements to return (use together with offset for pagination)")
+	list.AddIntFlag(cloudapiv6.ArgOffset, cloudapiv6.ArgOffsetShort, 0, "The first element (from the complete list of the elements) to include in the response (use together with limit for pagination)")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -176,7 +189,15 @@ func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {
-	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -279,7 +300,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 
 func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Datacenters to be deleted:")
-	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List()
+	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

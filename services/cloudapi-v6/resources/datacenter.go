@@ -24,7 +24,7 @@ type Response struct {
 
 // DatacentersService is a wrapper around ionoscloud.Datacenter
 type DatacentersService interface {
-	List() (Datacenters, *Response, error)
+	List(params ListQueryParams) (Datacenters, *Response, error)
 	Get(datacenterId string) (*Datacenter, *Response, error)
 	Create(name, description, region string) (*Datacenter, *Response, error)
 	Update(datacenterId string, input DatacenterProperties) (*Datacenter, *Response, error)
@@ -45,8 +45,30 @@ func NewDataCenterService(client *Client, ctx context.Context) DatacentersServic
 	}
 }
 
-func (ds *dataCentersService) List() (Datacenters, *Response, error) {
+func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Response, error) {
 	req := ds.client.DataCentersApi.DatacentersGet(ds.context)
+	if params.Filters != nil {
+		for k, v := range *params.Filters {
+			req = req.Filter(k, v)
+		}
+	}
+	if params.OrderBy != nil {
+		req = req.OrderBy(*params.OrderBy)
+	}
+	if params.Limit != nil {
+		req = req.Limit(*params.Limit)
+	}
+	if params.Offset != nil {
+		req = req.Offset(*params.Offset)
+	}
+	if params.DefaultQueryParams != nil {
+		if params.DefaultQueryParams.Depth != nil {
+			req = req.Depth(*params.DefaultQueryParams.Depth)
+		}
+		if params.DefaultQueryParams.Pretty != nil {
+			req = req.Pretty(*params.DefaultQueryParams.Pretty)
+		}
+	}
 	dcs, res, err := ds.client.DataCentersApi.DatacentersGetExecute(req)
 	return Datacenters{dcs}, &Response{*res}, err
 }

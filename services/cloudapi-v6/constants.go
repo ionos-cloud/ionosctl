@@ -133,6 +133,17 @@ const (
 	ArgGatewayIp             = "gateway-ip"
 	ArgLatest                = "latest"
 	ArgMethod                = "method"
+	ArgFilters               = "filters"
+	ArgFiltersShort          = "F"
+	ArgLimit                 = "limit"
+	ArgLimitShort            = "L"
+	ArgOrderBy               = "order-by"
+	ArgDepth                 = "depth"
+	ArgDepthShort            = "D"
+	ArgOffset                = "offset"
+	ArgOffsetShort           = "O"
+	ArgPretty                = "pretty"
+	ArgPrettyShort           = "P"
 )
 
 // IDs Flags

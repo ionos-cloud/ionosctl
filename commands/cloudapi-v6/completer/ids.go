@@ -52,7 +52,7 @@ func DataCentersIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	datacenterSvc := resources.NewDataCenterService(client, context.TODO())
-	datacenters, _, err := datacenterSvc.List()
+	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	dcIds := make([]string, 0)
 	if items, ok := datacenters.Datacenters.GetItemsOk(); ok && items != nil {
