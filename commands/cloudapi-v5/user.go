@@ -538,7 +538,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		}
 		id := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
 		groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId))
-		c.Printer.Verbose("Adding User with id: %v to group with id: %v...", id, groupId)
+		c.Printer.Verbose("Removing User with id: %v to group with id: %v...", id, groupId)
 		resp, err := c.CloudApiV5Services.Groups().RemoveUser(groupId, id)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
