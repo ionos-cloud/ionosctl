@@ -638,7 +638,6 @@ func TestRunLoadBalancerNicDetachAll(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLoadBalancerId), testLoadbalancerVar)
-		//viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgNicId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV5Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar).Return(balancednsList, nil, nil)
