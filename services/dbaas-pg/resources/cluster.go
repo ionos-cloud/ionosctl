@@ -66,7 +66,7 @@ func (svc *clustersService) Get(clusterId string) (*Cluster, *Response, error) {
 }
 
 func (svc *clustersService) Create(input CreateClusterRequest, backupId string, recoveryTargetTime time.Time) (*Cluster, *Response, error) {
-	req := svc.client.ClustersApi.ClustersPost(svc.context).Cluster(input.CreateClusterRequest)
+	req := svc.client.ClustersApi.ClustersPost(svc.context).CreateClusterRequest(input.CreateClusterRequest)
 	if backupId != "" {
 		// Create Cluster from a specified Backup
 		req = req.FromBackup(backupId)

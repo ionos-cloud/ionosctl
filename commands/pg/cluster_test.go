@@ -12,9 +12,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	v6resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
-	v6resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
@@ -24,14 +24,15 @@ import (
 var (
 	testCreateClusterRequest = resources.CreateClusterRequest{
 		CreateClusterRequest: sdkgo.CreateClusterRequest{
-			DisplayName:     &testClusterVar,
-			PostgresVersion: &testClusterVar,
-			Location:        &testClusterVar,
-			Replicas:        &testClusterFloatVar,
-			RamSize:         &testClusterVar,
-			CpuCoreCount:    &testClusterFloatVar,
-			StorageSize:     &testClusterVar,
-			StorageType:     &testClusterStorageTypeVar,
+			DisplayName:         &testClusterVar,
+			PostgresVersion:     &testClusterVar,
+			Location:            &testClusterVar,
+			Replicas:            &testClusterIntVar,
+			RamSize:             &testClusterVar,
+			CpuCoreCount:        &testClusterIntVar,
+			StorageSize:         &testClusterVar,
+			SynchronizationMode: &testSyncModeVar,
+			StorageType:         &testClusterStorageTypeVar,
 			VdcConnections: &[]sdkgo.VDCConnection{
 				{
 					VdcId:     &testClusterVar,
@@ -51,10 +52,11 @@ var (
 	}
 	testPatchClusterRequest = resources.PatchClusterRequest{
 		PatchClusterRequest: sdkgo.PatchClusterRequest{
-			CpuCoreCount: &testClusterFloatVar,
+			CpuCoreCount: &testClusterIntVar,
 			RamSize:      &testClusterNewVar,
 			StorageSize:  &testClusterNewVar,
 			DisplayName:  &testClusterNewVar,
+			Replicas:     &testClusterIntVar,
 			MaintenanceWindow: &sdkgo.MaintenanceWindow{
 				Time:    &testClusterNewVar,
 				Weekday: &testClusterNewVar,
@@ -70,17 +72,17 @@ var (
 	}
 	testClusterGetNew = resources.Cluster{
 		Cluster: sdkgo.Cluster{
-			Id:              &testClusterVar,
-			LifecycleStatus: &testClusterStateVar,
-			DisplayName:     &testClusterNewVar,
-			PostgresVersion: &testClusterNewVar,
-			Location:        &testClusterVar,
-			Replicas:        &testClusterFloatVar,
-			RamSize:         &testClusterNewVar,
-			CpuCoreCount:    &testClusterFloatVar,
-			StorageSize:     &testClusterNewVar,
-			BackupEnabled:   &testClusterBoolVar,
-			StorageType:     &testClusterStorageTypeVar,
+			Id:                  &testClusterVar,
+			LifecycleStatus:     &testClusterStateVar,
+			DisplayName:         &testClusterNewVar,
+			PostgresVersion:     &testClusterNewVar,
+			SynchronizationMode: &testSyncModeVar,
+			Location:            &testClusterVar,
+			Replicas:            &testClusterIntVar,
+			RamSize:             &testClusterNewVar,
+			CpuCoreCount:        &testClusterIntVar,
+			StorageSize:         &testClusterNewVar,
+			StorageType:         &testClusterStorageTypeVar,
 			VdcConnections: &[]sdkgo.VDCConnection{
 				{
 					VdcId:     &testClusterVar,
@@ -96,17 +98,17 @@ var (
 	}
 	testClusterGet = resources.Cluster{
 		Cluster: sdkgo.Cluster{
-			Id:              &testClusterVar,
-			LifecycleStatus: &testClusterStateVar,
-			DisplayName:     &testClusterVar,
-			PostgresVersion: &testClusterVar,
-			Location:        &testClusterVar,
-			Replicas:        &testClusterFloatVar,
-			RamSize:         &testClusterVar,
-			CpuCoreCount:    &testClusterFloatVar,
-			StorageSize:     &testClusterVar,
-			BackupEnabled:   &testClusterBoolVar,
-			StorageType:     &testClusterStorageTypeVar,
+			Id:                  &testClusterVar,
+			LifecycleStatus:     &testClusterStateVar,
+			DisplayName:         &testClusterVar,
+			PostgresVersion:     &testClusterVar,
+			Location:            &testClusterVar,
+			SynchronizationMode: &testSyncModeVar,
+			Replicas:            &testClusterIntVar,
+			RamSize:             &testClusterVar,
+			CpuCoreCount:        &testClusterIntVar,
+			StorageSize:         &testClusterVar,
+			StorageType:         &testClusterStorageTypeVar,
 			VdcConnections: &[]sdkgo.VDCConnection{
 				{
 					VdcId:     &testClusterVar,
@@ -122,16 +124,17 @@ var (
 	}
 	testClusterGetFailed = resources.Cluster{
 		Cluster: sdkgo.Cluster{
-			Id:              &testClusterVar,
-			LifecycleStatus: &testClusterStateFailedVar,
-			DisplayName:     &testClusterVar,
-			PostgresVersion: &testClusterVar,
-			Location:        &testClusterVar,
-			Replicas:        &testClusterFloatVar,
-			RamSize:         &testClusterVar,
-			CpuCoreCount:    &testClusterFloatVar,
-			StorageSize:     &testClusterVar,
-			StorageType:     &testClusterStorageTypeVar,
+			Id:                  &testClusterVar,
+			LifecycleStatus:     &testClusterStateFailedVar,
+			DisplayName:         &testClusterVar,
+			SynchronizationMode: &testSyncModeVar,
+			PostgresVersion:     &testClusterVar,
+			Location:            &testClusterVar,
+			Replicas:            &testClusterIntVar,
+			RamSize:             &testClusterVar,
+			CpuCoreCount:        &testClusterIntVar,
+			StorageSize:         &testClusterVar,
+			StorageType:         &testClusterStorageTypeVar,
 			VdcConnections: &[]sdkgo.VDCConnection{
 				{
 					VdcId:     &testClusterVar,
@@ -162,11 +165,12 @@ var (
 	testIonosTime = sdkgo.IonosTime{
 		Time: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
+	testSyncModeVar           = sdkgo.SynchronizationMode(testClusterVar)
 	testTimeArgVar            = "2021-01-01T00:00:00Z"
 	testClusterBoolVar        = true
 	testClusterStateFailedVar = "FAILED"
 	testClusterStateVar       = "AVAILABLE"
-	testClusterFloatVar       = float32(1)
+	testClusterIntVar         = int32(1)
 	testClusterStorageTypeVar = sdkgo.HDD
 	testClusterPage           = int32(2)
 	testClusterVar            = "test-cluster"
@@ -448,9 +452,10 @@ func TestRunClusterCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgIpAddress), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLocation), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgRamSize), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgSyncMode), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageSize), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageType), string(sdkgo.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceDay), testClusterVar)
@@ -480,9 +485,10 @@ func TestRunClusterCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgIpAddress), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLocation), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgRamSize), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgSyncMode), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageSize), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageType), string(sdkgo.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceDay), testClusterVar)
@@ -511,9 +517,10 @@ func TestRunClusterCreateLocation(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLanId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgIpAddress), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgSyncMode), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgRamSize), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageSize), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageType), string(sdkgo.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceDay), testClusterVar)
@@ -543,9 +550,10 @@ func TestRunClusterCreateLocationErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLanId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgIpAddress), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgRamSize), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgSyncMode), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageSize), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageType), string(sdkgo.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceDay), testClusterVar)
@@ -576,9 +584,10 @@ func TestRunClusterCreateWaitForState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgIpAddress), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLocation), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgRamSize), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgSyncMode), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageSize), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageType), string(sdkgo.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceDay), testClusterVar)
@@ -610,9 +619,10 @@ func TestRunClusterCreateWaitForStateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgIpAddress), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgLocation), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgSyncMode), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgRamSize), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageSize), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageType), string(sdkgo.HDD))
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceDay), testClusterVar)
@@ -641,7 +651,8 @@ func TestRunClusterUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgRamSize), testClusterNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageSize), testClusterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceDay), testClusterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceTime), testClusterNewVar)
@@ -825,7 +836,8 @@ func TestRunClusterUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgPostgresVersion), testClusterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgRamSize), testClusterNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterFloatVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgReplicas), testClusterIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgCpuCoreCount), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgStorageSize), testClusterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceDay), testClusterNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapidbaaspgsql.ArgMaintenanceTime), testClusterNewVar)

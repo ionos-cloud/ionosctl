@@ -106,11 +106,15 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgPostgresVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddFloat32Flag(cloudapidbaaspgsql.ArgReplicas, cloudapidbaaspgsql.ArgReplicasShort, 1, "The number of replicas in your cluster. Minimum: 1. Maximum: 5")
-	create.AddFloat32Flag(cloudapidbaaspgsql.ArgCpuCoreCount, "", 4, "The number of CPU cores per replica")
+	create.AddIntFlag(cloudapidbaaspgsql.ArgReplicas, cloudapidbaaspgsql.ArgReplicasShort, 1, "The number of replicas in your cluster. Minimum: 1. Maximum: 5")
+	create.AddIntFlag(cloudapidbaaspgsql.ArgCpuCoreCount, "", 4, "The number of CPU cores per replica")
 	create.AddStringFlag(cloudapidbaaspgsql.ArgRamSize, "", "2Gi", "The amount of memory per replica in IEC format. Value must be a multiple of 1024Mi and at least 2048Mi")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgRamSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048Mi", "2Gi", "4Gi", "10Gi"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(cloudapidbaaspgsql.ArgSyncMode, cloudapidbaaspgsql.ArgSyncModeShort, "asynchronous", "Represents different modes of replication")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"asynchronous", "synchronous", "strictly_synchronous"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapidbaaspgsql.ArgStorageSize, "", "20Gi", "The amount of storage per replica. It is expected IEC format like 2Gi or 500Mi")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -176,7 +180,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgPostgresVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddFloat32Flag(cloudapidbaaspgsql.ArgCpuCoreCount, "", 0, "The number of CPU cores per replica")
+	update.AddIntFlag(cloudapidbaaspgsql.ArgReplicas, cloudapidbaaspgsql.ArgReplicasShort, 1, "The number of replicas in your cluster")
+	update.AddIntFlag(cloudapidbaaspgsql.ArgCpuCoreCount, "", 0, "The number of CPU cores per replica")
 	update.AddStringFlag(cloudapidbaaspgsql.ArgRamSize, "", "", "The amount of memory per replica in IEC format. Value must be a multiple of 1024Mi and at least 2048Mi")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapidbaaspgsql.ArgRamSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2Gi", "4Gi", "2048Mi", "10Gi"}, cobra.ShellCompDirectiveNoFileComp
@@ -333,7 +338,8 @@ func RunClusterCreate(c *core.CommandConfig) error {
 		}
 	}
 	c.Printer.Verbose("Creating Cluster...")
-	cluster, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(*input, viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)), recoveryTargetTime)
+	cluster, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(*input,
+		viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgBackupId)), recoveryTargetTime)
 	if err != nil {
 		return err
 	}
@@ -464,10 +470,13 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgPostgresVersion))
 	c.Printer.Verbose("PostgresVersion: %v", pgsqlVersion)
 	input.SetPostgresVersion(pgsqlVersion)
-	replicas := float32(viper.GetFloat64(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgReplicas)))
+	syncMode := viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgSyncMode))
+	c.Printer.Verbose("SynchronizationMode: %v", syncMode)
+	input.SetSynchronizationMode(sdkgo.SynchronizationMode(syncMode))
+	replicas := viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgReplicas))
 	c.Printer.Verbose("Replicas: %v", replicas)
 	input.SetReplicas(replicas)
-	cpuCoreCount := float32(viper.GetFloat64(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgCpuCoreCount)))
+	cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgCpuCoreCount))
 	c.Printer.Verbose("CpuCoreCount: %v", cpuCoreCount)
 	input.SetCpuCoreCount(cpuCoreCount)
 	ramSize := viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgRamSize))
@@ -541,9 +550,14 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 func getPatchClusterRequest(c *core.CommandConfig) resources.PatchClusterRequest {
 	input := resources.PatchClusterRequest{}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgCpuCoreCount)) {
-		cpuCoreCount := float32(viper.GetFloat64(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgCpuCoreCount)))
+		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgCpuCoreCount))
 		c.Printer.Verbose("CpuCoreCount: %v", cpuCoreCount)
 		input.SetCpuCoreCount(cpuCoreCount)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgReplicas)) {
+		replicas := viper.GetInt32(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgReplicas))
+		c.Printer.Verbose("Replicas: %v", replicas)
+		input.SetReplicas(replicas)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgRamSize)) {
 		ramSize := viper.GetString(core.GetFlagName(c.NS, cloudapidbaaspgsql.ArgRamSize))
@@ -591,21 +605,21 @@ var (
 )
 
 type ClusterPrint struct {
-	ClusterId         string  `json:"ClusterId,omitempty"`
-	Location          string  `json:"Location,omitempty"`
-	BackupEnabled     bool    `json:"BackupEnabled,omitempty"`
-	LifecycleStatus   string  `json:"LifecycleStatus,omitempty"`
-	DisplayName       string  `json:"DisplayName,omitempty"`
-	PostgresVersion   string  `json:"PostgresVersion,omitempty"`
-	Replicas          float32 `json:"Replicas,omitempty"`
-	RamSize           string  `json:"RamSize,omitempty"`
-	CpuCoreCount      float32 `json:"CpuCoreCount,omitempty"`
-	StorageSize       string  `json:"StorageSize,omitempty"`
-	StorageType       string  `json:"StorageType,omitempty"`
-	VdcId             string  `json:"VdcId,omitempty"`
-	LanId             string  `json:"LanId,omitempty"`
-	IpAddress         string  `json:"IpAddress,omitempty"`
-	MaintenanceWindow string  `json:"MaintenanceWindow,omitempty"`
+	ClusterId         string `json:"ClusterId,omitempty"`
+	Location          string `json:"Location,omitempty"`
+	BackupEnabled     bool   `json:"BackupEnabled,omitempty"`
+	LifecycleStatus   string `json:"LifecycleStatus,omitempty"`
+	DisplayName       string `json:"DisplayName,omitempty"`
+	PostgresVersion   string `json:"PostgresVersion,omitempty"`
+	Replicas          int32  `json:"Replicas,omitempty"`
+	RamSize           string `json:"RamSize,omitempty"`
+	CpuCoreCount      int32  `json:"CpuCoreCount,omitempty"`
+	StorageSize       string `json:"StorageSize,omitempty"`
+	StorageType       string `json:"StorageType,omitempty"`
+	VdcId             string `json:"VdcId,omitempty"`
+	LanId             string `json:"LanId,omitempty"`
+	IpAddress         string `json:"IpAddress,omitempty"`
+	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
 }
 
 func getClusterPrint(resp *resources.Response, c *core.CommandConfig, dcs []resources.Cluster) printer.Result {

@@ -13,6 +13,8 @@ const (
 	ArgPostgresVersionShort = "p"
 	ArgReplicas             = "replicas"
 	ArgReplicasShort        = "R"
+	ArgSyncMode             = "sync"
+	ArgSyncModeShort        = "S"
 	ArgCpuCoreCount         = "cpu-core-count"
 	ArgRamSize              = "ram-size"
 	ArgStorageSize          = "storage-size"
