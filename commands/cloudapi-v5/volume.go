@@ -574,7 +574,7 @@ func DeleteAllVolumes(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Server Volume Commands
@@ -864,7 +864,7 @@ func DetachAllServers(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Output Printing

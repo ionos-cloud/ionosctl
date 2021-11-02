@@ -331,7 +331,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {

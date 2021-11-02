@@ -414,7 +414,7 @@ func DeleteAllNics(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // LoadBalancer Nic Commands
@@ -722,7 +722,7 @@ func DetachAllNics(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Output Printing

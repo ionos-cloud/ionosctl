@@ -387,7 +387,7 @@ func DeleteAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 func GroupUserCmd() *core.Command {
@@ -593,7 +593,7 @@ func RemoveAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Output Printing

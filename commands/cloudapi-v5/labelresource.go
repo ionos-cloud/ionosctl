@@ -119,7 +119,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) (*resources.Response, erro
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 func RunServerLabelsList(c *core.CommandConfig) error {
@@ -237,7 +237,7 @@ func RemoveAllServerLabels(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 func RunVolumeLabelsList(c *core.CommandConfig) error {
@@ -354,7 +354,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 func RunIpBlockLabelsList(c *core.CommandConfig) error {
@@ -468,7 +468,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) (*resources.Response, error) 
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 func RunSnapshotLabelsList(c *core.CommandConfig) error {
@@ -578,7 +578,7 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) (*resources.Response, error)
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Output Printing
