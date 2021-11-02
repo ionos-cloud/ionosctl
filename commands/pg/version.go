@@ -25,7 +25,7 @@ func PgsqlVersionCmd() *core.Command {
 			Use:              "version",
 			Aliases:          []string{"v"},
 			Short:            "DBaaS Postgres Version Operations",
-			Long:             "The sub-commands of `ionosctl dbaas-pgsql version` allow you to get information about available DBaaS Postgres Versions.",
+			Long:             "The sub-commands of `ionosctl pg version` allow you to get information about available DBaaS Postgres Versions.",
 			TraverseChildren: true,
 		},
 	}

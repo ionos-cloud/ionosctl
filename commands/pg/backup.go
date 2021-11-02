@@ -27,7 +27,7 @@ func BackupCmd() *core.Command {
 			Use:              "backup",
 			Aliases:          []string{"b"},
 			Short:            "PostgreSQL Backup Operations",
-			Long:             "The sub-commands of `ionosctl dbaas-pgsql backup` allow you to create, list, get, update and delete PostgreSQL Backups.",
+			Long:             "The sub-commands of `ionosctl pg backup` allow you to create, list, get, update and delete PostgreSQL Backups.",
 			TraverseChildren: true,
 		},
 	}
