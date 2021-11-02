@@ -94,7 +94,7 @@ func ClusterCmd() *core.Command {
 
 Required values to run command:
 
-* Postgres Version
+* PostgresSQL Version
 * Vdc Id (VirtualDataCenter Id)
 * Lan Id`,
 		Example:    createClusterExample,
@@ -102,8 +102,8 @@ Required values to run command:
 		CmdRun:     RunClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(dbaaspg.ArgPostgresVersion, dbaaspg.ArgPostgresVersionShort, "", "The PostgreSQL version of your Cluster", core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgPostgresVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(dbaaspg.ArgVersion, dbaaspg.ArgVersionShort, "", "The PostgreSQL version of your Cluster", core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddIntFlag(dbaaspg.ArgReplicas, dbaaspg.ArgReplicasShort, 1, "The number of replicas in your cluster. Minimum: 1. Maximum: 5")
@@ -129,13 +129,13 @@ Required values to run command:
 		return []string{"de/fra", "de/txl", "gb/lhr"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "UnnamedCluster", "The friendly name of your cluster")
-	create.AddStringFlag(dbaaspg.ArgVdcId, dbaaspg.ArgVdcIdShort, "", "The unique ID of the VDC to connect to your cluster", core.RequiredFlagOption())
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVdcId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(dbaaspg.ArgDatacenterId, dbaaspg.ArgDatacenterIdShort, "", "The unique ID of the VDC to connect to your cluster", core.RequiredFlagOption())
+	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgLanId, "", "", "The unique Lan ID", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return cloudapiv6completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, dbaaspg.ArgVdcId))), cobra.ShellCompDirectiveNoFileComp
+		return cloudapiv6completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, dbaaspg.ArgDatacenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgIpAddress, "", "", "The private IP and subnet for the database. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. Example: 192.168.1.100/24", core.RequiredFlagOption())
 	create.AddStringFlag(dbaaspg.ArgBackupId, dbaaspg.ArgBackupIdShort, "", "The unique ID of the backup you want to restore")
@@ -176,8 +176,8 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(dbaaspg.ArgPostgresVersion, dbaaspg.ArgPostgresVersionShort, "", "The PostgreSQL version of your cluster")
-	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgPostgresVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(dbaaspg.ArgVersion, dbaaspg.ArgVersionShort, "", "The PostgreSQL version of your cluster")
+	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddIntFlag(dbaaspg.ArgReplicas, dbaaspg.ArgReplicasShort, 1, "The number of replicas in your cluster")
@@ -279,7 +279,7 @@ func PreRunClusterDelete(c *core.PreCommandConfig) error {
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgPostgresVersion, dbaaspg.ArgVdcId, dbaaspg.ArgLanId, dbaaspg.ArgIpAddress)
+	err := core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgVersion, dbaaspg.ArgDatacenterId, dbaaspg.ArgLanId, dbaaspg.ArgIpAddress)
 	if err != nil {
 		return err
 	}
@@ -467,7 +467,7 @@ func ClusterDeleteAll(c *core.CommandConfig) (resp *resources.Response, err erro
 func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterRequest, error) {
 	input := resources.CreateClusterRequest{}
 	// Setting Attributes
-	pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgPostgresVersion))
+	pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVersion))
 	c.Printer.Verbose("PostgresVersion: %v", pgsqlVersion)
 	input.SetPostgresVersion(pgsqlVersion)
 	syncMode := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSyncMode))
@@ -494,7 +494,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		input.SetLocation(location)
 	} else {
 		c.Printer.Verbose("Getting Location from VDC...")
-		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVdcId)))
+		vdc, _, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)))
 		if err != nil {
 			return nil, err
 		}
@@ -517,7 +517,7 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	dbuser.SetPassword(password)
 	input.SetCredentials(dbuser)
 	vdcConnection := sdkgo.VDCConnection{}
-	vdcId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVdcId))
+	vdcId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId))
 	c.Printer.Verbose("VDCConnection - VdcId: %v", vdcId)
 	vdcConnection.SetVdcId(vdcId)
 	lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLanId))
@@ -569,8 +569,8 @@ func getPatchClusterRequest(c *core.CommandConfig) resources.PatchClusterRequest
 		c.Printer.Verbose("StorageSize: %v", storageSize)
 		input.SetStorageSize(storageSize)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgPostgresVersion)) {
-		pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgPostgresVersion))
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgVersion)) {
+		pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVersion))
 		c.Printer.Verbose("PostgresVersion: %v", pgsqlVersion)
 		input.SetPostgresVersion(pgsqlVersion)
 	}
@@ -599,9 +599,9 @@ func getPatchClusterRequest(c *core.CommandConfig) resources.PatchClusterRequest
 // Output Printing
 
 var (
-	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "VdcId", "LanId", "IpAddress", "Replicas", "LifecycleStatus"}
+	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "IpAddress", "Replicas", "LifecycleStatus"}
 	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "BackupEnabled", "LifecycleStatus", "PostgresVersion", "Replicas", "RamSize", "CpuCoreCount",
-		"StorageSize", "StorageType", "VdcId", "LanId", "IpAddress", "MaintenanceWindow"}
+		"StorageSize", "StorageType", "DatacenterId", "LanId", "IpAddress", "MaintenanceWindow"}
 )
 
 type ClusterPrint struct {
@@ -616,7 +616,7 @@ type ClusterPrint struct {
 	CpuCoreCount      int32  `json:"CpuCoreCount,omitempty"`
 	StorageSize       string `json:"StorageSize,omitempty"`
 	StorageType       string `json:"StorageType,omitempty"`
-	VdcId             string `json:"VdcId,omitempty"`
+	DatacenterId      string `json:"DatacenterId,omitempty"`
 	LanId             string `json:"LanId,omitempty"`
 	IpAddress         string `json:"IpAddress,omitempty"`
 	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
@@ -658,7 +658,7 @@ func getClusterCols(flagName string, outErr io.Writer) []string {
 		"CpuCoreCount":      "CpuCoreCount",
 		"StorageSize":       "StorageSize",
 		"StorageType":       "StorageType",
-		"VdcId":             "VdcId",
+		"DatacenterId":      "DatacenterId",
 		"LanId":             "LanId",
 		"IpAddress":         "IpAddress",
 		"MaintenanceWindow": "MaintenanceWindow",
@@ -704,7 +704,7 @@ func getClustersKVMaps(clusters []resources.Cluster) []map[string]interface{} {
 		if vdcConnectionsOk, ok := cluster.GetVdcConnectionsOk(); ok && vdcConnectionsOk != nil {
 			for _, vdcConnection := range *vdcConnectionsOk {
 				if vdcIdOk, ok := vdcConnection.GetVdcIdOk(); ok && vdcIdOk != nil {
-					clusterPrint.VdcId = *vdcIdOk
+					clusterPrint.DatacenterId = *vdcIdOk
 				}
 				if lanIdOk, ok := vdcConnection.GetLanIdOk(); ok && lanIdOk != nil {
 					clusterPrint.LanId = *lanIdOk

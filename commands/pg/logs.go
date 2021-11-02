@@ -55,7 +55,7 @@ func LogsCmd() *core.Command {
 		InitClient: true,
 	})
 	get.AddStringFlag(dbaaspg.ArgStartTime, dbaaspg.ArgStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	get.AddStringFlag(dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "", " The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
+	get.AddStringFlag(dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
 	get.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 0, "The maximal number of log lines to return. The command will print all logs, if this is not set")
 	get.AddStringFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
