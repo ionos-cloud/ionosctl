@@ -14,6 +14,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
@@ -40,32 +41,33 @@ func LogsCmd() *core.Command {
 	})
 
 	/*
-		Get Command
+		List Command
 	*/
-	get := core.NewCommand(ctx, clusterCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, clusterCmd, core.CommandBuilder{
 		Namespace:  "cluster",
 		Resource:   "logs",
-		Verb:       "get",
-		Aliases:    []string{"g"},
-		ShortDesc:  "Get Logs for a PostgreSQL Cluster",
-		Example:    getLogsExample,
+		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
+		ShortDesc:  "List Logs for a PostgreSQL Cluster",
+		Example:    listLogsExample,
 		LongDesc:   "Use this command to retrieve the Logs of a specified PostgreSQL Cluster. By default, the result will contain all Cluster Logs. You can specify the start time, end time or a limit for sorting Cluster Logs.\n\nRequired values to run command:\n\n* Cluster Id",
 		PreCmdRun:  PreRunClusterId,
-		CmdRun:     RunClusterLogsGet,
+		CmdRun:     RunClusterLogsList,
 		InitClient: true,
 	})
-	get.AddStringFlag(dbaaspg.ArgStartTime, dbaaspg.ArgStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	get.AddStringFlag(dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	get.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 0, "The maximal number of log lines to return. The command will print all logs, if this is not set")
-	get.AddStringFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
-	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	list.AddStringFlag(dbaaspg.ArgSaveToFile, dbaaspg.ArgSaveToFileShort, "", "Save/Dump Cluster Logs into a specific file")
+	list.AddStringFlag(dbaaspg.ArgStartTime, dbaaspg.ArgStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
+	list.AddStringFlag(dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
+	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 0, "The maximal number of log lines to return. The command will print all logs, if this is not set")
+	list.AddStringFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
+	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return clusterCmd
 }
 
-func RunClusterLogsGet(c *core.CommandConfig) error {
+func RunClusterLogsList(c *core.CommandConfig) error {
 	var (
 		startTime, endTime time.Time
 		err                error
@@ -93,6 +95,27 @@ func RunClusterLogsGet(c *core.CommandConfig) error {
 		viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)), startTime, endTime)
 	if err != nil {
 		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgSaveToFile)) {
+		filename := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSaveToFile))
+		c.Printer.Verbose("Check if file " + filename + " already exists...")
+		if utils.FileExists(filename) {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete existing file %v", filename)); err != nil {
+				return err
+			}
+			if err = utils.DeleteFile(filename); err != nil {
+				return err
+			}
+		}
+		c.Printer.Verbose("Saving Cluster Logs to file: %v", filename)
+		file, err := utils.SaveToFile(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSaveToFile)), getClusterLogsPrint(c, clusterLogs))
+		if err != nil {
+			return err
+		}
+		if file != nil {
+			c.Printer.Print("Successfully saved Cluster Logs to file: " + file.Name())
+		}
+		return nil
 	}
 	return c.Printer.Print(getClusterLogsPrint(c, clusterLogs))
 }

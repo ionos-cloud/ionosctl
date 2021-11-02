@@ -106,7 +106,7 @@ func ClusterBackupCmd() *core.Command {
 		Command: &cobra.Command{
 			Use:              "backup",
 			Aliases:          []string{"b"},
-			Short:            "PostgreSQL Backup Operations",
+			Short:            "PostgreSQL Cluster Backup Operations",
 			Long:             "The sub-commands of `ionosctl dbaas-pgsql cluster backup` allow you to list PostgreSQL Backups from a specified Cluster.",
 			TraverseChildren: true,
 		},
@@ -152,7 +152,7 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultBackupCols = []string{"BackupId", "ClusterId", "DisplayName", "Type", "CreatedDate"}
+	defaultBackupCols = []string{"BackupId", "ClusterId", "DisplayName", "Type"}
 	allBackupCols     = []string{"BackupId", "ClusterId", "DisplayName", "Type", "CreatedDate", "LastModifiedDate"}
 )
 

@@ -9,7 +9,7 @@ const (
 	deleteClusterExample  = `ionosctl pg cluster delete -i CLUSTER_ID`
 	listBackupExample     = `ionosctl pg backup list`
 	getBackupExample      = `ionosctl pg backup get -i BACKUP_ID`
-	getLogsExample        = `ionosctl pg logs get --cluster-id CLUSTER_ID`
+	listLogsExample       = `ionosctl pg logs list --cluster-id CLUSTER_ID`
 	listVersionExample    = `ionosctl pg version list`
 	getVersionExample     = `ionosctl pg version get --cluster-id CLUSTER_ID`
 	listAPIVersionExample = `ionosctl pg api-version list`

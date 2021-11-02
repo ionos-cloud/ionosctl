@@ -120,7 +120,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"20Gi", "500Mi", "2Gi", "50Gi"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgStorageType, "", "HDD", " The storage type used in your cluster")
+	create.AddStringFlag(dbaaspg.ArgStorageType, "", "HDD", "The storage type used in your cluster")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})

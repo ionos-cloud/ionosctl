@@ -64,7 +64,7 @@ func TestRunClusterLogsGet(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLimit), testLimitVar)
 		rm.CloudApiDbaasPgsqlMocks.Log.EXPECT().Get(testLogVar, testLimitVar, testStartTime, testEndTime).Return(&testLogs, nil, nil)
-		err := RunClusterLogsGet(cfg)
+		err := RunClusterLogsList(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -82,7 +82,7 @@ func TestRunClusterLogsGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLimit), testLimitVar)
 		rm.CloudApiDbaasPgsqlMocks.Log.EXPECT().Get(testLogVar, testLimitVar, testStartTime, testEndTime).Return(&testLogs, nil, testLogErr)
-		err := RunClusterLogsGet(cfg)
+		err := RunClusterLogsList(cfg)
 		assert.Error(t, err)
 	})
 }

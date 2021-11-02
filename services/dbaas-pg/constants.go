@@ -35,6 +35,8 @@ const (
 	ArgMaintenanceTimeShort = "T"
 	ArgMaintenanceDay       = "maintenance-day"
 	ArgMaintenanceDayShort  = "d"
+	ArgSaveToFile           = "save-to-file"
+	ArgSaveToFileShort      = "S"
 )
 
 const (
