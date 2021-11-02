@@ -40,5 +40,5 @@ const (
 const (
 	ClusterId             = "The unique ID of the Cluster"
 	BackupId              = ""
-	DefaultClusterTimeout = int(600)
+	DefaultClusterTimeout = int(1200)
 )

@@ -90,19 +90,19 @@ func ClusterCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a PostgreSQL Cluster",
-		LongDesc: `Use this command to create a new PostgreSQL Cluster. You must set the unique ID of the VDC, the unique ID of the LAN. If the other options are not set, the default values will be used. Regarding the location field, if it is not manually set, it will be used the location of the VDC.
+		LongDesc: `Use this command to create a new PostgreSQL Cluster. You must set the unique ID of the VDC (VirtualDataCenter), the unique ID of the LAN. If the other options are not set, the default values will be used. Regarding the location field, if it is not manually set, it will be used the location of the VDC.
 
 Required values to run command:
 
-* PostgresSQL Version
-* Vdc Id (VirtualDataCenter Id)
-* Lan Id`,
+* Datacenter Id
+* Lan Id
+* IP`,
 		Example:    createClusterExample,
 		PreCmdRun:  PreRunClusterCreate,
 		CmdRun:     RunClusterCreate,
 		InitClient: true,
 	})
-	create.AddStringFlag(dbaaspg.ArgVersion, dbaaspg.ArgVersionShort, "", "The PostgreSQL version of your Cluster", core.RequiredFlagOption())
+	create.AddStringFlag(dbaaspg.ArgVersion, dbaaspg.ArgVersionShort, "13", "The PostgreSQL version of your Cluster")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -279,7 +279,7 @@ func PreRunClusterDelete(c *core.PreCommandConfig) error {
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgVersion, dbaaspg.ArgDatacenterId, dbaaspg.ArgLanId, dbaaspg.ArgIpAddress)
+	err := core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgDatacenterId, dbaaspg.ArgLanId, dbaaspg.ArgIpAddress)
 	if err != nil {
 		return err
 	}
