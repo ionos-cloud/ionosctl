@@ -180,7 +180,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddIntFlag(dbaaspg.ArgReplicas, dbaaspg.ArgReplicasShort, 1, "The number of replicas in your cluster")
+	update.AddIntFlag(dbaaspg.ArgReplicas, dbaaspg.ArgReplicasShort, 0, "The number of replicas in your cluster")
 	update.AddIntFlag(dbaaspg.ArgCpuCoreCount, "", 0, "The number of CPU cores per replica")
 	update.AddStringFlag(dbaaspg.ArgRamSize, "", "", "The amount of memory per replica in IEC format. Value must be a multiple of 1024Mi and at least 2048Mi")
 	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRamSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
