@@ -166,7 +166,7 @@ func K8sClustersIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	k8sSvc := resources.NewK8sService(client, context.TODO())
-	k8ss, _, err := k8sSvc.ListClusters()
+	k8ss, _, err := k8sSvc.ListClusters(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	k8ssIds := make([]string, 0)
 	if items, ok := k8ss.KubernetesClusters.GetItemsOk(); ok && items != nil {

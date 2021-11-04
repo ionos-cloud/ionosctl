@@ -1,5 +1,6 @@
 /*
-	This is used for supporting completion in the CLI list requests --filters options
+	This is used for supporting completion in the CLI.
+	Option: --filters
 */
 package completer
 
@@ -15,6 +16,60 @@ func DataCentersFilters() []string {
 	return getPropertiesName(ionoscloud.DatacenterProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
+func BackupUnitFilters() []string {
+	return getPropertiesName(ionoscloud.BackupUnitProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func ServersFilters() []string {
+	return getPropertiesName(ionoscloud.ServerProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func ImagesFilters() []string {
+	return getPropertiesName(ionoscloud.ImageProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func VolumesFilters() []string {
+	return getPropertiesName(ionoscloud.VolumeProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func SnapshotsFilters() []string {
+	return getPropertiesName(ionoscloud.SnapshotProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func IpBlocksFilters() []string {
+	return getPropertiesName(ionoscloud.IpBlockProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func LANsFilters() []string {
+	return getPropertiesName(ionoscloud.LanProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func NICsFilters() []string {
+	return getPropertiesName(ionoscloud.NicProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func FirewallRulesFilters() []string {
+	return getPropertiesName(ionoscloud.FirewallruleProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func LoadBalancersFilters() []string {
+	return getPropertiesName(ionoscloud.LoadbalancerProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func RequestsFilters() []string {
+	return getPropertiesName(ionoscloud.RequestProperties{}, ionoscloud.RequestMetadata{})
+}
+
+func UsersFilters() []string {
+	return getPropertiesName(ionoscloud.UserProperties{}, ionoscloud.UserMetadata{})
+}
+
+func K8sClusterFilters() []string {
+	return getPropertiesName(ionoscloud.KubernetesClusterProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+// getPropertiesName uses reflection to get properties' name from a struct.
+// It helps in making the filters available to the user in autocompletion.
 func getPropertiesName(params ...interface{}) []string {
 	var argKind reflect.Kind
 	properties := make([]string, 0)

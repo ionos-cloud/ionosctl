@@ -176,9 +176,9 @@ func (mr *MockK8sServiceMockRecorder) GetVersion() *gomock.Call {
 }
 
 // ListClusters mocks base method.
-func (m *MockK8sService) ListClusters() (resources.K8sClusters, *resources.Response, error) {
+func (m *MockK8sService) ListClusters(params resources.ListQueryParams) (resources.K8sClusters, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListClusters")
+	ret := m.ctrl.Call(m, "ListClusters", params)
 	ret0, _ := ret[0].(resources.K8sClusters)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -186,9 +186,9 @@ func (m *MockK8sService) ListClusters() (resources.K8sClusters, *resources.Respo
 }
 
 // ListClusters indicates an expected call of ListClusters.
-func (mr *MockK8sServiceMockRecorder) ListClusters() *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) ListClusters(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockK8sService)(nil).ListClusters))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockK8sService)(nil).ListClusters), params)
 }
 
 // ListNodePools mocks base method.

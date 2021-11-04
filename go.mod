@@ -16,3 +16,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
 )
+
+replace github.com/ionos-cloud/sdk-go/v6 => ../v6/sdk-go

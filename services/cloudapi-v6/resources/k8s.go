@@ -84,7 +84,7 @@ type K8sMaintenanceWindow struct {
 
 // K8sService is a wrapper around ionoscloud.K8s
 type K8sService interface {
-	ListClusters() (K8sClusters, *Response, error)
+	ListClusters(params ListQueryParams) (K8sClusters, *Response, error)
 	GetCluster(clusterId string) (*K8sCluster, *Response, error)
 	CreateCluster(u K8sClusterForPost) (*K8sCluster, *Response, error)
 	UpdateCluster(clusterId string, input K8sClusterForPut) (*K8sCluster, *Response, error)
@@ -117,8 +117,27 @@ func NewK8sService(client *Client, ctx context.Context) K8sService {
 	}
 }
 
-func (s *k8sService) ListClusters() (K8sClusters, *Response, error) {
+func (s *k8sService) ListClusters(params ListQueryParams) (K8sClusters, *Response, error) {
 	req := s.client.KubernetesApi.K8sGet(s.context)
+	if params.Filters != nil {
+		for k, v := range *params.Filters {
+			req = req.Filter(k, v)
+		}
+	}
+	if params.OrderBy != nil {
+		req = req.OrderBy(*params.OrderBy)
+	}
+	if params.Limit != nil {
+		req = req.MaxResults(*params.Limit)
+	}
+	if params.DefaultQueryParams != nil {
+		if params.DefaultQueryParams.Depth != nil {
+			req = req.Depth(*params.DefaultQueryParams.Depth)
+		}
+		if params.DefaultQueryParams.Pretty != nil {
+			req = req.Pretty(*params.DefaultQueryParams.Pretty)
+		}
+	}
 	dcs, res, err := s.client.KubernetesApi.K8sGetExecute(req)
 	return K8sClusters{dcs}, &Response{*res}, err
 }

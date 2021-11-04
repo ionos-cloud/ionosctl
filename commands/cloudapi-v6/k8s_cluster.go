@@ -9,6 +9,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -61,7 +62,7 @@ func K8sClusterCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
 		Namespace:  "k8s",
 		Resource:   "cluster",
 		Verb:       "list",
@@ -72,6 +73,15 @@ func K8sClusterCmd() *core.Command {
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunK8sClusterList,
 		InitClient: true,
+	})
+	list.AddBoolFlag(cloudapiv6.ArgPretty, cloudapiv6.ArgPrettyShort, false, "Controls whether the response is pretty-printed (with indentations and new lines)")
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, 0, "An integer value [0-10] that determines the amount of detail returned")
+	list.AddIntFlag(cloudapiv6.ArgLimit, cloudapiv6.ArgLimitShort, 0, "The maximum number of elements to return (use together with offset for pagination)")
+	list.AddIntFlag(cloudapiv6.ArgOffset, cloudapiv6.ArgOffsetShort, 0, "The first element (from the complete list of the elements) to include in the response (use together with limit for pagination)")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.K8sClusterFilters()))
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.K8sClusterFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -202,7 +212,15 @@ func PreRunK8sClusterDelete(c *core.PreCommandConfig) error {
 }
 
 func RunK8sClusterList(c *core.CommandConfig) error {
-	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -412,7 +430,7 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 
 func DeleteAllK8sClusters(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("K8sClusters to be deleted:")
-	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters()
+	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

@@ -58,7 +58,7 @@ You can filter the output of the command based on properties, getting only datac
 		InitClient: true,
 	})
 	list.AddBoolFlag(cloudapiv6.ArgPretty, cloudapiv6.ArgPrettyShort, false, "Controls whether the response is pretty-printed (with indentations and new lines)")
-	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, 0, "Controls the detail depth of the response objects")
+	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, 0, "An integer value [0-10] that determines the amount of detail returned")
 	list.AddIntFlag(cloudapiv6.ArgLimit, cloudapiv6.ArgLimitShort, 0, "The maximum number of elements to return (use together with offset for pagination)")
 	list.AddIntFlag(cloudapiv6.ArgOffset, cloudapiv6.ArgOffsetShort, 0, "The first element (from the complete list of the elements) to include in the response (use together with limit for pagination)")
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
