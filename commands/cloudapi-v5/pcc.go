@@ -305,7 +305,7 @@ func DeleteAllPccs(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *resources.PrivateCrossConnectProperties {

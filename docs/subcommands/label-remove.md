@@ -31,6 +31,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                    Remove all Labels.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [Key Value] (default [Key,Value])

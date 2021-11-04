@@ -387,7 +387,7 @@ func DeleteAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 func GroupUserCmd() *core.Command {
@@ -465,7 +465,7 @@ func GroupUserCmd() *core.Command {
 		ShortDesc:  "Remove User from a Group",
 		LongDesc:   "Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    removeGroupUserExample,
-		PreCmdRun:  PreRunGroupUserIds,
+		PreCmdRun:  PreRunGroupUserRemove,
 		CmdRun:     RunGroupUserRemove,
 		InitClient: true,
 	})
@@ -481,8 +481,16 @@ func GroupUserCmd() *core.Command {
 	_ = removeUser.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupUsersIds(os.Stderr, viper.GetString(core.GetFlagName(removeUser.NS, cloudapiv5.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	removeUser.AddBoolFlag(cloudapiv5.ArgAll, cloudapiv5.ArgAllShort, false, "Remove all Users fro a group.")
 
 	return groupUserCmd
+}
+
+func PreRunGroupUserRemove(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv5.ArgGroupId, cloudapiv5.ArgUserId},
+		[]string{cloudapiv5.ArgGroupId, cloudapiv5.ArgAll},
+	)
 }
 
 func RunGroupUserList(c *core.CommandConfig) error {
@@ -516,20 +524,76 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 }
 
 func RunGroupUserRemove(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove user from group"); err != nil {
-		return err
-	}
-	id := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId))
-	c.Printer.Verbose("Adding User with id: %v to group with id: %v...", id, groupId)
-	resp, err := c.CloudApiV5Services.Groups().RemoveUser(groupId, id)
-	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
+	if allFlag {
+		resp, err = RemoveAllUsers(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove user from group"); err != nil {
+			return err
+		}
+		id := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
+		groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId))
+		c.Printer.Verbose("Removing User with id: %v to group with id: %v...", id, groupId)
+		resp, err := c.CloudApiV5Services.Groups().RemoveUser(groupId, id)
+		if resp != nil {
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getGroupPrint(resp, c, nil))
+}
+
+func RemoveAllUsers(c *core.CommandConfig) (*resources.Response, error) {
+	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId))
+	_ = c.Printer.Print("Users to be removed from Group with id: " + groupId)
+	users, resp, err := c.CloudApiV5Services.Groups().ListUsers(groupId)
+	if err != nil {
+		return nil, err
+	}
+	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("User Id: " + *id)
+			}
+			if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
+				if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
+					_ = c.Printer.Print(" User Name: " + *firstName)
+				}
+				if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
+					_ = c.Printer.Print(" User Name: " + *lastName)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "removing all the Users"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Removing all the Users from Group with id: %v...", groupId)
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting removing User with id: %v...", *id)
+				resp, err = c.CloudApiV5Services.Groups().RemoveUser(groupId, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // Output Printing

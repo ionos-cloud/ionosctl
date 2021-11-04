@@ -45,6 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                      Detach all Nics.
   -u, --api-url string           Override default host url (default "https://api.ionos.com")
       --cols strings             Set of columns to be printed on output 
                                  Available columns: [NicId Name Dhcp LanId Ips State FirewallActive Mac] (default [NicId,Name,Dhcp,LanId,Ips,State])
