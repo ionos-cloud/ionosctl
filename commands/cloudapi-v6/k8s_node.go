@@ -316,7 +316,7 @@ func DelteAllK8sNodes(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Output Printing

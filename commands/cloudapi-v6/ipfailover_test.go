@@ -32,6 +32,12 @@ var (
 			},
 		},
 	}
+	lansIpFailover = resources.Lans{
+		Lans: ionoscloud.Lans{
+			Id:    &testIpFailoverVar,
+			Items: &[]ionoscloud.Lan{l},
+		},
+	}
 	testLanIpFailoverRemove = resources.Lan{
 		Lan: ionoscloud.Lan{
 			Id: &testIpFailoverVar,
@@ -297,6 +303,34 @@ func TestRunIpFailoverRemove(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIp), testIpFailoverVar)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
+			LanProperties: ionoscloud.LanProperties{
+				IpFailover: &[]ionoscloud.IPFailover{},
+			},
+		}).Return(&testLanIpFailoverRemove, nil, nil)
+		err := RunIpFailoverRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunIpFailoverRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testIpFailoverVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testIpFailoverVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testIpFailoverVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testIpFailoverVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testIpFailoverVar).Return(lansIpFailover, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
 			LanProperties: ionoscloud.LanProperties{

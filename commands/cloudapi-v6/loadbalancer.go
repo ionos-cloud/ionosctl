@@ -351,7 +351,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) (*resources.Response, error) 
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Output Printing
