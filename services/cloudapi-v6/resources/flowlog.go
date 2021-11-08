@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -47,16 +48,18 @@ func NewFlowLogService(client *Client, ctx context.Context) FlowLogsService {
 
 func (svc *flowLogsService) List(datacenterId, serverId, nicId string, params ListQueryParams) (FlowLogs, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGet(svc.context, datacenterId, serverId, nicId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	flowlogs, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGetExecute(req)
 	return FlowLogs{flowlogs}, &Response{*resp}, err

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -46,16 +47,18 @@ func NewVolumeService(client *Client, ctx context.Context) VolumesService {
 
 func (vs *volumesService) List(datacenterId string, params ListQueryParams) (Volumes, *Response, error) {
 	req := vs.client.VolumesApi.DatacentersVolumesGet(vs.context, datacenterId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	volumes, res, err := vs.client.VolumesApi.DatacentersVolumesGetExecute(req)
 	return Volumes{volumes}, &Response{*res}, err

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -70,16 +71,18 @@ func NewServerService(client *Client, ctx context.Context) ServersService {
 
 func (ss *serversService) List(datacenterId string, params ListQueryParams) (Servers, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersGet(ss.context, datacenterId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	s, res, err := ss.client.ServersApi.DatacentersServersGetExecute(req)
 	return Servers{s}, &Response{*res}, err
@@ -153,16 +156,18 @@ func (ss *serversService) GetRemoteConsoleUrl(datacenterId, serverId string) (Re
 
 func (ss *serversService) ListVolumes(datacenterId, serverId string, params ListQueryParams) (AttachedVolumes, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersVolumesGet(ss.context, datacenterId, serverId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	vols, res, err := ss.client.ServersApi.DatacentersServersVolumesGetExecute(req)
 	return AttachedVolumes{vols}, &Response{*res}, err
@@ -189,16 +194,18 @@ func (ss *serversService) DetachVolume(datacenterId, serverId, volumeId string) 
 
 func (ss *serversService) ListCdroms(datacenterId, serverId string, params ListQueryParams) (Cdroms, *Response, error) {
 	req := ss.client.ServersApi.DatacentersServersCdromsGet(ss.context, datacenterId, serverId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	imgs, res, err := ss.client.ServersApi.DatacentersServersCdromsGetExecute(req)
 	return Cdroms{imgs}, &Response{*res}, err

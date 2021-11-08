@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -44,16 +45,18 @@ func NewSnapshotService(client *Client, ctx context.Context) SnapshotsService {
 
 func (s *snapshotsService) List(params ListQueryParams) (Snapshots, *Response, error) {
 	req := s.client.SnapshotsApi.SnapshotsGet(s.context)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	snapshots, resp, err := s.client.SnapshotsApi.SnapshotsGetExecute(req)
 	return Snapshots{snapshots}, &Response{*resp}, err

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -42,16 +43,18 @@ func NewRequestService(client *Client, ctx context.Context) RequestsService {
 
 func (rs *requestsService) List(params ListQueryParams) (Requests, *Response, error) {
 	req := rs.client.RequestsApi.RequestsGet(rs.context)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	reqs, res, err := rs.client.RequestsApi.RequestsGetExecute(req)
 	return Requests{reqs}, &Response{*res}, err

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -47,16 +48,18 @@ func NewLoadbalancerService(client *Client, ctx context.Context) LoadbalancersSe
 
 func (ls *loadbalancersService) List(datacenterId string, params ListQueryParams) (Loadbalancers, *Response, error) {
 	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersGet(ls.context, datacenterId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	s, res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersGetExecute(req)
 	return Loadbalancers{s}, &Response{*res}, err
@@ -101,16 +104,18 @@ func (ns *loadbalancersService) AttachNic(datacenterId, loadbalancerId, nicId st
 
 func (ns *loadbalancersService) ListNics(datacenterId, loadbalancerId string, params ListQueryParams) (BalancedNics, *Response, error) {
 	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGet(ns.context, datacenterId, loadbalancerId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	nics, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGetExecute(req)
 	return BalancedNics{nics}, &Response{*resp}, err

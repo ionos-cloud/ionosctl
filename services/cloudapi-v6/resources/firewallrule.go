@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -43,16 +44,18 @@ func NewFirewallRuleService(client *Client, ctx context.Context) FirewallRulesSe
 
 func (svc *firewallRulesService) List(datacenterId, serverId, nicId string, params ListQueryParams) (FirewallRules, *Response, error) {
 	req := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesGet(svc.context, datacenterId, serverId, nicId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	rules, resp, err := svc.client.FirewallRulesApi.DatacentersServersNicsFirewallrulesGetExecute(req)
 	return FirewallRules{rules}, &Response{*resp}, err

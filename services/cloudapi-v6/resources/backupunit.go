@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -48,16 +49,18 @@ func NewBackupUnitService(client *Client, ctx context.Context) BackupUnitsServic
 
 func (s *backupUnitsService) List(params ListQueryParams) (BackupUnits, *Response, error) {
 	req := s.client.BackupUnitsApi.BackupunitsGet(s.context)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	dcs, res, err := s.client.BackupUnitsApi.BackupunitsGetExecute(req)
 	return BackupUnits{dcs}, &Response{*res}, err

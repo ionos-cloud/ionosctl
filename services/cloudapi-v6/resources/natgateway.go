@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
@@ -69,16 +70,18 @@ func NewNatGatewayService(client *Client, ctx context.Context) NatGatewaysServic
 
 func (ds *natGatewaysService) List(datacenterId string, params ListQueryParams) (NatGateways, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysGet(ds.context, datacenterId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysGetExecute(req)
 	return NatGateways{s}, &Response{*res}, err
@@ -110,16 +113,18 @@ func (ds *natGatewaysService) Delete(datacenterId, natGatewayId string) (*Respon
 
 func (ds *natGatewaysService) ListRules(datacenterId, natGatewayId string, params ListQueryParams) (NatGatewayRules, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesGet(ds.context, datacenterId, natGatewayId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesGetExecute(req)
 	return NatGatewayRules{s}, &Response{*res}, err
@@ -151,16 +156,18 @@ func (ds *natGatewaysService) DeleteRule(datacenterId, natGatewayId, ruleId stri
 
 func (ds *natGatewaysService) ListFlowLogs(datacenterId, natGatewayId string, params ListQueryParams) (FlowLogs, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsGet(ds.context, datacenterId, natGatewayId)
-	if params.Filters != nil {
-		for k, v := range *params.Filters {
-			req = req.Filter(k, v)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
 		}
-	}
-	if params.OrderBy != nil {
-		req = req.OrderBy(*params.OrderBy)
-	}
-	if params.MaxResults != nil {
-		req = req.MaxResults(*params.MaxResults)
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
 	}
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsGetExecute(req)
 	return FlowLogs{s}, &Response{*res}, err
