@@ -1,3 +1,7 @@
+/*
+	This is used for supporting completion in the CLI.
+	This is used for custom resources - filtered based on location, type, etc.
+*/
 package completer
 
 import (

@@ -1,3 +1,7 @@
+/*
+	This is used for supporting completion in the CLI.
+	Option: --datacenter-id --server-id --backupunit-id, usually --<RESOURCE_TYPE>-id
+*/
 package completer
 
 import (

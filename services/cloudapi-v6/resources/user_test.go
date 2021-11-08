@@ -16,7 +16,7 @@ func TestNewUserService(t *testing.T) {
 	t.Run("list_users_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		userSvc := NewUserService(svc.Get(), ctx)
-		_, _, err := userSvc.List()
+		_, _, err := userSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_user_error", func(t *testing.T) {
