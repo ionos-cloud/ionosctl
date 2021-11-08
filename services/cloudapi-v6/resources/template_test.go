@@ -16,7 +16,7 @@ func TestNewTemplateService(t *testing.T) {
 	t.Run("list_templates_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		templateSvc := NewTemplateService(svc.Get(), ctx)
-		_, _, err := templateSvc.List()
+		_, _, err := templateSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_template_error", func(t *testing.T) {

@@ -135,15 +135,9 @@ const (
 	ArgMethod                = "method"
 	ArgFilters               = "filters"
 	ArgFiltersShort          = "F"
-	ArgLimit                 = "limit"
-	ArgLimitShort            = "L"
 	ArgOrderBy               = "order-by"
-	ArgDepth                 = "depth"
-	ArgDepthShort            = "D"
-	ArgOffset                = "offset"
-	ArgOffsetShort           = "O"
-	ArgPretty                = "pretty"
-	ArgPrettyShort           = "P"
+	ArgMaxResults            = "max-results"
+	ArgMaxResultsShort       = "M"
 )
 
 // IDs Flags

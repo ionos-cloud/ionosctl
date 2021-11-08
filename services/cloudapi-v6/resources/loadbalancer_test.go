@@ -16,7 +16,7 @@ func TestNewLoadbalancerService(t *testing.T) {
 	t.Run("list_loadbalancers_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		loadbalancerSvc := NewLoadbalancerService(svc.Get(), ctx)
-		_, _, err := loadbalancerSvc.List(testLoadbalancerResourceVar)
+		_, _, err := loadbalancerSvc.List(testLoadbalancerResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_loadbalancer_error", func(t *testing.T) {
@@ -52,7 +52,7 @@ func TestNewLoadbalancerService(t *testing.T) {
 	t.Run("list_nics_loadbalancer_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		loadbalancerSvc := NewLoadbalancerService(svc.Get(), ctx)
-		_, _, err := loadbalancerSvc.ListNics(testLoadbalancerResourceVar, testLoadbalancerResourceVar)
+		_, _, err := loadbalancerSvc.ListNics(testLoadbalancerResourceVar, testLoadbalancerResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_nic_loadbalancer_error", func(t *testing.T) {

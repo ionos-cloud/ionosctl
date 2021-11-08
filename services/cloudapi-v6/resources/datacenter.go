@@ -55,19 +55,8 @@ func (ds *dataCentersService) List(params ListQueryParams) (Datacenters, *Respon
 	if params.OrderBy != nil {
 		req = req.OrderBy(*params.OrderBy)
 	}
-	if params.Limit != nil {
-		req = req.Limit(*params.Limit)
-	}
-	if params.Offset != nil {
-		req = req.Offset(*params.Offset)
-	}
-	if params.DefaultQueryParams != nil {
-		if params.DefaultQueryParams.Depth != nil {
-			req = req.Depth(*params.DefaultQueryParams.Depth)
-		}
-		if params.DefaultQueryParams.Pretty != nil {
-			req = req.Pretty(*params.DefaultQueryParams.Pretty)
-		}
+	if params.MaxResults != nil {
+		req = req.MaxResults(*params.MaxResults)
 	}
 	dcs, res, err := ds.client.DataCentersApi.DatacentersGetExecute(req)
 	return Datacenters{dcs}, &Response{*res}, err

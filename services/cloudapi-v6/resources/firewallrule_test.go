@@ -20,6 +20,7 @@ func TestNewFirewallRuleService(t *testing.T) {
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
+			ListQueryParams{},
 		)
 		assert.Error(t, err)
 	})

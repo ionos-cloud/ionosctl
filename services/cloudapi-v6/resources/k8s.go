@@ -127,16 +127,8 @@ func (s *k8sService) ListClusters(params ListQueryParams) (K8sClusters, *Respons
 	if params.OrderBy != nil {
 		req = req.OrderBy(*params.OrderBy)
 	}
-	if params.Limit != nil {
-		req = req.MaxResults(*params.Limit)
-	}
-	if params.DefaultQueryParams != nil {
-		if params.DefaultQueryParams.Depth != nil {
-			req = req.Depth(*params.DefaultQueryParams.Depth)
-		}
-		if params.DefaultQueryParams.Pretty != nil {
-			req = req.Pretty(*params.DefaultQueryParams.Pretty)
-		}
+	if params.MaxResults != nil {
+		req = req.MaxResults(*params.MaxResults)
 	}
 	dcs, res, err := s.client.KubernetesApi.K8sGetExecute(req)
 	return K8sClusters{dcs}, &Response{*res}, err

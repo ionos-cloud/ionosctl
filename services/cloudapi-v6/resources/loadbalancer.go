@@ -20,13 +20,13 @@ type Loadbalancers struct {
 
 // LoadbalancersService is a wrapper around ionoscloud.Loadbalancer
 type LoadbalancersService interface {
-	List(datacenterId string) (Loadbalancers, *Response, error)
+	List(datacenterId string, params ListQueryParams) (Loadbalancers, *Response, error)
 	Get(datacenterId, loadbalancerId string) (*Loadbalancer, *Response, error)
 	Create(datacenterId, name string, dhcp bool) (*Loadbalancer, *Response, error)
 	Update(datacenterId, loadbalancerId string, input LoadbalancerProperties) (*Loadbalancer, *Response, error)
 	Delete(datacenterId, loadbalancerId string) (*Response, error)
 	AttachNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error)
-	ListNics(datacenterId, loadbalancerId string) (BalancedNics, *Response, error)
+	ListNics(datacenterId, loadbalancerId string, params ListQueryParams) (BalancedNics, *Response, error)
 	GetNic(datacenterId, loadbalancerId, nicId string) (*Nic, *Response, error)
 	DetachNic(datacenterId, loadbalancerId, nicId string) (*Response, error)
 }
@@ -45,8 +45,19 @@ func NewLoadbalancerService(client *Client, ctx context.Context) LoadbalancersSe
 	}
 }
 
-func (ls *loadbalancersService) List(datacenterId string) (Loadbalancers, *Response, error) {
+func (ls *loadbalancersService) List(datacenterId string, params ListQueryParams) (Loadbalancers, *Response, error) {
 	req := ls.client.LoadBalancersApi.DatacentersLoadbalancersGet(ls.context, datacenterId)
+	if params.Filters != nil {
+		for k, v := range *params.Filters {
+			req = req.Filter(k, v)
+		}
+	}
+	if params.OrderBy != nil {
+		req = req.OrderBy(*params.OrderBy)
+	}
+	if params.MaxResults != nil {
+		req = req.MaxResults(*params.MaxResults)
+	}
 	s, res, err := ls.client.LoadBalancersApi.DatacentersLoadbalancersGetExecute(req)
 	return Loadbalancers{s}, &Response{*res}, err
 }
@@ -88,8 +99,19 @@ func (ns *loadbalancersService) AttachNic(datacenterId, loadbalancerId, nicId st
 	return &Nic{nic}, &Response{*resp}, err
 }
 
-func (ns *loadbalancersService) ListNics(datacenterId, loadbalancerId string) (BalancedNics, *Response, error) {
+func (ns *loadbalancersService) ListNics(datacenterId, loadbalancerId string, params ListQueryParams) (BalancedNics, *Response, error) {
 	req := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGet(ns.context, datacenterId, loadbalancerId)
+	if params.Filters != nil {
+		for k, v := range *params.Filters {
+			req = req.Filter(k, v)
+		}
+	}
+	if params.OrderBy != nil {
+		req = req.OrderBy(*params.OrderBy)
+	}
+	if params.MaxResults != nil {
+		req = req.MaxResults(*params.MaxResults)
+	}
 	nics, resp, err := ns.client.LoadBalancersApi.DatacentersLoadbalancersBalancednicsGetExecute(req)
 	return BalancedNics{nics}, &Response{*resp}, err
 }

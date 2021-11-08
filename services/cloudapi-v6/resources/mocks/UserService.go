@@ -114,9 +114,9 @@ func (mr *MockUsersServiceMockRecorder) GetResourcesByType(resourceType interfac
 }
 
 // List mocks base method.
-func (m *MockUsersService) List() (resources.Users, *resources.Response, error) {
+func (m *MockUsersService) List(params resources.ListQueryParams) (resources.Users, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.Users)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -124,9 +124,9 @@ func (m *MockUsersService) List() (resources.Users, *resources.Response, error) 
 }
 
 // List indicates an expected call of List.
-func (mr *MockUsersServiceMockRecorder) List() *gomock.Call {
+func (mr *MockUsersServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockUsersService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockUsersService)(nil).List), params)
 }
 
 // ListResources mocks base method.

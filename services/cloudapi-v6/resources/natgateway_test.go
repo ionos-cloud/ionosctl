@@ -16,7 +16,7 @@ func TestNewNatGatewayService(t *testing.T) {
 	t.Run("list_natgateways_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		natgatewaySvc := NewNatGatewayService(svc.Get(), ctx)
-		_, _, err := natgatewaySvc.List(testNatGatewayResourceVar)
+		_, _, err := natgatewaySvc.List(testNatGatewayResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_natgateway_error", func(t *testing.T) {
@@ -46,7 +46,7 @@ func TestNewNatGatewayService(t *testing.T) {
 	t.Run("listrules_natgateway_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		natgatewaySvc := NewNatGatewayService(svc.Get(), ctx)
-		_, _, err := natgatewaySvc.ListRules(testNatGatewayResourceVar, testNatGatewayResourceVar)
+		_, _, err := natgatewaySvc.ListRules(testNatGatewayResourceVar, testNatGatewayResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("getrule_natgateway_error", func(t *testing.T) {
@@ -76,7 +76,7 @@ func TestNewNatGatewayService(t *testing.T) {
 	t.Run("listflowlogs_natgateway_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		natgatewaySvc := NewNatGatewayService(svc.Get(), ctx)
-		_, _, err := natgatewaySvc.ListFlowLogs(testNatGatewayResourceVar, testNatGatewayResourceVar)
+		_, _, err := natgatewaySvc.ListFlowLogs(testNatGatewayResourceVar, testNatGatewayResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("getflowlog_natgateway_error", func(t *testing.T) {

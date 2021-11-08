@@ -16,7 +16,7 @@ func TestNewImageService(t *testing.T) {
 	t.Run("list_images_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		imageSvc := NewImageService(svc.Get(), ctx)
-		_, _, err := imageSvc.List()
+		_, _, err := imageSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_image_error", func(t *testing.T) {

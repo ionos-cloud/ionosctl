@@ -23,7 +23,7 @@ type AttachedVolumes struct {
 }
 
 type VolumesService interface {
-	List(datacenterId string) (Volumes, *Response, error)
+	List(datacenterId string, params ListQueryParams) (Volumes, *Response, error)
 	Get(datacenterId, volumeId string) (*Volume, *Response, error)
 	Create(datacenterId string, input Volume) (*Volume, *Response, error)
 	Update(datacenterId, volumeId string, input VolumeProperties) (*Volume, *Response, error)
@@ -44,8 +44,19 @@ func NewVolumeService(client *Client, ctx context.Context) VolumesService {
 	}
 }
 
-func (vs *volumesService) List(datacenterId string) (Volumes, *Response, error) {
+func (vs *volumesService) List(datacenterId string, params ListQueryParams) (Volumes, *Response, error) {
 	req := vs.client.VolumesApi.DatacentersVolumesGet(vs.context, datacenterId)
+	if params.Filters != nil {
+		for k, v := range *params.Filters {
+			req = req.Filter(k, v)
+		}
+	}
+	if params.OrderBy != nil {
+		req = req.OrderBy(*params.OrderBy)
+	}
+	if params.MaxResults != nil {
+		req = req.MaxResults(*params.MaxResults)
+	}
 	volumes, res, err := vs.client.VolumesApi.DatacentersVolumesGetExecute(req)
 	return Volumes{volumes}, &Response{*res}, err
 }

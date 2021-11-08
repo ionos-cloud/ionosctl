@@ -20,7 +20,7 @@ type ImageProperties struct {
 
 // ImagesService is a wrapper around ionoscloud.Image
 type ImagesService interface {
-	List() (Images, *Response, error)
+	List(params ListQueryParams) (Images, *Response, error)
 	Get(imageId string) (*Image, *Response, error)
 	Update(imageId string, imgProp ImageProperties) (*Image, *Response, error)
 	Delete(imageId string) (*Response, error)
@@ -40,8 +40,19 @@ func NewImageService(client *Client, ctx context.Context) ImagesService {
 	}
 }
 
-func (s *imagesService) List() (Images, *Response, error) {
+func (s *imagesService) List(params ListQueryParams) (Images, *Response, error) {
 	req := s.client.ImagesApi.ImagesGet(s.context)
+	if params.Filters != nil {
+		for k, v := range *params.Filters {
+			req = req.Filter(k, v)
+		}
+	}
+	if params.OrderBy != nil {
+		req = req.OrderBy(*params.OrderBy)
+	}
+	if params.MaxResults != nil {
+		req = req.MaxResults(*params.MaxResults)
+	}
 	images, resp, err := s.client.ImagesApi.ImagesGetExecute(req)
 	return Images{images}, &Response{*resp}, err
 }

@@ -20,6 +20,7 @@ func TestNewFlowLogService(t *testing.T) {
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
 			testFlowLogResourceVar,
+			ListQueryParams{},
 		)
 		assert.Error(t, err)
 	})

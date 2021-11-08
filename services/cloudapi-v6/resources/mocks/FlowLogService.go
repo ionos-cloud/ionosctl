@@ -82,9 +82,9 @@ func (mr *MockFlowLogsServiceMockRecorder) Get(datacenterId, serverId, nicId, fl
 }
 
 // List mocks base method.
-func (m *MockFlowLogsService) List(datacenterId, serverId, nicId string) (resources.FlowLogs, *resources.Response, error) {
+func (m *MockFlowLogsService) List(datacenterId, serverId, nicId string, params resources.ListQueryParams) (resources.FlowLogs, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", datacenterId, serverId, nicId)
+	ret := m.ctrl.Call(m, "List", datacenterId, serverId, nicId, params)
 	ret0, _ := ret[0].(resources.FlowLogs)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,9 +92,9 @@ func (m *MockFlowLogsService) List(datacenterId, serverId, nicId string) (resour
 }
 
 // List indicates an expected call of List.
-func (mr *MockFlowLogsServiceMockRecorder) List(datacenterId, serverId, nicId interface{}) *gomock.Call {
+func (mr *MockFlowLogsServiceMockRecorder) List(datacenterId, serverId, nicId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockFlowLogsService)(nil).List), datacenterId, serverId, nicId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockFlowLogsService)(nil).List), datacenterId, serverId, nicId, params)
 }
 
 // Update mocks base method.

@@ -28,7 +28,7 @@ type Lans struct {
 
 // LansService is a wrapper around ionoscloud.Lan
 type LansService interface {
-	List(datacenterId string) (Lans, *Response, error)
+	List(datacenterId string, params ListQueryParams) (Lans, *Response, error)
 	Get(datacenterId, lanId string) (*Lan, *Response, error)
 	Create(datacenterId string, input LanPost) (*LanPost, *Response, error)
 	Update(datacenterId, lanId string, input LanProperties) (*Lan, *Response, error)
@@ -49,8 +49,19 @@ func NewLanService(client *Client, ctx context.Context) LansService {
 	}
 }
 
-func (ls *lansService) List(datacenterId string) (Lans, *Response, error) {
+func (ls *lansService) List(datacenterId string, params ListQueryParams) (Lans, *Response, error) {
 	req := ls.client.LansApi.DatacentersLansGet(ls.context, datacenterId)
+	if params.Filters != nil {
+		for k, v := range *params.Filters {
+			req = req.Filter(k, v)
+		}
+	}
+	if params.OrderBy != nil {
+		req = req.OrderBy(*params.OrderBy)
+	}
+	if params.MaxResults != nil {
+		req = req.MaxResults(*params.MaxResults)
+	}
 	lans, resp, err := ls.client.LansApi.DatacentersLansGetExecute(req)
 	return Lans{lans}, &Response{*resp}, err
 }

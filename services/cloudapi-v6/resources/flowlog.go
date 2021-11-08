@@ -24,7 +24,7 @@ type FlowLogs struct {
 
 // FlowLogsService is a wrapper around ionoscloud.FlowLog
 type FlowLogsService interface {
-	List(datacenterId, serverId, nicId string) (FlowLogs, *Response, error)
+	List(datacenterId, serverId, nicId string, params ListQueryParams) (FlowLogs, *Response, error)
 	Get(datacenterId, serverId, nicId, flowLogId string) (*FlowLog, *Response, error)
 	Create(datacenterId, serverId, nicId string, input FlowLog) (*FlowLog, *Response, error)
 	Update(datacenterId, serverId, nicId, flowlogId string, input FlowLogPut) (*FlowLog, *Response, error)
@@ -45,8 +45,19 @@ func NewFlowLogService(client *Client, ctx context.Context) FlowLogsService {
 	}
 }
 
-func (svc *flowLogsService) List(datacenterId, serverId, nicId string) (FlowLogs, *Response, error) {
+func (svc *flowLogsService) List(datacenterId, serverId, nicId string, params ListQueryParams) (FlowLogs, *Response, error) {
 	req := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGet(svc.context, datacenterId, serverId, nicId)
+	if params.Filters != nil {
+		for k, v := range *params.Filters {
+			req = req.Filter(k, v)
+		}
+	}
+	if params.OrderBy != nil {
+		req = req.OrderBy(*params.OrderBy)
+	}
+	if params.MaxResults != nil {
+		req = req.MaxResults(*params.MaxResults)
+	}
 	flowlogs, resp, err := svc.client.FlowLogsApi.DatacentersServersNicsFlowlogsGetExecute(req)
 	return FlowLogs{flowlogs}, &Response{*resp}, err
 }

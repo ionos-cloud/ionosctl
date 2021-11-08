@@ -1,11 +1,9 @@
 package resources
 
 type ListQueryParams struct {
-	Filters            *map[string]string `json:"Filters,omitempty"`
-	OrderBy            *string            `json:"OrderBy,omitempty"`
-	Offset             *int32             `json:"Offset,omitempty"`
-	Limit              *int32             `json:"Limit,omitempty"`
-	DefaultQueryParams *QueryParams       `json:"DefaultQueryParams,omitempty"`
+	Filters    *map[string]string `json:"Filters,omitempty"`
+	OrderBy    *string            `json:"OrderBy,omitempty"`
+	MaxResults *int32             `json:"MaxResults,omitempty"`
 }
 
 func (q ListQueryParams) SetFilters(filters map[string]string) ListQueryParams {
@@ -18,18 +16,8 @@ func (q ListQueryParams) SetOrderBy(orderBy string) ListQueryParams {
 	return q
 }
 
-func (q ListQueryParams) SetOffset(offset int32) ListQueryParams {
-	q.Offset = &offset
-	return q
-}
-
-func (q ListQueryParams) SetLimit(limit int32) ListQueryParams {
-	q.Limit = &limit
-	return q
-}
-
-func (q ListQueryParams) SetDefaultQueryParams(params QueryParams) ListQueryParams {
-	q.DefaultQueryParams = &params
+func (q ListQueryParams) SetMaxResults(maxResults int32) ListQueryParams {
+	q.MaxResults = &maxResults
 	return q
 }
 

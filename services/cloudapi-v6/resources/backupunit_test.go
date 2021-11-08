@@ -16,7 +16,7 @@ func TestNewBackupUnitService(t *testing.T) {
 	t.Run("list_backupunits_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		backupUnitSvc := NewBackupUnitService(svc.Get(), ctx)
-		_, _, err := backupUnitSvc.List()
+		_, _, err := backupUnitSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_backupunit_error", func(t *testing.T) {

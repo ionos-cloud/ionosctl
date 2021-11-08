@@ -16,7 +16,7 @@ func TestNewIpBlockService(t *testing.T) {
 	t.Run("list_ipblocks_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		ipblockSvc := NewIpBlockService(svc.Get(), ctx)
-		_, _, err := ipblockSvc.List()
+		_, _, err := ipblockSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_ipblock_error", func(t *testing.T) {

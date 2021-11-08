@@ -14,7 +14,7 @@ func TestNewNetworkLoadBalancerService(t *testing.T) {
 	t.Run("list_networkloadbalancers_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		networkloadbalancerSvc := NewNetworkLoadBalancerService(svc.Get(), ctx)
-		_, _, err := networkloadbalancerSvc.List(testNetworkLoadBalancerResourceVar)
+		_, _, err := networkloadbalancerSvc.List(testNetworkLoadBalancerResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_networkloadbalancer_error", func(t *testing.T) {
@@ -44,7 +44,7 @@ func TestNewNetworkLoadBalancerService(t *testing.T) {
 	t.Run("listrules_networkloadbalancer_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		networkloadbalancerSvc := NewNetworkLoadBalancerService(svc.Get(), ctx)
-		_, _, err := networkloadbalancerSvc.ListForwardingRules(testNetworkLoadBalancerResourceVar, testNetworkLoadBalancerResourceVar)
+		_, _, err := networkloadbalancerSvc.ListForwardingRules(testNetworkLoadBalancerResourceVar, testNetworkLoadBalancerResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("getrule_networkloadbalancer_error", func(t *testing.T) {
@@ -75,7 +75,7 @@ func TestNewNetworkLoadBalancerService(t *testing.T) {
 	t.Run("listflowlogs_networkloadbalancer_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		networkloadbalancerSvc := NewNetworkLoadBalancerService(svc.Get(), ctx)
-		_, _, err := networkloadbalancerSvc.ListFlowLogs(testNetworkLoadBalancerResourceVar, testNetworkLoadBalancerResourceVar)
+		_, _, err := networkloadbalancerSvc.ListFlowLogs(testNetworkLoadBalancerResourceVar, testNetworkLoadBalancerResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("getflowlog_networkloadbalancer_error", func(t *testing.T) {
