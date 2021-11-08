@@ -74,14 +74,11 @@ func K8sClusterCmd() *core.Command {
 		CmdRun:     RunK8sClusterList,
 		InitClient: true,
 	})
-	list.AddBoolFlag(cloudapiv6.ArgPretty, cloudapiv6.ArgPrettyShort, false, "Controls whether the response is pretty-printed (with indentations and new lines)")
-	list.AddIntFlag(cloudapiv6.ArgDepth, cloudapiv6.ArgDepthShort, 0, "An integer value [0-10] that determines the amount of detail returned")
-	list.AddIntFlag(cloudapiv6.ArgLimit, cloudapiv6.ArgLimitShort, 0, "The maximum number of elements to return (use together with offset for pagination)")
-	list.AddIntFlag(cloudapiv6.ArgOffset, cloudapiv6.ArgOffsetShort, 0, "The first element (from the complete list of the elements) to include in the response (use together with limit for pagination)")
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.K8sClusterFilters()))
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.K8sClustersFilters()))
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return completer.K8sClusterFilters(), cobra.ShellCompDirectiveNoFileComp
+		return completer.K8sClustersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*

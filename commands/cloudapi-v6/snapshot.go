@@ -3,6 +3,8 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
 
@@ -41,7 +43,7 @@ func SnapshotCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "list",
@@ -52,6 +54,12 @@ func SnapshotCmd() *core.Command {
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunSnapshotList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.SnapshotsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -231,7 +239,15 @@ func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
 }
 
 func RunSnapshotList(c *core.CommandConfig) error {
-	ss, resp, err := c.CloudApiV6Services.Snapshots().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	ss, resp, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -422,7 +438,7 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 
 func DeleteAllSnapshots(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Snapshots to be deleted:")
-	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List()
+	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

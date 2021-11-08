@@ -3,6 +3,8 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"io"
 	"os"
@@ -42,7 +44,7 @@ func UserCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, userCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, userCmd, core.CommandBuilder{
 		Namespace:  "user",
 		Resource:   "user",
 		Verb:       "list",
@@ -53,6 +55,12 @@ func UserCmd() *core.Command {
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunUserList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -183,7 +191,15 @@ func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunUserList(c *core.CommandConfig) error {
-	users, resp, err := c.CloudApiV6Services.Users().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	users, resp, err := c.CloudApiV6Services.Users().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -343,7 +359,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 
 func DeleteAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Users to be deleted:")
-	users, resp, err := c.CloudApiV6Services.Users().List()
+	users, resp, err := c.CloudApiV6Services.Users().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

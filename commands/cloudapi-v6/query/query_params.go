@@ -27,24 +27,10 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 		orderBy := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgOrderBy))
 		queryParams = queryParams.SetOrderBy(orderBy)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgOffset)) {
-		offset := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgOffset))
-		queryParams = queryParams.SetOffset(offset)
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgMaxResults)) {
+		maxResults := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgMaxResults))
+		queryParams = queryParams.SetMaxResults(maxResults)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLimit)) {
-		limit := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgLimit))
-		queryParams = queryParams.SetLimit(limit)
-	}
-	defaultQueryParams := resources.QueryParams{}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDepth)) {
-		depth := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgDepth))
-		defaultQueryParams = defaultQueryParams.SetDepth(depth)
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPretty)) {
-		pretty := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPretty))
-		defaultQueryParams = defaultQueryParams.SetPretty(pretty)
-	}
-	queryParams = queryParams.SetDefaultQueryParams(defaultQueryParams)
 
 	return queryParams, nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
 
@@ -63,6 +64,12 @@ func ServerCmd() *core.Command {
 	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -494,7 +501,15 @@ func PreRunDcServerDelete(c *core.PreCommandConfig) error {
 }
 
 func RunServerList(c *core.CommandConfig) error {
-	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	servers, resp, err := c.CloudApiV6Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -891,7 +906,7 @@ func getNewDAS(c *core.CommandConfig) (*resources.Volume, error) {
 func DeleteAllServers(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	_ = c.Printer.Print("Servers to be deleted:")
-	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId)
+	servers, resp, err := c.CloudApiV6Services.Servers().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -1078,7 +1093,7 @@ func getCubeServersIds(outErr io.Writer, datacenterId string) []string {
 	)
 	clierror.CheckError(err, outErr)
 	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
-	servers, _, err := serverSvc.List(datacenterId)
+	servers, _, err := serverSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := servers.Servers.GetItemsOk(); ok && items != nil {

@@ -3,6 +3,8 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
 
@@ -41,7 +43,7 @@ func PccCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, pccCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, pccCmd, core.CommandBuilder{
 		Namespace:  "pcc",
 		Resource:   "pcc",
 		Verb:       "list",
@@ -52,6 +54,12 @@ func PccCmd() *core.Command {
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunPccList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.PccsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -166,7 +174,15 @@ func PreRunPccDelete(c *core.PreCommandConfig) error {
 }
 
 func RunPccList(c *core.CommandConfig) error {
-	pccs, resp, err := c.CloudApiV6Services.Pccs().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	pccs, resp, err := c.CloudApiV6Services.Pccs().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -293,7 +309,7 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 
 func DeleteAllPccs(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("PrivateCrossConnects to be deleted:")
-	pccs, resp, err := c.CloudApiV6Services.Pccs().List()
+	pccs, resp, err := c.CloudApiV6Services.Pccs().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -564,7 +580,7 @@ func getPccsIds(outErr io.Writer) []string {
 	)
 	clierror.CheckError(err, outErr)
 	pccSvc := resources.NewPrivateCrossConnectService(clientSvc.Get(), context.TODO())
-	pccs, _, err := pccSvc.List()
+	pccs, _, err := pccSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	pccsIds := make([]string, 0)
 	if items, ok := pccs.PrivateCrossConnects.GetItemsOk(); ok && items != nil {

@@ -64,9 +64,50 @@ func UsersFilters() []string {
 	return getPropertiesName(ionoscloud.UserProperties{}, ionoscloud.UserMetadata{})
 }
 
-func K8sClusterFilters() []string {
+func K8sClustersFilters() []string {
 	return getPropertiesName(ionoscloud.KubernetesClusterProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
+
+func K8sNodePoolsFilters() []string {
+	return getPropertiesName(ionoscloud.KubernetesNodePoolProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func K8sNodesFilters() []string {
+	return getPropertiesName(ionoscloud.KubernetesNodeProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func FlowLogsFilters() []string {
+	return getPropertiesName(ionoscloud.FlowLogProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func GroupFilters() []string {
+	return getPropertiesName(ionoscloud.GroupProperties{})
+}
+
+func NATGatewayFilters() []string {
+	return getPropertiesName(ionoscloud.NatGatewayProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func NATGatewayRuleFilters() []string {
+	return getPropertiesName(ionoscloud.NatGatewayRuleProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func NetworkLoadBalancerFilters() []string {
+	return getPropertiesName(ionoscloud.NetworkLoadBalancerProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func NetworkLoadBalancerForwardingRulesFilters() []string {
+	return getPropertiesName(ionoscloud.NetworkLoadBalancerForwardingRuleProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func PccsFilters() []string {
+	return getPropertiesName(ionoscloud.PrivateCrossConnectProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
+func TemplatesFilters() []string {
+	return getPropertiesName(ionoscloud.TemplateProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
 
 // getPropertiesName uses reflection to get properties' name from a struct.
 // It helps in making the filters available to the user in autocompletion.
