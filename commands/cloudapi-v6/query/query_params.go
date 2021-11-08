@@ -2,6 +2,7 @@ package query
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -10,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const FiltersPartitionChar = ":"
+const FiltersPartitionChar = "="
 
 func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error) {
 	queryParams := resources.ListQueryParams{}
@@ -35,7 +36,7 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 	return queryParams, nil
 }
 
-// getFilters should get the input from the user: --filters key:value,key:value
+// getFilters should get the input from the user: --filters key=value,key=value
 // and return a map with the corresponding key values
 func getFilters(args []string) (map[string]string, error) {
 	filtersKV := map[string]string{}
@@ -47,7 +48,8 @@ func getFilters(args []string) (map[string]string, error) {
 			kv := strings.Split(arg, FiltersPartitionChar)
 			filtersKV[kv[0]] = kv[1]
 		} else {
-			return filtersKV, errors.New("--filters should have the following format: --filters KEY1:VALUE1, KEY2:VALUE2")
+			return filtersKV, errors.New(fmt.Sprintf("--filters should have the following format: --filters KEY1%sVALUE1, KEY2%sVALUE2",
+				FiltersPartitionChar, FiltersPartitionChar))
 		}
 	}
 	return filtersKV, nil

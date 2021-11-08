@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -151,7 +151,7 @@ Required values to run command:
 	})
 	deleteCmd.AddStringFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", cloudapiv6.PccId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.PccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Private Cross-Connects.")
@@ -384,7 +384,7 @@ func PeersCmd() *core.Command {
 	})
 	listPeers.AddStringFlag(cloudapiv6.ArgPccId, "", "", cloudapiv6.PccId, core.RequiredFlagOption())
 	_ = listPeers.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.PccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return peerCmd
@@ -567,30 +567,4 @@ func getPccPeersKVMaps(ps []resources.Peer) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
-}
-
-func getPccsIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	pccSvc := resources.NewPrivateCrossConnectService(clientSvc.Get(), context.TODO())
-	pccs, _, err := pccSvc.List(resources.ListQueryParams{})
-	clierror.CheckError(err, outErr)
-	pccsIds := make([]string, 0)
-	if items, ok := pccs.PrivateCrossConnects.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				pccsIds = append(pccsIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return pccsIds
 }

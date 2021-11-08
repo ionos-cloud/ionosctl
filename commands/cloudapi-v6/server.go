@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"io"
 	"os"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -235,7 +235,9 @@ Required values to run command:
 	})
 	update.AddStringFlag(cloudapiv6.ArgCdromId, "", "", "The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getImagesCdromIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ImagesIdsCustom(os.Stderr, resources.ListQueryParams{Filters: &map[string]string{
+			"type": "CDROM",
+		}}), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Server")
 	update.AddStringFlag(cloudapiv6.ArgCPUFamily, "", cloudapiv6.DefaultServerCPUFamily, "CPU Family of the Server")
@@ -318,7 +320,12 @@ Required values to run command:
 	})
 	suspend.AddStringFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = suspend.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getCubeServersIds(os.Stderr, viper.GetString(core.GetFlagName(suspend.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.ServersIdsCustom(os.Stderr, viper.GetString(core.GetFlagName(suspend.NS, cloudapiv6.ArgDataCenterId)),
+			resources.ListQueryParams{
+				Filters: &map[string]string{
+					"type": serverCubeType,
+				},
+			}), cobra.ShellCompDirectiveNoFileComp
 	})
 	suspend.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server suspend to be executed")
 	suspend.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server suspend [seconds]")
@@ -450,7 +457,12 @@ Required values to run command:
 	})
 	resume.AddStringFlag(cloudapiv6.ArgServerId, cloudapiv6.ArgIdShort, "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = resume.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getCubeServersIds(os.Stderr, viper.GetString(core.GetFlagName(resume.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+		return completer.ServersIdsCustom(os.Stderr, viper.GetString(core.GetFlagName(resume.NS, cloudapiv6.ArgDataCenterId)),
+			resources.ListQueryParams{
+				Filters: &map[string]string{
+					"type": serverCubeType,
+				},
+			}), cobra.ShellCompDirectiveNoFileComp
 	})
 	resume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server resume to be executed")
 	resume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Server resume [seconds]")
@@ -1080,36 +1092,4 @@ func getServersKVMaps(ss []resources.Server) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
-}
-
-func getCubeServersIds(outErr io.Writer, datacenterId string) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	serverSvc := resources.NewServerService(clientSvc.Get(), context.TODO())
-	servers, _, err := serverSvc.List(datacenterId, resources.ListQueryParams{})
-	clierror.CheckError(err, outErr)
-	ssIds := make([]string, 0)
-	if items, ok := servers.Servers.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if p, ok := item.GetPropertiesOk(); ok && p != nil {
-				if t, ok := p.GetTypeOk(); ok && t != nil {
-					if *t == serverCubeType {
-						if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-							ssIds = append(ssIds, *itemId)
-						}
-					}
-				}
-			}
-		}
-	} else {
-		return nil
-	}
-	return ssIds
 }

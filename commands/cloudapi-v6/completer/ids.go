@@ -181,6 +181,15 @@ func K8sClustersIds(outErr io.Writer) []string {
 	return k8ssIds
 }
 
+func K8sVersionsIds(outErr io.Writer) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	k8sSvc := resources.NewK8sService(client, context.TODO())
+	k8ss, _, err := k8sSvc.ListVersions()
+	clierror.CheckError(err, outErr)
+	return k8ss
+}
+
 func K8sNodesIds(outErr io.Writer, clusterId, nodepoolId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)

@@ -64,8 +64,8 @@ Use flags to retrieve a list of Requests:
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
-	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed")
-	list.AddStringFlag(cloudapiv6.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE")
+	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed", core.DeprecatedFlagOption())
+	list.AddStringFlag(cloudapiv6.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE", core.DeprecatedFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"POST", "PUT", "DELETE", "PATCH", "CREATE", "UPDATE"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -131,6 +131,8 @@ func PreRunRequestId(c *core.PreCommandConfig) error {
 }
 
 func RunRequestList(c *core.CommandConfig) error {
+	c.Printer.Print("WARNING: The following flags are deprecated and they will be removed in the next releases:" +
+		c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --filters --order-by --max-results options instead!")
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {

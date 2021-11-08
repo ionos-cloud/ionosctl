@@ -67,20 +67,20 @@ Use flags to retrieve a list of Images:
 		CmdRun:     RunImageList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapiv6.ArgType, "", "", "The type of the Image")
+	list.AddStringFlag(cloudapiv6.ArgType, "", "", "The type of the Image", core.DeprecatedFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CDROM", "HDD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapiv6.ArgLicenceType, "", "", "The licence type of the Image")
+	list.AddStringFlag(cloudapiv6.ArgLicenceType, "", "", "The licence type of the Image", core.DeprecatedFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "", "The location of the Image")
+	list.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "", "The location of the Image", core.DeprecatedFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapiv6.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by")
-	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed")
+	list.AddStringFlag(cloudapiv6.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by", core.DeprecatedFlagOption())
+	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed", core.DeprecatedFlagOption())
 	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
 	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
 	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
@@ -116,6 +116,8 @@ func PreRunImageId(c *core.PreCommandConfig) error {
 }
 
 func RunImageList(c *core.CommandConfig) error {
+	c.Printer.Print("WARNING: The following flags are deprecated and they will be removed in the next releases:" +
+		c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + "\nUse --filters --order-by --max-results options instead!")
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {

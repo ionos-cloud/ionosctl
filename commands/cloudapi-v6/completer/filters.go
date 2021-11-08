@@ -16,7 +16,7 @@ func DataCentersFilters() []string {
 	return getPropertiesName(ionoscloud.DatacenterProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func BackupUnitFilters() []string {
+func BackupUnitsFilters() []string {
 	return getPropertiesName(ionoscloud.BackupUnitProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
@@ -80,19 +80,19 @@ func FlowLogsFilters() []string {
 	return getPropertiesName(ionoscloud.FlowLogProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func GroupFilters() []string {
+func GroupsFilters() []string {
 	return getPropertiesName(ionoscloud.GroupProperties{})
 }
 
-func NATGatewayFilters() []string {
+func NATGatewaysFilters() []string {
 	return getPropertiesName(ionoscloud.NatGatewayProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func NATGatewayRuleFilters() []string {
+func NATGatewayRulesFilters() []string {
 	return getPropertiesName(ionoscloud.NatGatewayRuleProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func NetworkLoadBalancerFilters() []string {
+func NetworkLoadBalancersFilters() []string {
 	return getPropertiesName(ionoscloud.NetworkLoadBalancerProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
@@ -107,7 +107,6 @@ func PccsFilters() []string {
 func TemplatesFilters() []string {
 	return getPropertiesName(ionoscloud.TemplateProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
-
 
 // getPropertiesName uses reflection to get properties' name from a struct.
 // It helps in making the filters available to the user in autocompletion.
@@ -127,6 +126,11 @@ func getPropertiesName(params ...interface{}) []string {
 					argKind = arg.Field(i).Type.Elem().Kind()
 					if argKind != reflect.Slice {
 						properties = append(properties, makeFirstLowerCase(arg.Field(i).Name))
+					} else {
+						// Add slices of strings only, not nested properties as they are currently not supported
+						if arg.Field(i).Type.Elem().String() == reflect.SliceOf(reflect.TypeOf("")).String() {
+							properties = append(properties, makeFirstLowerCase(arg.Field(i).Name))
+						}
 					}
 				}
 			}
