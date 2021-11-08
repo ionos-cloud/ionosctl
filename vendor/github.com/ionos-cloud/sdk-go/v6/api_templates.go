@@ -145,13 +145,11 @@ func (a *TemplatesApiService) TemplatesFindByIdExecute(r ApiTemplatesFindByIdReq
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -181,6 +179,7 @@ type ApiTemplatesGetRequest struct {
 	ApiService *TemplatesApiService
 	filters    _neturl.Values
 	orderBy    *string
+	maxResults *int32
 	depth      *int32
 }
 
@@ -191,7 +190,7 @@ func (r ApiTemplatesGetRequest) Depth(depth int32) ApiTemplatesGetRequest {
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiTemplatesGetRequest) Filter(key string, value string) ApiTemplatesGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -199,6 +198,12 @@ func (r ApiTemplatesGetRequest) Filter(key string, value string) ApiTemplatesGet
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiTemplatesGetRequest) OrderBy(orderBy string) ApiTemplatesGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiTemplatesGetRequest) MaxResults(maxResults int32) ApiTemplatesGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -250,6 +255,9 @@ func (a *TemplatesApiService) TemplatesGetExecute(r ApiTemplatesGetRequest) (Tem
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -316,13 +324,11 @@ func (a *TemplatesApiService) TemplatesGetExecute(r ApiTemplatesGetRequest) (Tem
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))

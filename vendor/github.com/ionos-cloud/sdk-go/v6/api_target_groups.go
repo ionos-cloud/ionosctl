@@ -24,57 +24,54 @@ var (
 	_ _context.Context
 )
 
-// UserS3KeysApiService UserS3KeysApi service
-type UserS3KeysApiService service
+// TargetGroupsApiService TargetGroupsApi service
+type TargetGroupsApiService service
 
-type ApiUmUsersS3keysDeleteRequest struct {
+type ApiTargetGroupsDeleteRequest struct {
 	ctx             _context.Context
-	ApiService      *UserS3KeysApiService
-	userId          string
-	keyId           string
+	ApiService      *TargetGroupsApiService
+	targetGroupId   string
 	pretty          *bool
 	depth           *int32
 	xContractNumber *int32
 }
 
-func (r ApiUmUsersS3keysDeleteRequest) Pretty(pretty bool) ApiUmUsersS3keysDeleteRequest {
+func (r ApiTargetGroupsDeleteRequest) Pretty(pretty bool) ApiTargetGroupsDeleteRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiUmUsersS3keysDeleteRequest) Depth(depth int32) ApiUmUsersS3keysDeleteRequest {
+func (r ApiTargetGroupsDeleteRequest) Depth(depth int32) ApiTargetGroupsDeleteRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiUmUsersS3keysDeleteRequest) XContractNumber(xContractNumber int32) ApiUmUsersS3keysDeleteRequest {
+func (r ApiTargetGroupsDeleteRequest) XContractNumber(xContractNumber int32) ApiTargetGroupsDeleteRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiUmUsersS3keysDeleteRequest) Execute() (*APIResponse, error) {
-	return r.ApiService.UmUsersS3keysDeleteExecute(r)
+func (r ApiTargetGroupsDeleteRequest) Execute() (*APIResponse, error) {
+	return r.ApiService.TargetGroupsDeleteExecute(r)
 }
 
 /*
- * UmUsersS3keysDelete Delete an S3 Key
- * Delete an S3 key.
+ * TargetGroupsDelete Remove a Target Group
+ * Removes the specified Target Group.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param userId The unique ID of the user
- * @param keyId The unique access key ID of the S3 key
- * @return ApiUmUsersS3keysDeleteRequest
+ * @param targetGroupId The unique ID of the Target Group
+ * @return ApiTargetGroupsDeleteRequest
  */
-func (a *UserS3KeysApiService) UmUsersS3keysDelete(ctx _context.Context, userId string, keyId string) ApiUmUsersS3keysDeleteRequest {
-	return ApiUmUsersS3keysDeleteRequest{
-		ApiService: a,
-		ctx:        ctx,
-		userId:     userId,
-		keyId:      keyId,
+func (a *TargetGroupsApiService) TargetGroupsDelete(ctx _context.Context, targetGroupId string) ApiTargetGroupsDeleteRequest {
+	return ApiTargetGroupsDeleteRequest{
+		ApiService:    a,
+		ctx:           ctx,
+		targetGroupId: targetGroupId,
 	}
 }
 
 /*
  * Execute executes the request
  */
-func (a *UserS3KeysApiService) UmUsersS3keysDeleteExecute(r ApiUmUsersS3keysDeleteRequest) (*APIResponse, error) {
+func (a *TargetGroupsApiService) TargetGroupsDeleteExecute(r ApiTargetGroupsDeleteRequest) (*APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodDelete
 		localVarPostBody     interface{}
@@ -83,14 +80,13 @@ func (a *UserS3KeysApiService) UmUsersS3keysDeleteExecute(r ApiUmUsersS3keysDele
 		localVarFileBytes    []byte
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "UserS3KeysApiService.UmUsersS3keysDelete")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TargetGroupsApiService.TargetGroupsDelete")
 	if err != nil {
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/um/users/{userId}/s3keys/{keyId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"userId"+"}", _neturl.PathEscape(parameterToString(r.userId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"keyId"+"}", _neturl.PathEscape(parameterToString(r.keyId, "")), -1)
+	localVarPath := localBasePath + "/targetgroups/{targetGroupId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"targetGroupId"+"}", _neturl.PathEscape(parameterToString(r.targetGroupId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -149,7 +145,7 @@ func (a *UserS3KeysApiService) UmUsersS3keysDeleteExecute(r ApiUmUsersS3keysDele
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "UmUsersS3keysDelete",
+		Operation:   "TargetGroupsDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -182,72 +178,68 @@ func (a *UserS3KeysApiService) UmUsersS3keysDeleteExecute(r ApiUmUsersS3keysDele
 	return localVarAPIResponse, nil
 }
 
-type ApiUmUsersS3keysFindByKeyIdRequest struct {
+type ApiTargetgroupsFindByTargetGroupIdRequest struct {
 	ctx             _context.Context
-	ApiService      *UserS3KeysApiService
-	userId          string
-	keyId           string
+	ApiService      *TargetGroupsApiService
+	targetGroupId   string
 	pretty          *bool
 	depth           *int32
 	xContractNumber *int32
 }
 
-func (r ApiUmUsersS3keysFindByKeyIdRequest) Pretty(pretty bool) ApiUmUsersS3keysFindByKeyIdRequest {
+func (r ApiTargetgroupsFindByTargetGroupIdRequest) Pretty(pretty bool) ApiTargetgroupsFindByTargetGroupIdRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiUmUsersS3keysFindByKeyIdRequest) Depth(depth int32) ApiUmUsersS3keysFindByKeyIdRequest {
+func (r ApiTargetgroupsFindByTargetGroupIdRequest) Depth(depth int32) ApiTargetgroupsFindByTargetGroupIdRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiUmUsersS3keysFindByKeyIdRequest) XContractNumber(xContractNumber int32) ApiUmUsersS3keysFindByKeyIdRequest {
+func (r ApiTargetgroupsFindByTargetGroupIdRequest) XContractNumber(xContractNumber int32) ApiTargetgroupsFindByTargetGroupIdRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiUmUsersS3keysFindByKeyIdRequest) Execute() (S3Key, *APIResponse, error) {
-	return r.ApiService.UmUsersS3keysFindByKeyIdExecute(r)
+func (r ApiTargetgroupsFindByTargetGroupIdRequest) Execute() (TargetGroup, *APIResponse, error) {
+	return r.ApiService.TargetgroupsFindByTargetGroupIdExecute(r)
 }
 
 /*
- * UmUsersS3keysFindByKeyId Retrieve given S3 Key belonging to the given User
- * You can retrieve S3 key belonging to the given User. This user Id can be found in the response body when a user is created or when you GET a list of users. The key Id can be found in the response body when a S3 key is created or when you GET a list of all S3 keys of a user
+ * TargetgroupsFindByTargetGroupId Retrieve a Target Group
+ * Retrieves the attributes of a given Target Group.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param userId The unique ID of the user
- * @param keyId The unique access key ID of the S3 key
- * @return ApiUmUsersS3keysFindByKeyIdRequest
+ * @param targetGroupId The unique ID of the Target Group
+ * @return ApiTargetgroupsFindByTargetGroupIdRequest
  */
-func (a *UserS3KeysApiService) UmUsersS3keysFindByKeyId(ctx _context.Context, userId string, keyId string) ApiUmUsersS3keysFindByKeyIdRequest {
-	return ApiUmUsersS3keysFindByKeyIdRequest{
-		ApiService: a,
-		ctx:        ctx,
-		userId:     userId,
-		keyId:      keyId,
+func (a *TargetGroupsApiService) TargetgroupsFindByTargetGroupId(ctx _context.Context, targetGroupId string) ApiTargetgroupsFindByTargetGroupIdRequest {
+	return ApiTargetgroupsFindByTargetGroupIdRequest{
+		ApiService:    a,
+		ctx:           ctx,
+		targetGroupId: targetGroupId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return S3Key
+ * @return TargetGroup
  */
-func (a *UserS3KeysApiService) UmUsersS3keysFindByKeyIdExecute(r ApiUmUsersS3keysFindByKeyIdRequest) (S3Key, *APIResponse, error) {
+func (a *TargetGroupsApiService) TargetgroupsFindByTargetGroupIdExecute(r ApiTargetgroupsFindByTargetGroupIdRequest) (TargetGroup, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  S3Key
+		localVarReturnValue  TargetGroup
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "UserS3KeysApiService.UmUsersS3keysFindByKeyId")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TargetGroupsApiService.TargetgroupsFindByTargetGroupId")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/um/users/{userId}/s3keys/{keyId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"userId"+"}", _neturl.PathEscape(parameterToString(r.userId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"keyId"+"}", _neturl.PathEscape(parameterToString(r.keyId, "")), -1)
+	localVarPath := localBasePath + "/targetgroups/{targetGroupId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"targetGroupId"+"}", _neturl.PathEscape(parameterToString(r.targetGroupId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -306,7 +298,7 @@ func (a *UserS3KeysApiService) UmUsersS3keysFindByKeyIdExecute(r ApiUmUsersS3key
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "UmUsersS3keysFindByKeyId",
+		Operation:   "TargetgroupsFindByTargetGroupId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -349,91 +341,87 @@ func (a *UserS3KeysApiService) UmUsersS3keysFindByKeyIdExecute(r ApiUmUsersS3key
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiUmUsersS3keysGetRequest struct {
+type ApiTargetgroupsGetRequest struct {
 	ctx             _context.Context
-	ApiService      *UserS3KeysApiService
+	ApiService      *TargetGroupsApiService
 	filters         _neturl.Values
 	orderBy         *string
 	maxResults      *int32
-	userId          string
 	pretty          *bool
 	depth           *int32
 	xContractNumber *int32
 }
 
-func (r ApiUmUsersS3keysGetRequest) Pretty(pretty bool) ApiUmUsersS3keysGetRequest {
+func (r ApiTargetgroupsGetRequest) Pretty(pretty bool) ApiTargetgroupsGetRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiUmUsersS3keysGetRequest) Depth(depth int32) ApiUmUsersS3keysGetRequest {
+func (r ApiTargetgroupsGetRequest) Depth(depth int32) ApiTargetgroupsGetRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiUmUsersS3keysGetRequest) XContractNumber(xContractNumber int32) ApiUmUsersS3keysGetRequest {
+func (r ApiTargetgroupsGetRequest) XContractNumber(xContractNumber int32) ApiTargetgroupsGetRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
-func (r ApiUmUsersS3keysGetRequest) Filter(key string, value string) ApiUmUsersS3keysGetRequest {
+func (r ApiTargetgroupsGetRequest) Filter(key string, value string) ApiTargetgroupsGetRequest {
 	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
 
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
-func (r ApiUmUsersS3keysGetRequest) OrderBy(orderBy string) ApiUmUsersS3keysGetRequest {
+func (r ApiTargetgroupsGetRequest) OrderBy(orderBy string) ApiTargetgroupsGetRequest {
 	r.orderBy = &orderBy
 	return r
 }
 
 // MaxResults query param limits the number of results returned.
-func (r ApiUmUsersS3keysGetRequest) MaxResults(maxResults int32) ApiUmUsersS3keysGetRequest {
+func (r ApiTargetgroupsGetRequest) MaxResults(maxResults int32) ApiTargetgroupsGetRequest {
 	r.maxResults = &maxResults
 	return r
 }
 
-func (r ApiUmUsersS3keysGetRequest) Execute() (S3Keys, *APIResponse, error) {
-	return r.ApiService.UmUsersS3keysGetExecute(r)
+func (r ApiTargetgroupsGetRequest) Execute() (TargetGroups, *APIResponse, error) {
+	return r.ApiService.TargetgroupsGetExecute(r)
 }
 
 /*
- * UmUsersS3keysGet Retrieve a User's S3 keys
- * You can retrieve S3 keys owned by a user by using the users ID. This user Id can be found in the response body when a user is created or when you GET a list of users.
+ * TargetgroupsGet List Target Groups
+ * You can retrieve a list of all Target Groups.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param userId The unique ID of the user
- * @return ApiUmUsersS3keysGetRequest
+ * @return ApiTargetgroupsGetRequest
  */
-func (a *UserS3KeysApiService) UmUsersS3keysGet(ctx _context.Context, userId string) ApiUmUsersS3keysGetRequest {
-	return ApiUmUsersS3keysGetRequest{
+func (a *TargetGroupsApiService) TargetgroupsGet(ctx _context.Context) ApiTargetgroupsGetRequest {
+	return ApiTargetgroupsGetRequest{
 		ApiService: a,
 		ctx:        ctx,
-		userId:     userId,
 		filters:    _neturl.Values{},
 	}
 }
 
 /*
  * Execute executes the request
- * @return S3Keys
+ * @return TargetGroups
  */
-func (a *UserS3KeysApiService) UmUsersS3keysGetExecute(r ApiUmUsersS3keysGetRequest) (S3Keys, *APIResponse, error) {
+func (a *TargetGroupsApiService) TargetgroupsGetExecute(r ApiTargetgroupsGetRequest) (TargetGroups, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  S3Keys
+		localVarReturnValue  TargetGroups
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "UserS3KeysApiService.UmUsersS3keysGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TargetGroupsApiService.TargetgroupsGet")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/um/users/{userId}/s3keys"
-	localVarPath = strings.Replace(localVarPath, "{"+"userId"+"}", _neturl.PathEscape(parameterToString(r.userId, "")), -1)
+	localVarPath := localBasePath + "/targetgroups"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -505,7 +493,7 @@ func (a *UserS3KeysApiService) UmUsersS3keysGetExecute(r ApiUmUsersS3keysGetRequ
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "UmUsersS3keysGet",
+		Operation:   "TargetgroupsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -548,72 +536,80 @@ func (a *UserS3KeysApiService) UmUsersS3keysGetExecute(r ApiUmUsersS3keysGetRequ
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiUmUsersS3keysPostRequest struct {
-	ctx             _context.Context
-	ApiService      *UserS3KeysApiService
-	userId          string
-	pretty          *bool
-	depth           *int32
-	xContractNumber *int32
+type ApiTargetgroupsPatchRequest struct {
+	ctx                   _context.Context
+	ApiService            *TargetGroupsApiService
+	targetGroupId         string
+	targetGroupProperties *TargetGroupProperties
+	pretty                *bool
+	depth                 *int32
+	xContractNumber       *int32
 }
 
-func (r ApiUmUsersS3keysPostRequest) Pretty(pretty bool) ApiUmUsersS3keysPostRequest {
+func (r ApiTargetgroupsPatchRequest) TargetGroupProperties(targetGroupProperties TargetGroupProperties) ApiTargetgroupsPatchRequest {
+	r.targetGroupProperties = &targetGroupProperties
+	return r
+}
+func (r ApiTargetgroupsPatchRequest) Pretty(pretty bool) ApiTargetgroupsPatchRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiUmUsersS3keysPostRequest) Depth(depth int32) ApiUmUsersS3keysPostRequest {
+func (r ApiTargetgroupsPatchRequest) Depth(depth int32) ApiTargetgroupsPatchRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiUmUsersS3keysPostRequest) XContractNumber(xContractNumber int32) ApiUmUsersS3keysPostRequest {
+func (r ApiTargetgroupsPatchRequest) XContractNumber(xContractNumber int32) ApiTargetgroupsPatchRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiUmUsersS3keysPostRequest) Execute() (S3Key, *APIResponse, error) {
-	return r.ApiService.UmUsersS3keysPostExecute(r)
+func (r ApiTargetgroupsPatchRequest) Execute() (TargetGroup, *APIResponse, error) {
+	return r.ApiService.TargetgroupsPatchExecute(r)
 }
 
 /*
- * UmUsersS3keysPost Create a S3 Key for the given User
- * Creates a S3 key for the given user. This user Id can be found in the response body when a user is created or when you GET a list of users. Maximum of 5 keys can be generated for a given user
+ * TargetgroupsPatch Partially update a Target Group
+ * Partially update the attributes of a given Target Group
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param userId The unique ID of the user
- * @return ApiUmUsersS3keysPostRequest
+ * @param targetGroupId The unique ID of the Target Group
+ * @return ApiTargetgroupsPatchRequest
  */
-func (a *UserS3KeysApiService) UmUsersS3keysPost(ctx _context.Context, userId string) ApiUmUsersS3keysPostRequest {
-	return ApiUmUsersS3keysPostRequest{
-		ApiService: a,
-		ctx:        ctx,
-		userId:     userId,
+func (a *TargetGroupsApiService) TargetgroupsPatch(ctx _context.Context, targetGroupId string) ApiTargetgroupsPatchRequest {
+	return ApiTargetgroupsPatchRequest{
+		ApiService:    a,
+		ctx:           ctx,
+		targetGroupId: targetGroupId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return S3Key
+ * @return TargetGroup
  */
-func (a *UserS3KeysApiService) UmUsersS3keysPostExecute(r ApiUmUsersS3keysPostRequest) (S3Key, *APIResponse, error) {
+func (a *TargetGroupsApiService) TargetgroupsPatchExecute(r ApiTargetgroupsPatchRequest) (TargetGroup, *APIResponse, error) {
 	var (
-		localVarHTTPMethod   = _nethttp.MethodPost
+		localVarHTTPMethod   = _nethttp.MethodPatch
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  S3Key
+		localVarReturnValue  TargetGroup
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "UserS3KeysApiService.UmUsersS3keysPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TargetGroupsApiService.TargetgroupsPatch")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/um/users/{userId}/s3keys"
-	localVarPath = strings.Replace(localVarPath, "{"+"userId"+"}", _neturl.PathEscape(parameterToString(r.userId, "")), -1)
+	localVarPath := localBasePath + "/targetgroups/{targetGroupId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"targetGroupId"+"}", _neturl.PathEscape(parameterToString(r.targetGroupId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if r.targetGroupProperties == nil {
+		return localVarReturnValue, nil, reportError("targetGroupProperties is required and must be specified")
+	}
 
 	if r.pretty != nil {
 		localVarQueryParams.Add("pretty", parameterToString(*r.pretty, ""))
@@ -642,6 +638,8 @@ func (a *UserS3KeysApiService) UmUsersS3keysPostExecute(r ApiUmUsersS3keysPostRe
 	if r.xContractNumber != nil {
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
+	// body params
+	localVarPostBody = r.targetGroupProperties
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -668,7 +666,7 @@ func (a *UserS3KeysApiService) UmUsersS3keysPostExecute(r ApiUmUsersS3keysPostRe
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "UmUsersS3keysPost",
+		Operation:   "TargetgroupsPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -711,83 +709,75 @@ func (a *UserS3KeysApiService) UmUsersS3keysPostExecute(r ApiUmUsersS3keysPostRe
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiUmUsersS3keysPutRequest struct {
+type ApiTargetgroupsPostRequest struct {
 	ctx             _context.Context
-	ApiService      *UserS3KeysApiService
-	userId          string
-	keyId           string
-	s3Key           *S3Key
+	ApiService      *TargetGroupsApiService
+	targetGroup     *TargetGroup
 	pretty          *bool
 	depth           *int32
 	xContractNumber *int32
 }
 
-func (r ApiUmUsersS3keysPutRequest) S3Key(s3Key S3Key) ApiUmUsersS3keysPutRequest {
-	r.s3Key = &s3Key
+func (r ApiTargetgroupsPostRequest) TargetGroup(targetGroup TargetGroup) ApiTargetgroupsPostRequest {
+	r.targetGroup = &targetGroup
 	return r
 }
-func (r ApiUmUsersS3keysPutRequest) Pretty(pretty bool) ApiUmUsersS3keysPutRequest {
+func (r ApiTargetgroupsPostRequest) Pretty(pretty bool) ApiTargetgroupsPostRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiUmUsersS3keysPutRequest) Depth(depth int32) ApiUmUsersS3keysPutRequest {
+func (r ApiTargetgroupsPostRequest) Depth(depth int32) ApiTargetgroupsPostRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiUmUsersS3keysPutRequest) XContractNumber(xContractNumber int32) ApiUmUsersS3keysPutRequest {
+func (r ApiTargetgroupsPostRequest) XContractNumber(xContractNumber int32) ApiTargetgroupsPostRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiUmUsersS3keysPutRequest) Execute() (S3Key, *APIResponse, error) {
-	return r.ApiService.UmUsersS3keysPutExecute(r)
+func (r ApiTargetgroupsPostRequest) Execute() (TargetGroup, *APIResponse, error) {
+	return r.ApiService.TargetgroupsPostExecute(r)
 }
 
 /*
- * UmUsersS3keysPut Modify a S3 key having the given key id
- * You can enable or disable a given S3 key.
+ * TargetgroupsPost Add a Target Group
+ * This will add a new Target Group.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param userId
- * @param keyId The unique access key ID of the S3 key
- * @return ApiUmUsersS3keysPutRequest
+ * @return ApiTargetgroupsPostRequest
  */
-func (a *UserS3KeysApiService) UmUsersS3keysPut(ctx _context.Context, userId string, keyId string) ApiUmUsersS3keysPutRequest {
-	return ApiUmUsersS3keysPutRequest{
+func (a *TargetGroupsApiService) TargetgroupsPost(ctx _context.Context) ApiTargetgroupsPostRequest {
+	return ApiTargetgroupsPostRequest{
 		ApiService: a,
 		ctx:        ctx,
-		userId:     userId,
-		keyId:      keyId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return S3Key
+ * @return TargetGroup
  */
-func (a *UserS3KeysApiService) UmUsersS3keysPutExecute(r ApiUmUsersS3keysPutRequest) (S3Key, *APIResponse, error) {
+func (a *TargetGroupsApiService) TargetgroupsPostExecute(r ApiTargetgroupsPostRequest) (TargetGroup, *APIResponse, error) {
 	var (
-		localVarHTTPMethod   = _nethttp.MethodPut
+		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  S3Key
+		localVarReturnValue  TargetGroup
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "UserS3KeysApiService.UmUsersS3keysPut")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TargetGroupsApiService.TargetgroupsPost")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/um/users/{userId}/s3keys/{keyId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"userId"+"}", _neturl.PathEscape(parameterToString(r.userId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"keyId"+"}", _neturl.PathEscape(parameterToString(r.keyId, "")), -1)
+	localVarPath := localBasePath + "/targetgroups"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.s3Key == nil {
-		return localVarReturnValue, nil, reportError("s3Key is required and must be specified")
+	if r.targetGroup == nil {
+		return localVarReturnValue, nil, reportError("targetGroup is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -818,7 +808,7 @@ func (a *UserS3KeysApiService) UmUsersS3keysPutExecute(r ApiUmUsersS3keysPutRequ
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.s3Key
+	localVarPostBody = r.targetGroup
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -845,7 +835,7 @@ func (a *UserS3KeysApiService) UmUsersS3keysPutExecute(r ApiUmUsersS3keysPutRequ
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "UmUsersS3keysPut",
+		Operation:   "TargetgroupsPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -888,110 +878,90 @@ func (a *UserS3KeysApiService) UmUsersS3keysPutExecute(r ApiUmUsersS3keysPutRequ
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiUmUsersS3ssourlGetRequest struct {
+type ApiTargetgroupsPutRequest struct {
 	ctx             _context.Context
-	ApiService      *UserS3KeysApiService
-	filters         _neturl.Values
-	orderBy         *string
-	maxResults      *int32
-	userId          string
+	ApiService      *TargetGroupsApiService
+	targetGroupId   string
+	targetGroup     *TargetGroupPut
 	pretty          *bool
+	depth           *int32
 	xContractNumber *int32
 }
 
-func (r ApiUmUsersS3ssourlGetRequest) Pretty(pretty bool) ApiUmUsersS3ssourlGetRequest {
+func (r ApiTargetgroupsPutRequest) TargetGroup(targetGroup TargetGroupPut) ApiTargetgroupsPutRequest {
+	r.targetGroup = &targetGroup
+	return r
+}
+func (r ApiTargetgroupsPutRequest) Pretty(pretty bool) ApiTargetgroupsPutRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiUmUsersS3ssourlGetRequest) XContractNumber(xContractNumber int32) ApiUmUsersS3ssourlGetRequest {
+func (r ApiTargetgroupsPutRequest) Depth(depth int32) ApiTargetgroupsPutRequest {
+	r.depth = &depth
+	return r
+}
+func (r ApiTargetgroupsPutRequest) XContractNumber(xContractNumber int32) ApiTargetgroupsPutRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-// Filters query parameters limit results to those containing a matching value for a specific property.
-func (r ApiUmUsersS3ssourlGetRequest) Filter(key string, value string) ApiUmUsersS3ssourlGetRequest {
-	filterKey := fmt.Sprintf(FilterQueryParam, key)
-	r.filters[filterKey] = []string{value}
-	return r
-}
-
-// OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
-func (r ApiUmUsersS3ssourlGetRequest) OrderBy(orderBy string) ApiUmUsersS3ssourlGetRequest {
-	r.orderBy = &orderBy
-	return r
-}
-
-// MaxResults query param limits the number of results returned.
-func (r ApiUmUsersS3ssourlGetRequest) MaxResults(maxResults int32) ApiUmUsersS3ssourlGetRequest {
-	r.maxResults = &maxResults
-	return r
-}
-
-func (r ApiUmUsersS3ssourlGetRequest) Execute() (S3ObjectStorageSSO, *APIResponse, error) {
-	return r.ApiService.UmUsersS3ssourlGetExecute(r)
+func (r ApiTargetgroupsPutRequest) Execute() (TargetGroup, *APIResponse, error) {
+	return r.ApiService.TargetgroupsPutExecute(r)
 }
 
 /*
- * UmUsersS3ssourlGet Retrieve S3 object storage single signon URL for the given user
- * You can retrieve S3 object storage single signon URL for the given user. This user Id can be found in the response body when a user is created or when you GET a list of users.
+ * TargetgroupsPut Update a Target Group
+ * Update the attributes of a given Target Group
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param userId The unique ID of the user
- * @return ApiUmUsersS3ssourlGetRequest
+ * @param targetGroupId The unique ID of the Target Group
+ * @return ApiTargetgroupsPutRequest
  */
-func (a *UserS3KeysApiService) UmUsersS3ssourlGet(ctx _context.Context, userId string) ApiUmUsersS3ssourlGetRequest {
-	return ApiUmUsersS3ssourlGetRequest{
-		ApiService: a,
-		ctx:        ctx,
-		userId:     userId,
-		filters:    _neturl.Values{},
+func (a *TargetGroupsApiService) TargetgroupsPut(ctx _context.Context, targetGroupId string) ApiTargetgroupsPutRequest {
+	return ApiTargetgroupsPutRequest{
+		ApiService:    a,
+		ctx:           ctx,
+		targetGroupId: targetGroupId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return S3ObjectStorageSSO
+ * @return TargetGroup
  */
-func (a *UserS3KeysApiService) UmUsersS3ssourlGetExecute(r ApiUmUsersS3ssourlGetRequest) (S3ObjectStorageSSO, *APIResponse, error) {
+func (a *TargetGroupsApiService) TargetgroupsPutExecute(r ApiTargetgroupsPutRequest) (TargetGroup, *APIResponse, error) {
 	var (
-		localVarHTTPMethod   = _nethttp.MethodGet
+		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  S3ObjectStorageSSO
+		localVarReturnValue  TargetGroup
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "UserS3KeysApiService.UmUsersS3ssourlGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TargetGroupsApiService.TargetgroupsPut")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/um/users/{userId}/s3ssourl"
-	localVarPath = strings.Replace(localVarPath, "{"+"userId"+"}", _neturl.PathEscape(parameterToString(r.userId, "")), -1)
+	localVarPath := localBasePath + "/targetgroups/{targetGroupId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"targetGroupId"+"}", _neturl.PathEscape(parameterToString(r.targetGroupId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if r.targetGroup == nil {
+		return localVarReturnValue, nil, reportError("targetGroup is required and must be specified")
+	}
 
 	if r.pretty != nil {
 		localVarQueryParams.Add("pretty", parameterToString(*r.pretty, ""))
 	}
-	if r.orderBy != nil {
-		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
-	}
-	if r.maxResults != nil {
-		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
-	}
-	if len(r.filters) > 0 {
-		for k, v := range r.filters {
-			for _, iv := range v {
-				localVarQueryParams.Add(k, iv)
-			}
-		}
+	if r.depth != nil {
+		localVarQueryParams.Add("depth", parameterToString(*r.depth, ""))
 	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -1010,6 +980,8 @@ func (a *UserS3KeysApiService) UmUsersS3ssourlGetExecute(r ApiUmUsersS3ssourlGet
 	if r.xContractNumber != nil {
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
+	// body params
+	localVarPostBody = r.targetGroup
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -1036,7 +1008,7 @@ func (a *UserS3KeysApiService) UmUsersS3ssourlGetExecute(r ApiUmUsersS3ssourlGet
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "UmUsersS3ssourlGet",
+		Operation:   "TargetgroupsPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {

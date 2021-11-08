@@ -159,13 +159,11 @@ func (a *BackupUnitsApiService) BackupunitsDeleteExecute(r ApiBackupunitsDeleteR
 		return localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -314,13 +312,11 @@ func (a *BackupUnitsApiService) BackupunitsFindByIdExecute(r ApiBackupunitsFindB
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -350,6 +346,7 @@ type ApiBackupunitsGetRequest struct {
 	ApiService      *BackupUnitsApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	pretty          *bool
 	depth           *int32
 	xContractNumber *int32
@@ -370,7 +367,7 @@ func (r ApiBackupunitsGetRequest) XContractNumber(xContractNumber int32) ApiBack
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiBackupunitsGetRequest) Filter(key string, value string) ApiBackupunitsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -378,6 +375,12 @@ func (r ApiBackupunitsGetRequest) Filter(key string, value string) ApiBackupunit
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiBackupunitsGetRequest) OrderBy(orderBy string) ApiBackupunitsGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiBackupunitsGetRequest) MaxResults(maxResults int32) ApiBackupunitsGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -432,6 +435,9 @@ func (a *BackupUnitsApiService) BackupunitsGetExecute(r ApiBackupunitsGetRequest
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -501,13 +507,11 @@ func (a *BackupUnitsApiService) BackupunitsGetExecute(r ApiBackupunitsGetRequest
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -676,13 +680,11 @@ func (a *BackupUnitsApiService) BackupunitsPatchExecute(r ApiBackupunitsPatchReq
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -847,13 +849,11 @@ func (a *BackupUnitsApiService) BackupunitsPostExecute(r ApiBackupunitsPostReque
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1022,13 +1022,11 @@ func (a *BackupUnitsApiService) BackupunitsPutExecute(r ApiBackupunitsPutRequest
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1058,6 +1056,7 @@ type ApiBackupunitsSsourlGetRequest struct {
 	ApiService      *BackupUnitsApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	backupunitId    string
 	pretty          *bool
 	xContractNumber *int32
@@ -1074,7 +1073,7 @@ func (r ApiBackupunitsSsourlGetRequest) XContractNumber(xContractNumber int32) A
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiBackupunitsSsourlGetRequest) Filter(key string, value string) ApiBackupunitsSsourlGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -1082,6 +1081,12 @@ func (r ApiBackupunitsSsourlGetRequest) Filter(key string, value string) ApiBack
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiBackupunitsSsourlGetRequest) OrderBy(orderBy string) ApiBackupunitsSsourlGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiBackupunitsSsourlGetRequest) MaxResults(maxResults int32) ApiBackupunitsSsourlGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -1136,6 +1141,9 @@ func (a *BackupUnitsApiService) BackupunitsSsourlGetExecute(r ApiBackupunitsSsou
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -1205,13 +1213,11 @@ func (a *BackupUnitsApiService) BackupunitsSsourlGetExecute(r ApiBackupunitsSsou
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))

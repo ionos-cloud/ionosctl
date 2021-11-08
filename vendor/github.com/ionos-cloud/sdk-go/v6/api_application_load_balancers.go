@@ -24,57 +24,57 @@ var (
 	_ _context.Context
 )
 
-// NetworkLoadBalancersApiService NetworkLoadBalancersApi service
-type NetworkLoadBalancersApiService service
+// ApplicationLoadBalancersApiService ApplicationLoadBalancersApi service
+type ApplicationLoadBalancersApiService service
 
-type ApiDatacentersNetworkloadbalancersDeleteRequest struct {
-	ctx                   _context.Context
-	ApiService            *NetworkLoadBalancersApiService
-	datacenterId          string
-	networkLoadBalancerId string
-	pretty                *bool
-	depth                 *int32
-	xContractNumber       *int32
+type ApiDatacentersApplicationloadbalancersDeleteRequest struct {
+	ctx                       _context.Context
+	ApiService                *ApplicationLoadBalancersApiService
+	datacenterId              string
+	applicationLoadBalancerId string
+	pretty                    *bool
+	depth                     *int32
+	xContractNumber           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersDeleteRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersDeleteRequest {
+func (r ApiDatacentersApplicationloadbalancersDeleteRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersDeleteRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersDeleteRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersDeleteRequest {
+func (r ApiDatacentersApplicationloadbalancersDeleteRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersDeleteRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersDeleteRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersDeleteRequest {
+func (r ApiDatacentersApplicationloadbalancersDeleteRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersDeleteRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersDeleteRequest) Execute() (*APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersDeleteExecute(r)
+func (r ApiDatacentersApplicationloadbalancersDeleteRequest) Execute() (*APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersDeleteExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersDelete Remove an Network Load Balancer
- * Removes the specified Network Load Balancer.
+ * DatacentersApplicationloadbalancersDelete Remove an Application Load Balancer
+ * Removes the specified Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
- * @return ApiDatacentersNetworkloadbalancersDeleteRequest
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
+ * @return ApiDatacentersApplicationloadbalancersDeleteRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersDelete(ctx _context.Context, datacenterId string, networkLoadBalancerId string) ApiDatacentersNetworkloadbalancersDeleteRequest {
-	return ApiDatacentersNetworkloadbalancersDeleteRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersDelete(ctx _context.Context, datacenterId string, applicationLoadBalancerId string) ApiDatacentersApplicationloadbalancersDeleteRequest {
+	return ApiDatacentersApplicationloadbalancersDeleteRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
 	}
 }
 
 /*
  * Execute executes the request
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersDeleteExecute(r ApiDatacentersNetworkloadbalancersDeleteRequest) (*APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersDeleteExecute(r ApiDatacentersApplicationloadbalancersDeleteRequest) (*APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodDelete
 		localVarPostBody     interface{}
@@ -83,14 +83,14 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersDeleteEx
 		localVarFileBytes    []byte
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersDelete")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersDelete")
 	if err != nil {
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -149,7 +149,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersDeleteEx
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersDelete",
+		Operation:   "DatacentersApplicationloadbalancersDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -182,72 +182,72 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersDeleteEx
 	return localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest struct {
-	ctx                   _context.Context
-	ApiService            *NetworkLoadBalancersApiService
-	datacenterId          string
-	networkLoadBalancerId string
-	pretty                *bool
-	depth                 *int32
-	xContractNumber       *int32
+type ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest struct {
+	ctx                       _context.Context
+	ApiService                *ApplicationLoadBalancersApiService
+	datacenterId              string
+	applicationLoadBalancerId string
+	pretty                    *bool
+	depth                     *int32
+	xContractNumber           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest {
+func (r ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest {
+func (r ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest {
+func (r ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest) Execute() (NetworkLoadBalancer, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdExecute(r)
+func (r ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest) Execute() (ApplicationLoadBalancer, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersFindByNetworkLoadBalancerId Retrieve an Network Load Balancer
- * Retrieves the attributes of a given Network Load Balancer.
+ * DatacentersApplicationloadbalancersFindByApplicationLoadBalancerId Retrieve an Application Load Balancer
+ * Retrieves the attributes of a given Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
- * @return ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
+ * @return ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFindByNetworkLoadBalancerId(ctx _context.Context, datacenterId string, networkLoadBalancerId string) ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest {
-	return ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFindByApplicationLoadBalancerId(ctx _context.Context, datacenterId string, applicationLoadBalancerId string) ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest {
+	return ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancer
+ * @return ApplicationLoadBalancer
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdExecute(r ApiDatacentersNetworkloadbalancersFindByNetworkLoadBalancerIdRequest) (NetworkLoadBalancer, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdExecute(r ApiDatacentersApplicationloadbalancersFindByApplicationLoadBalancerIdRequest) (ApplicationLoadBalancer, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancer
+		localVarReturnValue  ApplicationLoadBalancer
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersFindByNetworkLoadBalancerId")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersFindByApplicationLoadBalancerId")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -306,7 +306,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFindByNe
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersFindByNetworkLoadBalancerId",
+		Operation:   "DatacentersApplicationloadbalancersFindByApplicationLoadBalancerId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -349,57 +349,57 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFindByNe
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest struct {
-	ctx                   _context.Context
-	ApiService            *NetworkLoadBalancersApiService
-	datacenterId          string
-	networkLoadBalancerId string
-	flowLogId             string
-	pretty                *bool
-	depth                 *int32
-	xContractNumber       *int32
+type ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest struct {
+	ctx                       _context.Context
+	ApiService                *ApplicationLoadBalancersApiService
+	datacenterId              string
+	applicationLoadBalancerId string
+	flowLogId                 string
+	pretty                    *bool
+	depth                     *int32
+	xContractNumber           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest) Execute() (*APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersFlowlogsDeleteExecute(r)
+func (r ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest) Execute() (*APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersFlowlogsDeleteExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersFlowlogsDelete Remove Flow Log from Network Load Balancer
- * This will remove a flow log from the network load balancer.
+ * DatacentersApplicationloadbalancersFlowlogsDelete Remove Flow Log from Application Load Balancer
+ * This will remove a flow log from the application load balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
  * @param flowLogId The unique ID of the flow log
- * @return ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest
+ * @return ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsDelete(ctx _context.Context, datacenterId string, networkLoadBalancerId string, flowLogId string) ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest {
-	return ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		flowLogId:             flowLogId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsDelete(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, flowLogId string) ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest {
+	return ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		flowLogId:                 flowLogId,
 	}
 }
 
 /*
  * Execute executes the request
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsDeleteExecute(r ApiDatacentersNetworkloadbalancersFlowlogsDeleteRequest) (*APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsDeleteExecute(r ApiDatacentersApplicationloadbalancersFlowlogsDeleteRequest) (*APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodDelete
 		localVarPostBody     interface{}
@@ -408,14 +408,14 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		localVarFileBytes    []byte
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersFlowlogsDelete")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersFlowlogsDelete")
 	if err != nil {
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/flowlogs/{flowLogId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/flowlogs/{flowLogId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"flowLogId"+"}", _neturl.PathEscape(parameterToString(r.flowLogId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -475,7 +475,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersFlowlogsDelete",
+		Operation:   "DatacentersApplicationloadbalancersFlowlogsDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -508,50 +508,50 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 	return localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest struct {
-	ctx                   _context.Context
-	ApiService            *NetworkLoadBalancersApiService
-	datacenterId          string
-	networkLoadBalancerId string
-	flowLogId             string
-	pretty                *bool
-	depth                 *int32
-	xContractNumber       *int32
+type ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest struct {
+	ctx                       _context.Context
+	ApiService                *ApplicationLoadBalancersApiService
+	datacenterId              string
+	applicationLoadBalancerId string
+	flowLogId                 string
+	pretty                    *bool
+	depth                     *int32
+	xContractNumber           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest) Execute() (FlowLog, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdExecute(r)
+func (r ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest) Execute() (FlowLog, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersFlowlogsFindByFlowLogId Retrieve a Flow Log of the Network Load Balancer
- * This will return a Flow Log of the Network Load Balancer.
+ * DatacentersApplicationloadbalancersFlowlogsFindByFlowLogId Retrieve a Flow Log of the Application Load Balancer
+ * This will return a Flow Log of the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
  * @param flowLogId The unique ID of the Flow Log
- * @return ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest
+ * @return ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsFindByFlowLogId(ctx _context.Context, datacenterId string, networkLoadBalancerId string, flowLogId string) ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest {
-	return ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		flowLogId:             flowLogId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsFindByFlowLogId(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, flowLogId string) ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest {
+	return ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		flowLogId:                 flowLogId,
 	}
 }
 
@@ -559,7 +559,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
  * Execute executes the request
  * @return FlowLog
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdExecute(r ApiDatacentersNetworkloadbalancersFlowlogsFindByFlowLogIdRequest) (FlowLog, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdExecute(r ApiDatacentersApplicationloadbalancersFlowlogsFindByFlowLogIdRequest) (FlowLog, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -569,14 +569,14 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		localVarReturnValue  FlowLog
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersFlowlogsFindByFlowLogId")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersFlowlogsFindByFlowLogId")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/flowlogs/{flowLogId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/flowlogs/{flowLogId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"flowLogId"+"}", _neturl.PathEscape(parameterToString(r.flowLogId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -636,7 +636,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersFlowlogsFindByFlowLogId",
+		Operation:   "DatacentersApplicationloadbalancersFlowlogsFindByFlowLogId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -679,70 +679,70 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersFlowlogsGetRequest struct {
-	ctx                   _context.Context
-	ApiService            *NetworkLoadBalancersApiService
-	filters               _neturl.Values
-	orderBy               *string
-	maxResults            *int32
-	datacenterId          string
-	networkLoadBalancerId string
-	pretty                *bool
-	depth                 *int32
-	xContractNumber       *int32
+type ApiDatacentersApplicationloadbalancersFlowlogsGetRequest struct {
+	ctx                       _context.Context
+	ApiService                *ApplicationLoadBalancersApiService
+	filters                   _neturl.Values
+	orderBy                   *string
+	maxResults                *int32
+	datacenterId              string
+	applicationLoadBalancerId string
+	pretty                    *bool
+	depth                     *int32
+	xContractNumber           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsGetRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersFlowlogsGetRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsGetRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersFlowlogsGetRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsGetRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersFlowlogsGetRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsGetRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersFlowlogsGetRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsGetRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersFlowlogsGetRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsGetRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersFlowlogsGetRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
-func (r ApiDatacentersNetworkloadbalancersFlowlogsGetRequest) Filter(key string, value string) ApiDatacentersNetworkloadbalancersFlowlogsGetRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsGetRequest) Filter(key string, value string) ApiDatacentersApplicationloadbalancersFlowlogsGetRequest {
 	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
 
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
-func (r ApiDatacentersNetworkloadbalancersFlowlogsGetRequest) OrderBy(orderBy string) ApiDatacentersNetworkloadbalancersFlowlogsGetRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsGetRequest) OrderBy(orderBy string) ApiDatacentersApplicationloadbalancersFlowlogsGetRequest {
 	r.orderBy = &orderBy
 	return r
 }
 
 // MaxResults query param limits the number of results returned.
-func (r ApiDatacentersNetworkloadbalancersFlowlogsGetRequest) MaxResults(maxResults int32) ApiDatacentersNetworkloadbalancersFlowlogsGetRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsGetRequest) MaxResults(maxResults int32) ApiDatacentersApplicationloadbalancersFlowlogsGetRequest {
 	r.maxResults = &maxResults
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsGetRequest) Execute() (FlowLogs, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersFlowlogsGetExecute(r)
+func (r ApiDatacentersApplicationloadbalancersFlowlogsGetRequest) Execute() (FlowLogs, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersFlowlogsGetExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersFlowlogsGet List Network Load Balancer Flow Logs
- * You can retrieve a list of Flow Logs of the Network Load Balancer.
+ * DatacentersApplicationloadbalancersFlowlogsGet List Application Load Balancer Flow Logs
+ * You can retrieve a list of Flow Logs of the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
- * @return ApiDatacentersNetworkloadbalancersFlowlogsGetRequest
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
+ * @return ApiDatacentersApplicationloadbalancersFlowlogsGetRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsGet(ctx _context.Context, datacenterId string, networkLoadBalancerId string) ApiDatacentersNetworkloadbalancersFlowlogsGetRequest {
-	return ApiDatacentersNetworkloadbalancersFlowlogsGetRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		filters:               _neturl.Values{},
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsGet(ctx _context.Context, datacenterId string, applicationLoadBalancerId string) ApiDatacentersApplicationloadbalancersFlowlogsGetRequest {
+	return ApiDatacentersApplicationloadbalancersFlowlogsGetRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		filters:                   _neturl.Values{},
 	}
 }
 
@@ -750,7 +750,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
  * Execute executes the request
  * @return FlowLogs
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsGetExecute(r ApiDatacentersNetworkloadbalancersFlowlogsGetRequest) (FlowLogs, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsGetExecute(r ApiDatacentersApplicationloadbalancersFlowlogsGetRequest) (FlowLogs, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -760,14 +760,14 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		localVarReturnValue  FlowLogs
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersFlowlogsGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersFlowlogsGet")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/flowlogs"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/flowlogs"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -839,7 +839,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersFlowlogsGet",
+		Operation:   "DatacentersApplicationloadbalancersFlowlogsGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -882,55 +882,55 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest struct {
-	ctx                                  _context.Context
-	ApiService                           *NetworkLoadBalancersApiService
-	datacenterId                         string
-	networkLoadBalancerId                string
-	flowLogId                            string
-	networkLoadBalancerFlowLogProperties *FlowLogProperties
-	pretty                               *bool
-	depth                                *int32
-	xContractNumber                      *int32
+type ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest struct {
+	ctx                                      _context.Context
+	ApiService                               *ApplicationLoadBalancersApiService
+	datacenterId                             string
+	applicationLoadBalancerId                string
+	flowLogId                                string
+	applicationLoadBalancerFlowLogProperties *FlowLogProperties
+	pretty                                   *bool
+	depth                                    *int32
+	xContractNumber                          *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest) NetworkLoadBalancerFlowLogProperties(networkLoadBalancerFlowLogProperties FlowLogProperties) ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest {
-	r.networkLoadBalancerFlowLogProperties = &networkLoadBalancerFlowLogProperties
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest) ApplicationLoadBalancerFlowLogProperties(applicationLoadBalancerFlowLogProperties FlowLogProperties) ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest {
+	r.applicationLoadBalancerFlowLogProperties = &applicationLoadBalancerFlowLogProperties
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest) Execute() (FlowLog, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersFlowlogsPatchExecute(r)
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest) Execute() (FlowLog, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersFlowlogsPatchExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersFlowlogsPatch Partially modify a Flow Log of the Network Load Balancer
- * You can use to partially update a Flow Log of a Network Load Balancer.
+ * DatacentersApplicationloadbalancersFlowlogsPatch Partially modify a Flow Log of the Application Load Balancer
+ * You can use to partially update a Flow Log of a Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
  * @param flowLogId The unique ID of the Flow Log
- * @return ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest
+ * @return ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsPatch(ctx _context.Context, datacenterId string, networkLoadBalancerId string, flowLogId string) ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest {
-	return ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		flowLogId:             flowLogId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsPatch(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, flowLogId string) ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest {
+	return ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		flowLogId:                 flowLogId,
 	}
 }
 
@@ -938,7 +938,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
  * Execute executes the request
  * @return FlowLog
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsPatchExecute(r ApiDatacentersNetworkloadbalancersFlowlogsPatchRequest) (FlowLog, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsPatchExecute(r ApiDatacentersApplicationloadbalancersFlowlogsPatchRequest) (FlowLog, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPatch
 		localVarPostBody     interface{}
@@ -948,21 +948,21 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		localVarReturnValue  FlowLog
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersFlowlogsPatch")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersFlowlogsPatch")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/flowlogs/{flowLogId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/flowlogs/{flowLogId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"flowLogId"+"}", _neturl.PathEscape(parameterToString(r.flowLogId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.networkLoadBalancerFlowLogProperties == nil {
-		return localVarReturnValue, nil, reportError("networkLoadBalancerFlowLogProperties is required and must be specified")
+	if r.applicationLoadBalancerFlowLogProperties == nil {
+		return localVarReturnValue, nil, reportError("applicationLoadBalancerFlowLogProperties is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -993,7 +993,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.networkLoadBalancerFlowLogProperties
+	localVarPostBody = r.applicationLoadBalancerFlowLogProperties
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -1020,7 +1020,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersFlowlogsPatch",
+		Operation:   "DatacentersApplicationloadbalancersFlowlogsPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1063,52 +1063,52 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersFlowlogsPostRequest struct {
-	ctx                        _context.Context
-	ApiService                 *NetworkLoadBalancersApiService
-	datacenterId               string
-	networkLoadBalancerId      string
-	networkLoadBalancerFlowLog *FlowLog
-	pretty                     *bool
-	depth                      *int32
-	xContractNumber            *int32
+type ApiDatacentersApplicationloadbalancersFlowlogsPostRequest struct {
+	ctx                            _context.Context
+	ApiService                     *ApplicationLoadBalancersApiService
+	datacenterId                   string
+	applicationLoadBalancerId      string
+	applicationLoadBalancerFlowLog *FlowLog
+	pretty                         *bool
+	depth                          *int32
+	xContractNumber                *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPostRequest) NetworkLoadBalancerFlowLog(networkLoadBalancerFlowLog FlowLog) ApiDatacentersNetworkloadbalancersFlowlogsPostRequest {
-	r.networkLoadBalancerFlowLog = &networkLoadBalancerFlowLog
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPostRequest) ApplicationLoadBalancerFlowLog(applicationLoadBalancerFlowLog FlowLog) ApiDatacentersApplicationloadbalancersFlowlogsPostRequest {
+	r.applicationLoadBalancerFlowLog = &applicationLoadBalancerFlowLog
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPostRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersFlowlogsPostRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPostRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersFlowlogsPostRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPostRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersFlowlogsPostRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPostRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersFlowlogsPostRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPostRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersFlowlogsPostRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPostRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersFlowlogsPostRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPostRequest) Execute() (FlowLog, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersFlowlogsPostExecute(r)
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPostRequest) Execute() (FlowLog, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersFlowlogsPostExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersFlowlogsPost Add a Network Load Balancer Flow Log
- * This will add a new Flow Log to the Network Load Balancer.
+ * DatacentersApplicationloadbalancersFlowlogsPost Add a Application Load Balancer Flow Log
+ * This will add a new Flow Log to the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
- * @return ApiDatacentersNetworkloadbalancersFlowlogsPostRequest
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
+ * @return ApiDatacentersApplicationloadbalancersFlowlogsPostRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsPost(ctx _context.Context, datacenterId string, networkLoadBalancerId string) ApiDatacentersNetworkloadbalancersFlowlogsPostRequest {
-	return ApiDatacentersNetworkloadbalancersFlowlogsPostRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsPost(ctx _context.Context, datacenterId string, applicationLoadBalancerId string) ApiDatacentersApplicationloadbalancersFlowlogsPostRequest {
+	return ApiDatacentersApplicationloadbalancersFlowlogsPostRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
 	}
 }
 
@@ -1116,7 +1116,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
  * Execute executes the request
  * @return FlowLog
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsPostExecute(r ApiDatacentersNetworkloadbalancersFlowlogsPostRequest) (FlowLog, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsPostExecute(r ApiDatacentersApplicationloadbalancersFlowlogsPostRequest) (FlowLog, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -1126,20 +1126,20 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		localVarReturnValue  FlowLog
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersFlowlogsPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersFlowlogsPost")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/flowlogs"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/flowlogs"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.networkLoadBalancerFlowLog == nil {
-		return localVarReturnValue, nil, reportError("networkLoadBalancerFlowLog is required and must be specified")
+	if r.applicationLoadBalancerFlowLog == nil {
+		return localVarReturnValue, nil, reportError("applicationLoadBalancerFlowLog is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -1170,7 +1170,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.networkLoadBalancerFlowLog
+	localVarPostBody = r.applicationLoadBalancerFlowLog
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -1197,7 +1197,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersFlowlogsPost",
+		Operation:   "DatacentersApplicationloadbalancersFlowlogsPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1240,55 +1240,55 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersFlowlogsPutRequest struct {
-	ctx                        _context.Context
-	ApiService                 *NetworkLoadBalancersApiService
-	datacenterId               string
-	networkLoadBalancerId      string
-	flowLogId                  string
-	networkLoadBalancerFlowLog *FlowLogPut
-	pretty                     *bool
-	depth                      *int32
-	xContractNumber            *int32
+type ApiDatacentersApplicationloadbalancersFlowlogsPutRequest struct {
+	ctx                            _context.Context
+	ApiService                     *ApplicationLoadBalancersApiService
+	datacenterId                   string
+	applicationLoadBalancerId      string
+	flowLogId                      string
+	applicationLoadBalancerFlowLog *FlowLogPut
+	pretty                         *bool
+	depth                          *int32
+	xContractNumber                *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPutRequest) NetworkLoadBalancerFlowLog(networkLoadBalancerFlowLog FlowLogPut) ApiDatacentersNetworkloadbalancersFlowlogsPutRequest {
-	r.networkLoadBalancerFlowLog = &networkLoadBalancerFlowLog
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPutRequest) ApplicationLoadBalancerFlowLog(applicationLoadBalancerFlowLog FlowLogPut) ApiDatacentersApplicationloadbalancersFlowlogsPutRequest {
+	r.applicationLoadBalancerFlowLog = &applicationLoadBalancerFlowLog
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPutRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersFlowlogsPutRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPutRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersFlowlogsPutRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPutRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersFlowlogsPutRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPutRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersFlowlogsPutRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPutRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersFlowlogsPutRequest {
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPutRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersFlowlogsPutRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersFlowlogsPutRequest) Execute() (FlowLog, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersFlowlogsPutExecute(r)
+func (r ApiDatacentersApplicationloadbalancersFlowlogsPutRequest) Execute() (FlowLog, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersFlowlogsPutExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersFlowlogsPut Modify a Flow Log of the Network Load Balancer
- * You can use to update a Flow Log of the Network Load Balancer.
+ * DatacentersApplicationloadbalancersFlowlogsPut Modify a Flow Log of the Application Load Balancer
+ * You can use to update a Flow Log of the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
  * @param flowLogId The unique ID of the Flow Log
- * @return ApiDatacentersNetworkloadbalancersFlowlogsPutRequest
+ * @return ApiDatacentersApplicationloadbalancersFlowlogsPutRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsPut(ctx _context.Context, datacenterId string, networkLoadBalancerId string, flowLogId string) ApiDatacentersNetworkloadbalancersFlowlogsPutRequest {
-	return ApiDatacentersNetworkloadbalancersFlowlogsPutRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		flowLogId:             flowLogId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsPut(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, flowLogId string) ApiDatacentersApplicationloadbalancersFlowlogsPutRequest {
+	return ApiDatacentersApplicationloadbalancersFlowlogsPutRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		flowLogId:                 flowLogId,
 	}
 }
 
@@ -1296,7 +1296,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
  * Execute executes the request
  * @return FlowLog
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogsPutExecute(r ApiDatacentersNetworkloadbalancersFlowlogsPutRequest) (FlowLog, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersFlowlogsPutExecute(r ApiDatacentersApplicationloadbalancersFlowlogsPutRequest) (FlowLog, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
@@ -1306,21 +1306,21 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		localVarReturnValue  FlowLog
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersFlowlogsPut")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersFlowlogsPut")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/flowlogs/{flowLogId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/flowlogs/{flowLogId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"flowLogId"+"}", _neturl.PathEscape(parameterToString(r.flowLogId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.networkLoadBalancerFlowLog == nil {
-		return localVarReturnValue, nil, reportError("networkLoadBalancerFlowLog is required and must be specified")
+	if r.applicationLoadBalancerFlowLog == nil {
+		return localVarReturnValue, nil, reportError("applicationLoadBalancerFlowLog is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -1351,7 +1351,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.networkLoadBalancerFlowLog
+	localVarPostBody = r.applicationLoadBalancerFlowLog
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -1378,7 +1378,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersFlowlogsPut",
+		Operation:   "DatacentersApplicationloadbalancersFlowlogsPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1421,57 +1421,57 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersFlowlogs
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest struct {
-	ctx                   _context.Context
-	ApiService            *NetworkLoadBalancersApiService
-	datacenterId          string
-	networkLoadBalancerId string
-	forwardingRuleId      string
-	pretty                *bool
-	depth                 *int32
-	xContractNumber       *int32
+type ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest struct {
+	ctx                       _context.Context
+	ApiService                *ApplicationLoadBalancersApiService
+	datacenterId              string
+	applicationLoadBalancerId string
+	forwardingRuleId          string
+	pretty                    *bool
+	depth                     *int32
+	xContractNumber           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest) Execute() (*APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersForwardingrulesDeleteExecute(r)
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest) Execute() (*APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersForwardingrulesDeleteExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersForwardingrulesDelete Remove Forwarding Rule from Network Load Balancer
- * This will remove a forwarding rule from the Network Load Balancer.
+ * DatacentersApplicationloadbalancersForwardingrulesDelete Remove Forwarding Rule from Application Load Balancer
+ * This will remove a forwarding rule from the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
  * @param forwardingRuleId The unique ID of the forwarding rule
- * @return ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest
+ * @return ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesDelete(ctx _context.Context, datacenterId string, networkLoadBalancerId string, forwardingRuleId string) ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest {
-	return ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		forwardingRuleId:      forwardingRuleId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesDelete(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, forwardingRuleId string) ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest {
+	return ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		forwardingRuleId:          forwardingRuleId,
 	}
 }
 
 /*
  * Execute executes the request
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesDeleteExecute(r ApiDatacentersNetworkloadbalancersForwardingrulesDeleteRequest) (*APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesDeleteExecute(r ApiDatacentersApplicationloadbalancersForwardingrulesDeleteRequest) (*APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodDelete
 		localVarPostBody     interface{}
@@ -1480,14 +1480,14 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		localVarFileBytes    []byte
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersForwardingrulesDelete")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersForwardingrulesDelete")
 	if err != nil {
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/forwardingrules/{forwardingRuleId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/forwardingrules/{forwardingRuleId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"forwardingRuleId"+"}", _neturl.PathEscape(parameterToString(r.forwardingRuleId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1547,7 +1547,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersForwardingrulesDelete",
+		Operation:   "DatacentersApplicationloadbalancersForwardingrulesDelete",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1580,75 +1580,75 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 	return localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest struct {
-	ctx                   _context.Context
-	ApiService            *NetworkLoadBalancersApiService
-	datacenterId          string
-	networkLoadBalancerId string
-	forwardingRuleId      string
-	pretty                *bool
-	depth                 *int32
-	xContractNumber       *int32
+type ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest struct {
+	ctx                       _context.Context
+	ApiService                *ApplicationLoadBalancersApiService
+	datacenterId              string
+	applicationLoadBalancerId string
+	forwardingRuleId          string
+	pretty                    *bool
+	depth                     *int32
+	xContractNumber           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest) Execute() (NetworkLoadBalancerForwardingRule, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdExecute(r)
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest) Execute() (ApplicationLoadBalancerForwardingRule, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleId Retrieve a Forwarding Rule of the Network Load Balancer
- * This will a forwarding rule of the Network Load Balancer.
+ * DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleId Retrieve a Forwarding Rule of the Application Load Balancer
+ * This will a forwarding rule of the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
  * @param forwardingRuleId The unique ID of the forwarding rule
- * @return ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest
+ * @return ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleId(ctx _context.Context, datacenterId string, networkLoadBalancerId string, forwardingRuleId string) ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest {
-	return ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		forwardingRuleId:      forwardingRuleId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleId(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, forwardingRuleId string) ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest {
+	return ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		forwardingRuleId:          forwardingRuleId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancerForwardingRule
+ * @return ApplicationLoadBalancerForwardingRule
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdExecute(r ApiDatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleIdRequest) (NetworkLoadBalancerForwardingRule, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdExecute(r ApiDatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleIdRequest) (ApplicationLoadBalancerForwardingRule, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancerForwardingRule
+		localVarReturnValue  ApplicationLoadBalancerForwardingRule
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleId")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleId")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/forwardingrules/{forwardingRuleId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/forwardingrules/{forwardingRuleId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"forwardingRuleId"+"}", _neturl.PathEscape(parameterToString(r.forwardingRuleId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1708,7 +1708,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersForwardingrulesFindByForwardingRuleId",
+		Operation:   "DatacentersApplicationloadbalancersForwardingrulesFindByForwardingRuleId",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1751,95 +1751,95 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest struct {
-	ctx                   _context.Context
-	ApiService            *NetworkLoadBalancersApiService
-	filters               _neturl.Values
-	orderBy               *string
-	maxResults            *int32
-	datacenterId          string
-	networkLoadBalancerId string
-	pretty                *bool
-	depth                 *int32
-	xContractNumber       *int32
+type ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest struct {
+	ctx                       _context.Context
+	ApiService                *ApplicationLoadBalancersApiService
+	filters                   _neturl.Values
+	orderBy                   *string
+	maxResults                *int32
+	datacenterId              string
+	applicationLoadBalancerId string
+	pretty                    *bool
+	depth                     *int32
+	xContractNumber           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest) Filter(key string, value string) ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest) Filter(key string, value string) ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest {
 	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
 
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest) OrderBy(orderBy string) ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest) OrderBy(orderBy string) ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest {
 	r.orderBy = &orderBy
 	return r
 }
 
 // MaxResults query param limits the number of results returned.
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest) MaxResults(maxResults int32) ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest) MaxResults(maxResults int32) ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest {
 	r.maxResults = &maxResults
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest) Execute() (NetworkLoadBalancerForwardingRules, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersForwardingrulesGetExecute(r)
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest) Execute() (ApplicationLoadBalancerForwardingRules, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersForwardingrulesGetExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersForwardingrulesGet List Network Load Balancer Forwarding Rules
- * You can retrieve a list of forwarding rules of the Network Load Balancer.
+ * DatacentersApplicationloadbalancersForwardingrulesGet List Application Load Balancer Forwarding Rules
+ * You can retrieve a list of forwarding rules of the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
- * @return ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
+ * @return ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesGet(ctx _context.Context, datacenterId string, networkLoadBalancerId string) ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest {
-	return ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		filters:               _neturl.Values{},
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesGet(ctx _context.Context, datacenterId string, applicationLoadBalancerId string) ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest {
+	return ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		filters:                   _neturl.Values{},
 	}
 }
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancerForwardingRules
+ * @return ApplicationLoadBalancerForwardingRules
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesGetExecute(r ApiDatacentersNetworkloadbalancersForwardingrulesGetRequest) (NetworkLoadBalancerForwardingRules, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesGetExecute(r ApiDatacentersApplicationloadbalancersForwardingrulesGetRequest) (ApplicationLoadBalancerForwardingRules, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancerForwardingRules
+		localVarReturnValue  ApplicationLoadBalancerForwardingRules
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersForwardingrulesGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersForwardingrulesGet")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/forwardingrules"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/forwardingrules"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -1911,7 +1911,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersForwardingrulesGet",
+		Operation:   "DatacentersApplicationloadbalancersForwardingrulesGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -1954,87 +1954,87 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest struct {
-	ctx                                         _context.Context
-	ApiService                                  *NetworkLoadBalancersApiService
-	datacenterId                                string
-	networkLoadBalancerId                       string
-	forwardingRuleId                            string
-	networkLoadBalancerForwardingRuleProperties *NetworkLoadBalancerForwardingRuleProperties
-	pretty                                      *bool
-	depth                                       *int32
-	xContractNumber                             *int32
+type ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest struct {
+	ctx                                             _context.Context
+	ApiService                                      *ApplicationLoadBalancersApiService
+	datacenterId                                    string
+	applicationLoadBalancerId                       string
+	forwardingRuleId                                string
+	applicationLoadBalancerForwardingRuleProperties *ApplicationLoadBalancerForwardingRuleProperties
+	pretty                                          *bool
+	depth                                           *int32
+	xContractNumber                                 *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest) NetworkLoadBalancerForwardingRuleProperties(networkLoadBalancerForwardingRuleProperties NetworkLoadBalancerForwardingRuleProperties) ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest {
-	r.networkLoadBalancerForwardingRuleProperties = &networkLoadBalancerForwardingRuleProperties
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest) ApplicationLoadBalancerForwardingRuleProperties(applicationLoadBalancerForwardingRuleProperties ApplicationLoadBalancerForwardingRuleProperties) ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest {
+	r.applicationLoadBalancerForwardingRuleProperties = &applicationLoadBalancerForwardingRuleProperties
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest) Execute() (NetworkLoadBalancerForwardingRule, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersForwardingrulesPatchExecute(r)
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest) Execute() (ApplicationLoadBalancerForwardingRule, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersForwardingrulesPatchExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersForwardingrulesPatch Partially modify a forwarding rule of the Network Load Balancer
- * You can use to partially update a forwarding rule of a Network Load Balancer.
+ * DatacentersApplicationloadbalancersForwardingrulesPatch Partially modify a forwarding rule of the Application Load Balancer
+ * You can use to partially update a forwarding rule of an Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
  * @param forwardingRuleId The unique ID of the forwarding rule
- * @return ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest
+ * @return ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesPatch(ctx _context.Context, datacenterId string, networkLoadBalancerId string, forwardingRuleId string) ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest {
-	return ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		forwardingRuleId:      forwardingRuleId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesPatch(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, forwardingRuleId string) ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest {
+	return ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		forwardingRuleId:          forwardingRuleId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancerForwardingRule
+ * @return ApplicationLoadBalancerForwardingRule
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesPatchExecute(r ApiDatacentersNetworkloadbalancersForwardingrulesPatchRequest) (NetworkLoadBalancerForwardingRule, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesPatchExecute(r ApiDatacentersApplicationloadbalancersForwardingrulesPatchRequest) (ApplicationLoadBalancerForwardingRule, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPatch
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancerForwardingRule
+		localVarReturnValue  ApplicationLoadBalancerForwardingRule
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersForwardingrulesPatch")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersForwardingrulesPatch")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/forwardingrules/{forwardingRuleId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/forwardingrules/{forwardingRuleId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"forwardingRuleId"+"}", _neturl.PathEscape(parameterToString(r.forwardingRuleId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.networkLoadBalancerForwardingRuleProperties == nil {
-		return localVarReturnValue, nil, reportError("networkLoadBalancerForwardingRuleProperties is required and must be specified")
+	if r.applicationLoadBalancerForwardingRuleProperties == nil {
+		return localVarReturnValue, nil, reportError("applicationLoadBalancerForwardingRuleProperties is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -2065,7 +2065,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.networkLoadBalancerForwardingRuleProperties
+	localVarPostBody = r.applicationLoadBalancerForwardingRuleProperties
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -2092,7 +2092,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersForwardingrulesPatch",
+		Operation:   "DatacentersApplicationloadbalancersForwardingrulesPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2135,83 +2135,83 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest struct {
-	ctx                               _context.Context
-	ApiService                        *NetworkLoadBalancersApiService
-	datacenterId                      string
-	networkLoadBalancerId             string
-	networkLoadBalancerForwardingRule *NetworkLoadBalancerForwardingRule
-	pretty                            *bool
-	depth                             *int32
-	xContractNumber                   *int32
+type ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest struct {
+	ctx                                   _context.Context
+	ApiService                            *ApplicationLoadBalancersApiService
+	datacenterId                          string
+	applicationLoadBalancerId             string
+	applicationLoadBalancerForwardingRule *ApplicationLoadBalancerForwardingRule
+	pretty                                *bool
+	depth                                 *int32
+	xContractNumber                       *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest) NetworkLoadBalancerForwardingRule(networkLoadBalancerForwardingRule NetworkLoadBalancerForwardingRule) ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest {
-	r.networkLoadBalancerForwardingRule = &networkLoadBalancerForwardingRule
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest) ApplicationLoadBalancerForwardingRule(applicationLoadBalancerForwardingRule ApplicationLoadBalancerForwardingRule) ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest {
+	r.applicationLoadBalancerForwardingRule = &applicationLoadBalancerForwardingRule
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest) Execute() (NetworkLoadBalancerForwardingRule, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersForwardingrulesPostExecute(r)
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest) Execute() (ApplicationLoadBalancerForwardingRule, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersForwardingrulesPostExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersForwardingrulesPost Add a Network Load Balancer Forwarding Rule
- * This will add a new forwarding rule to the Network Load Balancer.
+ * DatacentersApplicationloadbalancersForwardingrulesPost Add an Application Load Balancer Forwarding Rule
+ * This will add a new forwarding rule to the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
- * @return ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
+ * @return ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesPost(ctx _context.Context, datacenterId string, networkLoadBalancerId string) ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest {
-	return ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesPost(ctx _context.Context, datacenterId string, applicationLoadBalancerId string) ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest {
+	return ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancerForwardingRule
+ * @return ApplicationLoadBalancerForwardingRule
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesPostExecute(r ApiDatacentersNetworkloadbalancersForwardingrulesPostRequest) (NetworkLoadBalancerForwardingRule, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesPostExecute(r ApiDatacentersApplicationloadbalancersForwardingrulesPostRequest) (ApplicationLoadBalancerForwardingRule, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancerForwardingRule
+		localVarReturnValue  ApplicationLoadBalancerForwardingRule
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersForwardingrulesPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersForwardingrulesPost")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/forwardingrules"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/forwardingrules"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.networkLoadBalancerForwardingRule == nil {
-		return localVarReturnValue, nil, reportError("networkLoadBalancerForwardingRule is required and must be specified")
+	if r.applicationLoadBalancerForwardingRule == nil {
+		return localVarReturnValue, nil, reportError("applicationLoadBalancerForwardingRule is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -2242,7 +2242,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.networkLoadBalancerForwardingRule
+	localVarPostBody = r.applicationLoadBalancerForwardingRule
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -2269,7 +2269,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersForwardingrulesPost",
+		Operation:   "DatacentersApplicationloadbalancersForwardingrulesPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2312,87 +2312,87 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest struct {
-	ctx                               _context.Context
-	ApiService                        *NetworkLoadBalancersApiService
-	datacenterId                      string
-	networkLoadBalancerId             string
-	forwardingRuleId                  string
-	networkLoadBalancerForwardingRule *NetworkLoadBalancerForwardingRulePut
-	pretty                            *bool
-	depth                             *int32
-	xContractNumber                   *int32
+type ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest struct {
+	ctx                                   _context.Context
+	ApiService                            *ApplicationLoadBalancersApiService
+	datacenterId                          string
+	applicationLoadBalancerId             string
+	forwardingRuleId                      string
+	applicationLoadBalancerForwardingRule *ApplicationLoadBalancerForwardingRulePut
+	pretty                                *bool
+	depth                                 *int32
+	xContractNumber                       *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest) NetworkLoadBalancerForwardingRule(networkLoadBalancerForwardingRule NetworkLoadBalancerForwardingRulePut) ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest {
-	r.networkLoadBalancerForwardingRule = &networkLoadBalancerForwardingRule
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest) ApplicationLoadBalancerForwardingRule(applicationLoadBalancerForwardingRule ApplicationLoadBalancerForwardingRulePut) ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest {
+	r.applicationLoadBalancerForwardingRule = &applicationLoadBalancerForwardingRule
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest {
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest) Execute() (NetworkLoadBalancerForwardingRule, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersForwardingrulesPutExecute(r)
+func (r ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest) Execute() (ApplicationLoadBalancerForwardingRule, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersForwardingrulesPutExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersForwardingrulesPut Modify a forwarding rule of the Network Load Balancer
- * You can use to update a forwarding rule of the Network Load Balancer.
+ * DatacentersApplicationloadbalancersForwardingrulesPut Modify a forwarding rule of the Application Load Balancer
+ * You can use to update a forwarding rule of the Application Load Balancer.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
  * @param forwardingRuleId The unique ID of the forwarding rule
- * @return ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest
+ * @return ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesPut(ctx _context.Context, datacenterId string, networkLoadBalancerId string, forwardingRuleId string) ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest {
-	return ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
-		forwardingRuleId:      forwardingRuleId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesPut(ctx _context.Context, datacenterId string, applicationLoadBalancerId string, forwardingRuleId string) ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest {
+	return ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
+		forwardingRuleId:          forwardingRuleId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancerForwardingRule
+ * @return ApplicationLoadBalancerForwardingRule
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardingrulesPutExecute(r ApiDatacentersNetworkloadbalancersForwardingrulesPutRequest) (NetworkLoadBalancerForwardingRule, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersForwardingrulesPutExecute(r ApiDatacentersApplicationloadbalancersForwardingrulesPutRequest) (ApplicationLoadBalancerForwardingRule, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancerForwardingRule
+		localVarReturnValue  ApplicationLoadBalancerForwardingRule
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersForwardingrulesPut")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersForwardingrulesPut")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}/forwardingrules/{forwardingRuleId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}/forwardingrules/{forwardingRuleId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"forwardingRuleId"+"}", _neturl.PathEscape(parameterToString(r.forwardingRuleId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.networkLoadBalancerForwardingRule == nil {
-		return localVarReturnValue, nil, reportError("networkLoadBalancerForwardingRule is required and must be specified")
+	if r.applicationLoadBalancerForwardingRule == nil {
+		return localVarReturnValue, nil, reportError("applicationLoadBalancerForwardingRule is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -2423,7 +2423,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.networkLoadBalancerForwardingRule
+	localVarPostBody = r.applicationLoadBalancerForwardingRule
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -2450,7 +2450,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersForwardingrulesPut",
+		Operation:   "DatacentersApplicationloadbalancersForwardingrulesPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2493,9 +2493,9 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersForwardi
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersGetRequest struct {
+type ApiDatacentersApplicationloadbalancersGetRequest struct {
 	ctx             _context.Context
-	ApiService      *NetworkLoadBalancersApiService
+	ApiService      *ApplicationLoadBalancersApiService
 	filters         _neturl.Values
 	orderBy         *string
 	maxResults      *int32
@@ -2507,59 +2507,59 @@ type ApiDatacentersNetworkloadbalancersGetRequest struct {
 	limit           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersGetRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersGetRequest {
+func (r ApiDatacentersApplicationloadbalancersGetRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersGetRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersGetRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersGetRequest {
+func (r ApiDatacentersApplicationloadbalancersGetRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersGetRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersGetRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersGetRequest {
+func (r ApiDatacentersApplicationloadbalancersGetRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersGetRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersGetRequest) Offset(offset int32) ApiDatacentersNetworkloadbalancersGetRequest {
+func (r ApiDatacentersApplicationloadbalancersGetRequest) Offset(offset int32) ApiDatacentersApplicationloadbalancersGetRequest {
 	r.offset = &offset
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersGetRequest) Limit(limit int32) ApiDatacentersNetworkloadbalancersGetRequest {
+func (r ApiDatacentersApplicationloadbalancersGetRequest) Limit(limit int32) ApiDatacentersApplicationloadbalancersGetRequest {
 	r.limit = &limit
 	return r
 }
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
-func (r ApiDatacentersNetworkloadbalancersGetRequest) Filter(key string, value string) ApiDatacentersNetworkloadbalancersGetRequest {
+func (r ApiDatacentersApplicationloadbalancersGetRequest) Filter(key string, value string) ApiDatacentersApplicationloadbalancersGetRequest {
 	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
 
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
-func (r ApiDatacentersNetworkloadbalancersGetRequest) OrderBy(orderBy string) ApiDatacentersNetworkloadbalancersGetRequest {
+func (r ApiDatacentersApplicationloadbalancersGetRequest) OrderBy(orderBy string) ApiDatacentersApplicationloadbalancersGetRequest {
 	r.orderBy = &orderBy
 	return r
 }
 
 // MaxResults query param limits the number of results returned.
-func (r ApiDatacentersNetworkloadbalancersGetRequest) MaxResults(maxResults int32) ApiDatacentersNetworkloadbalancersGetRequest {
+func (r ApiDatacentersApplicationloadbalancersGetRequest) MaxResults(maxResults int32) ApiDatacentersApplicationloadbalancersGetRequest {
 	r.maxResults = &maxResults
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersGetRequest) Execute() (NetworkLoadBalancers, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersGetExecute(r)
+func (r ApiDatacentersApplicationloadbalancersGetRequest) Execute() (ApplicationLoadBalancers, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersGetExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersGet List Network Load Balancers
- * Retrieve a list of Network Load Balancers within the datacenter.
+ * DatacentersApplicationloadbalancersGet List Application Load Balancers
+ * Retrieve a list of Application Load Balancers within the datacenter.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @return ApiDatacentersNetworkloadbalancersGetRequest
+ * @return ApiDatacentersApplicationloadbalancersGetRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersGet(ctx _context.Context, datacenterId string) ApiDatacentersNetworkloadbalancersGetRequest {
-	return ApiDatacentersNetworkloadbalancersGetRequest{
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersGet(ctx _context.Context, datacenterId string) ApiDatacentersApplicationloadbalancersGetRequest {
+	return ApiDatacentersApplicationloadbalancersGetRequest{
 		ApiService:   a,
 		ctx:          ctx,
 		datacenterId: datacenterId,
@@ -2569,24 +2569,24 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersGet(ctx 
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancers
+ * @return ApplicationLoadBalancers
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersGetExecute(r ApiDatacentersNetworkloadbalancersGetRequest) (NetworkLoadBalancers, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersGetExecute(r ApiDatacentersApplicationloadbalancersGetRequest) (ApplicationLoadBalancers, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancers
+		localVarReturnValue  ApplicationLoadBalancers
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersGet")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -2665,7 +2665,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersGetExecu
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersGet",
+		Operation:   "DatacentersApplicationloadbalancersGet",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2708,83 +2708,83 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersGetExecu
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersPatchRequest struct {
-	ctx                           _context.Context
-	ApiService                    *NetworkLoadBalancersApiService
-	datacenterId                  string
-	networkLoadBalancerId         string
-	networkLoadBalancerProperties *NetworkLoadBalancerProperties
-	pretty                        *bool
-	depth                         *int32
-	xContractNumber               *int32
+type ApiDatacentersApplicationloadbalancersPatchRequest struct {
+	ctx                               _context.Context
+	ApiService                        *ApplicationLoadBalancersApiService
+	datacenterId                      string
+	applicationLoadBalancerId         string
+	applicationLoadBalancerProperties *ApplicationLoadBalancerProperties
+	pretty                            *bool
+	depth                             *int32
+	xContractNumber                   *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersPatchRequest) NetworkLoadBalancerProperties(networkLoadBalancerProperties NetworkLoadBalancerProperties) ApiDatacentersNetworkloadbalancersPatchRequest {
-	r.networkLoadBalancerProperties = &networkLoadBalancerProperties
+func (r ApiDatacentersApplicationloadbalancersPatchRequest) ApplicationLoadBalancerProperties(applicationLoadBalancerProperties ApplicationLoadBalancerProperties) ApiDatacentersApplicationloadbalancersPatchRequest {
+	r.applicationLoadBalancerProperties = &applicationLoadBalancerProperties
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersPatchRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersPatchRequest {
+func (r ApiDatacentersApplicationloadbalancersPatchRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersPatchRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersPatchRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersPatchRequest {
+func (r ApiDatacentersApplicationloadbalancersPatchRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersPatchRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersPatchRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersPatchRequest {
+func (r ApiDatacentersApplicationloadbalancersPatchRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersPatchRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersPatchRequest) Execute() (NetworkLoadBalancer, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersPatchExecute(r)
+func (r ApiDatacentersApplicationloadbalancersPatchRequest) Execute() (ApplicationLoadBalancer, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersPatchExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersPatch Partially update an Network Load Balancer
- * Partially update the attributes of a given Network Load Balancer
+ * DatacentersApplicationloadbalancersPatch Partially update an Application Load Balancer
+ * Partially update the attributes of a given Application Load Balancer
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
- * @return ApiDatacentersNetworkloadbalancersPatchRequest
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
+ * @return ApiDatacentersApplicationloadbalancersPatchRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPatch(ctx _context.Context, datacenterId string, networkLoadBalancerId string) ApiDatacentersNetworkloadbalancersPatchRequest {
-	return ApiDatacentersNetworkloadbalancersPatchRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersPatch(ctx _context.Context, datacenterId string, applicationLoadBalancerId string) ApiDatacentersApplicationloadbalancersPatchRequest {
+	return ApiDatacentersApplicationloadbalancersPatchRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancer
+ * @return ApplicationLoadBalancer
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPatchExecute(r ApiDatacentersNetworkloadbalancersPatchRequest) (NetworkLoadBalancer, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersPatchExecute(r ApiDatacentersApplicationloadbalancersPatchRequest) (ApplicationLoadBalancer, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPatch
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancer
+		localVarReturnValue  ApplicationLoadBalancer
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersPatch")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersPatch")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.networkLoadBalancerProperties == nil {
-		return localVarReturnValue, nil, reportError("networkLoadBalancerProperties is required and must be specified")
+	if r.applicationLoadBalancerProperties == nil {
+		return localVarReturnValue, nil, reportError("applicationLoadBalancerProperties is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -2815,7 +2815,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPatchExe
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.networkLoadBalancerProperties
+	localVarPostBody = r.applicationLoadBalancerProperties
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -2842,7 +2842,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPatchExe
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersPatch",
+		Operation:   "DatacentersApplicationloadbalancersPatch",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -2885,46 +2885,46 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPatchExe
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersPostRequest struct {
-	ctx                 _context.Context
-	ApiService          *NetworkLoadBalancersApiService
-	datacenterId        string
-	networkLoadBalancer *NetworkLoadBalancer
-	pretty              *bool
-	depth               *int32
-	xContractNumber     *int32
+type ApiDatacentersApplicationloadbalancersPostRequest struct {
+	ctx                     _context.Context
+	ApiService              *ApplicationLoadBalancersApiService
+	datacenterId            string
+	applicationLoadBalancer *ApplicationLoadBalancer
+	pretty                  *bool
+	depth                   *int32
+	xContractNumber         *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersPostRequest) NetworkLoadBalancer(networkLoadBalancer NetworkLoadBalancer) ApiDatacentersNetworkloadbalancersPostRequest {
-	r.networkLoadBalancer = &networkLoadBalancer
+func (r ApiDatacentersApplicationloadbalancersPostRequest) ApplicationLoadBalancer(applicationLoadBalancer ApplicationLoadBalancer) ApiDatacentersApplicationloadbalancersPostRequest {
+	r.applicationLoadBalancer = &applicationLoadBalancer
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersPostRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersPostRequest {
+func (r ApiDatacentersApplicationloadbalancersPostRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersPostRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersPostRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersPostRequest {
+func (r ApiDatacentersApplicationloadbalancersPostRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersPostRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersPostRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersPostRequest {
+func (r ApiDatacentersApplicationloadbalancersPostRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersPostRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersPostRequest) Execute() (NetworkLoadBalancer, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersPostExecute(r)
+func (r ApiDatacentersApplicationloadbalancersPostRequest) Execute() (ApplicationLoadBalancer, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersPostExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersPost Create an Network Load Balancer
- * Creates an Network Load Balancer within the datacenter.
+ * DatacentersApplicationloadbalancersPost Create an Application Load Balancer
+ * Creates an Application Load Balancer within the datacenter.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @return ApiDatacentersNetworkloadbalancersPostRequest
+ * @return ApiDatacentersApplicationloadbalancersPostRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPost(ctx _context.Context, datacenterId string) ApiDatacentersNetworkloadbalancersPostRequest {
-	return ApiDatacentersNetworkloadbalancersPostRequest{
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersPost(ctx _context.Context, datacenterId string) ApiDatacentersApplicationloadbalancersPostRequest {
+	return ApiDatacentersApplicationloadbalancersPostRequest{
 		ApiService:   a,
 		ctx:          ctx,
 		datacenterId: datacenterId,
@@ -2933,31 +2933,31 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPost(ctx
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancer
+ * @return ApplicationLoadBalancer
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPostExecute(r ApiDatacentersNetworkloadbalancersPostRequest) (NetworkLoadBalancer, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersPostExecute(r ApiDatacentersApplicationloadbalancersPostRequest) (ApplicationLoadBalancer, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancer
+		localVarReturnValue  ApplicationLoadBalancer
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersPost")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.networkLoadBalancer == nil {
-		return localVarReturnValue, nil, reportError("networkLoadBalancer is required and must be specified")
+	if r.applicationLoadBalancer == nil {
+		return localVarReturnValue, nil, reportError("applicationLoadBalancer is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -2988,7 +2988,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPostExec
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.networkLoadBalancer
+	localVarPostBody = r.applicationLoadBalancer
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -3015,7 +3015,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPostExec
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersPost",
+		Operation:   "DatacentersApplicationloadbalancersPost",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
@@ -3058,83 +3058,83 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPostExec
 	return localVarReturnValue, localVarAPIResponse, nil
 }
 
-type ApiDatacentersNetworkloadbalancersPutRequest struct {
-	ctx                   _context.Context
-	ApiService            *NetworkLoadBalancersApiService
-	datacenterId          string
-	networkLoadBalancerId string
-	networkLoadBalancer   *NetworkLoadBalancerPut
-	pretty                *bool
-	depth                 *int32
-	xContractNumber       *int32
+type ApiDatacentersApplicationloadbalancersPutRequest struct {
+	ctx                       _context.Context
+	ApiService                *ApplicationLoadBalancersApiService
+	datacenterId              string
+	applicationLoadBalancerId string
+	applicationLoadBalancer   *ApplicationLoadBalancerPut
+	pretty                    *bool
+	depth                     *int32
+	xContractNumber           *int32
 }
 
-func (r ApiDatacentersNetworkloadbalancersPutRequest) NetworkLoadBalancer(networkLoadBalancer NetworkLoadBalancerPut) ApiDatacentersNetworkloadbalancersPutRequest {
-	r.networkLoadBalancer = &networkLoadBalancer
+func (r ApiDatacentersApplicationloadbalancersPutRequest) ApplicationLoadBalancer(applicationLoadBalancer ApplicationLoadBalancerPut) ApiDatacentersApplicationloadbalancersPutRequest {
+	r.applicationLoadBalancer = &applicationLoadBalancer
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersPutRequest) Pretty(pretty bool) ApiDatacentersNetworkloadbalancersPutRequest {
+func (r ApiDatacentersApplicationloadbalancersPutRequest) Pretty(pretty bool) ApiDatacentersApplicationloadbalancersPutRequest {
 	r.pretty = &pretty
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersPutRequest) Depth(depth int32) ApiDatacentersNetworkloadbalancersPutRequest {
+func (r ApiDatacentersApplicationloadbalancersPutRequest) Depth(depth int32) ApiDatacentersApplicationloadbalancersPutRequest {
 	r.depth = &depth
 	return r
 }
-func (r ApiDatacentersNetworkloadbalancersPutRequest) XContractNumber(xContractNumber int32) ApiDatacentersNetworkloadbalancersPutRequest {
+func (r ApiDatacentersApplicationloadbalancersPutRequest) XContractNumber(xContractNumber int32) ApiDatacentersApplicationloadbalancersPutRequest {
 	r.xContractNumber = &xContractNumber
 	return r
 }
 
-func (r ApiDatacentersNetworkloadbalancersPutRequest) Execute() (NetworkLoadBalancer, *APIResponse, error) {
-	return r.ApiService.DatacentersNetworkloadbalancersPutExecute(r)
+func (r ApiDatacentersApplicationloadbalancersPutRequest) Execute() (ApplicationLoadBalancer, *APIResponse, error) {
+	return r.ApiService.DatacentersApplicationloadbalancersPutExecute(r)
 }
 
 /*
- * DatacentersNetworkloadbalancersPut Update an Network Load Balancer
- * Update the attributes of a given Network Load Balancer
+ * DatacentersApplicationloadbalancersPut Update an Application Load Balancer
+ * Update the attributes of a given Application Load Balancer
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param datacenterId The unique ID of the data center.
- * @param networkLoadBalancerId The unique ID of the Network Load Balancer
- * @return ApiDatacentersNetworkloadbalancersPutRequest
+ * @param applicationLoadBalancerId The unique ID of the Application Load Balancer
+ * @return ApiDatacentersApplicationloadbalancersPutRequest
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPut(ctx _context.Context, datacenterId string, networkLoadBalancerId string) ApiDatacentersNetworkloadbalancersPutRequest {
-	return ApiDatacentersNetworkloadbalancersPutRequest{
-		ApiService:            a,
-		ctx:                   ctx,
-		datacenterId:          datacenterId,
-		networkLoadBalancerId: networkLoadBalancerId,
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersPut(ctx _context.Context, datacenterId string, applicationLoadBalancerId string) ApiDatacentersApplicationloadbalancersPutRequest {
+	return ApiDatacentersApplicationloadbalancersPutRequest{
+		ApiService:                a,
+		ctx:                       ctx,
+		datacenterId:              datacenterId,
+		applicationLoadBalancerId: applicationLoadBalancerId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return NetworkLoadBalancer
+ * @return ApplicationLoadBalancer
  */
-func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPutExecute(r ApiDatacentersNetworkloadbalancersPutRequest) (NetworkLoadBalancer, *APIResponse, error) {
+func (a *ApplicationLoadBalancersApiService) DatacentersApplicationloadbalancersPutExecute(r ApiDatacentersApplicationloadbalancersPutRequest) (ApplicationLoadBalancer, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  NetworkLoadBalancer
+		localVarReturnValue  ApplicationLoadBalancer
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkLoadBalancersApiService.DatacentersNetworkloadbalancersPut")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ApplicationLoadBalancersApiService.DatacentersApplicationloadbalancersPut")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/datacenters/{datacenterId}/networkloadbalancers/{networkLoadBalancerId}"
+	localVarPath := localBasePath + "/datacenters/{datacenterId}/applicationloadbalancers/{applicationLoadBalancerId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"datacenterId"+"}", _neturl.PathEscape(parameterToString(r.datacenterId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"networkLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.networkLoadBalancerId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"applicationLoadBalancerId"+"}", _neturl.PathEscape(parameterToString(r.applicationLoadBalancerId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.networkLoadBalancer == nil {
-		return localVarReturnValue, nil, reportError("networkLoadBalancer is required and must be specified")
+	if r.applicationLoadBalancer == nil {
+		return localVarReturnValue, nil, reportError("applicationLoadBalancer is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -3165,7 +3165,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPutExecu
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.networkLoadBalancer
+	localVarPostBody = r.applicationLoadBalancer
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -3192,7 +3192,7 @@ func (a *NetworkLoadBalancersApiService) DatacentersNetworkloadbalancersPutExecu
 		Method:      localVarHTTPMethod,
 		RequestURL:  localVarPath,
 		RequestTime: httpRequestTime,
-		Operation:   "DatacentersNetworkloadbalancersPut",
+		Operation:   "DatacentersApplicationloadbalancersPut",
 	}
 
 	if err != nil || localVarHTTPResponse == nil {
