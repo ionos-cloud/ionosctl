@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"os"
 	"testing"
 
@@ -82,7 +83,7 @@ func TestRunNetworkLoadBalancerFlowLogList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogs, &testResponse, nil)
 		err := RunNetworkLoadBalancerFlowLogList(cfg)
 		assert.NoError(t, err)
 	})
@@ -97,7 +98,7 @@ func TestRunNetworkLoadBalancerFlowLogListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, nil, testNetworkLoadBalancerFlowLogErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogs, nil, testNetworkLoadBalancerFlowLogErr)
 		err := RunNetworkLoadBalancerFlowLogList(cfg)
 		assert.Error(t, err)
 	})
@@ -310,7 +311,7 @@ func TestRunNetworkLoadBalancerFlowLogDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
 		//viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFlowLogId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogsList, &testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, nil)
 		err := RunNetworkLoadBalancerFlowLogDelete(cfg)

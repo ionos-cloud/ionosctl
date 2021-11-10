@@ -125,7 +125,7 @@ func TestRunPccList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().List().Return(pccs, &testResponse, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccs, &testResponse, nil)
 		err := RunPccList(cfg)
 		assert.NoError(t, err)
 	})
@@ -138,7 +138,7 @@ func TestRunPccListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().List().Return(pccs, nil, testPccErr)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccs, nil, testPccErr)
 		err := RunPccList(cfg)
 		assert.Error(t, err)
 	})
@@ -376,7 +376,7 @@ func TestRunPccDeleteAll(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().List().Return(pccsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccsList, &testResponse, nil)
 		rm.CloudApiV6Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
 		err := RunPccDelete(cfg)
@@ -468,24 +468,5 @@ func TestGetPccsColsErr(t *testing.T) {
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestGetPccsIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
-	assert.NoError(t, err)
-	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	getPccsIds(w)
-	err = w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }

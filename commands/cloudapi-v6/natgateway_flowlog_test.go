@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"os"
 	"testing"
 
@@ -82,7 +83,7 @@ func TestRunNatGatewayFlowLogList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testFlowLogVar)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, &testResponse, nil)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogs, &testResponse, nil)
 		err := RunNatGatewayFlowLogList(cfg)
 		assert.NoError(t, err)
 	})
@@ -97,7 +98,7 @@ func TestRunNatGatewayFlowLogListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testFlowLogVar)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogs, nil, testNatGatewayFlowLogErr)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogs, nil, testNatGatewayFlowLogErr)
 		err := RunNatGatewayFlowLogList(cfg)
 		assert.Error(t, err)
 	})
@@ -307,9 +308,8 @@ func TestRunNatGatewayFlowLogDeleteAll(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testFlowLogVar)
-		//viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFlowLogId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar).Return(testFlowLogsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogsList, &testResponse, nil)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, nil)
 		err := RunNatGatewayFlowLogDelete(cfg)

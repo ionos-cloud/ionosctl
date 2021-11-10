@@ -78,7 +78,11 @@ func (c *Command) GetAnnotations() map[string]string {
 }
 
 func (c *Command) GetAnnotationsByKey(key string) string {
-	return c.Command.Annotations[key]
+	if c != nil && c.Command != nil {
+		return c.Command.Annotations[key]
+	} else {
+		return ""
+	}
 }
 
 func (c *Command) AddStringSliceFlag(name, shorthand string, defaultValue []string, desc string, optionFunc ...FlagOptionFunc) {
