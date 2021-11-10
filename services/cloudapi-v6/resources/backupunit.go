@@ -85,7 +85,7 @@ func (s *backupUnitsService) Create(u BackupUnit) (*BackupUnit, *Response, error
 }
 
 func (s *backupUnitsService) Update(backupUnitId string, input BackupUnitProperties) (*BackupUnit, *Response, error) {
-	req := s.client.BackupUnitsApi.BackupunitsPatch(s.context, backupUnitId).BackupUnitProperties(input.BackupUnitProperties)
+	req := s.client.BackupUnitsApi.BackupunitsPatch(s.context, backupUnitId).BackupUnit(input.BackupUnitProperties)
 	backupUnit, res, err := s.client.BackupUnitsApi.BackupunitsPatchExecute(req)
 	return &BackupUnit{backupUnit}, &Response{*res}, err
 }
