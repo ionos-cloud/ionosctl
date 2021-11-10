@@ -43,7 +43,7 @@ func NetworkloadbalancerFlowLogCmd() *core.Command {
 		ShortDesc:  "List Network Load Balancer FlowLogs",
 		LongDesc:   "Use this command to list Network Load Balancer FlowLogs from a specified Network Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
 		Example:    listNetworkLoadBalancerFlowLogExample,
-		PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
+		PreCmdRun:  PreRunNetworkLoadBalacerFlowLogList,
 		CmdRun:     RunNetworkLoadBalancerFlowLogList,
 		InitClient: true,
 	})
@@ -244,6 +244,19 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Network Load Balancer FlowLog deletion [seconds]")
 
 	return networkloadbalancerFlowLogCmd
+}
+
+func PreRunNetworkLoadBalacerFlowLogList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.FlowLogsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunNetworkLoadBalancerFlowLogCreate(c *core.PreCommandConfig) error {

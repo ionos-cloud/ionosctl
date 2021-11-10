@@ -51,7 +51,7 @@ func IpblockCmd() *core.Command {
 		ShortDesc:  "List IpBlocks",
 		LongDesc:   "Use this command to list IpBlocks.",
 		Example:    listIpBlockExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunIpblockList,
 		CmdRun:     RunIpBlockList,
 		InitClient: true,
 	})
@@ -170,6 +170,16 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for IpBlock deletion [seconds]")
 
 	return ipblockCmd
+}
+
+func PreRunIpblockList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.IpBlocksPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunIpBlockId(c *core.PreCommandConfig) error {

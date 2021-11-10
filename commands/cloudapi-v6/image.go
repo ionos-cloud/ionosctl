@@ -63,7 +63,7 @@ Use flags to retrieve a list of Images:
 * sorting by the time the Image was created, starting from now in descending order, take the first N Images, using ` + "`" + `ionosctl image list --latest N` + "`" + `
 * sorting by multiple of above options, using ` + "`" + `ionosctl image list --type IMAGE_TYPE --location LOCATION_ID --latest N` + "`" + ``,
 		Example:    listImagesExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunImageList,
 		CmdRun:     RunImageList,
 		InitClient: true,
 	})
@@ -112,6 +112,16 @@ Use flags to retrieve a list of Images:
 	})
 
 	return imageCmd
+}
+
+func PreRunImageList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.ImagesPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunImageId(c *core.PreCommandConfig) error {

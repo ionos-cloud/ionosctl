@@ -52,7 +52,7 @@ func GroupCmd() *core.Command {
 		ShortDesc:  "List Groups",
 		LongDesc:   "Use this command to get a list of available Groups available on your account.",
 		Example:    listGroupExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunGroupList,
 		CmdRun:     RunGroupList,
 		InitClient: true,
 	})
@@ -188,6 +188,15 @@ Required values to run command:
 	groupCmd.AddCommand(GroupResourceCmd())
 	groupCmd.AddCommand(GroupUserCmd())
 	return groupCmd
+}
+
+func PreRunGroupList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.GroupsFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunGroupId(c *core.PreCommandConfig) error {

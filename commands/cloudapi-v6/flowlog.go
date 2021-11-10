@@ -53,7 +53,7 @@ func FlowlogCmd() *core.Command {
 		ShortDesc:  "List FlowLogs",
 		LongDesc:   "Use this command to get a list of FlowLogs from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id",
 		Example:    listFlowLogExample,
-		PreCmdRun:  PreRunDcServerNicIds,
+		PreCmdRun:  PreRunFlowLogList,
 		CmdRun:     RunFlowLogList,
 		InitClient: true,
 	})
@@ -216,6 +216,19 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for FlowLog deletion [seconds]")
 
 	return flowLogCmd
+}
+
+func PreRunFlowLogList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.FlowLogsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunFlowLogCreate(c *core.PreCommandConfig) error {

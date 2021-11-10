@@ -52,7 +52,7 @@ func NatgatewayCmd() *core.Command {
 		ShortDesc:  "List NAT Gateways",
 		LongDesc:   "Use this command to list NAT Gateways from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listNatGatewayExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunNATGatewayList,
 		CmdRun:     RunNatGatewayList,
 		InitClient: true,
 	})
@@ -201,6 +201,19 @@ Required values to run command:
 	natgatewayCmd.AddCommand(NatgatewayFlowLogCmd())
 
 	return natgatewayCmd
+}
+
+func PreRunNATGatewayList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.NATGatewaysPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunDcIdsNatGatewayIps(c *core.PreCommandConfig) error {

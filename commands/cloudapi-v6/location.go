@@ -51,7 +51,7 @@ func LocationCmd() *core.Command {
 		ShortDesc:  "List Locations",
 		LongDesc:   "Use this command to get a list of available locations to create objects on.",
 		Example:    listLocationExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunLocationsList,
 		CmdRun:     RunLocationList,
 		InitClient: true,
 	})
@@ -88,6 +88,16 @@ func LocationCmd() *core.Command {
 	locationCmd.AddCommand(CpuCmd())
 
 	return locationCmd
+}
+
+func PreRunLocationsList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.LocationsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunLocationId(c *core.PreCommandConfig) error {

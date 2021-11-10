@@ -70,7 +70,7 @@ func K8sClusterCmd() *core.Command {
 		ShortDesc:  "List Kubernetes Clusters",
 		LongDesc:   "Use this command to get a list of existing Kubernetes Clusters.",
 		Example:    listK8sClustersExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunK8sClusterList,
 		CmdRun:     RunK8sClusterList,
 		InitClient: true,
 	})
@@ -201,6 +201,16 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Request [seconds]")
 
 	return k8sCmd
+}
+
+func PreRunK8sClusterList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.K8sClustersPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunK8sClusterId(c *core.PreCommandConfig) error {

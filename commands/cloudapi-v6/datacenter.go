@@ -53,7 +53,7 @@ func DatacenterCmd() *core.Command {
 
 You can filter the output of the command based on properties, getting only datacenters with specific properties - using the filters option. In order to setup filters, use the following format: ` + "`" + `KEY:VALUE` + "`" + `. Example: ` + "`" + `--filters location:us/las,state:AVAILABLE` + "`" + ``,
 		Example:    listDatacenterExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunDataCenterList,
 		CmdRun:     RunDataCenterList,
 		InitClient: true,
 	})
@@ -186,6 +186,16 @@ func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
 		[]string{cloudapiv6.ArgDataCenterId},
 		[]string{cloudapiv6.ArgAll},
 	)
+}
+
+func PreRunDataCenterList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.DataCentersPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {

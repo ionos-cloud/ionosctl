@@ -51,7 +51,7 @@ func SnapshotCmd() *core.Command {
 		ShortDesc:  "List Snapshots",
 		LongDesc:   "Use this command to get a list of Snapshots.",
 		Example:    listSnapshotsExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunSnapshotList,
 		CmdRun:     RunSnapshotList,
 		InitClient: true,
 	})
@@ -224,6 +224,16 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
 
 	return snapshotCmd
+}
+
+func PreRunSnapshotList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.SnapshotsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunSnapshotId(c *core.PreCommandConfig) error {

@@ -96,11 +96,11 @@ func TestFiltersLength(t *testing.T) {
 		assert.True(t, len(filters) > 0)
 	})
 	t.Run("nlb_filters", func(t *testing.T) {
-		filters := NetworkLoadBalancersFilters()
+		filters := NlbsFilters()
 		assert.True(t, len(filters) > 0)
 	})
 	t.Run("nlbrule_filters", func(t *testing.T) {
-		filters := NetworkLoadBalancerForwardingRulesFilters()
+		filters := NlbForwardingRulesFilters()
 		assert.True(t, len(filters) > 0)
 	})
 	t.Run("pcc_filters", func(t *testing.T) {

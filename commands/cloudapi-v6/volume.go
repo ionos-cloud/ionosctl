@@ -53,7 +53,7 @@ func VolumeCmd() *core.Command {
 		ShortDesc:  "List Volumes",
 		LongDesc:   "Use this command to list all Volumes from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listVolumeExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunVolumeList,
 		CmdRun:     RunVolumeList,
 		InitClient: true,
 	})
@@ -246,6 +246,19 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume deletion [seconds]")
 
 	return volumeCmd
+}
+
+func PreRunVolumeList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.VolumesPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunDcVolumeIds(c *core.PreCommandConfig) error {

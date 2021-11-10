@@ -52,7 +52,7 @@ func NicCmd() *core.Command {
 		ShortDesc:  "List NICs",
 		LongDesc:   "Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listNicExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunNicList,
 		CmdRun:     RunNicList,
 		InitClient: true,
 	})
@@ -243,6 +243,19 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC deletion [seconds]")
 
 	return nicCmd
+}
+
+func PreRunNicList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.NICsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunNicDelete(c *core.PreCommandConfig) error {

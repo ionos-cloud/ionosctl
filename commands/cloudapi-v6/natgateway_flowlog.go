@@ -43,7 +43,7 @@ func NatgatewayFlowLogCmd() *core.Command {
 		ShortDesc:  "List NAT Gateway FlowLogs",
 		LongDesc:   "Use this command to list NAT Gateway FlowLogs from a specified NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
 		Example:    listNatGatewayFlowLogExample,
-		PreCmdRun:  PreRunDcNatGatewayIds,
+		PreCmdRun:  PreRunNATGatewayFlowLogList,
 		CmdRun:     RunNatGatewayFlowLogList,
 		InitClient: true,
 	})
@@ -248,6 +248,19 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway FlowLog deletion [seconds]")
 
 	return natgatewayFlowLogCmd
+}
+
+func PreRunNATGatewayFlowLogList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.FlowLogsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunNatGatewayFlowLogCreate(c *core.PreCommandConfig) error {

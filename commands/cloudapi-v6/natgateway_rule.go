@@ -53,7 +53,7 @@ func NatgatewayRuleCmd() *core.Command {
 		ShortDesc:  "List NAT Gateway Rules",
 		LongDesc:   "Use this command to list NAT Gateway Rules from a specified NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
 		Example:    listNatGatewayRuleExample,
-		PreCmdRun:  PreRunDcNatGatewayIds,
+		PreCmdRun:  PreRunNATGatewayRuleList,
 		CmdRun:     RunNatGatewayRuleList,
 		InitClient: true,
 	})
@@ -239,6 +239,19 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NAT Gateway Rule deletion [seconds]")
 
 	return natgatewayRuleCmd
+}
+
+func PreRunNATGatewayRuleList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.NATGatewayRulesPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunNatGatewayRuleCreate(c *core.PreCommandConfig) error {

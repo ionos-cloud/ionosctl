@@ -51,7 +51,7 @@ func PccCmd() *core.Command {
 		ShortDesc:  "List Private Cross-Connects",
 		LongDesc:   "Use this command to get a list of existing Private Cross-Connects available on your account.",
 		Example:    listPccsExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunPccList,
 		CmdRun:     RunPccList,
 		InitClient: true,
 	})
@@ -163,6 +163,16 @@ Required values to run command:
 	pccCmd.AddCommand(PeersCmd())
 
 	return pccCmd
+}
+
+func PreRunPccList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.PccsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunPccId(c *core.PreCommandConfig) error {

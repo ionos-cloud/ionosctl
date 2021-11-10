@@ -52,7 +52,7 @@ func LanCmd() *core.Command {
 		ShortDesc:  "List LANs",
 		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listLanExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunLansList,
 		CmdRun:     RunLanList,
 		InitClient: true,
 	})
@@ -204,6 +204,19 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
 
 	return lanCmd
+}
+
+func PreRunLansList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.LANsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunLanDelete(c *core.PreCommandConfig) error {

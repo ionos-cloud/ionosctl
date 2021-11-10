@@ -54,7 +54,7 @@ func BackupunitCmd() *core.Command {
 		ShortDesc:  "List BackupUnits",
 		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.",
 		Example:    listBackupUnitsExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunBackupUnitList,
 		CmdRun:     RunBackupUnitList,
 		InitClient: true,
 	})
@@ -197,6 +197,16 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for BackupUnit deletion [seconds]")
 
 	return backupUnitCmd
+}
+
+func PreRunBackupUnitList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.BackupUnitsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunBackupUnitId(c *core.PreCommandConfig) error {

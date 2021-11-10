@@ -51,7 +51,7 @@ func LoadBalancerCmd() *core.Command {
 		ShortDesc:  "List Load Balancers",
 		LongDesc:   "Use this command to retrieve a list of Load Balancers within a Virtual Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listLoadbalancerExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunLoadBalancerList,
 		CmdRun:     RunLoadBalancerList,
 		InitClient: true,
 	})
@@ -196,6 +196,19 @@ Required values to run command:
 	loadbalancerCmd.AddCommand(LoadBalancerNicCmd())
 
 	return loadbalancerCmd
+}
+
+func PreRunLoadBalancerList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.LoadBalancersPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {

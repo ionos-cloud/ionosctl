@@ -51,7 +51,7 @@ func K8sNodeCmd() *core.Command {
 		ShortDesc:  "List Kubernetes Nodes",
 		LongDesc:   "Use this command to get a list of existing Kubernetes Nodes.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		Example:    listK8sNodesExample,
-		PreCmdRun:  PreRunK8sClusterNodePoolIds,
+		PreCmdRun:  PreRunK8sNodesList,
 		CmdRun:     RunK8sNodeList,
 		InitClient: true,
 	})
@@ -184,6 +184,19 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Kubernetes Nodes within an existing Kubernetes NodePool in a Cluster.")
 
 	return k8sCmd
+}
+
+func PreRunK8sNodesList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgK8sClusterId, cloudapiv6.ArgK8sNodePoolId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.K8sNodesPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunK8sClusterNodesIds(c *core.PreCommandConfig) error {

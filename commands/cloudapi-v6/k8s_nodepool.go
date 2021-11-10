@@ -53,7 +53,7 @@ func K8sNodePoolCmd() *core.Command {
 		ShortDesc:  "List Kubernetes NodePools",
 		LongDesc:   "Use this command to get a list of all contained NodePools in a selected Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		Example:    listK8sNodePoolsExample,
-		PreCmdRun:  PreRunK8sClusterId,
+		PreCmdRun:  PreRunK8sNodePoolsList,
 		CmdRun:     RunK8sNodePoolList,
 		InitClient: true,
 	})
@@ -245,6 +245,19 @@ Required values to run command:
 	k8sCmd.AddCommand(K8sNodePoolLanCmd())
 
 	return k8sCmd
+}
+
+func PreRunK8sNodePoolsList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgK8sClusterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.K8sNodePoolsPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunK8sClusterNodePoolIds(c *core.PreCommandConfig) error {

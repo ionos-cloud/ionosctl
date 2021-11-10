@@ -90,7 +90,7 @@ Required values to run command:
 		ShortDesc:  "List attached CD-ROMs from a Server",
 		LongDesc:   "Use this command to retrieve a list of CD-ROMs attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listCdromServerExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunServerCdromList,
 		CmdRun:     RunServerCdromsList,
 		InitClient: true,
 	})
@@ -180,6 +180,19 @@ Required values to run command:
 	detachCdrom.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for CD-ROM detachment [seconds]")
 
 	return serverCdromCmd
+}
+
+func PreRunServerCdromList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.ImagesPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunDcServerCdromIds(c *core.PreCommandConfig) error {

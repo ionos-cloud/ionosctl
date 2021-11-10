@@ -60,7 +60,7 @@ Use flags to retrieve a list of Requests:
 * sorting by method: ` + "`" + `ionosctl request list --method REQUEST_METHOD` + "`" + `, where request method can be CREATE or POST, UPDATE or PATCH, PUT and DELETE
 * sorting by both of the above options: ` + "`" + `ionosctl request list --method REQUEST_METHOD --latest N` + "`" + ``,
 		Example:    listRequestExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunRequestList,
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
@@ -127,6 +127,16 @@ Required values to run command:
 	wait.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option waiting for Request [seconds]")
 
 	return reqCmd
+}
+
+func PreRunRequestList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.RequestsPropertiesFilters(),
+			MetadataFilters:   completer.RequestsMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunRequestId(c *core.PreCommandConfig) error {

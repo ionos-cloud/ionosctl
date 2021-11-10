@@ -53,7 +53,7 @@ func FirewallruleCmd() *core.Command {
 		ShortDesc:  "List Firewall Rules",
 		LongDesc:   "Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id",
 		Example:    listFirewallRuleExample,
-		PreCmdRun:  PreRunDcServerNicIds,
+		PreCmdRun:  PreRunFirewallRuleList,
 		CmdRun:     RunFirewallRuleList,
 		InitClient: true,
 	})
@@ -292,6 +292,19 @@ Required values to run command:
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
 
 	return firewallRuleCmd
+}
+
+func PreRunFirewallRuleList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.FirewallRulesPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunDcServerNicIds(c *core.PreCommandConfig) error {

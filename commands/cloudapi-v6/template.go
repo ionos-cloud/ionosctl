@@ -50,7 +50,7 @@ func TemplateCmd() *core.Command {
 		ShortDesc:  "List Templates",
 		LongDesc:   "Use this command to get a list of available public Templates.",
 		Example:    listTemplateExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunTemplateList,
 		CmdRun:     RunTemplateList,
 		InitClient: true,
 	})
@@ -85,6 +85,16 @@ func TemplateCmd() *core.Command {
 	})
 
 	return templateCmd
+}
+
+func PreRunTemplateList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.TemplatesPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunTemplateId(c *core.PreCommandConfig) error {

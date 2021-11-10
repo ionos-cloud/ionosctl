@@ -57,7 +57,7 @@ func ServerCmd() *core.Command {
 		ShortDesc:  "List Servers",
 		LongDesc:   "Use this command to list Servers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listServerExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunServerList,
 		CmdRun:     RunServerList,
 		InitClient: true,
 	})
@@ -476,6 +476,19 @@ Required values to run command:
 	serverCmd.AddCommand(ServerCdromCmd())
 
 	return serverCmd
+}
+
+func PreRunServerList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.ServersPropertiesFilters(),
+			MetadataFilters:   completer.DataCentersMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunServerCreate(c *core.PreCommandConfig) error {

@@ -52,7 +52,7 @@ func UserCmd() *core.Command {
 		ShortDesc:  "List Users",
 		LongDesc:   "Use this command to get a list of existing Users available on your account.",
 		Example:    listUserExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunUserList,
 		CmdRun:     RunUserList,
 		InitClient: true,
 	})
@@ -176,6 +176,16 @@ Required values to run command:
 	userCmd.AddCommand(UserS3keyCmd())
 
 	return userCmd
+}
+
+func PreRunUserList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, query.AvailableFilters{
+			PropertiesFilters: completer.UserPropertiesFilters(),
+			MetadataFilters:   completer.UserMetadataFilters(),
+		})
+	}
+	return nil
 }
 
 func PreRunUserId(c *core.PreCommandConfig) error {
