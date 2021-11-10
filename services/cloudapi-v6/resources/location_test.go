@@ -7,16 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	testLocationResourceVar = "test-location-resource"
-)
+const testLocationResourceVar = "test-location-resource"
 
 func TestNewLocationService(t *testing.T) {
 	ctx := context.Background()
 	t.Run("list_locations_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		locationSvc := NewLocationService(svc.Get(), ctx)
-		_, _, err := locationSvc.List()
+		_, _, err := locationSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
 	t.Run("get_region_location_error", func(t *testing.T) {

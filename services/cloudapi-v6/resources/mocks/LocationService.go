@@ -67,9 +67,9 @@ func (mr *MockLocationsServiceMockRecorder) GetByRegionId(regionId interface{}) 
 }
 
 // List mocks base method.
-func (m *MockLocationsService) List() (resources.Locations, *resources.Response, error) {
+func (m *MockLocationsService) List(params resources.ListQueryParams) (resources.Locations, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.Locations)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -77,7 +77,7 @@ func (m *MockLocationsService) List() (resources.Locations, *resources.Response,
 }
 
 // List indicates an expected call of List.
-func (mr *MockLocationsServiceMockRecorder) List() *gomock.Call {
+func (mr *MockLocationsServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLocationsService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLocationsService)(nil).List), params)
 }

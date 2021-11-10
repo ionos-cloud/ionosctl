@@ -47,6 +47,10 @@ func TestFiltersLength(t *testing.T) {
 		filters := NICsFilters()
 		assert.True(t, len(filters) > 0)
 	})
+	t.Run("locations_filters", func(t *testing.T) {
+		filters := LocationsFilters()
+		assert.True(t, len(filters) > 0)
+	})
 	t.Run("firewallrules_filters", func(t *testing.T) {
 		filters := FirewallRulesFilters()
 		assert.True(t, len(filters) > 0)

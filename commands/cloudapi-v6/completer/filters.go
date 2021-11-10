@@ -40,6 +40,10 @@ func IpBlocksFilters() []string {
 	return getPropertiesName(ionoscloud.IpBlockProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
+func LocationsFilters() []string {
+	return getPropertiesName(ionoscloud.LocationProperties{}, ionoscloud.DatacenterElementMetadata{})
+}
+
 func LANsFilters() []string {
 	return getPropertiesName(ionoscloud.LanProperties{}, ionoscloud.DatacenterElementMetadata{})
 }

@@ -274,7 +274,7 @@ func LocationIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	locationSvc := resources.NewLocationService(client, context.TODO())
-	locations, _, err := locationSvc.List()
+	locations, _, err := locationSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	lcIds := make([]string, 0)
 	if items, ok := locations.Locations.GetItemsOk(); ok && items != nil {
