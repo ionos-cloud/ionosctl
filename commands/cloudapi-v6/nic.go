@@ -784,11 +784,13 @@ func getNicsCols(flagName string, outErr io.Writer) []string {
 }
 
 func getNics(nics resources.Nics) []resources.Nic {
-	ns := make([]resources.Nic, 0)
-	for _, s := range *nics.Items {
-		ns = append(ns, resources.Nic{Nic: s})
+	nicObjs := make([]resources.Nic, 0)
+	if items, ok := nics.GetItemsOk(); ok && items != nil {
+		for _, nic := range *items {
+			nicObjs = append(nicObjs, resources.Nic{Nic: nic})
+		}
 	}
-	return ns
+	return nicObjs
 }
 
 func getNic(n *resources.Nic) []resources.Nic {

@@ -434,11 +434,13 @@ func getLoadbalancersCols(flagName string, outErr io.Writer) []string {
 }
 
 func getLoadbalancers(loadbalancers resources.Loadbalancers) []resources.Loadbalancer {
-	vs := make([]resources.Loadbalancer, 0)
-	for _, s := range *loadbalancers.Items {
-		vs = append(vs, resources.Loadbalancer{Loadbalancer: s})
+	lbObjs := make([]resources.Loadbalancer, 0)
+	if items, ok := loadbalancers.GetItemsOk(); ok && items != nil {
+		for _, loadbalancer := range *items {
+			lbObjs = append(lbObjs, resources.Loadbalancer{Loadbalancer: loadbalancer})
+		}
 	}
-	return vs
+	return lbObjs
 }
 
 func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{} {

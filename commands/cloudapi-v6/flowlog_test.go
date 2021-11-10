@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -154,6 +155,26 @@ func TestRunFlowLogList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testFlowLogVar)
 		rm.CloudApiV6Mocks.FlowLog.EXPECT().List(testFlowLogVar, testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogs, &testResponse, nil)
+		err := RunFlowLogList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunFlowLogListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.FlowLog.EXPECT().List(testFlowLogVar, testFlowLogVar, testFlowLogVar, testListQueryParam).Return(resources.FlowLogs{}, &testResponse, nil)
 		err := RunFlowLogList(cfg)
 		assert.NoError(t, err)
 	})

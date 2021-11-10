@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"testing"
 
@@ -117,6 +118,25 @@ func TestRunServerCdromsList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testCdromVar)
 		rm.CloudApiV6Mocks.Server.EXPECT().ListCdroms(testCdromVar, testCdromVar, resources.ListQueryParams{}).Return(testCdroms, &testResponse, nil)
+		err := RunServerCdromsList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerCdromsListListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Server.EXPECT().ListCdroms(testCdromVar, testCdromVar, testListQueryParam).Return(resources.Cdroms{}, &testResponse, nil)
 		err := RunServerCdromsList(cfg)
 		assert.NoError(t, err)
 	})

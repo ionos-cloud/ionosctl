@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -332,6 +333,24 @@ func TestRunK8sNodePoolList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testNodepoolVar)
 		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodePools(testNodepoolVar, resources.ListQueryParams{}).Return(nodepools, &testResponse, nil)
+		err := RunK8sNodePoolList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunK8sNodePoolListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testNodepoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodePools(testNodepoolVar, testListQueryParam).Return(resources.K8sNodePools{}, &testResponse, nil)
 		err := RunK8sNodePoolList(cfg)
 		assert.NoError(t, err)
 	})

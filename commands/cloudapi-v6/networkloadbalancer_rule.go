@@ -556,11 +556,13 @@ func getForwardingRulesCols(flagName string, outErr io.Writer) []string {
 }
 
 func getForwardingRules(forwardingrules resources.NetworkLoadBalancerForwardingRules) []resources.NetworkLoadBalancerForwardingRule {
-	ss := make([]resources.NetworkLoadBalancerForwardingRule, 0)
-	for _, s := range *forwardingrules.Items {
-		ss = append(ss, resources.NetworkLoadBalancerForwardingRule{NetworkLoadBalancerForwardingRule: s})
+	nlbRuleObjs := make([]resources.NetworkLoadBalancerForwardingRule, 0)
+	if items, ok := forwardingrules.GetItemsOk(); ok && items != nil {
+		for _, forwardingRule := range *items {
+			nlbRuleObjs = append(nlbRuleObjs, resources.NetworkLoadBalancerForwardingRule{NetworkLoadBalancerForwardingRule: forwardingRule})
+		}
 	}
-	return ss
+	return nlbRuleObjs
 }
 
 func getForwardingRulesKVMaps(ss []resources.NetworkLoadBalancerForwardingRule) []map[string]interface{} {

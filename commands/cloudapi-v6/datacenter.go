@@ -410,8 +410,10 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 	dc := make([]resources.Datacenter, 0)
-	for _, d := range *datacenters.Items {
-		dc = append(dc, resources.Datacenter{Datacenter: d})
+	if items, ok := datacenters.GetItemsOk(); ok && items != nil {
+		for _, datacenter := range *items {
+			dc = append(dc, resources.Datacenter{Datacenter: datacenter})
+		}
 	}
 	return dc
 }

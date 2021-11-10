@@ -475,11 +475,13 @@ func getNetworkLoadBalancersCols(flagName string, outErr io.Writer) []string {
 }
 
 func getNetworkLoadBalancers(networkloadbalancers resources.NetworkLoadBalancers) []resources.NetworkLoadBalancer {
-	ss := make([]resources.NetworkLoadBalancer, 0)
-	for _, s := range *networkloadbalancers.Items {
-		ss = append(ss, resources.NetworkLoadBalancer{NetworkLoadBalancer: s})
+	networkLoadBalancerObjs := make([]resources.NetworkLoadBalancer, 0)
+	if items, ok := networkloadbalancers.GetItemsOk(); ok && items != nil {
+		for _, networkLoadBalancer := range *items {
+			networkLoadBalancerObjs = append(networkLoadBalancerObjs, resources.NetworkLoadBalancer{NetworkLoadBalancer: networkLoadBalancer})
+		}
 	}
-	return ss
+	return networkLoadBalancerObjs
 }
 
 func getNetworkLoadBalancersKVMaps(ss []resources.NetworkLoadBalancer) []map[string]interface{} {

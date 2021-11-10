@@ -155,6 +155,24 @@ func TestRunRequestList(t *testing.T) {
 	})
 }
 
+func TestRunRequestListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetGlobalFlagName(cfg.Namespace, config.ArgCols), allRequestCols)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Request.EXPECT().List(testListQueryParam).Return(resources.Requests{}, &testResponse, nil)
+		err := RunRequestList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunRequestListSortedUpdate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

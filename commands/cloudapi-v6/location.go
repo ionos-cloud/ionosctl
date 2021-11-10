@@ -189,11 +189,13 @@ func getLocation(u *resources.Location) []resources.Location {
 }
 
 func getLocations(locations resources.Locations) []resources.Location {
-	dc := make([]resources.Location, 0)
-	for _, d := range *locations.Items {
-		dc = append(dc, resources.Location{Location: d})
+	locationObjs := make([]resources.Location, 0)
+	if items, ok := locations.GetItemsOk(); ok && items != nil {
+		for _, location := range *items {
+			locationObjs = append(locationObjs, resources.Location{Location: location})
+		}
 	}
-	return dc
+	return locationObjs
 }
 
 func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {

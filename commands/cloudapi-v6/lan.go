@@ -458,11 +458,13 @@ func getLansCols(flagName string, outErr io.Writer) []string {
 }
 
 func getLans(lans resources.Lans) []resources.Lan {
-	ls := make([]resources.Lan, 0)
-	for _, s := range *lans.Items {
-		ls = append(ls, resources.Lan{Lan: s})
+	lanObjs := make([]resources.Lan, 0)
+	if items, ok := lans.GetItemsOk(); ok && items != nil {
+		for _, lan := range *items {
+			lanObjs = append(lanObjs, resources.Lan{Lan: lan})
+		}
 	}
-	return ls
+	return lanObjs
 }
 
 func getLansKVMaps(ls []resources.Lan) []map[string]interface{} {

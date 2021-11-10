@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 	"testing"
@@ -97,6 +98,24 @@ func TestRunImageList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgCols), allImageCols)
 		rm.CloudApiV6Mocks.Image.EXPECT().List(resources.ListQueryParams{}).Return(testImages, &testResponse, nil)
+		err := RunImageList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunImageListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgCols), allImageCols)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Image.EXPECT().List(testListQueryParam).Return(resources.Images{}, &testResponse, nil)
 		err := RunImageList(cfg)
 		assert.NoError(t, err)
 	})

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 	"testing"
@@ -91,6 +92,23 @@ func TestRunLocationList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		rm.CloudApiV6Mocks.Location.EXPECT().List(resources.ListQueryParams{}).Return(locations, &testResponse, nil)
+		err := RunLocationList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLocationListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Location.EXPECT().List(testListQueryParam).Return(resources.Locations{}, &testResponse, nil)
 		err := RunLocationList(cfg)
 		assert.NoError(t, err)
 	})

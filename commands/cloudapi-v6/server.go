@@ -1036,11 +1036,13 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 }
 
 func getServers(servers resources.Servers) []resources.Server {
-	ss := make([]resources.Server, 0)
-	for _, s := range *servers.Items {
-		ss = append(ss, resources.Server{Server: s})
+	serverObjs := make([]resources.Server, 0)
+	if items, ok := servers.GetItemsOk(); ok && items != nil {
+		for _, server := range *items {
+			serverObjs = append(serverObjs, resources.Server{Server: server})
+		}
 	}
-	return ss
+	return serverObjs
 }
 
 func getServersKVMaps(ss []resources.Server) []map[string]interface{} {

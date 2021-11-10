@@ -908,11 +908,13 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 }
 
 func getVolumes(volumes resources.Volumes) []resources.Volume {
-	vs := make([]resources.Volume, 0)
-	for _, s := range *volumes.Items {
-		vs = append(vs, resources.Volume{Volume: s})
+	volumeObjs := make([]resources.Volume, 0)
+	if items, ok := volumes.GetItemsOk(); ok && items != nil {
+		for _, volume := range *items {
+			volumeObjs = append(volumeObjs, resources.Volume{Volume: volume})
+		}
 	}
-	return vs
+	return volumeObjs
 }
 
 func getVolume(vol *resources.Volume) []resources.Volume {

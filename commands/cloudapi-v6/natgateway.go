@@ -447,11 +447,13 @@ func getNatGatewaysCols(flagName string, outErr io.Writer) []string {
 }
 
 func getNatGateways(natgateways resources.NatGateways) []resources.NatGateway {
-	ss := make([]resources.NatGateway, 0)
-	for _, s := range *natgateways.Items {
-		ss = append(ss, resources.NatGateway{NatGateway: s})
+	natGatewayObjs := make([]resources.NatGateway, 0)
+	if items, ok := natgateways.GetItemsOk(); ok && items != nil {
+		for _, natGateway := range *items {
+			natGatewayObjs = append(natGatewayObjs, resources.NatGateway{NatGateway: natGateway})
+		}
 	}
-	return ss
+	return natGatewayObjs
 }
 
 func getNatGatewaysKVMaps(ss []resources.NatGateway) []map[string]interface{} {

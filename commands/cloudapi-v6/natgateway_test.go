@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -146,6 +147,25 @@ func TestRunNatGatewayList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayVar)
 		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgCols), defaultNatGatewayCols)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().List(testNatGatewayVar, resources.ListQueryParams{}).Return(natgateways, &testResponse, nil)
+		err := RunNatGatewayList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNatGatewayListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, config.ArgCols), defaultNatGatewayCols)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().List(testNatGatewayVar, testListQueryParam).Return(resources.NatGateways{}, &testResponse, nil)
 		err := RunNatGatewayList(cfg)
 		assert.NoError(t, err)
 	})

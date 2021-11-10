@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"os"
 	"testing"
@@ -84,6 +85,25 @@ func TestRunNetworkLoadBalancerFlowLogList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogs, &testResponse, nil)
+		err := RunNetworkLoadBalancerFlowLogList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNetworkLoadBalancerFlowLogListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, testListQueryParam).Return(resources.FlowLogs{}, &testResponse, nil)
 		err := RunNetworkLoadBalancerFlowLogList(cfg)
 		assert.NoError(t, err)
 	})

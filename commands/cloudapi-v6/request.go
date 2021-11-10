@@ -283,11 +283,13 @@ func getRequestsCols(flagName string, outErr io.Writer) []string {
 }
 
 func getRequests(requests resources.Requests) []resources.Request {
-	req := make([]resources.Request, 0)
-	for _, r := range *requests.Items {
-		req = append(req, resources.Request{Request: r})
+	requestObjs := make([]resources.Request, 0)
+	if items, ok := requests.GetItemsOk(); ok && items != nil {
+		for _, request := range *items {
+			requestObjs = append(requestObjs, resources.Request{Request: request})
+		}
 	}
-	return req
+	return requestObjs
 }
 
 func sortRequestsByMethod(requests resources.Requests, method string) resources.Requests {

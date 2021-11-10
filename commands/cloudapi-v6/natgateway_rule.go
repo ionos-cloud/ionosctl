@@ -536,11 +536,13 @@ func getNatGatewayRulesCols(flagName string, outErr io.Writer) []string {
 }
 
 func getNatGatewayRules(natgatewayRules resources.NatGatewayRules) []resources.NatGatewayRule {
-	ss := make([]resources.NatGatewayRule, 0)
-	for _, s := range *natgatewayRules.Items {
-		ss = append(ss, resources.NatGatewayRule{NatGatewayRule: s})
+	ruleObjs := make([]resources.NatGatewayRule, 0)
+	if items, ok := natgatewayRules.GetItemsOk(); ok && items != nil {
+		for _, natGatewayRule := range *items {
+			ruleObjs = append(ruleObjs, resources.NatGatewayRule{NatGatewayRule: natGatewayRule})
+		}
 	}
-	return ss
+	return ruleObjs
 }
 
 func getNatGatewayRulesKVMaps(ss []resources.NatGatewayRule) []map[string]interface{} {

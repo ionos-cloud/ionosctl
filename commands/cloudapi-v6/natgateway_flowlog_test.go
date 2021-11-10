@@ -4,13 +4,14 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
+	"fmt"
 	"os"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -84,6 +85,25 @@ func TestRunNatGatewayFlowLogList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testFlowLogVar)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogs, &testResponse, nil)
+		err := RunNatGatewayFlowLogList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNatGatewayFlowLogListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, testListQueryParam).Return(resources.FlowLogs{}, &testResponse, nil)
 		err := RunNatGatewayFlowLogList(cfg)
 		assert.NoError(t, err)
 	})
