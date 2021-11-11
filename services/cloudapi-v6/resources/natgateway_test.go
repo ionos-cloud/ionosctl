@@ -19,6 +19,12 @@ func TestNewNatGatewayService(t *testing.T) {
 		_, _, err := natgatewaySvc.List(testNatGatewayResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
+	t.Run("list_natgateways_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		natgatewaySvc := NewNatGatewayService(svc.Get(), ctx)
+		_, _, err := natgatewaySvc.List(testNatGatewayResourceVar, testListQueryParam)
+		assert.Error(t, err)
+	})
 	t.Run("get_natgateway_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		natgatewaySvc := NewNatGatewayService(svc.Get(), ctx)

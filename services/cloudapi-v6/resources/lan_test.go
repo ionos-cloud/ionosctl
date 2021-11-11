@@ -19,6 +19,12 @@ func TestNewLanService(t *testing.T) {
 		_, _, err := lanSvc.List(testLanResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
+	t.Run("list_lans_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		lanSvc := NewLanService(svc.Get(), ctx)
+		_, _, err := lanSvc.List(testLanResourceVar, testListQueryParam)
+		assert.Error(t, err)
+	})
 	t.Run("get_lan_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		lanSvc := NewLanService(svc.Get(), ctx)

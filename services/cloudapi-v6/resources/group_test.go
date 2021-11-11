@@ -19,6 +19,12 @@ func TestNewGroupService(t *testing.T) {
 		_, _, err := groupSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
+	t.Run("list_groups_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		groupSvc := NewGroupService(svc.Get(), ctx)
+		_, _, err := groupSvc.List(testListQueryParam)
+		assert.Error(t, err)
+	})
 	t.Run("get_group_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		groupSvc := NewGroupService(svc.Get(), ctx)

@@ -19,6 +19,12 @@ func TestNewSnapshotService(t *testing.T) {
 		_, _, err := snapshotSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
+	t.Run("list_snapshots_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		snapshotSvc := NewSnapshotService(svc.Get(), ctx)
+		_, _, err := snapshotSvc.List(testListQueryParam)
+		assert.Error(t, err)
+	})
 	t.Run("get_snapshot_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		snapshotSvc := NewSnapshotService(svc.Get(), ctx)

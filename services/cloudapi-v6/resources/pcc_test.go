@@ -19,6 +19,12 @@ func TestNewPrivateCrossConnectService(t *testing.T) {
 		_, _, err := pccSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
+	t.Run("list_pccs_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		pccSvc := NewPrivateCrossConnectService(svc.Get(), ctx)
+		_, _, err := pccSvc.List(testListQueryParam)
+		assert.Error(t, err)
+	})
 	t.Run("get_pcc_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		pccSvc := NewPrivateCrossConnectService(svc.Get(), ctx)

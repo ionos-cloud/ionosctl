@@ -19,6 +19,12 @@ func TestNewLoadbalancerService(t *testing.T) {
 		_, _, err := loadbalancerSvc.List(testLoadbalancerResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
+	t.Run("list_loadbalancers_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		loadbalancerSvc := NewLoadbalancerService(svc.Get(), ctx)
+		_, _, err := loadbalancerSvc.List(testLoadbalancerResourceVar, testListQueryParam)
+		assert.Error(t, err)
+	})
 	t.Run("get_loadbalancer_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		loadbalancerSvc := NewLoadbalancerService(svc.Get(), ctx)

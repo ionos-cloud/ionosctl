@@ -19,6 +19,12 @@ func TestNewNicService(t *testing.T) {
 		_, _, err := nicSvc.List(testNicResourceVar, testNicResourceVar, ListQueryParams{})
 		assert.Error(t, err)
 	})
+	t.Run("list_nics_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		nicSvc := NewNicService(svc.Get(), ctx)
+		_, _, err := nicSvc.List(testNicResourceVar, testNicResourceVar, testListQueryParam)
+		assert.Error(t, err)
+	})
 	t.Run("get_nic_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		nicSvc := NewNicService(svc.Get(), ctx)

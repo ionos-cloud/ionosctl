@@ -19,6 +19,12 @@ func TestNewDataCenterService(t *testing.T) {
 		_, _, err := datacenterSvc.List(ListQueryParams{})
 		assert.Error(t, err)
 	})
+	t.Run("list_datacenters_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
+		_, _, err := datacenterSvc.List(testListQueryParam)
+		assert.Error(t, err)
+	})
 	t.Run("get_datacenter_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		datacenterSvc := NewDataCenterService(svc.Get(), ctx)
