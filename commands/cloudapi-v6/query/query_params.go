@@ -74,7 +74,7 @@ func GetListQueryParams(c *core.CommandConfig) (resources.ListQueryParams, error
 func getFilters(args []string, cmd *core.Command) (map[string]string, error) {
 	filtersKV := map[string]string{}
 	if len(args) == 0 {
-		return filtersKV, errors.New("len of args must be different than 0")
+		return filtersKV, errors.New("must provide at least one filter")
 	}
 	for _, arg := range args {
 		if strings.Contains(arg, FiltersPartitionChar) {
