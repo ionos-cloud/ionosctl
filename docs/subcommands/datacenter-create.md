@@ -55,7 +55,6 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 
 ```text
 ionosctl datacenter create --name NAME --location LOCATION_ID
-
 ionosctl datacenter create --name NAME --location LOCATION_ID --wait-for-request
 ```
 

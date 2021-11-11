@@ -47,9 +47,12 @@ Required values to run command:
                                  Available columns: [NicId Name Dhcp LanId Ips State FirewallActive FirewallType DeviceNumber PciSlot Mac] (default [NicId,Name,Dhcp,LanId,Ips,State])
   -c, --config string            Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string     The unique Data Center Id (required)
+  -F, --filters strings          Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2. Available filters: [name description location version features secAuthProtection etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
   -f, --force                    Force command to execute without user input
   -h, --help                     Print usage
       --loadbalancer-id string   The unique Load Balancer Id (required)
+  -M, --max-results int          The maximum number of elements to return
+      --order-by string          Limits results to those containing a matching value for a specific property
   -o, --output string            Desired output format [text|json] (default "text")
   -q, --quiet                    Quiet output
   -v, --verbose                  Print step-by-step process when running command
