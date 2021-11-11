@@ -5,13 +5,13 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"os"
 	"testing"
 
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
