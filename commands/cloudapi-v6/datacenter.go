@@ -190,10 +190,7 @@ func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
 
 func PreRunDataCenterList(c *core.PreCommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.DataCentersPropertiesFilters(),
-			MetadataFilters:   completer.DataCentersMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.DataCentersFilters(), completer.DataCentersFiltersUsage())
 	}
 	return nil
 }

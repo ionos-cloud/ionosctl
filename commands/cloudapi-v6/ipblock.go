@@ -174,10 +174,7 @@ Required values to run command:
 
 func PreRunIpblockList(c *core.PreCommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.IpBlocksPropertiesFilters(),
-			MetadataFilters:   completer.DataCentersMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.IpBlocksFilters(), completer.IpBlocksFiltersUsage())
 	}
 	return nil
 }

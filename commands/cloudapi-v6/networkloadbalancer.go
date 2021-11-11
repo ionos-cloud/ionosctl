@@ -212,10 +212,7 @@ func PreRunNetworkLoadBalancerList(c *core.PreCommandConfig) error {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.NlbsPropertiesFilters(),
-			MetadataFilters:   completer.DataCentersMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.NlbsFilters(), completer.NlbsFiltersUsage())
 	}
 	return nil
 }

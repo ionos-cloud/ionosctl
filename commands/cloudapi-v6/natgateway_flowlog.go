@@ -255,10 +255,7 @@ func PreRunNATGatewayFlowLogList(c *core.PreCommandConfig) error {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.FlowLogsPropertiesFilters(),
-			MetadataFilters:   completer.DataCentersMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.FlowLogsFilters(), completer.FlowLogsFiltersUsage())
 	}
 	return nil
 }

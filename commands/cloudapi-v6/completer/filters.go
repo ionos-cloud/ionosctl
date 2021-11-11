@@ -6,6 +6,7 @@ package completer
 
 import (
 	"bytes"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -16,212 +17,200 @@ func DataCentersFilters() []string {
 	return getPropertiesName(ionoscloud.DatacenterProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func DataCentersFiltersUsage() []string {
-	return getPropertiesName(ionoscloud.DatacenterProperties{}, ionoscloud.DatacenterElementMetadata{})
-}
-
-func DataCentersPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.DatacenterProperties{})
-}
-
-func DataCentersMetadataFilters() []string {
-	return getPropertiesName(ionoscloud.DatacenterElementMetadata{})
+func DataCentersFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.DatacenterProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func BackupUnitsFilters() []string {
 	return getPropertiesName(ionoscloud.BackupUnitProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func BackupUnitsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.BackupUnitProperties{})
+func BackupUnitsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.BackupUnitProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func ServersFilters() []string {
 	return getPropertiesName(ionoscloud.ServerProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func ServersPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.ServerProperties{})
+func ServersFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.ServerProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func ImagesFilters() []string {
 	return getPropertiesName(ionoscloud.ImageProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func ImagesPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.ImageProperties{})
+func ImagesFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.ImageProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func VolumesFilters() []string {
 	return getPropertiesName(ionoscloud.VolumeProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func VolumesPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.VolumeProperties{})
+func VolumesFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.VolumeProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func SnapshotsFilters() []string {
 	return getPropertiesName(ionoscloud.SnapshotProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func SnapshotsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.SnapshotProperties{})
+func SnapshotsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.SnapshotProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func IpBlocksFilters() []string {
 	return getPropertiesName(ionoscloud.IpBlockProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func IpBlocksPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.IpBlockProperties{})
+func IpBlocksFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.IpBlockProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func LocationsFilters() []string {
 	return getPropertiesName(ionoscloud.LocationProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func LocationsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.LocationProperties{})
+func LocationsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.LocationProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func LANsFilters() []string {
 	return getPropertiesName(ionoscloud.LanProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func LANsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.LanProperties{})
+func LANsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.LanProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func NICsFilters() []string {
 	return getPropertiesName(ionoscloud.NicProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func NICsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.NicProperties{})
+func NICsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.NicProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func FirewallRulesFilters() []string {
 	return getPropertiesName(ionoscloud.FirewallruleProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func FirewallRulesPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.FirewallruleProperties{})
+func FirewallRulesFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.FirewallruleProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func LoadBalancersFilters() []string {
 	return getPropertiesName(ionoscloud.LoadbalancerProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func LoadBalancersPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.LoadbalancerProperties{})
+func LoadbalancersFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.LoadbalancerProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func RequestsFilters() []string {
 	return getPropertiesName(ionoscloud.RequestProperties{}, ionoscloud.RequestMetadata{})
 }
 
-func RequestsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.RequestProperties{})
-}
-
-func RequestsMetadataFilters() []string {
-	return getPropertiesName(ionoscloud.RequestMetadata{})
+func RequestsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.RequestProperties{}), getPropertiesName(ionoscloud.RequestMetadata{}))
 }
 
 func UsersFilters() []string {
 	return getPropertiesName(ionoscloud.UserProperties{}, ionoscloud.UserMetadata{})
 }
 
-func UserPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.UserProperties{})
-}
-
-func UserMetadataFilters() []string {
-	return getPropertiesName(ionoscloud.UserMetadata{})
+func UsersFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.UserProperties{}), getPropertiesName(ionoscloud.UserMetadata{}))
 }
 
 func K8sClustersFilters() []string {
 	return getPropertiesName(ionoscloud.KubernetesClusterProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func K8sClustersPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.KubernetesClusterProperties{})
+func K8sClustersFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.KubernetesClusterProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func K8sNodePoolsFilters() []string {
 	return getPropertiesName(ionoscloud.KubernetesNodePoolProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func K8sNodePoolsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.KubernetesNodePoolProperties{})
+func K8sNodePoolsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.KubernetesNodePoolProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func K8sNodesFilters() []string {
 	return getPropertiesName(ionoscloud.KubernetesNodeProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func K8sNodesPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.KubernetesNodeProperties{})
+func K8sNodesFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.KubernetesNodeProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func FlowLogsFilters() []string {
 	return getPropertiesName(ionoscloud.FlowLogProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func FlowLogsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.FlowLogProperties{})
+func FlowLogsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.FlowLogProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func GroupsFilters() []string {
 	return getPropertiesName(ionoscloud.GroupProperties{})
 }
 
+func GroupsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.GroupProperties{}), []string{})
+}
+
 func NATGatewaysFilters() []string {
 	return getPropertiesName(ionoscloud.NatGatewayProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func NATGatewaysPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.NatGatewayProperties{})
+func NATGatewaysFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.NatGatewayProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func NATGatewayRulesFilters() []string {
 	return getPropertiesName(ionoscloud.NatGatewayRuleProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func NATGatewayRulesPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.NatGatewayRuleProperties{})
+func NATGatewayRulesFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.NatGatewayRuleProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func NlbsFilters() []string {
 	return getPropertiesName(ionoscloud.NetworkLoadBalancerProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func NlbsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.NetworkLoadBalancerProperties{})
+func NlbsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.NetworkLoadBalancerProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
-func NlbForwardingRulesFilters() []string {
+func NlbRulesFilters() []string {
 	return getPropertiesName(ionoscloud.NetworkLoadBalancerForwardingRuleProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func NlbForwardinRulesPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.NetworkLoadBalancerForwardingRuleProperties{})
+func NlbRulesFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.NetworkLoadBalancerForwardingRuleProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func PccsFilters() []string {
 	return getPropertiesName(ionoscloud.PrivateCrossConnectProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func PccsPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.PrivateCrossConnectProperties{})
+func PccsFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.PrivateCrossConnectProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 func TemplatesFilters() []string {
 	return getPropertiesName(ionoscloud.TemplateProperties{}, ionoscloud.DatacenterElementMetadata{})
 }
 
-func TemplatesPropertiesFilters() []string {
-	return getPropertiesName(ionoscloud.TemplateProperties{})
+func TemplatesFiltersUsage() string {
+	return getFilterUsage(getPropertiesName(ionoscloud.TemplateProperties{}), getPropertiesName(ionoscloud.DatacenterElementMetadata{}))
 }
 
 // getPropertiesName uses reflection to get properties' name from a struct.
@@ -253,6 +242,17 @@ func getPropertiesName(params ...interface{}) []string {
 		}
 	}
 	return properties
+}
+
+func getFilterUsage(propertiesFilters []string, metadataFilters []string) string {
+	usage := "Available Filters:\n"
+	if len(propertiesFilters) > 0 {
+		usage = fmt.Sprintf("%s* filter by property: %s", usage, propertiesFilters)
+	}
+	if len(metadataFilters) > 0 {
+		usage = fmt.Sprintf("%s\n* filter by metadata: %s", usage, metadataFilters)
+	}
+	return usage
 }
 
 func makeFirstLowerCase(s string) string {

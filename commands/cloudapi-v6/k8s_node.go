@@ -191,10 +191,7 @@ func PreRunK8sNodesList(c *core.PreCommandConfig) error {
 		return err
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.K8sNodesPropertiesFilters(),
-			MetadataFilters:   completer.DataCentersMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.K8sNodesFilters(), completer.K8sNodesFiltersUsage())
 	}
 	return nil
 }

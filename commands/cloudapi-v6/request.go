@@ -131,10 +131,7 @@ Required values to run command:
 
 func PreRunRequestList(c *core.PreCommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.RequestsPropertiesFilters(),
-			MetadataFilters:   completer.RequestsMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.RequestsFilters(), completer.RequestsFiltersUsage())
 	}
 	return nil
 }

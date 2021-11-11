@@ -100,7 +100,7 @@ func TestFiltersLength(t *testing.T) {
 		assert.True(t, len(filters) > 0)
 	})
 	t.Run("nlbrule_filters", func(t *testing.T) {
-		filters := NlbForwardingRulesFilters()
+		filters := NlbRulesFilters()
 		assert.True(t, len(filters) > 0)
 	})
 	t.Run("pcc_filters", func(t *testing.T) {

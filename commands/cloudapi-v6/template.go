@@ -89,10 +89,7 @@ func TemplateCmd() *core.Command {
 
 func PreRunTemplateList(c *core.PreCommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.TemplatesPropertiesFilters(),
-			MetadataFilters:   completer.DataCentersMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.TemplatesFilters(), completer.TemplatesFiltersUsage())
 	}
 	return nil
 }

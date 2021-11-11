@@ -116,10 +116,7 @@ Use flags to retrieve a list of Images:
 
 func PreRunImageList(c *core.PreCommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.ImagesPropertiesFilters(),
-			MetadataFilters:   completer.DataCentersMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.ImagesFilters(), completer.ImagesFiltersUsage())
 	}
 	return nil
 }

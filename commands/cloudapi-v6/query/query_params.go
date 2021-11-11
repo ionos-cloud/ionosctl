@@ -17,14 +17,7 @@ import (
 
 const FiltersPartitionChar = "="
 
-// AvailableFilters for resources are usually split
-// between Properties and Metadata Filters.
-type AvailableFilters struct {
-	PropertiesFilters []string
-	MetadataFilters   []string
-}
-
-func ValidateFilters(c *core.PreCommandConfig, filters AvailableFilters) error {
+func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageFilters string) error {
 	filtersKV, err := getFilters(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)), c.Command)
 	if err != nil {
 		return err
@@ -32,7 +25,7 @@ func ValidateFilters(c *core.PreCommandConfig, filters AvailableFilters) error {
 	c.Printer.Verbose("Validating %v filters...", len(filtersKV))
 	invalidFilters := make([]string, 0)
 	for filterKey, _ := range filtersKV {
-		if !isValidFilter(filterKey, filters.PropertiesFilters, filters.MetadataFilters) {
+		if !isValidFilter(filterKey, availableFilters) {
 			c.Printer.Verbose("Invalid Filter: %s", filterKey)
 			invalidFilters = append(invalidFilters, filterKey)
 		} else {
@@ -45,7 +38,7 @@ func ValidateFilters(c *core.PreCommandConfig, filters AvailableFilters) error {
 				c.Command.CommandPath(),
 				len(invalidFilters),
 				pluralize("filter", len(invalidFilters)),
-				getUsage(filters),
+				usageFilters,
 				c.Command.CommandPath(),
 			),
 		)
@@ -113,17 +106,6 @@ func isValidFilter(filter string, availableFiltersObjs ...[]string) bool {
 		}
 	}
 	return false
-}
-
-func getUsage(filters AvailableFilters) string {
-	usage := "Available Filters:\n"
-	if len(filters.PropertiesFilters) > 0 {
-		usage = fmt.Sprintf("%s* filter by property: %s", usage, filters.PropertiesFilters)
-	}
-	if len(filters.MetadataFilters) > 0 {
-		usage = fmt.Sprintf("%s\n* filter by metadata: %s", usage, filters.MetadataFilters)
-	}
-	return usage
 }
 
 func pluralize(word string, number int) string {

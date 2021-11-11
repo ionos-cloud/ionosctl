@@ -192,9 +192,7 @@ Required values to run command:
 
 func PreRunGroupList(c *core.PreCommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.GroupsFilters(),
-		})
+		return query.ValidateFilters(c, completer.GroupsFilters(), completer.GroupsFiltersUsage())
 	}
 	return nil
 }

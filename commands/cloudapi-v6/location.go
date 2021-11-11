@@ -92,10 +92,7 @@ func LocationCmd() *core.Command {
 
 func PreRunLocationsList(c *core.PreCommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.LocationsPropertiesFilters(),
-			MetadataFilters:   completer.DataCentersMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.LocationsFilters(), completer.LocationsFiltersUsage())
 	}
 	return nil
 }

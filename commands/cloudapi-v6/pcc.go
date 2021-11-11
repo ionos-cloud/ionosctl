@@ -167,10 +167,7 @@ Required values to run command:
 
 func PreRunPccList(c *core.PreCommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
-		return query.ValidateFilters(c, query.AvailableFilters{
-			PropertiesFilters: completer.PccsPropertiesFilters(),
-			MetadataFilters:   completer.DataCentersMetadataFilters(),
-		})
+		return query.ValidateFilters(c, completer.PccsFilters(), completer.PccsFiltersUsage())
 	}
 	return nil
 }
