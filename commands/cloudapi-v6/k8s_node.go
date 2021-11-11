@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -49,7 +48,7 @@ func K8sNodeCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes Nodes",
-		LongDesc:   "Use this command to get a list of existing Kubernetes Nodes.\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
+		LongDesc:   "Use this command to get a list of existing Kubernetes Nodes.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1:VALUE1,KEY2:VALUE2`.\n" + completer.K8sNodesFiltersUsage() + "\n\nRequired values to run command:\n\n* K8s Cluster Id\n* K8s NodePool Id",
 		Example:    listK8sNodesExample,
 		PreCmdRun:  PreRunK8sNodesList,
 		CmdRun:     RunK8sNodeList,
@@ -68,7 +67,7 @@ func K8sNodeCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2")
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sNodesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})

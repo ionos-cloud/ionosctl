@@ -47,18 +47,12 @@ func RequestCmd() *core.Command {
 		List Command
 	*/
 	list := core.NewCommand(ctx, reqCmd, core.CommandBuilder{
-		Namespace: "request",
-		Resource:  "request",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List Requests",
-		LongDesc: `Use this command to list all Requests on your account.
-
-Use flags to retrieve a list of Requests:
-
-* sorting by the time the Request was created, starting from now in descending order, take the first N Requests: ` + "`" + `ionosctl request list --latest N` + "`" + `
-* sorting by method: ` + "`" + `ionosctl request list --method REQUEST_METHOD` + "`" + `, where request method can be CREATE or POST, UPDATE or PATCH, PUT and DELETE
-* sorting by both of the above options: ` + "`" + `ionosctl request list --method REQUEST_METHOD --latest N` + "`" + ``,
+		Namespace:  "request",
+		Resource:   "request",
+		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
+		ShortDesc:  "List Requests",
+		LongDesc:   "Use this command to list all Requests on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1:VALUE1,KEY2:VALUE2`.\n" + completer.RequestsFiltersUsage(),
 		Example:    listRequestExample,
 		PreCmdRun:  PreRunRequestList,
 		CmdRun:     RunRequestList,
@@ -74,7 +68,7 @@ Use flags to retrieve a list of Requests:
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2")
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.RequestsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})

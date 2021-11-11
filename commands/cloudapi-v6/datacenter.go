@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -51,7 +50,8 @@ func DatacenterCmd() *core.Command {
 		ShortDesc: "List Data Centers",
 		LongDesc: `Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account. You can setup multiple query parameters.
 
-You can filter the output of the command based on properties, getting only datacenters with specific properties - using the filters option. In order to setup filters, use the following format: ` + "`" + `KEY:VALUE` + "`" + `. Example: ` + "`" + `--filters location:us/las,state:AVAILABLE` + "`" + ``,
+You can filter the results using ` + "`" + `--filters` + "`" + ` option. Use the following format to set filters: ` + "`" + `--filters KEY1:VALUE1,KEY2:VALUE2` + "`" + `
+` + completer.DataCentersFiltersUsage(),
 		Example:    listDatacenterExample,
 		PreCmdRun:  PreRunDataCenterList,
 		CmdRun:     RunDataCenterList,
@@ -62,7 +62,7 @@ You can filter the output of the command based on properties, getting only datac
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2")
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})

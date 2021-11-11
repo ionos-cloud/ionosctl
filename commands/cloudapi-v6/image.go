@@ -47,21 +47,12 @@ func ImageCmd() *core.Command {
 		List Command
 	*/
 	list := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
-		Namespace: "image",
-		Resource:  "image",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List Images",
-		LongDesc: `Use this command to get a full list of available public Images.
-
-Use flags to retrieve a list of Images:
-
-* sorting by location, using ` + "`" + `ionosctl image list --location LOCATION_ID` + "`" + `
-* sorting by licence type, using ` + "`" + `ionosctl image list --licence-type LICENCE_TYPE` + "`" + `
-* sorting by Image type, using ` + "`" + `ionosctl image list --type IMAGE_TYPE` + "`" + `
-* sorting by Image alias, using ` + "`" + `ionosctl image list --image-alias IMAGE_ALIAS` + "`" + `; image alias can be either the Image alias ` + "`" + `--image-alias ubuntu:latest` + "`" + ` or part of Image alias e.g. ` + "`" + `--image-alias latest` + "`" + `
-* sorting by the time the Image was created, starting from now in descending order, take the first N Images, using ` + "`" + `ionosctl image list --latest N` + "`" + `
-* sorting by multiple of above options, using ` + "`" + `ionosctl image list --type IMAGE_TYPE --location LOCATION_ID --latest N` + "`" + ``,
+		Namespace:  "image",
+		Resource:   "image",
+		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
+		ShortDesc:  "List Images",
+		LongDesc:   "Use this command to get a full list of available public Images.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1:VALUE1,KEY2:VALUE2`.\n" + completer.ImagesFiltersUsage(),
 		Example:    listImagesExample,
 		PreCmdRun:  PreRunImageList,
 		CmdRun:     RunImageList,
@@ -86,7 +77,7 @@ Use flags to retrieve a list of Images:
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1:VALUE1,KEY2:VALUE2")
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
