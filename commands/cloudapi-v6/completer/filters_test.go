@@ -113,6 +113,109 @@ func TestFiltersLength(t *testing.T) {
 	})
 }
 
+func TestFiltersUsage(t *testing.T) {
+	t.Run("datacenters_filters_usage", func(t *testing.T) {
+		filtersUsage := DataCentersFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("backupunits_filters_usage", func(t *testing.T) {
+		filtersUsage := BackupUnitsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("servers_filters_usage", func(t *testing.T) {
+		filtersUsage := ServersFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("images_filters_usage", func(t *testing.T) {
+		filtersUsage := ImagesFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("volumes_filters_usage", func(t *testing.T) {
+		filtersUsage := VolumesFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("snapshots_filters_usage", func(t *testing.T) {
+		filtersUsage := SnapshotsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("ipblocks_filters_usage", func(t *testing.T) {
+		filtersUsage := IpBlocksFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("lans_filters_usage", func(t *testing.T) {
+		filtersUsage := LANsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("nics_filters_usage", func(t *testing.T) {
+		filtersUsage := NICsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("locations_filters_usage", func(t *testing.T) {
+		filtersUsage := LocationsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("firewallrules_filters_usage", func(t *testing.T) {
+		filtersUsage := FirewallRulesFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("loadbalancers_filters_usage", func(t *testing.T) {
+		filtersUsage := LoadbalancersFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("requests_filters_usage", func(t *testing.T) {
+		filtersUsage := RequestsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("users_filters_usage", func(t *testing.T) {
+		filtersUsage := UsersFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("k8sclusters_filters_usage", func(t *testing.T) {
+		filtersUsage := K8sClustersFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("k8snodepools_filters_usage", func(t *testing.T) {
+		filtersUsage := K8sNodePoolsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("k8snodes_filters_usage", func(t *testing.T) {
+		filtersUsage := K8sNodesFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("flowlogs_filters_usage", func(t *testing.T) {
+		filtersUsage := FlowLogsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("groups_filters_usage", func(t *testing.T) {
+		filtersUsage := GroupsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("natgateways_filters_usage", func(t *testing.T) {
+		filtersUsage := NATGatewaysFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("natgatewayrules_filters_usage", func(t *testing.T) {
+		filtersUsage := NATGatewayRulesFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("nlb_filters_usage", func(t *testing.T) {
+		filtersUsage := NlbsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("nlbrule_filters_usage", func(t *testing.T) {
+		filtersUsage := NlbRulesFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("pcc_filters_usage", func(t *testing.T) {
+		filtersUsage := PccsFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+	t.Run("templates_filters_usage", func(t *testing.T) {
+		filtersUsage := TemplatesFiltersUsage()
+		assert.True(t, filtersUsage != "")
+	})
+}
+
 // This struct is used for testing purposes.
 type testStruct struct {
 	a               *string

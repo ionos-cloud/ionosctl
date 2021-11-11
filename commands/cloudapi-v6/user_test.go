@@ -102,6 +102,44 @@ func TestUserCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunUserList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunUserList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunUserListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("firstname=%s", testQueryParamVar)})
+		err := PreRunUserList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunUserListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunUserList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunUserId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
