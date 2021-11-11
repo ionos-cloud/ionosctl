@@ -117,8 +117,7 @@ func PreRunImageId(c *core.PreCommandConfig) error {
 }
 
 func RunImageList(c *core.CommandConfig) error {
-	c.Printer.Print("WARNING: The following flags are deprecated and they will be removed in the next releases:" +
-		c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + "\nUse --filters --order-by --max-results options instead!")
+	c.Printer.Print("WARNING: The following flags are deprecated:" + c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --filters --order-by --max-results options instead!")
 	// Add Query Parameters for GET Requests
 	listQueryParams, err := query.GetListQueryParams(c)
 	if err != nil {
