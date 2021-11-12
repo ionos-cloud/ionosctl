@@ -47,6 +47,26 @@ var (
 			Properties: &testRuleTargetProperties.NetworkLoadBalancerForwardingRuleProperties,
 		},
 	}
+	testTarget = ionoscloud.NetworkLoadBalancerForwardingRuleTarget{
+		Ip:   &testNlbRuleTargetVar,
+		Port: &testNlbRuleTargetIntVar,
+	}
+	testNlbRuleTarget = ionoscloud.NetworkLoadBalancerForwardingRule{
+		Id: &testNlbRuleTargetVar,
+		Properties: &ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+			Name:    &testNlbRuleTargetVar,
+			Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{testTarget, testTarget},
+		},
+	}
+	testNlbRuleTargetList = resources.NetworkLoadBalancerForwardingRules{
+		NetworkLoadBalancerForwardingRules: ionoscloud.NetworkLoadBalancerForwardingRules{
+			Id: &testNlbRuleTargetVar,
+			Items: &[]ionoscloud.NetworkLoadBalancerForwardingRule{
+				testNlbRuleTarget,
+				testNlbRuleTarget,
+			},
+		},
+	}
 	testNlbRuleTargetIntVar  = int32(1)
 	testNlbRuleTargetBoolVar = false
 	testNlbRuleTargetVar     = "test-rule-target"
@@ -281,6 +301,34 @@ func TestRunNlbRuleTargetRemove(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetIp), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTargetPort), testNlbRuleTargetIntVar)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).Return(&testNlbRuleTargetGetUpdated, nil, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
+			&resources.NetworkLoadBalancerForwardingRuleProperties{
+				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+					Targets: &[]ionoscloud.NetworkLoadBalancerForwardingRuleTarget{},
+				},
+			}).Return(&testNlbRuleTargetGet, &testResponse, nil)
+		err := RunNlbRuleTargetRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNlbRuleTargetRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbRuleTargetVar, testNlbRuleTargetVar).
+			Return(testNlbRuleTargetList, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).
+			Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,
 			&resources.NetworkLoadBalancerForwardingRuleProperties{
 				NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{

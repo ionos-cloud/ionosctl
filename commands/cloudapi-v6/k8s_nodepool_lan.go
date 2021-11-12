@@ -230,7 +230,7 @@ func RemoveAllK8sNodepoolsLans(c *core.CommandConfig) (*resources.Response, erro
 	if err != nil {
 		return nil, err
 	}
-	if k8sNodepoolsItems, ok := k8sNodepools.GetItemsOk(); ok && k8sNodepoolsItems != nil { // todo try to improve the complexity si intreaba Ana daca e ok implementarea
+	if k8sNodepoolsItems, ok := k8sNodepools.GetItemsOk(); ok && k8sNodepoolsItems != nil {
 		for _, k8sNodepool := range *k8sNodepoolsItems {
 			if props, ok := k8sNodepool.GetPropertiesOk(); ok && props != nil {
 				if lans, ok := props.GetLansOk(); ok && lans != nil {
@@ -254,8 +254,20 @@ func RemoveAllK8sNodepoolsLans(c *core.CommandConfig) (*resources.Response, erro
 	}
 	propertiesUpdated := resources.K8sNodePoolPropertiesForPut{}
 	if properties, ok := ng.GetPropertiesOk(); ok && properties != nil {
+		if n, ok := properties.GetNodeCountOk(); ok && n != nil {
+			propertiesUpdated.SetNodeCount(*n)
+		}
+		if n, ok := properties.GetAutoScalingOk(); ok && n != nil {
+			propertiesUpdated.SetAutoScaling(*n)
+		}
+		if n, ok := properties.GetMaintenanceWindowOk(); ok && n != nil {
+			propertiesUpdated.SetMaintenanceWindow(*n)
+		}
+		if n, ok := properties.GetK8sVersionOk(); ok && n != nil {
+			propertiesUpdated.SetK8sVersion(*n)
+		}
 		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
-		propertiesUpdated.SetLans(newLans)
+		propertiesUpdated.SetLans(newLans) // []ionoscloud.KubernetesNodePoolLan{}
 		k8sNodePoolUpdated := resources.K8sNodePoolForPut{
 			KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 				Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,

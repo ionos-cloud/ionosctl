@@ -247,7 +247,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) (*resources.Response, error)
 	if err != nil {
 		return nil, err
 	}
-	if natGatewaysItems, ok := natGateways.GetItemsOk(); ok && natGatewaysItems != nil { // todo try to improve the complexity si intreaba Ana daca e ok implementarea
+	if natGatewaysItems, ok := natGateways.GetItemsOk(); ok && natGatewaysItems != nil {
 		for _, natGateway := range *natGatewaysItems {
 			if props, ok := natGateway.GetPropertiesOk(); ok && props != nil {
 				if lans, ok := props.GetLansOk(); ok && lans != nil {
