@@ -167,6 +167,12 @@ Required values to run command:
 		InitClient: true,
 	})
 	update.AddStringFlag(cloudapiv5.ArgK8sVersion, "", "", "The K8s version for the NodePool. K8s version downgrade is not supported")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgK8sVersion,
+		func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+			clusterId := viper.GetString(core.GetFlagName(update.NS, cloudapiv5.ArgK8sClusterId))
+			nodepoolId := viper.GetString(core.GetFlagName(update.NS, cloudapiv5.ArgK8sNodePoolId))
+			return completer.K8sNodePoolUpgradeVersions(os.Stderr, clusterId, nodepoolId), cobra.ShellCompDirectiveNoFileComp
+		})
 	update.AddIntFlag(cloudapiv5.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
 	update.AddIntFlag(cloudapiv5.ArgK8sMinNodeCount, "", 1, "The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count")
 	update.AddIntFlag(cloudapiv5.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count")
