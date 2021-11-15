@@ -438,7 +438,7 @@ func DeleteAllNics(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // LoadBalancer Nic Commands
@@ -583,7 +583,7 @@ Required values to run command:
 * Load Balancer Id
 * NIC Id`,
 		Example:    detachNicLoadbalancerExample,
-		PreCmdRun:  PreRunDcNicLoadBalancerIds,
+		PreCmdRun:  PreRunNicDetach,
 		CmdRun:     RunLoadBalancerNicDetach,
 		InitClient: true,
 	})
@@ -606,12 +606,20 @@ Required values to run command:
 	})
 	detachNic.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC detachment to be executed")
 	detachNic.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC detachment [seconds]")
+	detachNic.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all Nics.")
 
 	return loadbalancerNicCmd
 }
 
 func PreRunDcNicLoadBalancerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNicId, cloudapiv6.ArgLoadBalancerId)
+}
+
+func PreRunNicDetach(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNicId, cloudapiv6.ArgLoadBalancerId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNicId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
@@ -653,22 +661,75 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
-		return err
-	}
-	resp, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-	)
-	if err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DetachAllNics(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
+			return err
+		}
+		resp, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		)
+		if err != nil {
+			return err
+		}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getNicPrint(resp, c, nil))
+}
+
+func DetachAllNics(c *core.CommandConfig) (*resources.Response, error) {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
+	_ = c.Printer.Print("Nics to be detached:")
+	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId)
+	if err != nil {
+		return nil, err
+	}
+	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
+		for _, nic := range *nicsItems {
+			if id, ok := nic.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Nic Id: " + *id)
+			}
+			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" Nic Name: " + *name)
+				}
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Nics"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Detaching all the Nics...")
+		for _, nic := range *nicsItems {
+			if id, ok := nic.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting detaching Nic with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // Output Printing

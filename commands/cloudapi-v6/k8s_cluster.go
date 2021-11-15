@@ -455,7 +455,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Output Printing

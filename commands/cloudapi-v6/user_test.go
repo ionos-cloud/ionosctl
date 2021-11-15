@@ -61,6 +61,14 @@ var (
 			Items: &[]ionoscloud.User{userTestGet.User},
 		},
 	}
+	groupUsersTestList = resources.GroupMembers{
+		GroupMembers: ionoscloud.GroupMembers{
+			Items: &[]ionoscloud.User{
+				userTestGet.User,
+				userTestGet.User,
+			},
+		},
+	}
 	userProperties = resources.UserProperties{
 		UserProperties: ionoscloud.UserProperties{
 			Firstname:     &testUserNewVar,
@@ -514,6 +522,26 @@ func TestRunGroupUserRemove(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
+		rm.CloudApiV6Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(&testResponse, nil)
+		err := RunGroupUserRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupUserRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Group.EXPECT().ListUsers(testGroupVar).Return(groupUsersTestList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(&testResponse, nil)
 		err := RunGroupUserRemove(cfg)
 		assert.NoError(t, err)

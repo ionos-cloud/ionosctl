@@ -28,6 +28,12 @@ var (
 			},
 		},
 	}
+	natgatewaysLanListTest = resources.NatGateways{
+		NatGateways: ionoscloud.NatGateways{
+			Id:    &testNatGatewayLanVar,
+			Items: &[]ionoscloud.NatGateway{natgatewayLanTest.NatGateway, natgatewayLanTest.NatGateway},
+		},
+	}
 	natgatewayLanTestUpdated = resources.NatGateway{
 		NatGateway: ionoscloud.NatGateway{
 			Id: &testNatGatewayLanVar,
@@ -53,6 +59,11 @@ var (
 			Lans: &[]ionoscloud.NatGatewayLanProperties{
 				natgatewayLanProperties.NatGatewayLanProperties,
 			},
+		},
+	}
+	natgatewayLanTestRemoveAll = resources.NatGatewayProperties{
+		NatGatewayProperties: ionoscloud.NatGatewayProperties{
+			Lans: &[]ionoscloud.NatGatewayLanProperties{},
 		},
 	}
 	natgatewayLanProperties = resources.NatGatewayLanProperties{
@@ -239,6 +250,27 @@ func TestRunNatGatewayLanRemove(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testNatGatewayLanNewIntVar)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar).Return(&natgatewayLanTest, &testResponse, nil)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestRemove).Return(&natgatewayLanTest, nil, nil)
+		err := RunNatGatewayLanRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNatGatewayLanRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayLanVar)
+		//viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testNatGatewayLanNewIntVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().List(testNatGatewayLanVar).Return(natgatewaysLanListTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar).Return(&natgatewayLanTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestRemoveAll).Return(&natgatewayLanTest, nil, nil)
 		err := RunNatGatewayLanRemove(cfg)
 		assert.NoError(t, err)
 	})

@@ -390,7 +390,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) (*resources.Response, 
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Output Printing
