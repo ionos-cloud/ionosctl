@@ -267,7 +267,7 @@ func RemoveAllK8sNodepoolsLans(c *core.CommandConfig) (*resources.Response, erro
 			propertiesUpdated.SetK8sVersion(*n)
 		}
 		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
-		propertiesUpdated.SetLans(newLans) // []ionoscloud.KubernetesNodePoolLan{}
+		propertiesUpdated.SetLans(newLans)
 		k8sNodePoolUpdated := resources.K8sNodePoolForPut{
 			KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 				Properties: &propertiesUpdated.KubernetesNodePoolPropertiesForPut,

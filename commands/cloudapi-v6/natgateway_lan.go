@@ -271,22 +271,20 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) (*resources.Response, error)
 	proper := make([]ionoscloud.NatGatewayLanProperties, 0)
 	if ng != nil {
 		if properties, ok := ng.GetPropertiesOk(); ok && properties != nil {
-			if lans, ok := properties.GetLansOk(); ok && lans != nil { // todo cred ca if-ul asta poate fi sters, daca nu, trebuie adaugat si la k8s nodepools lan
-				natGatewaysProps := &resources.NatGatewayProperties{
-					NatGatewayProperties: ionoscloud.NatGatewayProperties{
-						Lans: &proper,
-					},
-				}
-				ng, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps)
-				if resp != nil {
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			natGatewaysProps := &resources.NatGatewayProperties{
+				NatGatewayProperties: ionoscloud.NatGatewayProperties{
+					Lans: &proper,
+				},
+			}
+			ng, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps)
+			if resp != nil {
+				c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+			}
+			if err != nil {
+				return nil, err
+			}
+			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+				return nil, err
 			}
 		}
 	}
