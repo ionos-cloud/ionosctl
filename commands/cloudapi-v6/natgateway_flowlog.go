@@ -429,5 +429,5 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) (*resources.Response, er
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }

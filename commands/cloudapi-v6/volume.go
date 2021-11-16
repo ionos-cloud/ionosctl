@@ -601,7 +601,7 @@ func DeleteAllVolumes(c *core.CommandConfig) (*resources.Response, error) {
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Server Volume Commands
@@ -748,7 +748,7 @@ Required values to run command:
 * Server Id
 * Volume Id`,
 		Example:    detachVolumeServerExample,
-		PreCmdRun:  PreRunDcServerVolumeIds,
+		PreCmdRun:  PreRunDcServerVolumeDetach,
 		CmdRun:     RunServerVolumeDetach,
 		InitClient: true,
 	})
@@ -771,12 +771,20 @@ Required values to run command:
 	})
 	detachVolume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume detachment to be executed")
 	detachVolume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume detachment [seconds]")
+	detachVolume.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all Volumes.")
 
 	return serverVolumeCmd
 }
 
 func PreRunDcServerVolumeIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgVolumeId)
+}
+
+func PreRunDcServerVolumeDetach(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgVolumeId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunServerVolumeAttach(c *core.CommandConfig) error {
@@ -841,22 +849,75 @@ func RunServerVolumeGet(c *core.CommandConfig) error {
 }
 
 func RunServerVolumeDetach(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server"); err != nil {
-		return err
-	}
-	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
-	c.Printer.Verbose("Datacenter ID: %v", dcId)
-	c.Printer.Verbose("Detaching Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
-	resp, err := c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, volumeId)
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DetachAllServers(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server"); err != nil {
+			return err
+		}
+		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+		serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+		c.Printer.Verbose("Datacenter ID: %v", dcId)
+		c.Printer.Verbose("Detaching Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
+		resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, volumeId)
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getVolumePrint(resp, c, nil))
+}
+
+func DetachAllServers(c *core.CommandConfig) (*resources.Response, error) {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	_ = c.Printer.Print("Volumes to be detached:")
+	volumes, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId)
+	if err != nil {
+		return nil, err
+	}
+	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
+		for _, volume := range *volumesItems {
+			if id, ok := volume.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Volume Id: " + *id)
+			}
+			if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" Volume Name: " + *name)
+				}
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Volumes"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Detaching all the Volumes...")
+		for _, volume := range *volumesItems {
+			if id, ok := volume.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting detaching Volume with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // Output Printing

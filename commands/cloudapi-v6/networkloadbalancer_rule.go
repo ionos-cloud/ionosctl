@@ -488,7 +488,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) (*resour
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
 
 // Output Printing

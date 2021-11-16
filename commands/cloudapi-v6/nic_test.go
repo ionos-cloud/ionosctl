@@ -49,6 +49,24 @@ var (
 			},
 		},
 	}
+	nicLoadBalancer = ionoscloud.Nic{
+		Id: &testLoadbalancerVar,
+		Properties: &ionoscloud.NicProperties{
+			Name:           &testNicVar,
+			Lan:            &lanNicId,
+			Dhcp:           &dhcpNic,
+			Ips:            &ipsNic,
+			FirewallActive: &dhcpNic,
+			Mac:            &testNicVar,
+		},
+		Metadata: &ionoscloud.DatacenterElementMetadata{State: &testStateVar},
+	}
+	balancednsList = resources.BalancedNics{
+		BalancedNics: ionoscloud.BalancedNics{
+			Id:    &testNicVar,
+			Items: &[]ionoscloud.Nic{nicLoadBalancer, nicLoadBalancer},
+		},
+	}
 	nicProperties = resources.NicProperties{
 		NicProperties: ionoscloud.NicProperties{
 			Name: &testNicNewVar,
@@ -654,6 +672,27 @@ func TestRunLoadBalancerNicDetach(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().DetachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(nil, nil)
+		err := RunLoadBalancerNicDetach(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLoadBalancerNicDetachAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLoadBalancerId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar).Return(balancednsList, nil, nil)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().DetachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().DetachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
 		err := RunLoadBalancerNicDetach(cfg)
 		assert.NoError(t, err)
 	})

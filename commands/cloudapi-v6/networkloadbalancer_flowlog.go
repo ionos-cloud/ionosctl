@@ -428,5 +428,5 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) (*resources.Res
 			}
 		}
 	}
-	return resp, err
+	return resp, nil
 }
