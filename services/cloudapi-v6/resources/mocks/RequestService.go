@@ -67,9 +67,9 @@ func (mr *MockRequestsServiceMockRecorder) GetStatus(requestId interface{}) *gom
 }
 
 // List mocks base method.
-func (m *MockRequestsService) List() (resources.Requests, *resources.Response, error) {
+func (m *MockRequestsService) List(params resources.ListQueryParams) (resources.Requests, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.Requests)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -77,9 +77,9 @@ func (m *MockRequestsService) List() (resources.Requests, *resources.Response, e
 }
 
 // List indicates an expected call of List.
-func (mr *MockRequestsServiceMockRecorder) List() *gomock.Call {
+func (mr *MockRequestsServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRequestsService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRequestsService)(nil).List), params)
 }
 
 // Wait mocks base method.

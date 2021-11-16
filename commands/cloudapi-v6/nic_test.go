@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -123,6 +124,50 @@ func TestNicCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunNicList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
+		err := PreRunNicList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunNicListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunNicList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunNicListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunNicList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunNicList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -133,7 +178,26 @@ func TestRunNicList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
-		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar).Return(ns, &testResponse, nil)
+		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar, resources.ListQueryParams{}).Return(ns, &testResponse, nil)
+		err := RunNicList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNicListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar, testListQueryParam).Return(resources.Nics{}, &testResponse, nil)
 		err := RunNicList(cfg)
 		assert.NoError(t, err)
 	})
@@ -148,7 +212,7 @@ func TestRunNicListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
-		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar).Return(ns, nil, testNicErr)
+		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar, resources.ListQueryParams{}).Return(ns, nil, testNicErr)
 		err := RunNicList(cfg)
 		assert.Error(t, err)
 	})
@@ -346,7 +410,7 @@ func TestRunNicDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testNicVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar).Return(nicsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Nic.EXPECT().List(testNicVar, testNicVar, resources.ListQueryParams{}).Return(nicsList, &testResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Delete(testNicVar, testNicVar, testNicVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Nic.EXPECT().Delete(testNicVar, testNicVar, testNicVar).Return(&testResponse, nil)
 		err := RunNicDelete(cfg)
@@ -542,7 +606,7 @@ func TestRunLoadBalancerNicList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLoadBalancerId), testLoadbalancerVar)
-		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar).Return(balancedns, nil, nil)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar, resources.ListQueryParams{}).Return(balancedns, nil, nil)
 		err := RunLoadBalancerNicList(cfg)
 		assert.NoError(t, err)
 	})
@@ -557,7 +621,7 @@ func TestRunLoadBalancerNicListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLoadBalancerId), testLoadbalancerVar)
-		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar).Return(balancedns, nil, testLoadbalancerErr)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar, resources.ListQueryParams{}).Return(balancedns, nil, testLoadbalancerErr)
 		err := RunLoadBalancerNicList(cfg)
 		assert.Error(t, err)
 	})
@@ -626,7 +690,7 @@ func TestRunLoadBalancerNicDetachAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLoadBalancerId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar).Return(balancednsList, nil, nil)
+		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar, resources.ListQueryParams{}).Return(balancednsList, nil, nil)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().DetachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Loadbalancer.EXPECT().DetachNic(testLoadbalancerVar, testLoadbalancerVar, testLoadbalancerVar).Return(&testResponse, nil)
 		err := RunLoadBalancerNicDetach(cfg)

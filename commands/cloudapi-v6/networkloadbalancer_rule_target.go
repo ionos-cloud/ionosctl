@@ -294,7 +294,7 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) (*resources.Response, error) 
 	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
 	var frOld *resources.NetworkLoadBalancerForwardingRule
 	_ = c.Printer.Print("Forwarding Rule Targets to be removed:")
-	forwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, nlbId)
+	forwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, nlbId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

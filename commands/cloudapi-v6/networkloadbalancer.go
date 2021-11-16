@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -48,15 +49,24 @@ func NetworkloadbalancerCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Network Load Balancers",
-		LongDesc:   "Use this command to list Network Load Balancers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to list Network Load Balancers from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NlbsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listNetworkLoadBalancerExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunNetworkLoadBalancerList,
 		CmdRun:     RunNetworkLoadBalancerList,
 		InitClient: true,
 	})
 	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NlbsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NlbsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -196,6 +206,16 @@ Required values to run command:
 	return networkloadbalancerCmd
 }
 
+func PreRunNetworkLoadBalancerList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NlbsFilters(), completer.NlbsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcNetworkLoadBalancerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId)
 }
@@ -208,7 +228,15 @@ func PreRunDcNetworkLoadBalancerDelete(c *core.PreCommandConfig) error {
 }
 
 func RunNetworkLoadBalancerList(c *core.CommandConfig) error {
-	networkloadbalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	networkloadbalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -353,7 +381,7 @@ func getNewNetworkLoadBalancerInfo(c *core.CommandConfig) *resources.NetworkLoad
 func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	_ = c.Printer.Print("NetworkLoadBalancers to be deleted:")
-	networkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(dcId)
+	networkLoadBalancers, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -456,11 +484,13 @@ func getNetworkLoadBalancersCols(flagName string, outErr io.Writer) []string {
 }
 
 func getNetworkLoadBalancers(networkloadbalancers resources.NetworkLoadBalancers) []resources.NetworkLoadBalancer {
-	ss := make([]resources.NetworkLoadBalancer, 0)
-	for _, s := range *networkloadbalancers.Items {
-		ss = append(ss, resources.NetworkLoadBalancer{NetworkLoadBalancer: s})
+	networkLoadBalancerObjs := make([]resources.NetworkLoadBalancer, 0)
+	if items, ok := networkloadbalancers.GetItemsOk(); ok && items != nil {
+		for _, networkLoadBalancer := range *items {
+			networkLoadBalancerObjs = append(networkLoadBalancerObjs, resources.NetworkLoadBalancer{NetworkLoadBalancer: networkLoadBalancer})
+		}
 	}
-	return ss
+	return networkLoadBalancerObjs
 }
 
 func getNetworkLoadBalancersKVMaps(ss []resources.NetworkLoadBalancer) []map[string]interface{} {

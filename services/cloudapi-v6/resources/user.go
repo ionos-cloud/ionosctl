@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -44,7 +45,7 @@ type Resources struct {
 
 // UsersService is a wrapper around ionoscloud.User
 type UsersService interface {
-	List() (Users, *Response, error)
+	List(params ListQueryParams) (Users, *Response, error)
 	Get(userId string) (*User, *Response, error)
 	Create(u UserPost) (*User, *Response, error)
 	Update(userId string, input UserPut) (*User, *Response, error)
@@ -68,8 +69,21 @@ func NewUserService(client *Client, ctx context.Context) UsersService {
 	}
 }
 
-func (s *usersService) List() (Users, *Response, error) {
+func (s *usersService) List(params ListQueryParams) (Users, *Response, error) {
 	req := s.client.UserManagementApi.UmUsersGet(s.context)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	dcs, res, err := s.client.UserManagementApi.UmUsersGetExecute(req)
 	return Users{dcs}, &Response{*res}, err
 }

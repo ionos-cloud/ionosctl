@@ -9,6 +9,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -49,9 +50,9 @@ func FirewallruleCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Firewall Rules",
-		LongDesc:   "Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id",
+		LongDesc:   "Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.FirewallRulesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id",
 		Example:    listFirewallRuleExample,
-		PreCmdRun:  PreRunDcServerNicIds,
+		PreCmdRun:  PreRunFirewallRuleList,
 		CmdRun:     RunFirewallRuleList,
 		InitClient: true,
 	})
@@ -69,6 +70,15 @@ func FirewallruleCmd() *core.Command {
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.FirewallRulesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.FirewallRulesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -283,6 +293,16 @@ Required values to run command:
 	return firewallRuleCmd
 }
 
+func PreRunFirewallRuleList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.FirewallRulesFilters(), completer.FirewallRulesFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcServerNicIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId)
 }
@@ -303,10 +323,19 @@ func PreRunDcServerNicFRuleIds(c *core.PreCommandConfig) error {
 }
 
 func RunFirewallRuleList(c *core.CommandConfig) error {
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
 	firewallRules, resp, err := c.CloudApiV6Services.FirewallRules().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		listQueryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
@@ -482,7 +511,7 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) (*resources.Response, error) 
 	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
 	_ = c.Printer.Print("Firewallrules to be deleted:")
-	firewallrules, resp, err := c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId)
+	firewallrules, resp, err := c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

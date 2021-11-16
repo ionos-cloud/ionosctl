@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -48,17 +49,17 @@ type NetworkLoadBalancerForwardingRules struct {
 
 // NetworkLoadBalancersService is a wrapper around ionoscloud.NetworkLoadBalancer
 type NetworkLoadBalancersService interface {
-	List(datacenterId string) (NetworkLoadBalancers, *Response, error)
+	List(datacenterId string, params ListQueryParams) (NetworkLoadBalancers, *Response, error)
 	Get(datacenterId, networkLoadBalancerId string) (*NetworkLoadBalancer, *Response, error)
 	Create(datacenterId string, input NetworkLoadBalancer) (*NetworkLoadBalancer, *Response, error)
 	Update(datacenterId, networkLoadBalancerId string, input NetworkLoadBalancerProperties) (*NetworkLoadBalancer, *Response, error)
 	Delete(datacenterId, networkLoadBalancerId string) (*Response, error)
-	ListForwardingRules(datacenterId, networkLoadBalancerId string) (NetworkLoadBalancerForwardingRules, *Response, error)
+	ListForwardingRules(datacenterId, networkLoadBalancerId string, params ListQueryParams) (NetworkLoadBalancerForwardingRules, *Response, error)
 	GetForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string) (*NetworkLoadBalancerForwardingRule, *Response, error)
 	CreateForwardingRule(datacenterId, networkLoadBalancerId string, input NetworkLoadBalancerForwardingRule) (*NetworkLoadBalancerForwardingRule, *Response, error)
 	UpdateForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string, input *NetworkLoadBalancerForwardingRuleProperties) (*NetworkLoadBalancerForwardingRule, *Response, error)
 	DeleteForwardingRule(datacenterId, networkLoadBalancerId, forwardingRuleId string) (*Response, error)
-	ListFlowLogs(datacenterId, networkLoadBalancerId string) (FlowLogs, *Response, error)
+	ListFlowLogs(datacenterId, networkLoadBalancerId string, params ListQueryParams) (FlowLogs, *Response, error)
 	GetFlowLog(datacenterId, networkLoadBalancerId, flowLogId string) (*FlowLog, *Response, error)
 	CreateFlowLog(datacenterId, networkLoadBalancerId string, input FlowLog) (*FlowLog, *Response, error)
 	UpdateFlowLog(datacenterId, networkLoadBalancerId, flowLogId string, input *FlowLogProperties) (*FlowLog, *Response, error)
@@ -79,8 +80,21 @@ func NewNetworkLoadBalancerService(client *Client, ctx context.Context) NetworkL
 	}
 }
 
-func (svc *networkLoadBalancersService) List(datacenterId string) (NetworkLoadBalancers, *Response, error) {
+func (svc *networkLoadBalancersService) List(datacenterId string, params ListQueryParams) (NetworkLoadBalancers, *Response, error) {
 	req := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersGet(svc.context, datacenterId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	networkLoadBalancers, resp, err := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersGetExecute(req)
 	return NetworkLoadBalancers{networkLoadBalancers}, &Response{*resp}, err
 }
@@ -109,8 +123,21 @@ func (svc *networkLoadBalancersService) Delete(datacenterId, networkLoadBalancer
 	return &Response{*resp}, err
 }
 
-func (svc *networkLoadBalancersService) ListForwardingRules(datacenterId, networkLoadBalancerId string) (NetworkLoadBalancerForwardingRules, *Response, error) {
+func (svc *networkLoadBalancersService) ListForwardingRules(datacenterId, networkLoadBalancerId string, params ListQueryParams) (NetworkLoadBalancerForwardingRules, *Response, error) {
 	req := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersForwardingrulesGet(svc.context, datacenterId, networkLoadBalancerId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	networkLoadBalancerRules, resp, err := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersForwardingrulesGetExecute(req)
 	return NetworkLoadBalancerForwardingRules{networkLoadBalancerRules}, &Response{*resp}, err
 }
@@ -139,8 +166,21 @@ func (svc *networkLoadBalancersService) DeleteForwardingRule(datacenterId, netwo
 	return &Response{*resp}, err
 }
 
-func (svc *networkLoadBalancersService) ListFlowLogs(datacenterId, networkLoadBalancerId string) (FlowLogs, *Response, error) {
+func (svc *networkLoadBalancersService) ListFlowLogs(datacenterId, networkLoadBalancerId string, params ListQueryParams) (FlowLogs, *Response, error) {
 	req := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersFlowlogsGet(svc.context, datacenterId, networkLoadBalancerId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	flowLogs, resp, err := svc.client.NetworkLoadBalancersApi.DatacentersNetworkloadbalancersFlowlogsGetExecute(req)
 	return FlowLogs{flowLogs}, &Response{*resp}, err
 }

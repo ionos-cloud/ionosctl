@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -48,15 +49,24 @@ func NatgatewayCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List NAT Gateways",
-		LongDesc:   "Use this command to list NAT Gateways from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to list NAT Gateways from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NATGatewaysFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listNatGatewayExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunNATGatewayList,
 		CmdRun:     RunNatGatewayList,
 		InitClient: true,
 	})
 	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NATGatewaysFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NATGatewaysFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -192,6 +202,16 @@ Required values to run command:
 	return natgatewayCmd
 }
 
+func PreRunNATGatewayList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NATGatewaysFilters(), completer.NATGatewaysFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcIdsNatGatewayIps(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgIps)
 }
@@ -208,7 +228,15 @@ func PreRunNatGatewayDelete(c *core.PreCommandConfig) error {
 }
 
 func RunNatGatewayList(c *core.CommandConfig) error {
-	natgateways, resp, err := c.CloudApiV6Services.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	natgateways, resp, err := c.CloudApiV6Services.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -331,7 +359,7 @@ func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties
 func DeleteAllNatgateways(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	_ = c.Printer.Print("NatGateways to be deleted:")
-	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId)
+	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -428,11 +456,13 @@ func getNatGatewaysCols(flagName string, outErr io.Writer) []string {
 }
 
 func getNatGateways(natgateways resources.NatGateways) []resources.NatGateway {
-	ss := make([]resources.NatGateway, 0)
-	for _, s := range *natgateways.Items {
-		ss = append(ss, resources.NatGateway{NatGateway: s})
+	natGatewayObjs := make([]resources.NatGateway, 0)
+	if items, ok := natgateways.GetItemsOk(); ok && items != nil {
+		for _, natGateway := range *items {
+			natGatewayObjs = append(natGatewayObjs, resources.NatGateway{NatGateway: natGateway})
+		}
 	}
-	return ss
+	return natGatewayObjs
 }
 
 func getNatGatewaysKVMaps(ss []resources.NatGateway) []map[string]interface{} {

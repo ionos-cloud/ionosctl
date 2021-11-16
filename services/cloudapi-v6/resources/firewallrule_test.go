@@ -20,6 +20,18 @@ func TestNewFirewallRuleService(t *testing.T) {
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
 			testFirewallRuleResourceVar,
+			ListQueryParams{},
+		)
+		assert.Error(t, err)
+	})
+	t.Run("list_firewallrules_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		firewallruleSvc := NewFirewallRuleService(svc.Get(), ctx)
+		_, _, err := firewallruleSvc.List(
+			testFirewallRuleResourceVar,
+			testFirewallRuleResourceVar,
+			testFirewallRuleResourceVar,
+			testListQueryParam,
 		)
 		assert.Error(t, err)
 	})

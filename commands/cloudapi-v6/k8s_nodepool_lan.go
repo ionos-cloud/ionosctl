@@ -226,7 +226,7 @@ func RemoveAllK8sNodepoolsLans(c *core.CommandConfig) (*resources.Response, erro
 	nodePoolId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId))
 
 	_ = c.Printer.Print("K8s Nodepool Lans to be removed:")
-	k8sNodepools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(clusterId)
+	k8sNodepools, resp, err := c.CloudApiV6Services.K8s().ListNodePools(clusterId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

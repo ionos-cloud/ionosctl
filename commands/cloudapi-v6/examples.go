@@ -12,15 +12,12 @@ const (
 		Data Center Examples
 	*/
 	listDatacenterExample = `ionosctl datacenter list
-
 ionosctl datacenter list --cols "DatacenterId,Name,Location,Version"`
 	getDatacenterExample    = `ionosctl datacenter get --datacenter-id DATACENTER_ID`
 	createDatacenterExample = `ionosctl datacenter create --name NAME --location LOCATION_ID
-
 ionosctl datacenter create --name NAME --location LOCATION_ID --wait-for-request`
 	updateDatacenterExample = `ionosctl datacenter update --datacenter-id DATACENTER_ID --description DESCRIPTION --cols "DatacenterId,Description"`
 	deleteDatacenterExample = `ionosctl datacenter delete --datacenter-id DATACENTER_ID
-
 ionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-request`
 
 	/*

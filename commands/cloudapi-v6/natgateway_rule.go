@@ -9,6 +9,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -49,9 +50,9 @@ func NatgatewayRuleCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List NAT Gateway Rules",
-		LongDesc:   "Use this command to list NAT Gateway Rules from a specified NAT Gateway.\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
+		LongDesc:   "Use this command to list NAT Gateway Rules from a specified NAT Gateway.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NATGatewayRulesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* NAT Gateway Id",
 		Example:    listNatGatewayRuleExample,
-		PreCmdRun:  PreRunDcNatGatewayIds,
+		PreCmdRun:  PreRunNATGatewayRuleList,
 		CmdRun:     RunNatGatewayRuleList,
 		InitClient: true,
 	})
@@ -62,6 +63,15 @@ func NatgatewayRuleCmd() *core.Command {
 	list.AddStringFlag(cloudapiv6.ArgNatGatewayId, "", "", cloudapiv6.NatGatewayId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNatGatewayId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NatGatewaysIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NATGatewayRulesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NATGatewayRulesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -230,6 +240,16 @@ Required values to run command:
 	return natgatewayRuleCmd
 }
 
+func PreRunNATGatewayRuleList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NATGatewayRulesFilters(), completer.NATGatewayRulesFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunNatGatewayRuleCreate(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgIp, cloudapiv6.ArgSourceSubnet)
 }
@@ -246,9 +266,18 @@ func PreRunDcNatGatewayRuleDelete(c *core.PreCommandConfig) error {
 }
 
 func RunNatGatewayRuleList(c *core.CommandConfig) error {
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
 	natgatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
+		listQueryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
@@ -404,7 +433,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) (*resources.Response, error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	_ = c.Printer.Print("NatGatewayRules to be deleted:")
-	natGatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId)
+	natGatewayRules, resp, err := c.CloudApiV6Services.NatGateways().ListRules(dcId, natGatewayId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -516,11 +545,13 @@ func getNatGatewayRulesCols(flagName string, outErr io.Writer) []string {
 }
 
 func getNatGatewayRules(natgatewayRules resources.NatGatewayRules) []resources.NatGatewayRule {
-	ss := make([]resources.NatGatewayRule, 0)
-	for _, s := range *natgatewayRules.Items {
-		ss = append(ss, resources.NatGatewayRule{NatGatewayRule: s})
+	ruleObjs := make([]resources.NatGatewayRule, 0)
+	if items, ok := natgatewayRules.GetItemsOk(); ok && items != nil {
+		for _, natGatewayRule := range *items {
+			ruleObjs = append(ruleObjs, resources.NatGatewayRule{NatGatewayRule: natGatewayRule})
+		}
 	}
-	return ss
+	return ruleObjs
 }
 
 func getNatGatewayRulesKVMaps(ss []resources.NatGatewayRule) []map[string]interface{} {

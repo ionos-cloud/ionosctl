@@ -374,9 +374,8 @@ func TestRunK8sNodePoolLanRemoveAll(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testK8sNodePoolLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodePoolId), testK8sNodePoolLanVar)
-		//viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanId), testK8sNodePoolLanIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodePools(testK8sNodePoolLanVar).Return(k8sNodepoolLanListTest, &testResponse, nil)
+		rm.CloudApiV6Mocks.K8s.EXPECT().ListNodePools(testK8sNodePoolLanVar, resources.ListQueryParams{}).Return(k8sNodepoolLanListTest, &testResponse, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar).Return(&k8sNodepoolLanTest, &testResponse, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().UpdateNodePool(testK8sNodePoolLanVar, testK8sNodePoolLanVar, inputK8sNodepoolLanTestRemoveAll).
 			Return(&k8sNodepoolLanTestUpdatedRemove, &testResponse, nil)

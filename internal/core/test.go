@@ -66,6 +66,11 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	// Init Test Mock Resources and Services
 	testMocks := initMockResources(ctrl)
 	cmdConfig := &CommandConfig{
+		Command: &Command{
+			Command: &cobra.Command{
+				Use: testConst,
+			},
+		},
 		NS:        testConst,
 		Namespace: testConst,
 		Resource:  testConst,

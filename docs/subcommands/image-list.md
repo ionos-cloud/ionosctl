@@ -28,14 +28,10 @@ For `list` command:
 
 Use this command to get a full list of available public Images.
 
-Use flags to retrieve a list of Images:
-
-* sorting by location, using `ionosctl image list --location LOCATION_ID`
-* sorting by licence type, using `ionosctl image list --licence-type LICENCE_TYPE`
-* sorting by Image type, using `ionosctl image list --type IMAGE_TYPE`
-* sorting by Image alias, using `ionosctl image list --image-alias IMAGE_ALIAS`; image alias can be either the Image alias `--image-alias ubuntu:latest` or part of Image alias e.g. `--image-alias latest`
-* sorting by the time the Image was created, starting from now in descending order, take the first N Images, using `ionosctl image list --latest N`
-* sorting by multiple of above options, using `ionosctl image list --type IMAGE_TYPE --location LOCATION_ID --latest N`
+You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
+Available Filters:
+* filter by property: [name description location size cpuHotPlug cpuHotUnplug ramHotPlug ramHotUnplug nicHotPlug nicHotUnplug discVirtioHotPlug discVirtioHotUnplug discScsiHotPlug discScsiHotUnplug licenceType imageType public imageAliases cloudInit]
+* filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 ## Options
 
@@ -44,15 +40,18 @@ Use flags to retrieve a list of Images:
       --cols strings          Set of columns to be printed on output 
                               Available columns: [ImageId Name ImageAliases Location Size LicenceType ImageType Description Public CloudInit CreatedDate CreatedBy CreatedByUserId] (default [ImageId,Name,ImageAliases,Location,LicenceType,ImageType,CloudInit,CreatedDate])
   -c, --config string         Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+  -F, --filters strings       Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2
   -f, --force                 Force command to execute without user input
   -h, --help                  Print usage
-      --image-alias string    Image Alias or part of Image Alias to sort Images by
-      --latest int            Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed
-      --licence-type string   The licence type of the Image
-  -l, --location string       The location of the Image
+      --image-alias string    Image Alias or part of Image Alias to sort Images by (deprecated)
+      --latest int            Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed (deprecated)
+      --licence-type string   The licence type of the Image (deprecated)
+  -l, --location string       The location of the Image (deprecated)
+  -M, --max-results int       The maximum number of elements to return
+      --order-by string       Limits results to those containing a matching value for a specific property
   -o, --output string         Desired output format [text|json] (default "text")
   -q, --quiet                 Quiet output
-      --type string           The type of the Image
+      --type string           The type of the Image (deprecated)
   -v, --verbose               Print step-by-step process when running command
 ```
 

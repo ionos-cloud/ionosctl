@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -20,7 +21,7 @@ type Locations struct {
 
 // LocationsService is a wrapper around ionoscloud.Location
 type LocationsService interface {
-	List() (Locations, *Response, error)
+	List(params ListQueryParams) (Locations, *Response, error)
 	GetByRegionAndLocationId(regionId, locationId string) (*Location, *Response, error)
 	GetByRegionId(regionId string) (Locations, *Response, error)
 }
@@ -39,8 +40,21 @@ func NewLocationService(client *Client, ctx context.Context) LocationsService {
 	}
 }
 
-func (s *locationsService) List() (Locations, *Response, error) {
+func (s *locationsService) List(params ListQueryParams) (Locations, *Response, error) {
 	req := s.client.LocationsApi.LocationsGet(s.context)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	locations, resp, err := s.client.LocationsApi.LocationsGetExecute(req)
 	return Locations{locations}, &Response{*resp}, err
 }

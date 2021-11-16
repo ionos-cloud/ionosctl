@@ -2,10 +2,10 @@ package commands
 
 import (
 	"context"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"strings"
 
 	"github.com/ionos-cloud/ionosctl/internal/core"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 )
 

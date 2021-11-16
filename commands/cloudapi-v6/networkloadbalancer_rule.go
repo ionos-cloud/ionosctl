@@ -10,6 +10,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -50,9 +51,9 @@ func NetworkloadbalancerRuleCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Network Load Balancer Forwarding Rules",
-		LongDesc:   "Use this command to list Network Load Balancer Forwarding Rules from a specified Network Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
+		LongDesc:   "Use this command to list Network Load Balancer Forwarding Rules from a specified Network Load Balancer.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NlbRulesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Network Load Balancer Id",
 		Example:    listNetworkLoadBalancerForwardingRuleExample,
-		PreCmdRun:  PreRunDcNetworkLoadBalancerIds,
+		PreCmdRun:  PreRunNetworkLoadBalancerRuleList,
 		CmdRun:     RunNetworkLoadBalancerForwardingRuleList,
 		InitClient: true,
 	})
@@ -63,6 +64,15 @@ func NetworkloadbalancerRuleCmd() *core.Command {
 	list.AddStringFlag(cloudapiv6.ArgNetworkLoadBalancerId, "", "", cloudapiv6.NetworkLoadBalancerId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgNetworkLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.NetworkLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NlbRulesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NlbRulesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -235,6 +245,16 @@ Required values to run command:
 	return nlbRuleCmd
 }
 
+func PreRunNetworkLoadBalancerRuleList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NlbRulesFilters(), completer.NlbRulesFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunNetworkLoadBalancerForwardingRuleCreate(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgListenerIp, cloudapiv6.ArgListenerPort)
 }
@@ -251,9 +271,18 @@ func PreRunDcNetworkLoadBalancerForwardingRuleDelete(c *core.PreCommandConfig) e
 }
 
 func RunNetworkLoadBalancerForwardingRuleList(c *core.CommandConfig) error {
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
 	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+		listQueryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
@@ -422,7 +451,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) (*resour
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
 	_ = c.Printer.Print("NetworkLoadBalancerForwardingRules to be deleted:")
-	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId)
+	nlbForwardingRules, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().ListForwardingRules(dcId, loadBalancerId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -537,11 +566,13 @@ func getForwardingRulesCols(flagName string, outErr io.Writer) []string {
 }
 
 func getForwardingRules(forwardingrules resources.NetworkLoadBalancerForwardingRules) []resources.NetworkLoadBalancerForwardingRule {
-	ss := make([]resources.NetworkLoadBalancerForwardingRule, 0)
-	for _, s := range *forwardingrules.Items {
-		ss = append(ss, resources.NetworkLoadBalancerForwardingRule{NetworkLoadBalancerForwardingRule: s})
+	nlbRuleObjs := make([]resources.NetworkLoadBalancerForwardingRule, 0)
+	if items, ok := forwardingrules.GetItemsOk(); ok && items != nil {
+		for _, forwardingRule := range *items {
+			nlbRuleObjs = append(nlbRuleObjs, resources.NetworkLoadBalancerForwardingRule{NetworkLoadBalancerForwardingRule: forwardingRule})
+		}
 	}
-	return ss
+	return nlbRuleObjs
 }
 
 func getForwardingRulesKVMaps(ss []resources.NetworkLoadBalancerForwardingRule) []map[string]interface{} {

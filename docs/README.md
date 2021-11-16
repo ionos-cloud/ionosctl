@@ -293,6 +293,10 @@ You will see step-by-step process when running a command.
 
 This flag can be used with any command(in general create, read, update, delete, but it's available also for the other specific command) of any resource.
 
+* Use the `--filters` option
+
+You can use the filters option for the list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
+
 ### Help Information
 
 You can see all available options for each command, use:

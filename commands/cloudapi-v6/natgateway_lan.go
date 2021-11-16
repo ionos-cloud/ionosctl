@@ -243,7 +243,7 @@ func RemoveAllNatGatewayLans(c *core.CommandConfig) (*resources.Response, error)
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	_ = c.Printer.Print("NAT Gateways Lans to be removed:")
-	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId)
+	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

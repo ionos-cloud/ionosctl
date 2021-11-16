@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -44,17 +45,26 @@ func BackupunitCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
 		Namespace:  "backupunit",
 		Resource:   "backupunit",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List BackupUnits",
-		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.",
+		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.BackupUnitsFiltersUsage(),
 		Example:    listBackupUnitsExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunBackupUnitList,
 		CmdRun:     RunBackupUnitList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -188,6 +198,13 @@ Required values to run command:
 	return backupUnitCmd
 }
 
+func PreRunBackupUnitList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.BackupUnitsFilters(), completer.BackupUnitsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunBackupUnitId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgBackupUnitId)
 }
@@ -204,7 +221,15 @@ func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {
-	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -331,7 +356,7 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 
 func DeleteAllBackupUnits(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Backup Unitts to be deleted:")
-	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List()
+	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

@@ -12,9 +12,11 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
@@ -45,27 +47,30 @@ func RequestCmd() *core.Command {
 		List Command
 	*/
 	list := core.NewCommand(ctx, reqCmd, core.CommandBuilder{
-		Namespace: "request",
-		Resource:  "request",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List Requests",
-		LongDesc: `Use this command to list all Requests on your account.
-
-Use flags to retrieve a list of Requests:
-
-* sorting by the time the Request was created, starting from now in descending order, take the first N Requests: ` + "`" + `ionosctl request list --latest N` + "`" + `
-* sorting by method: ` + "`" + `ionosctl request list --method REQUEST_METHOD` + "`" + `, where request method can be CREATE or POST, UPDATE or PATCH, PUT and DELETE
-* sorting by both of the above options: ` + "`" + `ionosctl request list --method REQUEST_METHOD --latest N` + "`" + ``,
+		Namespace:  "request",
+		Resource:   "request",
+		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
+		ShortDesc:  "List Requests",
+		LongDesc:   "Use this command to list all Requests on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.RequestsFiltersUsage(),
 		Example:    listRequestExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunRequestList,
 		CmdRun:     RunRequestList,
 		InitClient: true,
 	})
-	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed")
-	list.AddStringFlag(cloudapiv6.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE")
+	list.AddIntFlag(cloudapiv6.ArgLatest, "", 0, "Show latest N Requests. If it is not set, all Requests will be printed", core.DeprecatedFlagOption())
+	list.AddStringFlag(cloudapiv6.ArgMethod, "", "", "Show only the Requests with this method. E.g CREATE, UPDATE, DELETE", core.DeprecatedFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgMethod, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"POST", "PUT", "DELETE", "PATCH", "CREATE", "UPDATE"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.RequestsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.RequestsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -118,12 +123,28 @@ Required values to run command:
 	return reqCmd
 }
 
+func PreRunRequestList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.RequestsFilters(), completer.RequestsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunRequestId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgRequestId)
 }
 
 func RunRequestList(c *core.CommandConfig) error {
-	requests, resp, err := c.CloudApiV6Services.Requests().List()
+	c.Printer.Print("WARNING: The following flags are deprecated:" + c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --filters --order-by --max-results options instead!")
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	requests, resp, err := c.CloudApiV6Services.Requests().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -262,11 +283,13 @@ func getRequestsCols(flagName string, outErr io.Writer) []string {
 }
 
 func getRequests(requests resources.Requests) []resources.Request {
-	req := make([]resources.Request, 0)
-	for _, r := range *requests.Items {
-		req = append(req, resources.Request{Request: r})
+	requestObjs := make([]resources.Request, 0)
+	if items, ok := requests.GetItemsOk(); ok && items != nil {
+		for _, request := range *items {
+			requestObjs = append(requestObjs, resources.Request{Request: request})
+		}
 	}
-	return req
+	return requestObjs
 }
 
 func sortRequestsByMethod(requests resources.Requests, method string) resources.Requests {

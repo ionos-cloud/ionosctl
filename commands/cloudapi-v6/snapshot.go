@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -41,17 +42,26 @@ func SnapshotCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Snapshots",
-		LongDesc:   "Use this command to get a list of Snapshots.",
+		LongDesc:   "Use this command to get a list of Snapshots.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.SnapshotsFiltersUsage(),
 		Example:    listSnapshotsExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunSnapshotList,
 		CmdRun:     RunSnapshotList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.SnapshotsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.SnapshotsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -215,6 +225,13 @@ Required values to run command:
 	return snapshotCmd
 }
 
+func PreRunSnapshotList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.SnapshotsFilters(), completer.SnapshotsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunSnapshotId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgSnapshotId)
 }
@@ -231,7 +248,15 @@ func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
 }
 
 func RunSnapshotList(c *core.CommandConfig) error {
-	ss, resp, err := c.CloudApiV6Services.Snapshots().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	ss, resp, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -422,7 +447,7 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 
 func DeleteAllSnapshots(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Snapshots to be deleted:")
-	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List()
+	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
