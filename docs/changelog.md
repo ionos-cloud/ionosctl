@@ -1,5 +1,12 @@
 # Changelog
 
+## \[6.0.0-beta.7\]
+
+* **feature**: added `--filters`, `--max-results`, `--order-by` options on all list commands
+* **feature**: added `-all` option for remove and detach commands
+* **enhancement:** added completion support for `--k8s-version` option
+* **dependency-update**: SDK-Go version from v6.0.0-beta.6 to v6.0.0-beta.9
+
 ## \[6.0.0-beta.6\]
 
 * bug-fix: fixed `login` command to support username and password or token authentication
