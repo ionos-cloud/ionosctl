@@ -718,7 +718,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
 			return err
 		}
-		resp, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
+		resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
