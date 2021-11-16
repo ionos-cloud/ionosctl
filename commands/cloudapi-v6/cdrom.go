@@ -297,7 +297,7 @@ func DetachAllCdRoms(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	_ = c.Printer.Print("CD-ROMS to be detached:")
-	cdRoms, resp, err := c.CloudApiV6Services.Servers().ListCdroms(dcId, serverId)
+	cdRoms, resp, err := c.CloudApiV6Services.Servers().ListCdroms(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

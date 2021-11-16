@@ -330,7 +330,7 @@ func TestRunIpFailoverRemoveAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicId), testIpFailoverVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.Lan.EXPECT().List(testIpFailoverVar).Return(lansIpFailover, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testIpFailoverVar, resources.ListQueryParams{}).Return(lansIpFailover, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Get(testIpFailoverVar, testIpFailoverVar).Return(&testLanIpFailover, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Update(testIpFailoverVar, testIpFailoverVar, resources.LanProperties{
 			LanProperties: ionoscloud.LanProperties{

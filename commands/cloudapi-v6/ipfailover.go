@@ -289,7 +289,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) (*resources.Response, error) {
 	}
 
 	_ = c.Printer.Print("IP Failovers to be removed:")
-	ipFailovers, resp, err := c.CloudApiV6Services.Lans().List(dcId)
+	ipFailovers, resp, err := c.CloudApiV6Services.Lans().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

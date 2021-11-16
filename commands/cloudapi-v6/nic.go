@@ -738,7 +738,7 @@ func DetachAllNics(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
 	_ = c.Printer.Print("Nics to be detached:")
-	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId)
+	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

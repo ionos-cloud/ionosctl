@@ -922,7 +922,7 @@ func TestRunServerVolumeDetachAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttachedList, nil, nil)
+		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, resources.ListQueryParams{}).Return(vsAttachedList, nil, nil)
 		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(&testResponse, nil)
 		err := RunServerVolumeDetach(cfg)

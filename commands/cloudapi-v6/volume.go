@@ -881,7 +881,7 @@ func DetachAllServers(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	_ = c.Printer.Print("Volumes to be detached:")
-	volumes, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId)
+	volumes, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
