@@ -293,6 +293,17 @@ func RunVolumeList(c *core.CommandConfig) error {
 		return err
 	}
 	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["size"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.GigaBytes)
+				if err != nil {
+					return err
+				}
+				filters["size"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
 	}
 	volumes, resp, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
@@ -658,7 +669,7 @@ Required values to run command:
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached Volumes from a Server",
-		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listVolumesServerExample,
 		PreCmdRun:  PreRunDcServerIds,
 		CmdRun:     RunServerVolumesList,
@@ -681,7 +692,7 @@ Required values to run command:
 	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
-	listVolumes.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, fmt.Sprintf("Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2. Available filters: %v", completer.DataCentersFilters()))
+	listVolumes.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
 	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
@@ -796,6 +807,17 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 		return err
 	}
 	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["size"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.GigaBytes)
+				if err != nil {
+					return err
+				}
+				filters["size"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
 		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
 	}
 	attachedVols, _, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId, listQueryParams)
