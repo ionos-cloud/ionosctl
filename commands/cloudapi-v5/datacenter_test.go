@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -60,6 +61,16 @@ var (
 	testDatacenterBoolVar = false
 	testDatacenterNewVar  = "test-new-datacenter"
 	testDatacenterErr     = errors.New("datacenter test error occurred")
+	// Variables for Query Parameters
+	testListQueryParam = resources.ListQueryParams{
+		Filters: &map[string]string{
+			testQueryParamVar: testQueryParamVar,
+		},
+		OrderBy:    &testQueryParamVar,
+		MaxResults: &testMaxResultsVar,
+	}
+	testQueryParamVar = "test-filter"
+	testMaxResultsVar = int32(2)
 )
 
 func TestDatacenterCmd(t *testing.T) {
@@ -69,6 +80,44 @@ func TestDatacenterCmd(t *testing.T) {
 		err = errors.New("non-available cmd")
 	}
 	assert.NoError(t, err)
+}
+
+func TestPreRunDataCenterList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunDataCenterList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunDataCenterListFilter(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunDataCenterList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunDataCenterListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunDataCenterList(cfg)
+		assert.Error(t, err)
+	})
 }
 
 func TestPreRunDataCenterId(t *testing.T) {
@@ -105,8 +154,25 @@ func TestRunDataCenterList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		rm.CloudApiV5Mocks.Datacenter.EXPECT().List().Return(dcs, &testResponse, nil)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().List(resources.ListQueryParams{}).Return(dcs, &testResponse, nil)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), "")
+		err := RunDataCenterList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunDataCenterListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().List(testListQueryParam).Return(resources.Datacenters{}, &testResponse, nil)
 		err := RunDataCenterList(cfg)
 		assert.NoError(t, err)
 	})
@@ -121,7 +187,7 @@ func TestRunDataCenterListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), "")
-		rm.CloudApiV5Mocks.Datacenter.EXPECT().List().Return(dcs, nil, testDatacenterErr)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().List(resources.ListQueryParams{}).Return(dcs, nil, testDatacenterErr)
 		err := RunDataCenterList(cfg)
 		assert.Error(t, err)
 	})
@@ -319,7 +385,7 @@ func TestRunDataCenterDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
-		rm.CloudApiV5Mocks.Datacenter.EXPECT().List().Return(dcs, &testResponse, nil)
+		rm.CloudApiV5Mocks.Datacenter.EXPECT().List(resources.ListQueryParams{}).Return(dcs, &testResponse, nil)
 		rm.CloudApiV5Mocks.Datacenter.EXPECT().Delete(testDatacenterVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.Datacenter.EXPECT().Delete(testDatacenterVar).Return(&testResponse, nil)
 		err := RunDataCenterDelete(cfg)
