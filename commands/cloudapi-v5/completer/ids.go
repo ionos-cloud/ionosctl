@@ -1,3 +1,7 @@
+/*
+	This is used for supporting completion in the CLI.
+	Option: --datacenter-id --server-id --backupunit-id, usually --<RESOURCE_TYPE>-id
+*/
 package completer
 
 import (
@@ -198,6 +202,15 @@ func K8sNodePoolsIds(outErr io.Writer, clusterId string) []string {
 		return nil
 	}
 	return k8ssIds
+}
+
+func K8sVersionsIds(outErr io.Writer) []string {
+	client, err := getClient()
+	clierror.CheckError(err, outErr)
+	k8sSvc := resources.NewK8sService(client, context.TODO())
+	k8ss, _, err := k8sSvc.ListVersions()
+	clierror.CheckError(err, outErr)
+	return k8ss
 }
 
 func LansIds(outErr io.Writer, datacenterId string) []string {
