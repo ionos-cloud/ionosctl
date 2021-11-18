@@ -3,6 +3,7 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"io"
 	"os"
 
@@ -41,17 +42,26 @@ func IpblockCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, ipblockCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, ipblockCmd, core.CommandBuilder{
 		Namespace:  "ipblock",
 		Resource:   "ipblock",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List IpBlocks",
-		LongDesc:   "Use this command to list IpBlocks.",
+		LongDesc:   "Use this command to list IpBlocks.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.IpBlocksFiltersUsage(),
 		Example:    listIpBlockExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunIpblockList,
 		CmdRun:     RunIpBlockList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.IpBlocksFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.IpBlocksFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -161,6 +171,13 @@ Required values to run command:
 	return ipblockCmd
 }
 
+func PreRunIpblockList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.IpBlocksFilters(), completer.IpBlocksFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunIpBlockId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgIpBlockId)
 }
@@ -173,7 +190,15 @@ func PreRunIpBlockDelete(c *core.PreCommandConfig) error {
 }
 
 func RunIpBlockList(c *core.CommandConfig) error {
-	ipblocks, resp, err := c.CloudApiV5Services.IpBlocks().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	ipblocks, resp, err := c.CloudApiV5Services.IpBlocks().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -270,7 +295,7 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 
 func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("IpBlocks to be deleted:")
-	ipBlocks, resp, err := c.CloudApiV5Services.IpBlocks().List()
+	ipBlocks, resp, err := c.CloudApiV5Services.IpBlocks().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

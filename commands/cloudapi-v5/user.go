@@ -3,6 +3,7 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/waiter"
 	"io"
 	"os"
@@ -42,17 +43,26 @@ func UserCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, userCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, userCmd, core.CommandBuilder{
 		Namespace:  "user",
 		Resource:   "user",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Users",
-		LongDesc:   "Use this command to get a list of existing Users available on your account.",
+		LongDesc:   "Use this command to get a list of existing Users available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.UsersFiltersUsage(),
 		Example:    listUserExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunUserList,
 		CmdRun:     RunUserList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -167,6 +177,13 @@ Required values to run command:
 	return userCmd
 }
 
+func PreRunUserList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.UsersFilters(), completer.UsersFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunUserId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgUserId)
 }
@@ -183,7 +200,15 @@ func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunUserList(c *core.CommandConfig) error {
-	users, resp, err := c.CloudApiV5Services.Users().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	users, resp, err := c.CloudApiV5Services.Users().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -346,7 +371,7 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 
 func DeleteAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Users to be deleted:")
-	users, resp, err := c.CloudApiV5Services.Users().List()
+	users, resp, err := c.CloudApiV5Services.Users().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

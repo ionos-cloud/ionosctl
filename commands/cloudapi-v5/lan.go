@@ -3,6 +3,7 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"io"
 	"os"
 
@@ -48,15 +49,24 @@ func LanCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List LANs",
-		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LANsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listLanExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunLansList,
 		CmdRun:     RunLanList,
 		InitClient: true,
 	})
 	list.AddStringFlag(cloudapiv5.ArgDataCenterId, "", "", cloudapiv5.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LANsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LANsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -195,6 +205,16 @@ Required values to run command:
 	return lanCmd
 }
 
+func PreRunLansList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.LANsFilters(), completer.LANsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunLanDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
 		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgLanId},
@@ -203,7 +223,15 @@ func PreRunLanDelete(c *core.PreCommandConfig) error {
 }
 
 func RunLanList(c *core.CommandConfig) error {
-	lans, resp, err := c.CloudApiV5Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	lans, resp, err := c.CloudApiV5Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -342,7 +370,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 func DeleteAllLans(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	_ = c.Printer.Print("Lans to be deleted:")
-	lans, resp, err := c.CloudApiV5Services.Lans().List(dcId)
+	lans, resp, err := c.CloudApiV5Services.Lans().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

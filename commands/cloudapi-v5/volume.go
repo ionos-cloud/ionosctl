@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"io"
 	"os"
 	"strconv"
@@ -50,15 +51,24 @@ func VolumeCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Volumes",
-		LongDesc:   "Use this command to list all Volumes from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to list all Volumes from a Data Center on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listVolumeExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunVolumeList,
 		CmdRun:     RunVolumeList,
 		InitClient: true,
 	})
 	list.AddStringFlag(cloudapiv5.ArgDataCenterId, "", "", cloudapiv5.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -238,6 +248,16 @@ Required values to run command:
 	return volumeCmd
 }
 
+func PreRunVolumeList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.VolumesFilters(), completer.VolumesFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgVolumeId)
 }
@@ -267,7 +287,26 @@ func PreRunDcVolumeDelete(c *core.PreCommandConfig) error {
 
 func RunVolumeList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
-	volumes, resp, err := c.CloudApiV5Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["size"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.GigaBytes)
+				if err != nil {
+					return err
+				}
+				filters["size"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	volumes, resp, err := c.CloudApiV5Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -535,7 +574,7 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 func DeleteAllVolumes(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	_ = c.Printer.Print("Volumes to be deleted:")
-	volumes, resp, err := c.CloudApiV5Services.Volumes().List(dcId)
+	volumes, resp, err := c.CloudApiV5Services.Volumes().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -642,9 +681,9 @@ Required values to run command:
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached Volumes from a Server",
-		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listVolumesServerExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunServerVolumeList,
 		CmdRun:     RunServerVolumesList,
 		InitClient: true,
 	})
@@ -659,6 +698,15 @@ Required values to run command:
 	listVolumes.AddStringFlag(cloudapiv5.ArgServerId, "", "", cloudapiv5.ServerId, core.RequiredFlagOption())
 	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(listVolumes.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	listVolumes.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	listVolumes.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	listVolumes.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -740,6 +788,16 @@ Required values to run command:
 	return serverVolumeCmd
 }
 
+func PreRunServerVolumeList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.VolumesFilters(), completer.VolumesFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcServerVolumeIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId, cloudapiv5.ArgVolumeId)
 }
@@ -773,7 +831,26 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Listing attached Volumes from Server with ID: %v...", serverId)
-	attachedVols, _, err := c.CloudApiV5Services.Servers().ListVolumes(dcId, serverId)
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["size"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.GigaBytes)
+				if err != nil {
+					return err
+				}
+				filters["size"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	attachedVols, _, err := c.CloudApiV5Services.Servers().ListVolumes(dcId, serverId, listQueryParams)
 	if err != nil {
 		return err
 	}
@@ -827,7 +904,7 @@ func DetachAllServers(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
 	_ = c.Printer.Print("Volumes to be detached:")
-	volumes, resp, err := c.CloudApiV5Services.Servers().ListVolumes(dcId, serverId)
+	volumes, resp, err := c.CloudApiV5Services.Servers().ListVolumes(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

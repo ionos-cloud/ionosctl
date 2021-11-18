@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
+	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"io"
 	"os"
 	"sort"
@@ -45,40 +47,40 @@ func ImageCmd() *core.Command {
 		List Command
 	*/
 	list := core.NewCommand(ctx, imageCmd, core.CommandBuilder{
-		Namespace: "image",
-		Resource:  "image",
-		Verb:      "list",
-		Aliases:   []string{"l", "ls"},
-		ShortDesc: "List Images",
-		LongDesc: `Use this command to get a full list of available public Images.
-
-Use flags to retrieve a list of Images:
-
-* sorting by location, using ` + "`" + `ionosctl image list --location LOCATION_ID` + "`" + `
-* sorting by licence type, using ` + "`" + `ionosctl image list --licence-type LICENCE_TYPE` + "`" + `
-* sorting by Image type, using ` + "`" + `ionosctl image list --type IMAGE_TYPE` + "`" + `
-* sorting by Image alias, using ` + "`" + `ionosctl image list --image-alias IMAGE_ALIAS` + "`" + `; image alias can be either the Image alias ` + "`" + `--image-alias ubuntu:latest` + "`" + ` or part of Image alias e.g. ` + "`" + `--image-alias latest` + "`" + `
-* sorting by the time the Image was created, starting from now in descending order, take the first N Images, using ` + "`" + `ionosctl image list --latest N` + "`" + `
-* sorting by multiple of above options, using ` + "`" + `ionosctl image list --type IMAGE_TYPE --location LOCATION_ID --latest N` + "`" + ``,
+		Namespace:  "image",
+		Resource:   "image",
+		Verb:       "list",
+		Aliases:    []string{"l", "ls"},
+		ShortDesc:  "List Images",
+		LongDesc:   "Use this command to get a full list of available public Images.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ImagesFiltersUsage(),
 		Example:    listImagesExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunImageList,
 		CmdRun:     RunImageList,
 		InitClient: true,
 	})
-	list.AddStringFlag(cloudapiv5.ArgType, "", "", "The type of the Image")
+	list.AddStringFlag(cloudapiv5.ArgType, "", "", "The type of the Image", core.DeprecatedFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"CDROM", "HDD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapiv5.ArgLicenceType, "", "", "The licence type of the Image")
+	list.AddStringFlag(cloudapiv5.ArgLicenceType, "", "", "The licence type of the Image", core.DeprecatedFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgLicenceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"WINDOWS", "WINDOWS2016", "LINUX", "OTHER", "UNKNOWN"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapiv5.ArgLocation, cloudapiv5.ArgLocationShort, "", "The location of the Image")
+	list.AddStringFlag(cloudapiv5.ArgLocation, cloudapiv5.ArgLocationShort, "", "The location of the Image", core.DeprecatedFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddStringFlag(cloudapiv5.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by")
-	list.AddIntFlag(cloudapiv5.ArgLatest, "", 0, "Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed")
+	list.AddStringFlag(cloudapiv5.ArgImageAlias, "", "", "Image Alias or part of Image Alias to sort Images by", core.DeprecatedFlagOption())
+	list.AddIntFlag(cloudapiv5.ArgLatest, "", 0, "Show the latest N Images, based on creation date, starting from now in descending order. If it is not set, all Images will be printed", core.DeprecatedFlagOption())
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
 
 	/*
 		Get Command
@@ -103,12 +105,28 @@ Use flags to retrieve a list of Images:
 	return imageCmd
 }
 
+func PreRunImageList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.ImagesFilters(), completer.ImagesFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunImageId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgImageId)
 }
 
 func RunImageList(c *core.CommandConfig) error {
-	images, resp, err := c.CloudApiV5Services.Images().List()
+	c.Printer.Print("WARNING: The following flags are deprecated:" + c.Command.GetAnnotationsByKey(core.DeprecatedFlagsAnnotation) + ". Use --filters --order-by --max-results options instead!")
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	images, resp, err := c.CloudApiV5Services.Images().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}

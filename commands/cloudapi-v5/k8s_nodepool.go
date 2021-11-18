@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"io"
 	"os"
 	"strconv"
@@ -50,15 +51,24 @@ func K8sNodePoolCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes NodePools",
-		LongDesc:   "Use this command to get a list of all contained NodePools in a selected Kubernetes Cluster.\n\nRequired values to run command:\n\n* K8s Cluster Id",
+		LongDesc:   "Use this command to get a list of all contained NodePools in a selected Kubernetes Cluster.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.K8sNodePoolsFiltersUsage() + "\n\nRequired values to run command:\n\n* K8s Cluster Id",
 		Example:    listK8sNodePoolsExample,
-		PreCmdRun:  PreRunK8sClusterId,
+		PreCmdRun:  PreRunK8sNodePoolsList,
 		CmdRun:     RunK8sNodePoolList,
 		InitClient: true,
 	})
 	list.AddStringFlag(cloudapiv5.ArgK8sClusterId, "", "", cloudapiv5.K8sClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgK8sClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.K8sNodePoolsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.K8sNodePoolsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -231,6 +241,16 @@ Required values to run command:
 	return k8sCmd
 }
 
+func PreRunK8sNodePoolsList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgK8sClusterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.K8sNodePoolsFilters(), completer.K8sNodePoolsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunK8sClusterNodePoolIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgK8sClusterId, cloudapiv5.ArgK8sNodePoolId)
 }
@@ -248,7 +268,26 @@ func PreRunK8sClusterDcIds(c *core.PreCommandConfig) error {
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting K8s NodePools from K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
-	k8ss, resp, err := c.CloudApiV5Services.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["ramSize"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
+				if err != nil {
+					return err
+				}
+				filters["ramSize"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	k8ss, resp, err := c.CloudApiV5Services.K8s().ListNodePools(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -512,7 +551,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 func DeleteAllK8sNodepools(c *core.CommandConfig) (*resources.Response, error) {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId))
 	_ = c.Printer.Print("K8sNodePools to be deleted:")
-	k8sNodePools, resp, err := c.CloudApiV5Services.K8s().ListNodePools(clusterId)
+	k8sNodePools, resp, err := c.CloudApiV5Services.K8s().ListNodePools(clusterId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"io"
 	"os"
 
@@ -47,9 +48,9 @@ func NicCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List NICs",
-		LongDesc:   "Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		LongDesc:   "Use this command to get a list of NICs on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NICsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listNicExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunNicList,
 		CmdRun:     RunNicList,
 		InitClient: true,
 	})
@@ -60,6 +61,15 @@ func NicCmd() *core.Command {
 	list.AddStringFlag(cloudapiv5.ArgServerId, "", "", cloudapiv5.ServerId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NICsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NICsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -223,6 +233,16 @@ Required values to run command:
 	return nicCmd
 }
 
+func PreRunNicList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NICsFilters(), completer.NICsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunNicDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
 		[]string{cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId, cloudapiv5.ArgNicId},
@@ -234,7 +254,16 @@ func RunNicList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
 	c.Printer.Verbose("Server ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)))
 	c.Printer.Verbose("Getting NICs...")
-	nics, resp, err := c.CloudApiV5Services.Nics().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	nics, resp, err := c.CloudApiV5Services.Nics().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)),
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -374,7 +403,7 @@ func DeleteAllNics(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
 	_ = c.Printer.Print("Nics to be deleted:")
-	nics, resp, err := c.CloudApiV5Services.Nics().List(dcId, serverId)
+	nics, resp, err := c.CloudApiV5Services.Nics().List(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -489,7 +518,7 @@ Required values to run command:
 		ShortDesc:  "List attached NICs from a Load Balancer",
 		LongDesc:   "Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		Example:    listNicsLoadbalancerExample,
-		PreCmdRun:  PreRunDcLoadBalancerIds,
+		PreCmdRun:  PreRunRunLoadBalancerNicList,
 		CmdRun:     RunLoadBalancerNicList,
 		InitClient: true,
 	})
@@ -504,6 +533,12 @@ Required values to run command:
 	listNics.AddStringFlag(cloudapiv5.ArgLoadBalancerId, "", "", cloudapiv5.LoadBalancerId, core.RequiredFlagOption())
 	_ = listNics.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(listNics.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	listNics.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	listNics.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	listNics.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2.")
+	_ = listNics.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NICsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -587,6 +622,16 @@ Required values to run command:
 	return loadbalancerNicCmd
 }
 
+func PreRunRunLoadBalancerNicList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgLoadBalancerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NICsFilters(), completer.NICsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcNicLoadBalancerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgNicId, cloudapiv5.ArgLoadBalancerId)
 }
@@ -622,7 +667,15 @@ func RunLoadBalancerNicList(c *core.CommandConfig) error {
 	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLoadBalancerId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Listing attached NICs from LoadBalancer with ID: %v", lbId)
-	attachedNics, resp, err := c.CloudApiV5Services.Loadbalancers().ListNics(dcId, lbId)
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	attachedNics, resp, err := c.CloudApiV5Services.Loadbalancers().ListNics(dcId, lbId, listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -685,7 +738,7 @@ func DetachAllNics(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLoadBalancerId))
 	_ = c.Printer.Print("Nics to be detached:")
-	nics, resp, err := c.CloudApiV5Services.Loadbalancers().ListNics(dcId, lbId)
+	nics, resp, err := c.CloudApiV5Services.Loadbalancers().ListNics(dcId, lbId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}

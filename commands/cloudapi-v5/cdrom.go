@@ -5,7 +5,9 @@ import (
 	"io"
 	"os"
 
+	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -85,9 +87,9 @@ Required values to run command:
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached CD-ROMs from a Server",
-		LongDesc:   "Use this command to retrieve a list of CD-ROMs attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		LongDesc:   "Use this command to retrieve a list of CD-ROMs attached to the Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ImagesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listCdromServerExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunServerCdromList,
 		CmdRun:     RunServerCdromsList,
 		InitClient: true,
 	})
@@ -98,6 +100,15 @@ Required values to run command:
 	listCdroms.AddStringFlag(cloudapiv5.ArgServerId, "", "", cloudapiv5.ServerId, core.RequiredFlagOption())
 	_ = listCdroms.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(listCdroms.NS, cloudapiv5.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	listCdroms.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	listCdroms.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = listCdroms.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	listCdroms.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = listCdroms.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -182,6 +193,16 @@ func PreRunDcServerCdromDetach(c *core.PreCommandConfig) error {
 	)
 }
 
+func PreRunServerCdromList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgServerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.ImagesFilters(), completer.ImagesFiltersUsage())
+	}
+	return nil
+}
+
 func RunServerCdromAttach(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
@@ -202,10 +223,17 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 }
 
 func RunServerCdromsList(c *core.CommandConfig) error {
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
 	attachedCdroms, resp, err := c.CloudApiV5Services.Servers().ListCdroms(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)),
-	)
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -269,7 +297,7 @@ func DetachllCdRoms(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
 	_ = c.Printer.Print("CD-ROMS to be detached:")
-	csRoms, resp, err := c.CloudApiV5Services.Servers().ListCdroms(dcId, serverId)
+	csRoms, resp, err := c.CloudApiV5Services.Servers().ListCdroms(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -332,7 +360,7 @@ func getImagesCdromIds(outErr io.Writer) []string {
 	)
 	clierror.CheckError(err, outErr)
 	imageSvc := resources.NewImageService(clientSvc.Get(), context.TODO())
-	images, _, err := imageSvc.List()
+	images, _, err := imageSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	imgsIds := make([]string, 0)
 	images = sortImagesByType(images, "CDROM")
