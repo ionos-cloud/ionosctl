@@ -18,7 +18,7 @@ func BackupUnitsIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	backupUnitSvc := resources.NewBackupUnitService(client, context.TODO())
-	backupUnits, _, err := backupUnitSvc.List()
+	backupUnits, _, err := backupUnitSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	backupUnitsIds := make([]string, 0)
 	if items, ok := backupUnits.BackupUnits.GetItemsOk(); ok && items != nil {
@@ -37,7 +37,7 @@ func AttachedCdromsIds(outErr io.Writer, datacenterId, serverId string) []string
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	serverSvc := resources.NewServerService(client, context.TODO())
-	cdroms, _, err := serverSvc.ListCdroms(datacenterId, serverId)
+	cdroms, _, err := serverSvc.ListCdroms(datacenterId, serverId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	attachedCdromsIds := make([]string, 0)
 	if items, ok := cdroms.GetItemsOk(); ok && items != nil {
@@ -56,7 +56,7 @@ func DataCentersIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	datacenterSvc := resources.NewDataCenterService(client, context.TODO())
-	datacenters, _, err := datacenterSvc.List()
+	datacenters, _, err := datacenterSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	dcIds := make([]string, 0)
 	if items, ok := datacenters.Datacenters.GetItemsOk(); ok && items != nil {
@@ -75,7 +75,7 @@ func FirewallRulesIds(outErr io.Writer, datacenterId, serverId, nicId string) []
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	firewallRuleSvc := resources.NewFirewallRuleService(client, context.TODO())
-	firewallRules, _, err := firewallRuleSvc.List(datacenterId, serverId, nicId)
+	firewallRules, _, err := firewallRuleSvc.List(datacenterId, serverId, nicId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	firewallRulesIds := make([]string, 0)
 	if items, ok := firewallRules.FirewallRules.GetItemsOk(); ok && items != nil {
@@ -94,7 +94,7 @@ func GroupsIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	groupSvc := resources.NewGroupService(client, context.TODO())
-	groups, _, err := groupSvc.List()
+	groups, _, err := groupSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	groupsIds := make([]string, 0)
 	if items, ok := groups.Groups.GetItemsOk(); ok && items != nil {
@@ -113,7 +113,7 @@ func ImageIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	imageSvc := resources.NewImageService(client, context.TODO())
-	images, _, err := imageSvc.List()
+	images, _, err := imageSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	imgsIds := make([]string, 0)
 	if items, ok := images.Images.GetItemsOk(); ok && items != nil {
@@ -132,7 +132,7 @@ func IpBlocksIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	ipBlockSvc := resources.NewIpBlockService(client, context.TODO())
-	ipBlocks, _, err := ipBlockSvc.List()
+	ipBlocks, _, err := ipBlockSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := ipBlocks.IpBlocks.GetItemsOk(); ok && items != nil {
@@ -151,7 +151,7 @@ func K8sClustersIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	k8sSvc := resources.NewK8sService(client, context.TODO())
-	k8ss, _, err := k8sSvc.ListClusters()
+	k8ss, _, err := k8sSvc.ListClusters(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	k8ssIds := make([]string, 0)
 	if items, ok := k8ss.KubernetesClusters.GetItemsOk(); ok && items != nil {
@@ -170,7 +170,7 @@ func K8sNodesIds(outErr io.Writer, clusterId, nodepoolId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	k8sSvc := resources.NewK8sService(client, context.TODO())
-	k8ss, _, err := k8sSvc.ListNodes(clusterId, nodepoolId)
+	k8ss, _, err := k8sSvc.ListNodes(clusterId, nodepoolId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	k8ssIds := make([]string, 0)
 	if items, ok := k8ss.KubernetesNodes.GetItemsOk(); ok && items != nil {
@@ -189,7 +189,7 @@ func K8sNodePoolsIds(outErr io.Writer, clusterId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	k8sSvc := resources.NewK8sService(client, context.TODO())
-	k8ss, _, err := k8sSvc.ListNodePools(clusterId)
+	k8ss, _, err := k8sSvc.ListNodePools(clusterId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	k8ssIds := make([]string, 0)
 	if items, ok := k8ss.KubernetesNodePools.GetItemsOk(); ok && items != nil {
@@ -217,7 +217,7 @@ func LansIds(outErr io.Writer, datacenterId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	lanSvc := resources.NewLanService(client, context.TODO())
-	lans, _, err := lanSvc.List(datacenterId)
+	lans, _, err := lanSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	lansIds := make([]string, 0)
 	if items, ok := lans.Lans.GetItemsOk(); ok && items != nil {
@@ -236,7 +236,7 @@ func LoadbalancersIds(outErr io.Writer, datacenterId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	loadbalancerSvc := resources.NewLoadbalancerService(client, context.TODO())
-	loadbalancers, _, err := loadbalancerSvc.List(datacenterId)
+	loadbalancers, _, err := loadbalancerSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	loadbalancersIds := make([]string, 0)
 	if items, ok := loadbalancers.Loadbalancers.GetItemsOk(); ok && items != nil {
@@ -255,7 +255,7 @@ func LocationIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	locationSvc := resources.NewLocationService(client, context.TODO())
-	locations, _, err := locationSvc.List()
+	locations, _, err := locationSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	lcIds := make([]string, 0)
 	if items, ok := locations.Locations.GetItemsOk(); ok && items != nil {
@@ -274,7 +274,7 @@ func NicsIds(outErr io.Writer, datacenterId, serverId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	nicSvc := resources.NewNicService(client, context.TODO())
-	nics, _, err := nicSvc.List(datacenterId, serverId)
+	nics, _, err := nicSvc.List(datacenterId, serverId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	nicsIds := make([]string, 0)
 	if items, ok := nics.Nics.GetItemsOk(); ok && items != nil {
@@ -293,7 +293,7 @@ func AttachedNicsIds(outErr io.Writer, datacenterId, loadbalancerId string) []st
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	nicSvc := resources.NewLoadbalancerService(client, context.TODO())
-	nics, _, err := nicSvc.ListNics(datacenterId, loadbalancerId)
+	nics, _, err := nicSvc.ListNics(datacenterId, loadbalancerId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	attachedNicsIds := make([]string, 0)
 	if items, ok := nics.BalancedNics.GetItemsOk(); ok && items != nil {
@@ -312,7 +312,7 @@ func PccsIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	pccSvc := resources.NewPrivateCrossConnectService(client, context.TODO())
-	pccs, _, err := pccSvc.List()
+	pccs, _, err := pccSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	pccsIds := make([]string, 0)
 	if items, ok := pccs.PrivateCrossConnects.GetItemsOk(); ok && items != nil {
@@ -331,7 +331,7 @@ func RequestsIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	reqSvc := resources.NewRequestService(client, context.TODO())
-	requests, _, err := reqSvc.List()
+	requests, _, err := reqSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	reqIds := make([]string, 0)
 	if items, ok := requests.Requests.GetItemsOk(); ok && items != nil {
@@ -388,7 +388,7 @@ func ServersIds(outErr io.Writer, datacenterId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	serverSvc := resources.NewServerService(client, context.TODO())
-	servers, _, err := serverSvc.List(datacenterId)
+	servers, _, err := serverSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := servers.Servers.GetItemsOk(); ok && items != nil {
@@ -426,7 +426,7 @@ func SnapshotIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	snapshotSvc := resources.NewSnapshotService(client, context.TODO())
-	snapshots, _, err := snapshotSvc.List()
+	snapshots, _, err := snapshotSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	ssIds := make([]string, 0)
 	if items, ok := snapshots.Snapshots.GetItemsOk(); ok && items != nil {
@@ -445,7 +445,7 @@ func UsersIds(outErr io.Writer) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	userSvc := resources.NewUserService(client, context.TODO())
-	users, _, err := userSvc.List()
+	users, _, err := userSvc.List(resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	usersIds := make([]string, 0)
 	if items, ok := users.Users.GetItemsOk(); ok && items != nil {
@@ -483,7 +483,7 @@ func VolumesIds(outErr io.Writer, datacenterId string) []string {
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	volumeSvc := resources.NewVolumeService(client, context.TODO())
-	volumes, _, err := volumeSvc.List(datacenterId)
+	volumes, _, err := volumeSvc.List(datacenterId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	volumesIds := make([]string, 0)
 	if items, ok := volumes.Volumes.GetItemsOk(); ok && items != nil {
@@ -502,7 +502,7 @@ func AttachedVolumesIds(outErr io.Writer, datacenterId, serverId string) []strin
 	client, err := getClient()
 	clierror.CheckError(err, outErr)
 	serverSvc := resources.NewServerService(client, context.TODO())
-	volumes, _, err := serverSvc.ListVolumes(datacenterId, serverId)
+	volumes, _, err := serverSvc.ListVolumes(datacenterId, serverId, resources.ListQueryParams{})
 	clierror.CheckError(err, outErr)
 	attachedVolumesIds := make([]string, 0)
 	if items, ok := volumes.AttachedVolumes.GetItemsOk(); ok && items != nil {
