@@ -2,6 +2,7 @@
 
 ## Include Services Makefile Targets
 include ./tools/cloudapi-v6/cloudapi_v6.mk
+include ./tools/auth-v1/auth_v1.mk
 
 export CGO_ENABLED = 0
 export GO111MODULE := on

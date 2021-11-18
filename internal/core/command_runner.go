@@ -9,6 +9,7 @@ import (
 	config2 "github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	authV1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -119,6 +120,13 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 			if err = c.CloudApiV6Services.InitServices(computeClient); err != nil {
 				return err
 			}
+			authClient, err := c.AuthV1Services.InitClient()
+			if err != nil {
+				return err
+			}
+			if err = c.AuthV1Services.InitServices(authClient); err != nil {
+				return err
+			}
 			return nil
 		},
 	}
@@ -153,6 +161,7 @@ type CommandConfig struct {
 
 	// Services
 	CloudApiV6Services cloudapi_v6.Services
+	AuthV1Services     authV1.Services
 
 	// Context
 	Context context.Context
