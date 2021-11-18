@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 
@@ -24,7 +25,7 @@ type Cdroms struct {
 
 // ServersService is a wrapper around ionoscloud.Server
 type ServersService interface {
-	List(datacenterId string) (Servers, *Response, error)
+	List(datacenterId string, params ListQueryParams) (Servers, *Response, error)
 	Get(datacenterId, serverId string) (*Server, *Response, error)
 	Create(datacenterId string, input Server) (*Server, *Response, error)
 	Update(datacenterId, serverId string, input ServerProperties) (*Server, *Response, error)
@@ -34,9 +35,9 @@ type ServersService interface {
 	Reboot(datacenterId, serverId string) (*Response, error)
 	AttachVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
 	DetachVolume(datacenterId, serverId, volumeId string) (*Response, error)
-	ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error)
+	ListVolumes(datacenterId, serverId string, params ListQueryParams) (AttachedVolumes, *Response, error)
 	GetVolume(datacenterId, serverId, volumeId string) (*Volume, *Response, error)
-	ListCdroms(datacenterId, serverId string) (Cdroms, *Response, error)
+	ListCdroms(datacenterId, serverId string, params ListQueryParams) (Cdroms, *Response, error)
 	AttachCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error)
 	GetCdrom(datacenterId, serverId, cdromId string) (*Image, *Response, error)
 	DetachCdrom(datacenterId, serverId, cdromId string) (*Response, error)
@@ -56,8 +57,21 @@ func NewServerService(client *Client, ctx context.Context) ServersService {
 	}
 }
 
-func (ss *serversService) List(datacenterId string) (Servers, *Response, error) {
+func (ss *serversService) List(datacenterId string, params ListQueryParams) (Servers, *Response, error) {
 	req := ss.client.ServerApi.DatacentersServersGet(ss.context, datacenterId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	s, res, err := ss.client.ServerApi.DatacentersServersGetExecute(req)
 	return Servers{s}, &Response{*res}, err
 }
@@ -104,8 +118,21 @@ func (ss *serversService) Reboot(datacenterId, serverId string) (*Response, erro
 	return &Response{*res}, err
 }
 
-func (ss *serversService) ListVolumes(datacenterId, serverId string) (AttachedVolumes, *Response, error) {
+func (ss *serversService) ListVolumes(datacenterId, serverId string, params ListQueryParams) (AttachedVolumes, *Response, error) {
 	req := ss.client.ServerApi.DatacentersServersVolumesGet(ss.context, datacenterId, serverId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	vols, res, err := ss.client.ServerApi.DatacentersServersVolumesGetExecute(req)
 	return AttachedVolumes{vols}, &Response{*res}, err
 }
@@ -129,8 +156,21 @@ func (ss *serversService) DetachVolume(datacenterId, serverId, volumeId string) 
 	return &Response{*res}, err
 }
 
-func (ss *serversService) ListCdroms(datacenterId, serverId string) (Cdroms, *Response, error) {
+func (ss *serversService) ListCdroms(datacenterId, serverId string, params ListQueryParams) (Cdroms, *Response, error) {
 	req := ss.client.ServerApi.DatacentersServersCdromsGet(ss.context, datacenterId, serverId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	imgs, res, err := ss.client.ServerApi.DatacentersServersCdromsGetExecute(req)
 	return Cdroms{imgs}, &Response{*res}, err
 }

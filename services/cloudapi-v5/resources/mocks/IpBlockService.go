@@ -82,9 +82,9 @@ func (mr *MockIpBlocksServiceMockRecorder) Get(IpBlockId interface{}) *gomock.Ca
 }
 
 // List mocks base method.
-func (m *MockIpBlocksService) List() (resources.IpBlocks, *resources.Response, error) {
+func (m *MockIpBlocksService) List(params resources.ListQueryParams) (resources.IpBlocks, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.IpBlocks)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,9 +92,9 @@ func (m *MockIpBlocksService) List() (resources.IpBlocks, *resources.Response, e
 }
 
 // List indicates an expected call of List.
-func (mr *MockIpBlocksServiceMockRecorder) List() *gomock.Call {
+func (mr *MockIpBlocksServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockIpBlocksService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockIpBlocksService)(nil).List), params)
 }
 
 // Update mocks base method.

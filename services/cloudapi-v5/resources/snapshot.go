@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 
@@ -20,7 +21,7 @@ type SnapshotProperties struct {
 
 // SnapshotsService is a wrapper around ionoscloud.Snapshot
 type SnapshotsService interface {
-	List() (Snapshots, *Response, error)
+	List(params ListQueryParams) (Snapshots, *Response, error)
 	Get(snapshotId string) (*Snapshot, *Response, error)
 	Create(datacenterId, volumeId, name, description, licenceType string, secAuthProtection bool) (*Snapshot, *Response, error)
 	Update(snapshotId string, snapshotProp SnapshotProperties) (*Snapshot, *Response, error)
@@ -42,8 +43,21 @@ func NewSnapshotService(client *Client, ctx context.Context) SnapshotsService {
 	}
 }
 
-func (s *snapshotsService) List() (Snapshots, *Response, error) {
+func (s *snapshotsService) List(params ListQueryParams) (Snapshots, *Response, error) {
 	req := s.client.SnapshotApi.SnapshotsGet(s.context)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	snapshots, resp, err := s.client.SnapshotApi.SnapshotsGetExecute(req)
 	return Snapshots{snapshots}, &Response{*resp}, err
 }

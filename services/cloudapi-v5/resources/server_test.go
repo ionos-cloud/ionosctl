@@ -16,7 +16,13 @@ func TestNewServerService(t *testing.T) {
 	t.Run("list_servers_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		serverSvc := NewServerService(svc.Get(), ctx)
-		_, _, err := serverSvc.List(testServerResourceVar)
+		_, _, err := serverSvc.List(testServerResourceVar, ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("list_servers_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		serverSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := serverSvc.List(testServerResourceVar, testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("get_server_error", func(t *testing.T) {
@@ -73,7 +79,13 @@ func TestNewServerService(t *testing.T) {
 	t.Run("list_volumes_server_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		serverSvc := NewServerService(svc.Get(), ctx)
-		_, _, err := serverSvc.ListVolumes(testServerResourceVar, testServerResourceVar)
+		_, _, err := serverSvc.ListVolumes(testServerResourceVar, testServerResourceVar, ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("list_volumes_server_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		serverSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := serverSvc.ListVolumes(testServerResourceVar, testServerResourceVar, testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("get_volume_server_error", func(t *testing.T) {

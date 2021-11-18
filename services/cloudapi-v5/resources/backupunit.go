@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 
@@ -24,7 +25,7 @@ type BackupUnits struct {
 
 // BackupUnitsService is a wrapper around ionoscloud.BackupUnit
 type BackupUnitsService interface {
-	List() (BackupUnits, *Response, error)
+	List(params ListQueryParams) (BackupUnits, *Response, error)
 	Get(backupUnitId string) (*BackupUnit, *Response, error)
 	GetSsoUrl(backupUnitId string) (*BackupUnitSSO, *Response, error)
 	Create(u BackupUnit) (*BackupUnit, *Response, error)
@@ -46,8 +47,21 @@ func NewBackupUnitService(client *Client, ctx context.Context) BackupUnitsServic
 	}
 }
 
-func (s *backupUnitsService) List() (BackupUnits, *Response, error) {
+func (s *backupUnitsService) List(params ListQueryParams) (BackupUnits, *Response, error) {
 	req := s.client.BackupUnitApi.BackupunitsGet(s.context)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	dcs, res, err := s.client.BackupUnitApi.BackupunitsGetExecute(req)
 	return BackupUnits{dcs}, &Response{*res}, err
 }

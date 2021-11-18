@@ -82,9 +82,9 @@ func (mr *MockSnapshotsServiceMockRecorder) Get(snapshotId interface{}) *gomock.
 }
 
 // List mocks base method.
-func (m *MockSnapshotsService) List() (resources.Snapshots, *resources.Response, error) {
+func (m *MockSnapshotsService) List(params resources.ListQueryParams) (resources.Snapshots, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.Snapshots)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,9 +92,9 @@ func (m *MockSnapshotsService) List() (resources.Snapshots, *resources.Response,
 }
 
 // List indicates an expected call of List.
-func (mr *MockSnapshotsServiceMockRecorder) List() *gomock.Call {
+func (mr *MockSnapshotsServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockSnapshotsService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockSnapshotsService)(nil).List), params)
 }
 
 // Restore mocks base method.
