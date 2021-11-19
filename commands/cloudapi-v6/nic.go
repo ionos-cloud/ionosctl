@@ -543,7 +543,7 @@ Required values to run command:
 		ShortDesc:  "List attached NICs from a Load Balancer",
 		LongDesc:   "Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		Example:    listNicsLoadbalancerExample,
-		PreCmdRun:  PreRunDcLoadBalancerIds,
+		PreCmdRun:  PreRunLoadBalancerNicList,
 		CmdRun:     RunLoadBalancerNicList,
 		InitClient: true,
 	})
@@ -645,6 +645,16 @@ Required values to run command:
 	detachNic.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all Nics.")
 
 	return loadbalancerNicCmd
+}
+
+func PreRunLoadBalancerNicList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLoadBalancerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NICsFilters(), completer.NICsFiltersUsage())
+	}
+	return nil
 }
 
 func PreRunDcNicLoadBalancerIds(c *core.PreCommandConfig) error {

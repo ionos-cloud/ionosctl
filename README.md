@@ -297,7 +297,7 @@ This flag can be used with any command(in general create, read, update, delete, 
 
 * Use the `--filters` option
 
-You can use the filters option for the list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
+You can use the filters option for the majority of list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
 
 ### Help Information
 
