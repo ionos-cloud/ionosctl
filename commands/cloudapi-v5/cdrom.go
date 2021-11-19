@@ -2,7 +2,6 @@ package cloudapi_v5
 
 import (
 	"context"
-	"io"
 	"os"
 
 	"github.com/fatih/structs"
@@ -13,7 +12,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
 	"github.com/spf13/cobra"
@@ -69,7 +67,9 @@ Required values to run command:
 	})
 	attachCdrom.AddStringFlag(cloudapiv5.ArgCdromId, cloudapiv5.ArgIdShort, "", cloudapiv5.CdromId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getImagesCdromIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ImagesIdsCustom(os.Stderr, resources.ListQueryParams{Filters: &map[string]string{
+			"type": "CDROM",
+		}}), cobra.ShellCompDirectiveNoFileComp
 	})
 	attachCdrom.AddStringFlag(cloudapiv5.ArgServerId, "", "", cloudapiv5.ServerId, core.RequiredFlagOption())
 	_ = attachCdrom.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -347,31 +347,4 @@ func getCdroms(cdroms resources.Cdroms) []resources.Image {
 		}
 	}
 	return imgs
-}
-
-func getImagesCdromIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	imageSvc := resources.NewImageService(clientSvc.Get(), context.TODO())
-	images, _, err := imageSvc.List(resources.ListQueryParams{})
-	clierror.CheckError(err, outErr)
-	imgsIds := make([]string, 0)
-	images = sortImagesByType(images, "CDROM")
-	if items, ok := images.Images.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				imgsIds = append(imgsIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return imgsIds
 }

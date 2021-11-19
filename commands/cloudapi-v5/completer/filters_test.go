@@ -79,36 +79,8 @@ func TestFiltersLength(t *testing.T) {
 		filters := K8sNodesFilters()
 		assert.True(t, len(filters) > 0)
 	})
-	t.Run("flowlogs_filters", func(t *testing.T) {
-		filters := FlowLogsFilters()
-		assert.True(t, len(filters) > 0)
-	})
-	t.Run("groups_filters", func(t *testing.T) {
-		filters := GroupsFilters()
-		assert.True(t, len(filters) > 0)
-	})
-	t.Run("natgateways_filters", func(t *testing.T) {
-		filters := NATGatewaysFilters()
-		assert.True(t, len(filters) > 0)
-	})
-	t.Run("natgatewayrules_filters", func(t *testing.T) {
-		filters := NATGatewayRulesFilters()
-		assert.True(t, len(filters) > 0)
-	})
-	t.Run("nlb_filters", func(t *testing.T) {
-		filters := NlbsFilters()
-		assert.True(t, len(filters) > 0)
-	})
-	t.Run("nlbrule_filters", func(t *testing.T) {
-		filters := NlbRulesFilters()
-		assert.True(t, len(filters) > 0)
-	})
 	t.Run("pcc_filters", func(t *testing.T) {
 		filters := PccsFilters()
-		assert.True(t, len(filters) > 0)
-	})
-	t.Run("templates_filters", func(t *testing.T) {
-		filters := TemplatesFilters()
 		assert.True(t, len(filters) > 0)
 	})
 }
@@ -182,36 +154,8 @@ func TestFiltersUsage(t *testing.T) {
 		filtersUsage := K8sNodesFiltersUsage()
 		assert.True(t, filtersUsage != "")
 	})
-	t.Run("flowlogs_filters_usage", func(t *testing.T) {
-		filtersUsage := FlowLogsFiltersUsage()
-		assert.True(t, filtersUsage != "")
-	})
-	t.Run("groups_filters_usage", func(t *testing.T) {
-		filtersUsage := GroupsFiltersUsage()
-		assert.True(t, filtersUsage != "")
-	})
-	t.Run("natgateways_filters_usage", func(t *testing.T) {
-		filtersUsage := NATGatewaysFiltersUsage()
-		assert.True(t, filtersUsage != "")
-	})
-	t.Run("natgatewayrules_filters_usage", func(t *testing.T) {
-		filtersUsage := NATGatewayRulesFiltersUsage()
-		assert.True(t, filtersUsage != "")
-	})
-	t.Run("nlb_filters_usage", func(t *testing.T) {
-		filtersUsage := NlbsFiltersUsage()
-		assert.True(t, filtersUsage != "")
-	})
-	t.Run("nlbrule_filters_usage", func(t *testing.T) {
-		filtersUsage := NlbRulesFiltersUsage()
-		assert.True(t, filtersUsage != "")
-	})
 	t.Run("pcc_filters_usage", func(t *testing.T) {
 		filtersUsage := PccsFiltersUsage()
-		assert.True(t, filtersUsage != "")
-	})
-	t.Run("templates_filters_usage", func(t *testing.T) {
-		filtersUsage := TemplatesFiltersUsage()
 		assert.True(t, filtersUsage != "")
 	})
 }

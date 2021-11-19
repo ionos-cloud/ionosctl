@@ -22,7 +22,7 @@ func ValidateFilters(c *core.PreCommandConfig, availableFilters []string, usageF
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Validating %v filters...", len(filtersKV))
+	c.Printer.Verbose("Starting validate %v filters...", len(filtersKV))
 	invalidFilters := make([]string, 0)
 	for filterKey, _ := range filtersKV {
 		if !isValidFilter(filterKey, availableFilters) {

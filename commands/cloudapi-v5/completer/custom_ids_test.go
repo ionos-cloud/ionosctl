@@ -54,7 +54,7 @@ func TestServersIdsCustomCube(t *testing.T) {
 	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	ServersIdsCustom(w, testIdVar, resources.ListQueryParams{
 		Filters: &map[string]string{
-			"type": "CUBE",
+			"type": "ENTERPRISE",
 		},
 	})
 	err = w.Flush()
