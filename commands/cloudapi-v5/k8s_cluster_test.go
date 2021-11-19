@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -179,6 +180,47 @@ func TestK8sClusterCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunK8sClusterList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sClusterId), testClusterVar)
+		err := PreRunK8sClusterList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunK8sClusterListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sClusterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunK8sClusterList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunK8sClusterListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sClusterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunK8sClusterList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunK8sClusterId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -214,6 +256,23 @@ func TestRunK8sClusterList(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		rm.CloudApiV5Mocks.K8s.EXPECT().ListClusters(resources.ListQueryParams{}).Return(clusters, &testResponse, nil)
+		err := RunK8sClusterList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunK8sClusterListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.K8s.EXPECT().ListClusters(testListQueryParam).Return(resources.K8sClusters{}, &testResponse, nil)
 		err := RunK8sClusterList(cfg)
 		assert.NoError(t, err)
 	})

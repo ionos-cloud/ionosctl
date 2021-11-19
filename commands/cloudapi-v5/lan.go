@@ -470,8 +470,10 @@ func getLansCols(flagName string, outErr io.Writer) []string {
 
 func getLans(lans resources.Lans) []resources.Lan {
 	ls := make([]resources.Lan, 0)
-	for _, s := range *lans.Items {
-		ls = append(ls, resources.Lan{Lan: s})
+	if items, ok := lans.GetItemsOk(); ok && items != nil {
+		for _, s := range *items {
+			ls = append(ls, resources.Lan{Lan: s})
+		}
 	}
 	return ls
 }

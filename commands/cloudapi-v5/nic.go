@@ -518,7 +518,7 @@ Required values to run command:
 		ShortDesc:  "List attached NICs from a Load Balancer",
 		LongDesc:   "Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		Example:    listNicsLoadbalancerExample,
-		PreCmdRun:  PreRunRunLoadBalancerNicList,
+		PreCmdRun:  PreRunLoadBalancerNicList,
 		CmdRun:     RunLoadBalancerNicList,
 		InitClient: true,
 	})
@@ -622,7 +622,7 @@ Required values to run command:
 	return loadbalancerNicCmd
 }
 
-func PreRunRunLoadBalancerNicList(c *core.PreCommandConfig) error {
+func PreRunLoadBalancerNicList(c *core.PreCommandConfig) error {
 	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgLoadBalancerId); err != nil {
 		return err
 	}
@@ -850,8 +850,10 @@ func getNicsCols(flagName string, outErr io.Writer) []string {
 
 func getNics(nics resources.Nics) []resources.Nic {
 	ns := make([]resources.Nic, 0)
-	for _, s := range *nics.Items {
-		ns = append(ns, resources.Nic{Nic: s})
+	if items, ok := nics.GetItemsOk(); ok && items != nil {
+		for _, s := range *items {
+			ns = append(ns, resources.Nic{Nic: s})
+		}
 	}
 	return ns
 }
@@ -866,8 +868,10 @@ func getNic(n *resources.Nic) []resources.Nic {
 
 func getAttachedNics(nics resources.BalancedNics) []resources.Nic {
 	ns := make([]resources.Nic, 0)
-	for _, s := range *nics.BalancedNics.Items {
-		ns = append(ns, resources.Nic{Nic: s})
+	if items, ok := nics.GetItemsOk(); ok && items != nil {
+		for _, s := range *items {
+			ns = append(ns, resources.Nic{Nic: s})
+		}
 	}
 	return ns
 }

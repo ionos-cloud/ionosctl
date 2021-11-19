@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"testing"
 
@@ -63,6 +64,50 @@ func TestServerCdromCmd(t *testing.T) {
 		err = errors.New("non-available cmd")
 	}
 	assert.NoError(t, err)
+}
+
+func TestPreRunServerCdromList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testCdromVar)
+		err := PreRunServerCdromList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerCdromListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunServerCdromList(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunServerCdromListFilter(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunServerCdromList(cfg)
+		assert.NoError(t, err)
+	})
 }
 
 func TestPreRunDcServerCdromIds(t *testing.T) {
@@ -157,6 +202,25 @@ func TestRunServerCdromsList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testCdromVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testCdromVar)
 		rm.CloudApiV5Mocks.Server.EXPECT().ListCdroms(testCdromVar, testCdromVar, resources.ListQueryParams{}).Return(testCdroms, &testResponse, nil)
+		err := RunServerCdromsList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerCdromsListListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Server.EXPECT().ListCdroms(testCdromVar, testCdromVar, testListQueryParam).Return(resources.Cdroms{}, &testResponse, nil)
 		err := RunServerCdromsList(cfg)
 		assert.NoError(t, err)
 	})

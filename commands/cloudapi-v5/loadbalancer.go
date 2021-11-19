@@ -452,8 +452,10 @@ func getLoadbalancersCols(flagName string, outErr io.Writer) []string {
 
 func getLoadbalancers(loadbalancers resources.Loadbalancers) []resources.Loadbalancer {
 	vs := make([]resources.Loadbalancer, 0)
-	for _, s := range *loadbalancers.Items {
-		vs = append(vs, resources.Loadbalancer{Loadbalancer: s})
+	if items, ok := loadbalancers.GetItemsOk(); ok && items != nil {
+		for _, s := range *items {
+			vs = append(vs, resources.Loadbalancer{Loadbalancer: s})
+		}
 	}
 	return vs
 }

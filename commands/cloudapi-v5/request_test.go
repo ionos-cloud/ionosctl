@@ -115,6 +115,47 @@ func TestRequestCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunRequestList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRequestId), testRequestVar)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunRequestList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunRequestListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRequestId), testRequestVar)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunRequestList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunRequestListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgRequestId), testRequestVar)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunRequestList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunRequestId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -150,6 +191,24 @@ func TestRunRequestList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetGlobalFlagName(cfg.Namespace, config.ArgCols), allRequestCols)
 		rm.CloudApiV5Mocks.Request.EXPECT().List(resources.ListQueryParams{}).Return(testRequests, &testResponse, nil)
+		err := RunRequestList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunRequestListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetGlobalFlagName(cfg.Namespace, config.ArgCols), allRequestCols)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Request.EXPECT().List(testListQueryParam).Return(resources.Requests{}, &testResponse, nil)
 		err := RunRequestList(cfg)
 		assert.NoError(t, err)
 	})

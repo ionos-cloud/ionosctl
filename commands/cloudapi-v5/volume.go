@@ -1027,8 +1027,10 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 
 func getVolumes(volumes resources.Volumes) []resources.Volume {
 	vs := make([]resources.Volume, 0)
-	for _, s := range *volumes.Items {
-		vs = append(vs, resources.Volume{Volume: s})
+	if items, ok := volumes.GetItemsOk(); ok && items != nil {
+		for _, s := range *items {
+			vs = append(vs, resources.Volume{Volume: s})
+		}
 	}
 	return vs
 }

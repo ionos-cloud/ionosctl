@@ -284,8 +284,10 @@ func getRequestsCols(flagName string, outErr io.Writer) []string {
 
 func getRequests(requests resources.Requests) []resources.Request {
 	req := make([]resources.Request, 0)
-	for _, r := range *requests.Items {
-		req = append(req, resources.Request{Request: r})
+	if items, ok := requests.GetItemsOk(); ok && items != nil {
+		for _, r := range *items {
+			req = append(req, resources.Request{Request: r})
+		}
 	}
 	return req
 }

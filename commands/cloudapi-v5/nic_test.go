@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -117,6 +118,50 @@ func TestLoadBalancerNicCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunNicList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testNicVar)
+		err := PreRunNicList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunNicListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunNicList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunNicListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunNicList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunNicList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -129,6 +174,25 @@ func TestRunNicList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testNicVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testNicVar)
 		rm.CloudApiV5Mocks.Nic.EXPECT().List(testNicVar, testNicVar, resources.ListQueryParams{}).Return(ns, &testResponse, nil)
+		err := RunNicList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNicListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testNicVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Nic.EXPECT().List(testNicVar, testNicVar, testListQueryParam).Return(resources.Nics{}, &testResponse, nil)
 		err := RunNicList(cfg)
 		assert.NoError(t, err)
 	})
@@ -487,6 +551,50 @@ func TestPreRunDcNicLoadBalancerIdsRequiredFlagsErr(t *testing.T) {
 	})
 }
 
+func TestPreRunLoadBalancerNicList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLoadBalancerId), testLoadbalancerVar)
+		err := PreRunLoadBalancerNicList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunLoadBalancerNicListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLoadBalancerId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunLoadBalancerNicList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunLoadBalancerNicListFiltersErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLoadBalancerId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunLoadBalancerNicList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunLoadBalancerNicAttach(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -553,6 +661,25 @@ func TestRunLoadBalancerNicList(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLoadbalancerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLoadBalancerId), testLoadbalancerVar)
 		rm.CloudApiV5Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar, resources.ListQueryParams{}).Return(balancedns, nil, nil)
+		err := RunLoadBalancerNicList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLoadBalancerNicListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLoadBalancerId), testLoadbalancerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Loadbalancer.EXPECT().ListNics(testLoadbalancerVar, testLoadbalancerVar, testListQueryParam).Return(resources.BalancedNics{}, nil, nil)
 		err := RunLoadBalancerNicList(cfg)
 		assert.NoError(t, err)
 	})

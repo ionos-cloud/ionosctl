@@ -805,8 +805,10 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 
 func getServers(servers resources.Servers) []resources.Server {
 	ss := make([]resources.Server, 0)
-	for _, s := range *servers.Items {
-		ss = append(ss, resources.Server{Server: s})
+	if items, ok := servers.GetItemsOk(); ok && items != nil {
+		for _, s := range *items {
+			ss = append(ss, resources.Server{Server: s})
+		}
 	}
 	return ss
 }
