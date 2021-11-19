@@ -671,7 +671,7 @@ Required values to run command:
 		ShortDesc:  "List attached Volumes from a Server",
 		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listVolumesServerExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunServerVolumeList,
 		CmdRun:     RunServerVolumesList,
 		InitClient: true,
 	})
@@ -774,6 +774,16 @@ Required values to run command:
 	detachVolume.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all Volumes.")
 
 	return serverVolumeCmd
+}
+
+func PreRunServerVolumeList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.VolumesFilters(), completer.VolumesFiltersUsage())
+	}
+	return nil
 }
 
 func PreRunDcServerVolumeIds(c *core.PreCommandConfig) error {
