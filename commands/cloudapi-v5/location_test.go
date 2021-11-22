@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 	"testing"
@@ -73,6 +74,44 @@ func TestPreLocationIdErr(t *testing.T) {
 	})
 }
 
+func TestPreLocationList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunLocationsList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreLocationListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunLocationsList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreLocationListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunLocationsList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunLocationList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -81,7 +120,24 @@ func TestRunLocationList(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
-		rm.CloudApiV5Mocks.Location.EXPECT().List().Return(locations, &testResponse, nil)
+		rm.CloudApiV5Mocks.Location.EXPECT().List(resources.ListQueryParams{}).Return(locations, &testResponse, nil)
+		err := RunLocationList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLocationListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Location.EXPECT().List(testListQueryParam).Return(resources.Locations{}, &testResponse, nil)
 		err := RunLocationList(cfg)
 		assert.NoError(t, err)
 	})
@@ -94,7 +150,7 @@ func TestRunLocationListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.CloudApiV5Mocks.Location.EXPECT().List().Return(locations, nil, testLocationErr)
+		rm.CloudApiV5Mocks.Location.EXPECT().List(resources.ListQueryParams{}).Return(locations, nil, testLocationErr)
 		err := RunLocationList(cfg)
 		assert.Error(t, err)
 	})

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -120,6 +121,47 @@ func TestServerCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunServerList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
+		err := PreRunServerList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunServerList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunServerList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunDcIdServerCoresRam(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -183,7 +225,25 @@ func TestRunServerList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
-		rm.CloudApiV5Mocks.Server.EXPECT().List(testServerVar).Return(ss, &testResponse, nil)
+		rm.CloudApiV5Mocks.Server.EXPECT().List(testServerVar, resources.ListQueryParams{}).Return(ss, &testResponse, nil)
+		err := RunServerList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Server.EXPECT().List(testServerVar, testListQueryParam).Return(resources.Servers{}, &testResponse, nil)
 		err := RunServerList(cfg)
 		assert.NoError(t, err)
 	})
@@ -198,7 +258,7 @@ func TestRunServerListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
-		rm.CloudApiV5Mocks.Server.EXPECT().List(testServerVar).Return(ss, nil, testServerErr)
+		rm.CloudApiV5Mocks.Server.EXPECT().List(testServerVar, resources.ListQueryParams{}).Return(ss, nil, testServerErr)
 		err := RunServerList(cfg)
 		assert.Error(t, err)
 	})
@@ -544,7 +604,7 @@ func TestRunServerDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
-		rm.CloudApiV5Mocks.Server.EXPECT().List(testServerVar).Return(ssList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Server.EXPECT().List(testServerVar, resources.ListQueryParams{}).Return(ssList, &testResponse, nil)
 		rm.CloudApiV5Mocks.Server.EXPECT().Delete(testServerVar, testServerVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.Server.EXPECT().Delete(testServerVar, testServerVar).Return(&testResponse, nil)
 		err := RunServerDelete(cfg)

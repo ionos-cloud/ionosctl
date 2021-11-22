@@ -82,9 +82,9 @@ func (mr *MockNicsServiceMockRecorder) Get(datacenterId, serverId, nicId interfa
 }
 
 // List mocks base method.
-func (m *MockNicsService) List(datacenterId, serverId string) (resources.Nics, *resources.Response, error) {
+func (m *MockNicsService) List(datacenterId, serverId string, params resources.ListQueryParams) (resources.Nics, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", datacenterId, serverId)
+	ret := m.ctrl.Call(m, "List", datacenterId, serverId, params)
 	ret0, _ := ret[0].(resources.Nics)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,9 +92,9 @@ func (m *MockNicsService) List(datacenterId, serverId string) (resources.Nics, *
 }
 
 // List indicates an expected call of List.
-func (mr *MockNicsServiceMockRecorder) List(datacenterId, serverId interface{}) *gomock.Call {
+func (mr *MockNicsServiceMockRecorder) List(datacenterId, serverId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockNicsService)(nil).List), datacenterId, serverId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockNicsService)(nil).List), datacenterId, serverId, params)
 }
 
 // Update mocks base method.

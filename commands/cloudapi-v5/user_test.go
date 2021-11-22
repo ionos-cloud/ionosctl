@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -135,6 +136,44 @@ func TestPreRunUserIdErr(t *testing.T) {
 	})
 }
 
+func TestPreRunUserList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunUserList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunUserListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("firstname=%s", testQueryParamVar)})
+		err := PreRunUserList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunUserListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunUserList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunUserNameEmailPwd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -172,7 +211,24 @@ func TestRunUserList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV5Mocks.User.EXPECT().List().Return(users, &testResponse, nil)
+		rm.CloudApiV5Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(users, &testResponse, nil)
+		err := RunUserList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunUserListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.User.EXPECT().List(testListQueryParam).Return(resources.Users{}, &testResponse, nil)
 		err := RunUserList(cfg)
 		assert.NoError(t, err)
 	})
@@ -186,7 +242,7 @@ func TestRunUserListErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV5Mocks.User.EXPECT().List().Return(users, nil, testUserErr)
+		rm.CloudApiV5Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(users, nil, testUserErr)
 		err := RunUserList(cfg)
 		assert.Error(t, err)
 	})
@@ -380,7 +436,7 @@ func TestRunUserDeleteAll(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
-		rm.CloudApiV5Mocks.User.EXPECT().List().Return(usersList, &testResponse, nil)
+		rm.CloudApiV5Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(usersList, &testResponse, nil)
 		rm.CloudApiV5Mocks.User.EXPECT().Delete(testUserVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.User.EXPECT().Delete(testUserVar).Return(&testResponse, nil)
 		err := RunUserDelete(cfg)

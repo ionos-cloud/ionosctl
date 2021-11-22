@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
@@ -28,7 +29,7 @@ type BalancedNics struct {
 
 // NicsService is a wrapper around ionoscloud.Nic
 type NicsService interface {
-	List(datacenterId, serverId string) (Nics, *Response, error)
+	List(datacenterId, serverId string, params ListQueryParams) (Nics, *Response, error)
 	Get(datacenterId, serverId, nicId string) (*Nic, *Response, error)
 	Create(datacenterId, serverId, name string, ips []string, dhcp bool, lan int32) (*Nic, *Response, error)
 	Update(datacenterId, serverId, nicId string, input NicProperties) (*Nic, *Response, error)
@@ -49,8 +50,21 @@ func NewNicService(client *Client, ctx context.Context) NicsService {
 	}
 }
 
-func (ns *nicsService) List(datacenterId, serverId string) (Nics, *Response, error) {
+func (ns *nicsService) List(datacenterId, serverId string, params ListQueryParams) (Nics, *Response, error) {
 	req := ns.client.NicApi.DatacentersServersNicsGet(ns.context, datacenterId, serverId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	nics, resp, err := ns.client.NicApi.DatacentersServersNicsGetExecute(req)
 	return Nics{nics}, &Response{*resp}, err
 }

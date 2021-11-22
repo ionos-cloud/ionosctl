@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -92,6 +93,44 @@ func TestPccCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunPccList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunPccList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunPccListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunPccList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunPccListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunPccList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunPccId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -126,7 +165,24 @@ func TestRunPccList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV5Mocks.Pcc.EXPECT().List().Return(pccs, &testResponse, nil)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccs, &testResponse, nil)
+		err := RunPccList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunPccListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List(testListQueryParam).Return(resources.PrivateCrossConnects{}, &testResponse, nil)
 		err := RunPccList(cfg)
 		assert.NoError(t, err)
 	})
@@ -140,7 +196,7 @@ func TestRunPccListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV5Mocks.Pcc.EXPECT().List().Return(pccs, nil, testPccErr)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccs, nil, testPccErr)
 		err := RunPccList(cfg)
 		assert.Error(t, err)
 	})
@@ -391,7 +447,7 @@ func TestRunPccDeleteAll(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
-		rm.CloudApiV5Mocks.Pcc.EXPECT().List().Return(pccsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccsList, &testResponse, nil)
 		rm.CloudApiV5Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
 		err := RunPccDelete(cfg)

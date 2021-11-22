@@ -161,13 +161,11 @@ func (a *LocationApiService) LocationsFindByRegionIdExecute(r ApiLocationsFindBy
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -330,13 +328,11 @@ func (a *LocationApiService) LocationsFindByRegionIdAndIdExecute(r ApiLocationsF
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -366,6 +362,7 @@ type ApiLocationsGetRequest struct {
 	ApiService      *LocationApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	pretty          *bool
 	depth           *int32
 	xContractNumber *int32
@@ -386,7 +383,7 @@ func (r ApiLocationsGetRequest) XContractNumber(xContractNumber int32) ApiLocati
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiLocationsGetRequest) Filter(key string, value string) ApiLocationsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -394,6 +391,12 @@ func (r ApiLocationsGetRequest) Filter(key string, value string) ApiLocationsGet
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiLocationsGetRequest) OrderBy(orderBy string) ApiLocationsGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiLocationsGetRequest) MaxResults(maxResults int32) ApiLocationsGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -448,6 +451,9 @@ func (a *LocationApiService) LocationsGetExecute(r ApiLocationsGetRequest) (Loca
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -517,13 +523,11 @@ func (a *LocationApiService) LocationsGetExecute(r ApiLocationsGetRequest) (Loca
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))

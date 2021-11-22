@@ -98,9 +98,9 @@ func (mr *MockBackupUnitsServiceMockRecorder) GetSsoUrl(backupUnitId interface{}
 }
 
 // List mocks base method.
-func (m *MockBackupUnitsService) List() (resources.BackupUnits, *resources.Response, error) {
+func (m *MockBackupUnitsService) List(params resources.ListQueryParams) (resources.BackupUnits, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.BackupUnits)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,9 +108,9 @@ func (m *MockBackupUnitsService) List() (resources.BackupUnits, *resources.Respo
 }
 
 // List indicates an expected call of List.
-func (mr *MockBackupUnitsServiceMockRecorder) List() *gomock.Call {
+func (mr *MockBackupUnitsServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockBackupUnitsService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockBackupUnitsService)(nil).List), params)
 }
 
 // Update mocks base method.

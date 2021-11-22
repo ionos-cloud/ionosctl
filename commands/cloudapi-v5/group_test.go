@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -113,6 +114,44 @@ func TestGroupCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunGroupList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunGroupList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunGroupListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("name=%s", testQueryParamVar)})
+		err := PreRunGroupList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunGroupListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunGroupList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunGroupId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -173,7 +212,24 @@ func TestRunGroupList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		rm.CloudApiV5Mocks.Group.EXPECT().List().Return(groups, &testResponse, nil)
+		rm.CloudApiV5Mocks.Group.EXPECT().List(resources.ListQueryParams{}).Return(groups, &testResponse, nil)
+		err := RunGroupList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Group.EXPECT().List(testListQueryParam).Return(resources.Groups{}, &testResponse, nil)
 		err := RunGroupList(cfg)
 		assert.NoError(t, err)
 	})
@@ -187,7 +243,7 @@ func TestRunGroupListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-		rm.CloudApiV5Mocks.Group.EXPECT().List().Return(groups, nil, testGroupErr)
+		rm.CloudApiV5Mocks.Group.EXPECT().List(resources.ListQueryParams{}).Return(groups, nil, testGroupErr)
 		err := RunGroupList(cfg)
 		assert.Error(t, err)
 	})
@@ -457,7 +513,7 @@ func TestRunGroupDeleteAll(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
-		rm.CloudApiV5Mocks.Group.EXPECT().List().Return(groupsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Group.EXPECT().List(resources.ListQueryParams{}).Return(groupsList, &testResponse, nil)
 		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		err := RunGroupDelete(cfg)

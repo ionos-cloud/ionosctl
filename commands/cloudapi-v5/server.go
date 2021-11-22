@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -49,15 +51,24 @@ func ServerCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Servers",
-		LongDesc:   "Use this command to list Servers from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to list Servers from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.ServersFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listServerExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunServerList,
 		CmdRun:     RunServerList,
 		InitClient: true,
 	})
 	list.AddStringFlag(cloudapiv5.ArgDataCenterId, "", "", cloudapiv5.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.ServersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -193,7 +204,9 @@ Required values to run command:
 	})
 	update.AddStringFlag(cloudapiv5.ArgCdromId, "", "", "The unique Cdrom Id for the BootCdrom. The Cdrom needs to be already attached to the Server")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgCdromId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getImagesCdromIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.ImagesIdsCustom(os.Stderr, resources.ListQueryParams{Filters: &map[string]string{
+			"type": "CDROM",
+		}}), cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Server update to be executed")
 	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the updated Server to be in AVAILABLE state")
@@ -340,6 +353,16 @@ Required values to run command:
 	return serverCmd
 }
 
+func PreRunServerList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.ServersFilters(), completer.ServersFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcIdServerCoresRam(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId, cloudapiv5.ArgCores, cloudapiv5.ArgRam)
 }
@@ -357,7 +380,26 @@ func PreRunDcServerDelete(c *core.PreCommandConfig) error {
 
 func RunServerList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
-	servers, resp, err := c.CloudApiV5Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["ram"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.MegaBytes)
+				if err != nil {
+					return err
+				}
+				filters["ram"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	servers, resp, err := c.CloudApiV5Services.Servers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -649,7 +691,7 @@ func getServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
 func DeleteAllServers(c *core.CommandConfig) (*resources.Response, error) {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	_ = c.Printer.Print("Servers to be deleted:")
-	servers, resp, err := c.CloudApiV5Services.Servers().List(dcId)
+	servers, resp, err := c.CloudApiV5Services.Servers().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -763,8 +805,10 @@ func getServersCols(flagName string, outErr io.Writer) []string {
 
 func getServers(servers resources.Servers) []resources.Server {
 	ss := make([]resources.Server, 0)
-	for _, s := range *servers.Items {
-		ss = append(ss, resources.Server{Server: s})
+	if items, ok := servers.GetItemsOk(); ok && items != nil {
+		for _, s := range *items {
+			ss = append(ss, resources.Server{Server: s})
+		}
 	}
 	return ss
 }

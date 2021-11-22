@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 
@@ -40,7 +41,7 @@ type ResourceGroups struct {
 
 // GroupsService is a wrapper around ionoscloud.Group
 type GroupsService interface {
-	List() (Groups, *Response, error)
+	List(params ListQueryParams) (Groups, *Response, error)
 	Get(groupId string) (*Group, *Response, error)
 	Create(u Group) (*Group, *Response, error)
 	Update(groupId string, input Group) (*Group, *Response, error)
@@ -70,8 +71,21 @@ func NewGroupService(client *Client, ctx context.Context) GroupsService {
 	}
 }
 
-func (s *groupsService) List() (Groups, *Response, error) {
+func (s *groupsService) List(params ListQueryParams) (Groups, *Response, error) {
 	req := s.client.UserManagementApi.UmGroupsGet(s.context)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	gs, res, err := s.client.UserManagementApi.UmGroupsGetExecute(req)
 	return Groups{gs}, &Response{*res}, err
 }

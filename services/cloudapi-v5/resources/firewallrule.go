@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
 
@@ -20,7 +21,7 @@ type FirewallRules struct {
 
 // FirewallRulesService is a wrapper around ionoscloud.FirewallRule
 type FirewallRulesService interface {
-	List(datacenterId, serverId, nicId string) (FirewallRules, *Response, error)
+	List(datacenterId, serverId, nicId string, param ListQueryParams) (FirewallRules, *Response, error)
 	Get(datacenterId, serverId, nicId, firewallRuleId string) (*FirewallRule, *Response, error)
 	Create(datacenterId, serverId, nicId string, input FirewallRule) (*FirewallRule, *Response, error)
 	Update(datacenterId, serverId, nicId, firewallRuleId string, input FirewallRuleProperties) (*FirewallRule, *Response, error)
@@ -41,8 +42,21 @@ func NewFirewallRuleService(client *Client, ctx context.Context) FirewallRulesSe
 	}
 }
 
-func (svc *firewallRulesService) List(datacenterId, serverId, nicId string) (FirewallRules, *Response, error) {
+func (svc *firewallRulesService) List(datacenterId, serverId, nicId string, params ListQueryParams) (FirewallRules, *Response, error) {
 	req := svc.client.NicApi.DatacentersServersNicsFirewallrulesGet(svc.context, datacenterId, serverId, nicId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	rules, resp, err := svc.client.NicApi.DatacentersServersNicsFirewallrulesGetExecute(req)
 	return FirewallRules{rules}, &Response{*resp}, err
 }

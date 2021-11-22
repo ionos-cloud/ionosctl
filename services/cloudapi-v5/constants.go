@@ -102,6 +102,11 @@ const (
 	ArgPublicIps             = "public-ips"
 	ArgLatest                = "latest"
 	ArgMethod                = "method"
+	ArgFilters               = "filters"
+	ArgFiltersShort          = "F"
+	ArgOrderBy               = "order-by"
+	ArgMaxResults            = "max-results"
+	ArgMaxResultsShort       = "M"
 )
 
 // IDs Flags

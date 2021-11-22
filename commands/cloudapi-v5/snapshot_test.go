@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -109,6 +110,44 @@ func TestPreRunSnapshotIdErr(t *testing.T) {
 	})
 }
 
+func TestPreRunSnapshotList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunSnapshotList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunSnapshotListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunSnapshotList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunSnapshotListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunSnapshotList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunSnapshotIdDcIdVolumeId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -133,7 +172,24 @@ func TestRunSnapshotList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV5Mocks.Snapshot.EXPECT().List().Return(snapshots, &testResponse, nil)
+		rm.CloudApiV5Mocks.Snapshot.EXPECT().List(resources.ListQueryParams{}).Return(snapshots, &testResponse, nil)
+		err := RunSnapshotList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunSnapshotListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Snapshot.EXPECT().List(testListQueryParam).Return(resources.Snapshots{}, &testResponse, nil)
 		err := RunSnapshotList(cfg)
 		assert.NoError(t, err)
 	})
@@ -147,7 +203,7 @@ func TestRunSnapshotListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV5Mocks.Snapshot.EXPECT().List().Return(snapshots, nil, testSnapshotErr)
+		rm.CloudApiV5Mocks.Snapshot.EXPECT().List(resources.ListQueryParams{}).Return(snapshots, nil, testSnapshotErr)
 		err := RunSnapshotList(cfg)
 		assert.Error(t, err)
 	})
@@ -162,7 +218,7 @@ func TestRunSnapshotListSort(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgLicenceType), testSnapshotVar)
-		rm.CloudApiV5Mocks.Snapshot.EXPECT().List().Return(snapshots, nil, nil)
+		rm.CloudApiV5Mocks.Snapshot.EXPECT().List(resources.ListQueryParams{}).Return(snapshots, nil, nil)
 		err := RunSnapshotList(cfg)
 		assert.NoError(t, err)
 	})
@@ -395,7 +451,7 @@ func TestRunSnapshotDeleteAll(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
-		rm.CloudApiV5Mocks.Snapshot.EXPECT().List().Return(snapshots, &testResponse, nil)
+		rm.CloudApiV5Mocks.Snapshot.EXPECT().List(resources.ListQueryParams{}).Return(snapshots, &testResponse, nil)
 		rm.CloudApiV5Mocks.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.Snapshot.EXPECT().Delete(testSnapshotVar).Return(&testResponse, nil)
 		err := RunSnapshotDelete(cfg)

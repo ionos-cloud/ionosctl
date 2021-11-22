@@ -9,9 +9,11 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
@@ -40,17 +42,26 @@ func LocationCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, locationCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, locationCmd, core.CommandBuilder{
 		Namespace:  "location",
 		Resource:   "location",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Locations",
-		LongDesc:   "Use this command to get a list of available locations to create objects on.",
+		LongDesc:   "Use this command to get a list of available locations to create objects on.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LocationsFiltersUsage(),
 		Example:    listLocationExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunLocationsList,
 		CmdRun:     RunLocationList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -76,12 +87,27 @@ func LocationCmd() *core.Command {
 	return locationCmd
 }
 
+func PreRunLocationsList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.LocationsFilters(), completer.LocationsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunLocationId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgLocationId)
 }
 
 func RunLocationList(c *core.CommandConfig) error {
-	locations, resp, err := c.CloudApiV5Services.Locations().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	locations, resp, err := c.CloudApiV5Services.Locations().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -165,11 +191,13 @@ func getLocation(u *resources.Location) []resources.Location {
 }
 
 func getLocations(locations resources.Locations) []resources.Location {
-	dc := make([]resources.Location, 0)
-	for _, d := range *locations.Items {
-		dc = append(dc, resources.Location{Location: d})
+	locObj := make([]resources.Location, 0)
+	if items, ok := locations.GetItemsOk(); ok && items != nil {
+		for _, item := range *items {
+			locObj = append(locObj, resources.Location{Location: item})
+		}
 	}
-	return dc
+	return locObj
 }
 
 func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {

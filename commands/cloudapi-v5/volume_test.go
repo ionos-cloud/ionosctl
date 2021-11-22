@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -187,6 +188,47 @@ func TestVolumeCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunVolumeList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
+		err := PreRunVolumeList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunVolumeList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunVolumeList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunVolumeCreate(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -273,7 +315,25 @@ func TestRunVolumeList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
-		rm.CloudApiV5Mocks.Volume.EXPECT().List(testVolumeVar).Return(vs, &testResponse, nil)
+		rm.CloudApiV5Mocks.Volume.EXPECT().List(testVolumeVar, resources.ListQueryParams{}).Return(vs, &testResponse, nil)
+		err := RunVolumeList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunVolumeListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV5Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(resources.Volumes{}, &testResponse, nil)
 		err := RunVolumeList(cfg)
 		assert.NoError(t, err)
 	})
@@ -288,7 +348,7 @@ func TestRunVolumeListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
-		rm.CloudApiV5Mocks.Volume.EXPECT().List(testVolumeVar).Return(vs, nil, testVolumeErr)
+		rm.CloudApiV5Mocks.Volume.EXPECT().List(testVolumeVar, resources.ListQueryParams{}).Return(vs, nil, testVolumeErr)
 		err := RunVolumeList(cfg)
 		assert.Error(t, err)
 	})
@@ -592,7 +652,7 @@ func TestRunVolumeDeleteAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testVolumeVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
-		rm.CloudApiV5Mocks.Volume.EXPECT().List(testVolumeVar).Return(vsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Volume.EXPECT().List(testVolumeVar, resources.ListQueryParams{}).Return(vsList, &testResponse, nil)
 		rm.CloudApiV5Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(&testResponse, nil)
 		err := RunVolumeDelete(cfg)
@@ -804,7 +864,7 @@ func TestRunServerVolumesList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testServerVar)
-		rm.CloudApiV5Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttached, nil, nil)
+		rm.CloudApiV5Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, resources.ListQueryParams{}).Return(vsAttached, nil, nil)
 		err := RunServerVolumesList(cfg)
 		assert.NoError(t, err)
 	})
@@ -820,7 +880,7 @@ func TestRunServerVolumesListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testServerVar)
-		rm.CloudApiV5Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttached, nil, testVolumeErr)
+		rm.CloudApiV5Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, resources.ListQueryParams{}).Return(vsAttached, nil, testVolumeErr)
 		err := RunServerVolumesList(cfg)
 		assert.Error(t, err)
 	})
@@ -892,7 +952,7 @@ func TestRunServerVolumeDetachAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
-		rm.CloudApiV5Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttachedList, nil, nil)
+		rm.CloudApiV5Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, resources.ListQueryParams{}).Return(vsAttachedList, nil, nil)
 		rm.CloudApiV5Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(&testResponse, nil)
 		rm.CloudApiV5Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(&testResponse, nil)
 		err := RunServerVolumeDetach(cfg)

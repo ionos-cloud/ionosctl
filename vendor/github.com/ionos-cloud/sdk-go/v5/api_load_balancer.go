@@ -169,13 +169,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersBalancednicsDeleteExecu
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -342,13 +340,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersBalancednicsFindByNicId
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -378,6 +374,7 @@ type ApiDatacentersLoadbalancersBalancednicsGetRequest struct {
 	ApiService      *LoadBalancerApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	datacenterId    string
 	loadbalancerId  string
 	pretty          *bool
@@ -410,7 +407,7 @@ func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) Limit(limit int32) Ap
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) Filter(key string, value string) ApiDatacentersLoadbalancersBalancednicsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -418,6 +415,12 @@ func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) Filter(key string, va
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) OrderBy(orderBy string) ApiDatacentersLoadbalancersBalancednicsGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiDatacentersLoadbalancersBalancednicsGetRequest) MaxResults(maxResults int32) ApiDatacentersLoadbalancersBalancednicsGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -484,6 +487,9 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersBalancednicsGetExecute(
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -553,13 +559,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersBalancednicsGetExecute(
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -732,13 +736,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersBalancednicsPostExecute
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -901,13 +903,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersDeleteExecute(r ApiData
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1070,13 +1070,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersFindByIdExecute(r ApiDa
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1106,6 +1104,7 @@ type ApiDatacentersLoadbalancersGetRequest struct {
 	ApiService      *LoadBalancerApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	datacenterId    string
 	pretty          *bool
 	depth           *int32
@@ -1137,7 +1136,7 @@ func (r ApiDatacentersLoadbalancersGetRequest) Limit(limit int32) ApiDatacenters
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersLoadbalancersGetRequest) Filter(key string, value string) ApiDatacentersLoadbalancersGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -1145,6 +1144,12 @@ func (r ApiDatacentersLoadbalancersGetRequest) Filter(key string, value string) 
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiDatacentersLoadbalancersGetRequest) OrderBy(orderBy string) ApiDatacentersLoadbalancersGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiDatacentersLoadbalancersGetRequest) MaxResults(maxResults int32) ApiDatacentersLoadbalancersGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -1208,6 +1213,9 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersGetExecute(r ApiDatacen
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -1277,13 +1285,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersGetExecute(r ApiDatacen
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1456,13 +1462,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersPatchExecute(r ApiDatac
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1631,13 +1635,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersPostExecute(r ApiDatace
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1810,13 +1812,11 @@ func (a *LoadBalancerApiService) DatacentersLoadbalancersPutExecute(r ApiDatacen
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))

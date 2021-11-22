@@ -165,13 +165,11 @@ func (a *LabelApiService) DatacentersLabelsDeleteExecute(r ApiDatacentersLabelsD
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -334,13 +332,11 @@ func (a *LabelApiService) DatacentersLabelsFindByKeyExecute(r ApiDatacentersLabe
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -370,6 +366,7 @@ type ApiDatacentersLabelsGetRequest struct {
 	ApiService      *LabelApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	datacenterId    string
 	pretty          *bool
 	depth           *int32
@@ -401,7 +398,7 @@ func (r ApiDatacentersLabelsGetRequest) Limit(limit int32) ApiDatacentersLabelsG
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersLabelsGetRequest) Filter(key string, value string) ApiDatacentersLabelsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -409,6 +406,12 @@ func (r ApiDatacentersLabelsGetRequest) Filter(key string, value string) ApiData
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiDatacentersLabelsGetRequest) OrderBy(orderBy string) ApiDatacentersLabelsGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiDatacentersLabelsGetRequest) MaxResults(maxResults int32) ApiDatacentersLabelsGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -472,6 +475,9 @@ func (a *LabelApiService) DatacentersLabelsGetExecute(r ApiDatacentersLabelsGetR
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -541,13 +547,11 @@ func (a *LabelApiService) DatacentersLabelsGetExecute(r ApiDatacentersLabelsGetR
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -716,13 +720,11 @@ func (a *LabelApiService) DatacentersLabelsPostExecute(r ApiDatacentersLabelsPos
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -895,13 +897,11 @@ func (a *LabelApiService) DatacentersLabelsPutExecute(r ApiDatacentersLabelsPutR
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1068,13 +1068,11 @@ func (a *LabelApiService) DatacentersServersLabelsDeleteExecute(r ApiDatacenters
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1241,13 +1239,11 @@ func (a *LabelApiService) DatacentersServersLabelsFindByKeyExecute(r ApiDatacent
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1277,6 +1273,7 @@ type ApiDatacentersServersLabelsGetRequest struct {
 	ApiService      *LabelApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	datacenterId    string
 	serverId        string
 	pretty          *bool
@@ -1309,7 +1306,7 @@ func (r ApiDatacentersServersLabelsGetRequest) Limit(limit int32) ApiDatacenters
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersServersLabelsGetRequest) Filter(key string, value string) ApiDatacentersServersLabelsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -1317,6 +1314,12 @@ func (r ApiDatacentersServersLabelsGetRequest) Filter(key string, value string) 
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiDatacentersServersLabelsGetRequest) OrderBy(orderBy string) ApiDatacentersServersLabelsGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiDatacentersServersLabelsGetRequest) MaxResults(maxResults int32) ApiDatacentersServersLabelsGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -1383,6 +1386,9 @@ func (a *LabelApiService) DatacentersServersLabelsGetExecute(r ApiDatacentersSer
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -1452,13 +1458,11 @@ func (a *LabelApiService) DatacentersServersLabelsGetExecute(r ApiDatacentersSer
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1631,13 +1635,11 @@ func (a *LabelApiService) DatacentersServersLabelsPostExecute(r ApiDatacentersSe
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1814,13 +1816,11 @@ func (a *LabelApiService) DatacentersServersLabelsPutExecute(r ApiDatacentersSer
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1987,13 +1987,11 @@ func (a *LabelApiService) DatacentersVolumesLabelsDeleteExecute(r ApiDatacenters
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2160,13 +2158,11 @@ func (a *LabelApiService) DatacentersVolumesLabelsFindByKeyExecute(r ApiDatacent
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2196,6 +2192,7 @@ type ApiDatacentersVolumesLabelsGetRequest struct {
 	ApiService      *LabelApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	datacenterId    string
 	volumeId        string
 	pretty          *bool
@@ -2228,7 +2225,7 @@ func (r ApiDatacentersVolumesLabelsGetRequest) Limit(limit int32) ApiDatacenters
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiDatacentersVolumesLabelsGetRequest) Filter(key string, value string) ApiDatacentersVolumesLabelsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -2236,6 +2233,12 @@ func (r ApiDatacentersVolumesLabelsGetRequest) Filter(key string, value string) 
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiDatacentersVolumesLabelsGetRequest) OrderBy(orderBy string) ApiDatacentersVolumesLabelsGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiDatacentersVolumesLabelsGetRequest) MaxResults(maxResults int32) ApiDatacentersVolumesLabelsGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -2302,6 +2305,9 @@ func (a *LabelApiService) DatacentersVolumesLabelsGetExecute(r ApiDatacentersVol
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -2371,13 +2377,11 @@ func (a *LabelApiService) DatacentersVolumesLabelsGetExecute(r ApiDatacentersVol
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2550,13 +2554,11 @@ func (a *LabelApiService) DatacentersVolumesLabelsPostExecute(r ApiDatacentersVo
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2733,13 +2735,11 @@ func (a *LabelApiService) DatacentersVolumesLabelsPutExecute(r ApiDatacentersVol
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2902,13 +2902,11 @@ func (a *LabelApiService) IpblocksLabelsDeleteExecute(r ApiIpblocksLabelsDeleteR
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3071,13 +3069,11 @@ func (a *LabelApiService) IpblocksLabelsFindByKeyExecute(r ApiIpblocksLabelsFind
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3107,6 +3103,7 @@ type ApiIpblocksLabelsGetRequest struct {
 	ApiService      *LabelApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	ipblockId       string
 	pretty          *bool
 	depth           *int32
@@ -3128,7 +3125,7 @@ func (r ApiIpblocksLabelsGetRequest) XContractNumber(xContractNumber int32) ApiI
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiIpblocksLabelsGetRequest) Filter(key string, value string) ApiIpblocksLabelsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -3136,6 +3133,12 @@ func (r ApiIpblocksLabelsGetRequest) Filter(key string, value string) ApiIpblock
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiIpblocksLabelsGetRequest) OrderBy(orderBy string) ApiIpblocksLabelsGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiIpblocksLabelsGetRequest) MaxResults(maxResults int32) ApiIpblocksLabelsGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -3193,6 +3196,9 @@ func (a *LabelApiService) IpblocksLabelsGetExecute(r ApiIpblocksLabelsGetRequest
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -3262,13 +3268,11 @@ func (a *LabelApiService) IpblocksLabelsGetExecute(r ApiIpblocksLabelsGetRequest
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3437,13 +3441,11 @@ func (a *LabelApiService) IpblocksLabelsPostExecute(r ApiIpblocksLabelsPostReque
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3616,13 +3618,11 @@ func (a *LabelApiService) IpblocksLabelsPutExecute(r ApiIpblocksLabelsPutRequest
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3781,13 +3781,11 @@ func (a *LabelApiService) LabelsFindByUrnExecute(r ApiLabelsFindByUrnRequest) (L
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -3817,6 +3815,7 @@ type ApiLabelsGetRequest struct {
 	ApiService      *LabelApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	pretty          *bool
 	depth           *int32
 	xContractNumber *int32
@@ -3837,7 +3836,7 @@ func (r ApiLabelsGetRequest) XContractNumber(xContractNumber int32) ApiLabelsGet
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiLabelsGetRequest) Filter(key string, value string) ApiLabelsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -3845,6 +3844,12 @@ func (r ApiLabelsGetRequest) Filter(key string, value string) ApiLabelsGetReques
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiLabelsGetRequest) OrderBy(orderBy string) ApiLabelsGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiLabelsGetRequest) MaxResults(maxResults int32) ApiLabelsGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -3899,6 +3904,9 @@ func (a *LabelApiService) LabelsGetExecute(r ApiLabelsGetRequest) (Labels, *APIR
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -3968,13 +3976,11 @@ func (a *LabelApiService) LabelsGetExecute(r ApiLabelsGetRequest) (Labels, *APIR
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -4137,13 +4143,11 @@ func (a *LabelApiService) SnapshotsLabelsDeleteExecute(r ApiSnapshotsLabelsDelet
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -4306,13 +4310,11 @@ func (a *LabelApiService) SnapshotsLabelsFindByKeyExecute(r ApiSnapshotsLabelsFi
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -4342,6 +4344,7 @@ type ApiSnapshotsLabelsGetRequest struct {
 	ApiService      *LabelApiService
 	filters         _neturl.Values
 	orderBy         *string
+	maxResults      *int32
 	snapshotId      string
 	pretty          *bool
 	depth           *int32
@@ -4363,7 +4366,7 @@ func (r ApiSnapshotsLabelsGetRequest) XContractNumber(xContractNumber int32) Api
 
 // Filters query parameters limit results to those containing a matching value for a specific property.
 func (r ApiSnapshotsLabelsGetRequest) Filter(key string, value string) ApiSnapshotsLabelsGetRequest {
-	filterKey := fmt.Sprintf("filter.%s", key)
+	filterKey := fmt.Sprintf(FilterQueryParam, key)
 	r.filters[filterKey] = []string{value}
 	return r
 }
@@ -4371,6 +4374,12 @@ func (r ApiSnapshotsLabelsGetRequest) Filter(key string, value string) ApiSnapsh
 // OrderBy query param sorts the results alphanumerically in ascending order based on the specified property.
 func (r ApiSnapshotsLabelsGetRequest) OrderBy(orderBy string) ApiSnapshotsLabelsGetRequest {
 	r.orderBy = &orderBy
+	return r
+}
+
+// MaxResults query param limits the number of results returned.
+func (r ApiSnapshotsLabelsGetRequest) MaxResults(maxResults int32) ApiSnapshotsLabelsGetRequest {
+	r.maxResults = &maxResults
 	return r
 }
 
@@ -4428,6 +4437,9 @@ func (a *LabelApiService) SnapshotsLabelsGetExecute(r ApiSnapshotsLabelsGetReque
 	}
 	if r.orderBy != nil {
 		localVarQueryParams.Add("orderBy", parameterToString(*r.orderBy, ""))
+	}
+	if r.maxResults != nil {
+		localVarQueryParams.Add("maxResults", parameterToString(*r.maxResults, ""))
 	}
 	if len(r.filters) > 0 {
 		for k, v := range r.filters {
@@ -4497,13 +4509,11 @@ func (a *LabelApiService) SnapshotsLabelsGetExecute(r ApiSnapshotsLabelsGetReque
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -4672,13 +4682,11 @@ func (a *LabelApiService) SnapshotsLabelsPostExecute(r ApiSnapshotsLabelsPostReq
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -4851,13 +4859,11 @@ func (a *LabelApiService) SnapshotsLabelsPutExecute(r ApiSnapshotsLabelsPutReque
 		return localVarReturnValue, localVarAPIResponse, err
 	}
 
-	const FORMAT_STRING = "%s: %s"
-
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := GenericOpenAPIError{
 			statusCode: localVarHTTPResponse.StatusCode,
 			body:       localVarBody,
-			error:      fmt.Sprintf(FORMAT_STRING, localVarHTTPResponse.Status, string(localVarBody)),
+			error:      fmt.Sprintf(FormatStringErr, localVarHTTPResponse.Status, string(localVarBody)),
 		}
 		var v Error
 		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))

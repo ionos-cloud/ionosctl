@@ -8,7 +8,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-const RequiredFlagsAnnotation = "RequiredFlags"
+const (
+	RequiredFlagsAnnotation   = "RequiredFlags"
+	DeprecatedFlagsAnnotation = "DeprecatedFlags"
+)
 
 var (
 	flagNamePrintF  = "%s --%s %s"
@@ -16,6 +19,17 @@ var (
 )
 
 type FlagOptionFunc func(cmd *Command, flagName string)
+
+func DeprecatedFlagOption() FlagOptionFunc {
+	return func(cmd *Command, flagName string) {
+		cmd.Command.Flag(flagName).Usage = fmt.Sprintf("%s (deprecated)", cmd.Command.Flag(flagName).Usage)
+		// For documentation purposes, add flag to command Annotation
+		cmd.Command.Annotations = map[string]string{DeprecatedFlagsAnnotation: fmt.Sprintf(flagNamePrintF,
+			cmd.Command.Annotations[DeprecatedFlagsAnnotation],
+			flagName,
+			strings.ToUpper(strings.ReplaceAll(flagName, "-", "_")))}
+	}
+}
 
 func RequiredFlagOption() FlagOptionFunc {
 	return func(cmd *Command, flagName string) {

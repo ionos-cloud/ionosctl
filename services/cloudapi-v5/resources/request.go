@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"github.com/fatih/structs"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
@@ -20,7 +21,7 @@ type Requests struct {
 
 // RequestsService is a wrapper around ionoscloud.Request
 type RequestsService interface {
-	List() (Requests, *Response, error)
+	List(params ListQueryParams) (Requests, *Response, error)
 	Get(requestId string) (*Request, *Response, error)
 	GetStatus(requestId string) (*RequestStatus, *Response, error)
 	Wait(requestId string) (*Response, error)
@@ -40,8 +41,21 @@ func NewRequestService(client *Client, ctx context.Context) RequestsService {
 	}
 }
 
-func (rs *requestsService) List() (Requests, *Response, error) {
+func (rs *requestsService) List(params ListQueryParams) (Requests, *Response, error) {
 	req := rs.client.RequestApi.RequestsGet(rs.context)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	reqs, res, err := rs.client.RequestApi.RequestsGetExecute(req)
 	return Requests{reqs}, &Response{*res}, err
 }

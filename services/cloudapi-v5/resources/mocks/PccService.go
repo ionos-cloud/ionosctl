@@ -98,9 +98,9 @@ func (mr *MockPccsServiceMockRecorder) GetPeers(pccId interface{}) *gomock.Call 
 }
 
 // List mocks base method.
-func (m *MockPccsService) List() (resources.PrivateCrossConnects, *resources.Response, error) {
+func (m *MockPccsService) List(params resources.ListQueryParams) (resources.PrivateCrossConnects, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.PrivateCrossConnects)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -108,9 +108,9 @@ func (m *MockPccsService) List() (resources.PrivateCrossConnects, *resources.Res
 }
 
 // List indicates an expected call of List.
-func (mr *MockPccsServiceMockRecorder) List() *gomock.Call {
+func (mr *MockPccsServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPccsService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPccsService)(nil).List), params)
 }
 
 // Update mocks base method.

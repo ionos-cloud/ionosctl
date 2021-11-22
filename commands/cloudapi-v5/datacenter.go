@@ -3,6 +3,7 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"io"
 	"os"
 
@@ -41,17 +42,29 @@ func DatacenterCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
-		Namespace:  "datacenter",
-		Resource:   "datacenter",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Data Centers",
-		LongDesc:   "Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.",
+	list := core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
+		Namespace: "datacenter",
+		Resource:  "datacenter",
+		Verb:      "list",
+		Aliases:   []string{"l", "ls"},
+		ShortDesc: "List Data Centers",
+		LongDesc: `Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account. You can setup multiple query parameters.
+
+You can filter the results using ` + "`" + `--filters` + "`" + ` option. Use the following format to set filters: ` + "`" + `--filters KEY1=VALUE1,KEY2=VALUE2` + "`" + `
+` + completer.DataCentersFiltersUsage(),
 		Example:    listDatacenterExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunDataCenterList,
 		CmdRun:     RunDataCenterList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv5.ArgMaxResults, cloudapiv5.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv5.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv5.ArgFilters, cloudapiv5.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -168,6 +181,13 @@ func PreRunDataCenterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv5.ArgDataCenterId)
 }
 
+func PreRunDataCenterList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv5.ArgFilters)) {
+		return query.ValidateFilters(c, completer.DataCentersFilters(), completer.DataCentersFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlagsSets(c.Command, c.NS,
 		[]string{cloudapiv5.ArgDataCenterId},
@@ -176,7 +196,15 @@ func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
 }
 
 func RunDataCenterList(c *core.CommandConfig) error {
-	datacenters, resp, err := c.CloudApiV5Services.DataCenters().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, resp, err := c.CloudApiV5Services.DataCenters().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
@@ -279,7 +307,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 
 func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
 	_ = c.Printer.Print("Datacenters to be deleted:")
-	datacenters, resp, err := c.CloudApiV5Services.DataCenters().List()
+	datacenters, resp, err := c.CloudApiV5Services.DataCenters().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
@@ -388,8 +416,10 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 	dc := make([]resources.Datacenter, 0)
-	for _, d := range *datacenters.Items {
-		dc = append(dc, resources.Datacenter{Datacenter: d})
+	if items, ok := datacenters.GetItemsOk(); ok && items != nil {
+		for _, datacenter := range *items {
+			dc = append(dc, resources.Datacenter{Datacenter: datacenter})
+		}
 	}
 	return dc
 }

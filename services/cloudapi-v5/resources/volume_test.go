@@ -16,7 +16,13 @@ func TestNewVolumeService(t *testing.T) {
 	t.Run("list_volumes_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		volumeSvc := NewVolumeService(svc.Get(), ctx)
-		_, _, err := volumeSvc.List(testVolumeResourceVar)
+		_, _, err := volumeSvc.List(testVolumeResourceVar, ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("list_volumes_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		volumeSvc := NewVolumeService(svc.Get(), ctx)
+		_, _, err := volumeSvc.List(testVolumeResourceVar, testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("get_volume_error", func(t *testing.T) {
