@@ -1,5 +1,12 @@
 # Changelog
 
+## \[5.0.11\]
+
+* feature: added `--filters`, `--max-results`, `--order-by` options on all list commands
+* feature: added `-all` option for remove and detach commands
+* enhancement: added completion support for `--k8s-version` option
+* dependency-update: SDK-Go version from v5.1.7 to v5.1.10
+
 ## \[5.0.10\]
 
 * bug-fix: fixed `login` command to support username and password or token authentication
