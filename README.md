@@ -105,6 +105,8 @@ Also, you can overwrite the api endpoint: `api.ionos.com` via the `--api-url` gl
 export IONOS_API_URL="api-url"
 ```
 
+Note: if `IONOS_API_URL` environment variable is set, it is recommended to have the `api.ionos.com` value (not `api.ionos.com/cloudapi/v5`).
+
 * Using `login` command
 
 ```text
@@ -145,6 +147,15 @@ After a successful authentication with the `login` command, you will no longer n
 * Windows: `%APPDATA%\ionosctl\config.json`
 
   and retrieved every time you will perform an action on your account.
+
+### Environment Variables
+
+Environment Variable | Description 
+--- | --- 
+`IONOS_USERNAME` | Specify the username used to login, to authenticate against the IONOS Cloud API | 
+`IONOS_PASSWORD` | Specify the password used to login, to authenticate against the IONOS Cloud API | 
+`IONOS_TOKEN` | Specify the token used to login, if a token is being used instead of username and password |
+`IONOS_API_URL` | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v5` path, so it should _not_ be included in the `IONOS_API_URL` environment variable | 
 
 ### Enabling Shell Auto-Completion
 
