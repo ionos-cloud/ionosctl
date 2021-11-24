@@ -16,6 +16,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	authv1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/services/auth-v1/resources"
+	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -145,6 +146,7 @@ func RunTokenGet(c *core.CommandConfig) error {
 }
 
 func RunTokenCreate(c *core.CommandConfig) error {
+	c.Printer.Verbose("Generating new token..")
 	newJwt, _, err := c.AuthV1Services.Tokens().Create()
 	if err != nil {
 		return err
@@ -162,73 +164,100 @@ func RunTokenCreate(c *core.CommandConfig) error {
 
 func RunTokenDelete(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgTokenId)) {
-		tokenId := viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId))
-		c.Printer.Verbose("Token ID: %s", tokenId)
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete token with ID: %s", tokenId)); err != nil {
-			return err
-		}
-		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId)
-		if err != nil {
-			return err
-		}
-		if tokenResponse != nil {
-			if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
-				if *success {
-					return c.Printer.Print("Status: token has been successfully deleted")
-				}
-			}
-		}
+		return RunTokenDeleteById(c)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgCurrent)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgCurrent)) {
-		c.Printer.Verbose("Note: Authentication based on token needs to be used in order for the deletion to succeed.")
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete CURRENT token")); err != nil {
-			return err
-		}
-		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("CURRENT")
-		if err != nil {
-			return err
-		}
-		if tokenResponse != nil {
-			if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
-				if *success {
-					return c.Printer.Print("Status: tokens based on criteria: CURRENT have been successfully deleted")
-				}
-			}
-		}
+		return RunTokenDeleteCurrent(c)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgExpired)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgExpired)) {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete expired tokens")); err != nil {
-			return err
-		}
-		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED")
-		if err != nil {
-			return err
-		}
-		if tokenResponse != nil {
-			if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
-				if *success {
-					return c.Printer.Print("Status: tokens based on criteria: EXPIRED have been successfully deleted")
-				}
-			}
-		}
+		return RunTokenDeleteExpired(c)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgAll)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgAll)) {
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete all tokens")); err != nil {
-			return err
-		}
-		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL")
-		if err != nil {
-			return err
-		}
-		if tokenResponse != nil {
-			if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
-				if *success {
-					return c.Printer.Print("Status: tokens based on criteria: ALL have been successfully deleted")
-				}
+		return RunTokenDeleteAll(c)
+	}
+	return nil
+}
+
+func RunTokenDeleteAll(c *core.CommandConfig) error {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete all tokens")); err != nil {
+		return err
+	}
+	c.Printer.Verbose("Deleting all tokens...")
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL")
+	if err != nil {
+		return err
+	}
+	if tokenResponse != nil {
+		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+			if *success {
+				return c.Printer.Print("Status: all tokens have been successfully deleted")
 			}
 		}
 	}
-	return c.Printer.Print("Status: token delete command has been successfully executed")
+	return errors.New("error deleting all tokens")
+}
+
+func RunTokenDeleteExpired(c *core.CommandConfig) error {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete expired tokens")); err != nil {
+		return err
+	}
+	c.Printer.Verbose("Deleting expired tokens...")
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED")
+	if err != nil {
+		return err
+	}
+	if tokenResponse != nil {
+		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+			if *success {
+				return c.Printer.Print("Status: expired tokens have been successfully deleted")
+			}
+		}
+	}
+	return errors.New("error deleting expired tokens")
+}
+
+func RunTokenDeleteCurrent(c *core.CommandConfig) error {
+	c.Printer.Verbose("Note: This operation is based on Authorization Header for Bearer Token")
+	if viper.GetString(config.Token) == "" {
+		return errors.New(fmt.Sprintf("no token found. Please make sure you have exported the %s environment variable or you have token set in the config file",
+			sdkgoauth.IonosTokenEnvVar))
+	}
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete CURRENT token")); err != nil {
+		return err
+	}
+	c.Printer.Verbose("Deleting current token...")
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("CURRENT")
+	if err != nil {
+		return err
+	}
+	if tokenResponse != nil {
+		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+			if *success {
+				return c.Printer.Print("Status: current token have been successfully deleted")
+			}
+		}
+	}
+	return errors.New("error deleting current token")
+}
+
+func RunTokenDeleteById(c *core.CommandConfig) error {
+	tokenId := viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId))
+	c.Printer.Verbose("Token ID: %s", tokenId)
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete token with ID: %s", tokenId)); err != nil {
+		return err
+	}
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId)
+	if err != nil {
+		return err
+	}
+	if tokenResponse != nil {
+		if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+			if *success {
+				return c.Printer.Print("Status: token has been successfully deleted")
+			}
+		}
+	}
+	return errors.New("error deleting token")
 }
 
 // Output Printing

@@ -255,9 +255,88 @@ func TestRunTokenDelete(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
 		viper.Set(config.ArgVerbose, true)
+		err := RunTokenDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunTokenDeleteTokenId(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgTokenId), testTokenVar)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByID(testTokenVar).Return(&testDeleteResponse, nil, nil)
 		err := RunTokenDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunTokenDeleteCriteriaCurrent(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
+		viper.Set(config.Token, testTokenVar)
+		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("CURRENT").Return(&testDeleteResponse, nil, nil)
+		err := RunTokenDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunTokenDeleteCriteriaExpired(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgExpired), true)
+		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("EXPIRED").Return(&testDeleteResponse, nil, nil)
+		err := RunTokenDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunTokenDeleteCriteriaAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgAll), true)
+		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("ALL").Return(&testDeleteResponse, nil, nil)
+		err := RunTokenDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunTokenDeleteById(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgTokenId), testTokenVar)
+		rm.AuthV1Mocks.Token.EXPECT().DeleteByID(testTokenVar).Return(&testDeleteResponse, nil, nil)
+		err := RunTokenDeleteById(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -273,7 +352,7 @@ func TestRunTokenDeleteByIdErr(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgTokenId), testTokenVar)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByID(testTokenVar).Return(&testDeleteResponse, nil, testTokenErr)
-		err := RunTokenDelete(cfg)
+		err := RunTokenDeleteById(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -288,7 +367,7 @@ func TestRunTokenDeleteAll(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgAll), true)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("ALL").Return(&testDeleteResponse, nil, nil)
-		err := RunTokenDelete(cfg)
+		err := RunTokenDeleteAll(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -303,7 +382,22 @@ func TestRunTokenDeleteAllErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgAll), true)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("ALL").Return(&testDeleteResponse, nil, testTokenErr)
-		err := RunTokenDelete(cfg)
+		err := RunTokenDeleteAll(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunTokenDeleteAllResponseErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgAll), true)
+		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("ALL").Return(nil, nil, nil)
+		err := RunTokenDeleteAll(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -318,7 +412,7 @@ func TestRunTokenDeleteExpired(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgExpired), true)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("EXPIRED").Return(&testDeleteResponse, nil, nil)
-		err := RunTokenDelete(cfg)
+		err := RunTokenDeleteExpired(cfg)
 		assert.NoError(t, err)
 	})
 }
@@ -333,7 +427,7 @@ func TestRunTokenDeleteExpiredErr(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgExpired), true)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("EXPIRED").Return(&testDeleteResponse, nil, testTokenErr)
-		err := RunTokenDelete(cfg)
+		err := RunTokenDeleteExpired(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -347,10 +441,24 @@ func TestRunTokenDeleteCurrent(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
+		viper.Set(config.Token, testTokenVar)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("CURRENT").Return(&testDeleteResponse, nil, nil)
-		err := RunTokenDelete(cfg)
+		err := RunTokenDeleteCurrent(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunTokenDeleteCurrentNoErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
+		err := RunTokenDeleteCurrent(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -363,9 +471,9 @@ func TestRunTokenDeleteCurrentErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
-		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
+		viper.Set(config.Token, testTokenVar)
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByCriteria("CURRENT").Return(&testDeleteResponse, nil, testTokenErr)
-		err := RunTokenDelete(cfg)
+		err := RunTokenDeleteCurrent(cfg)
 		assert.Error(t, err)
 	})
 }
@@ -381,12 +489,12 @@ func TestRunTokenDeleteByIdAskForConfirm(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgTokenId), testTokenVar)
 		cfg.Stdin = bytes.NewReader([]byte("YES\n"))
 		rm.AuthV1Mocks.Token.EXPECT().DeleteByID(testTokenVar).Return(&testDeleteResponse, nil, nil)
-		err := RunTokenDelete(cfg)
+		err := RunTokenDeleteById(cfg)
 		assert.NoError(t, err)
 	})
 }
 
-func TestRunTokenDeleteAskForConfirmErr(t *testing.T) {
+func TestRunTokenDeleteByIdAskForConfirmErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
@@ -396,7 +504,53 @@ func TestRunTokenDeleteAskForConfirmErr(t *testing.T) {
 		viper.Set(config.ArgForce, false)
 		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgTokenId), testTokenVar)
 		cfg.Stdin = os.Stdin
-		err := RunTokenDelete(cfg)
+		err := RunTokenDeleteById(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunTokenDeleteCurrentAskForConfirmErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, false)
+		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgCurrent), true)
+		viper.Set(config.Token, testTokenVar)
+		cfg.Stdin = os.Stdin
+		err := RunTokenDeleteCurrent(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunTokenDeleteExpiredAskForConfirmErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, false)
+		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgExpired), true)
+		cfg.Stdin = os.Stdin
+		err := RunTokenDeleteExpired(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunTokenDeleteAllAskForConfirmErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, false)
+		viper.Set(core.GetFlagName(cfg.NS, authv1.ArgAll), true)
+		cfg.Stdin = os.Stdin
+		err := RunTokenDeleteAll(cfg)
 		assert.Error(t, err)
 	})
 }
