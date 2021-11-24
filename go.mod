@@ -18,5 +18,3 @@ require (
 	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
 )
-
-replace github.com/ionos-cloud/sdk-go-auth => ../auth/sdk-go

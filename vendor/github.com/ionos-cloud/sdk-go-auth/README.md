@@ -101,7 +101,7 @@ Name | Type | Description  | Notes
 
 ## DeleteTokenByCriteria
 
-> DeleteResponse DeleteTokenByCriteria(ctx, criteriaoptional)
+> TokenDeleteByCriteriaResponse DeleteTokenByCriteria(ctx, criteriaoptional)
 
 Delete tokens by criteria
 
@@ -128,7 +128,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DeleteResponse**](#DeleteResponse)
+[**TokenDeleteByCriteriaResponse**](#TokenDeleteByCriteriaResponse)
 
 ### HTTP request headers
 
@@ -140,7 +140,7 @@ Name | Type | Description  | Notes
 
 ## DeleteTokenById
 
-> DeleteResponse DeleteTokenById(ctx, tokenIdoptional)
+> TokenDeleteByIdResponse DeleteTokenById(ctx, tokenIdoptional)
 
 Delete tokens
 
@@ -167,7 +167,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DeleteResponse**](#DeleteResponse)
+[**TokenDeleteByIdResponse**](#TokenDeleteByIdResponse)
 
 ### HTTP request headers
 
@@ -286,24 +286,20 @@ client := ionossdk.NewAPIClient(ionossdk.NewConfigurationFromEnv())
 
 ## Documentation For Models
 
- - [DeleteResponse](#DeleteResponse)
  - [Error](#Error)
  - [ErrorMessages](#ErrorMessages)
  - [Jwt](#Jwt)
+ - [Request](#Request)
+ - [RequestDeleteByCriteriaResponse](#RequestDeleteByCriteriaResponse)
+ - [RequestDeleteByIdResponse](#RequestDeleteByIdResponse)
+ - [RequestGenerateResponse](#RequestGenerateResponse)
  - [Token](#Token)
+ - [TokenDeleteByCriteriaResponse](#TokenDeleteByCriteriaResponse)
+ - [TokenDeleteByIdResponse](#TokenDeleteByIdResponse)
  - [Tokens](#Tokens)
 
 
 ---
-
-# DeleteResponse
-
-## Properties
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**Success** | **bool** |  | [optional] [readonly] 
-
-[[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
 
 # Error
 
@@ -330,7 +326,51 @@ Name | Type | Description | Notes
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**Request** | [**RequestGenerateResponse**](#RequestGenerateResponse) |  | [optional] 
 **Token** | **string** | JSON Web Token (JWT) Base64url strings separated by dots | [optional] 
+
+[[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
+
+# Request
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**RequestId** | **string** | The request&#39;s unique identifier. | [optional] [readonly] 
+**IdentityId** | **int32** |  | [optional] [readonly] 
+**Uri** | **string** | URL to the object representation (absolute path). | [optional] [readonly] 
+
+[[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
+
+# RequestDeleteByCriteriaResponse
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**RequestId** | **string** | The request&#39;s unique identifier. | [optional] [readonly] 
+**Header** | **string** |  | [optional] [readonly] 
+**TokenDeleteCriteria** | **string** |  | [optional] [readonly] 
+
+[[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
+
+# RequestDeleteByIdResponse
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**RequestId** | **string** | The request&#39;s unique identifier. | [optional] [readonly] 
+**KeyIdentifier** | **string** | The deleted token&#39;s unique identifier. | [optional] [readonly] 
+
+[[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
+
+# RequestGenerateResponse
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**RequestId** | **string** | The request&#39;s unique identifier. | [optional] [readonly] 
+**Algorithm** | **string** |  | [optional] [readonly] 
+**Client** | **string** |  | [optional] [readonly] 
 
 [[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
 
@@ -346,11 +386,32 @@ Name | Type | Description | Notes
 
 [[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
 
+# TokenDeleteByCriteriaResponse
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**Request** | [**RequestDeleteByCriteriaResponse**](#RequestDeleteByCriteriaResponse) |  | [optional] 
+**Success** | **bool** |  | [optional] [readonly] 
+
+[[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
+
+# TokenDeleteByIdResponse
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**Request** | [**RequestDeleteByIdResponse**](#RequestDeleteByIdResponse) |  | [optional] 
+**Success** | **bool** |  | [optional] [readonly] 
+
+[[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)
+
 # Tokens
 
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**Request** | [**Request**](#Request) |  | [optional] 
 **Tokens** | [**[]Token**](#Token) | Array of items in that collection. | [optional] [readonly] 
 
 [[Back to API list]](#documentation-for-api-endpoints) [[Back to Model list]](#documentation-for-models)

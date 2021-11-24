@@ -16,8 +16,47 @@ import (
 
 // Tokens struct for Tokens
 type Tokens struct {
+	Request *Request `json:"request,omitempty"`
 	// Array of items in that collection.
 	Tokens *[]Token `json:"tokens,omitempty"`
+}
+
+// GetRequest returns the Request field value
+// If the value is explicit nil, the zero value for Request will be returned
+func (o *Tokens) GetRequest() *Request {
+	if o == nil {
+		return nil
+	}
+
+	return o.Request
+
+}
+
+// GetRequestOk returns a tuple with the Request field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Tokens) GetRequestOk() (*Request, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Request, true
+}
+
+// SetRequest sets field value
+func (o *Tokens) SetRequest(v Request) {
+
+	o.Request = &v
+
+}
+
+// HasRequest returns a boolean if a field has been set.
+func (o *Tokens) HasRequest() bool {
+	if o != nil && o.Request != nil {
+		return true
+	}
+
+	return false
 }
 
 // GetTokens returns the Tokens field value
@@ -60,6 +99,10 @@ func (o *Tokens) HasTokens() bool {
 
 func (o Tokens) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+
+	if o.Request != nil {
+		toSerialize["request"] = o.Request
+	}
 
 	if o.Tokens != nil {
 		toSerialize["tokens"] = o.Tokens
