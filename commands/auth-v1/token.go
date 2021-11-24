@@ -3,12 +3,9 @@ package authv1
 import (
 	"context"
 	"errors"
-	"fmt"
-	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"io"
 	"os"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/auth-v1/completer"
 	"github.com/ionos-cloud/ionosctl/internal/config"
@@ -47,7 +44,7 @@ func TokenCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Tokens",
-		LongDesc:   `Use this command to retrieve a complete list of Tokens under your account.`,
+		LongDesc:   "Use this command to retrieve a complete list of Tokens under your account.",
 		Example:    listTokenExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTokenList,
@@ -63,7 +60,7 @@ func TokenCmd() *core.Command {
 		Verb:       "get",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Get a Token ",
-		LongDesc:   "Use this command to retrieve details about a Virtual Token  by using its ID.\n\nRequired values to run command:\n\n* Token  Id",
+		LongDesc:   "Use this command to retrieve details about a Token by using its ID.\n\nRequired values to run command:\n\n* Token Id",
 		Example:    getTokenExample,
 		PreCmdRun:  PreRunTokenId,
 		CmdRun:     RunTokenGet,
@@ -77,19 +74,18 @@ func TokenCmd() *core.Command {
 	/*
 		Generate/Create Command
 	*/
-	generate := core.NewCommand(ctx, tokenCmd, core.CommandBuilder{
+	core.NewCommand(ctx, tokenCmd, core.CommandBuilder{
 		Namespace:  "token",
 		Resource:   "token",
 		Verb:       "generate",
 		Aliases:    []string{"g"},
 		ShortDesc:  "Create a new Token",
-		LongDesc:   `Use this command to generate a new Token.`,
+		LongDesc:   "Use this command to generate a new Token. Only the JWT will be displayed.",
 		Example:    generateTokenExample,
 		PreCmdRun:  core.NoPreRun,
 		CmdRun:     RunTokenCreate,
 		InitClient: true,
 	})
-	generate.AddBoolFlag(authv1.ArgDecode, authv1.ArgDecodeShort, false, "")
 
 	/*
 		Delete Command
@@ -100,11 +96,11 @@ func TokenCmd() *core.Command {
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a Token",
-		LongDesc: `Use this command to delete a specified Token or multiple Tokens (based on a criteria) from your account.
+		LongDesc: `Use this command to delete a specified Token or multiple Tokens (based on a criteria: CURRENT, EXPIRED, ALL) from your account.
 
 Required values to run command:
 
-* Token Id/Criteria`,
+* Token Id/CURRENT/EXPIRED/ALL`,
 		Example:    deleteTokenExample,
 		PreCmdRun:  PreRunTokenDelete,
 		CmdRun:     RunTokenDelete,
@@ -114,10 +110,9 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(authv1.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	deleteCmd.AddStringFlag(authv1.ArgCriteria, authv1.ArgCriteriaShort, "", "Delete all the Tokens based on this criteria", core.RequiredFlagOption())
-	_ = deleteCmd.Command.RegisterFlagCompletionFunc(authv1.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"EXPIRED", "CURRENT", "ALL"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	deleteCmd.AddBoolFlag(authv1.ArgCurrent, authv1.ArgCurrentShort, false, "Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file", core.RequiredFlagOption())
+	deleteCmd.AddBoolFlag(authv1.ArgExpired, authv1.ArgExpiredShort, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())
+	deleteCmd.AddBoolFlag(authv1.ArgAll, authv1.ArgAllShort, false, "Delete the Tokens under your account", core.RequiredFlagOption())
 
 	return tokenCmd
 }
@@ -127,7 +122,7 @@ func PreRunTokenId(c *core.PreCommandConfig) error {
 }
 
 func PreRunTokenDelete(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{authv1.ArgTokenId}, []string{authv1.ArgCriteria})
+	return core.CheckRequiredFlagsSets(c.Command, c.NS, []string{authv1.ArgTokenId}, []string{authv1.ArgCurrent}, []string{authv1.ArgExpired}, []string{authv1.ArgAll})
 }
 
 func RunTokenList(c *core.CommandConfig) error {
@@ -135,7 +130,7 @@ func RunTokenList(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTokenPrint(nil, c, getTokens(tokens)))
+	return c.Printer.Print(getTokenPrint(c, getTokens(tokens)))
 }
 
 func RunTokenGet(c *core.CommandConfig) error {
@@ -144,38 +139,23 @@ func RunTokenGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTokenPrint(nil, c, []resources.Token{*dc}))
+	return c.Printer.Print(getTokenPrint(c, []resources.Token{*dc}))
 }
 
 func RunTokenCreate(c *core.CommandConfig) error {
-	dc, resp, err := c.AuthV1Services.Tokens().Create()
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-	}
+	newJwt, _, err := c.AuthV1Services.Tokens().Create()
 	if err != nil {
 		return err
 	}
-
-	c.Printer.Print(*dc.Jwt.Token)
-	if viper.GetBool(core.GetFlagName(c.NS, authv1.ArgDecode)) {
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "parse jwt token unverified"); err != nil {
-			return err
+	if newJwt != nil {
+		if token, ok := newJwt.GetTokenOk(); ok && token != nil {
+			return c.Printer.Print(*token)
+		} else {
+			return errors.New("error getting generated token")
 		}
-		tokenString := *dc.Jwt.Token
-		claims := jwt.MapClaims{}
-		parser := &jwt.Parser{}
-		token, _, err := parser.ParseUnverified(tokenString, claims)
-		if err != nil {
-			return err
-		}
-		c.Printer.Print("Token2:\n")
-		c.Printer.Print(token.Header)
-		// do something with decoded claims
-		for key, val := range claims {
-			fmt.Printf("Key: %v, value: %v\n", key, val)
-		}
+	} else {
+		return errors.New("error getting generated JWT")
 	}
-	return nil
 }
 
 func RunTokenDelete(c *core.CommandConfig) error {
@@ -184,16 +164,54 @@ func RunTokenDelete(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(tokenResponse)
+		if tokenResponse != nil {
+			if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+				if *success {
+					return c.Printer.Print("Status: token has been successfully deleted")
+				}
+			}
+		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgCriteria)) {
-		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria(viper.GetString(core.GetFlagName(c.NS, authv1.ArgCriteria)))
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgCurrent)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgCurrent)) {
+		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("CURRENT")
 		if err != nil {
 			return err
 		}
-		return c.Printer.Print(tokenResponse)
+		if tokenResponse != nil {
+			if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+				if *success {
+					return c.Printer.Print("Status: tokens based on criteria: CURRENT have been successfully deleted")
+				}
+			}
+		}
 	}
-	return nil
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgExpired)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgExpired)) {
+		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED")
+		if err != nil {
+			return err
+		}
+		if tokenResponse != nil {
+			if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+				if *success {
+					return c.Printer.Print("Status: tokens based on criteria: EXPIRED have been successfully deleted")
+				}
+			}
+		}
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgAll)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgAll)) {
+		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL")
+		if err != nil {
+			return err
+		}
+		if tokenResponse != nil {
+			if success, ok := tokenResponse.GetSuccessOk(); ok && success != nil {
+				if *success {
+					return c.Printer.Print("Status: tokens based on criteria: ALL have been successfully deleted")
+				}
+			}
+		}
+	}
+	return c.Printer.Print("Status: token delete command has been successfully executed")
 }
 
 // Output Printing
@@ -210,14 +228,9 @@ type TokenPrint struct {
 	Href           string `json:"Href,omitempty"`
 }
 
-func getTokenPrint(resp *resources.Response, c *core.CommandConfig, dcs []resources.Token) printer.Result {
+func getTokenPrint(c *core.CommandConfig, dcs []resources.Token) printer.Result {
 	r := printer.Result{}
 	if c != nil {
-		if resp != nil {
-			r.Resource = c.Resource
-			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
-		}
 		if dcs != nil {
 			r.OutputJSON = dcs
 			r.KeyValue = getTokensKVMaps(dcs)

@@ -1,12 +1,14 @@
 package auth_v1
 
 const (
-	ArgTokenId       = "token-id"
-	ArgIdShort       = "i"
-	ArgCriteria      = "criteria"
-	ArgCriteriaShort = "C"
-	ArgDecode        = "decode"
-	ArgDecodeShort   = "D"
+	ArgTokenId      = "token-id"
+	ArgIdShort      = "i"
+	ArgAll          = "all"
+	ArgAllShort     = "A"
+	ArgExpired      = "expired"
+	ArgExpiredShort = "E"
+	ArgCurrent      = "current"
+	ArgCurrentShort = "C"
 )
 
 const (

@@ -14,8 +14,9 @@ const (
 )
 
 var (
-	flagNamePrintF  = "%s --%s %s"
-	requiredFlagErr = errors.New("error checking required flags on command")
+	flagNamePrintF     = "%s --%s %s"
+	flagNameBoolPrintF = "%s --%s"
+	requiredFlagErr    = errors.New("error checking required flags on command")
 )
 
 type FlagOptionFunc func(cmd *Command, flagName string)
@@ -72,9 +73,13 @@ func RequiresMultipleOptionsErr(cmd *Command, flagNamesSets ...[]string) error {
 	for _, flagNamesSet := range flagNamesSets {
 		usage = fmt.Sprintf("%s%s", usage, cmd.CommandPath())
 		for _, flagName := range flagNamesSet {
-			usage = fmt.Sprintf(flagNamePrintF, usage, flagName,
-				strings.ReplaceAll(strings.ToUpper(flagName), "-", "_"),
-			)
+			if cmd.Command.Flag(flagName).Value.Type() == "bool" {
+				usage = fmt.Sprintf(flagNameBoolPrintF, usage, flagName)
+			} else {
+				usage = fmt.Sprintf(flagNamePrintF, usage, flagName,
+					strings.ReplaceAll(strings.ToUpper(flagName), "-", "_"),
+				)
+			}
 		}
 		usage = fmt.Sprintf("%s\n", usage)
 	}
