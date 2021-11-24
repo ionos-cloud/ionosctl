@@ -8,7 +8,7 @@ require (
 	github.com/fatih/color v1.10.0
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.5.0
-	github.com/ionos-cloud/sdk-go-auth v1.0.0
+	github.com/ionos-cloud/sdk-go-auth v1.0.1
 	github.com/ionos-cloud/sdk-go/v6 v6.0.0-beta.9
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.2.1
@@ -16,5 +16,8 @@ require (
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620
+	golang.org/x/net v0.0.0-20211123203042-d83791d6bcd9 // indirect
+	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
+	google.golang.org/protobuf v1.27.1 // indirect
 )

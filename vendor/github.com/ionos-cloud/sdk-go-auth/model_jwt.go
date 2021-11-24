@@ -16,47 +16,8 @@ import (
 
 // Jwt struct for Jwt
 type Jwt struct {
-	Request *RequestGenerateResponse `json:"request,omitempty"`
 	// JSON Web Token (JWT) Base64url strings separated by dots
 	Token *string `json:"token,omitempty"`
-}
-
-// GetRequest returns the Request field value
-// If the value is explicit nil, the zero value for RequestGenerateResponse will be returned
-func (o *Jwt) GetRequest() *RequestGenerateResponse {
-	if o == nil {
-		return nil
-	}
-
-	return o.Request
-
-}
-
-// GetRequestOk returns a tuple with the Request field value
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Jwt) GetRequestOk() (*RequestGenerateResponse, bool) {
-	if o == nil {
-		return nil, false
-	}
-
-	return o.Request, true
-}
-
-// SetRequest sets field value
-func (o *Jwt) SetRequest(v RequestGenerateResponse) {
-
-	o.Request = &v
-
-}
-
-// HasRequest returns a boolean if a field has been set.
-func (o *Jwt) HasRequest() bool {
-	if o != nil && o.Request != nil {
-		return true
-	}
-
-	return false
 }
 
 // GetToken returns the Token field value
@@ -99,10 +60,6 @@ func (o *Jwt) HasToken() bool {
 
 func (o Jwt) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
-	if o.Request != nil {
-		toSerialize["request"] = o.Request
-	}
 
 	if o.Token != nil {
 		toSerialize["token"] = o.Token

@@ -11,12 +11,13 @@
 package ionoscloud
 
 import (
-	_context "context"
 	"fmt"
+	"strings"
+
+	_context "context"
 	_ioutil "io/ioutil"
 	_nethttp "net/http"
 	_neturl "net/url"
-	"strings"
 )
 
 // Linger please
@@ -230,7 +231,7 @@ func (r ApiDeleteTokenByCriteriaRequest) XContractNumber(xContractNumber int32) 
 	return r
 }
 
-func (r ApiDeleteTokenByCriteriaRequest) Execute() (TokenDeleteByCriteriaResponse, *APIResponse, error) {
+func (r ApiDeleteTokenByCriteriaRequest) Execute() (DeleteResponse, *APIResponse, error) {
 	return r.ApiService.DeleteTokenByCriteriaExecute(r)
 }
 
@@ -249,16 +250,16 @@ func (a *TokenApiService) DeleteTokenByCriteria(ctx _context.Context) ApiDeleteT
 
 /*
  * Execute executes the request
- * @return TokenDeleteByCriteriaResponse
+ * @return DeleteResponse
  */
-func (a *TokenApiService) DeleteTokenByCriteriaExecute(r ApiDeleteTokenByCriteriaRequest) (TokenDeleteByCriteriaResponse, *APIResponse, error) {
+func (a *TokenApiService) DeleteTokenByCriteriaExecute(r ApiDeleteTokenByCriteriaRequest) (DeleteResponse, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodDelete
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  TokenDeleteByCriteriaResponse
+		localVarReturnValue  DeleteResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TokenApiService.DeleteTokenByCriteria")
@@ -406,7 +407,7 @@ func (r ApiDeleteTokenByIdRequest) XContractNumber(xContractNumber int32) ApiDel
 	return r
 }
 
-func (r ApiDeleteTokenByIdRequest) Execute() (TokenDeleteByIdResponse, *APIResponse, error) {
+func (r ApiDeleteTokenByIdRequest) Execute() (DeleteResponse, *APIResponse, error) {
 	return r.ApiService.DeleteTokenByIdExecute(r)
 }
 
@@ -427,16 +428,16 @@ func (a *TokenApiService) DeleteTokenById(ctx _context.Context, tokenId string) 
 
 /*
  * Execute executes the request
- * @return TokenDeleteByIdResponse
+ * @return DeleteResponse
  */
-func (a *TokenApiService) DeleteTokenByIdExecute(r ApiDeleteTokenByIdRequest) (TokenDeleteByIdResponse, *APIResponse, error) {
+func (a *TokenApiService) DeleteTokenByIdExecute(r ApiDeleteTokenByIdRequest) (DeleteResponse, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodDelete
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  TokenDeleteByIdResponse
+		localVarReturnValue  DeleteResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TokenApiService.DeleteTokenById")
