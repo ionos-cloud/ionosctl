@@ -44,7 +44,7 @@ func RequiredFlagOption() FlagOptionFunc {
 }
 
 func RequiresMinOptionsErr(cmd *Command, flagNames ...string) error {
-	if cmd == nil {
+	if cmd == nil || cmd.Command == nil {
 		return requiredFlagErr
 	}
 	var usage string
@@ -66,14 +66,14 @@ func RequiresMinOptionsErr(cmd *Command, flagNames ...string) error {
 }
 
 func RequiresMultipleOptionsErr(cmd *Command, flagNamesSets ...[]string) error {
-	if cmd == nil {
+	if cmd == nil || cmd.Command == nil {
 		return requiredFlagErr
 	}
 	var usage string
 	for _, flagNamesSet := range flagNamesSets {
 		usage = fmt.Sprintf("%s%s", usage, cmd.CommandPath())
 		for _, flagName := range flagNamesSet {
-			if cmd.Command.Flag(flagName).Value.Type() == "bool" {
+			if cmd.Command.Flag(flagName) != nil && cmd.Command.Flag(flagName).Value.Type() == "bool" {
 				usage = fmt.Sprintf(flagNameBoolPrintF, usage, flagName)
 			} else {
 				usage = fmt.Sprintf(flagNamePrintF, usage, flagName,

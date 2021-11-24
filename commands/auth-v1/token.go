@@ -3,6 +3,7 @@ package authv1
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	authv1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/services/auth-v1/resources"
@@ -135,11 +137,11 @@ func RunTokenList(c *core.CommandConfig) error {
 
 func RunTokenGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Token with ID: %v...", viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
-	dc, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
+	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getTokenPrint(c, []resources.Token{*dc}))
+	return c.Printer.Print(getTokenPrint(c, []resources.Token{*token}))
 }
 
 func RunTokenCreate(c *core.CommandConfig) error {
@@ -160,7 +162,12 @@ func RunTokenCreate(c *core.CommandConfig) error {
 
 func RunTokenDelete(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgTokenId)) {
-		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
+		tokenId := viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId))
+		c.Printer.Verbose("Token ID: %s", tokenId)
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete token with ID: %s", tokenId)); err != nil {
+			return err
+		}
+		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId)
 		if err != nil {
 			return err
 		}
@@ -173,6 +180,10 @@ func RunTokenDelete(c *core.CommandConfig) error {
 		}
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgCurrent)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgCurrent)) {
+		c.Printer.Verbose("Note: Authentication based on token needs to be used in order for the deletion to succeed.")
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete CURRENT token")); err != nil {
+			return err
+		}
 		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("CURRENT")
 		if err != nil {
 			return err
@@ -186,6 +197,9 @@ func RunTokenDelete(c *core.CommandConfig) error {
 		}
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgExpired)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgExpired)) {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete expired tokens")); err != nil {
+			return err
+		}
 		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED")
 		if err != nil {
 			return err
@@ -199,6 +213,9 @@ func RunTokenDelete(c *core.CommandConfig) error {
 		}
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgAll)) && viper.GetBool(core.GetFlagName(c.NS, authv1.ArgAll)) {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete all tokens")); err != nil {
+			return err
+		}
 		tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL")
 		if err != nil {
 			return err
