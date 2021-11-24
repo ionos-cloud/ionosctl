@@ -145,6 +145,15 @@ After a successful authentication, you will no longer need to provide credential
 
   and retrieved every time you will perform an action on your account.
 
+### Environment Variables
+
+Environment Variable | Description
+--- | --- 
+`IONOS_USERNAME` | Specify the username used to login, to authenticate against the IONOS Cloud API | 
+`IONOS_PASSWORD` | Specify the password used to login, to authenticate against the IONOS Cloud API | 
+`IONOS_TOKEN` | Specify the token used to login, if a token is being used instead of username and password |
+`IONOS_API_URL` | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v5` path, so it should _not_ be included in the `IONOS_API_URL` environment variable | 
+
 ### Enabling Shell Auto-Completion
 
 `ionosctl` provides completions for various shells, for both commands and flags. If you partially type a command or a flag and then press `TAB`, the rest of the command will be automatically filled in. 
@@ -297,7 +306,7 @@ This flag can be used with any command(in general create, read, update, delete, 
 
 * Use the `--filters` option
 
-You can use the filters option for the list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
+You can use the filters option for the majority of list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
 
 ### Help Information
 
