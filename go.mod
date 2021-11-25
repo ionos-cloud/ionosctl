@@ -7,7 +7,7 @@ require (
 	github.com/fatih/color v1.10.0
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.5.0
-	github.com/ionos-cloud/sdk-go-autoscaling v0.0.0-00010101000000-000000000000
+	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.0-beta.1
 	github.com/ionos-cloud/sdk-go/v6 v6.0.0-beta.4
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.2.1
@@ -17,4 +17,4 @@ require (
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
 )
 
-replace github.com/ionos-cloud/sdk-go-autoscaling => /home/ana/go/src/github.com/ionos-cloud/dbaas/sdk-go
+//replace github.com/ionos-cloud/sdk-go-dbaas-postgres => /home/ana/go/src/github.com/ionos-cloud/dbaas/sdk-go

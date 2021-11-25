@@ -15,7 +15,7 @@ import (
 	v6resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

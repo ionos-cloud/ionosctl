@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
 
 const DefaultBasePath = "/cloudapi/databases/postgres"

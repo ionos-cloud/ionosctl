@@ -2,7 +2,7 @@ package resources
 
 import (
 	"context"
-	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
 
 type PostgresVersionList struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
 
 type ClusterLogs struct {

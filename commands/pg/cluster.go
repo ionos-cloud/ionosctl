@@ -19,7 +19,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
-	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

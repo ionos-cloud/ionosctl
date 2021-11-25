@@ -4,15 +4,15 @@ import (
 	"context"
 	"time"
 
-	sdkgo "github.com/ionos-cloud/sdk-go-autoscaling"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
 
 type Cluster struct {
-	sdkgo.Cluster
+	sdkgo.ClusterList
 }
 
 type ClusterList struct {
-	sdkgo.ClusterList
+	sdkgo.ClusterListAllOf
 }
 
 type CreateClusterRequest struct {
