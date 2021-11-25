@@ -1,11 +1,16 @@
 # Changelog
 
+## \[6.0.0-beta.8\] (upcoming release)
+
+* feature: added `token` commands, added support for Auth API, to generate, list, delete Tokens
+* dependency-update: added SDK-Go-Auth version v1.0.1
+
 ## \[6.0.0-beta.7\]
 
-* **feature**: added `--filters`, `--max-results`, `--order-by` options on all list commands
-* **feature**: added `-all` option for remove and detach commands
-* **enhancement:** added completion support for `--k8s-version` option
-* **dependency-update**: SDK-Go version from v6.0.0-beta.6 to v6.0.0-beta.9
+* feature: added `--filters`, `--max-results`, `--order-by` options on all list commands
+* feature: added `-all` option for remove and detach commands
+* enhancement: added completion support for `--k8s-version` option
+* dependency-update: SDK-Go version from v6.0.0-beta.6 to v6.0.0-beta.9
 
 ## \[6.0.0-beta.6\]
 
