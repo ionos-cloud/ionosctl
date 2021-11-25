@@ -128,6 +128,10 @@
 * [SnapshotList](subcommands/snapshot-list.md)
 * [SnapshotRestore](subcommands/snapshot-restore.md)
 * [SnapshotUpdate](subcommands/snapshot-update.md)
+* [TokenGenerate](subcommands/token-generate.md)
+* [TokenGet](subcommands/token-get.md)
+* [TokenList](subcommands/token-list.md)
+* [TokenDelete](subcommands/token-delete.md)
 * [UserCreate](subcommands/user-create.md)
 * [UserDelete](subcommands/user-delete.md)
 * [UserGet](subcommands/user-get.md)
@@ -144,10 +148,6 @@
 * [VolumeList](subcommands/volume-list.md)
 * [VolumeUpdate](subcommands/volume-update.md)
 * [Version](subcommands/version.md)
-* [TokenGenerate](subcommands/token-generate.md)
-* [TokenGet](subcommands/token-get.md)
-* [TokenList](subcommands/token-list.md)
-* [TokenDelete](subcommands/token-delete.md)
 
 ## Legal
 
