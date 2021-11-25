@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.0.0-beta.8] (upcoming release)
+## [6.0.0-beta.8]
 
 - feature: added `token` commands, added support for Auth API, to generate, list, delete Tokens
 - dependency-update: added SDK-Go-Auth version v1.0.1
