@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.0.12] (upcoming release)
+
+- feature: added `token` commands, added support for Auth API, to generate, list, delete Tokens
+- dependency-update: added SDK-Go-Auth version v1.0.1
+
 ## [5.0.11]
 
 - feature: added `--filters`, `--max-results`, `--order-by` options on all list commands

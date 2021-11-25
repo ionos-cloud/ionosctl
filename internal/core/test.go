@@ -2,13 +2,13 @@ package core
 
 import (
 	"context"
-	authv1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
 	"io"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
+	authv1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
