@@ -124,6 +124,8 @@ Required values to run command:
 	return tokenCmd
 }
 
+const contractNumberMessage = "Contract Number: %v"
+
 func PreRunTokenId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, authv1.ArgTokenId)
 }
@@ -134,7 +136,7 @@ func PreRunTokenDelete(c *core.PreCommandConfig) error {
 
 func RunTokenList(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
-		c.Printer.Verbose("Contract Number: %v", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	}
 	tokens, _, err := c.AuthV1Services.Tokens().List(viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
@@ -146,7 +148,7 @@ func RunTokenList(c *core.CommandConfig) error {
 func RunTokenGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Token with ID: %v...", viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
-		c.Printer.Verbose("Contract Number: %v", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	}
 	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)), viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
@@ -158,7 +160,7 @@ func RunTokenGet(c *core.CommandConfig) error {
 func RunTokenCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Generating new token..")
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
-		c.Printer.Verbose("Contract Number: %v", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	}
 	newJwt, _, err := c.AuthV1Services.Tokens().Create(viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
@@ -177,7 +179,7 @@ func RunTokenCreate(c *core.CommandConfig) error {
 
 func RunTokenDelete(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
-		c.Printer.Verbose("Contract Number: %v", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+		c.Printer.Verbose(contractNumberMessage, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgTokenId)) {
 		return RunTokenDeleteById(c)
