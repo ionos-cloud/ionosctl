@@ -33,6 +33,7 @@ Required values to run command:
       --cols strings      Set of columns to be printed on output 
                           Available columns: [TokenId CreatedDate ExpirationDate Href] (default [TokenId,CreatedDate,ExpirationDate])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --contract int      Users with multiple contracts must provide the contract number, for which the token information is displayed
   -f, --force             Force command to execute without user input
   -h, --help              Print usage
   -o, --output string     Desired output format [text|json] (default "text")

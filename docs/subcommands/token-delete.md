@@ -34,6 +34,7 @@ Required values to run command:
       --cols strings      Set of columns to be printed on output 
                           Available columns: [TokenId CreatedDate ExpirationDate Href] (default [TokenId,CreatedDate,ExpirationDate])
   -c, --config string     Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
+      --contract int      Users with multiple contracts must provide the contract number, for which the tokens are deleted
   -C, --current           Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file (required)
   -E, --expired           Delete the Tokens that are currently expired (required)
   -f, --force             Force command to execute without user input
