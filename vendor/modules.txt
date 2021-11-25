@@ -32,6 +32,9 @@ github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
+# github.com/ionos-cloud/sdk-go-auth v1.0.1
+## explicit
+github.com/ionos-cloud/sdk-go-auth
 # github.com/ionos-cloud/sdk-go/v5 v5.1.10
 ## explicit
 github.com/ionos-cloud/sdk-go/v5
