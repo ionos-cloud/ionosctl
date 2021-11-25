@@ -24,7 +24,7 @@ test_unit:
 test: test_unit cloudapiv6_test auth_v1_test
 
 .PHONY: mocks_update
-mocks_update: cloudapiv6_mocks_update
+mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update
 	@echo "--- Update mocks ---"
 	@tools/regenerate_mocks.sh
 	@echo "DONE"

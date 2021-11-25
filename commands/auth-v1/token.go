@@ -41,7 +41,7 @@ func TokenCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, tokenCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, tokenCmd, core.CommandBuilder{
 		Namespace:  "token",
 		Resource:   "token",
 		Verb:       "list",
@@ -53,6 +53,7 @@ func TokenCmd() *core.Command {
 		CmdRun:     RunTokenList,
 		InitClient: true,
 	})
+	list.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are listed")
 
 	/*
 		Get Command
@@ -73,11 +74,12 @@ func TokenCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(authv1.ArgTokenId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
 
 	/*
 		Generate/Create Command
 	*/
-	core.NewCommand(ctx, tokenCmd, core.CommandBuilder{
+	generate := core.NewCommand(ctx, tokenCmd, core.CommandBuilder{
 		Namespace:  "token",
 		Resource:   "token",
 		Verb:       "generate",
@@ -89,6 +91,7 @@ func TokenCmd() *core.Command {
 		CmdRun:     RunTokenCreate,
 		InitClient: true,
 	})
+	generate.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts can provide the contract number, for which the token is generated")
 
 	/*
 		Delete Command
@@ -116,6 +119,7 @@ Required values to run command:
 	deleteCmd.AddBoolFlag(authv1.ArgCurrent, authv1.ArgCurrentShort, false, "Delete the Token that is currently used. This requires a token to be set for authentication via environment variable IONOS_TOKEN or via config file", core.RequiredFlagOption())
 	deleteCmd.AddBoolFlag(authv1.ArgExpired, authv1.ArgExpiredShort, false, "Delete the Tokens that are currently expired", core.RequiredFlagOption())
 	deleteCmd.AddBoolFlag(authv1.ArgAll, authv1.ArgAllShort, false, "Delete the Tokens under your account", core.RequiredFlagOption())
+	deleteCmd.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are deleted")
 
 	return tokenCmd
 }
@@ -129,7 +133,10 @@ func PreRunTokenDelete(c *core.PreCommandConfig) error {
 }
 
 func RunTokenList(c *core.CommandConfig) error {
-	tokens, _, err := c.AuthV1Services.Tokens().List()
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
+		c.Printer.Verbose("Contract Number: %v", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	}
+	tokens, _, err := c.AuthV1Services.Tokens().List(viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
 		return err
 	}
@@ -138,7 +145,10 @@ func RunTokenList(c *core.CommandConfig) error {
 
 func RunTokenGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Token with ID: %v...", viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
-	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)))
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
+		c.Printer.Verbose("Contract Number: %v", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	}
+	token, _, err := c.AuthV1Services.Tokens().Get(viper.GetString(core.GetFlagName(c.NS, authv1.ArgTokenId)), viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
 		return err
 	}
@@ -147,7 +157,10 @@ func RunTokenGet(c *core.CommandConfig) error {
 
 func RunTokenCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Generating new token..")
-	newJwt, _, err := c.AuthV1Services.Tokens().Create()
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
+		c.Printer.Verbose("Contract Number: %v", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	}
+	newJwt, _, err := c.AuthV1Services.Tokens().Create(viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
 		return err
 	}
@@ -163,6 +176,9 @@ func RunTokenCreate(c *core.CommandConfig) error {
 }
 
 func RunTokenDelete(c *core.CommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgContractNo)) {
+		c.Printer.Verbose("Contract Number: %v", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
+	}
 	if viper.IsSet(core.GetFlagName(c.NS, authv1.ArgTokenId)) {
 		return RunTokenDeleteById(c)
 	}
@@ -183,7 +199,7 @@ func RunTokenDeleteAll(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("Deleting all tokens...")
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL")
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("ALL", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
 		return err
 	}
@@ -202,7 +218,7 @@ func RunTokenDeleteExpired(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("Deleting expired tokens...")
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED")
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("EXPIRED", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
 		return err
 	}
@@ -226,7 +242,7 @@ func RunTokenDeleteCurrent(c *core.CommandConfig) error {
 		return err
 	}
 	c.Printer.Verbose("Deleting current token...")
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("CURRENT")
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByCriteria("CURRENT", viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
 		return err
 	}
@@ -246,7 +262,7 @@ func RunTokenDeleteById(c *core.CommandConfig) error {
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete token with ID: %s", tokenId)); err != nil {
 		return err
 	}
-	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId)
+	tokenResponse, _, err := c.AuthV1Services.Tokens().DeleteByID(tokenId, viper.GetInt32(core.GetFlagName(c.NS, authv1.ArgContractNo)))
 	if err != nil {
 		return err
 	}

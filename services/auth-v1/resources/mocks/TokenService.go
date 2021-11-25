@@ -35,9 +35,9 @@ func (m *MockTokensService) EXPECT() *MockTokensServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockTokensService) Create() (*resources.Jwt, *resources.Response, error) {
+func (m *MockTokensService) Create(contractNumber int32) (*resources.Jwt, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create")
+	ret := m.ctrl.Call(m, "Create", contractNumber)
 	ret0, _ := ret[0].(*resources.Jwt)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -45,15 +45,15 @@ func (m *MockTokensService) Create() (*resources.Jwt, *resources.Response, error
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockTokensServiceMockRecorder) Create() *gomock.Call {
+func (mr *MockTokensServiceMockRecorder) Create(contractNumber interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTokensService)(nil).Create))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTokensService)(nil).Create), contractNumber)
 }
 
 // DeleteByCriteria mocks base method.
-func (m *MockTokensService) DeleteByCriteria(criteria string) (*resources.DeleteResponse, *resources.Response, error) {
+func (m *MockTokensService) DeleteByCriteria(criteria string, contractNumber int32) (*resources.DeleteResponse, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteByCriteria", criteria)
+	ret := m.ctrl.Call(m, "DeleteByCriteria", criteria, contractNumber)
 	ret0, _ := ret[0].(*resources.DeleteResponse)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -61,15 +61,15 @@ func (m *MockTokensService) DeleteByCriteria(criteria string) (*resources.Delete
 }
 
 // DeleteByCriteria indicates an expected call of DeleteByCriteria.
-func (mr *MockTokensServiceMockRecorder) DeleteByCriteria(criteria interface{}) *gomock.Call {
+func (mr *MockTokensServiceMockRecorder) DeleteByCriteria(criteria, contractNumber interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByCriteria", reflect.TypeOf((*MockTokensService)(nil).DeleteByCriteria), criteria)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByCriteria", reflect.TypeOf((*MockTokensService)(nil).DeleteByCriteria), criteria, contractNumber)
 }
 
 // DeleteByID mocks base method.
-func (m *MockTokensService) DeleteByID(tokenId string) (*resources.DeleteResponse, *resources.Response, error) {
+func (m *MockTokensService) DeleteByID(tokenId string, contractNumber int32) (*resources.DeleteResponse, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteByID", tokenId)
+	ret := m.ctrl.Call(m, "DeleteByID", tokenId, contractNumber)
 	ret0, _ := ret[0].(*resources.DeleteResponse)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -77,15 +77,15 @@ func (m *MockTokensService) DeleteByID(tokenId string) (*resources.DeleteRespons
 }
 
 // DeleteByID indicates an expected call of DeleteByID.
-func (mr *MockTokensServiceMockRecorder) DeleteByID(tokenId interface{}) *gomock.Call {
+func (mr *MockTokensServiceMockRecorder) DeleteByID(tokenId, contractNumber interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByID", reflect.TypeOf((*MockTokensService)(nil).DeleteByID), tokenId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByID", reflect.TypeOf((*MockTokensService)(nil).DeleteByID), tokenId, contractNumber)
 }
 
 // Get mocks base method.
-func (m *MockTokensService) Get(tokenId string) (*resources.Token, *resources.Response, error) {
+func (m *MockTokensService) Get(tokenId string, contractNumber int32) (*resources.Token, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", tokenId)
+	ret := m.ctrl.Call(m, "Get", tokenId, contractNumber)
 	ret0, _ := ret[0].(*resources.Token)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -93,15 +93,15 @@ func (m *MockTokensService) Get(tokenId string) (*resources.Token, *resources.Re
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockTokensServiceMockRecorder) Get(tokenId interface{}) *gomock.Call {
+func (mr *MockTokensServiceMockRecorder) Get(tokenId, contractNumber interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTokensService)(nil).Get), tokenId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTokensService)(nil).Get), tokenId, contractNumber)
 }
 
 // List mocks base method.
-func (m *MockTokensService) List() (resources.Tokens, *resources.Response, error) {
+func (m *MockTokensService) List(contractNumber int32) (resources.Tokens, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", contractNumber)
 	ret0, _ := ret[0].(resources.Tokens)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -109,7 +109,7 @@ func (m *MockTokensService) List() (resources.Tokens, *resources.Response, error
 }
 
 // List indicates an expected call of List.
-func (mr *MockTokensServiceMockRecorder) List() *gomock.Call {
+func (mr *MockTokensServiceMockRecorder) List(contractNumber interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTokensService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTokensService)(nil).List), contractNumber)
 }

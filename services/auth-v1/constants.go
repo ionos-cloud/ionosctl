@@ -9,6 +9,7 @@ const (
 	ArgExpiredShort = "E"
 	ArgCurrent      = "current"
 	ArgCurrentShort = "C"
+	ArgContractNo   = "contract"
 )
 
 const (
