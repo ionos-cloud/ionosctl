@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/cheggaaa/pb/v3 v3.0.8
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.10.0
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.5.0
