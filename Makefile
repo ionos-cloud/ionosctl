@@ -2,6 +2,7 @@
 
 ## Include Services Makefile Targets
 include ./tools/cloudapi-v5/cloudapi_v5.mk
+include ./tools/auth-v1/auth_v1.mk
 
 export CGO_ENABLED = 0
 export GO111MODULE := on
@@ -20,10 +21,10 @@ test_unit:
 	@echo "DONE"
 
 .PHONY: test
-test: test_unit cloudapiv5_test
+test: test_unit cloudapiv5_test auth_v1_test
 
 .PHONY: mocks_update
-mocks_update: cloudapiv5_mocks_update
+mocks_update: cloudapiv5_mocks_update auth_v1_mocks_update
 	@echo "--- Update mocks ---"
 	@tools/regenerate_mocks.sh
 	@echo "DONE"

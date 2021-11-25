@@ -8,6 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
+	authv1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -53,6 +54,7 @@ type CmdRunnerTest func(c *CommandConfig, mocks *ResourcesMocksTest)
 type ResourcesMocksTest struct {
 	// Add New Services Resources Mocks
 	CloudApiV5Mocks cloudapi_v5.ResourcesMocks
+	AuthV1Mocks     authv1.ResourcesMocks
 }
 
 func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
@@ -87,11 +89,13 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 func initMockResources(ctrl *gomock.Controller) *ResourcesMocksTest {
 	return &ResourcesMocksTest{
 		CloudApiV5Mocks: *cloudapi_v5.InitMocksResources(ctrl),
+		AuthV1Mocks:     *authv1.InitMocksResources(ctrl),
 	}
 }
 
 // Init Mock Services for Command Test
 func initMockServices(c *CommandConfig, tm *ResourcesMocksTest) *CommandConfig {
 	c.CloudApiV5Services = *cloudapi_v5.InitMockServices(&c.CloudApiV5Services, &tm.CloudApiV5Mocks)
+	c.AuthV1Services = *authv1.InitMockServices(&c.AuthV1Services, &tm.AuthV1Mocks)
 	return c
 }
