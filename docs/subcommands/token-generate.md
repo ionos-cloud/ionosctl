@@ -15,7 +15,7 @@ ionosctl token generate [flags]
 For `generate` command:
 
 ```text
-[g]
+[create]
 ```
 
 ## Description

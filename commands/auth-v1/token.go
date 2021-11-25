@@ -83,7 +83,7 @@ func TokenCmd() *core.Command {
 		Namespace:  "token",
 		Resource:   "token",
 		Verb:       "generate",
-		Aliases:    []string{"g"},
+		Aliases:    []string{"create"},
 		ShortDesc:  "Create a new Token",
 		LongDesc:   "Use this command to generate a new Token. Only the JSON Web Token, associated with user credentials, will be displayed.",
 		Example:    generateTokenExample,
