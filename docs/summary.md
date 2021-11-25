@@ -144,6 +144,10 @@
 * [VolumeList](subcommands/volume-list.md)
 * [VolumeUpdate](subcommands/volume-update.md)
 * [Version](subcommands/version.md)
+* [TokenGenerate](subcommands/token-generate.md)
+* [TokenGet](subcommands/token-get.md)
+* [TokenList](subcommands/token-list.md)
+* [TokenDelete](subcommands/token-delete.md)
 
 ## Legal
 

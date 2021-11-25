@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	authv1 "github.com/ionos-cloud/ionosctl/commands/auth-v1"
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -194,6 +195,8 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv5.ShareCmd())
 	rootCmd.AddCommand(cloudapiv5.UserCmd())
 	rootCmd.AddCommand(cloudapiv5.VolumeCmd())
+	// Auth Command
+	rootCmd.AddCommand(authv1.TokenCmd())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}
