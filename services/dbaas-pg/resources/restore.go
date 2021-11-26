@@ -30,7 +30,7 @@ func NewRestoresService(client *Client, ctx context.Context) RestoresService {
 }
 
 func (svc *restoresService) Restore(clusterId string, input CreateRestoreRequest) (*Response, error) {
-	req := svc.client.RestoresApi.ClusterRestorePost(svc.context, clusterId).Restore(input.CreateRestoreRequest)
+	req := svc.client.RestoresApi.ClusterRestorePost(svc.context, clusterId).CreateRestoreRequest(input.CreateRestoreRequest)
 	res, err := svc.client.RestoresApi.ClusterRestorePostExecute(req)
 	return &Response{*res}, err
 }

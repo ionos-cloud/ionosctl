@@ -17,7 +17,7 @@ type APIVersion struct {
 // InfosService is a wrapper around ionoscloud.APIVersion
 type InfosService interface {
 	List() (APIVersionList, *Response, error)
-	Get() (APIVersion, *Response, error)
+	Get() (APIVersionList, *Response, error)
 }
 
 type infosService struct {
@@ -40,8 +40,8 @@ func (svc *infosService) List() (APIVersionList, *Response, error) {
 	return APIVersionList{versions}, &Response{*res}, err
 }
 
-func (svc *infosService) Get() (APIVersion, *Response, error) {
+func (svc *infosService) Get() (APIVersionList, *Response, error) {
 	req := svc.client.MetadataApi.InfosVersionGet(svc.context)
 	versions, res, err := svc.client.MetadataApi.InfosVersionGetExecute(req)
-	return APIVersion{versions}, &Response{*res}, err
+	return APIVersionList{versions}, &Response{*res}, err
 }

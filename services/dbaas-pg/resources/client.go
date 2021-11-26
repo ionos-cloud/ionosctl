@@ -2,12 +2,10 @@ package resources
 
 import (
 	"errors"
-	"strings"
+	"fmt"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
-
-const DefaultBasePath = "/cloudapi/databases/postgres"
 
 type Client struct {
 	sdkgo.APIClient
@@ -30,25 +28,11 @@ type clientService struct {
 var _ ClientService = &clientService{}
 
 func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
-	if hostUrl == "" {
-		return nil, errors.New("host-url incorrect")
-	}
-	if !strings.HasSuffix(hostUrl, DefaultBasePath) {
-		hostUrl += DefaultBasePath
-	}
 	if token == "" && (name == "" || pwd == "") {
 		return nil, errors.New("username, password or token incorrect")
 	}
-	clientConfig := &sdkgo.Configuration{
-		Username: name,
-		Password: pwd,
-		Token:    token,
-		Servers: sdkgo.ServerConfigurations{
-			sdkgo.ServerConfiguration{
-				URL: hostUrl,
-			},
-		},
-	}
+	clientConfig := sdkgo.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig.UserAgent = fmt.Sprintf("ionos-cloud-sdk-go-dbaas-postgres-%v-cli", sdkgo.Version)
 	return &clientService{
 		client: sdkgo.NewAPIClient(clientConfig),
 	}, nil

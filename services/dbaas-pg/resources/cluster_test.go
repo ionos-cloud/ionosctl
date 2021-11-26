@@ -3,7 +3,6 @@ package resources
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -27,7 +26,7 @@ func TestNewClustersService(t *testing.T) {
 	t.Run("create_cluster_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		clusterUnitSvc := NewClustersService(svc.Get(), ctx)
-		_, _, err := clusterUnitSvc.Create(CreateClusterRequest{}, testClusterResourceVar, time.Time{})
+		_, _, err := clusterUnitSvc.Create(CreateClusterRequest{})
 		assert.Error(t, err)
 	})
 	t.Run("update_cluster_error", func(t *testing.T) {
