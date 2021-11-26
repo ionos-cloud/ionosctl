@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -41,17 +42,26 @@ func PccCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, pccCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, pccCmd, core.CommandBuilder{
 		Namespace:  "pcc",
 		Resource:   "pcc",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Private Cross-Connects",
-		LongDesc:   "Use this command to get a list of existing Private Cross-Connects available on your account.",
+		LongDesc:   "Use this command to get a list of existing Private Cross-Connects available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.PccsFiltersUsage(),
 		Example:    listPccsExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunPccList,
 		CmdRun:     RunPccList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.PccsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.PccsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -137,15 +147,16 @@ Required values to run command:
 
 * Pcc Id`,
 		Example:    deletePccExample,
-		PreCmdRun:  PreRunPccId,
+		PreCmdRun:  PreRunPccDelete,
 		CmdRun:     RunPccDelete,
 		InitClient: true,
 	})
 	deleteCmd.AddStringFlag(cloudapiv6.ArgPccId, cloudapiv6.ArgIdShort, "", cloudapiv6.PccId, core.RequiredFlagOption())
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.PccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Private Cross-Connect deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Private Cross-Connects.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Private Cross-Connect deletion [seconds]")
 
 	pccCmd.AddCommand(PeersCmd())
@@ -153,12 +164,34 @@ Required values to run command:
 	return pccCmd
 }
 
+func PreRunPccList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.PccsFilters(), completer.PccsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunPccId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgPccId)
 }
 
+func PreRunPccDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgPccId},
+		[]string{cloudapiv6.ArgAll},
+	)
+}
+
 func RunPccList(c *core.CommandConfig) error {
-	pccs, resp, err := c.CloudApiV6Services.Pccs().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	pccs, resp, err := c.CloudApiV6Services.Pccs().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -227,19 +260,30 @@ func RunPccUpdate(c *core.CommandConfig) error {
 }
 
 func RunPccDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Private cross connect with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
-	resp, err := c.CloudApiV6Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId)))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	pccId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DeleteAllPccs(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting Private cross connect with id: %v...", pccId)
+		resp, err = c.CloudApiV6Services.Pccs().Delete(pccId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getPccPrint(resp, c, nil))
 }
@@ -270,6 +314,48 @@ func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *
 			Description: &description,
 		},
 	}
+}
+
+func DeleteAllPccs(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("PrivateCrossConnects to be deleted:")
+	pccs, resp, err := c.CloudApiV6Services.Pccs().List(resources.ListQueryParams{})
+	if err != nil {
+		return nil, err
+	}
+	if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
+		for _, pcc := range *pccsItems {
+			if id, ok := pcc.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("PrivateCrossConnect Id: " + *id)
+			}
+			if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("PrivateCrossConnect Name: " + *name)
+				}
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the PrivateCrossConnects"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
+
+		for _, pcc := range *pccsItems {
+			if id, ok := pcc.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting PrivateCrossConnect with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Pccs().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 func PeersCmd() *core.Command {
@@ -307,7 +393,7 @@ func PeersCmd() *core.Command {
 	})
 	listPeers.AddStringFlag(cloudapiv6.ArgPccId, "", "", cloudapiv6.PccId, core.RequiredFlagOption())
 	_ = listPeers.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getPccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+		return completer.PccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	return peerCmd
@@ -490,30 +576,4 @@ func getPccPeersKVMaps(ps []resources.Peer) []map[string]interface{} {
 		out = append(out, o)
 	}
 	return out
-}
-
-func getPccsIds(outErr io.Writer) []string {
-	err := config.Load()
-	clierror.CheckError(err, outErr)
-	clientSvc, err := resources.NewClientService(
-		viper.GetString(config.Username),
-		viper.GetString(config.Password),
-		viper.GetString(config.Token),
-		config.GetServerUrl(),
-	)
-	clierror.CheckError(err, outErr)
-	pccSvc := resources.NewPrivateCrossConnectService(clientSvc.Get(), context.TODO())
-	pccs, _, err := pccSvc.List()
-	clierror.CheckError(err, outErr)
-	pccsIds := make([]string, 0)
-	if items, ok := pccs.PrivateCrossConnects.GetItemsOk(); ok && items != nil {
-		for _, item := range *items {
-			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
-				pccsIds = append(pccsIds, *itemId)
-			}
-		}
-	} else {
-		return nil
-	}
-	return pccsIds
 }

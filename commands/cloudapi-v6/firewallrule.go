@@ -9,6 +9,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -49,9 +50,9 @@ func FirewallruleCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Firewall Rules",
-		LongDesc:   "Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id",
+		LongDesc:   "Use this command to get a list of Firewall Rules from a specified NIC from a Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.FirewallRulesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id\n* Nic Id",
 		Example:    listFirewallRuleExample,
-		PreCmdRun:  PreRunDcServerNicIds,
+		PreCmdRun:  PreRunFirewallRuleList,
 		CmdRun:     RunFirewallRuleList,
 		InitClient: true,
 	})
@@ -69,6 +70,15 @@ func FirewallruleCmd() *core.Command {
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgServerId)),
 		), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.FirewallRulesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.FirewallRulesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -142,13 +152,13 @@ Required values to run command:
 	})
 	create.AddStringFlag(cloudapiv6.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Unset option allows all source MAC addresses")
 	create.AddStringFlag(cloudapiv6.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs")
-	create.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs")
+	create.AddStringFlag(cloudapiv6.ArgDestinationIp, cloudapiv6.ArgDestinationIpShort, "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target/destination IPs")
 	create.AddIntFlag(cloudapiv6.ArgIcmpType, "", 0, "Define the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types")
 	create.AddIntFlag(cloudapiv6.ArgIcmpCode, "", 0, "Define the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes")
 	create.AddIntFlag(cloudapiv6.ArgPortRangeStart, "", 1, "Define the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
 	create.AddIntFlag(cloudapiv6.ArgPortRangeEnd, "", 1, "Define the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
-	create.AddStringFlag(cloudapiv6.ArgType, "", "INGRESS", "The type of Firewall Rule")
-	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "INGRESS", "The type/direction of Firewall Rule")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule creation to be executed")
@@ -196,13 +206,13 @@ Required values to run command:
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the Firewall Rule")
 	update.AddStringFlag(cloudapiv6.ArgSourceMac, "", "", "Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Not setting option allows all source MAC addresses")
 	update.AddStringFlag(cloudapiv6.ArgSourceIp, "", "", "Only traffic originating from the respective IPv4 address is allowed. Not setting option allows all source IPs")
-	update.AddStringFlag(cloudapiv6.ArgTargetIp, "", "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target IPs")
+	update.AddStringFlag(cloudapiv6.ArgDestinationIp, cloudapiv6.ArgDestinationIpShort, "", "In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Not setting option allows all target/destination IPs")
 	update.AddIntFlag(cloudapiv6.ArgIcmpType, "", 0, "Redefine the allowed type (from 0 to 254) if the protocol ICMP is chosen. Not setting option allows all types")
 	update.AddIntFlag(cloudapiv6.ArgIcmpCode, "", 0, "Redefine the allowed code (from 0 to 254) if protocol ICMP is chosen. Not setting option allows all codes")
 	update.AddIntFlag(cloudapiv6.ArgPortRangeStart, "", 1, "Redefine the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
 	update.AddIntFlag(cloudapiv6.ArgPortRangeEnd, "", 1, "Redefine the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Not setting portRangeStart and portRangeEnd allows all ports")
-	update.AddStringFlag(cloudapiv6.ArgType, "", "", "The type of Firewall Rule")
-	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "", "The type/direction of Firewall Rule")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgFirewallRuleId, cloudapiv6.ArgIdShort, "", cloudapiv6.FirewallRuleId, core.RequiredFlagOption())
@@ -250,7 +260,7 @@ Required values to run command:
 * Nic Id
 * Firewall Rule Id`,
 		Example:    deleteFirewallRuleExample,
-		PreCmdRun:  PreRunDcServerNicFRuleIds,
+		PreCmdRun:  PreRunFirewallDelete,
 		CmdRun:     RunFirewallRuleDelete,
 		InitClient: true,
 	})
@@ -277,13 +287,31 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Firewall Rule deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Firewalls.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Firewall Rule deletion [seconds]")
 
 	return firewallRuleCmd
 }
 
+func PreRunFirewallRuleList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.FirewallRulesFilters(), completer.FirewallRulesFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcServerNicIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId)
+}
+
+func PreRunFirewallDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgAll},
+	)
 }
 
 func PreRunDcServerNicIdsFRuleProtocol(c *core.PreCommandConfig) error {
@@ -295,10 +323,19 @@ func PreRunDcServerNicFRuleIds(c *core.PreCommandConfig) error {
 }
 
 func RunFirewallRuleList(c *core.CommandConfig) error {
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
 	firewallRules, resp, err := c.CloudApiV6Services.FirewallRules().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		listQueryParams,
 	)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
@@ -332,7 +369,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 		properties.SetName(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgName)))
 	}
 	if !properties.HasType() {
-		properties.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType)))
+		properties.SetType(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)))
 	}
 	input := resources.FirewallRule{
 		FirewallRule: ionoscloud.FirewallRule{
@@ -381,25 +418,34 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleDelete(c *core.CommandConfig) error {
-	c.Printer.Verbose("Firewall Rule with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)))
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
-		return err
-	}
-	resp, err := c.CloudApiV6Services.FirewallRules().Delete(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId)),
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
+	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
+	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DeleteAllFirewallRuses(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting Firewall Rule with id: %v...", fruleId)
+		resp, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getFirewallRulePrint(resp, c, nil))
 }
@@ -427,10 +473,10 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 		properties.SetSourceMac(sourceMac)
 		c.Printer.Verbose("Property SourceMac set: %v", sourceMac)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp)) {
-		targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetIp))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp)) {
+		targetIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDestinationIp))
 		properties.SetTargetIp(targetIp)
-		c.Printer.Verbose("Property TargetIp set: %v", targetIp)
+		c.Printer.Verbose("Property TargetIp/DestinationIp set: %v", targetIp)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpCode)) {
 		icmpCode := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgIcmpCode))
@@ -452,20 +498,65 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 		properties.SetPortRangeEnd(portRangeEnd)
 		c.Printer.Verbose("Property PortRangeEnd set: %v", portRangeEnd)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgType)) {
-		firewallruleType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgType))
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgDirection)) {
+		firewallruleType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDirection))
 		properties.SetType(strings.ToUpper(firewallruleType))
-		c.Printer.Verbose("Property Type set: %v", firewallruleType)
+		c.Printer.Verbose("Property Type/Direction set: %v", firewallruleType)
 	}
 	return properties
+}
+
+func DeleteAllFirewallRuses(c *core.CommandConfig) (*resources.Response, error) {
+	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
+	_ = c.Printer.Print("Firewallrules to be deleted:")
+	firewallrules, resp, err := c.CloudApiV6Services.FirewallRules().List(datacenterId, serverId, nicId, resources.ListQueryParams{})
+	if err != nil {
+		return nil, err
+	}
+	if firewallrulestems, ok := firewallrules.GetItemsOk(); ok && firewallrulestems != nil {
+		for _, firewall := range *firewallrulestems {
+			if id, ok := firewall.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Firewallrule Id: " + *id)
+			}
+			if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Firewallrule Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewallrules"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Firewallrules...")
+		for _, firewall := range *firewallrulestems {
+			if id, ok := firewall.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting Firewall Rule with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // Output Printing
 
 var (
-	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Type", "State"}
-	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "TargetIP", "PortRangeStart", "PortRangeEnd",
-		"IcmpCode", "IcmpType", "Type", "State"}
+	defaultFirewallRuleCols = []string{"FirewallRuleId", "Name", "Protocol", "PortRangeStart", "PortRangeEnd", "Direction", "State"}
+	allFirewallRuleCols     = []string{"FirewallRuleId", "Name", "Protocol", "SourceMac", "SourceIP", "DestinationIP", "PortRangeStart", "PortRangeEnd",
+		"IcmpCode", "IcmpType", "Direction", "State"}
 )
 
 type FirewallRulePrint struct {
@@ -474,12 +565,12 @@ type FirewallRulePrint struct {
 	Protocol       string `json:"Protocol,omitempty"`
 	SourceMac      string `json:"SourceMac,omitempty"`
 	SourceIP       string `json:"SourceIP,omitempty"`
-	TargetIP       string `json:"TargetIP,omitempty"`
+	DestinationIP  string `json:"DestinationIP,omitempty"`
 	PortRangeStart int32  `json:"PortRangeStart,omitempty"`
 	PortRangeEnd   int32  `json:"PortRangeEnd,omitempty"`
 	IcmpCode       int32  `json:"IcmpCode,omitempty"`
 	IcmpType       int32  `json:"IcmpType,omitempty"`
-	Type           string `json:"Type,omitempty"`
+	Direction      string `json:"Direction,omitempty"`
 	State          string `json:"State,omitempty"`
 }
 
@@ -510,12 +601,12 @@ func getFirewallRulesCols(flagName string, outErr io.Writer) []string {
 			"Protocol":       "Protocol",
 			"SourceMac":      "SourceMac",
 			"SourceIP":       "SourceIP",
-			"TargetIP":       "TargetIP",
+			"DestinationIP":  "DestinationIP",
 			"PortRangeStart": "PortRangeStart",
 			"PortRangeEnd":   "PortRangeEnd",
 			"IcmpCode":       "IcmpCode",
 			"IcmpType":       "IcmpType",
-			"Type":           "Type",
+			"Direction":      "Direction",
 			"State":          "State",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
@@ -586,7 +677,7 @@ func getFirewallRuleKVMap(l resources.FirewallRule) map[string]interface{} {
 			firewallRulePrint.SourceIP = *sourceIp
 		}
 		if targetIp, ok := properties.GetTargetIpOk(); ok && targetIp != nil {
-			firewallRulePrint.TargetIP = *targetIp
+			firewallRulePrint.DestinationIP = *targetIp
 		}
 		if icmpType, ok := properties.GetIcmpTypeOk(); ok && icmpType != nil {
 			firewallRulePrint.IcmpType = *icmpType
@@ -595,7 +686,7 @@ func getFirewallRuleKVMap(l resources.FirewallRule) map[string]interface{} {
 			firewallRulePrint.IcmpCode = *icmpCode
 		}
 		if ruleType, ok := properties.GetTypeOk(); ok && ruleType != nil {
-			firewallRulePrint.Type = *ruleType
+			firewallRulePrint.Direction = *ruleType
 		}
 	}
 	if metadata, ok := l.GetMetadataOk(); ok && metadata != nil {

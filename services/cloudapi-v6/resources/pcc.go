@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -24,7 +25,7 @@ type Peer struct {
 
 // PccsService is a wrapper around ionoscloud.PrivateCrossConnect
 type PccsService interface {
-	List() (PrivateCrossConnects, *Response, error)
+	List(params ListQueryParams) (PrivateCrossConnects, *Response, error)
 	Get(pccId string) (*PrivateCrossConnect, *Response, error)
 	GetPeers(pccId string) (*[]Peer, *Response, error)
 	Create(u PrivateCrossConnect) (*PrivateCrossConnect, *Response, error)
@@ -46,8 +47,21 @@ func NewPrivateCrossConnectService(client *Client, ctx context.Context) PccsServ
 	}
 }
 
-func (s *pccsService) List() (PrivateCrossConnects, *Response, error) {
+func (s *pccsService) List(params ListQueryParams) (PrivateCrossConnects, *Response, error) {
 	req := s.client.PrivateCrossConnectsApi.PccsGet(s.context)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	dcs, res, err := s.client.PrivateCrossConnectsApi.PccsGetExecute(req)
 	return PrivateCrossConnects{dcs}, &Response{*res}, err
 }

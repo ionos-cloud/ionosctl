@@ -1,8 +1,6 @@
 package config
 
 const (
-	IonosServerUrlEnvVar = "IONOS_API_URL"
-
 	ArgConfig              = "config"
 	ArgConfigShort         = "c"
 	ArgOutput              = "output"
@@ -26,6 +24,7 @@ const (
 	ArgCols                = "cols"
 	ArgUpdates             = "updates"
 	ArgToken               = "token"
+	ArgTokenShort          = "t"
 	ArgUser                = "user"
 	ArgPassword            = "password"
 	ArgPasswordShort       = "p"

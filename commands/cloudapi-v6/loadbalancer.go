@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -47,15 +48,24 @@ func LoadBalancerCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Load Balancers",
-		LongDesc:   "Use this command to retrieve a list of Load Balancers within a Virtual Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to retrieve a list of Load Balancers within a Virtual Data Center on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LoadbalancersFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listLoadbalancerExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunLoadBalancerList,
 		CmdRun:     RunLoadBalancerList,
 		InitClient: true,
 	})
 	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LoadBalancersFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LoadBalancersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -108,7 +118,7 @@ Required values to run command:
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Load Balancer", "Name of the Load Balancer")
-	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
+	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Load Balancer creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer creation [seconds]")
 
@@ -144,7 +154,7 @@ Required values to run command:
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Load Balancer")
 	update.AddStringFlag(cloudapiv6.ArgIp, "", "", "The IP of the Load Balancer")
-	update.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP")
+	update.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Indicates if the Load Balancer will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Load Balancer update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer update [seconds]")
 
@@ -166,7 +176,7 @@ Required values to run command:
 * Data Center Id
 * Load Balancer Id`,
 		Example:    deleteLoadbalancerExample,
-		PreCmdRun:  PreRunDcLoadBalancerIds,
+		PreCmdRun:  PreRunDcLoadBalancerDelete,
 		CmdRun:     RunLoadBalancerDelete,
 		InitClient: true,
 	})
@@ -179,6 +189,7 @@ Required values to run command:
 		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for Load Balancer deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the LoadBlancers from a virtual Datacenter.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Load Balancer deletion [seconds]")
 
 	loadbalancerCmd.AddCommand(LoadBalancerNicCmd())
@@ -186,13 +197,38 @@ Required values to run command:
 	return loadbalancerCmd
 }
 
+func PreRunLoadBalancerList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.LoadBalancersFilters(), completer.LoadbalancersFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcLoadBalancerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLoadBalancerId)
 }
 
+func PreRunDcLoadBalancerDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLoadBalancerId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgAll},
+	)
+}
+
 func RunLoadBalancerList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting LoadBalancers from Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	lbs, resp, err := c.CloudApiV6Services.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	lbs, resp, err := c.CloudApiV6Services.Loadbalancers().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -273,25 +309,77 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Load balancer with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)))
-	resp, err := c.CloudApiV6Services.Loadbalancers().Delete(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	loadBlanacerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DeleteAllLoadBalancers(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting Load balancer with id: %v is deleting...", loadBlanacerId)
+		resp, err = c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBlanacerId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getLoadbalancerPrint(resp, c, nil))
+}
+
+func DeleteAllLoadBalancers(c *core.CommandConfig) (*resources.Response, error) {
+	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	_ = c.Printer.Print("LoadBalancers to be deleted:")
+	loadBalancers, resp, err := c.CloudApiV6Services.Loadbalancers().List(dcid, resources.ListQueryParams{})
+	if err != nil {
+		return nil, err
+	}
+	if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
+		for _, lb := range *loadBalancersItems {
+			if id, ok := lb.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("LoadBalancer Id: " + *id)
+			}
+			if properties, ok := lb.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" LoadBalancer Name: " + *name)
+				}
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the LoadBalancers...")
+
+		for _, lb := range *loadBalancersItems {
+			if id, ok := lb.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Datacenter ID: %v", dcid)
+				c.Printer.Verbose("Starting deleting Load balancer with id: %v ...", *id)
+				resp, err = c.CloudApiV6Services.Loadbalancers().Delete(dcid, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // Output Printing
@@ -355,11 +443,13 @@ func getLoadbalancersCols(flagName string, outErr io.Writer) []string {
 }
 
 func getLoadbalancers(loadbalancers resources.Loadbalancers) []resources.Loadbalancer {
-	vs := make([]resources.Loadbalancer, 0)
-	for _, s := range *loadbalancers.Items {
-		vs = append(vs, resources.Loadbalancer{Loadbalancer: s})
+	lbObjs := make([]resources.Loadbalancer, 0)
+	if items, ok := loadbalancers.GetItemsOk(); ok && items != nil {
+		for _, loadbalancer := range *items {
+			lbObjs = append(lbObjs, resources.Loadbalancer{Loadbalancer: loadbalancer})
+		}
 	}
-	return vs
+	return lbObjs
 }
 
 func getLoadbalancersKVMaps(vs []resources.Loadbalancer) []map[string]interface{} {

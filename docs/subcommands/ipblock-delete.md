@@ -37,6 +37,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                 Delete all the IpBlocks.
   -u, --api-url string      Override default host url (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [IpBlockId Name Location Size Ips State] (default [IpBlockId,Name,Location,Size,Ips,State])

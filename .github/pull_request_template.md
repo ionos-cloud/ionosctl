@@ -7,8 +7,10 @@
 <!-- Please check the completed items below -->
 <!-- Not all changes require documentation updates or tests to be added or updated -->
 
-- [ ] PR Title containing `Feat`/`Fix`/`Doc`
+- [ ] PR name added as appropriate (e.g. `feat:`/`fix:`/`doc:`/`test:`/`refactor:`)
 - [ ] Tests added or updated
 - [ ] Documentation updated
-- [ ] SONAR Cloud Scan - warnings checked
-- [ ] Task updated (Jira/Github)
+- [ ] Sonar Cloud Scan
+- [ ] Changelog updated and version incremented (label: upcoming release)
+- [ ] Github Issue linked if any
+- [ ] Jira task updated

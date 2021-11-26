@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -41,17 +42,26 @@ func SnapshotCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, snapshotCmd, core.CommandBuilder{
 		Namespace:  "snapshot",
 		Resource:   "snapshot",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Snapshots",
-		LongDesc:   "Use this command to get a list of Snapshots.",
+		LongDesc:   "Use this command to get a list of Snapshots.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.SnapshotsFiltersUsage(),
 		Example:    listSnapshotsExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunSnapshotList,
 		CmdRun:     RunSnapshotList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.SnapshotsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.SnapshotsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -110,7 +120,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
+	create.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
@@ -145,17 +155,17 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgSnapshotId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", false, "This volume is capable of CPU hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgCpuHotUnplug, "", false, "This volume is capable of CPU hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "This volume is capable of memory hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "This volume is capable of memory hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "This volume is capable of NIC hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "This volume is capable of NIC hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "This volume is capable of VirtIO drive hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "This volume is capable of VirtIO drive hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required)")
-	update.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection")
+	update.AddBoolFlag(cloudapiv6.ArgCpuHotPlug, "", false, "This volume is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgCpuHotUnplug, "", false, "This volume is capable of CPU hot unplug (no reboot required). E.g.: --cpu-hot-unplug=true, --cpu-hot-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgRamHotPlug, "", false, "This volume is capable of memory hot plug (no reboot required). E.g.: --ram-hot-plug=true, --ram-hot-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgRamHotUnplug, "", false, "This volume is capable of memory hot unplug (no reboot required). E.g.: --ram-hot-unplug=true, --ram-hot-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotPlug, "", false, "This volume is capable of NIC hot plug (no reboot required). E.g.: --nic-hot-plug=true, --nic-hot-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgNicHotUnplug, "", false, "This volume is capable of NIC hot unplug (no reboot required). E.g.: --nic-hot-unplug=true, --nic-hot-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotPlug, "", false, "This volume is capable of VirtIO drive hot plug (no reboot required). E.g.: --disc-virtio-plug=true, --disc-virtio-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgDiscVirtioHotUnplug, "", false, "This volume is capable of VirtIO drive hot unplug (no reboot required). E.g.: --disc-virtio-unplug=true, --disc-virtio-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotPlug, "", false, "This volume is capable of SCSI drive hot plug (no reboot required). E.g.: --disc-scsi-plug=true, --disc-scsi-plug=false")
+	update.AddBoolFlag(cloudapiv6.ArgDiscScsiHotUnplug, "", false, "This volume is capable of SCSI drive hot unplug (no reboot required). E.g.: --disc-scsi-unplug=true, --disc-scsi-unplug=false")
+	update.AddBoolFlag(cloudapiv6.ArgSecAuthProtection, "", false, "Enable secure authentication protection. E.g.: --sec-auth-protection=true, --sec-auth-protection=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot creation to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot creation [seconds]")
 
@@ -200,7 +210,7 @@ Required values to run command:
 		ShortDesc:  "Delete a Snapshot",
 		LongDesc:   "Use this command to delete the specified Snapshot.\n\nRequired values to run command:\n\n* Snapshot Id",
 		Example:    deleteSnapshotExample,
-		PreCmdRun:  PreRunSnapshotId,
+		PreCmdRun:  PreRunSnapshotDelete,
 		CmdRun:     RunSnapshotDelete,
 		InitClient: true,
 	})
@@ -209,13 +219,28 @@ Required values to run command:
 		return completer.SnapshotIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Snapshot deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Snapshots.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Snapshot deletion [seconds]")
 
 	return snapshotCmd
 }
 
+func PreRunSnapshotList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.SnapshotsFilters(), completer.SnapshotsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunSnapshotId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgSnapshotId)
+}
+
+func PreRunSnapshotDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgSnapshotId},
+		[]string{cloudapiv6.ArgAll},
+	)
 }
 
 func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
@@ -223,7 +248,15 @@ func PreRunSnapshotIdDcIdVolumeId(c *core.PreCommandConfig) error {
 }
 
 func RunSnapshotList(c *core.CommandConfig) error {
-	ss, resp, err := c.CloudApiV6Services.Snapshots().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	ss, resp, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -309,19 +342,30 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 }
 
 func RunSnapshotDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Snapshot with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
-	resp, err := c.CloudApiV6Services.Snapshots().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
+	if allFlag {
+		resp, err = DeleteAllSnapshots(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting Snapshot with id: %v...", snapshotId)
+		resp, err = c.CloudApiV6Services.Snapshots().Delete(snapshotId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
@@ -399,6 +443,49 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 		c.Printer.Verbose("Property SecAuthProtection set: %v", secAuthProtection)
 	}
 	return input
+}
+
+func DeleteAllSnapshots(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("Snapshots to be deleted:")
+	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(resources.ListQueryParams{})
+	if err != nil {
+		return nil, err
+	}
+	if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
+		for _, snapshot := range *snapshotsItems {
+			if id, ok := snapshot.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Snapshot Id: " + *id)
+			}
+			if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" Snapshot Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Snapshots...")
+
+		for _, snapshot := range *snapshotsItems {
+			if id, ok := snapshot.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting Snapshot with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Snapshots().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // Output Printing

@@ -43,8 +43,8 @@ Required values to run a command:
                                Available columns: [NicId Name Dhcp LanId Ips State FirewallActive FirewallType DeviceNumber PciSlot Mac] (default [NicId,Name,Dhcp,LanId,Ips,State])
   -c, --config string          Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --datacenter-id string   The unique Data Center Id (required)
-      --dhcp                   Set to false if you wish to disable DHCP on the NIC (default true)
-      --firewall-active        Activate or deactivate the Firewall
+      --dhcp                   Set to false if you wish to disable DHCP on the NIC. E.g.: --dhcp=true, --dhcp=false (default true)
+      --firewall-active        Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false
       --firewall-type string   The type of Firewall Rules that will be allowed on the NIC (default "INGRESS")
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage

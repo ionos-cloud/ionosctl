@@ -11,6 +11,8 @@ const (
 
 // Flags
 const (
+	ArgAll                   = "all"
+	ArgAllShort              = "a"
 	ArgCols                  = "cols"
 	ArgUserData              = "user-data"
 	ArgFirstName             = "first-name"
@@ -40,11 +42,14 @@ const (
 	ArgRam                   = "ram"
 	ArgCPUFamily             = "cpu-family"
 	ArgSize                  = "size"
+	ArgSizeShort             = "s"
 	ArgBus                   = "bus"
 	ArgLicenceType           = "licence-type"
 	ArgType                  = "type"
-	ArgSshKeys               = "ssh-keys"
+	ArgSshKeyPaths           = "ssh-key-paths"
+	ArgSshKeyPathsShort      = "k"
 	ArgPublic                = "public"
+	ArgPublicShort           = "p"
 	ArgIps                   = "ips"
 	ArgIp                    = "ip"
 	ArgDhcp                  = "dhcp"
@@ -75,12 +80,15 @@ const (
 	ArgDiscScsiHotUnplug     = "disc-scsi-hot-unplug"
 	ArgSecAuthProtection     = "sec-auth-protection"
 	ArgImageAlias            = "image-alias"
+	ArgImageAliasShort       = "a"
 	ArgProtocol              = "protocol"
 	ArgProtocolShort         = "p"
 	ArgSourceSubnet          = "source-subnet"
 	ArgTargetSubnet          = "target-subnet"
 	ArgSourceMac             = "source-mac"
 	ArgSourceIp              = "source-ip"
+	ArgDestinationIp         = "destination-ip"
+	ArgDestinationIpShort    = "D"
 	ArgTargetIp              = "target-ip"
 	ArgTargetPort            = "target-port"
 	ArgWeight                = "weight"
@@ -125,6 +133,11 @@ const (
 	ArgGatewayIp             = "gateway-ip"
 	ArgLatest                = "latest"
 	ArgMethod                = "method"
+	ArgFilters               = "filters"
+	ArgFiltersShort          = "F"
+	ArgOrderBy               = "order-by"
+	ArgMaxResults            = "max-results"
+	ArgMaxResultsShort       = "M"
 )
 
 // IDs Flags

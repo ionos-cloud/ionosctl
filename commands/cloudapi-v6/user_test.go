@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -31,6 +32,15 @@ var (
 			},
 		},
 	}
+	usersList = resources.Users{
+		Users: ionoscloud.Users{
+			Id: &testUserVar,
+			Items: &[]ionoscloud.User{
+				userTestGet.User,
+				userTestGet.User,
+			},
+		},
+	}
 	userTestGet = resources.User{
 		User: ionoscloud.User{
 			Id: &testUserVar,
@@ -50,6 +60,14 @@ var (
 		Users: ionoscloud.Users{
 			Id:    &testUserVar,
 			Items: &[]ionoscloud.User{userTestGet.User},
+		},
+	}
+	groupUsersTestList = resources.GroupMembers{
+		GroupMembers: ionoscloud.GroupMembers{
+			Items: &[]ionoscloud.User{
+				userTestGet.User,
+				userTestGet.User,
+			},
 		},
 	}
 	userProperties = resources.UserProperties{
@@ -90,6 +108,44 @@ func TestUserCmd(t *testing.T) {
 		err = errors.New("non-available cmd")
 	}
 	assert.NoError(t, err)
+}
+
+func TestPreRunUserList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunUserList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunUserListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("firstname=%s", testQueryParamVar)})
+		err := PreRunUserList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunUserListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunUserList(cfg)
+		assert.Error(t, err)
+	})
 }
 
 func TestPreRunUserId(t *testing.T) {
@@ -153,7 +209,24 @@ func TestRunUserList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.User.EXPECT().List().Return(users, &testResponse, nil)
+		rm.CloudApiV6Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(users, &testResponse, nil)
+		err := RunUserList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunUserListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.User.EXPECT().List(testListQueryParam).Return(resources.Users{}, &testResponse, nil)
 		err := RunUserList(cfg)
 		assert.NoError(t, err)
 	})
@@ -166,7 +239,7 @@ func TestRunUserListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.User.EXPECT().List().Return(users, nil, testUserErr)
+		rm.CloudApiV6Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(users, nil, testUserErr)
 		err := RunUserList(cfg)
 		assert.Error(t, err)
 	})
@@ -340,6 +413,25 @@ func TestRunUserDelete(t *testing.T) {
 	})
 }
 
+func TestRunUserDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(usersList, &testResponse, nil)
+		rm.CloudApiV6Mocks.User.EXPECT().Delete(testUserVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.User.EXPECT().Delete(testUserVar).Return(&testResponse, nil)
+		err := RunUserDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunUserDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -486,6 +578,26 @@ func TestRunGroupUserRemove(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
+		rm.CloudApiV6Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(&testResponse, nil)
+		err := RunGroupUserRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupUserRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Group.EXPECT().ListUsers(testGroupVar).Return(groupUsersTestList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(&testResponse, nil)
 		err := RunGroupUserRemove(cfg)
 		assert.NoError(t, err)

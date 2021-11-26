@@ -176,9 +176,9 @@ func (mr *MockNetworkLoadBalancersServiceMockRecorder) GetForwardingRule(datacen
 }
 
 // List mocks base method.
-func (m *MockNetworkLoadBalancersService) List(datacenterId string) (resources.NetworkLoadBalancers, *resources.Response, error) {
+func (m *MockNetworkLoadBalancersService) List(datacenterId string, params resources.ListQueryParams) (resources.NetworkLoadBalancers, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", datacenterId)
+	ret := m.ctrl.Call(m, "List", datacenterId, params)
 	ret0, _ := ret[0].(resources.NetworkLoadBalancers)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -186,15 +186,15 @@ func (m *MockNetworkLoadBalancersService) List(datacenterId string) (resources.N
 }
 
 // List indicates an expected call of List.
-func (mr *MockNetworkLoadBalancersServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
+func (mr *MockNetworkLoadBalancersServiceMockRecorder) List(datacenterId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockNetworkLoadBalancersService)(nil).List), datacenterId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockNetworkLoadBalancersService)(nil).List), datacenterId, params)
 }
 
 // ListFlowLogs mocks base method.
-func (m *MockNetworkLoadBalancersService) ListFlowLogs(datacenterId, networkLoadBalancerId string) (resources.FlowLogs, *resources.Response, error) {
+func (m *MockNetworkLoadBalancersService) ListFlowLogs(datacenterId, networkLoadBalancerId string, params resources.ListQueryParams) (resources.FlowLogs, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListFlowLogs", datacenterId, networkLoadBalancerId)
+	ret := m.ctrl.Call(m, "ListFlowLogs", datacenterId, networkLoadBalancerId, params)
 	ret0, _ := ret[0].(resources.FlowLogs)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -202,15 +202,15 @@ func (m *MockNetworkLoadBalancersService) ListFlowLogs(datacenterId, networkLoad
 }
 
 // ListFlowLogs indicates an expected call of ListFlowLogs.
-func (mr *MockNetworkLoadBalancersServiceMockRecorder) ListFlowLogs(datacenterId, networkLoadBalancerId interface{}) *gomock.Call {
+func (mr *MockNetworkLoadBalancersServiceMockRecorder) ListFlowLogs(datacenterId, networkLoadBalancerId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFlowLogs", reflect.TypeOf((*MockNetworkLoadBalancersService)(nil).ListFlowLogs), datacenterId, networkLoadBalancerId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFlowLogs", reflect.TypeOf((*MockNetworkLoadBalancersService)(nil).ListFlowLogs), datacenterId, networkLoadBalancerId, params)
 }
 
 // ListForwardingRules mocks base method.
-func (m *MockNetworkLoadBalancersService) ListForwardingRules(datacenterId, networkLoadBalancerId string) (resources.NetworkLoadBalancerForwardingRules, *resources.Response, error) {
+func (m *MockNetworkLoadBalancersService) ListForwardingRules(datacenterId, networkLoadBalancerId string, params resources.ListQueryParams) (resources.NetworkLoadBalancerForwardingRules, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListForwardingRules", datacenterId, networkLoadBalancerId)
+	ret := m.ctrl.Call(m, "ListForwardingRules", datacenterId, networkLoadBalancerId, params)
 	ret0, _ := ret[0].(resources.NetworkLoadBalancerForwardingRules)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -218,9 +218,9 @@ func (m *MockNetworkLoadBalancersService) ListForwardingRules(datacenterId, netw
 }
 
 // ListForwardingRules indicates an expected call of ListForwardingRules.
-func (mr *MockNetworkLoadBalancersServiceMockRecorder) ListForwardingRules(datacenterId, networkLoadBalancerId interface{}) *gomock.Call {
+func (mr *MockNetworkLoadBalancersServiceMockRecorder) ListForwardingRules(datacenterId, networkLoadBalancerId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListForwardingRules", reflect.TypeOf((*MockNetworkLoadBalancersService)(nil).ListForwardingRules), datacenterId, networkLoadBalancerId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListForwardingRules", reflect.TypeOf((*MockNetworkLoadBalancersService)(nil).ListForwardingRules), datacenterId, networkLoadBalancerId, params)
 }
 
 // Update mocks base method.

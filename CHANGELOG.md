@@ -1,5 +1,32 @@
 # Changelog
 
+## [6.0.0-beta.8]
+
+- feature: added `token` commands, added support for Auth API, to generate, list, delete Tokens
+- dependency-update: added SDK-Go-Auth version v1.0.1
+
+## [6.0.0-beta.7]
+
+- feature: added `--filters`, `--max-results`, `--order-by` options on all list commands
+- feature: added `-all` option for remove and detach commands
+- enhancement: added completion support for `--k8s-version` option
+- dependency-update: SDK-Go version from v6.0.0-beta.6 to v6.0.0-beta.9
+
+## [6.0.0-beta.6]
+
+- bug-fix: fixed `login` command to support username and password or token authentication
+
+## [6.0.0-beta.5]
+
+- Added `--all` option on delete commands
+- Updated SDK-Go version to v6.0.0-beta.6
+- Added `--image-alias` option to volume commands
+- Removed `--public` and `--gateway-ip` options from k8s cluster commands
+- Renamed `--ssh-keys` to `--ssh-key-paths` on volume commands and support uploading SSH Keys from files
+- Added BootVolume, `--volume-id` and BootCdrom, `--cdrom-id` to server update command
+- Renamed `--target-ip` to `--destination-ip`, `--type` to `--direction` from firewall rule commands
+- Updated documentation with usage of boolean flags
+
 ## [6.0.0-beta.4]
 
 - Added usage message on required flags
@@ -13,8 +40,8 @@
 - Renamed `--bucket-name` flag to `--s3bucket` flag
 - Added `--verbose` flag
 - Updated Cobra version to [v1.2.1](https://github.com/spf13/cobra/releases/tag/v1.2.0), improving completions with descriptions
-- Update Go version to 1.16
-- Update SDK-Go version to v6.0.0-beta.4
+- Updated Go version to 1.16
+- Updated SDK-Go version to v6.0.0-beta.4
 
 ## [6.0.0-beta2]
 

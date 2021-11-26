@@ -49,7 +49,7 @@ Required values to run a command:
       --cores int                  The total number of cores for the Node (default 2)
       --cpu-family string          CPU Type (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
-      --dhcp                       Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP (default true)
+      --dhcp                       Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                      Force command to execute without user input
   -h, --help                       Print usage
       --k8s-version string         The K8s version for the NodePool. If not set, the default one will be used

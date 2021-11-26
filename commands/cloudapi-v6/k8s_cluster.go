@@ -9,6 +9,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -61,17 +62,26 @@ func K8sClusterCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, k8sCmd, core.CommandBuilder{
 		Namespace:  "k8s",
 		Resource:   "cluster",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Kubernetes Clusters",
-		LongDesc:   "Use this command to get a list of existing Kubernetes Clusters.",
+		LongDesc:   "Use this command to get a list of existing Kubernetes Clusters.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.K8sClustersFiltersUsage(),
 		Example:    listK8sClustersExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunK8sClusterList,
 		CmdRun:     RunK8sClusterList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.K8sClustersFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.K8sClustersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -115,10 +125,11 @@ You can wait for the Cluster to be in "ACTIVE" state using ` + "`" + `--wait-for
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "UnnamedCluster", "The name for the K8s Cluster")
 	create.AddStringFlag(cloudapiv6.ArgK8sVersion, "", "", "The K8s version for the Cluster. If not set, the default one will be used")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.K8sVersionsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(cloudapiv6.ArgS3Bucket, "", "", "S3 Bucket name configured for K8s usage")
 	create.AddStringSliceFlag(cloudapiv6.ArgApiSubnets, "", []string{""}, "Access to the K8s API server is restricted to these CIDRs. Cluster-internal traffic is not affected by this restriction. If no allowlist is specified, access is not restricted. If an IP without subnet mask is provided, the default value will be used: 32 for IPv4 and 128 for IPv6")
-	create.AddBoolFlag(cloudapiv6.ArgPublic, "", true, "The indicator if the Cluster is public or private")
-	create.AddStringFlag(cloudapiv6.ArgGatewayIp, "", "", "The IP address of the gateway used by the Cluster. This is mandatory when `public` is set to `false` and should not be provided otherwise")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Cluster creation to be executed")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new Cluster to be in ACTIVE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Cluster/Request [seconds]")
@@ -146,6 +157,11 @@ Required values to run command:
 	})
 	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the K8s Cluster")
 	update.AddStringFlag(cloudapiv6.ArgK8sVersion, "", "", "The K8s version for the Cluster")
+	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgK8sVersion,
+		func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+			clusterId := viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgK8sClusterId))
+			return completer.K8sClusterUpgradeVersions(os.Stderr, clusterId), cobra.ShellCompDirectiveNoFileComp
+		})
 	update.AddStringFlag(cloudapiv6.ArgS3Bucket, "", "", "S3 Bucket name configured for K8s usage. It will overwrite the previous value")
 	update.AddStringSliceFlag(cloudapiv6.ArgApiSubnets, "", []string{""}, "Access to the K8s API server is restricted to these CIDRs. Cluster-internal traffic is not affected by this restriction. If no allowlist is specified, access is not restricted. If an IP without subnet mask is provided, the default value will be used: 32 for IPv4 and 128 for IPv6. This will overwrite the existing ones")
 	update.AddStringFlag(cloudapiv6.ArgK8sMaintenanceDay, "", "", "The day of the week for Maintenance Window has the English day format as following: Monday or Saturday")
@@ -177,7 +193,7 @@ Required values to run command:
 
 * K8s Cluster Id`,
 		Example:    deleteK8sClusterExample,
-		PreCmdRun:  PreRunK8sClusterId,
+		PreCmdRun:  PreRunK8sClusterDelete,
 		CmdRun:     RunK8sClusterDelete,
 		InitClient: true,
 	})
@@ -186,17 +202,40 @@ Required values to run command:
 		return completer.K8sClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Cluster deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Kubernetes clusters.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for Request [seconds]")
 
 	return k8sCmd
+}
+
+func PreRunK8sClusterList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.K8sClustersFilters(), completer.K8sClustersFiltersUsage())
+	}
+	return nil
 }
 
 func PreRunK8sClusterId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgK8sClusterId)
 }
 
+func PreRunK8sClusterDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgK8sClusterId},
+		[]string{cloudapiv6.ArgAll},
+	)
+}
+
 func RunK8sClusterList(c *core.CommandConfig) error {
-	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	k8ss, resp, err := c.CloudApiV6Services.K8s().ListClusters(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -279,19 +318,30 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 }
 
 func RunK8sClusterDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("K8s cluster with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	resp, err := c.CloudApiV6Services.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	k8sClusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
+	if allFlag {
+		resp, err = DeleteAllK8sClusters(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting K8s cluster with id: %v...", k8sClusterId)
+		resp, err = c.CloudApiV6Services.K8s().DeleteCluster(k8sClusterId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
 }
@@ -313,16 +363,6 @@ func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, erro
 		}
 	}
 	proper.SetK8sVersion(k8sversion)
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPublic)) {
-		public := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgPublic))
-		proper.SetPublic(public)
-		c.Printer.Verbose("Property Public set: %v", public)
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)) {
-		gatewayIp := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp))
-		proper.SetGatewayIp(gatewayIp)
-		c.Printer.Verbose("Property GatewayIp set: %v", gatewayIp)
-	}
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket)) {
 		s3buckets := make([]ionoscloud.S3Bucket, 0)
 		name := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3Bucket))
@@ -403,11 +443,54 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 	}
 }
 
+func DeleteAllK8sClusters(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("K8sClusters to be deleted:")
+	k8Clusters, resp, err := c.CloudApiV6Services.K8s().ListClusters(resources.ListQueryParams{})
+	if err != nil {
+		return nil, err
+	}
+	if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
+		for _, k8sCluster := range *k8sClustersItems {
+			if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("K8sCluster Id: " + *id)
+			}
+			if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("K8sCluster Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sClusters"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the K8sClusters...")
+
+		for _, k8sCluster := range *k8sClustersItems {
+			if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting K8sCluster with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.K8s().DeleteCluster(*id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
+}
+
 // Output Printing
 
-var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "Public", "State", "MaintenanceWindow"}
+var defaultK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow"}
 
-var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "Public", "GatewayIp", "S3Bucket", "ApiSubnetAllowList"}
+var allK8sClusterCols = []string{"ClusterId", "Name", "K8sVersion", "State", "MaintenanceWindow", "AvailableUpgradeVersions", "ViableNodePoolVersions", "S3Bucket", "ApiSubnetAllowList"}
 
 type K8sClusterPrint struct {
 	ClusterId                string   `json:"ClusterId,omitempty"`
@@ -417,8 +500,6 @@ type K8sClusterPrint struct {
 	ViableNodePoolVersions   []string `json:"ViableNodePoolVersions,omitempty"`
 	MaintenanceWindow        string   `json:"MaintenanceWindow,omitempty"`
 	State                    string   `json:"State,omitempty"`
-	GatewayIps               string   `json:"GatewayIps,omitempty"`
-	Public                   bool     `json:"Public,omitempty"`
 	S3Bucket                 []string `json:"S3Bucket,omitempty"`
 	ApiSubnetAllowList       []string `json:"ApiSubnetAllowList,omitempty"`
 }
@@ -452,8 +533,9 @@ func getK8sClusterCols(flagName string, outErr io.Writer) []string {
 			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
 			"ViableNodePoolVersions":   "ViableNodePoolVersions",
 			"MaintenanceWindow":        "MaintenanceWindow",
-			"Public":                   "Public",
-			"GatewayIps":               "GatewayIps",
+			"State":                    "State",
+			"S3Bucket":                 "S3Bucket",
+			"ApiSubnetAllowList":       "ApiSubnetAllowList",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -514,12 +596,6 @@ func getK8sClustersKVMaps(us []resources.K8sCluster) []map[string]interface{} {
 				if time, ok := maintenance.GetTimeOk(); ok && time != nil {
 					uPrint.MaintenanceWindow = fmt.Sprintf("%s %s", uPrint.MaintenanceWindow, *time)
 				}
-			}
-			if pub, ok := properties.GetPublicOk(); ok && pub != nil {
-				uPrint.Public = *pub
-			}
-			if gatewayIps, ok := properties.GetGatewayIpOk(); ok && gatewayIps != nil {
-				uPrint.GatewayIps = *gatewayIps
 			}
 			if apiSubnetAllowListOk, ok := properties.GetApiSubnetAllowListOk(); ok && apiSubnetAllowListOk != nil {
 				uPrint.ApiSubnetAllowList = *apiSubnetAllowListOk

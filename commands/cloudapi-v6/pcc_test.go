@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -24,6 +25,24 @@ var (
 			Properties: &ionoscloud.PrivateCrossConnectProperties{
 				Name:        &testPccVar,
 				Description: &testPccVar,
+			},
+		},
+	}
+	pccTestId = resources.PrivateCrossConnect{
+		PrivateCrossConnect: ionoscloud.PrivateCrossConnect{
+			Id: &testPccVar,
+			Properties: &ionoscloud.PrivateCrossConnectProperties{
+				Name:        &testPccVar,
+				Description: &testPccVar,
+			},
+		},
+	}
+	pccsList = resources.PrivateCrossConnects{
+		PrivateCrossConnects: ionoscloud.PrivateCrossConnects{
+			Id: &testPccVar,
+			Items: &[]ionoscloud.PrivateCrossConnect{
+				pccTestId.PrivateCrossConnect,
+				pccTestId.PrivateCrossConnect,
 			},
 		},
 	}
@@ -74,6 +93,44 @@ func TestPccCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunPccList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunPccList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunPccListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunPccList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunPccListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunPccList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunPccId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -107,7 +164,24 @@ func TestRunPccList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().List().Return(pccs, &testResponse, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccs, &testResponse, nil)
+		err := RunPccList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunPccListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().List(testListQueryParam).Return(resources.PrivateCrossConnects{}, &testResponse, nil)
 		err := RunPccList(cfg)
 		assert.NoError(t, err)
 	})
@@ -120,7 +194,7 @@ func TestRunPccListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.Pcc.EXPECT().List().Return(pccs, nil, testPccErr)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccs, nil, testPccErr)
 		err := RunPccList(cfg)
 		assert.Error(t, err)
 	})
@@ -347,6 +421,25 @@ func TestRunPccDelete(t *testing.T) {
 	})
 }
 
+func TestRunPccDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
+		err := RunPccDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunPccDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -431,24 +524,5 @@ func TestGetPccsColsErr(t *testing.T) {
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestGetPccsIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() {}
-	w := bufio.NewWriter(&b)
-	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
-	assert.NoError(t, err)
-	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	getPccsIds(w)
-	err = w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }

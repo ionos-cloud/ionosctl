@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -47,6 +48,15 @@ var (
 			Items: &[]ionoscloud.NatGatewayRule{natgatewayRuleTestGet.NatGatewayRule},
 		},
 	}
+	natgatewayRulesList = resources.NatGatewayRules{
+		NatGatewayRules: ionoscloud.NatGatewayRules{
+			Id: &testNatGatewayRuleVar,
+			Items: &[]ionoscloud.NatGatewayRule{
+				natgatewayRuleTestGet.NatGatewayRule,
+				natgatewayRuleTestGet.NatGatewayRule,
+			},
+		},
+	}
 	natgatewayRuleProperties = resources.NatGatewayRuleProperties{
 		NatGatewayRuleProperties: ionoscloud.NatGatewayRuleProperties{
 			Name:         &testNatGatewayRuleNewVar,
@@ -74,6 +84,50 @@ var (
 	testNatGatewayRuleNewVar      = "test-new-natgateway-rule"
 	testNatGatewayRuleErr         = errors.New("natgateway-rule test error")
 )
+
+func TestPreRunNatGatewayRuleList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
+		err := PreRunNATGatewayRuleList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunNatGatewayRuleListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunNATGatewayRuleList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunNatGatewayRuleListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunNATGatewayRuleList(cfg)
+		assert.Error(t, err)
+	})
+}
 
 func TestPreRunNatGatewayRuleCreate(t *testing.T) {
 	var b bytes.Buffer
@@ -141,7 +195,26 @@ func TestRunNatGatewayRuleList(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListRules(testNatGatewayRuleVar, testNatGatewayRuleVar).Return(natgatewayRules, &testResponse, nil)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListRules(testNatGatewayRuleVar, testNatGatewayRuleVar, resources.ListQueryParams{}).Return(natgatewayRules, &testResponse, nil)
+		err := RunNatGatewayRuleList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNatGatewayRuleListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListRules(testNatGatewayRuleVar, testNatGatewayRuleVar, testListQueryParam).Return(resources.NatGatewayRules{}, &testResponse, nil)
 		err := RunNatGatewayRuleList(cfg)
 		assert.NoError(t, err)
 	})
@@ -156,7 +229,7 @@ func TestRunNatGatewayRuleListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListRules(testNatGatewayRuleVar, testNatGatewayRuleVar).Return(natgatewayRules, nil, testNatGatewayRuleErr)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListRules(testNatGatewayRuleVar, testNatGatewayRuleVar, resources.ListQueryParams{}).Return(natgatewayRules, nil, testNatGatewayRuleErr)
 		err := RunNatGatewayRuleList(cfg)
 		assert.Error(t, err)
 	})
@@ -373,6 +446,26 @@ func TestRunNatGatewayRuleDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNatGatewayRuleVar)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().DeleteRule(testNatGatewayRuleVar, testNatGatewayRuleVar, testNatGatewayRuleVar).Return(&testResponse, nil)
+		err := RunNatGatewayRuleDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunNatGatewayRuleDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().ListRules(testNatGatewayRuleVar, testNatGatewayRuleVar, resources.ListQueryParams{}).Return(natgatewayRulesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.NatGateway.EXPECT().DeleteRule(testNatGatewayRuleVar, testNatGatewayRuleVar, testNatGatewayRuleVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().DeleteRule(testNatGatewayRuleVar, testNatGatewayRuleVar, testNatGatewayRuleVar).Return(&testResponse, nil)
 		err := RunNatGatewayRuleDelete(cfg)
 		assert.NoError(t, err)

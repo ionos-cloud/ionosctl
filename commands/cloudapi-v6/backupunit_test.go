@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -25,6 +26,25 @@ var (
 				Email:    &testBackupUnitVar,
 				Name:     &testBackupUnitVar,
 				Password: &testBackupUnitVar,
+			},
+		},
+	}
+	backupUnitTestId = resources.BackupUnit{
+		BackupUnit: ionoscloud.BackupUnit{
+			Id: &testBackUnitId,
+			Properties: &ionoscloud.BackupUnitProperties{
+				Email:    &testBackupUnitVar,
+				Name:     &testBackupUnitVar,
+				Password: &testBackupUnitVar,
+			},
+		},
+	}
+	backupUnitsList = resources.BackupUnits{
+		BackupUnits: ionoscloud.BackupUnits{
+			Id: &testBackUnitId,
+			Items: &[]ionoscloud.BackupUnit{
+				backupUnitTestId.BackupUnit,
+				backupUnitTestId.BackupUnit,
 			},
 		},
 	}
@@ -61,7 +81,17 @@ var (
 			},
 		},
 	}
+	testListQueryParam = resources.ListQueryParams{
+		Filters: &map[string]string{
+			testQueryParamVar: testQueryParamVar,
+		},
+		OrderBy:    &testQueryParamVar,
+		MaxResults: &testMaxResultsVar,
+	}
+	testQueryParamVar    = "test-filter"
+	testMaxResultsVar    = int32(2)
 	testBackupUnitVar    = "test-backup-unit"
+	testBackUnitId       = "87aa25ec-5f74-4927-bd95-c8e42db06fe2"
 	testBackupUnitNewVar = "test-new-backup-unit"
 	testBackupUnitErr    = errors.New("backup-unit test error")
 )
@@ -73,6 +103,57 @@ func TestBackupunitCmd(t *testing.T) {
 		err = errors.New("non-available cmd")
 	}
 	assert.NoError(t, err)
+}
+
+func TestPreRunBackupUnitListNoFilter(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunBackupUnitList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunBackupUnitList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("name=%s", testQueryParamVar)})
+		err := PreRunBackupUnitList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunBackupUnitListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunBackupUnitList(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunBackupUnitListFormatErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), testBackupUnitVar)
+		err := PreRunBackupUnitList(cfg)
+		assert.Error(t, err)
+	})
 }
 
 func TestPreRunBackupUnitId(t *testing.T) {
@@ -135,7 +216,24 @@ func TestRunBackupUnitList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List().Return(backupUnits, nil, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnits, nil, nil)
+		err := RunBackupUnitList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunBackupUnitListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(testListQueryParam).Return(resources.BackupUnits{}, nil, nil)
 		err := RunBackupUnitList(cfg)
 		assert.NoError(t, err)
 	})
@@ -148,7 +246,7 @@ func TestRunBackupUnitListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List().Return(backupUnits, nil, testBackupUnitErr)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnits, nil, testBackupUnitErr)
 		err := RunBackupUnitList(cfg)
 		assert.Error(t, err)
 	})
@@ -340,6 +438,23 @@ func TestRunBackupUnitDelete(t *testing.T) {
 		viper.Set(config.ArgForce, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testBackupUnitVar)
 		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackupUnitVar).Return(&testResponse, nil)
+		err := RunBackupUnitDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunBackupUnitDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnitsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
 	})

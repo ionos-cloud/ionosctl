@@ -138,10 +138,6 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 				URL:         getServerUrl(hostUrl),
 				Description: "Production",
 			},
-			{
-				URL:         getServerUrl(hostUrl),
-				Description: "Staging",
-			},
 		},
 		OperationServers: map[string]ServerConfigurations{},
 	}

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"strconv"
@@ -58,6 +59,32 @@ var (
 			},
 		},
 	}
+	serverCubeCreateImg = resources.Server{
+		Server: ionoscloud.Server{
+			Properties: &ionoscloud.ServerProperties{
+				Name:             &testServerVar,
+				Type:             &testServerCubeType,
+				TemplateUuid:     &testServerVar,
+				CpuFamily:        &testCpuFamilyType,
+				AvailabilityZone: &testServerVar,
+			},
+			Entities: &ionoscloud.ServerEntities{
+				Volumes: &ionoscloud.AttachedVolumes{
+					Items: &[]ionoscloud.Volume{
+						{
+							Properties: &ionoscloud.VolumeProperties{
+								Name:          &testServerVar,
+								Bus:           &testServerVar,
+								Type:          &testVolumeType,
+								ImageAlias:    &testServerVar,
+								ImagePassword: &testServerVar,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
 	s = ionoscloud.Server{
 		Id: &testServerVar,
 		Metadata: &ionoscloud.DatacenterElementMetadata{
@@ -78,6 +105,15 @@ var (
 			Items: &[]ionoscloud.Server{s},
 		},
 	}
+	ssList = resources.Servers{
+		Servers: ionoscloud.Servers{
+			Id: &testServerVar,
+			Items: &[]ionoscloud.Server{
+				s,
+				s,
+			},
+		},
+	}
 	serverProperties = resources.ServerProperties{
 		ServerProperties: ionoscloud.ServerProperties{
 			Name:             &testServerNewVar,
@@ -85,6 +121,12 @@ var (
 			Ram:              &ramNew,
 			CpuFamily:        &testServerNewVar,
 			AvailabilityZone: &testServerNewVar,
+			BootVolume: &ionoscloud.ResourceReference{
+				Id: &testServerVar,
+			},
+			BootCdrom: &ionoscloud.ResourceReference{
+				Id: &testServerVar,
+			},
 		},
 	}
 	serverNew = resources.Server{
@@ -119,6 +161,47 @@ func TestServerCmd(t *testing.T) {
 		err = errors.New("non-available cmd")
 	}
 	assert.NoError(t, err)
+}
+
+func TestPreRunServerList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		err := PreRunServerList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunServerList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunServerList(cfg)
+		assert.Error(t, err)
+	})
 }
 
 func TestPreRunDcServerIds(t *testing.T) {
@@ -162,6 +245,23 @@ func TestPreRunServerCreate(t *testing.T) {
 	})
 }
 
+func TestPreRunServerCreateImageAlias(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCores), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRam), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSshKeyPaths), []string{testServerVar})
+		err := PreRunServerCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestPreRunServerCreateCube(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -174,6 +274,39 @@ func TestPreRunServerCreateCube(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testServerVar)
 		err := PreRunServerCreate(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerCreateCubeImgId(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testServerCubeType)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testServerVar)
+		err := PreRunServerCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerCreateCubeImgErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testServerCubeType)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testServerVar)
+		err := PreRunServerCreate(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -200,6 +333,7 @@ func TestPreRunServerCreateCubeImg(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testServerCubeType)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testServerVar)
 		err := PreRunServerCreate(cfg)
 		assert.NoError(t, err)
 	})
@@ -214,7 +348,25 @@ func TestRunServerList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		rm.CloudApiV6Mocks.Server.EXPECT().List(testServerVar).Return(ss, &testResponse, nil)
+		rm.CloudApiV6Mocks.Server.EXPECT().List(testServerVar, resources.ListQueryParams{}).Return(ss, &testResponse, nil)
+		err := RunServerList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Server.EXPECT().List(testServerVar, testListQueryParam).Return(resources.Servers{}, &testResponse, nil)
 		err := RunServerList(cfg)
 		assert.NoError(t, err)
 	})
@@ -228,7 +380,7 @@ func TestRunServerListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
-		rm.CloudApiV6Mocks.Server.EXPECT().List(testServerVar).Return(ss, nil, testServerErr)
+		rm.CloudApiV6Mocks.Server.EXPECT().List(testServerVar, resources.ListQueryParams{}).Return(ss, nil, testServerErr)
 		err := RunServerList(cfg)
 		assert.Error(t, err)
 	})
@@ -342,6 +494,52 @@ func TestRunServerCreateCube(t *testing.T) {
 	})
 }
 
+func TestRunServerCreateCubeImgAlias(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeName), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testServerCubeType)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV6Mocks.Server.EXPECT().Create(testServerVar, serverCubeCreateImg).Return(&resources.Server{Server: s}, nil, nil)
+		err := RunServerCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerCreateCubeImgSshErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeName), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testServerCubeType)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgTemplateId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSshKeyPaths), []string{testServerVar})
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		err := RunServerCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunServerCreateWaitState(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -424,6 +622,8 @@ func TestRunServerUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCPUFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponse, nil)
 		err := RunServerUpdate(cfg)
@@ -445,6 +645,8 @@ func TestRunServerUpdateWaitStateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCPUFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		rm.CloudApiV6Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, nil)
@@ -468,6 +670,8 @@ func TestRunServerUpdateWaitState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCPUFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		rm.CloudApiV6Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, nil)
@@ -492,6 +696,8 @@ func TestRunServerUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCPUFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, nil, testServerErr)
 		err := RunServerUpdate(cfg)
@@ -513,6 +719,8 @@ func TestRunServerUpdateResponseErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCPUFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponse, testServerErr)
 		err := RunServerUpdate(cfg)
@@ -534,6 +742,8 @@ func TestRunServerUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRam), ramNew)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), testServerNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCPUFamily), testServerNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCdromId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), true)
 		rm.CloudApiV6Mocks.Server.EXPECT().Update(testServerVar, testServerVar, serverProperties).Return(&serverNew, &testResponse, nil)
 		rm.CloudApiV6Mocks.Request.EXPECT().GetStatus(testRequestIdVar).Return(&testRequestStatus, nil, testRequestErr)
@@ -554,6 +764,27 @@ func TestRunServerDelete(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV6Mocks.Server.EXPECT().Delete(testServerVar, testServerVar).Return(&testResponse, nil)
+		err := RunServerDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Server.EXPECT().List(testServerVar, resources.ListQueryParams{}).Return(ssList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Server.EXPECT().Delete(testServerVar, testServerVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Server.EXPECT().Delete(testServerVar, testServerVar).Return(&testResponse, nil)
 		err := RunServerDelete(cfg)
 		assert.NoError(t, err)
@@ -1001,25 +1232,5 @@ func TestGetServersColsErr(t *testing.T) {
 	err := w.Flush()
 	assert.NoError(t, err)
 	re := regexp.MustCompile(`unknown column Unknown`)
-	assert.True(t, re.Match(b.Bytes()))
-}
-
-func TestGetCubeServersIds(t *testing.T) {
-	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
-	var b bytes.Buffer
-	clierror.ErrAction = func() { return }
-	w := bufio.NewWriter(&b)
-	err := os.Setenv(ionoscloud.IonosUsernameEnvVar, "user")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosPasswordEnvVar, "pass")
-	assert.NoError(t, err)
-	err = os.Setenv(ionoscloud.IonosTokenEnvVar, "tok")
-	assert.NoError(t, err)
-	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
-	viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-	getCubeServersIds(w, testServerVar)
-	err = w.Flush()
-	assert.NoError(t, err)
-	re := regexp.MustCompile(`401 Unauthorized`)
 	assert.True(t, re.Match(b.Bytes()))
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -48,9 +49,9 @@ func NicCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List NICs",
-		LongDesc:   "Use this command to get a list of NICs on your account.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		LongDesc:   "Use this command to get a list of NICs on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NICsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listNicExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunNicList,
 		CmdRun:     RunNicList,
 		InitClient: true,
 	})
@@ -61,6 +62,15 @@ func NicCmd() *core.Command {
 	list.AddStringFlag(cloudapiv6.ArgServerId, "", "", cloudapiv6.ServerId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NICsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NICsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -124,8 +134,8 @@ Required values to run a command:
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Internet Access", "The name of the NIC")
 	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "IPs assigned to the NIC. This can be a collection")
-	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC")
-	create.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Activate or deactivate the Firewall")
+	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Set to false if you wish to disable DHCP on the NIC. E.g.: --dhcp=true, --dhcp=false")
+	create.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false")
 	create.AddStringFlag(cloudapiv6.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
@@ -181,12 +191,12 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Activate or deactivate the Firewall")
+	update.AddBoolFlag(cloudapiv6.ArgFirewallActive, "", cloudapiv6.DefaultFirewallActive, "Activate or deactivate the Firewall. E.g.: --firewall-active=true, --firewall-active=false")
 	update.AddStringFlag(cloudapiv6.ArgFirewallType, "", "INGRESS", "The type of Firewall Rules that will be allowed on the NIC")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFirewallType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false)")
+	update.AddBoolFlag(cloudapiv6.ArgDhcp, "", cloudapiv6.DefaultDhcp, "Boolean value that indicates if the NIC is using DHCP (true) or not (false). E.g.: --dhcp=true, --dhcp=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC update [seconds]")
 	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "IPs assigned to the NIC")
@@ -210,7 +220,7 @@ Required values to run command:
 * Server Id
 * NIC Id`,
 		Example:    deleteNicExample,
-		PreCmdRun:  PreRunDcServerNicIds,
+		PreCmdRun:  PreRunNicDelete,
 		CmdRun:     RunNicDelete,
 		InitClient: true,
 	})
@@ -228,15 +238,43 @@ Required values to run command:
 			viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgServerId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Nics from a Server.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC deletion [seconds]")
 
 	return nicCmd
 }
 
+func PreRunNicList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NICsFilters(), completer.NICsFiltersUsage())
+	}
+	return nil
+}
+
+func PreRunNicDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgNicId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgAll},
+	)
+}
+
 func RunNicList(c *core.CommandConfig) error {
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
 	nics, resp, err := c.CloudApiV6Services.Nics().List(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)))
+		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
+		listQueryParams,
+	)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -355,26 +393,82 @@ func RunNicUpdate(c *core.CommandConfig) error {
 }
 
 func RunNicDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("Nic with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)))
-	resp, err := c.CloudApiV6Services.Nics().Delete(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DeleteAllNics(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting Nic with id: %v...", nicId)
+		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getNicPrint(resp, c, nil))
+}
+
+func DeleteAllNics(c *core.CommandConfig) (*resources.Response, error) {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+	_ = c.Printer.Print("Nics to be deleted:")
+	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId, resources.ListQueryParams{})
+	if err != nil {
+		return nil, err
+	}
+	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
+		for _, nic := range *nicsItems {
+			if id, ok := nic.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Nic Id: " + *id)
+			}
+			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print("Nic Name: " + *name)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Nics...")
+
+		for _, nic := range *nicsItems {
+			if id, ok := nic.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Datacenter ID: %v", dcId)
+				c.Printer.Verbose("Server ID: %v", serverId)
+				c.Printer.Verbose("Starting deleting Nic with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // LoadBalancer Nic Commands
@@ -449,7 +543,7 @@ Required values to run command:
 		ShortDesc:  "List attached NICs from a Load Balancer",
 		LongDesc:   "Use this command to get a list of attached NICs to a Load Balancer from a Data Center.\n\nRequired values to run command:\n\n* Data Center Id\n* Load Balancer Id",
 		Example:    listNicsLoadbalancerExample,
-		PreCmdRun:  PreRunDcLoadBalancerIds,
+		PreCmdRun:  PreRunLoadBalancerNicList,
 		CmdRun:     RunLoadBalancerNicList,
 		InitClient: true,
 	})
@@ -464,6 +558,12 @@ Required values to run command:
 	listNics.AddStringFlag(cloudapiv6.ArgLoadBalancerId, "", "", cloudapiv6.LoadBalancerId, core.RequiredFlagOption())
 	_ = listNics.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLoadBalancerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LoadbalancersIds(os.Stderr, viper.GetString(core.GetFlagName(listNics.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	listNics.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	listNics.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	listNics.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2.")
+	_ = listNics.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NICsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -519,7 +619,7 @@ Required values to run command:
 * Load Balancer Id
 * NIC Id`,
 		Example:    detachNicLoadbalancerExample,
-		PreCmdRun:  PreRunDcNicLoadBalancerIds,
+		PreCmdRun:  PreRunNicDetach,
 		CmdRun:     RunLoadBalancerNicDetach,
 		InitClient: true,
 	})
@@ -542,12 +642,30 @@ Required values to run command:
 	})
 	detachNic.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for NIC detachment to be executed")
 	detachNic.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for NIC detachment [seconds]")
+	detachNic.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all Nics.")
 
 	return loadbalancerNicCmd
 }
 
+func PreRunLoadBalancerNicList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLoadBalancerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NICsFilters(), completer.NICsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcNicLoadBalancerIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNicId, cloudapiv6.ArgLoadBalancerId)
+}
+
+func PreRunNicDetach(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNicId, cloudapiv6.ArgLoadBalancerId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNicId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
@@ -566,9 +684,18 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicList(c *core.CommandConfig) error {
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
 	attachedNics, _, err := c.CloudApiV6Services.Loadbalancers().ListNics(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+		listQueryParams,
 	)
 	if err != nil {
 		return err
@@ -589,22 +716,75 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
-		return err
-	}
-	resp, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
-	)
-	if err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DetachAllNics(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
+			return err
+		}
+		resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
+		)
+		if err != nil {
+			return err
+		}
 
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getNicPrint(resp, c, nil))
+}
+
+func DetachAllNics(c *core.CommandConfig) (*resources.Response, error) {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
+	_ = c.Printer.Print("Nics to be detached:")
+	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId, resources.ListQueryParams{})
+	if err != nil {
+		return nil, err
+	}
+	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
+		for _, nic := range *nicsItems {
+			if id, ok := nic.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Nic Id: " + *id)
+			}
+			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" Nic Name: " + *name)
+				}
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Nics"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Detaching all the Nics...")
+		for _, nic := range *nicsItems {
+			if id, ok := nic.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting detaching Nic with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // Output Printing
@@ -684,11 +864,13 @@ func getNicsCols(flagName string, outErr io.Writer) []string {
 }
 
 func getNics(nics resources.Nics) []resources.Nic {
-	ns := make([]resources.Nic, 0)
-	for _, s := range *nics.Items {
-		ns = append(ns, resources.Nic{Nic: s})
+	nicObjs := make([]resources.Nic, 0)
+	if items, ok := nics.GetItemsOk(); ok && items != nil {
+		for _, nic := range *items {
+			nicObjs = append(nicObjs, resources.Nic{Nic: nic})
+		}
 	}
-	return ns
+	return nicObjs
 }
 
 func getNic(n *resources.Nic) []resources.Nic {

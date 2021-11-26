@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -20,7 +21,7 @@ type Templates struct {
 
 // TemplatesService is a wrapper around ionoscloud.Template
 type TemplatesService interface {
-	List() (Templates, *Response, error)
+	List(params ListQueryParams) (Templates, *Response, error)
 	Get(templateId string) (*Template, *Response, error)
 }
 
@@ -38,8 +39,21 @@ func NewTemplateService(client *Client, ctx context.Context) TemplatesService {
 	}
 }
 
-func (ss *templatesService) List() (Templates, *Response, error) {
+func (ss *templatesService) List(params ListQueryParams) (Templates, *Response, error) {
 	req := ss.client.TemplatesApi.TemplatesGet(ss.context)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	s, res, err := ss.client.TemplatesApi.TemplatesGetExecute(req)
 	return Templates{s}, &Response{*res}, err
 }

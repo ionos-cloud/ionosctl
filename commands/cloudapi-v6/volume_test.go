@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -31,8 +32,34 @@ var (
 			Type:                &testVolumeVar,
 			Bus:                 &testVolumeVar,
 			Image:               &testVolumeVar,
+			ImageAlias:          &testVolumeVar,
 			AvailabilityZone:    &zoneVolume,
 			SshKeys:             &testVolumeSliceVar,
+			BackupunitId:        &testVolumeVar,
+			UserData:            &testVolumeVar,
+			CpuHotPlug:          &testVolumeBoolVar,
+			RamHotPlug:          &testVolumeBoolVar,
+			NicHotPlug:          &testVolumeBoolVar,
+			NicHotUnplug:        &testVolumeBoolVar,
+			DiscVirtioHotPlug:   &testVolumeBoolVar,
+			DiscVirtioHotUnplug: &testVolumeBoolVar,
+			DeviceNumber:        &testDeviceNumberVolumeVar,
+		},
+		Metadata: &ionoscloud.DatacenterElementMetadata{
+			State: &testVolumeVar,
+		},
+	}
+	serverVolume = ionoscloud.Volume{
+		Id: &testServerVar,
+		Properties: &ionoscloud.VolumeProperties{
+			Name:                &testVolumeVar,
+			Size:                &sizeVolume,
+			LicenceType:         &testVolumeVar,
+			Type:                &testVolumeVar,
+			Bus:                 &testVolumeVar,
+			Image:               &testVolumeVar,
+			ImageAlias:          &testVolumeVar,
+			AvailabilityZone:    &zoneVolume,
 			BackupunitId:        &testVolumeVar,
 			UserData:            &testVolumeVar,
 			CpuHotPlug:          &testVolumeBoolVar,
@@ -72,6 +99,7 @@ var (
 				Name:                &testVolumeVar,
 				Size:                &sizeVolume,
 				Image:               &testVolumeVar,
+				ImageAlias:          &testVolumeVar,
 				ImagePassword:       &testVolumeVar,
 				Type:                &testVolumeVar,
 				Bus:                 &testVolumeVar,
@@ -91,6 +119,21 @@ var (
 		Volumes: ionoscloud.Volumes{
 			Id:    &testVolumeVar,
 			Items: &[]ionoscloud.Volume{v},
+		},
+	}
+	vsList = resources.Volumes{
+		Volumes: ionoscloud.Volumes{
+			Id: &testVolumeVar,
+			Items: &[]ionoscloud.Volume{
+				v,
+				v,
+			},
+		},
+	}
+	vsAttachedList = resources.AttachedVolumes{
+		AttachedVolumes: ionoscloud.AttachedVolumes{
+			Id:    &testVolumeVar,
+			Items: &[]ionoscloud.Volume{serverVolume, serverVolume},
 		},
 	}
 	volumeProperties = resources.VolumeProperties{
@@ -131,11 +174,12 @@ var (
 			Items: &[]ionoscloud.Volume{v},
 		},
 	}
-	testVolumeVar      = "test-volume"
-	testVolumeBoolVar  = false
-	testVolumeSliceVar = []string{"test-volume"}
-	testVolumeNewVar   = "test-new-volume"
-	testVolumeErr      = errors.New("volume test: error occurred")
+	testDeviceNumberVolumeVar = int64(1)
+	testVolumeVar             = "test-volume"
+	testVolumeBoolVar         = false
+	testVolumeSliceVar        = []string{"test-volume"}
+	testVolumeNewVar          = "test-new-volume"
+	testVolumeErr             = errors.New("volume test: error occurred")
 )
 
 func TestVolumeCmd(t *testing.T) {
@@ -145,6 +189,47 @@ func TestVolumeCmd(t *testing.T) {
 		err = errors.New("non-available cmd")
 	}
 	assert.NoError(t, err)
+}
+
+func TestPreRunVolumeList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		err := PreRunVolumeList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunVolumeList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunVolumeList(cfg)
+		assert.Error(t, err)
+	})
 }
 
 func TestPreRunDcVolumeIds(t *testing.T) {
@@ -173,6 +258,47 @@ func TestPreRunDcVolumeIdsErr(t *testing.T) {
 	})
 }
 
+func TestPreRunVolumeCreate(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		err := PreRunVolumeCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeCreateImg(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSshKeyPaths), []string{testVolumeVar})
+		err := PreRunVolumeCreate(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunVolumeCreateErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunVolumeCreate(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunVolumeList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -182,7 +308,25 @@ func TestRunVolumeList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar).Return(vs, &testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, resources.ListQueryParams{}).Return(vs, &testResponse, nil)
+		err := RunVolumeList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunVolumeListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, testListQueryParam).Return(resources.Volumes{}, &testResponse, nil)
 		err := RunVolumeList(cfg)
 		assert.NoError(t, err)
 	})
@@ -196,7 +340,7 @@ func TestRunVolumeListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
-		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar).Return(vs, nil, testVolumeErr)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, resources.ListQueryParams{}).Return(vs, nil, testVolumeErr)
 		err := RunVolumeList(cfg)
 		assert.Error(t, err)
 	})
@@ -291,6 +435,36 @@ func TestRunVolumeCreateImg(t *testing.T) {
 		rm.CloudApiV6Mocks.Volume.EXPECT().Create(testVolumeVar, testVolumeImg).Return(&resources.Volume{Volume: v}, nil, nil)
 		err := RunVolumeCreate(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunVolumeCreateSshKeyErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgName), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSize), sizeVolume)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgImageAlias), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSshKeyPaths), []string{testVolumeVar})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgType), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBus), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAvailabilityZone), zoneVolume)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgBackupUnitId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserData), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgCpuHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRamHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNicHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDiscVirtioHotPlug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDiscVirtioHotUnplug), testVolumeBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		err := RunVolumeCreate(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -448,6 +622,26 @@ func TestRunVolumeDelete(t *testing.T) {
 	})
 }
 
+func TestRunVolumeDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testVolumeVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Volume.EXPECT().List(testVolumeVar, resources.ListQueryParams{}).Return(vsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Volume.EXPECT().Delete(testVolumeVar, testVolumeVar).Return(&testResponse, nil)
+		err := RunVolumeDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunVolumeDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -571,6 +765,50 @@ func TestPreRunDcServerVolumeIds(t *testing.T) {
 	})
 }
 
+func TestPreRunServerVolumeList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
+		err := PreRunServerVolumeList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerVolumeListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunServerVolumeList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunServerVolumeListFiltersErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunServerVolumeList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreRunDcServerVolumeIdsRequiredFlagsErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -644,7 +882,7 @@ func TestRunServerVolumesList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttached, nil, nil)
+		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, resources.ListQueryParams{}).Return(vsAttached, nil, nil)
 		err := RunServerVolumesList(cfg)
 		assert.NoError(t, err)
 	})
@@ -659,7 +897,7 @@ func TestRunServerVolumesListErr(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
-		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar).Return(vsAttached, nil, testVolumeErr)
+		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, resources.ListQueryParams{}).Return(vsAttached, nil, testVolumeErr)
 		err := RunServerVolumesList(cfg)
 		assert.Error(t, err)
 	})
@@ -710,6 +948,27 @@ func TestRunServerVolumeDetach(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testServerVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(nil, nil)
+		err := RunServerVolumeDetach(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerVolumeDetachAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV6Mocks.Server.EXPECT().ListVolumes(testServerVar, testServerVar, resources.ListQueryParams{}).Return(vsAttachedList, nil, nil)
+		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Server.EXPECT().DetachVolume(testServerVar, testServerVar, testServerVar).Return(&testResponse, nil)
 		err := RunServerVolumeDetach(cfg)
 		assert.NoError(t, err)
 	})

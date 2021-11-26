@@ -77,19 +77,29 @@ You can provide your credentials:
 
 * Using environment variables
 
-You can set the environment variables using the next commands:
+You can set the environment variables for HTTP basic authentication:
 
 ```text
-export IONOS_USERNAME="ionos username"
-export IONOS_PASSWORD="ionos password"
-export IONOS_TOKEN="ionos token"
-export IONOS_API_URL="ionos api url"
+export IONOS_USERNAME="username"
+export IONOS_PASSWORD="password"
+```
+
+Or you can use token authentication:
+
+```text
+export IONOS_TOKEN="token"
+```
+
+Also, you can overwrite the api endpoint: `api.ionos.com` via the `--api-url` global flag or via the following environment variable:
+
+```text
+export IONOS_API_URL="api-url"
 ```
 
 * Using `login` command
 
 ```text
-ionosctl login --user username --password password
+ionosctl login --user username --password password -v
 ```
 
 The command can also be used without setting the `--user` and `--password` flags:
@@ -101,7 +111,13 @@ username
 Enter your password:
 ```
 
-You can also use token for authentication. After providing credentials, you will be notified if you logged in successfully or not:
+You can also authenticate via `--token` flag exclusively:
+
+```text
+ionosctl login --token IONOS_TOKEN
+```
+
+After providing credentials, you will be notified if you logged in successfully or not:
 
 ```text
 Status: Authentication successful!
@@ -111,7 +127,7 @@ Status: Authentication successful!
 Error: 401 Unauthorized
 ```
 
-Setting `--api-url` will overwrite the default value of `https://api.ionos.com` for subsequent requests.
+Setting `--api-url` or `IONOS_API_URL` will overwrite the default value of `https://api.ionos.com` for subsequent requests.
 
 After a successful authentication, you will no longer need to provide credentials unless you want to change them. By default, they will be stored in
 
@@ -120,6 +136,15 @@ After a successful authentication, you will no longer need to provide credential
 * Windows: `%APPDATA%\ionosctl\config.json`
 
   and retrieved every time you will perform an action on your account.
+
+### Environment Variables
+
+Environment Variable | Description
+--- | --- 
+`IONOS_USERNAME` | Specify the username used to login, to authenticate against the IONOS Cloud API | 
+`IONOS_PASSWORD` | Specify the password used to login, to authenticate against the IONOS Cloud API | 
+`IONOS_TOKEN` | Specify the token used to login, if a token is being used instead of username and password |
+`IONOS_API_URL` | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v5` path, so it should _not_ be included in the `IONOS_API_URL` environment variable | 
 
 ### Enabling Shell Auto-Completion
 
@@ -276,6 +301,10 @@ Note: When using `TAB` in autocompletion, on `--cols` option on a specific resou
 You will see step-by-step process when running a command.
 
 This flag can be used with any command(in general create, read, update, delete, but it's available also for the other specific command) of any resource.
+
+* Use the `--filters` option
+
+You can use the filters option for the list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
 
 ### Help Information
 

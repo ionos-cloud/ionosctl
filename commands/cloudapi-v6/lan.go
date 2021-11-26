@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -48,15 +49,24 @@ func LanCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List LANs",
-		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to retrieve a list of LANs provisioned in a specific Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LANsFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listLanExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunLansList,
 		CmdRun:     RunLanList,
 		InitClient: true,
 	})
 	list.AddStringFlag(cloudapiv6.ArgDataCenterId, "", "", cloudapiv6.DatacenterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LANsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LANsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -111,7 +121,7 @@ Required values to run command:
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed LAN", "The name of the LAN")
-	create.AddBoolFlag(cloudapiv6.ArgPublic, "", cloudapiv6.DefaultPublic, "Indicates if the LAN faces the public Internet (true) or not (false)")
+	create.AddBoolFlag(cloudapiv6.ArgPublic, cloudapiv6.ArgPublicShort, cloudapiv6.DefaultPublic, "Indicates if the LAN faces the public Internet (true) or not (false). E.g.: --public=true, --public=false")
 	create.AddStringFlag(cloudapiv6.ArgPccId, "", "", "The unique Id of the Private Cross-Connect the LAN will connect to")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -154,7 +164,7 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgPccId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddBoolFlag(cloudapiv6.ArgPublic, "", cloudapiv6.DefaultPublic, "Public option for LAN")
+	update.AddBoolFlag(cloudapiv6.ArgPublic, "", cloudapiv6.DefaultPublic, "Public option for LAN. E.g.: --public=true, --public=false")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for LAN update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN update [seconds]")
 
@@ -176,7 +186,7 @@ Required values to run command:
 * Data Center Id
 * LAN Id`,
 		Example:    deleteLanExample,
-		PreCmdRun:  PreRunDcLanIds,
+		PreCmdRun:  PreRunLanDelete,
 		CmdRun:     RunLanDelete,
 		InitClient: true,
 	})
@@ -189,13 +199,39 @@ Required values to run command:
 		return completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(deleteCmd.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
 	deleteCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for Request for LAN deletion to be executed")
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all Lans from a Virtual Data Center.")
 	deleteCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for LAN deletion [seconds]")
 
 	return lanCmd
 }
 
+func PreRunLansList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.LANsFilters(), completer.LANsFiltersUsage())
+	}
+	return nil
+}
+
+func PreRunLanDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgLanId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgAll},
+	)
+}
+
 func RunLanList(c *core.CommandConfig) error {
-	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	lans, resp, err := c.CloudApiV6Services.Lans().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -301,28 +337,76 @@ func RunLanUpdate(c *core.CommandConfig) error {
 }
 
 func RunLanDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
-		return err
-	}
+	var resp *resources.Response
+	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
-	c.Printer.Verbose("Deleting LAN with ID: %v from Datacenter with ID: %v...",
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId)), viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	resp, err := c.CloudApiV6Services.Lans().Delete(
-		dcId,
-		lanId,
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
-	}
-
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DeleteAllLans(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
+		resp, err = c.CloudApiV6Services.Lans().Delete(dcId, lanId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getLanPrint(resp, c, nil))
+}
+
+func DeleteAllLans(c *core.CommandConfig) (*resources.Response, error) {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	_ = c.Printer.Print("Lans to be deleted:")
+	lans, resp, err := c.CloudApiV6Services.Lans().List(dcId, resources.ListQueryParams{})
+	if err != nil {
+		return nil, err
+	}
+	if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
+		for _, lan := range *lansItems {
+			if id, ok := lan.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("Lan Id: " + *id)
+			}
+			if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
+				if name, ok := properties.GetNameOk(); ok && name != nil {
+					_ = c.Printer.Print(" Lan Name: " + *name)
+				}
+			}
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Lans...")
+
+		for _, lan := range *lansItems {
+			if id, ok := lan.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting Lan with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Lans().Delete(dcId, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // Output Printing
@@ -383,11 +467,13 @@ func getLansCols(flagName string, outErr io.Writer) []string {
 }
 
 func getLans(lans resources.Lans) []resources.Lan {
-	ls := make([]resources.Lan, 0)
-	for _, s := range *lans.Items {
-		ls = append(ls, resources.Lan{Lan: s})
+	lanObjs := make([]resources.Lan, 0)
+	if items, ok := lans.GetItemsOk(); ok && items != nil {
+		for _, lan := range *items {
+			lanObjs = append(lanObjs, resources.Lan{Lan: lan})
+		}
 	}
-	return ls
+	return lanObjs
 }
 
 func getLansKVMaps(ls []resources.Lan) []map[string]interface{} {

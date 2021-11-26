@@ -45,6 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                    Detach all CD-ROMS from a Server.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
   -i, --cdrom-id string        The unique Cdrom Id (required)
       --cols strings           Set of columns to be printed on output 

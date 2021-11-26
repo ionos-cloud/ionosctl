@@ -8,6 +8,8 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
@@ -41,17 +43,26 @@ func UserCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, userCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, userCmd, core.CommandBuilder{
 		Namespace:  "user",
 		Resource:   "user",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Users",
-		LongDesc:   "Use this command to get a list of existing Users available on your account.",
+		LongDesc:   "Use this command to get a list of existing Users available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.UsersFiltersUsage(),
 		Example:    listUserExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunUserList,
 		CmdRun:     RunUserList,
 		InitClient: true,
+	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.UsersFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -129,8 +140,8 @@ Required values to run command:
 	update.AddStringFlag(cloudapiv6.ArgFirstName, "", "", "The first name for the User")
 	update.AddStringFlag(cloudapiv6.ArgLastName, "", "", "The last name for the User")
 	update.AddStringFlag(cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The email for the User")
-	update.AddBoolFlag(cloudapiv6.ArgAdmin, "", false, "Assigns the User to have administrative rights")
-	update.AddBoolFlag(cloudapiv6.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User")
+	update.AddBoolFlag(cloudapiv6.ArgAdmin, "", false, "Assigns the User to have administrative rights. E.g.: --admin=true, --admin=false")
+	update.AddBoolFlag(cloudapiv6.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User. E.g.: --force-secure-auth=true, --force-secure-auth=false")
 	update.AddStringFlag(cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption())
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -151,7 +162,7 @@ Required values to run command:
 
 * User Id`,
 		Example:    deleteUserExample,
-		PreCmdRun:  PreRunUserId,
+		PreCmdRun:  PreRunUserDelete,
 		CmdRun:     RunUserDelete,
 		InitClient: true,
 	})
@@ -159,14 +170,29 @@ Required values to run command:
 	_ = deleteCmd.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.UsersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	deleteCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Delete all the Users.")
 
 	userCmd.AddCommand(UserS3keyCmd())
 
 	return userCmd
 }
 
+func PreRunUserList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.UsersFilters(), completer.UsersFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunUserId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgUserId)
+}
+
+func PreRunUserDelete(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgUserId},
+		[]string{cloudapiv6.ArgAll},
+	)
 }
 
 func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
@@ -174,7 +200,15 @@ func PreRunUserNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunUserList(c *core.CommandConfig) error {
-	users, resp, err := c.CloudApiV6Services.Users().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	users, resp, err := c.CloudApiV6Services.Users().List(listQueryParams)
 	if resp != nil {
 		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
 	}
@@ -247,16 +281,27 @@ func RunUserUpdate(c *core.CommandConfig) error {
 }
 
 func RunUserDelete(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
-		return err
-	}
-	c.Printer.Verbose("User with id: %v is deleting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
-	resp, err := c.CloudApiV6Services.Users().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId)))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = DeleteAllUsers(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete user"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Starting deleting User with id: %v...", userId)
+		resp, err = c.CloudApiV6Services.Users().Delete(userId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getUserPrint(resp, c, nil))
 }
@@ -319,6 +364,52 @@ func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.User
 			},
 		},
 	}
+}
+
+func DeleteAllUsers(c *core.CommandConfig) (*resources.Response, error) {
+	_ = c.Printer.Print("Users to be deleted:")
+	users, resp, err := c.CloudApiV6Services.Users().List(resources.ListQueryParams{})
+	if err != nil {
+		return nil, err
+	}
+	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("User Id: " + *id)
+			}
+			if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
+				if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
+					_ = c.Printer.Print("User First Name: " + *firstName)
+				}
+				if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
+					_ = c.Printer.Print("User Last Name: " + *lastName)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Users"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Deleting all the Users...")
+
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting User with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Users().Delete(*id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 func GroupUserCmd() *core.Command {
@@ -396,7 +487,7 @@ func GroupUserCmd() *core.Command {
 		ShortDesc:  "Remove User from a Group",
 		LongDesc:   "Use this command to remove a User from a Group.\n\nRequired values to run command:\n\n* Group Id\n* User Id",
 		Example:    removeGroupUserExample,
-		PreCmdRun:  PreRunGroupUserIds,
+		PreCmdRun:  PreRunGroupUserRemove,
 		CmdRun:     RunGroupUserRemove,
 		InitClient: true,
 	})
@@ -412,6 +503,7 @@ func GroupUserCmd() *core.Command {
 	_ = removeUser.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgUserId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupUsersIds(os.Stderr, viper.GetString(core.GetFlagName(removeUser.NS, cloudapiv6.ArgGroupId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	removeUser.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Users fro a group.")
 
 	return groupUserCmd
 }
@@ -425,6 +517,13 @@ func RunGroupUserList(c *core.CommandConfig) error {
 		return err
 	}
 	return c.Printer.Print(getUserPrint(nil, c, getGroupUsers(users)))
+}
+
+func PreRunGroupUserRemove(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgGroupId, cloudapiv6.ArgUserId},
+		[]string{cloudapiv6.ArgGroupId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunGroupUserAdd(c *core.CommandConfig) error {
@@ -447,23 +546,76 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 }
 
 func RunGroupUserRemove(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove user from group"); err != nil {
-		return err
-	}
-	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
-	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
-	c.Printer.Verbose("User with id: %v is adding to group with id: %v...", userId, groupId)
-	resp, err := c.CloudApiV6Services.Groups().RemoveUser(
-		groupId,
-		userId,
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
-	if err != nil {
-		return err
+	var resp *resources.Response
+	var err error
+	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
+	if allFlag {
+		resp, err = RemoveAllUsers(c)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove user from group"); err != nil {
+			return err
+		}
+		userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
+		groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+		c.Printer.Verbose("User with id: %v is adding to group with id: %v...", userId, groupId)
+		resp, err = c.CloudApiV6Services.Groups().RemoveUser(groupId, userId)
+		if resp != nil {
+			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
 	}
 	return c.Printer.Print(getGroupPrint(resp, c, nil))
+}
+
+func RemoveAllUsers(c *core.CommandConfig) (*resources.Response, error) {
+	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
+	_ = c.Printer.Print("Users to be removed from Group with id: " + groupId)
+	users, resp, err := c.CloudApiV6Services.Groups().ListUsers(groupId)
+	if err != nil {
+		return nil, err
+	}
+	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				_ = c.Printer.Print("User Id: " + *id)
+			}
+			if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
+				if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
+					_ = c.Printer.Print(" User Name: " + *firstName)
+				}
+				if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
+					_ = c.Printer.Print(" User Name: " + *lastName)
+				}
+			}
+		}
+
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "removing all the Users"); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Removing all the Users from Group with id: %v...", groupId)
+		for _, user := range *usersItems {
+			if id, ok := user.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting removing User with id: %v...", *id)
+				resp, err = c.CloudApiV6Services.Groups().RemoveUser(groupId, *id)
+				if resp != nil {
+					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
+					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+				}
+				if err != nil {
+					return nil, err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return resp, nil
 }
 
 // Output Printing

@@ -37,7 +37,7 @@ Required values to run command:
 ## Options
 
 ```text
-      --admin               Assigns the User to have administrative rights
+      --admin               Assigns the User to have administrative rights. E.g.: --admin=true, --admin=false
   -u, --api-url string      Override default host url (default "https://api.ionos.com")
       --cols strings        Set of columns to be printed on output 
                             Available columns: [UserId Firstname Lastname Email S3CanonicalUserId Administrator ForceSecAuth SecAuthActive Active] (default [UserId,Firstname,Lastname,Email,S3CanonicalUserId,Administrator,ForceSecAuth,SecAuthActive,Active])
@@ -45,7 +45,7 @@ Required values to run command:
   -e, --email string        The email for the User
       --first-name string   The first name for the User
   -f, --force               Force command to execute without user input
-      --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User
+      --force-secure-auth   Indicates if secure (two-factor) authentication should be forced for the User. E.g.: --force-secure-auth=true, --force-secure-auth=false
   -h, --help                Print usage
       --last-name string    The last name for the User
   -o, --output string       Desired output format [text|json] (default "text")

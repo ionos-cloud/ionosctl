@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	authv1 "github.com/ionos-cloud/ionosctl/commands/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/commands/pg"
 	"github.com/ionos-cloud/ionosctl/internal/config"
@@ -186,6 +187,8 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.ShareCmd())
 	rootCmd.AddCommand(cloudapiv6.K8sCmd())
 	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
+	// Auth Command
+	rootCmd.AddCommand(authv1.TokenCmd())
 	// Add CloudApiDBaaSPgsql Commands
 	rootCmd.AddCommand(cloudapidbaaspgsql.DBaaSPgCmd())
 }

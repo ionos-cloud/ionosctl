@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"regexp"
 	"testing"
 
@@ -48,6 +49,44 @@ func TestTemplateCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunTemplateList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunTemplateList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunTemplateListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunTemplateList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunTemplateListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunTemplateList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestPreTemplateId(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -81,7 +120,24 @@ func TestRunTemplateList(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
-		rm.CloudApiV6Mocks.Template.EXPECT().List().Return(templates, &testResponse, nil)
+		rm.CloudApiV6Mocks.Template.EXPECT().List(resources.ListQueryParams{}).Return(templates, &testResponse, nil)
+		err := RunTemplateList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunTemplateListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Template.EXPECT().List(testListQueryParam).Return(resources.Templates{}, &testResponse, nil)
 		err := RunTemplateList(cfg)
 		assert.NoError(t, err)
 	})
@@ -94,7 +150,7 @@ func TestRunTemplateListErr(t *testing.T) {
 		viper.Reset()
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
-		rm.CloudApiV6Mocks.Template.EXPECT().List().Return(templates, nil, testTemplateErr)
+		rm.CloudApiV6Mocks.Template.EXPECT().List(resources.ListQueryParams{}).Return(templates, nil, testTemplateErr)
 		err := RunTemplateList(cfg)
 		assert.Error(t, err)
 	})

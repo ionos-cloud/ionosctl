@@ -176,9 +176,9 @@ func (mr *MockNatGatewaysServiceMockRecorder) GetRule(datacenterId, natGatewayId
 }
 
 // List mocks base method.
-func (m *MockNatGatewaysService) List(datacenterId string) (resources.NatGateways, *resources.Response, error) {
+func (m *MockNatGatewaysService) List(datacenterId string, params resources.ListQueryParams) (resources.NatGateways, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", datacenterId)
+	ret := m.ctrl.Call(m, "List", datacenterId, params)
 	ret0, _ := ret[0].(resources.NatGateways)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -186,15 +186,15 @@ func (m *MockNatGatewaysService) List(datacenterId string) (resources.NatGateway
 }
 
 // List indicates an expected call of List.
-func (mr *MockNatGatewaysServiceMockRecorder) List(datacenterId interface{}) *gomock.Call {
+func (mr *MockNatGatewaysServiceMockRecorder) List(datacenterId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockNatGatewaysService)(nil).List), datacenterId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockNatGatewaysService)(nil).List), datacenterId, params)
 }
 
 // ListFlowLogs mocks base method.
-func (m *MockNatGatewaysService) ListFlowLogs(datacenterId, natGatewayId string) (resources.FlowLogs, *resources.Response, error) {
+func (m *MockNatGatewaysService) ListFlowLogs(datacenterId, natGatewayId string, params resources.ListQueryParams) (resources.FlowLogs, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListFlowLogs", datacenterId, natGatewayId)
+	ret := m.ctrl.Call(m, "ListFlowLogs", datacenterId, natGatewayId, params)
 	ret0, _ := ret[0].(resources.FlowLogs)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -202,15 +202,15 @@ func (m *MockNatGatewaysService) ListFlowLogs(datacenterId, natGatewayId string)
 }
 
 // ListFlowLogs indicates an expected call of ListFlowLogs.
-func (mr *MockNatGatewaysServiceMockRecorder) ListFlowLogs(datacenterId, natGatewayId interface{}) *gomock.Call {
+func (mr *MockNatGatewaysServiceMockRecorder) ListFlowLogs(datacenterId, natGatewayId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFlowLogs", reflect.TypeOf((*MockNatGatewaysService)(nil).ListFlowLogs), datacenterId, natGatewayId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFlowLogs", reflect.TypeOf((*MockNatGatewaysService)(nil).ListFlowLogs), datacenterId, natGatewayId, params)
 }
 
 // ListRules mocks base method.
-func (m *MockNatGatewaysService) ListRules(datacenterId, natGatewayId string) (resources.NatGatewayRules, *resources.Response, error) {
+func (m *MockNatGatewaysService) ListRules(datacenterId, natGatewayId string, params resources.ListQueryParams) (resources.NatGatewayRules, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListRules", datacenterId, natGatewayId)
+	ret := m.ctrl.Call(m, "ListRules", datacenterId, natGatewayId, params)
 	ret0, _ := ret[0].(resources.NatGatewayRules)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -218,9 +218,9 @@ func (m *MockNatGatewaysService) ListRules(datacenterId, natGatewayId string) (r
 }
 
 // ListRules indicates an expected call of ListRules.
-func (mr *MockNatGatewaysServiceMockRecorder) ListRules(datacenterId, natGatewayId interface{}) *gomock.Call {
+func (mr *MockNatGatewaysServiceMockRecorder) ListRules(datacenterId, natGatewayId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRules", reflect.TypeOf((*MockNatGatewaysService)(nil).ListRules), datacenterId, natGatewayId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRules", reflect.TypeOf((*MockNatGatewaysService)(nil).ListRules), datacenterId, natGatewayId, params)
 }
 
 // Update mocks base method.

@@ -45,6 +45,7 @@ Required values to run command:
 ## Options
 
 ```text
+  -a, --all                    Delete all Natgateway flowlogs.
   -u, --api-url string         Override default host url (default "https://api.ionos.com")
       --cols strings           Set of columns to be printed on output 
                                Available columns: [FlowLogId Name Action Direction Bucket State] (default [FlowLogId,Name,Action,Direction,Bucket,State])

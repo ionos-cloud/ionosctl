@@ -66,9 +66,9 @@ func (mr *MockImagesServiceMockRecorder) Get(imageId interface{}) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockImagesService) List() (resources.Images, *resources.Response, error) {
+func (m *MockImagesService) List(params resources.ListQueryParams) (resources.Images, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.Images)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockImagesService) List() (resources.Images, *resources.Response, error
 }
 
 // List indicates an expected call of List.
-func (mr *MockImagesServiceMockRecorder) List() *gomock.Call {
+func (mr *MockImagesServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockImagesService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockImagesService)(nil).List), params)
 }
 
 // Update mocks base method.
