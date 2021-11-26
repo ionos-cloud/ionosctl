@@ -210,7 +210,7 @@ func getBackupCols(flagName string, outErr io.Writer) []string {
 
 func getBackups(backups resources.ClusterBackupList) []resources.ClusterBackup {
 	c := make([]resources.ClusterBackup, 0)
-	if data, ok := backups.GetDataOk(); ok && data != nil {
+	if data, ok := backups.GetItemsOk(); ok && data != nil {
 		for _, d := range *data {
 			c = append(c, resources.ClusterBackup{ClusterBackup: d})
 		}
@@ -234,7 +234,7 @@ func getBackupsKVMaps(backups []resources.ClusterBackup) []map[string]interface{
 		if typeOk, ok := backup.GetTypeOk(); ok && typeOk != nil {
 			backupPrint.Type = *typeOk
 		}
-		if metadataOk, ok := backup.GetMetadataOk(); ok && metadataOk != nil {
+		if metadataOk, ok := backup.GetTypeOk(); ok && metadataOk != nil {
 			if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
 				createdDateOkRfc := createdDateOk.Format(time.RFC3339)
 				backupPrint.CreatedDate = createdDateOkRfc

@@ -17,7 +17,7 @@ func BackupsIds(outErr io.Writer) []string {
 	backupList, _, err := clustersService.List()
 	clierror.CheckError(err, outErr)
 	ids := make([]string, 0)
-	if dataOk, ok := backupList.GetDataOk(); ok && dataOk != nil {
+	if dataOk, ok := backupList.GetItemsOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ids = append(ids, *itemId)
@@ -36,7 +36,7 @@ func ClustersIds(outErr io.Writer) []string {
 	clusterList, _, err := clustersService.List("")
 	clierror.CheckError(err, outErr)
 	ids := make([]string, 0)
-	if dataOk, ok := clusterList.ClusterList.GetDataOk(); ok && dataOk != nil {
+	if dataOk, ok := clusterList.ClusterList.GetItemsOk(); ok && dataOk != nil {
 		for _, item := range *dataOk {
 			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
 				ids = append(ids, *itemId)

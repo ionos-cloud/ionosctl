@@ -10,6 +10,10 @@ type ClusterBackup struct {
 	sdkgo.ClusterBackup
 }
 
+type BackupResponse struct {
+	sdkgo.BackupResponse
+}
+
 type ClusterBackupList struct {
 	sdkgo.ClusterBackupList
 }

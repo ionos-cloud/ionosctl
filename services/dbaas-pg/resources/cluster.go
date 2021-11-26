@@ -18,8 +18,16 @@ type CreateClusterRequest struct {
 	sdkgo.CreateClusterRequest
 }
 
+type CreateClusterProperties struct {
+	sdkgo.CreateClusterProperties
+}
+
 type PatchClusterRequest struct {
 	sdkgo.PatchClusterRequest
+}
+
+type PatchClusterProperties struct {
+	sdkgo.PatchClusterProperties
 }
 
 type Response struct {

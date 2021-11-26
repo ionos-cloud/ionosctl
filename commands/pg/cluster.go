@@ -318,11 +318,10 @@ func RunClusterGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getClusterPrint(nil, c, []resources.Cluster{*cluster}))
+	return c.Printer.Print(getClusterPrint(nil, c, []resources.ClusterResponse{*cluster}))
 }
 
 func RunClusterCreate(c *core.CommandConfig) error {
-	var recoveryTargetTime time.Time
 	input, err := getCreateClusterRequest(c)
 	if err != nil {
 		return err
@@ -330,16 +329,15 @@ func RunClusterCreate(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)) {
 		c.Printer.Verbose("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgTime)) {
-		c.Printer.Verbose("RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgTime)))
-		recoveryTargetTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgTime)))
-		if err != nil {
-			return err
-		}
-	}
+	//if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgTime)) {
+	//	c.Printer.Verbose("RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgTime)))
+	//	recoveryTargetTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgTime)))
+	//	if err != nil {
+	//		return err
+	//	}
+	//}
 	c.Printer.Verbose("Creating Cluster...")
-	cluster, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(*input,
-		viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)), recoveryTargetTime)
+	cluster, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(*input)
 	if err != nil {
 		return err
 	}
@@ -355,7 +353,7 @@ func RunClusterCreate(c *core.CommandConfig) error {
 			return errors.New("error getting new Cluster Id")
 		}
 	}
-	return c.Printer.Print(getClusterPrint(resp, c, []resources.Cluster{*cluster}))
+	return c.Printer.Print(getClusterPrint(resp, c, []resources.ClusterResponse{*cluster}))
 }
 
 func RunClusterUpdate(c *core.CommandConfig) error {
@@ -367,7 +365,7 @@ func RunClusterUpdate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getClusterPrint(resp, c, []resources.Cluster{*item}))
+	return c.Printer.Print(getClusterPrint(resp, c, []resources.ClusterResponse{*item}))
 }
 
 func RunClusterRestore(c *core.CommandConfig) error {
@@ -434,11 +432,13 @@ func ClusterDeleteAll(c *core.CommandConfig) (resp *resources.Response, err erro
 	if err != nil {
 		return nil, err
 	}
-	if dataOk, ok := clusters.GetDataOk(); ok && dataOk != nil {
+	if dataOk, ok := clusters.GetItemsOk(); ok && dataOk != nil {
 		for _, cluster := range *dataOk {
 			var log string
-			if nameOk, ok := cluster.GetDisplayNameOk(); ok && nameOk != nil {
-				log = fmt.Sprintf("Cluster Name: %s", *nameOk)
+			if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
+				if nameOk, ok := propertiesOk.GetDisplayNameOk(); ok && nameOk != nil {
+					log = fmt.Sprintf("Cluster Name: %s", *nameOk)
+				}
 			}
 			if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
 				log = fmt.Sprintf("%s; Cluster Id: %s", log, *idOk)
@@ -449,7 +449,7 @@ func ClusterDeleteAll(c *core.CommandConfig) (resp *resources.Response, err erro
 	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all clusters"); err != nil {
 		return nil, err
 	}
-	if dataOk, ok := clusters.GetDataOk(); ok && dataOk != nil {
+	if dataOk, ok := clusters.GetItemsOk(); ok && dataOk != nil {
 		for _, cluster := range *dataOk {
 			if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
 				c.Printer.Verbose("Cluster ID: %v", *idOk)
@@ -465,7 +465,8 @@ func ClusterDeleteAll(c *core.CommandConfig) (resp *resources.Response, err erro
 }
 
 func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterRequest, error) {
-	input := resources.CreateClusterRequest{}
+	inputCluster := resources.CreateClusterRequest{}
+	input := sdkgo.CreateClusterProperties{}
 	// Setting Attributes
 	pgsqlVersion := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgVersion))
 	c.Printer.Verbose("PostgresVersion: %v", pgsqlVersion)
@@ -473,16 +474,16 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	syncMode := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSyncMode))
 	c.Printer.Verbose("SynchronizationMode: %v", syncMode)
 	input.SetSynchronizationMode(sdkgo.SynchronizationMode(syncMode))
-	replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgReplicas))
-	c.Printer.Verbose("Replicas: %v", replicas)
-	input.SetReplicas(replicas)
-	cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCpuCoreCount))
-	c.Printer.Verbose("CpuCoreCount: %v", cpuCoreCount)
-	input.SetCpuCoreCount(cpuCoreCount)
-	ramSize := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRamSize))
-	c.Printer.Verbose("RamSize: %v", ramSize)
-	input.SetRamSize(ramSize)
-	storageSize := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize))
+	replicas := viper.GetFloat64(core.GetFlagName(c.NS, dbaaspg.ArgReplicas))
+	c.Printer.Verbose("Instances: %v", replicas)
+	input.SetInstances(float32(replicas))
+	cpuCoreCount := viper.GetFloat64(core.GetFlagName(c.NS, dbaaspg.ArgCpuCoreCount))
+	c.Printer.Verbose("Cores: %v", cpuCoreCount)
+	input.SetCores(float32(cpuCoreCount))
+	ramSize := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgRamSize))
+	c.Printer.Verbose("Ram: %v", ramSize)
+	input.SetRam(ramSize)
+	storageSize := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize))
 	c.Printer.Verbose("StorageSize: %v", storageSize)
 	input.SetStorageSize(storageSize)
 	storageType := sdkgo.StorageType(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
@@ -516,19 +517,19 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	c.Printer.Verbose("DBUser - Password: %v", password)
 	dbuser.SetPassword(password)
 	input.SetCredentials(dbuser)
-	vdcConnection := sdkgo.VDCConnection{}
+	vdcConnection := sdkgo.Connection{}
 	vdcId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId))
-	c.Printer.Verbose("VDCConnection - VdcId: %v", vdcId)
-	vdcConnection.SetVdcId(vdcId)
+	c.Printer.Verbose("Connection - DatacenterId: %v", vdcId)
+	vdcConnection.SetDatacenterId(vdcId)
 	lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLanId))
-	c.Printer.Verbose("VDCConnection - LanId: %v", lanId)
+	c.Printer.Verbose("Connection - LanId: %v", lanId)
 	vdcConnection.SetLanId(lanId)
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgIpAddress)) {
 		ip := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgIpAddress))
-		c.Printer.Verbose("VDCConnection - IpAddress: %v", ip)
-		vdcConnection.SetIpAddress(ip)
+		c.Printer.Verbose("Connection - Cidr: %v", ip)
+		vdcConnection.SetCidr(ip)
 	}
-	input.SetVdcConnections([]sdkgo.VDCConnection{vdcConnection})
+	input.SetConnections([]sdkgo.Connection{vdcConnection})
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceTime)) ||
 		viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
 		maintenanceWindow := sdkgo.MaintenanceWindow{}
@@ -539,33 +540,35 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
 			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay))
-			c.Printer.Verbose("MaintenanceWindow - WeekDay: %v", maintenanceDay)
-			maintenanceWindow.SetWeekday(maintenanceDay)
+			c.Printer.Verbose("MaintenanceWindow - DayOfTheWeek: %v", maintenanceDay)
+			maintenanceWindow.SetDayOfTheWeek(maintenanceDay)
 		}
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
-	return &input, nil
+	inputCluster.SetProperties(input)
+	return &inputCluster, nil
 }
 
 func getPatchClusterRequest(c *core.CommandConfig) resources.PatchClusterRequest {
-	input := resources.PatchClusterRequest{}
+	inputCluster := resources.PatchClusterRequest{}
+	input := sdkgo.PatchClusterProperties{}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCpuCoreCount)) {
-		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCpuCoreCount))
-		c.Printer.Verbose("CpuCoreCount: %v", cpuCoreCount)
-		input.SetCpuCoreCount(cpuCoreCount)
+		cpuCoreCount := viper.GetFloat64(core.GetFlagName(c.NS, dbaaspg.ArgCpuCoreCount))
+		c.Printer.Verbose("Cores: %v", cpuCoreCount)
+		input.SetCores(float32(cpuCoreCount))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgReplicas)) {
-		replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgReplicas))
-		c.Printer.Verbose("Replicas: %v", replicas)
-		input.SetReplicas(replicas)
+		replicas := viper.GetFloat64(core.GetFlagName(c.NS, dbaaspg.ArgReplicas))
+		c.Printer.Verbose("Instances: %v", replicas)
+		input.SetInstances(float32(replicas))
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRamSize)) {
-		ramSize := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRamSize))
-		c.Printer.Verbose("RamSize: %v", ramSize)
-		input.SetRamSize(ramSize)
+		ramSize := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgRamSize))
+		c.Printer.Verbose("Ram: %v", ramSize)
+		input.SetRam(ramSize)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize)) {
-		storageSize := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize))
+		storageSize := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize))
 		c.Printer.Verbose("StorageSize: %v", storageSize)
 		input.SetStorageSize(storageSize)
 	}
@@ -588,41 +591,41 @@ func getPatchClusterRequest(c *core.CommandConfig) resources.PatchClusterRequest
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay)) {
 			maintenanceDay := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgMaintenanceDay))
-			c.Printer.Verbose("MaintenanceWeekDay: %v", maintenanceDay)
-			maintenanceWindow.SetWeekday(maintenanceDay)
+			c.Printer.Verbose("MaintenanceDayOfWeek: %v", maintenanceDay)
+			maintenanceWindow.SetDayOfTheWeek(maintenanceDay)
 		}
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
-	return input
+	inputCluster.SetProperties(input)
+	return inputCluster
 }
 
 // Output Printing
 
 var (
-	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "IpAddress", "Replicas", "LifecycleStatus"}
-	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "BackupEnabled", "LifecycleStatus", "PostgresVersion", "Replicas", "RamSize", "CpuCoreCount",
-		"StorageSize", "StorageType", "DatacenterId", "LanId", "IpAddress", "MaintenanceWindow"}
+	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "IpAddress", "Instances", "State"}
+	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "State", "PostgresVersion", "Instances", "Ram", "Cores",
+		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow"}
 )
 
 type ClusterPrint struct {
-	ClusterId         string `json:"ClusterId,omitempty"`
-	Location          string `json:"Location,omitempty"`
-	BackupEnabled     bool   `json:"BackupEnabled,omitempty"`
-	LifecycleStatus   string `json:"LifecycleStatus,omitempty"`
-	DisplayName       string `json:"DisplayName,omitempty"`
-	PostgresVersion   string `json:"PostgresVersion,omitempty"`
-	Replicas          int32  `json:"Replicas,omitempty"`
-	RamSize           string `json:"RamSize,omitempty"`
-	CpuCoreCount      int32  `json:"CpuCoreCount,omitempty"`
-	StorageSize       string `json:"StorageSize,omitempty"`
-	StorageType       string `json:"StorageType,omitempty"`
-	DatacenterId      string `json:"DatacenterId,omitempty"`
-	LanId             string `json:"LanId,omitempty"`
-	IpAddress         string `json:"IpAddress,omitempty"`
-	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
+	ClusterId         string  `json:"ClusterId,omitempty"`
+	Location          string  `json:"Location,omitempty"`
+	State             string  `json:"State,omitempty"`
+	DisplayName       string  `json:"DisplayName,omitempty"`
+	PostgresVersion   string  `json:"PostgresVersion,omitempty"`
+	Instances         float32 `json:"Instances,omitempty"`
+	Ram               string  `json:"Ram,omitempty"`
+	Cores             float32 `json:"Cores,omitempty"`
+	StorageSize       string  `json:"StorageSize,omitempty"`
+	StorageType       string  `json:"StorageType,omitempty"`
+	DatacenterId      string  `json:"DatacenterId,omitempty"`
+	LanId             string  `json:"LanId,omitempty"`
+	Cidr              string  `json:"Cidr,omitempty"`
+	MaintenanceWindow string  `json:"MaintenanceWindow,omitempty"`
 }
 
-func getClusterPrint(resp *resources.Response, c *core.CommandConfig, dcs []resources.Cluster) printer.Result {
+func getClusterPrint(resp *resources.Response, c *core.CommandConfig, dcs []resources.ClusterResponse) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if resp != nil {
@@ -652,15 +655,15 @@ func getClusterCols(flagName string, outErr io.Writer) []string {
 		"DisplayName":       "DisplayName",
 		"Location":          "Location",
 		"PostgresVersion":   "PostgresVersion",
-		"BackupEnabled":     "BackupEnabled",
-		"LifecycleStatus":   "LifecycleStatus",
-		"Replicas":          "Replicas",
-		"CpuCoreCount":      "CpuCoreCount",
+		"State":             "State",
+		"Ram":               "Ram",
+		"Instances":         "Instances",
+		"Cores":             "Cores",
 		"StorageSize":       "StorageSize",
 		"StorageType":       "StorageType",
 		"DatacenterId":      "DatacenterId",
 		"LanId":             "LanId",
-		"IpAddress":         "IpAddress",
+		"Cidr":              "Cidr",
 		"MaintenanceWindow": "MaintenanceWindow",
 	}
 	var clusterCols []string
@@ -675,75 +678,76 @@ func getClusterCols(flagName string, outErr io.Writer) []string {
 	return clusterCols
 }
 
-func getClusters(clusters resources.ClusterList) []resources.Cluster {
-	c := make([]resources.Cluster, 0)
-	if data, ok := clusters.GetDataOk(); ok && data != nil {
+func getClusters(clusters resources.ClusterList) []resources.ClusterResponse {
+	c := make([]resources.ClusterResponse, 0)
+	if data, ok := clusters.GetItemsOk(); ok && data != nil {
 		for _, d := range *data {
-			c = append(c, resources.Cluster{Cluster: d})
+			c = append(c, resources.ClusterResponse{ClusterResponse: d})
 		}
 	}
 	return c
 }
 
-func getClustersKVMaps(clusters []resources.Cluster) []map[string]interface{} {
+func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(clusters))
 	for _, cluster := range clusters {
 		var clusterPrint ClusterPrint
 		if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
 			clusterPrint.ClusterId = *idOk
 		}
-		if displayNameOk, ok := cluster.GetDisplayNameOk(); ok && displayNameOk != nil {
-			clusterPrint.DisplayName = *displayNameOk
-		}
-		if locationOk, ok := cluster.GetLocationOk(); ok && locationOk != nil {
-			clusterPrint.Location = *locationOk
-		}
-		if backupEnabledOk, ok := cluster.GetBackupEnabledOk(); ok && backupEnabledOk != nil {
-			clusterPrint.BackupEnabled = *backupEnabledOk
-		}
-		if vdcConnectionsOk, ok := cluster.GetVdcConnectionsOk(); ok && vdcConnectionsOk != nil {
-			for _, vdcConnection := range *vdcConnectionsOk {
-				if vdcIdOk, ok := vdcConnection.GetVdcIdOk(); ok && vdcIdOk != nil {
-					clusterPrint.DatacenterId = *vdcIdOk
-				}
-				if lanIdOk, ok := vdcConnection.GetLanIdOk(); ok && lanIdOk != nil {
-					clusterPrint.LanId = *lanIdOk
-				}
-				if ipAddressOk, ok := vdcConnection.GetIpAddressOk(); ok && ipAddressOk != nil {
-					clusterPrint.IpAddress = *ipAddressOk
+		if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
+			if displayNameOk, ok := propertiesOk.GetDisplayNameOk(); ok && displayNameOk != nil {
+				clusterPrint.DisplayName = *displayNameOk
+			}
+			if locationOk, ok := propertiesOk.GetLocationOk(); ok && locationOk != nil {
+				clusterPrint.Location = *locationOk
+			}
+			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
+				for _, vdcConnection := range *vdcConnectionsOk {
+					if vdcIdOk, ok := vdcConnection.GetDatacenterIdOk(); ok && vdcIdOk != nil {
+						clusterPrint.DatacenterId = *vdcIdOk
+					}
+					if lanIdOk, ok := vdcConnection.GetLanIdOk(); ok && lanIdOk != nil {
+						clusterPrint.LanId = *lanIdOk
+					}
+					if ipAddressOk, ok := vdcConnection.GetCidrOk(); ok && ipAddressOk != nil {
+						clusterPrint.Cidr = *ipAddressOk
+					}
 				}
 			}
-		}
-		if lifecycleStatusOk, ok := cluster.GetLifecycleStatusOk(); ok && lifecycleStatusOk != nil {
-			clusterPrint.LifecycleStatus = *lifecycleStatusOk
-		}
-		if postgresVersionOk, ok := cluster.GetPostgresVersionOk(); ok && postgresVersionOk != nil {
-			clusterPrint.PostgresVersion = *postgresVersionOk
-		}
-		if replicasOk, ok := cluster.GetReplicasOk(); ok && replicasOk != nil {
-			clusterPrint.Replicas = *replicasOk
-		}
-		if ramSizeOk, ok := cluster.GetRamSizeOk(); ok && ramSizeOk != nil {
-			clusterPrint.RamSize = *ramSizeOk
-		}
-		if cpuCoreCountOk, ok := cluster.GetCpuCoreCountOk(); ok && cpuCoreCountOk != nil {
-			clusterPrint.CpuCoreCount = *cpuCoreCountOk
-		}
-		if storageSizeOk, ok := cluster.GetStorageSizeOk(); ok && storageSizeOk != nil {
-			clusterPrint.StorageSize = *storageSizeOk
-		}
-		if storageTypeOk, ok := cluster.GetStorageTypeOk(); ok && storageTypeOk != nil {
-			clusterPrint.StorageType = string(*storageTypeOk)
-		}
-		if maintenanceWindowOk, ok := cluster.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
-			var maintenanceWindow string
-			if weekdayOk, ok := maintenanceWindowOk.GetWeekdayOk(); ok && weekdayOk != nil {
-				maintenanceWindow = *weekdayOk
+			if postgresVersionOk, ok := propertiesOk.GetPostgresVersionOk(); ok && postgresVersionOk != nil {
+				clusterPrint.PostgresVersion = *postgresVersionOk
 			}
-			if timeOk, ok := maintenanceWindowOk.GetTimeOk(); ok && timeOk != nil {
-				maintenanceWindow = fmt.Sprintf("%s %s", maintenanceWindow, *timeOk)
+			if replicasOk, ok := propertiesOk.GetInstancesOk(); ok && replicasOk != nil {
+				clusterPrint.Instances = *replicasOk
 			}
-			clusterPrint.MaintenanceWindow = maintenanceWindow
+			if ramSizeOk, ok := propertiesOk.GetRamOk(); ok && ramSizeOk != nil {
+				clusterPrint.Ram = fmt.Sprintf("%vMB", *ramSizeOk)
+			}
+			if cpuCoreCountOk, ok := propertiesOk.GetCoresOk(); ok && cpuCoreCountOk != nil {
+				clusterPrint.Cores = *cpuCoreCountOk
+			}
+			if storageSizeOk, ok := propertiesOk.GetStorageSizeOk(); ok && storageSizeOk != nil {
+				clusterPrint.StorageSize = fmt.Sprintf("%vGB", *storageSizeOk)
+			}
+			if storageTypeOk, ok := propertiesOk.GetStorageTypeOk(); ok && storageTypeOk != nil {
+				clusterPrint.StorageType = string(*storageTypeOk)
+			}
+			if maintenanceWindowOk, ok := propertiesOk.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
+				var maintenanceWindow string
+				if weekdayOk, ok := maintenanceWindowOk.GetDayOfTheWeekOk(); ok && weekdayOk != nil {
+					maintenanceWindow = *weekdayOk
+				}
+				if timeOk, ok := maintenanceWindowOk.GetTimeOk(); ok && timeOk != nil {
+					maintenanceWindow = fmt.Sprintf("%s %s", maintenanceWindow, *timeOk)
+				}
+				clusterPrint.MaintenanceWindow = maintenanceWindow
+			}
+		}
+		if metadataOk, ok := cluster.GetMetadataOk(); ok && metadataOk != nil {
+			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
+				clusterPrint.State = *stateOk
+			}
 		}
 		o := structs.Map(clusterPrint)
 		out = append(out, o)

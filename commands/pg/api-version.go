@@ -143,7 +143,7 @@ func getAPIVersionsKVMaps(apiVersions *[]pgsqlresources.APIVersion) []map[string
 	if apiVersions != nil {
 		for _, apiVersion := range *apiVersions {
 			var uPrint APIVersionPrint
-			if versionOk, ok := apiVersion.GetNameOk(); ok && versionOk != nil {
+			if versionOk, ok := apiVersion.GetVersionOk(); ok && versionOk != nil {
 				uPrint.Name = *versionOk
 			}
 			if swaggerUrlOk, ok := apiVersion.GetSwaggerUrlOk(); ok && swaggerUrlOk != nil {
