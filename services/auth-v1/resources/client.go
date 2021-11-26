@@ -2,6 +2,7 @@ package resources
 
 import (
 	"errors"
+	"fmt"
 
 	sdkgoauth "github.com/ionos-cloud/sdk-go-auth"
 )
@@ -31,6 +32,7 @@ func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
 		return nil, errors.New("username, password or token incorrect")
 	}
 	clientConfig := sdkgoauth.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig.UserAgent = fmt.Sprintf("ionos-cloud-sdk-go-auth-v%v-cli", sdkgoauth.Version)
 	return &clientService{
 		client: sdkgoauth.NewAPIClient(clientConfig),
 	}, nil

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"errors"
+	"fmt"
 
 	ionoscloud "github.com/ionos-cloud/sdk-go/v5"
 )
@@ -31,6 +32,7 @@ func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
 		return nil, errors.New("username, password or token incorrect")
 	}
 	clientConfig := ionoscloud.NewConfiguration(name, pwd, token, hostUrl)
+	clientConfig.UserAgent = fmt.Sprintf("ionos-cloud-sdk-go-v%v-cli", ionoscloud.Version)
 	return &clientService{
 		client: ionoscloud.NewAPIClient(clientConfig),
 	}, nil
