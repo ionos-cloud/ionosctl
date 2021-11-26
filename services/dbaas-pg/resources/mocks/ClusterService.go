@@ -6,7 +6,6 @@ package mock_resources
 
 import (
 	reflect "reflect"
-	time "time"
 
 	gomock "github.com/golang/mock/gomock"
 	resources "github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
@@ -36,19 +35,19 @@ func (m *MockClustersService) EXPECT() *MockClustersServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockClustersService) Create(input resources.CreateClusterRequest, backupId string, recoveryTargetTime time.Time) (*resources.Cluster, *resources.Response, error) {
+func (m *MockClustersService) Create(input resources.CreateClusterRequest) (*resources.ClusterResponse, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", input, backupId, recoveryTargetTime)
-	ret0, _ := ret[0].(*resources.Cluster)
+	ret := m.ctrl.Call(m, "Create", input)
+	ret0, _ := ret[0].(*resources.ClusterResponse)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockClustersServiceMockRecorder) Create(input, backupId, recoveryTargetTime interface{}) *gomock.Call {
+func (mr *MockClustersServiceMockRecorder) Create(input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockClustersService)(nil).Create), input, backupId, recoveryTargetTime)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockClustersService)(nil).Create), input)
 }
 
 // Delete mocks base method.
@@ -67,10 +66,10 @@ func (mr *MockClustersServiceMockRecorder) Delete(clusterId interface{}) *gomock
 }
 
 // Get mocks base method.
-func (m *MockClustersService) Get(clusterId string) (*resources.Cluster, *resources.Response, error) {
+func (m *MockClustersService) Get(clusterId string) (*resources.ClusterResponse, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", clusterId)
-	ret0, _ := ret[0].(*resources.Cluster)
+	ret0, _ := ret[0].(*resources.ClusterResponse)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -99,10 +98,10 @@ func (mr *MockClustersServiceMockRecorder) List(filterName interface{}) *gomock.
 }
 
 // Update mocks base method.
-func (m *MockClustersService) Update(clusterId string, input resources.PatchClusterRequest) (*resources.Cluster, *resources.Response, error) {
+func (m *MockClustersService) Update(clusterId string, input resources.PatchClusterRequest) (*resources.ClusterResponse, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", clusterId, input)
-	ret0, _ := ret[0].(*resources.Cluster)
+	ret0, _ := ret[0].(*resources.ClusterResponse)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
