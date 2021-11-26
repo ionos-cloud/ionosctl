@@ -34,7 +34,7 @@ type ApiClusterPostgresVersionsGetRequest struct {
 	clusterId  string
 }
 
-func (r ApiClusterPostgresVersionsGetRequest) Execute() ([]PostgresVersionList, *APIResponse, error) {
+func (r ApiClusterPostgresVersionsGetRequest) Execute() (PostgresVersionList, *APIResponse, error) {
 	return r.ApiService.ClusterPostgresVersionsGetExecute(r)
 }
 
@@ -57,16 +57,16 @@ func (a *ClustersApiService) ClusterPostgresVersionsGet(ctx _context.Context, cl
 
 /*
  * Execute executes the request
- * @return []PostgresVersionList
+ * @return PostgresVersionList
  */
-func (a *ClustersApiService) ClusterPostgresVersionsGetExecute(r ApiClusterPostgresVersionsGetRequest) ([]PostgresVersionList, *APIResponse, error) {
+func (a *ClustersApiService) ClusterPostgresVersionsGetExecute(r ApiClusterPostgresVersionsGetRequest) (PostgresVersionList, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  []PostgresVersionList
+		localVarReturnValue  PostgresVersionList
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClustersApiService.ClusterPostgresVersionsGet")
@@ -880,7 +880,7 @@ type ApiPostgresVersionsGetRequest struct {
 	ApiService *ClustersApiService
 }
 
-func (r ApiPostgresVersionsGetRequest) Execute() ([]PostgresVersionList, *APIResponse, error) {
+func (r ApiPostgresVersionsGetRequest) Execute() (PostgresVersionList, *APIResponse, error) {
 	return r.ApiService.PostgresVersionsGetExecute(r)
 }
 
@@ -899,16 +899,16 @@ func (a *ClustersApiService) PostgresVersionsGet(ctx _context.Context) ApiPostgr
 
 /*
  * Execute executes the request
- * @return []PostgresVersionList
+ * @return PostgresVersionList
  */
-func (a *ClustersApiService) PostgresVersionsGetExecute(r ApiPostgresVersionsGetRequest) ([]PostgresVersionList, *APIResponse, error) {
+func (a *ClustersApiService) PostgresVersionsGetExecute(r ApiPostgresVersionsGetRequest) (PostgresVersionList, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  []PostgresVersionList
+		localVarReturnValue  PostgresVersionList
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClustersApiService.PostgresVersionsGet")

@@ -32,7 +32,7 @@ type ApiInfosVersionGetRequest struct {
 	ApiService *MetadataApiService
 }
 
-func (r ApiInfosVersionGetRequest) Execute() ([]APIVersion, *APIResponse, error) {
+func (r ApiInfosVersionGetRequest) Execute() (APIVersion, *APIResponse, error) {
 	return r.ApiService.InfosVersionGetExecute(r)
 }
 
@@ -51,16 +51,16 @@ func (a *MetadataApiService) InfosVersionGet(ctx _context.Context) ApiInfosVersi
 
 /*
  * Execute executes the request
- * @return []APIVersion
+ * @return APIVersion
  */
-func (a *MetadataApiService) InfosVersionGetExecute(r ApiInfosVersionGetRequest) ([]APIVersion, *APIResponse, error) {
+func (a *MetadataApiService) InfosVersionGetExecute(r ApiInfosVersionGetRequest) (APIVersion, *APIResponse, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  []APIVersion
+		localVarReturnValue  APIVersion
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MetadataApiService.InfosVersionGet")

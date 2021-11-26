@@ -2,7 +2,6 @@ package resources
 
 import (
 	"errors"
-	"fmt"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 )
@@ -32,7 +31,6 @@ func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
 		return nil, errors.New("username, password or token incorrect")
 	}
 	clientConfig := sdkgo.NewConfiguration(name, pwd, token, hostUrl)
-	clientConfig.UserAgent = fmt.Sprintf("ionos-cloud-sdk-go-dbaas-postgres-%v-cli", sdkgo.Version)
 	return &clientService{
 		client: sdkgo.NewAPIClient(clientConfig),
 	}, nil
