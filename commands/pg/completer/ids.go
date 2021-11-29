@@ -29,6 +29,25 @@ func BackupsIds(outErr io.Writer) []string {
 	return ids
 }
 
+func BackupsIdsForCluster(outErr io.Writer, clusterId string) []string {
+	client, err := getDbaasPgsqlClient()
+	clierror.CheckError(err, outErr)
+	clustersService := resources.NewBackupsService(client, context.TODO())
+	backupList, _, err := clustersService.ListBackups(clusterId)
+	clierror.CheckError(err, outErr)
+	ids := make([]string, 0)
+	if dataOk, ok := backupList.GetItemsOk(); ok && dataOk != nil {
+		for _, item := range *dataOk {
+			if itemId, ok := item.GetIdOk(); ok && itemId != nil {
+				ids = append(ids, *itemId)
+			}
+		}
+	} else {
+		return nil
+	}
+	return ids
+}
+
 func ClustersIds(outErr io.Writer) []string {
 	client, err := getDbaasPgsqlClient()
 	clierror.CheckError(err, outErr)
