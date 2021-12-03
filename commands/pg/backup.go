@@ -27,7 +27,7 @@ func BackupCmd() *core.Command {
 			Use:              "backup",
 			Aliases:          []string{"b"},
 			Short:            "PostgreSQL Backup Operations",
-			Long:             "The sub-commands of `ionosctl pg backup` allow you to create, list, get, update and delete PostgreSQL Backups.",
+			Long:             "The sub-commands of `ionosctl pg backup` allow you to list, get PostgreSQL Backups.",
 			TraverseChildren: true,
 		},
 	}
@@ -107,7 +107,7 @@ func ClusterBackupCmd() *core.Command {
 			Use:              "backup",
 			Aliases:          []string{"b"},
 			Short:            "PostgreSQL Cluster Backup Operations",
-			Long:             "The sub-commands of `ionosctl dbaas-pgsql cluster backup` allow you to list PostgreSQL Backups from a specified Cluster.",
+			Long:             "The sub-commands of `ionosctl dbaas-pgsql cluster backup` allow you to list PostgreSQL Backups from a specific Cluster.",
 			TraverseChildren: true,
 		},
 	}
@@ -121,7 +121,7 @@ func ClusterBackupCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Cluster Backups from a Cluster",
-		LongDesc:   "Use this command to retrieve a list of PostgreSQL Cluster Backups from a specified Cluster.",
+		LongDesc:   "Use this command to retrieve a list of PostgreSQL Cluster Backups from a specific Cluster.",
 		Example:    listBackupExample,
 		PreCmdRun:  PreRunClusterId,
 		CmdRun:     RunClusterBackupList,
@@ -190,12 +190,13 @@ func getBackupCols(flagName string, outErr io.Writer) []string {
 		return defaultBackupCols
 	}
 	columnsMap := map[string]string{
-		"BackupId":         "BackupId",
-		"DisplayName":      "DisplayName",
-		"ClusterId":        "ClusterId",
-		"Type":             "Type",
-		"CreatedDate":      "CreatedDate",
-		"LastModifiedDate": "LastModifiedDate",
+		"BackupId":                   "BackupId",
+		"DisplayName":                "DisplayName",
+		"ClusterId":                  "ClusterId",
+		"EarliestRecoveryTargetTime": "EarliestRecoveryTargetTime",
+		"CreatedDate":                "CreatedDate",
+		"Version":                    "Version",
+		"Active":                     "Active",
 	}
 	var backupCols []string
 	for _, k := range cols {

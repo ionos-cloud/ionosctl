@@ -90,13 +90,14 @@ func ClusterCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a PostgreSQL Cluster",
-		LongDesc: `Use this command to create a new PostgreSQL Cluster. You must set the unique ID of the VDC (VirtualDataCenter), the unique ID of the LAN. If the other options are not set, the default values will be used. Regarding the location field, if it is not manually set, it will be used the location of the VDC.
+		LongDesc: `Use this command to create a new PostgreSQL Cluster. You must set the unique ID of the Datacenter, the unique ID of the LAN, and an IP Subnet. If the other options are not set, the default values will be used. Regarding the location field, if it is not manually set, it will be used the location of the Datacenter.
 
 Required values to run command:
 
 * Datacenter Id
 * Lan Id
-* IP`,
+* IP
+* Credentials for the User`,
 		Example:    createClusterExample,
 		PreCmdRun:  PreRunClusterCreate,
 		CmdRun:     RunClusterCreate,
@@ -106,47 +107,51 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(dbaaspg.ArgReplicas, dbaaspg.ArgReplicasShort, 1, "The number of replicas in your cluster. Minimum: 1. Maximum: 5")
-	create.AddIntFlag(dbaaspg.ArgCpuCoreCount, "", 4, "The number of CPU cores per replica")
-	create.AddStringFlag(dbaaspg.ArgRamSize, "", "2048", "The amount of memory per instance in megabytes. Has to be a multiple of 256. Minimum: 2048")
-	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRamSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	create.AddIntFlag(dbaaspg.ArgInstances, dbaaspg.ArgInstancesShort, 2, "The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5")
+	create.AddIntFlag(dbaaspg.ArgCores, "", 4, "The number of CPU cores per instance. Minimum: 1")
+	// TODO: add conversion as for cloudapi-v6
+	create.AddStringFlag(dbaaspg.ArgRam, "", "2048", "The amount of memory per instance in megabytes. Has to be a multiple of 256. Minimum: 2048")
+	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgSyncMode, dbaaspg.ArgSyncModeShort, "ASYNCHRONOUS", "Represents different modes of replication")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"asynchronous", "synchronous", "strictly_synchronous"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"ASYNCHRONOUS", "SYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgStorageSize, "", "2048", "The amount of storage per instance in megabytes.")
+	// TODO: add conversion as for cloudapi-v6
+	create.AddStringFlag(dbaaspg.ArgStorageSize, "", "2048", "The amount of storage per instance in megabytes")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"20Gi", "500Mi", "2Gi", "50Gi"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"2048"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgStorageType, "", "HDD", "The storage type used in your cluster")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgLocation, "", "", "The physical location where the cluster will be created. This will be where all of your instances live. Property cannot be modified after datacenter creation (disallowed in update requests). If not set, it will be used VDC's location")
+	create.AddStringFlag(dbaaspg.ArgLocation, "", "", "The physical location where the cluster will be created. This will be where all of your instances live. Property cannot be modified after datacenter creation. If not set, it will be used Datacenter's location")
+	// TODO: update autocompletion if dbaas is supported everywhere
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"de/fra", "de/txl", "gb/lhr"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "UnnamedCluster", "The friendly name of your cluster")
-	create.AddStringFlag(dbaaspg.ArgDatacenterId, dbaaspg.ArgDatacenterIdShort, "", "The unique ID of the VDC to connect to your cluster", core.RequiredFlagOption())
+	create.AddStringFlag(dbaaspg.ArgDatacenterId, dbaaspg.ArgDatacenterIdShort, "", "The unique ID of the Datacenter to connect to your cluster", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgLanId, "", "", "The unique Lan ID", core.RequiredFlagOption())
+	create.AddStringFlag(dbaaspg.ArgLanId, "", "", "The unique ID of the LAN to connect your cluster to", core.RequiredFlagOption())
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, dbaaspg.ArgDatacenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgIpAddress, "", "", "The private IP and subnet for the database. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. Example: 192.168.1.100/24", core.RequiredFlagOption())
+	// TODO: check if this should be named CIDR
+	create.AddStringFlag(dbaaspg.ArgIpAddress, "", "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. Example: 192.168.1.100/24", core.RequiredFlagOption())
 	create.AddStringFlag(dbaaspg.ArgBackupId, dbaaspg.ArgBackupIdShort, "", "The unique ID of the backup you want to restore")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgTime, "", "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
-	create.AddStringFlag(dbaaspg.ArgUsername, "", "db-admin", "Username for the database user to be created. Some system usernames are restricted (e.g. postgres, admin, standby)")
-	create.AddStringFlag(dbaaspg.ArgPassword, "", "", "Password for the database user to be created", core.RequiredFlagOption())
+	create.AddStringFlag(dbaaspg.ArgUsername, "", "db-admin", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)")
+	create.AddStringFlag(dbaaspg.ArgPassword, "", "", "Password for the initial postgres user", core.RequiredFlagOption())
 	create.AddStringFlag(dbaaspg.ArgMaintenanceTime, dbaaspg.ArgMaintenanceTimeShort, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Example: 16:30:59")
-	create.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "WeekDay for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
+	create.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -180,19 +185,20 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddIntFlag(dbaaspg.ArgReplicas, dbaaspg.ArgReplicasShort, 0, "The number of replicas in your cluster")
-	update.AddIntFlag(dbaaspg.ArgCpuCoreCount, "", 0, "The number of CPU cores per replica")
-	update.AddStringFlag(dbaaspg.ArgRamSize, "", "", "The amount of memory per replica in IEC format. Value must be a multiple of 1024Mi and at least 2048Mi")
-	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRamSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	update.AddIntFlag(dbaaspg.ArgInstances, dbaaspg.ArgInstancesShort, 0, "The number of instances in your cluster")
+	update.AddIntFlag(dbaaspg.ArgCores, "", 0, "The number of CPU cores per instance")
+	// TODO: update autocompletion values
+	update.AddStringFlag(dbaaspg.ArgRam, "", "", "The amount of memory per instance in megabytes. Has to be a multiple of 256")
+	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2Gi", "4Gi", "2048Mi", "10Gi"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(dbaaspg.ArgStorageSize, "", "", "The amount of storage per replica. It is expected IEC format like 2Gi or 500Mi")
+	update.AddStringFlag(dbaaspg.ArgStorageSize, "", "", "The amount of storage per instance in megabytes")
 	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"20Gi", "500Mi", "2Gi", "50Gi"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(dbaaspg.ArgName, dbaaspg.ArgNameShort, "", "The friendly name of your cluster")
 	update.AddStringFlag(dbaaspg.ArgMaintenanceTime, dbaaspg.ArgMaintenanceTimeShort, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Example: 16:30:59")
-	update.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "WeekDay for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
+	update.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "Day of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
 	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -479,13 +485,13 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	syncMode := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSyncMode))
 	c.Printer.Verbose("SynchronizationMode: %v", syncMode)
 	input.SetSynchronizationMode(sdkgo.SynchronizationMode(syncMode))
-	replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgReplicas))
+	replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances))
 	c.Printer.Verbose("Instances: %v", replicas)
 	input.SetInstances(replicas)
-	cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCpuCoreCount))
+	cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores))
 	c.Printer.Verbose("Cores: %v", cpuCoreCount)
 	input.SetCores(cpuCoreCount)
-	ramSize := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgRamSize))
+	ramSize := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgRam))
 	c.Printer.Verbose("Ram: %v", ramSize)
 	input.SetRam(ramSize)
 	storageSize := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgStorageSize))
@@ -557,18 +563,18 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 func getPatchClusterRequest(c *core.CommandConfig) resources.PatchClusterRequest {
 	inputCluster := resources.PatchClusterRequest{}
 	input := sdkgo.PatchClusterProperties{}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCpuCoreCount)) {
-		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCpuCoreCount))
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCores)) {
+		cpuCoreCount := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores))
 		c.Printer.Verbose("Cores: %v", cpuCoreCount)
 		input.SetCores(cpuCoreCount)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgReplicas)) {
-		replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgReplicas))
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgInstances)) {
+		replicas := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances))
 		c.Printer.Verbose("Instances: %v", replicas)
 		input.SetInstances(replicas)
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRamSize)) {
-		ramSize := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgRamSize))
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRam)) {
+		ramSize := viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgRam))
 		c.Printer.Verbose("Ram: %v", ramSize)
 		input.SetRam(ramSize)
 	}
@@ -608,7 +614,7 @@ func getPatchClusterRequest(c *core.CommandConfig) resources.PatchClusterRequest
 // Output Printing
 
 var (
-	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "IpAddress", "Instances", "State"}
+	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "Cidr", "Instances", "State"}
 	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "State", "PostgresVersion", "Instances", "Ram", "Cores",
 		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow"}
 )

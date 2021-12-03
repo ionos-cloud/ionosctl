@@ -168,8 +168,8 @@ type CommandConfig struct {
 	initCfg func(commandConfig *CommandConfig) error
 
 	// Services
-	CloudApiV6Services cloudapi_v6.Services
-	AuthV1Services     authV1.Services
+	CloudApiV6Services         cloudapi_v6.Services
+	AuthV1Services             authV1.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
 
 	// Context
