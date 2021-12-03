@@ -90,14 +90,14 @@ func ClusterCmd() *core.Command {
 		Verb:      "create",
 		Aliases:   []string{"c"},
 		ShortDesc: "Create a PostgreSQL Cluster",
-		LongDesc: `Use this command to create a new PostgreSQL Cluster. You must set the unique ID of the Datacenter, the unique ID of the LAN, and an IP Subnet. If the other options are not set, the default values will be used. Regarding the location field, if it is not manually set, it will be used the location of the Datacenter.
+		LongDesc: `Use this command to create a new PostgreSQL Cluster. You must set the unique ID of the Datacenter, the unique ID of the LAN, and IP and subnet. If the other options are not set, the default values will be used. Regarding the location field, if it is not manually set, it will be used the location of the Datacenter.
 
 Required values to run command:
 
 * Datacenter Id
 * Lan Id
 * IP
-* Credentials for the User`,
+* Credentials for the User: Username and Password`,
 		Example:    createClusterExample,
 		PreCmdRun:  PreRunClusterCreate,
 		CmdRun:     RunClusterCreate,
@@ -148,8 +148,8 @@ Required values to run command:
 		return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgTime, "", "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
-	create.AddStringFlag(dbaaspg.ArgUsername, "", "db-admin", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)")
-	create.AddStringFlag(dbaaspg.ArgPassword, "", "", "Password for the initial postgres user", core.RequiredFlagOption())
+	create.AddStringFlag(dbaaspg.ArgUsername, dbaaspg.ArgUsernameShort, "db-admin", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
+	create.AddStringFlag(dbaaspg.ArgPassword, dbaaspg.ArgPasswordShort, "", "Password for the initial postgres user", core.RequiredFlagOption())
 	create.AddStringFlag(dbaaspg.ArgMaintenanceTime, dbaaspg.ArgMaintenanceTimeShort, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Example: 16:30:59")
 	create.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

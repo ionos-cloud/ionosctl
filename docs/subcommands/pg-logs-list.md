@@ -18,12 +18,6 @@ For `pg` command:
 [postgres]
 ```
 
-For `logs` command:
-
-```text
-[l]
-```
-
 For `list` command:
 
 ```text

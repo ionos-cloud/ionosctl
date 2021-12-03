@@ -42,9 +42,9 @@ Required values to run command:
 
 ```text
   -u, --api-url string     Override default host url (default "https://api.ionos.com")
-  -i, --backup-id string    (required)
+  -i, --backup-id string   The unique ID of the Backup (required)
       --cols strings       Set of columns to be printed on output 
-                           Available columns: [BackupId ClusterId DisplayName Type CreatedDate LastModifiedDate] (default [BackupId,ClusterId,DisplayName,Type])
+                           Available columns: [BackupId ClusterId DisplayName Active CreatedDate EarliestRecoveryTargetTime Version] (default [BackupId,ClusterId,DisplayName,EarliestRecoveryTargetTime,Active])
   -c, --config string      Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force              Force command to execute without user input
   -h, --help               Print usage

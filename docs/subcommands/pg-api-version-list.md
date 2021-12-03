@@ -39,7 +39,7 @@ Use this command to retrieve all available DBaaS PostgreSQL API versions.
 ```text
   -u, --api-url string   Override default host url (default "https://api.ionos.com")
       --cols strings     Set of columns to be printed on output 
-                         Available columns: [Name SwaggerUrl] (default [Name,SwaggerUrl])
+                         Available columns: [Version SwaggerUrl] (default [Version,SwaggerUrl])
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage

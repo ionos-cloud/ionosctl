@@ -30,7 +30,9 @@ const (
 	ArgName                 = "name"
 	ArgNameShort            = "n"
 	ArgUsername             = "username"
+	ArgUsernameShort        = "U"
 	ArgPassword             = "password"
+	ArgPasswordShort        = "P"
 	ArgMaintenanceTime      = "maintenance-time"
 	ArgMaintenanceTimeShort = "T"
 	ArgMaintenanceDay       = "maintenance-day"
@@ -41,6 +43,6 @@ const (
 
 const (
 	ClusterId             = "The unique ID of the Cluster"
-	BackupId              = ""
+	BackupId              = "The unique ID of the Backup"
 	DefaultClusterTimeout = int(1200)
 )
