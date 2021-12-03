@@ -82,30 +82,30 @@ ctx = context.WithValue(context.Background(), sw.ContextOperationServerVariables
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *https://api.ionos.com/cloudapi/databases*
+All URIs are relative to *https://api.ionos.com/databases/postgresql*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*BackupsApi* | [**ClusterBackupsGet**](docs/api/BackupsApi.md#clusterbackupsget) | **Get** /postgres/clusters/{clusterId}/backups | List backups of cluster
-*BackupsApi* | [**ClustersBackupsFindById**](docs/api/BackupsApi.md#clustersbackupsfindbyid) | **Get** /postgres/clusters/backups/{backupId} | Fetch a cluster backup
-*BackupsApi* | [**ClustersBackupsGet**](docs/api/BackupsApi.md#clustersbackupsget) | **Get** /postgres/clusters/backups | List cluster backups
-*ClustersApi* | [**ClusterPostgresVersionsGet**](docs/api/ClustersApi.md#clusterpostgresversionsget) | **Get** /postgres/clusters/{clusterId}/postgresversions | List PostgreSQL versions
-*ClustersApi* | [**ClustersDelete**](docs/api/ClustersApi.md#clustersdelete) | **Delete** /postgres/clusters/{clusterId} | Delete a cluster
-*ClustersApi* | [**ClustersFindById**](docs/api/ClustersApi.md#clustersfindbyid) | **Get** /postgres/clusters/{clusterId} | Fetch a cluster
-*ClustersApi* | [**ClustersGet**](docs/api/ClustersApi.md#clustersget) | **Get** /postgres/clusters | List clusters
-*ClustersApi* | [**ClustersPatch**](docs/api/ClustersApi.md#clusterspatch) | **Patch** /postgres/clusters/{clusterId} | Patch a cluster
-*ClustersApi* | [**ClustersPost**](docs/api/ClustersApi.md#clusterspost) | **Post** /postgres/clusters | Create a cluster
-*ClustersApi* | [**PostgresVersionsGet**](docs/api/ClustersApi.md#postgresversionsget) | **Get** /postgres/clusters/postgresversions | List PostgreSQL versions
-*LogsApi* | [**ClusterLogsGet**](docs/api/LogsApi.md#clusterlogsget) | **Get** /postgres/clusters/{clusterId}/logs | Get logs of your cluster
-*MetadataApi* | [**InfosVersionGet**](docs/api/MetadataApi.md#infosversionget) | **Get** /postgres/infos/version | Get the current API version
-*MetadataApi* | [**InfosVersionsGet**](docs/api/MetadataApi.md#infosversionsget) | **Get** /postgres/infos/versions | Fetch all API versions
-*QuotaApi* | [**QuotaGet**](docs/api/QuotaApi.md#quotaget) | **Get** /quota | Get the current quota
-*RestoresApi* | [**ClusterRestorePost**](docs/api/RestoresApi.md#clusterrestorepost) | **Post** /postgres/clusters/{clusterId}/restore | In-place restore of a cluster
+*BackupsApi* | [**ClusterBackupsGet**](docs/api/BackupsApi.md#clusterbackupsget) | **Get** /clusters/{clusterId}/backups | List backups of cluster
+*BackupsApi* | [**ClustersBackupsFindById**](docs/api/BackupsApi.md#clustersbackupsfindbyid) | **Get** /clusters/backups/{backupId} | Fetch a cluster backup
+*BackupsApi* | [**ClustersBackupsGet**](docs/api/BackupsApi.md#clustersbackupsget) | **Get** /clusters/backups | List cluster backups
+*ClustersApi* | [**ClusterPostgresVersionsGet**](docs/api/ClustersApi.md#clusterpostgresversionsget) | **Get** /clusters/{clusterId}/postgresversions | List PostgreSQL versions
+*ClustersApi* | [**ClustersDelete**](docs/api/ClustersApi.md#clustersdelete) | **Delete** /clusters/{clusterId} | Delete a cluster
+*ClustersApi* | [**ClustersFindById**](docs/api/ClustersApi.md#clustersfindbyid) | **Get** /clusters/{clusterId} | Fetch a cluster
+*ClustersApi* | [**ClustersGet**](docs/api/ClustersApi.md#clustersget) | **Get** /clusters | List clusters
+*ClustersApi* | [**ClustersPatch**](docs/api/ClustersApi.md#clusterspatch) | **Patch** /clusters/{clusterId} | Patch a cluster
+*ClustersApi* | [**ClustersPost**](docs/api/ClustersApi.md#clusterspost) | **Post** /clusters | Create a cluster
+*ClustersApi* | [**PostgresVersionsGet**](docs/api/ClustersApi.md#postgresversionsget) | **Get** /clusters/postgresversions | List PostgreSQL versions
+*LogsApi* | [**ClusterLogsGet**](docs/api/LogsApi.md#clusterlogsget) | **Get** /clusters/{clusterId}/logs | Get logs of your cluster
+*MetadataApi* | [**InfosVersionGet**](docs/api/MetadataApi.md#infosversionget) | **Get** /infos/version | Get the current API version
+*MetadataApi* | [**InfosVersionsGet**](docs/api/MetadataApi.md#infosversionsget) | **Get** /infos/versions | Fetch all API versions
+*RestoresApi* | [**ClusterRestorePost**](docs/api/RestoresApi.md#clusterrestorepost) | **Post** /clusters/{clusterId}/restore | In-place restore of a cluster
 
 
 ## Documentation For Models
 
  - [APIVersion](docs/models/APIVersion.md)
+ - [BackupLocation](docs/models/BackupLocation.md)
  - [BackupMetadata](docs/models/BackupMetadata.md)
  - [BackupResponse](docs/models/BackupResponse.md)
  - [ClusterBackup](docs/models/ClusterBackup.md)
@@ -122,8 +122,10 @@ Class | Method | HTTP request | Description
  - [CreateClusterRequest](docs/models/CreateClusterRequest.md)
  - [CreateRestoreRequest](docs/models/CreateRestoreRequest.md)
  - [DBUser](docs/models/DBUser.md)
+ - [DayOfTheWeek](docs/models/DayOfTheWeek.md)
  - [ErrorMessage](docs/models/ErrorMessage.md)
  - [ErrorResponse](docs/models/ErrorResponse.md)
+ - [Location](docs/models/Location.md)
  - [MaintenanceWindow](docs/models/MaintenanceWindow.md)
  - [Metadata](docs/models/Metadata.md)
  - [Pagination](docs/models/Pagination.md)
@@ -132,8 +134,8 @@ Class | Method | HTTP request | Description
  - [PatchClusterRequest](docs/models/PatchClusterRequest.md)
  - [PostgresVersionList](docs/models/PostgresVersionList.md)
  - [PostgresVersionListData](docs/models/PostgresVersionListData.md)
- - [QuotaList](docs/models/QuotaList.md)
  - [ResourceType](docs/models/ResourceType.md)
+ - [State](docs/models/State.md)
  - [StorageType](docs/models/StorageType.md)
  - [SynchronizationMode](docs/models/SynchronizationMode.md)
 
@@ -184,5 +186,5 @@ Each of these functions takes a value of the given basic type and returns a poin
 
 ## Author
 
-dbaas-dev@cloud.ionos.com
+
 

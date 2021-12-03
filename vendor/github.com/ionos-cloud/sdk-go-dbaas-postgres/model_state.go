@@ -15,69 +15,72 @@ import (
 	"fmt"
 )
 
-// StorageType The storage type used in your cluster.
-type StorageType string
+// State The current status reported back by the cluster.
+type State string
 
-// List of StorageType
+// List of State
 const (
-	HDD StorageType = "HDD"
-	SSD StorageType = "SSD"
+	AVAILABLE  State = "AVAILABLE"
+	BUSY       State = "BUSY"
+	DESTROYING State = "DESTROYING"
+	FAILED     State = "FAILED"
+	UNKNOWN    State = "UNKNOWN"
 )
 
-func (v *StorageType) UnmarshalJSON(src []byte) error {
+func (v *State) UnmarshalJSON(src []byte) error {
 	var value string
 	err := json.Unmarshal(src, &value)
 	if err != nil {
 		return err
 	}
-	enumTypeValue := StorageType(value)
-	for _, existing := range []StorageType{"HDD", "SSD"} {
+	enumTypeValue := State(value)
+	for _, existing := range []State{"AVAILABLE", "BUSY", "DESTROYING", "FAILED", "UNKNOWN"} {
 		if existing == enumTypeValue {
 			*v = enumTypeValue
 			return nil
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid StorageType", value)
+	return fmt.Errorf("%+v is not a valid State", value)
 }
 
-// Ptr returns reference to StorageType value
-func (v StorageType) Ptr() *StorageType {
+// Ptr returns reference to State value
+func (v State) Ptr() *State {
 	return &v
 }
 
-type NullableStorageType struct {
-	value *StorageType
+type NullableState struct {
+	value *State
 	isSet bool
 }
 
-func (v NullableStorageType) Get() *StorageType {
+func (v NullableState) Get() *State {
 	return v.value
 }
 
-func (v *NullableStorageType) Set(val *StorageType) {
+func (v *NullableState) Set(val *State) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableStorageType) IsSet() bool {
+func (v NullableState) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableStorageType) Unset() {
+func (v *NullableState) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableStorageType(val *StorageType) *NullableStorageType {
-	return &NullableStorageType{value: val, isSet: true}
+func NewNullableState(val *State) *NullableState {
+	return &NullableState{value: val, isSet: true}
 }
 
-func (v NullableStorageType) MarshalJSON() ([]byte, error) {
+func (v NullableState) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableStorageType) UnmarshalJSON(src []byte) error {
+func (v *NullableState) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

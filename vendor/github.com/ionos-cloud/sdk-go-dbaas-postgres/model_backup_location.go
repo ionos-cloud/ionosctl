@@ -15,69 +15,68 @@ import (
 	"fmt"
 )
 
-// StorageType The storage type used in your cluster.
-type StorageType string
+// BackupLocation The S3 location where the backups will be stored.
+type BackupLocation string
 
-// List of StorageType
+// List of BackupLocation
 const (
-	HDD StorageType = "HDD"
-	SSD StorageType = "SSD"
+	DE BackupLocation = "de"
 )
 
-func (v *StorageType) UnmarshalJSON(src []byte) error {
+func (v *BackupLocation) UnmarshalJSON(src []byte) error {
 	var value string
 	err := json.Unmarshal(src, &value)
 	if err != nil {
 		return err
 	}
-	enumTypeValue := StorageType(value)
-	for _, existing := range []StorageType{"HDD", "SSD"} {
+	enumTypeValue := BackupLocation(value)
+	for _, existing := range []BackupLocation{"de"} {
 		if existing == enumTypeValue {
 			*v = enumTypeValue
 			return nil
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid StorageType", value)
+	return fmt.Errorf("%+v is not a valid BackupLocation", value)
 }
 
-// Ptr returns reference to StorageType value
-func (v StorageType) Ptr() *StorageType {
+// Ptr returns reference to BackupLocation value
+func (v BackupLocation) Ptr() *BackupLocation {
 	return &v
 }
 
-type NullableStorageType struct {
-	value *StorageType
+type NullableBackupLocation struct {
+	value *BackupLocation
 	isSet bool
 }
 
-func (v NullableStorageType) Get() *StorageType {
+func (v NullableBackupLocation) Get() *BackupLocation {
 	return v.value
 }
 
-func (v *NullableStorageType) Set(val *StorageType) {
+func (v *NullableBackupLocation) Set(val *BackupLocation) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableStorageType) IsSet() bool {
+func (v NullableBackupLocation) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableStorageType) Unset() {
+func (v *NullableBackupLocation) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableStorageType(val *StorageType) *NullableStorageType {
-	return &NullableStorageType{value: val, isSet: true}
+func NewNullableBackupLocation(val *BackupLocation) *NullableBackupLocation {
+	return &NullableBackupLocation{value: val, isSet: true}
 }
 
-func (v NullableStorageType) MarshalJSON() ([]byte, error) {
+func (v NullableBackupLocation) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableStorageType) UnmarshalJSON(src []byte) error {
+func (v *NullableBackupLocation) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
