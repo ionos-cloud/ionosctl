@@ -21,7 +21,7 @@ type ClusterBackupList struct {
 // BackupsService is a wrapper around ionoscloud.ClusterBackup
 type BackupsService interface {
 	List() (ClusterBackupList, *Response, error)
-	Get(backupId string) (*ClusterBackup, *Response, error)
+	Get(backupId string) (*BackupResponse, *Response, error)
 	ListBackups(clusterId string) (ClusterBackupList, *Response, error)
 }
 
@@ -45,10 +45,10 @@ func (svc *backupsService) List() (ClusterBackupList, *Response, error) {
 	return ClusterBackupList{backupList}, &Response{*res}, err
 }
 
-func (svc *backupsService) Get(backupId string) (*ClusterBackup, *Response, error) {
+func (svc *backupsService) Get(backupId string) (*BackupResponse, *Response, error) {
 	req := svc.client.BackupsApi.ClustersBackupsFindById(svc.context, backupId)
 	backup, res, err := svc.client.BackupsApi.ClustersBackupsFindByIdExecute(req)
-	return &ClusterBackup{backup}, &Response{*res}, err
+	return &BackupResponse{backup}, &Response{*res}, err
 }
 
 func (svc *backupsService) ListBackups(clusterId string) (ClusterBackupList, *Response, error) {

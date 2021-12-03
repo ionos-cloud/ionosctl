@@ -97,7 +97,7 @@ func RunBackupGet(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	return c.Printer.Print(getBackupPrint(c, []resources.ClusterBackup{*backup}))
+	return c.Printer.Print(getBackupPrint(c, []resources.BackupResponse{*backup}))
 }
 
 func ClusterBackupCmd() *core.Command {
@@ -152,20 +152,21 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultBackupCols = []string{"BackupId", "ClusterId", "DisplayName", "Type"}
-	allBackupCols     = []string{"BackupId", "ClusterId", "DisplayName", "Type", "CreatedDate", "LastModifiedDate"}
+	defaultBackupCols = []string{"BackupId", "ClusterId", "DisplayName", "EarliestRecoveryTargetTime", "Active"}
+	allBackupCols     = []string{"BackupId", "ClusterId", "DisplayName", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version"}
 )
 
 type BackupPrint struct {
-	BackupId         string `json:"BackupId,omitempty"`
-	ClusterId        string `json:"ClusterId,omitempty"`
-	DisplayName      string `json:"DisplayName,omitempty"`
-	Type             string `json:"Type,omitempty"`
-	CreatedDate      string `json:"CreatedDate,omitempty"`
-	LastModifiedDate string `json:"LastModifiedDate,omitempty"`
+	BackupId                   string `json:"BackupId,omitempty"`
+	ClusterId                  string `json:"ClusterId,omitempty"`
+	DisplayName                string `json:"DisplayName,omitempty"`
+	EarliestRecoveryTargetTime string `json:"EarliestRecoveryTargetTime,omitempty"`
+	Version                    string `json:"Version,omitempty"`
+	Active                     bool   `json:"Active,omitempty"`
+	CreatedDate                string `json:"CreatedDate,omitempty"`
 }
 
-func getBackupPrint(c *core.CommandConfig, dcs []resources.ClusterBackup) printer.Result {
+func getBackupPrint(c *core.CommandConfig, dcs []resources.BackupResponse) printer.Result {
 	r := printer.Result{}
 	if c != nil {
 		if dcs != nil {
@@ -208,40 +209,45 @@ func getBackupCols(flagName string, outErr io.Writer) []string {
 	return backupCols
 }
 
-func getBackups(backups resources.ClusterBackupList) []resources.ClusterBackup {
-	c := make([]resources.ClusterBackup, 0)
+func getBackups(backups resources.ClusterBackupList) []resources.BackupResponse {
+	c := make([]resources.BackupResponse, 0)
 	if data, ok := backups.GetItemsOk(); ok && data != nil {
 		for _, d := range *data {
-			c = append(c, resources.ClusterBackup{ClusterBackup: d})
+			c = append(c, resources.BackupResponse{BackupResponse: d})
 		}
 	}
 	return c
 }
 
-func getBackupsKVMaps(backups []resources.ClusterBackup) []map[string]interface{} {
+func getBackupsKVMaps(backups []resources.BackupResponse) []map[string]interface{} {
 	out := make([]map[string]interface{}, 0, len(backups))
 	for _, backup := range backups {
 		var backupPrint BackupPrint
 		if idOk, ok := backup.GetIdOk(); ok && idOk != nil {
 			backupPrint.BackupId = *idOk
 		}
-		if displayNameOk, ok := backup.GetDisplayNameOk(); ok && displayNameOk != nil {
-			backupPrint.DisplayName = *displayNameOk
+		if propertiesOk, ok := backup.GetPropertiesOk(); ok && propertiesOk != nil {
+			if displayNameOk, ok := propertiesOk.GetDisplayNameOk(); ok && displayNameOk != nil {
+				backupPrint.DisplayName = *displayNameOk
+			}
+			if clusterIdOk, ok := propertiesOk.GetClusterIdOk(); ok && clusterIdOk != nil {
+				backupPrint.ClusterId = *clusterIdOk
+			}
+			if earliestTargetTimeOk, ok := propertiesOk.GetEarliestRecoveryTargetTimeOk(); ok && earliestTargetTimeOk != nil {
+				earliestTargetTimeRfc := earliestTargetTimeOk.Format(time.RFC3339)
+				backupPrint.EarliestRecoveryTargetTime = earliestTargetTimeRfc
+			}
+			if versionOk, ok := propertiesOk.GetVersionOk(); ok && versionOk != nil {
+				backupPrint.Version = *versionOk
+			}
+			if isActiveOk, ok := propertiesOk.GetIsActiveOk(); ok && isActiveOk != nil {
+				backupPrint.Active = *isActiveOk
+			}
 		}
-		if clusterIdOk, ok := backup.GetClusterIdOk(); ok && clusterIdOk != nil {
-			backupPrint.ClusterId = *clusterIdOk
-		}
-		if typeOk, ok := backup.GetTypeOk(); ok && typeOk != nil {
-			backupPrint.Type = *typeOk
-		}
-		if metadataOk, ok := backup.GetTypeOk(); ok && metadataOk != nil {
+		if metadataOk, ok := backup.GetMetadataOk(); ok && metadataOk != nil {
 			if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
 				createdDateOkRfc := createdDateOk.Format(time.RFC3339)
 				backupPrint.CreatedDate = createdDateOkRfc
-			}
-			if lastModifiedDateOk, ok := metadataOk.GetLastModifiedDateOk(); ok && lastModifiedDateOk != nil {
-				lastModifiedDateOkRfc := lastModifiedDateOk.Format(time.RFC3339)
-				backupPrint.LastModifiedDate = lastModifiedDateOkRfc
 			}
 		}
 		o := structs.Map(backupPrint)

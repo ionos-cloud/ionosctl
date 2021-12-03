@@ -115,6 +115,7 @@ Class | Method | HTTP request | Description
  - [ClusterListAllOf](docs/models/ClusterListAllOf.md)
  - [ClusterLogs](docs/models/ClusterLogs.md)
  - [ClusterLogsInstances](docs/models/ClusterLogsInstances.md)
+ - [ClusterLogsMessages](docs/models/ClusterLogsMessages.md)
  - [ClusterProperties](docs/models/ClusterProperties.md)
  - [ClusterResponse](docs/models/ClusterResponse.md)
  - [Connection](docs/models/Connection.md)

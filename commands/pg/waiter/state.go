@@ -9,8 +9,10 @@ func ClusterStateInterrogator(c *core.CommandConfig, objId string) (*string, err
 	if err != nil {
 		return nil, err
 	}
-	if lifecycleStatusOk, ok := obj.GetLifecycleStatusOk(); ok && lifecycleStatusOk != nil {
-		return lifecycleStatusOk, nil
+	if metadataOk, ok := obj.GetMetadataOk(); ok && metadataOk != nil {
+		if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
+			return (*string)(stateOk), nil
+		}
 	}
 	return nil, nil
 }

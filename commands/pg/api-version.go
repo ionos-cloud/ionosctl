@@ -88,10 +88,10 @@ func RunAPIVersionGet(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultAPIVersionCols = []string{"Name", "SwaggerUrl"}
+var defaultAPIVersionCols = []string{"Version", "SwaggerUrl"}
 
 type APIVersionPrint struct {
-	Name       string `json:"Name,omitempty"`
+	Version    string `json:"Version,omitempty"`
 	SwaggerUrl string `json:"SwaggerUrl,omitempty"`
 }
 
@@ -121,7 +121,7 @@ func getAPIVersionCols(flagName string, outErr io.Writer) []string {
 	if viper.IsSet(flagName) {
 		var pgsqlVersionCols []string
 		columnsMap := map[string]string{
-			"Name":       "Name",
+			"Version":    "Version",
 			"SwaggerUrl": "SwaggerUrl",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
@@ -144,7 +144,7 @@ func getAPIVersionsKVMaps(apiVersions *[]pgsqlresources.APIVersion) []map[string
 		for _, apiVersion := range *apiVersions {
 			var uPrint APIVersionPrint
 			if versionOk, ok := apiVersion.GetVersionOk(); ok && versionOk != nil {
-				uPrint.Name = *versionOk
+				uPrint.Version = *versionOk
 			}
 			if swaggerUrlOk, ok := apiVersion.GetSwaggerUrlOk(); ok && swaggerUrlOk != nil {
 				uPrint.SwaggerUrl = *swaggerUrlOk

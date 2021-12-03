@@ -27,7 +27,6 @@ func LogsCmd() *core.Command {
 	clusterCmd := &core.Command{
 		Command: &cobra.Command{
 			Use:              "logs",
-			Aliases:          []string{"l"},
 			Short:            "PostgreSQL Cluster Logs Operations",
 			Long:             "The sub-commands of `ionosctl pg logs` allow you to get the Logs of a specified PostgreSQL Cluster.",
 			TraverseChildren: true,

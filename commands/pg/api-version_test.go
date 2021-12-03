@@ -19,7 +19,7 @@ import (
 var (
 	testAPIVersion = resources.APIVersion{
 		APIVersion: sdkgo.APIVersion{
-			Name:       &testAPIVersionVar,
+			Version:    &testAPIVersionVar,
 			SwaggerUrl: &testAPIVersionVar,
 		},
 	}

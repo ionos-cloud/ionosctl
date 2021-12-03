@@ -35,10 +35,10 @@ func (m *MockBackupsService) EXPECT() *MockBackupsServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockBackupsService) Get(backupId string) (*resources.ClusterBackup, *resources.Response, error) {
+func (m *MockBackupsService) Get(backupId string) (*resources.BackupResponse, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", backupId)
-	ret0, _ := ret[0].(*resources.ClusterBackup)
+	ret0, _ := ret[0].(*resources.BackupResponse)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
