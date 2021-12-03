@@ -18,27 +18,26 @@ import (
 )
 
 var (
-	testBackup = resources.ClusterBackup{
-		ClusterBackup: sdkgo.ClusterBackup{
-			Id:          &testBackupVar,
-			ClusterId:   &testBackupVar,
-			DisplayName: &testBackupVar,
-			Type:        &testBackupVar,
-			Metadata: &sdkgo.Metadata{
-				CreatedDate:      &testIonosTime,
-				LastModifiedDate: &testIonosTime,
+	testBackup = resources.BackupResponse{
+		BackupResponse: sdkgo.BackupResponse{
+			Properties: &sdkgo.ClusterBackup{
+				Id:          &testBackupVar,
+				ClusterId:   &testBackupVar,
+				DisplayName: &testBackupVar,
+			},
+			Metadata: &sdkgo.BackupMetadata{
+				CreatedDate: &testIonosTime,
 			},
 		},
 	}
 	testBackups = resources.ClusterBackupList{
 		ClusterBackupList: sdkgo.ClusterBackupList{
-			Page: &testBackupPage,
-			Data: &[]sdkgo.ClusterBackup{testBackup.ClusterBackup},
+			Id:    &testBackupVar,
+			Items: &[]sdkgo.BackupResponse{testBackup.BackupResponse},
 		},
 	}
-	testBackupPage = int32(2)
-	testBackupVar  = "test-backup"
-	testBackupErr  = errors.New("test backup error")
+	testBackupVar = "test-backup"
+	testBackupErr = errors.New("test backup error")
 )
 
 func TestBackupCmd(t *testing.T) {
@@ -182,7 +181,7 @@ func TestGetBackupsCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("backup", config.ArgCols), []string{"DisplayName"})
+	viper.Set(core.GetGlobalFlagName("backup", config.ArgCols), []string{"BackupId"})
 	getBackupCols(core.GetGlobalFlagName("backup", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)
