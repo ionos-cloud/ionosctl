@@ -126,7 +126,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgStorageType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HDD", "SSD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgLocation, "", "", "The physical location where the cluster will be created. This will be where all of your instances live. Property cannot be modified after datacenter creation. If not set, it will be used Datacenter's location")
+	create.AddStringFlag(dbaaspg.ArgLocation, "", "", "The physical location where the cluster will be created. It cannot be modified after datacenter creation. If not set, it will be used Datacenter's location")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return cloudapiv6completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})

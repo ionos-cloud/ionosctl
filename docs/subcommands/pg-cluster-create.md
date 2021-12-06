@@ -56,7 +56,7 @@ Required values to run command:
   -h, --help                      Print usage
   -I, --instances int             The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5 (default 1)
       --lan-id string             The unique ID of the LAN to connect your cluster to (required)
-      --location-id string        The physical location where the cluster will be created. This will be where all of your instances live. Property cannot be modified after datacenter creation. If not set, it will be used Datacenter's location
+      --location-id string        The physical location where the cluster will be created. It cannot be modified after datacenter creation. If not set, it will be used Datacenter's location
   -d, --maintenance-day string    Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur
   -T, --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Example: 16:30:59
   -n, --name string               The friendly name of your cluster (default "UnnamedCluster")
