@@ -24,7 +24,7 @@ const (
 	ArgBackupId             = "backup-id"
 	ArgBackupIdShort        = "b"
 	ArgTime                 = "time"
-	ArgIpAddress            = "ip"
+	ArgCidr                 = "cidr"
 	ArgLanId                = "lan-id"
 	ArgLocation             = "location-id"
 	ArgName                 = "name"
