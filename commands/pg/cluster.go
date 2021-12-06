@@ -108,7 +108,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddIntFlag(dbaaspg.ArgInstances, dbaaspg.ArgInstancesShort, 2, "The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5")
+	create.AddIntFlag(dbaaspg.ArgInstances, dbaaspg.ArgInstancesShort, 1, "The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5")
 	create.AddIntFlag(dbaaspg.ArgCores, "", 2, "The number of CPU cores per instance. Minimum: 1")
 	create.AddStringFlag(dbaaspg.ArgRam, "", "3GB", "The amount of memory per instance. Size must be specified in multiples of 256. Minimum: 2048. The default unit is MB. e.g. --ram 2048 or --ram 2048MB")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -144,7 +144,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgTime, "", "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
+	create.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 	create.AddStringFlag(dbaaspg.ArgUsername, dbaaspg.ArgUsernameShort, "db-admin", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
 	create.AddStringFlag(dbaaspg.ArgPassword, dbaaspg.ArgPasswordShort, "", "Password for the initial postgres user", core.RequiredFlagOption())
 	create.AddStringFlag(dbaaspg.ArgMaintenanceTime, dbaaspg.ArgMaintenanceTimeShort, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Example: 16:30:59")
@@ -229,7 +229,7 @@ Required values to run command:
 	_ = restoreCmd.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIdsForCluster(os.Stderr, viper.GetString(core.GetFlagName(restoreCmd.NS, dbaaspg.ArgClusterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	restoreCmd.AddStringFlag(dbaaspg.ArgTime, "", "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
+	restoreCmd.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
 	restoreCmd.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
 	restoreCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
 
@@ -287,12 +287,6 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
-	// Validate Flags
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgTime)) {
-		if !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)) {
-			return errors.New("error: recovery target time can be used with --backup-id flag")
-		}
-	}
 	return nil
 }
 
@@ -330,16 +324,6 @@ func RunClusterCreate(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)) {
-		c.Printer.Verbose("Backup ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)))
-	}
-	//if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgTime)) {
-	//	c.Printer.Verbose("RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgTime)))
-	//	recoveryTargetTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgTime)))
-	//	if err != nil {
-	//		return err
-	//	}
-	//}
 	c.Printer.Verbose("Creating Cluster...")
 	cluster, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Create(*input)
 	if err != nil {
@@ -391,9 +375,9 @@ func RunClusterRestore(c *core.CommandConfig) error {
 			BackupId: &backupId,
 		},
 	}
-	if viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgTime)) != "" {
-		c.Printer.Verbose("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgTime)))
-		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgTime)))
+	if viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) != "" {
+		c.Printer.Verbose("Setting RecoveryTargetTime [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)))
+		recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)))
 		if err != nil {
 			return err
 		}
@@ -562,6 +546,24 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 			maintenanceWindow.SetDayOfTheWeek(sdkgo.DayOfTheWeek(maintenanceDay))
 		}
 		input.SetMaintenanceWindow(maintenanceWindow)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)) ||
+		viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) {
+		createRestoreRequest := sdkgo.CreateRestoreRequest{}
+		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)) {
+			recoveryTargetTime, err := time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgRecoveryTime)))
+			if err != nil {
+				return nil, err
+			}
+			c.Printer.Verbose("From Backup - RecoveryTargetTime [RFC3339 format]: %v", recoveryTargetTime)
+			createRestoreRequest.SetRecoveryTargetTime(recoveryTargetTime)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgBackupId)) {
+			backupId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))
+			c.Printer.Verbose("From Backup - BackupId: %v", backupId)
+			createRestoreRequest.SetBackupId(backupId)
+		}
+		input.SetFromBackup(createRestoreRequest)
 	}
 	inputCluster.SetProperties(input)
 	return &inputCluster, nil

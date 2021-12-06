@@ -50,6 +50,10 @@ var (
 					Username: &testClusterVar,
 					Password: &testClusterVar,
 				},
+				FromBackup: &sdkgo.CreateRestoreRequest{
+					BackupId:           &testClusterVar,
+					RecoveryTargetTime: &testIonosTime,
+				},
 			},
 		},
 	}
@@ -283,29 +287,11 @@ func TestPreRunClusterCreateRecoveryTime(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDatacenterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLanId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCidr), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
 		err := PreRunClusterCreate(cfg)
 		assert.NoError(t, err)
-	})
-}
-
-func TestPreRunClusterCreateRecoveryTimeErr(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
-		viper.Reset()
-		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
-		viper.Set(config.ArgQuiet, false)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgVersion), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDatacenterId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLanId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCidr), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
-		err := PreRunClusterCreate(cfg)
-		assert.Error(t, err)
 	})
 }
 
@@ -483,8 +469,8 @@ func TestRunClusterCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUsername), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
-		//viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		//viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(&testClusterGet, nil, nil)
 		err := RunClusterCreate(cfg)
 		assert.NoError(t, err)
@@ -517,7 +503,7 @@ func TestRunClusterCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUsername), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		//viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(&testClusterGet, nil, testClusterErr)
 		err := RunClusterCreate(cfg)
 		assert.Error(t, err)
@@ -548,8 +534,8 @@ func TestRunClusterCreateLocation(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUsername), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
-		//viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		//viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		rm.CloudApiV6Mocks.Datacenter.EXPECT().Get(testClusterVar).Return(&testVdcGet, nil, nil)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(&testClusterGet, nil, nil)
 		err := RunClusterCreate(cfg)
@@ -582,7 +568,7 @@ func TestRunClusterCreateLocationErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUsername), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		rm.CloudApiV6Mocks.Datacenter.EXPECT().Get(testClusterVar).Return(&testVdcGet, nil, testClusterErr)
 		err := RunClusterCreate(cfg)
 		assert.Error(t, err)
@@ -616,7 +602,7 @@ func TestRunClusterCreateWaitForState(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUsername), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(&testClusterGet, nil, nil)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Get(testClusterVar).Return(&testClusterGet, nil, nil).Times(2)
 		err := RunClusterCreate(cfg)
@@ -651,7 +637,7 @@ func TestRunClusterCreateWaitForStateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUsername), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Create(testCreateClusterRequest).Return(&testClusterGet, nil, nil)
 		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().Get(testClusterVar).Return(&testClusterGetFailed, nil, nil)
 		err := RunClusterCreate(cfg)
@@ -695,7 +681,7 @@ func TestRunClusterRestore(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		rm.CloudApiDbaasPgsqlMocks.Restore.EXPECT().Restore(testClusterVar, testCreateRestoreRequest).Return(nil, nil)
 		err := RunClusterRestore(cfg)
 		assert.NoError(t, err)
@@ -714,7 +700,7 @@ func TestRunClusterRestoreErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		rm.CloudApiDbaasPgsqlMocks.Restore.EXPECT().Restore(testClusterVar, testCreateRestoreRequest).Return(nil, testClusterErr)
 		err := RunClusterRestore(cfg)
 		assert.Error(t, err)
@@ -732,7 +718,7 @@ func TestRunClusterRestoreAskConfirmErr(t *testing.T) {
 		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
-		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
 		cfg.Stdin = os.Stdin
 		err := RunClusterRestore(cfg)
 		assert.Error(t, err)
