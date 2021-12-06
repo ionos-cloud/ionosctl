@@ -55,8 +55,8 @@ Required values to run command:
   -n, --name string               The friendly name of your cluster
   -o, --output string             Desired output format [text|json] (default "text")
   -q, --quiet                     Quiet output
-      --ram string                The amount of memory per instance in megabytes. Has to be a multiple of 256
-      --storage-size string       The amount of storage per instance in megabytes
+      --ram string                The amount of memory per instance. Size must be specified in multiples of 256. Minimum: 2048. The default unit is MB. e.g. --ram 2048 or --ram 2048MB
+      --storage-size string       The amount of storage per instance. The default unit is MB. e.g.: --size 20480 or --size 20480MB or --size 20GB
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
   -v, --verbose                   Print step-by-step process when running command
   -V, --version string            The PostgreSQL version of your cluster
