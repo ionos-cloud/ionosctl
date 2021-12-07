@@ -3,7 +3,7 @@ package pg
 const (
 	listClusterExample    = `ionosctl pg cluster list`
 	getClusterExample     = `ionosctl pg cluster get -i CLUSTER_ID`
-	createClusterExample  = `ionosctl pg cluster create -V POSTGRES_VERSION --datacenter-id DATACENTER_ID --lan-id LAN_ID --ip IP_ADDRESS`
+	createClusterExample  = `ionosctl pg cluster create --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --password DBUSER_PASSWORD`
 	updateClusterExample  = `ionosctl pg cluster update -i CLUSTER_ID -n CLUSTER_NAME`
 	restoreClusterExample = `ionosctl pg cluster restore -i CLUSTER_ID --backup-id BACKUP_ID`
 	deleteClusterExample  = `ionosctl pg cluster delete -i CLUSTER_ID`

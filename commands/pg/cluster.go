@@ -97,7 +97,7 @@ Required values to run command:
 
 * Datacenter Id
 * Lan Id
-* IP
+* Cidr (IP and subnet)
 * Credentials for the User: Username and Password`,
 		Example:    createClusterExample,
 		PreCmdRun:  PreRunClusterCreate,
