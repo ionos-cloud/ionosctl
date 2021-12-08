@@ -19,6 +19,7 @@ const (
 
 const (
 	stateProgressCircleTpl   = `{{ etime . }} {{ "Waiting for state" }}{{ cycle . "." ".. " "..." "...." }}`
+	deleteProgressCircleTpl  = `{{ etime . }} {{ "Waiting for deletion" }}{{ cycle . "." ".. " "..." "...." }}`
 	requestProgressCircleTpl = `{{ etime . }} {{ "Waiting for request" }}{{ cycle . "." ".. " "..." "...." }}`
 )
 
@@ -97,6 +98,50 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 				return err
 			}
 			progress.SetTemplateString(stateProgressCircleTpl + " " + done)
+		} else {
+			c.Printer.Print(waitingForStateMsg)
+			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+			if err := <-errCh; err != nil {
+				c.Printer.Print(failed)
+				return err
+			}
+			c.Printer.Print(done)
+		}
+		return nil
+	}
+}
+
+func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateStateFunc, resourceId string) error {
+	if !viper.GetBool(core2.GetFlagName(c.NS, config.ArgWaitForDelete)) {
+		// Double Check: return if flag not set
+		return nil
+	} else {
+		// Set context timeout
+		timeout := viper.GetInt(core2.GetFlagName(c.NS, config.ArgTimeout))
+		if timeout == 0 {
+			timeout = config.DefaultTimeoutSeconds
+		}
+		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
+		defer cancel()
+
+		// Check the output format
+		if viper.GetString(config.ArgOutput) == printer.TypeText.String() {
+			progress := pb.New(1)
+			progress.SetWriter(c.Printer.GetStdout())
+			progress.SetTemplateString(deleteProgressCircleTpl)
+			progress.Start()
+			defer progress.Finish()
+
+			// WaitForDelete monitors the state in case of the deletion fails and
+			// the state is marked as failed.
+			// Please make sure in the interrogator function that if the resource no
+			// longer exists to return state as "DONE".
+			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+			if err := <-errCh; err != nil {
+				progress.SetTemplateString(deleteProgressCircleTpl + " " + failed)
+				return err
+			}
+			progress.SetTemplateString(deleteProgressCircleTpl + " " + done)
 		} else {
 			c.Printer.Print(waitingForStateMsg)
 			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)

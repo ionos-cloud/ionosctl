@@ -18,6 +18,7 @@ const (
 	ArgWaitForRequest      = "wait-for-request"
 	ArgWaitForRequestShort = "w"
 	ArgWaitForState        = "wait-for-state"
+	ArgWaitForDelete       = "wait-for-deletion"
 	ArgWaitForStateShort   = "W"
 	ArgTimeout             = "timeout"
 	ArgTimeoutShort        = "t"

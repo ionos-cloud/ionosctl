@@ -17,6 +17,7 @@ const (
 	stateActiveStatus    = "ACTIVE"
 	stateAvailableStatus = "AVAILABLE"
 	stateReadyStatus     = "READY"
+	stateDoneStatus      = "DONE"
 	stateFailedStatus    = "FAILED"
 )
 
@@ -51,7 +52,7 @@ func WatchStateProgress(ctx context.Context, c *core.CommandConfig, interrogator
 				return
 			}
 			if state == nil {
-				errChan <- errors.New("error getting state")
+				errChan <- errors.New("error getting state/status")
 				return
 			}
 
@@ -64,7 +65,7 @@ func WatchStateProgress(ctx context.Context, c *core.CommandConfig, interrogator
 			case stateUpdatingStatus:
 				sendingProgress(50)
 				break
-			case stateActiveStatus, stateAvailableStatus, stateReadyStatus:
+			case stateActiveStatus, stateAvailableStatus, stateReadyStatus, stateDoneStatus:
 				sendingProgress(100)
 				errChan <- nil
 				return
