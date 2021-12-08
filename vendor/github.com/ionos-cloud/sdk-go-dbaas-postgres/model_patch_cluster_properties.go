@@ -21,7 +21,8 @@ type PatchClusterProperties struct {
 	// The amount of memory per instance in megabytes. Has to be a multiple of 256.
 	Ram *int32 `json:"ram,omitempty"`
 	// The amount of storage per instance in megabytes.
-	StorageSize *int32 `json:"storageSize,omitempty"`
+	StorageSize *int32        `json:"storageSize,omitempty"`
+	Connections *[]Connection `json:"connections,omitempty"`
 	// The friendly name of your cluster.
 	DisplayName       *string            `json:"displayName,omitempty"`
 	MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"`
@@ -139,6 +140,44 @@ func (o *PatchClusterProperties) SetStorageSize(v int32) {
 // HasStorageSize returns a boolean if a field has been set.
 func (o *PatchClusterProperties) HasStorageSize() bool {
 	if o != nil && o.StorageSize != nil {
+		return true
+	}
+
+	return false
+}
+
+// GetConnections returns the Connections field value
+// If the value is explicit nil, the zero value for []Connection will be returned
+func (o *PatchClusterProperties) GetConnections() *[]Connection {
+	if o == nil {
+		return nil
+	}
+
+	return o.Connections
+
+}
+
+// GetConnectionsOk returns a tuple with the Connections field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *PatchClusterProperties) GetConnectionsOk() (*[]Connection, bool) {
+	if o == nil {
+		return nil, false
+	}
+
+	return o.Connections, true
+}
+
+// SetConnections sets field value
+func (o *PatchClusterProperties) SetConnections(v []Connection) {
+
+	o.Connections = &v
+
+}
+
+// HasConnections returns a boolean if a field has been set.
+func (o *PatchClusterProperties) HasConnections() bool {
+	if o != nil && o.Connections != nil {
 		return true
 	}
 
@@ -310,6 +349,10 @@ func (o PatchClusterProperties) MarshalJSON() ([]byte, error) {
 
 	if o.StorageSize != nil {
 		toSerialize["storageSize"] = o.StorageSize
+	}
+
+	if o.Connections != nil {
+		toSerialize["connections"] = o.Connections
 	}
 
 	if o.DisplayName != nil {
