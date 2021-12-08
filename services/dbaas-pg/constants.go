@@ -40,6 +40,7 @@ const (
 	ArgMaintenanceDayShort  = "d"
 	ArgSaveToFile           = "save-to-file"
 	ArgSaveToFileShort      = "S"
+	ArgRemoveConnection     = "remove-connection"
 )
 
 const (

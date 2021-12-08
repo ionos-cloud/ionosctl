@@ -110,7 +110,7 @@ Required values to run command:
 	})
 	create.AddIntFlag(dbaaspg.ArgInstances, dbaaspg.ArgInstancesShort, 1, "The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5")
 	create.AddIntFlag(dbaaspg.ArgCores, "", 2, "The number of CPU cores per instance. Minimum: 1")
-	create.AddStringFlag(dbaaspg.ArgRam, "", "3GB", "The amount of memory per instance. Size must be specified in multiples of 256. Minimum: 2048. The default unit is MB. e.g. --ram 2048 or --ram 2048MB")
+	create.AddStringFlag(dbaaspg.ArgRam, "", "3GB", "The amount of memory per instance. Size must be specified in multiples of 1024. Minimum: 2048. The default unit is MB. e.g. --ram 2048 or --ram 2048MB")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -182,9 +182,19 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgVersion, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PostgresVersions(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddIntFlag(dbaaspg.ArgInstances, dbaaspg.ArgInstancesShort, 0, "The number of instances in your cluster")
+	update.AddBoolFlag(dbaaspg.ArgRemoveConnection, "", false, "Remove the connection completely")
+	update.AddStringFlag(dbaaspg.ArgDatacenterId, dbaaspg.ArgDatacenterIdShort, "", "The unique ID of the Datacenter to connect to your cluster. It has to be in the same location as the current datacenter")
+	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDatacenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cloudapiv6completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(dbaaspg.ArgLanId, "", "", "The unique ID of the LAN to connect your cluster to")
+	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgLanId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return cloudapiv6completer.LansIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, dbaaspg.ArgDatacenterId))), cobra.ShellCompDirectiveNoFileComp
+	})
+	update.AddStringFlag(dbaaspg.ArgCidr, "", "", "The IP and subnet for the cluster. Note the following unavailable IP ranges: 10.233.64.0/18, 10.233.0.0/18, 10.233.114.0/24. Example: 192.168.1.100/24")
+	update.AddIntFlag(dbaaspg.ArgInstances, dbaaspg.ArgInstancesShort, 0, "The number of instances in your cluster. Minimum: 0. Maximum: 5")
 	update.AddIntFlag(dbaaspg.ArgCores, "", 0, "The number of CPU cores per instance")
-	update.AddStringFlag(dbaaspg.ArgRam, "", "", "The amount of memory per instance. Size must be specified in multiples of 256. Minimum: 2048. The default unit is MB. e.g. --ram 2048 or --ram 2048MB")
+	update.AddStringFlag(dbaaspg.ArgRam, "", "", "The amount of memory per instance. Size must be specified in multiples of 1024. Minimum: 2048. The default unit is MB. e.g. --ram 2048 or --ram 2048MB")
 	_ = update.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"256MB", "512MB", "1024MB", "2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -287,6 +297,9 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
+	if viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances)) < 1 || viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances)) > 5 {
+		return errors.New("instances must be set to minimum: 1, maximum: 5")
+	}
 	return nil
 }
 
@@ -367,7 +380,7 @@ func RunClusterRestore(c *core.CommandConfig) error {
 	backupId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupId))
 	c.Printer.Verbose("Cluster ID: %v", clusterId)
 	c.Printer.Verbose("Backup ID: %v", backupId)
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "restore cluster"); err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("restore cluster with id: %v from backup: %v", clusterId, backupId)); err != nil {
 		return err
 	}
 	input := resources.CreateRestoreRequest{
@@ -405,7 +418,7 @@ func RunClusterDelete(c *core.CommandConfig) error {
 	} else {
 		clusterId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))
 		c.Printer.Verbose("Cluster ID: %v", clusterId)
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete cluster"); err != nil {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete cluster with id: %v", clusterId)); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Deleting Cluster...")
@@ -440,7 +453,7 @@ func ClusterDeleteAll(c *core.CommandConfig) (resp *resources.Response, err erro
 			c.Printer.Print(log)
 		}
 	}
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all clusters"); err != nil {
+	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ALL clusters"); err != nil {
 		return nil, err
 	}
 	if dataOk, ok := clusters.GetItemsOk(); ok && dataOk != nil {
@@ -624,8 +637,75 @@ func getPatchClusterRequest(c *core.CommandConfig) (*resources.PatchClusterReque
 		}
 		input.SetMaintenanceWindow(maintenanceWindow)
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLanId)) || viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCidr)) {
+		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+		if err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose(getConnectionMessage(connection))
+		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId)) {
+			lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDatacenterId))
+			c.Printer.Verbose("Updated Datacenter Id: %v", lanId)
+			connection.SetDatacenterId(lanId)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLanId)) {
+			lanId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLanId))
+			c.Printer.Verbose("Updated Lan Id: %v", lanId)
+			connection.SetLanId(lanId)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgCidr)) {
+			cidrId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgCidr))
+			c.Printer.Verbose("Updated Cidr: %v", cidrId)
+			connection.SetCidr(cidrId)
+		}
+		input.SetConnections([]sdkgo.Connection{connection})
+	}
+	if viper.GetBool(core.GetFlagName(c.NS, dbaaspg.ArgRemoveConnection)) {
+		connection, err := getConnectionFromCluster(c, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+		if err != nil {
+			return nil, err
+		}
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("remove connection with: %v", getConnectionMessage(connection))); err != nil {
+			return nil, err
+		}
+		c.Printer.Verbose("Removing Connection...")
+		input.SetConnections([]sdkgo.Connection{})
+	}
 	inputCluster.SetProperties(input)
 	return &inputCluster, nil
+}
+
+func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (sdkgo.Connection, error) {
+	if c != nil {
+		oldCluster, _, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(clusterId)
+		if err != nil {
+			return sdkgo.Connection{}, err
+		}
+		c.Printer.Verbose("Getting properties from cluster with Id: %v", clusterId)
+		if propertiesOk, ok := oldCluster.GetPropertiesOk(); ok && propertiesOk != nil {
+			c.Printer.Verbose("Getting connection..")
+			if connectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && connectionsOk != nil {
+				for _, connectionOk := range *connectionsOk {
+					return connectionOk, nil
+				}
+			}
+		}
+	}
+	return sdkgo.Connection{}, nil
+}
+
+func getConnectionMessage(connection sdkgo.Connection) string {
+	var msg string
+	if datacenterOk, ok := connection.GetDatacenterIdOk(); ok && datacenterOk != nil {
+		msg = fmt.Sprintf("DatacenterId: %v", *datacenterOk)
+	}
+	if lanOk, ok := connection.GetLanIdOk(); ok && lanOk != nil {
+		msg = fmt.Sprintf("%v, LanId: %v", msg, *lanOk)
+	}
+	if cidrOk, ok := connection.GetCidrOk(); ok && cidrOk != nil {
+		msg = fmt.Sprintf("%v, Cidr: %v", msg, *cidrOk)
+	}
+	return msg
 }
 
 // Output Printing

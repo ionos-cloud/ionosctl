@@ -271,8 +271,27 @@ func TestPreRunClusterCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLanId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCidr), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgInstances), testClusterIntVar)
 		err := PreRunClusterCreate(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunClusterCreateInstancesErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgVersion), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDatacenterId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLanId), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCidr), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgInstances), 10)
+		err := PreRunClusterCreate(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -288,6 +307,7 @@ func TestPreRunClusterCreateRecoveryTime(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLanId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgCidr), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgRecoveryTime), testTimeArgVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgInstances), testClusterIntVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgBackupId), testClusterVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgPassword), testClusterVar)
 		err := PreRunClusterCreate(cfg)
