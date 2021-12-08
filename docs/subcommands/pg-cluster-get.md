@@ -50,7 +50,7 @@ Required values to run command:
   -h, --help                Print usage
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-  -t, --timeout int         Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
+  -t, --timeout int         Timeout option for Cluster to be in AVAILABLE state [seconds] (default 1200)
   -v, --verbose             Print step-by-step process when running command
   -W, --wait-for-state      Wait for Cluster to be in AVAILABLE state
 ```
