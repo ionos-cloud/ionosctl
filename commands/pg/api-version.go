@@ -3,7 +3,9 @@ package pg
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/internal/config"
@@ -11,6 +13,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	pgsqlresources "github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
+	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -147,6 +150,12 @@ func getAPIVersionsKVMaps(apiVersions *[]pgsqlresources.APIVersion) []map[string
 				uPrint.Version = *versionOk
 			}
 			if swaggerUrlOk, ok := apiVersion.GetSwaggerUrlOk(); ok && swaggerUrlOk != nil {
+				if strings.HasPrefix(*swaggerUrlOk, "/postgresql") {
+					*swaggerUrlOk = strings.TrimPrefix(*swaggerUrlOk, "/postgresql")
+				}
+				if !strings.HasPrefix(*swaggerUrlOk, sdkgo.DefaultIonosServerUrl) {
+					*swaggerUrlOk = fmt.Sprintf("%s%s", sdkgo.DefaultIonosServerUrl, *swaggerUrlOk)
+				}
 				uPrint.SwaggerUrl = *swaggerUrlOk
 			}
 			o := structs.Map(uPrint)

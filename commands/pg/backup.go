@@ -107,7 +107,7 @@ func ClusterBackupCmd() *core.Command {
 			Use:              "backup",
 			Aliases:          []string{"b"},
 			Short:            "PostgreSQL Cluster Backup Operations",
-			Long:             "The sub-commands of `ionosctl dbaas-pgsql cluster backup` allow you to list PostgreSQL Backups from a specific Cluster.",
+			Long:             "The sub-commands of `ionosctl pg cluster backup` allow you to list PostgreSQL Backups from a specific Cluster.",
 			TraverseChildren: true,
 		},
 	}
