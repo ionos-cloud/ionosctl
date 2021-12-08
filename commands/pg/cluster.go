@@ -80,7 +80,7 @@ func ClusterCmd() *core.Command {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
+	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
 
 	/*
 		Create Command
@@ -153,7 +153,7 @@ Required values to run command:
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
+	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
 
 	/*
 		Update Command
@@ -209,7 +209,7 @@ Required values to run command:
 		return []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for Cluster to be in AVAILABLE state")
-	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state[seconds]")
+	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, dbaaspg.DefaultClusterTimeout, "Timeout option for Cluster to be in AVAILABLE state [seconds]")
 
 	/*
 		Restore Command
@@ -296,6 +296,9 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	err := core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgDatacenterId, dbaaspg.ArgLanId, dbaaspg.ArgCidr, dbaaspg.ArgPassword)
 	if err != nil {
 		return err
+	}
+	if viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores)) < 1 {
+		return errors.New("cores must be set to minimum: 1")
 	}
 	if viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances)) < 1 || viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgInstances)) > 5 {
 		return errors.New("instances must be set to minimum: 1, maximum: 5")
