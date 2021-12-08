@@ -44,7 +44,7 @@ Required values to run command:
   -u, --api-url string      Override default host url (default "https://api.ionos.com")
   -i, --cluster-id string   The unique ID of the Cluster (required)
       --cols strings        Set of columns to be printed on output 
-                            Available columns: [Name] (default [Name])
+                            Available columns: [Version] (default [Version])
   -c, --config string       Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force               Force command to execute without user input
   -h, --help                Print usage

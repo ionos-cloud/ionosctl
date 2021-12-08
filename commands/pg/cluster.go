@@ -299,6 +299,7 @@ func PreRunClusterCreate(c *core.PreCommandConfig) error {
 	if err != nil {
 		return err
 	}
+	// Validate Flags
 	if viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgCores)) < 1 {
 		return errors.New("cores must be set to minimum: 1")
 	}
@@ -696,6 +697,8 @@ func getConnectionFromCluster(c *core.CommandConfig, clusterId string) (sdkgo.Co
 				for _, connectionOk := range *connectionsOk {
 					return connectionOk, nil
 				}
+			} else {
+				return sdkgo.Connection{}, errors.New("no connections found")
 			}
 		}
 	}
