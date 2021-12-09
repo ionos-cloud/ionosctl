@@ -78,6 +78,8 @@ Required values to run command:
 ## Examples
 
 ```text
-ionosctl pg cluster create --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --password DBUSER_PASSWORD
+ionosctl pg cluster create --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --db-username DB_USERNAME --db-password DB_PASSWORD
+
+ionosctl pg cluster create --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR -u DB_USERNAME -P DB_PASSWORD
 ```
 
