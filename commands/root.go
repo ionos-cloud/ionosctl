@@ -15,6 +15,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const CLIVersionDev = "DEV"
+
 var (
 	// RootCmd is the root level command that all other commands attach to
 	rootCmd = &core.Command{
@@ -76,6 +78,11 @@ func init() {
 	// Init version
 	initVersion()
 	rootCmd.Command.Version = IonosctlVersion.GetVersion()
+	if rootCmd.Command.Version != CLIVersionDev {
+		viper.Set(config.CLIHttpUserAgent, fmt.Sprintf("ionosctl/v%v", IonosctlVersion.GetVersion()))
+	} else {
+		viper.Set(config.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", IonosctlVersion.GetVersion()))
+	}
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -136,7 +143,7 @@ func initVersion() {
 		IonosctlVersion.version = Version
 	}
 	if Label == "" {
-		IonosctlVersion.label = "DEV"
+		IonosctlVersion.label = CLIVersionDev
 	} else {
 		IonosctlVersion.label = Label
 	}
