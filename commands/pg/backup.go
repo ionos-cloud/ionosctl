@@ -152,7 +152,7 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultBackupCols = []string{"BackupId", "ClusterId", "DisplayName", "EarliestRecoveryTargetTime", "Active"}
+	defaultBackupCols = []string{"BackupId", "ClusterId", "CreatedDate", "EarliestRecoveryTargetTime", "Active"}
 	allBackupCols     = []string{"BackupId", "ClusterId", "DisplayName", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version"}
 )
 
