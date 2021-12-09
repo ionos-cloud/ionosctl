@@ -252,7 +252,7 @@ Required values to run command:
 		Verb:      "delete",
 		Aliases:   []string{"d"},
 		ShortDesc: "Delete a PostgreSQL Cluster",
-		LongDesc: `Use this command to delete a specified PostgreSQL Cluster from your account.
+		LongDesc: `Use this command to delete a specified PostgreSQL Cluster from your account. You can wait for the cluster to be deleted with the wait-for-deletion option.
 
 Required values to run command:
 

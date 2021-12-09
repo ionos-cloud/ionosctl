@@ -98,7 +98,7 @@ func RunPgsqlVersionGet(c *core.CommandConfig) error {
 var defaultPgsqlVersionCols = []string{"Version"}
 
 type PgsqlVersionPrint struct {
-	Version string `json:"Version,omitempty"`
+	Version []string `json:"Version,omitempty"`
 }
 
 func getPgsqlVersionPrint(c *core.CommandConfig, postgresVersionList *pgsqlresources.PostgresVersionList) printer.Result {
@@ -137,14 +137,14 @@ func getPgsqlVersionsKVMaps(postgresVersionList *pgsqlresources.PostgresVersionL
 	out := make([]map[string]interface{}, 0, 0)
 	if postgresVersionList != nil {
 		if dataOk, ok := postgresVersionList.GetDataOk(); ok && dataOk != nil {
+			var uPrint PgsqlVersionPrint
 			for _, data := range *dataOk {
-				var uPrint PgsqlVersionPrint
 				if nameOk, ok := data.GetNameOk(); ok && nameOk != nil {
-					uPrint.Version = *nameOk
+					uPrint.Version = append(uPrint.Version, *nameOk)
 				}
-				o := structs.Map(uPrint)
-				out = append(out, o)
 			}
+			o := structs.Map(uPrint)
+			out = append(out, o)
 		}
 	}
 	return out

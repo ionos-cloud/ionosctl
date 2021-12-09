@@ -32,7 +32,7 @@ For `delete` command:
 
 ## Description
 
-Use this command to delete a specified PostgreSQL Cluster from your account.
+Use this command to delete a specified PostgreSQL Cluster from your account. You can wait for the cluster to be deleted with the wait-for-deletion option.
 
 Required values to run command:
 

@@ -39,7 +39,7 @@ Required values to run command:
 * Datacenter Id
 * Lan Id
 * Cidr (IP and subnet)
-* Credentials for the User: Username and Password
+* Credentials for the database user: Username and Password
 
 ## Options
 
@@ -52,6 +52,8 @@ Required values to run command:
   -c, --config string             Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                 The number of CPU cores per instance. Minimum: 1 (default 2)
   -D, --datacenter-id string      The unique ID of the Datacenter to connect to your cluster (required)
+  -P, --db-password string        Password for the initial postgres user (required)
+  -U, --db-username string        Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby) (required)
   -f, --force                     Force command to execute without user input
   -h, --help                      Print usage
   -I, --instances int             The number of instances in your cluster (one master and n-1 standbys). Minimum: 1. Maximum: 5 (default 1)
@@ -61,7 +63,6 @@ Required values to run command:
   -T, --maintenance-time string   Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Example: 16:30:59
   -n, --name string               The friendly name of your cluster (default "UnnamedCluster")
   -o, --output string             Desired output format [text|json] (default "text")
-  -P, --password string           Password for the initial postgres user (required)
   -q, --quiet                     Quiet output
       --ram string                The amount of memory per instance. Size must be specified in multiples of 1024. Minimum: 2048. The default unit is MB. e.g. --ram 2048 or --ram 2048MB (default "3GB")
   -R, --recovery-time string      If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely
@@ -69,7 +70,6 @@ Required values to run command:
       --storage-type string       The storage type used in your cluster (default "HDD")
   -S, --sync string               Represents different modes of replication (default "ASYNCHRONOUS")
   -t, --timeout int               Timeout option for Cluster to be in AVAILABLE state[seconds] (default 1200)
-  -U, --username string           Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby) (required) (default "db-admin")
   -v, --verbose                   Print step-by-step process when running command
   -V, --version string            The PostgreSQL version of your Cluster (default "13")
   -W, --wait-for-state            Wait for Cluster to be in AVAILABLE state
