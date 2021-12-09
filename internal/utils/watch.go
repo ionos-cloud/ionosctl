@@ -130,3 +130,60 @@ func WatchRequestProgress(ctx context.Context, c *core.CommandConfig, interrogat
 	}()
 	return progressChan, errChan
 }
+
+// WatchDeletionProgress watches the deletion progress of a Resource until it completes with success: returning 404 http response status code.
+func WatchDeletionProgress(ctx context.Context, c *core.CommandConfig, interrogator InterrogateDeletionFunc, resourceId string) (<-chan int, <-chan error) {
+	errChan := make(chan error, 1)
+	progressChan := make(chan int)
+	go func() {
+		defer close(errChan)
+		defer close(progressChan)
+		ticker := time.NewTicker(pollTime)
+		sendingProgress := func(p int) {
+			select {
+			case progressChan <- p:
+				break
+			default:
+				break
+			}
+		}
+		for {
+			select {
+			case <-ctx.Done():
+				errChan <- ctx.Err()
+				return
+			case <-ticker.C:
+				break
+			}
+
+			httpResponseCode, err := interrogator(c, resourceId)
+			if err != nil {
+				errChan <- err
+				return
+			}
+			if httpResponseCode == nil {
+				errChan <- errors.New("error getting http response status code")
+				return
+			}
+
+			// Check Resource Http Response Status Code
+			// Send Progress, Send Error if any
+			switch *httpResponseCode {
+			case 200:
+				sendingProgress(1)
+				break
+			case 202:
+				sendingProgress(50)
+				break
+			case 404:
+				sendingProgress(100)
+				errChan <- nil
+				return
+			case 400, 401, 403, 500:
+				errChan <- errors.New(failed)
+				return
+			}
+		}
+	}()
+	return progressChan, errChan
+}

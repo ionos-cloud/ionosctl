@@ -111,7 +111,9 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 	}
 }
 
-func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateStateFunc, resourceId string) error {
+type InterrogateDeletionFunc func(c *core2.CommandConfig, resourceId string) (*int, error)
+
+func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc, resourceId string) error {
 	if !viper.GetBool(core2.GetFlagName(c.NS, config.ArgWaitForDelete)) {
 		// Double Check: return if flag not set
 		return nil
@@ -132,11 +134,8 @@ func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateStateFunc, re
 			progress.Start()
 			defer progress.Finish()
 
-			// WaitForDelete monitors the state in case of the deletion fails and
-			// the state is marked as failed.
-			// Please make sure in the interrogator function that if the resource no
-			// longer exists to return state as "DONE".
-			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+			// WaitForDelete monitors the http Response Status Code.
+			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
 				progress.SetTemplateString(deleteProgressCircleTpl + " " + failed)
 				return err
@@ -144,7 +143,7 @@ func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateStateFunc, re
 			progress.SetTemplateString(deleteProgressCircleTpl + " " + done)
 		} else {
 			c.Printer.Print(waitingForStateMsg)
-			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
 				c.Printer.Print(failed)
 				return err

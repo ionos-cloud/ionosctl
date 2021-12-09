@@ -98,7 +98,7 @@ Required values to run command:
 * Datacenter Id
 * Lan Id
 * Cidr (IP and subnet)
-* Credentials for the User: Username and Password`,
+* Credentials for the database user: Username and Password`,
 		Example:    createClusterExample,
 		PreCmdRun:  PreRunClusterCreate,
 		CmdRun:     RunClusterCreate,
@@ -145,8 +145,8 @@ Required values to run command:
 		return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	create.AddStringFlag(dbaaspg.ArgRecoveryTime, dbaaspg.ArgRecoveryTimeShort, "", "If this value is supplied as ISO 8601 timestamp, the backup will be replayed up until the given timestamp. If empty, the backup will be applied completely")
-	create.AddStringFlag(dbaaspg.ArgUsername, dbaaspg.ArgUsernameShort, "db-admin", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
-	create.AddStringFlag(dbaaspg.ArgPassword, dbaaspg.ArgPasswordShort, "", "Password for the initial postgres user", core.RequiredFlagOption())
+	create.AddStringFlag(dbaaspg.ArgDbUsername, dbaaspg.ArgDbUsernameShort, "", "Username for the initial postgres user. Some system usernames are restricted (e.g. postgres, admin, standby)", core.RequiredFlagOption())
+	create.AddStringFlag(dbaaspg.ArgDbPassword, dbaaspg.ArgDbPasswordShort, "", "Password for the initial postgres user", core.RequiredFlagOption())
 	create.AddStringFlag(dbaaspg.ArgMaintenanceTime, dbaaspg.ArgMaintenanceTimeShort, "", "Time for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur. Example: 16:30:59")
 	create.AddStringFlag(dbaaspg.ArgMaintenanceDay, dbaaspg.ArgMaintenanceDayShort, "", "Day Of the Week for the MaintenanceWindows. The MaintenanceWindow is a weekly 4 hour-long windows, during which maintenance might occur")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgMaintenanceDay, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -295,7 +295,7 @@ func PreRunClusterDelete(c *core.PreCommandConfig) error {
 }
 
 func PreRunClusterCreate(c *core.PreCommandConfig) error {
-	err := core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgDatacenterId, dbaaspg.ArgLanId, dbaaspg.ArgCidr, dbaaspg.ArgPassword)
+	err := core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgDatacenterId, dbaaspg.ArgLanId, dbaaspg.ArgCidr, dbaaspg.ArgDbUsername, dbaaspg.ArgDbPassword)
 	if err != nil {
 		return err
 	}
@@ -534,10 +534,10 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	c.Printer.Verbose("DisplayName: %v", displayName)
 	input.SetDisplayName(displayName)
 	dbuser := sdkgo.DBUser{}
-	username := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgUsername))
+	username := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDbUsername))
 	c.Printer.Verbose("DBUser - Username: %v", username)
 	dbuser.SetUsername(username)
-	password := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgPassword))
+	password := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDbPassword))
 	c.Printer.Verbose("DBUser - Password: %v", password)
 	dbuser.SetPassword(password)
 	input.SetCredentials(dbuser)

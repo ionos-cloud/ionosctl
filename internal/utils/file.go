@@ -18,10 +18,12 @@ func SaveToFile(filename string, arg interface{}) (*os.File, error) {
 		if err != nil {
 			return nil, err
 		}
-		byteKey := []byte(fmt.Sprintf("%v", arg.(interface{})))
-		_, err = file.Write(byteKey)
-		if err != nil {
-			return nil, err
+		if arg != nil {
+			byteKey := []byte(fmt.Sprintf("%v", arg.(interface{})))
+			_, err = file.Write(byteKey)
+			if err != nil {
+				return nil, err
+			}
 		}
 	} else {
 		return nil, errors.New(fmt.Sprintf("file %v already exists. Please delete it before retrying", filename))
