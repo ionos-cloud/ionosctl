@@ -1,9 +1,9 @@
 package pg
 
 const (
-	listClusterExample    = `ionosctl pg cluster list`
-	getClusterExample     = `ionosctl pg cluster get -i CLUSTER_ID`
-	createClusterExample  = `ionosctl pg cluster create --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --db-username DB_USERNAME --db-password DB_PASSWORD
+	listClusterExample   = `ionosctl pg cluster list`
+	getClusterExample    = `ionosctl pg cluster get -i CLUSTER_ID`
+	createClusterExample = `ionosctl pg cluster create --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR --db-username DB_USERNAME --db-password DB_PASSWORD
 
 ionosctl pg cluster create --datacenter-id DATACENTER_ID --lan-id LAN_ID --cidr CIDR -u DB_USERNAME -P DB_PASSWORD`
 	updateClusterExample  = `ionosctl pg cluster update -i CLUSTER_ID -n CLUSTER_NAME`
