@@ -103,6 +103,16 @@ func TestRunPgsqlVersionListErr(t *testing.T) {
 	})
 }
 
+func TestGetPgsqlVersionColsNoSet(t *testing.T) {
+	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
+	var b bytes.Buffer
+	clierror.ErrAction = func() {}
+	w := bufio.NewWriter(&b)
+	getPgsqlVersionCols(core.GetGlobalFlagName("version", config.ArgCols), w)
+	err := w.Flush()
+	assert.NoError(t, err)
+}
+
 func TestGetPgsqlVersionCols(t *testing.T) {
 	defer func(a func()) { clierror.ErrAction = a }(clierror.ErrAction)
 	var b bytes.Buffer

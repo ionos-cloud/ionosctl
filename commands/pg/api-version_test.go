@@ -20,14 +20,15 @@ var (
 	testAPIVersion = resources.APIVersion{
 		APIVersion: sdkgo.APIVersion{
 			Name:       &testAPIVersionVar,
-			SwaggerUrl: &testAPIVersionVar,
+			SwaggerUrl: &testSwaaggerUrlVar,
 		},
 	}
 	testAPIVersions = resources.APIVersionList{
 		Versions: []sdkgo.APIVersion{testAPIVersion.APIVersion},
 	}
-	testAPIVersionVar = "test-api-version"
-	testAPIVersionErr = errors.New("test api-version error")
+	testAPIVersionVar  = "test-api-version"
+	testSwaaggerUrlVar = "/postgresql/test/test/test"
+	testAPIVersionErr  = errors.New("test api-version error")
 )
 
 func TestAPIVersionCmd(t *testing.T) {

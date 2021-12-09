@@ -17,6 +17,12 @@ func TestNewClustersService(t *testing.T) {
 		_, _, err := clusterUnitSvc.List("")
 		assert.Error(t, err)
 	})
+	t.Run("list_cluster_filter_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		clusterUnitSvc := NewClustersService(svc.Get(), ctx)
+		_, _, err := clusterUnitSvc.List(testClusterResourceVar)
+		assert.Error(t, err)
+	})
 	t.Run("get_clusters_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		clusterUnitSvc := NewClustersService(svc.Get(), ctx)

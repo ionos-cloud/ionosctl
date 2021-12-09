@@ -20,12 +20,17 @@ import (
 var (
 	testBackup = resources.BackupResponse{
 		BackupResponse: sdkgo.BackupResponse{
+			Id: &testBackupVar,
 			Properties: &sdkgo.ClusterBackup{
-				Id:          &testBackupVar,
-				ClusterId:   &testBackupVar,
-				DisplayName: &testBackupVar,
+				Id:                         &testBackupVar,
+				ClusterId:                  &testBackupVar,
+				DisplayName:                &testBackupVar,
+				EarliestRecoveryTargetTime: &testIonosTime,
+				Version:                    &testBackupVar,
+				IsActive:                   &testBackupBoolVar,
 			},
 			Metadata: &sdkgo.BackupMetadata{
+				State:       &testStateVar,
 				CreatedDate: &testIonosTime,
 			},
 		},
@@ -36,8 +41,10 @@ var (
 			Items: &[]sdkgo.BackupResponse{testBackup.BackupResponse},
 		},
 	}
-	testBackupVar = "test-backup"
-	testBackupErr = errors.New("test backup error")
+	testStateVar      = sdkgo.State("AVAILABLE")
+	testBackupVar     = "test-backup"
+	testBackupBoolVar = true
+	testBackupErr     = errors.New("test backup error")
 )
 
 func TestBackupCmd(t *testing.T) {
