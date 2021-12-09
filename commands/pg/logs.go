@@ -14,7 +14,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
-	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-pg/resources"
@@ -54,7 +53,6 @@ func LogsCmd() *core.Command {
 		CmdRun:     RunClusterLogsList,
 		InitClient: true,
 	})
-	list.AddStringFlag(dbaaspg.ArgSaveToFile, dbaaspg.ArgSaveToFileShort, "", "Save/Dump Cluster Logs into a specific file")
 	list.AddStringFlag(dbaaspg.ArgStartTime, dbaaspg.ArgStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
 	list.AddStringFlag(dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
 	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 0, "The maximal number of log lines to return. The command will print all logs, if this is not set")
@@ -94,27 +92,6 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 		viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)), startTime, endTime)
 	if err != nil {
 		return err
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgSaveToFile)) {
-		filename := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSaveToFile))
-		c.Printer.Verbose("Check if file " + filename + " already exists...")
-		if utils.FileExists(filename) {
-			if err = utils.AskForConfirm(c.Stdin, c.Printer, fmt.Sprintf("delete existing file %v", filename)); err != nil {
-				return err
-			}
-			if err = utils.DeleteFile(filename); err != nil {
-				return err
-			}
-		}
-		c.Printer.Verbose("Saving Cluster Logs to file: %v", filename)
-		file, err := utils.SaveToFile(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSaveToFile)), getClusterLogsPrint(c, clusterLogs))
-		if err != nil {
-			return err
-		}
-		if file != nil {
-			c.Printer.Print("Successfully saved Cluster Logs to file: " + file.Name())
-		}
-		return nil
 	}
 	return c.Printer.Print(getClusterLogsPrint(c, clusterLogs))
 }
