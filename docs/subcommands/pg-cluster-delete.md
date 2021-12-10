@@ -52,9 +52,9 @@ Required values to run command:
   -n, --name string         Delete all Clusters after filtering based on name. It does not require an exact match. Can be used with --all flag
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
-  -t, --timeout int         Timeout option for Cluster to be deleted[seconds] (default 1200)
+  -t, --timeout int         Timeout option for Cluster to be completely removed[seconds] (default 1200)
   -v, --verbose             Print step-by-step process when running command
-  -W, --wait-for-deletion   Wait for Cluster to be deleted
+  -W, --wait-for-deletion   Wait for Cluster to be completely removed
 ```
 
 ## Examples

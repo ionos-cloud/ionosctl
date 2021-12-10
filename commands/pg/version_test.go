@@ -118,7 +118,7 @@ func TestGetPgsqlVersionCols(t *testing.T) {
 	var b bytes.Buffer
 	clierror.ErrAction = func() {}
 	w := bufio.NewWriter(&b)
-	viper.Set(core.GetGlobalFlagName("version", config.ArgCols), []string{"Version"})
+	viper.Set(core.GetGlobalFlagName("version", config.ArgCols), []string{"PostgresVersions"})
 	getPgsqlVersionCols(core.GetGlobalFlagName("version", config.ArgCols), w)
 	err := w.Flush()
 	assert.NoError(t, err)

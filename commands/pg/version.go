@@ -95,10 +95,10 @@ func RunPgsqlVersionGet(c *core.CommandConfig) error {
 
 // Output Printing
 
-var defaultPgsqlVersionCols = []string{"Version"}
+var defaultPgsqlVersionCols = []string{"PostgresVersions"}
 
 type PgsqlVersionPrint struct {
-	Version []string `json:"Version,omitempty"`
+	PostgresVersions []string `json:"PostgresVersions,omitempty"`
 }
 
 func getPgsqlVersionPrint(c *core.CommandConfig, postgresVersionList *pgsqlresources.PostgresVersionList) printer.Result {
@@ -117,7 +117,7 @@ func getPgsqlVersionCols(flagName string, outErr io.Writer) []string {
 	if viper.IsSet(flagName) {
 		var pgsqlVersionCols []string
 		columnsMap := map[string]string{
-			"Version": "Version",
+			"PostgresVersions": "PostgresVersions",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -140,7 +140,7 @@ func getPgsqlVersionsKVMaps(postgresVersionList *pgsqlresources.PostgresVersionL
 			var uPrint PgsqlVersionPrint
 			for _, data := range *dataOk {
 				if nameOk, ok := data.GetNameOk(); ok && nameOk != nil {
-					uPrint.Version = append(uPrint.Version, *nameOk)
+					uPrint.PostgresVersions = append(uPrint.PostgresVersions, *nameOk)
 				}
 			}
 			o := structs.Map(uPrint)
