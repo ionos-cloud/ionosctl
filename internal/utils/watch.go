@@ -12,13 +12,15 @@ import (
 
 // State Status
 const (
-	stateDeployingStatus = "DEPLOYING"
-	stateUpdatingStatus  = "UPDATING"
-	stateActiveStatus    = "ACTIVE"
-	stateAvailableStatus = "AVAILABLE"
-	stateReadyStatus     = "READY"
-	stateDoneStatus      = "DONE"
-	stateFailedStatus    = "FAILED"
+	stateDeployingStatus  = "DEPLOYING"
+	stateUpdatingStatus   = "UPDATING"
+	stateBusyStatus       = "BUSY"
+	stateActiveStatus     = "ACTIVE"
+	stateAvailableStatus  = "AVAILABLE"
+	stateReadyStatus      = "READY"
+	stateDoneStatus       = "DONE"
+	stateFailedStatus     = "FAILED"
+	stateDestroyingStatus = "DESTROYING"
 )
 
 // WatchStateProgress watches the state progress of a Resource until it completes with success: meaning ACTIVE or AVAILABLE or error.
@@ -62,14 +64,14 @@ func WatchStateProgress(ctx context.Context, c *core.CommandConfig, interrogator
 			case stateDeployingStatus:
 				sendingProgress(1)
 				break
-			case stateUpdatingStatus:
+			case stateUpdatingStatus, stateBusyStatus:
 				sendingProgress(50)
 				break
 			case stateActiveStatus, stateAvailableStatus, stateReadyStatus, stateDoneStatus:
 				sendingProgress(100)
 				errChan <- nil
 				return
-			case stateFailedStatus:
+			case stateFailedStatus, stateDestroyingStatus:
 				errChan <- errors.New(failed)
 				return
 			}
