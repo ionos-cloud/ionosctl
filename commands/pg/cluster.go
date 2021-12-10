@@ -97,7 +97,7 @@ Required values to run command:
 
 * Datacenter Id
 * Lan Id
-* Cidr (IP and subnet)
+* CIDR (IP and subnet)
 * Credentials for the database user: Username and Password`,
 		Example:    createClusterExample,
 		PreCmdRun:  PreRunClusterCreate,
@@ -114,7 +114,7 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(dbaaspg.ArgSyncMode, dbaaspg.ArgSyncModeShort, "ASYNCHRONOUS", "Represents different modes of replication")
+	create.AddStringFlag(dbaaspg.ArgSyncMode, dbaaspg.ArgSyncModeShort, "ASYNCHRONOUS", "Synchronization Mode. Represents different modes of replication")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ASYNCHRONOUS", "SYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
 	})
