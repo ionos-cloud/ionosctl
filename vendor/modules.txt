@@ -35,7 +35,7 @@ github.com/inconshreveable/mousetrap
 # github.com/ionos-cloud/sdk-go-auth v1.0.1
 ## explicit
 github.com/ionos-cloud/sdk-go-auth
-# github.com/ionos-cloud/sdk-go/v6 v6.0.0-beta.9
+# github.com/ionos-cloud/sdk-go/v6 v6.0.0
 ## explicit
 github.com/ionos-cloud/sdk-go/v6
 # github.com/magiconair/properties v1.8.5

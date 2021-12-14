@@ -1954,13 +1954,13 @@ type ApiK8sNodepoolsPostRequest struct {
 	ctx                _context.Context
 	ApiService         *KubernetesApiService
 	k8sClusterId       string
-	kubernetesNodePool *KubernetesNodePool
+	kubernetesNodePool *KubernetesNodePoolForPost
 	pretty             *bool
 	depth              *int32
 	xContractNumber    *int32
 }
 
-func (r ApiK8sNodepoolsPostRequest) KubernetesNodePool(kubernetesNodePool KubernetesNodePool) ApiK8sNodepoolsPostRequest {
+func (r ApiK8sNodepoolsPostRequest) KubernetesNodePool(kubernetesNodePool KubernetesNodePoolForPost) ApiK8sNodepoolsPostRequest {
 	r.kubernetesNodePool = &kubernetesNodePool
 	return r
 }
@@ -2124,18 +2124,18 @@ func (a *KubernetesApiService) K8sNodepoolsPostExecute(r ApiK8sNodepoolsPostRequ
 }
 
 type ApiK8sNodepoolsPutRequest struct {
-	ctx                      _context.Context
-	ApiService               *KubernetesApiService
-	k8sClusterId             string
-	nodepoolId               string
-	kubernetesNodePoolForPut *KubernetesNodePoolForPut
-	pretty                   *bool
-	depth                    *int32
-	xContractNumber          *int32
+	ctx                _context.Context
+	ApiService         *KubernetesApiService
+	k8sClusterId       string
+	nodepoolId         string
+	kubernetesNodePool *KubernetesNodePoolForPut
+	pretty             *bool
+	depth              *int32
+	xContractNumber    *int32
 }
 
-func (r ApiK8sNodepoolsPutRequest) KubernetesNodePoolForPut(kubernetesNodePoolForPut KubernetesNodePoolForPut) ApiK8sNodepoolsPutRequest {
-	r.kubernetesNodePoolForPut = &kubernetesNodePoolForPut
+func (r ApiK8sNodepoolsPutRequest) KubernetesNodePool(kubernetesNodePool KubernetesNodePoolForPut) ApiK8sNodepoolsPutRequest {
+	r.kubernetesNodePool = &kubernetesNodePool
 	return r
 }
 func (r ApiK8sNodepoolsPutRequest) Pretty(pretty bool) ApiK8sNodepoolsPutRequest {
@@ -2198,8 +2198,8 @@ func (a *KubernetesApiService) K8sNodepoolsPutExecute(r ApiK8sNodepoolsPutReques
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.kubernetesNodePoolForPut == nil {
-		return localVarReturnValue, nil, reportError("kubernetesNodePoolForPut is required and must be specified")
+	if r.kubernetesNodePool == nil {
+		return localVarReturnValue, nil, reportError("kubernetesNodePool is required and must be specified")
 	}
 
 	if r.pretty != nil {
@@ -2230,7 +2230,7 @@ func (a *KubernetesApiService) K8sNodepoolsPutExecute(r ApiK8sNodepoolsPutReques
 		localVarHeaderParams["X-Contract-Number"] = parameterToString(*r.xContractNumber, "")
 	}
 	// body params
-	localVarPostBody = r.kubernetesNodePoolForPut
+	localVarPostBody = r.kubernetesNodePool
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {

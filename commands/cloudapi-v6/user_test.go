@@ -90,6 +90,7 @@ var (
 				Firstname:     &testUserNewVar,
 				Lastname:      &testUserNewVar,
 				Email:         &testUserNewVar,
+				Password:      &testUserNewVar,
 				Administrator: &testUserBoolVar,
 				ForceSecAuth:  &testUserBoolVar,
 			},
@@ -337,6 +338,7 @@ func TestRunUserUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirstName), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLastName), testUserNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgForceSecAuth), testUserBoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAdmin), testUserBoolVar)
@@ -355,6 +357,7 @@ func TestRunUserUpdateOldUser(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testUserNewVar)
 		rm.CloudApiV6Mocks.User.EXPECT().Get(testUserVar).Return(&userNew, nil, nil)
 		rm.CloudApiV6Mocks.User.EXPECT().Update(testUserVar, userNewPut).Return(&userNew, nil, nil)
 		err := RunUserUpdate(cfg)
@@ -372,6 +375,7 @@ func TestRunUserUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirstName), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLastName), testUserNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testUserNewVar)
 		rm.CloudApiV6Mocks.User.EXPECT().Get(testUserVar).Return(&userTestGet, nil, nil)
 		rm.CloudApiV6Mocks.User.EXPECT().Update(testUserVar, userNewPut).Return(&userNew, nil, testUserErr)
@@ -390,6 +394,7 @@ func TestRunUserUpdateGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgUserId), testUserVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFirstName), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLastName), testUserNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgPassword), testUserNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgEmail), testUserNewVar)
 		rm.CloudApiV6Mocks.User.EXPECT().Get(testUserVar).Return(&userTestGet, nil, testUserErr)
 		err := RunUserUpdate(cfg)

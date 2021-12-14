@@ -96,8 +96,6 @@ func UserCmd() *core.Command {
 		ShortDesc: "Create a User under a particular contract",
 		LongDesc: `Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
-Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
-
 Required values to run a command:
 
 * First Name
@@ -127,8 +125,6 @@ Required values to run a command:
 		ShortDesc: "Update a User",
 		LongDesc: `Use this command to update details about a specific User including their privileges.
 
-Note: The password attribute is immutable. It is not allowed in update requests. It is recommended that the new User log into the DCD and change their password.
-
 Required values to run command:
 
 * User Id`,
@@ -140,6 +136,7 @@ Required values to run command:
 	update.AddStringFlag(cloudapiv6.ArgFirstName, "", "", "The first name for the User")
 	update.AddStringFlag(cloudapiv6.ArgLastName, "", "", "The last name for the User")
 	update.AddStringFlag(cloudapiv6.ArgEmail, cloudapiv6.ArgEmailShort, "", "The email for the User")
+	update.AddStringFlag(cloudapiv6.ArgPassword, cloudapiv6.ArgPasswordShort, "", "The password for the User (must be at least 5 characters long)")
 	update.AddBoolFlag(cloudapiv6.ArgAdmin, "", false, "Assigns the User to have administrative rights. E.g.: --admin=true, --admin=false")
 	update.AddBoolFlag(cloudapiv6.ArgForceSecAuth, "", false, "Indicates if secure (two-factor) authentication should be forced for the User. E.g.: --force-secure-auth=true, --force-secure-auth=false")
 	update.AddStringFlag(cloudapiv6.ArgUserId, cloudapiv6.ArgIdShort, "", cloudapiv6.UserId, core.RequiredFlagOption())
@@ -307,61 +304,62 @@ func RunUserDelete(c *core.CommandConfig) error {
 }
 
 func getUserInfo(oldUser *resources.User, c *core.CommandConfig) *resources.UserPut {
-	var (
-		firstName, lastName, email string
-		forceSecureAuth, admin     bool
-	)
+	userPropertiesPut := ionoscloud.UserPropertiesPut{}
 	if properties, ok := oldUser.GetPropertiesOk(); ok && properties != nil {
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName)) {
-			firstName = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName))
+			firstName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirstName))
 			c.Printer.Verbose("Property FirstName set: %v", firstName)
+			userPropertiesPut.SetFirstname(firstName)
 		} else {
-			if name, ok := properties.GetFirstnameOk(); ok && name != nil {
-				firstName = *name
+			if firstnameOk, ok := properties.GetFirstnameOk(); ok && firstnameOk != nil {
+				userPropertiesPut.SetFirstname(*firstnameOk)
 			}
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLastName)) {
-			lastName = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLastName))
+			lastName := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLastName))
 			c.Printer.Verbose("Property LastName set: %v", lastName)
+			userPropertiesPut.SetLastname(lastName)
 		} else {
-			if name, ok := properties.GetLastnameOk(); ok && name != nil {
-				lastName = *name
+			if lastnameOk, ok := properties.GetLastnameOk(); ok && lastnameOk != nil {
+				userPropertiesPut.SetLastname(*lastnameOk)
 			}
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgEmail)) {
-			email = viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
+			email := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgEmail))
 			c.Printer.Verbose("Property Email set: %v", email)
+			userPropertiesPut.SetEmail(email)
 		} else {
-			if e, ok := properties.GetEmailOk(); ok && e != nil {
-				email = *e
+			if emailOk, ok := properties.GetEmailOk(); ok && emailOk != nil {
+				userPropertiesPut.SetEmail(*emailOk)
 			}
 		}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgPassword)) {
+			password := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPassword))
+			c.Printer.Verbose("Property Password set: %v", password)
+			userPropertiesPut.SetPassword(password)
+		}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth)) {
-			forceSecureAuth = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth))
+			forceSecureAuth := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgForceSecAuth))
 			c.Printer.Verbose("Property ForceSecAuth set: %v", forceSecureAuth)
+			userPropertiesPut.SetForceSecAuth(forceSecureAuth)
 		} else {
-			if secAuth, ok := properties.GetForceSecAuthOk(); ok && secAuth != nil {
-				forceSecureAuth = *secAuth
+			if secAuthOk, ok := properties.GetForceSecAuthOk(); ok && secAuthOk != nil {
+				userPropertiesPut.SetForceSecAuth(*secAuthOk)
 			}
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin)) {
-			admin = viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin))
+			admin := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAdmin))
 			c.Printer.Verbose("Property Administrator set: %v", admin)
+			userPropertiesPut.SetAdministrator(admin)
 		} else {
-			if administrator, ok := properties.GetAdministratorOk(); ok && administrator != nil {
-				admin = *administrator
+			if administratorOk, ok := properties.GetAdministratorOk(); ok && administratorOk != nil {
+				userPropertiesPut.SetAdministrator(*administratorOk)
 			}
 		}
 	}
 	return &resources.UserPut{
 		UserPut: ionoscloud.UserPut{
-			Properties: &ionoscloud.UserPropertiesPut{
-				Firstname:     &firstName,
-				Lastname:      &lastName,
-				Email:         &email,
-				Administrator: &admin,
-				ForceSecAuth:  &forceSecureAuth,
-			},
+			Properties: &userPropertiesPut,
 		},
 	}
 }

@@ -20,9 +20,9 @@ import (
 )
 
 var (
-	nodepoolTestPost = resources.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
-			Properties: &ionoscloud.KubernetesNodePoolProperties{
+	nodepoolTestPost = resources.K8sNodePoolForPost{
+		KubernetesNodePoolForPost: ionoscloud.KubernetesNodePoolForPost{
+			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPost{
 				Name:             &testNodepoolVar,
 				NodeCount:        &testNodepoolIntVar,
 				DatacenterId:     &testNodepoolVar,
@@ -320,6 +320,46 @@ func TestPreRunK8sNodePoolsListFilters(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
 		err := PreRunK8sNodePoolsList(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunK8sNodePoolDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testNodepoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodePoolId), testNodepoolVar)
+		err := PreRunK8sClusterNodePoolDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunK8sNodePoolDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sClusterId), testNodepoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		err := PreRunK8sClusterNodePoolDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunK8sNodePoolDeleteErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		err := PreRunK8sClusterNodePoolDelete(cfg)
+		assert.Error(t, err)
 	})
 }
 

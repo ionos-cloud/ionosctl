@@ -124,7 +124,7 @@ func NewConfiguration(username, password, token, hostUrl string) *Configuration 
 	cfg := &Configuration{
 		DefaultHeader:      make(map[string]string),
 		DefaultQueryParams: url.Values{},
-		UserAgent:          "ionos-cloud-sdk-go/v6.0.0-beta.9",
+		UserAgent:          "ionos-cloud-sdk-go/6.0.0",
 		Debug:              false,
 		Username:           username,
 		Password:           password,
@@ -245,7 +245,7 @@ func getServerUrl(serverUrl string) string {
 	if serverUrl == "" {
 		return DefaultIonosServerUrl
 	}
-	if !strings.HasPrefix(serverUrl, "https://") {
+	if !strings.HasPrefix(serverUrl, "https://") && !strings.HasPrefix(serverUrl, "http://") {
 		serverUrl = fmt.Sprintf("https://%s", serverUrl)
 	}
 	if !strings.HasSuffix(serverUrl, DefaultIonosBasePath) {

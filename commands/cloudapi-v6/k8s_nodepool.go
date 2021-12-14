@@ -406,7 +406,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 	return c.Printer.Print("Status: Command node pool delete has been successfully executed")
 }
 
-func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePool, error) {
+func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, error) {
 	var (
 		k8sversion string
 		err        error
@@ -434,7 +434,7 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePool, error) {
 	availabilityZone := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgAvailabilityZone))
 	storageType := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgStorageType))
 	// Set Properties
-	nodePoolProperties := ionoscloud.KubernetesNodePoolProperties{}
+	nodePoolProperties := ionoscloud.KubernetesNodePoolPropertiesForPost{}
 	nodePoolProperties.SetName(name)
 	nodePoolProperties.SetK8sVersion(k8sversion)
 	nodePoolProperties.SetNodeCount(nodeCount)
@@ -459,8 +459,8 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePool, error) {
 		}
 		nodePoolProperties.SetLans(newLans)
 	}
-	return &resources.K8sNodePool{
-		KubernetesNodePool: ionoscloud.KubernetesNodePool{
+	return &resources.K8sNodePoolForPost{
+		KubernetesNodePoolForPost: ionoscloud.KubernetesNodePoolForPost{
 			Properties: &nodePoolProperties,
 		},
 	}, nil
