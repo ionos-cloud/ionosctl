@@ -1,5 +1,11 @@
 # Changelog
 
+## \[6.0.0\] (upcoming release)
+
+* feature: added `--password` on `ionosctl user update` command
+* feature: updated code for `ionosctl k8s nodepool` commands in sync with the changes from SDK Go
+* dependency-update: added SDK-Go version `v6.0.0-beta.9` to `v6.0.0`
+
 ## \[6.0.0-beta.8\]
 
 * feature: added `token` commands, added support for Auth API, to generate, list, delete Tokens
