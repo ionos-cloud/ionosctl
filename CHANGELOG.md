@@ -1,9 +1,10 @@
 # Changelog
 
-## [6.0.0] (upcoming release)
+## [6.0.0]
 
 - feature: added `--password` on `ionosctl user update` command
 - feature: updated code for `ionosctl k8s nodepool` commands in sync with the changes from SDK Go
+- bug-fix: `ionosctl lan create` command supports now `--cols` option
 - dependency-update: added SDK-Go version `v6.0.0-beta.9` to `v6.0.0`
 
 ## [6.0.0-beta.8]
