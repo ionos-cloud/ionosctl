@@ -28,8 +28,6 @@ For `create` command:
 
 Use this command to create a User under a particular contract. You need to specify the firstname, lastname, email and password for the new User.
 
-Note: The password set here cannot be updated through the API currently. It is recommended that a new User log into the DCD and change their password.
-
 Required values to run a command:
 
 * First Name
