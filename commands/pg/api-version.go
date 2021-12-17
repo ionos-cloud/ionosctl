@@ -150,8 +150,8 @@ func getAPIVersionsKVMaps(apiVersions *[]pgsqlresources.APIVersion) []map[string
 				uPrint.Version = *versionOk
 			}
 			if swaggerUrlOk, ok := apiVersion.GetSwaggerUrlOk(); ok && swaggerUrlOk != nil {
-				if strings.HasPrefix(*swaggerUrlOk, "/postgresql") {
-					*swaggerUrlOk = strings.TrimPrefix(*swaggerUrlOk, "/postgresql")
+				if strings.HasPrefix(*swaggerUrlOk, "appserver:8181/postgresql") {
+					*swaggerUrlOk = strings.TrimPrefix(*swaggerUrlOk, "appserver:8181/postgresql")
 				}
 				if !strings.HasPrefix(*swaggerUrlOk, sdkgo.DefaultIonosServerUrl) {
 					*swaggerUrlOk = fmt.Sprintf("%s%s", sdkgo.DefaultIonosServerUrl, *swaggerUrlOk)
