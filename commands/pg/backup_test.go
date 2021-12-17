@@ -24,7 +24,6 @@ var (
 			Properties: &sdkgo.ClusterBackup{
 				Id:                         &testBackupVar,
 				ClusterId:                  &testBackupVar,
-				DisplayName:                &testBackupVar,
 				EarliestRecoveryTargetTime: &testIonosTime,
 				Version:                    &testBackupVar,
 				IsActive:                   &testBackupBoolVar,

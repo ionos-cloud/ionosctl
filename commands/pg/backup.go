@@ -152,18 +152,18 @@ func RunClusterBackupList(c *core.CommandConfig) error {
 // Output Printing
 
 var (
-	defaultBackupCols = []string{"BackupId", "ClusterId", "CreatedDate", "EarliestRecoveryTargetTime", "Active"}
-	allBackupCols     = []string{"BackupId", "ClusterId", "DisplayName", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version"}
+	defaultBackupCols = []string{"BackupId", "ClusterId", "CreatedDate", "EarliestRecoveryTargetTime", "Active", "State"}
+	allBackupCols     = []string{"BackupId", "ClusterId", "Active", "CreatedDate", "EarliestRecoveryTargetTime", "Version", "State"}
 )
 
 type BackupPrint struct {
 	BackupId                   string `json:"BackupId,omitempty"`
 	ClusterId                  string `json:"ClusterId,omitempty"`
-	DisplayName                string `json:"DisplayName,omitempty"`
 	EarliestRecoveryTargetTime string `json:"EarliestRecoveryTargetTime,omitempty"`
 	Version                    string `json:"Version,omitempty"`
 	Active                     bool   `json:"Active,omitempty"`
 	CreatedDate                string `json:"CreatedDate,omitempty"`
+	State                      string `json:"State,omitempty"`
 }
 
 func getBackupPrint(c *core.CommandConfig, dcs []resources.BackupResponse) printer.Result {
@@ -191,12 +191,12 @@ func getBackupCols(flagName string, outErr io.Writer) []string {
 	}
 	columnsMap := map[string]string{
 		"BackupId":                   "BackupId",
-		"DisplayName":                "DisplayName",
 		"ClusterId":                  "ClusterId",
 		"EarliestRecoveryTargetTime": "EarliestRecoveryTargetTime",
 		"CreatedDate":                "CreatedDate",
 		"Version":                    "Version",
 		"Active":                     "Active",
+		"State":                      "State",
 	}
 	var backupCols []string
 	for _, k := range cols {
@@ -228,9 +228,6 @@ func getBackupsKVMaps(backups []resources.BackupResponse) []map[string]interface
 			backupPrint.BackupId = *idOk
 		}
 		if propertiesOk, ok := backup.GetPropertiesOk(); ok && propertiesOk != nil {
-			if displayNameOk, ok := propertiesOk.GetDisplayNameOk(); ok && displayNameOk != nil {
-				backupPrint.DisplayName = *displayNameOk
-			}
 			if clusterIdOk, ok := propertiesOk.GetClusterIdOk(); ok && clusterIdOk != nil {
 				backupPrint.ClusterId = *clusterIdOk
 			}
@@ -249,6 +246,9 @@ func getBackupsKVMaps(backups []resources.BackupResponse) []map[string]interface
 			if createdDateOk, ok := metadataOk.GetCreatedDateOk(); ok && createdDateOk != nil {
 				createdDateOkRfc := createdDateOk.Format(time.RFC3339)
 				backupPrint.CreatedDate = createdDateOkRfc
+			}
+			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
+				backupPrint.State = string(*stateOk)
 			}
 		}
 		o := structs.Map(backupPrint)
