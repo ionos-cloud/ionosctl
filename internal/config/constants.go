@@ -1,7 +1,7 @@
 package config
 
 const (
-	RequestTimeMessage = "The execution time of the request is: %v"
+	RequestTimeMessage = "Request ID: %v Execution Time: %v"
 
 	ArgConfig              = "config"
 	ArgConfigShort         = "c"

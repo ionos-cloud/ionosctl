@@ -3,12 +3,10 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
-	"io"
-	"os"
-
+	"fmt"
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -19,6 +17,9 @@ import (
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.uber.org/multierr"
+	"io"
+	"os"
 )
 
 func DatacenterCmd() *core.Command {
@@ -313,36 +314,41 @@ func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
 		for _, dc := range *datacentersItems {
+			var messageLog string
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Datacenter Id: " + *id)
+				messageLog = fmt.Sprintf("Datacenter Id: %s", *id)
 			}
 			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Datacenter Name: " + *name)
+					messageLog = fmt.Sprintf("%s Datacenter Name: %s", messageLog, *name)
 				}
 			}
+			c.Printer.Print(messageLog)
 		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
 			return nil, err
 		}
-		c.Printer.Verbose("Deleting all the Datacenters...")
 
+		c.Printer.Verbose("Deleting all the Datacenters...")
+		var multiErr error
 		for _, dc := range *datacentersItems {
 			if id, ok := dc.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.DataCenters().Delete(*id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				if resp != nil && printer.GetId(resp) != "" {
+					c.Printer.Verbose(config.RequestTimeMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, err)
+					continue
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 					return nil, err
 				}
 			}
+		}
+		if multiErr != nil {
+			return nil, multiErr
 		}
 	}
 	return resp, nil
