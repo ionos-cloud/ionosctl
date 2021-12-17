@@ -22,7 +22,7 @@ type CreateClusterProperties struct {
 	Instances *int32 `json:"instances"`
 	// The number of CPU cores per instance.
 	Cores *int32 `json:"cores"`
-	// The amount of memory per instance in megabytes. Has to be a multiple of 256.
+	// The amount of memory per instance in megabytes. Has to be a multiple of 1024.
 	Ram *int32 `json:"ram"`
 	// The amount of storage per instance in megabytes.
 	StorageSize *int32        `json:"storageSize"`

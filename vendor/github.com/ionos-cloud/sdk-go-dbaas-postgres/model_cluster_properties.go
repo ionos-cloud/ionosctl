@@ -24,7 +24,7 @@ type ClusterProperties struct {
 	BackupLocation  *BackupLocation `json:"backupLocation,omitempty"`
 	// The total number of instances in the cluster (one master and n-1 standbys).
 	Instances *int32 `json:"instances,omitempty"`
-	// The amount of memory per instance in megabytes. Has to be a multiple of 256.
+	// The amount of memory per instance in megabytes. Has to be a multiple of 1024.
 	Ram *int32 `json:"ram,omitempty"`
 	// The number of CPU cores per instance.
 	Cores *int32 `json:"cores,omitempty"`
