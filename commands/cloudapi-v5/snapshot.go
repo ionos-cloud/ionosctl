@@ -289,8 +289,7 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		dcId, volumeId, name, description, licenseType, secAuthProtection)
 	s, resp, err := c.CloudApiV5Services.Snapshots().Create(dcId, volumeId, name, description, licenseType, secAuthProtection)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -306,7 +305,7 @@ func RunSnapshotUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId)))
 	s, resp, err := c.CloudApiV5Services.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId)), getSnapshotPropertiesSet(c))
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -329,7 +328,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgSnapshotId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -354,7 +353,7 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Snapshot with id: %v...", snapshotId)
 		resp, err = c.CloudApiV5Services.Snapshots().Delete(snapshotId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -469,8 +468,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting Snapshot with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Snapshots().Delete(*id)
 				if resp != nil {
-					viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgUserId))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

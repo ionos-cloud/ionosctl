@@ -210,7 +210,7 @@ func RunServerCdromAttach(c *core.CommandConfig) error {
 	c.Printer.Verbose("CD-ROM with id: %v is attaching to Server with id: %v from Datacenter with id: %v... ", cdRomId, serverId, dcId)
 	attachedCdrom, resp, err := c.CloudApiV5Services.Servers().AttachCdrom(dcId, serverId, cdRomId)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -279,9 +279,8 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgCdromId)),
 		)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
-
 		if err != nil {
 			return err
 		}
@@ -322,8 +321,7 @@ func DetachllCdRoms(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting detaching CD-ROM with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Servers().DetachCdrom(dcId, serverId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

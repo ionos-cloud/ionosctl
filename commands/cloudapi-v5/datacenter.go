@@ -233,8 +233,7 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Properties set for creating the Datacenter: Name: %v, Description: %v, Location: %v", name, description, location)
 	dc, resp, err := c.CloudApiV5Services.DataCenters().Create(name, description, location)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -258,12 +257,9 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		input.SetDescription(description)
 		c.Printer.Verbose("Property Description set: %v", description)
 	}
-	dc, resp, err := c.CloudApiV5Services.DataCenters().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)),
-		input,
-	)
+	dc, resp, err := c.CloudApiV5Services.DataCenters().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)), input)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -292,7 +288,7 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Datacenter with id: %v...", dcId)
 		resp, err = c.CloudApiV5Services.DataCenters().Delete(dcId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -333,8 +329,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.DataCenters().Delete(*id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

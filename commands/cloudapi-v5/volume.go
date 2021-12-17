@@ -344,8 +344,7 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 		*input,
 	)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -369,7 +368,7 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 		*input,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -399,7 +398,7 @@ func RunVolumeDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Volume with id: %v...", volumeId)
 		resp, err = c.CloudApiV5Services.Volumes().Delete(dcId, volumeId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -601,8 +600,7 @@ func DeleteAllVolumes(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting Volume with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Volumes().Delete(dcId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err
@@ -889,6 +887,9 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 		c.Printer.Verbose("Datacenter ID: %v", dcId)
 		c.Printer.Verbose("Detaching Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
 		resp, err := c.CloudApiV5Services.Servers().DetachVolume(dcId, serverId, volumeId)
+		if resp != nil {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		}
 		if err != nil {
 			return err
 		}
@@ -929,8 +930,7 @@ func DetachAllServers(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting detaching Volume with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Servers().DetachVolume(dcId, serverId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

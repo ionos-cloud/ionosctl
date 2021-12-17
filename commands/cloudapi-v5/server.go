@@ -443,8 +443,7 @@ func RunServerCreate(c *core.CommandConfig) error {
 		},
 	)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -482,7 +481,7 @@ func RunServerUpdate(c *core.CommandConfig) error {
 		*input,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -521,7 +520,7 @@ func RunServerDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId)
 		resp, err = c.CloudApiV5Services.Servers().Delete(dcId, serverId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -544,7 +543,7 @@ func RunServerStart(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -567,7 +566,7 @@ func RunServerStop(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -590,7 +589,7 @@ func RunServerReboot(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -717,8 +716,7 @@ func DeleteAllServers(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", *id, dcId)
 				resp, err = c.CloudApiV5Services.Servers().Delete(dcId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

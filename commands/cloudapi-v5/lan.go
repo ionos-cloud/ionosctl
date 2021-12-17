@@ -278,8 +278,7 @@ func RunLanCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating LAN in Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)))
 	l, resp, err := c.CloudApiV5Services.Lans().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)), input)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -324,7 +323,7 @@ func RunLanUpdate(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -354,7 +353,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
 		resp, err = c.CloudApiV5Services.Lans().Delete(dcId, lanId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -396,8 +395,7 @@ func DeleteAllLans(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting Lan with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Lans().Delete(dcId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

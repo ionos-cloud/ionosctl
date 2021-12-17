@@ -227,8 +227,7 @@ func RunPccCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Properties set for creating the private cross connect: Name: %v, Description: %v", name, description)
 	u, resp, err := c.CloudApiV5Services.Pccs().Create(newUser)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -249,7 +248,7 @@ func RunPccUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating Private Cross-Connect with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
 	pccUpd, resp, err := c.CloudApiV5Services.Pccs().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)), *newProperties)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -277,7 +276,7 @@ func RunPccDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Private cross connect with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
 		resp, err = c.CloudApiV5Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -318,8 +317,7 @@ func DeleteAllPccs(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting PrivateCrossConnect with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Pccs().Delete(*id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err
