@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.0.13]
+
+- feature: added `--password` on `ionosctl user update` command
+- dependency-update: SDK-Go version from [v5.1.10](https://github.com/ionos-cloud/sdk-go/releases/tag/v5.1.10) to [v5.1.11](https://github.com/ionos-cloud/sdk-go/releases/tag/v5.1.11) which contains important bug fixes
+
 ## [5.0.12]
 
 - feature: added `token` commands, added support for Auth API, to generate, list, delete Tokens
