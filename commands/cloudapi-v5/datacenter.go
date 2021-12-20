@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+	
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
@@ -18,8 +21,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/multierr"
-	"io"
-	"os"
 )
 
 func DatacenterCmd() *core.Command {

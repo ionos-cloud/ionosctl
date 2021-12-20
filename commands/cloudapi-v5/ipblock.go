@@ -3,6 +3,8 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 
@@ -294,45 +296,54 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Print("IpBlocks to be deleted:")
-	ipBlocks, resp, err := c.CloudApiV5Services.IpBlocks().List(resources.ListQueryParams{})
+	c.Printer.Verbose("Getting all IpBlocks...")
+	ipBlocks, _, err := c.CloudApiV5Services.IpBlocks().List(resources.ListQueryParams{})
 	if err != nil {
 		return nil, err
 	}
-	if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
+	if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil && len(*ipBlocksItems) > 0 {
+		c.Printer.Print("IpBlocks to be deleted:")
 		for _, dc := range *ipBlocksItems {
+			var messageLog string
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("IpBlock Id: " + *id)
+				messageLog = fmt.Sprintf("IpBlock Id: %v", *id)
 			}
 			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" IpBlock Name: " + *name)
+					messageLog = fmt.Sprintf("%v IpBlock Name: %v", messageLog, *name)
 				}
 			}
+			c.Printer.Print(messageLog)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
 			return nil, err
 		}
-		c.Printer.Verbose("Deleting all the IpBlocks...")
+
+		c.Printer.Verbose("Deleting all IpBlocks...")
+		var multiErr error
 		for _, dc := range *ipBlocksItems {
 			if id, ok := dc.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting IpBlock with id: %v...", *id)
-				resp, err = c.CloudApiV5Services.IpBlocks().Delete(*id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+				resp, err := c.CloudApiV5Services.IpBlocks().Delete(*id)
+				if resp != nil && printer.GetId(resp) != "" {
+					c.Printer.Verbose(config.RequestTimeMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, err)
+					continue
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 					return nil, err
 				}
 			}
 		}
+		if multiErr != nil {
+			return nil, multiErr
+		}
+	} else {
+		return nil, errors.New("could not get items of IpBlocks")
 	}
-	return resp, nil
+	return nil, nil
 }
 
 // Output Printing
@@ -353,9 +364,9 @@ func getIpBlockPrint(resp *resources.Response, c *core.CommandConfig, ipBlocks [
 	if c != nil {
 		if resp != nil {
 			r.ApiResponse = resp
+			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
 			r.Resource = c.Resource
 			r.Verb = c.Verb
-			r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
 		}
 		if ipBlocks != nil {
 			r.OutputJSON = ipBlocks
