@@ -318,19 +318,18 @@ func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
 			return nil, err
 		}
-
-		c.Printer.Verbose("Deleting all IpBlocks...")
 		var multiErr error
 		for _, dc := range *ipBlocksItems {
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting IpBlock with id: %v...", *id)
 				resp, err := c.CloudApiV5Services.IpBlocks().Delete(*id)
 				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestTimeMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					multiErr = multierr.Append(multiErr, err)
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 					continue
+				} else {
+					c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 					return nil, err

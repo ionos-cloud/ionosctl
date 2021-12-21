@@ -2,6 +2,8 @@ package config
 
 const (
 	RequestTimeMessage = "Request ID: %v Execution Time: %v"
+	StatusDeletingAll  = "Status: Deleting %v with Id: %v..."
+	DeleteAllAppendErr = "error occurred deleting %v with Id: %v. error: %w"
 
 	ArgConfig              = "config"
 	ArgConfigShort         = "c"
