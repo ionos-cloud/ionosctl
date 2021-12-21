@@ -368,8 +368,7 @@ func RunFirewallRuleCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating Firewall Rule attached to specified NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", nicId, serverId, datacenterId)
 	firewallRule, resp, err := c.CloudApiV5Services.FirewallRules().Create(datacenterId, serverId, nicId, input)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -389,7 +388,7 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
 	firewallRule, resp, err := c.CloudApiV5Services.FirewallRules().Update(datacenterId, serverId, nicId, fruleId, getFirewallRulePropertiesSet(c))
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -421,7 +420,7 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
 		resp, err = c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -516,8 +515,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) (*resources.Response, error) 
 				c.Printer.Verbose("Starting deleting Firewall Rule with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

@@ -538,7 +538,7 @@ func RunGroupUserAdd(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding User with id: %v to group with id: %v...", id, groupId)
 	userAdded, resp, err := c.CloudApiV5Services.Groups().AddUser(groupId, u)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -564,7 +564,7 @@ func RunGroupUserRemove(c *core.CommandConfig) error {
 		c.Printer.Verbose("Removing User with id: %v to group with id: %v...", id, groupId)
 		resp, err := c.CloudApiV5Services.Groups().RemoveUser(groupId, id)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -604,8 +604,7 @@ func RemoveAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting removing User with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Groups().RemoveUser(groupId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

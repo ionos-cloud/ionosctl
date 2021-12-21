@@ -227,8 +227,7 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Properties set for creating the Ip block: Name: %v, Location: %v, Size: %v", name, loc, size)
 	i, resp, err := c.CloudApiV5Services.IpBlocks().Create(name, loc, size)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -252,7 +251,7 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -280,7 +279,7 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Staring deleting Ip block with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgIpBlockId)))
 		resp, err = c.CloudApiV5Services.IpBlocks().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgIpBlockId)))
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -320,8 +319,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting IpBlock with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.IpBlocks().Delete(*id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

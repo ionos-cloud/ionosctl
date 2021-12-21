@@ -210,7 +210,7 @@ func RunIpFailoverAdd(c *core.CommandConfig) error {
 	ipsFailovers := make([]resources.IpFailover, 0)
 	lanUpdated, resp, err := c.CloudApiV5Services.Lans().Update(dcId, lanId, getIpFailoverInfo(c))
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -259,7 +259,7 @@ func RunIpFailoverRemove(c *core.CommandConfig) error {
 				_, resp, err = c.CloudApiV5Services.Lans().Update(
 					dcId, lanId, removeIpFailoverInfo(c, ipfailovers))
 				if resp != nil {
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return err
@@ -319,8 +319,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) (*resources.Response, error) {
 			if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
 				_, resp, err = c.CloudApiV5Services.Lans().Update(dcId, lanId, lanProperties)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

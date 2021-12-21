@@ -262,8 +262,7 @@ func RunLoadBalancerCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	lb, resp, err := c.CloudApiV5Services.Loadbalancers().Create(dcId, name, dhcp)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -301,7 +300,7 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -332,7 +331,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Load balancer with id: %v...", loadBlanacerId)
 		resp, err = c.CloudApiV5Services.Loadbalancers().Delete(dcid, loadBlanacerId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -375,8 +374,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) (*resources.Response, error) 
 				c.Printer.Verbose("Starting deleting Load balancer with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Loadbalancers().Delete(dcid, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

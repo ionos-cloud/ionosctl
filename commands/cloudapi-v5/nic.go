@@ -309,8 +309,7 @@ func RunNicCreate(c *core.CommandConfig) error {
 		name, ips, dhcp, lanId)
 	n, resp, err := c.CloudApiV5Services.Nics().Create(dcId, serverId, name, ips, dhcp, lanId)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -353,7 +352,7 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		input,
 	)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -386,7 +385,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Nic with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgNicId)))
 		resp, err = c.CloudApiV5Services.Nics().Delete(dcId, serverId, nicId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -431,8 +430,7 @@ func DeleteAllNics(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting Nic with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Nics().Delete(dcId, serverId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err
@@ -651,7 +649,7 @@ func RunLoadBalancerNicAttach(c *core.CommandConfig) error {
 	c.Printer.Verbose("Attaching NIC with ID: %v to LoadBalancer with ID: %v", nicId, lbId)
 	attachedNic, resp, err := c.CloudApiV5Services.Loadbalancers().AttachNic(dcId, lbId, nicId)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -721,7 +719,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 		c.Printer.Verbose("Detaching NIC with ID: %v from LoadBalancer with ID: %v", nicId, lbId)
 		resp, err := c.CloudApiV5Services.Loadbalancers().DetachNic(dcId, lbId, nicId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -763,8 +761,7 @@ func DetachAllNics(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting detaching Nic with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Loadbalancers().DetachNic(dcId, lbId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

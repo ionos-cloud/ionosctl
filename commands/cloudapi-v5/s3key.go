@@ -220,8 +220,7 @@ func RunUserS3KeyCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating S3 Key for User with ID: %v", userId)
 	s, resp, err := c.CloudApiV5Services.S3Keys().Create(userId)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -248,7 +247,7 @@ func RunUserS3KeyUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating S3 Key with ID: %v for User with ID: %v", keyId, userId)
 	s, resp, err := c.CloudApiV5Services.S3Keys().Update(userId, keyId, newKey)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -279,7 +278,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting S3 keys with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgS3KeyId)))
 		resp, err = c.CloudApiV5Services.S3Keys().Delete(userId, s3KeyId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -316,8 +315,7 @@ func DeleteAllS3Keys(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting S3 keys with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.S3Keys().Delete(userId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err
