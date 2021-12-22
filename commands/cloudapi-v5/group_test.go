@@ -177,6 +177,32 @@ func TestPreRunGroupIdErr(t *testing.T) {
 	})
 }
 
+func TestPreRunGroupDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgGroupId), testGroupVar)
+		err := PreRunGroupDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunGroupDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunGroupDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestPreRunGroupUserIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

@@ -107,6 +107,34 @@ func TestPreRunUserKeyIdsErr(t *testing.T) {
 	})
 }
 
+func TestPreRunUserKeyDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgUserId), testS3keyVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgS3KeyId), testS3keyVar)
+		err := PreRunUserKeyDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunUserKeyDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgUserId), testS3keyVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunUserKeyDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunUserS3KeyList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

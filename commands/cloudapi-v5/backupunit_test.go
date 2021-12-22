@@ -159,6 +159,32 @@ func TestPreRunBackupUnitIdErr(t *testing.T) {
 	})
 }
 
+func TestPreRunBackupUnitDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgBackupUnitId), testBackupUnitVar)
+		err := PreRunBackupUnitDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunBackupUnitDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunBackupUnitDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestPreRunBackupUnitNameEmailPwd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

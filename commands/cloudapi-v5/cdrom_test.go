@@ -137,6 +137,36 @@ func TestPreRunDcServerCdromIdsErr(t *testing.T) {
 	})
 }
 
+func TestPreRunDcServerCdromDetach(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgCdromId), testCdromVar)
+		err := PreRunDcServerCdromDetach(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunDcServerCdromDetachAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testCdromVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunDcServerCdromDetach(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunServerCdromAttach(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

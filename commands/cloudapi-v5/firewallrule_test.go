@@ -238,6 +238,38 @@ func TestPreRunDcServerNicFRuleIdsErr(t *testing.T) {
 	})
 }
 
+func TestPreRunDcServerNicDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgFirewallRuleId), testFirewallRuleVar)
+		err := PreRunDcServerNicDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunDcServerNicDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunDcServerNicDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunFirewallRuleList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

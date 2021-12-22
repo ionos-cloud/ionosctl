@@ -352,6 +352,34 @@ func TestRunK8sNodePoolListErr(t *testing.T) {
 	})
 }
 
+func TestPreRunK8sClusterNodePoolDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sClusterId), testNodepoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sNodePoolId), testNodepoolVar)
+		err := PreRunK8sClusterNodePoolDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunK8sClusterNodePoolDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sClusterId), testNodepoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunK8sClusterNodePoolDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunK8sNodePoolGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

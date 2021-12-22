@@ -115,6 +115,32 @@ func TestPreRunIpBlockIdErr(t *testing.T) {
 	})
 }
 
+func TestPreRunIpBlockDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgIpBlockId), testIpBlockVar)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunIpBlockDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunIpBlockDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		viper.Set(config.ArgQuiet, false)
+		err := PreRunIpBlockDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestPreRunIpBlockList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

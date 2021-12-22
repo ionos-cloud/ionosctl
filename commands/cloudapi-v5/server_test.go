@@ -215,6 +215,34 @@ func TestPreRunDcServerIdsRequiredFlagErr(t *testing.T) {
 	})
 }
 
+func TestPreRunDcServerDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgServerId), testServerVar)
+		err := PreRunDcServerDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunDcServerDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgDataCenterId), testServerVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunDcServerDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestRunServerList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
