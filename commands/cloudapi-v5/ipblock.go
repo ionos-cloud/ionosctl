@@ -267,39 +267,35 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 }
 
 func RunIpBlockDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllIpBlocks(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DeleteAllIpBlocks(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(getIpBlockDeletePrint(c, nil))
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ipblock"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Staring deleting Ip block with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgIpBlockId)))
-		resp, err = c.CloudApiV5Services.IpBlocks().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgIpBlockId)))
+		c.Printer.Verbose("Starting deleting Ip block with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgIpBlockId)))
+		resp, err := c.CloudApiV5Services.IpBlocks().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgIpBlockId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
 		if err != nil {
 			return err
 		}
-
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getIpBlockPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getIpBlockPrint(resp, c, nil))
 }
 
-func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllIpBlocks(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting all IpBlocks...")
 	ipBlocks, _, err := c.CloudApiV5Services.IpBlocks().List(resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil && len(*ipBlocksItems) > 0 {
 		c.Printer.Print("IpBlocks to be deleted:")
@@ -316,7 +312,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
 			c.Printer.Print(messageLog)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
-			return nil, err
+			return err
 		}
 		var multiErr error
 		for _, dc := range *ipBlocksItems {
@@ -332,17 +328,17 @@ func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
 					c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
 		if multiErr != nil {
-			return nil, multiErr
+			return multiErr
 		}
+		return nil
 	} else {
-		return nil, errors.New("could not get items of IpBlocks")
+		return errors.New("could not get items of IpBlocks")
 	}
-	return nil, nil
 }
 
 // Output Printing
@@ -367,6 +363,21 @@ func getIpBlockPrint(resp *resources.Response, c *core.CommandConfig, ipBlocks [
 			r.Resource = c.Resource
 			r.Verb = c.Verb
 		}
+		if ipBlocks != nil {
+			r.OutputJSON = ipBlocks
+			r.KeyValue = getIpBlocksKVMaps(ipBlocks)
+			r.Columns = getIpBlocksCols(core.GetGlobalFlagName(c.Resource, config.ArgCols), c.Printer.GetStderr())
+		}
+	}
+	return r
+}
+
+func getIpBlockDeletePrint(c *core.CommandConfig, ipBlocks []resources.IpBlock) printer.Result {
+	r := printer.Result{}
+	if c != nil {
+		r.WaitForRequest = viper.GetBool(core.GetFlagName(c.NS, config.ArgWaitForRequest))
+		r.Resource = c.Resource
+		r.Verb = c.Verb
 		if ipBlocks != nil {
 			r.OutputJSON = ipBlocks
 			r.KeyValue = getIpBlocksKVMaps(ipBlocks)
