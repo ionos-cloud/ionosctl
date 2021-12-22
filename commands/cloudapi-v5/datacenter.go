@@ -3,8 +3,11 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
+
+	"go.uber.org/multierr"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/completer"
@@ -19,7 +22,6 @@ import (
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"go.uber.org/multierr"
 )
 
 func DatacenterCmd() *core.Command {
@@ -273,21 +275,18 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllDatacenters(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DeleteAllDatacenters(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
 			return err
 		}
 		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 		c.Printer.Verbose("Starting deleting Datacenter with id: %v...", dcId)
-		resp, err = c.CloudApiV5Services.DataCenters().Delete(dcId)
+		resp, err := c.CloudApiV5Services.DataCenters().Delete(dcId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -297,16 +296,15 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getDataCenterPrint(resp, c, nil))
 	}
-
-	return c.Printer.Print(getDataCenterPrint(resp, c, nil))
 }
 
-func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllDatacenters(c *core.CommandConfig) error {
 	_ = c.Printer.Print("Datacenters to be deleted:")
-	datacenters, resp, err := c.CloudApiV5Services.DataCenters().List(resources.ListQueryParams{})
+	datacenters, _, err := c.CloudApiV5Services.DataCenters().List(resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
 		for _, dc := range *datacentersItems {
@@ -319,35 +317,38 @@ func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
 					messageLog = fmt.Sprintf("%s Datacenter Name: %s", messageLog, *name)
 				}
 			}
-			c.Printer.Print(messageLog)
+			_ = c.Printer.Print(messageLog)
 		}
 		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
-			return nil, err
+			return err
 		}
-
 		c.Printer.Verbose("Deleting all the Datacenters...")
 		var multiErr error
 		for _, dc := range *datacentersItems {
 			if id, ok := dc.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
-				resp, err = c.CloudApiV5Services.DataCenters().Delete(*id)
+				resp, err := c.CloudApiV5Services.DataCenters().Delete(*id)
 				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					multiErr = multierr.Append(multiErr, err)
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
 					continue
+				} else {
+					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
 		if multiErr != nil {
-			return nil, multiErr
+			return multiErr
 		}
+		return nil
+	} else {
+		return errors.New("could not get items of Datacenters")
 	}
-	return resp, nil
 }
 
 // Output Printing
