@@ -322,8 +322,7 @@ func RunK8sNodePoolCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating K8s NodePool in K8s Cluster with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
 	u, resp, err := c.CloudApiV5Services.K8s().CreateNodePool(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)), *newNodePool)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -354,7 +353,7 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating K8s node pool with id: %v from K8s Cluster with id: %v...", k8sNodePoolId, k8sClusterId)
 	newNodePoolUpdated, resp, err := c.CloudApiV5Services.K8s().UpdateNodePool(k8sClusterId, k8sNodePoolId, newNodePool)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -384,7 +383,7 @@ func RunK8sNodePoolDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting K8s Nodepool with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId)))
 		resp, err = c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, nodepollId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -577,8 +576,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting K8sNodePool with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, *id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

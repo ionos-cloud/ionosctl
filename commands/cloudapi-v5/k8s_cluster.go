@@ -265,8 +265,7 @@ func RunK8sClusterCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating K8s Cluster...")
 	u, resp, err := c.CloudApiV5Services.K8s().CreateCluster(*newCluster)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -298,7 +297,7 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating K8s cluster with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
 	k8sUpd, resp, err := c.CloudApiV5Services.K8s().UpdateCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)), newCluster)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -330,7 +329,7 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting K8s cluster with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
 		resp, err = c.CloudApiV5Services.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -469,8 +468,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting K8sCluster with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.K8s().DeleteCluster(*id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

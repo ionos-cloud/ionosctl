@@ -246,8 +246,7 @@ func RunGroupCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating Group...")
 	u, resp, err := c.CloudApiV5Services.Groups().Create(newGroup)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -272,7 +271,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating Group with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId)))
 	groupUpd, resp, err := c.CloudApiV5Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId)), newGroup)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -300,7 +299,7 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Group with id: %v...", groupId)
 		resp, err = c.CloudApiV5Services.Groups().Delete(groupId)
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -473,8 +472,7 @@ func DeleteAllGroups(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting Group with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.Groups().Delete(*id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err

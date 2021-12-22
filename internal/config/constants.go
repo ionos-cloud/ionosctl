@@ -1,7 +1,8 @@
 package config
 
 const (
-	RequestTimeMessage = "Request ID: %v Execution Time: %v"
+	RequestInfoMessage = "Request ID: %v Execution Time: %v"
+	RequestTimeMessage = "Request Execution Time: %v"
 	StatusDeletingAll  = "Status: Deleting %v with Id: %v..."
 	DeleteAllAppendErr = "error occurred deleting %v with Id: %v. error: %w"
 

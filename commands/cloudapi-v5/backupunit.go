@@ -279,8 +279,7 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Properties set for creating the Backup Unit: Name: %v , Email: %v", name, email)
 	u, resp, err := c.CloudApiV5Services.BackupUnit().Create(newBackupUnit)
 	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -299,7 +298,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	newProperties := getBackupUnitInfo(c)
 	backupUnitUpd, resp, err := c.CloudApiV5Services.BackupUnit().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgBackupUnitId)), *newProperties)
 	if resp != nil {
-		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -326,7 +325,7 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Starting deleting Backup unit with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgBackupUnitId)))
 		resp, err = c.CloudApiV5Services.BackupUnit().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgBackupUnitId)))
 		if resp != nil {
-			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -380,8 +379,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) (*resources.Response, error) {
 				c.Printer.Verbose("Starting deleting Backup unit with id: %v...", *id)
 				resp, err = c.CloudApiV5Services.BackupUnit().Delete(*id)
 				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err
