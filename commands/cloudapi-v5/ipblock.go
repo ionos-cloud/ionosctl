@@ -317,6 +317,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 		var multiErr error
 		for _, dc := range *ipBlocksItems {
 			if id, ok := dc.GetIdOk(); ok && id != nil {
+				c.Printer.Verbose("Starting deleting IpBlock with id: %v...", *id)
 				resp, err := c.CloudApiV5Services.IpBlocks().Delete(*id)
 				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)

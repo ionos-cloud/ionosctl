@@ -5,6 +5,7 @@ const (
 	RequestTimeMessage = "Request Execution Time: %v"
 	StatusDeletingAll  = "Status: Deleting %v with Id: %v..."
 	DeleteAllAppendErr = "error occurred deleting %v with Id: %v. error: %w"
+	RemoveAllAppendErr = "error occurred removing %v. error: %w"
 
 	ArgConfig              = "config"
 	ArgConfigShort         = "c"

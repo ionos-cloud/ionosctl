@@ -3,6 +3,8 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 
@@ -336,77 +338,82 @@ func RunLanUpdate(c *core.CommandConfig) error {
 }
 
 func RunLanDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgLanId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllLans(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DeleteAllLans(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete lan"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting LAN with ID: %v from Datacenter with ID: %v...", lanId, dcId)
-		resp, err = c.CloudApiV5Services.Lans().Delete(dcId, lanId)
+		resp, err := c.CloudApiV5Services.Lans().Delete(dcId, lanId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
 		}
-
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getLanPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getLanPrint(resp, c, nil))
 }
 
-func DeleteAllLans(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllLans(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	_ = c.Printer.Print("Lans to be deleted:")
-	lans, resp, err := c.CloudApiV5Services.Lans().List(dcId, resources.ListQueryParams{})
+	lans, _, err := c.CloudApiV5Services.Lans().List(dcId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
 		for _, lan := range *lansItems {
+			var messageLog string
 			if id, ok := lan.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Lan Id: " + *id)
+				messageLog = fmt.Sprintf("Lan Id: %v", *id)
 			}
 			if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Lan Name: " + *name)
+					messageLog = fmt.Sprintf("%v Lan Name: %v", messageLog, *name)
 				}
 			}
+			_ = c.Printer.Print(messageLog)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
-			return nil, err
+			return err
 		}
 		c.Printer.Verbose("Deleting all the Lans...")
-
+		var multiErr error
 		for _, lan := range *lansItems {
 			if id, ok := lan.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting Lan with id: %v...", *id)
-				resp, err = c.CloudApiV5Services.Lans().Delete(dcId, *id)
-				if resp != nil {
+				resp, err := c.CloudApiV5Services.Lans().Delete(dcId, *id)
+				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+					continue
+				} else {
+					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
+		if multiErr != nil {
+			return multiErr
+		}
+		return nil
+	} else {
+		return errors.New("could not get items of Lans")
 	}
-	return resp, nil
 }
 
 // Output Printing

@@ -2,6 +2,9 @@ package cloudapi_v5
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"go.uber.org/multierr"
 	"os"
 
 	"github.com/fatih/structs"
@@ -260,20 +263,17 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 }
 
 func RunServerCdromDetach(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DetachllCdRoms(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DetachAllCdRoms(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach CD-ROM from server"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("CD-ROM with id: %v is detaching... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgCdromId)))
-		resp, err = c.CloudApiV5Services.Servers().DetachCdrom(
+		resp, err := c.CloudApiV5Services.Servers().DetachCdrom(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgCdromId)),
@@ -288,51 +288,61 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getImagePrint(resp, c, nil))
 	}
-	return c.Printer.Print(getImagePrint(resp, c, nil))
 }
 
-func DetachllCdRoms(c *core.CommandConfig) (*resources.Response, error) {
+func DetachAllCdRoms(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
 	_ = c.Printer.Print("CD-ROMS to be detached:")
-	csRoms, resp, err := c.CloudApiV5Services.Servers().ListCdroms(dcId, serverId, resources.ListQueryParams{})
+	cdroms, _, err := c.CloudApiV5Services.Servers().ListCdroms(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if cdRomsItems, ok := csRoms.GetItemsOk(); ok && cdRomsItems != nil {
-		for _, cdRom := range *cdRomsItems {
+	if cdromsItems, ok := cdroms.GetItemsOk(); ok && cdromsItems != nil {
+		for _, cdRom := range *cdromsItems {
+			var messageLog string
 			if id, ok := cdRom.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("CD-ROM Id: " + *id)
+				messageLog = fmt.Sprintf("CD-ROM Id: %v", *id)
 			}
 			if properties, ok := cdRom.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" CD-ROM Name: " + *name)
+					messageLog = fmt.Sprintf("%v CD-ROM Name: %v", messageLog, *name)
 				}
 			}
+			_ = c.Printer.Print(messageLog)
 		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMS"); err != nil {
-			return nil, err
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMs"); err != nil {
+			return err
 		}
-		c.Printer.Verbose("Detaching all the CD-ROM...")
-		for _, cdRom := range *cdRomsItems {
+		c.Printer.Verbose("Detaching all the CD-ROMs...")
+		var multiErr error
+		for _, cdRom := range *cdromsItems {
 			if id, ok := cdRom.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting detaching CD-ROM with id: %v...", *id)
-				resp, err = c.CloudApiV5Services.Servers().DetachCdrom(dcId, serverId, *id)
-				if resp != nil {
+				resp, err := c.CloudApiV5Services.Servers().DetachCdrom(dcId, serverId, *id)
+				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+					continue
+				} else {
+					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
+		if multiErr != nil {
+			return multiErr
+		}
+		return nil
+	} else {
+		return errors.New("could not get items of CD-ROMs")
 	}
-	return resp, nil
 }
 
 // Output Printing

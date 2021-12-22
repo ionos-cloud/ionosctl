@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 	"strconv"
@@ -503,22 +504,19 @@ func RunServerUpdate(c *core.CommandConfig) error {
 }
 
 func RunServerDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllServers(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DeleteAllServers(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete server"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", serverId, dcId)
-		resp, err = c.CloudApiV5Services.Servers().Delete(dcId, serverId)
+		resp, err := c.CloudApiV5Services.Servers().Delete(dcId, serverId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -528,8 +526,8 @@ func RunServerDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getServerPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getServerPrint(resp, c, nil))
 }
 
 func RunServerStart(c *core.CommandConfig) error {
@@ -687,47 +685,56 @@ func getServerInfo(c *core.CommandConfig) (*resources.ServerProperties, error) {
 	}, nil
 }
 
-func DeleteAllServers(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllServers(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	_ = c.Printer.Print("Servers to be deleted:")
-	servers, resp, err := c.CloudApiV5Services.Servers().List(dcId, resources.ListQueryParams{})
+	servers, _, err := c.CloudApiV5Services.Servers().List(dcId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
 		for _, server := range *serversItems {
+			var messageLog string
 			if id, ok := server.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Server Id: " + *id)
+				messageLog = fmt.Sprintf("Server Id: %v", *id)
 			}
 			if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Server Name: " + *name)
+					messageLog = fmt.Sprintf("%v Server Name: %v", messageLog, *name)
 				}
 			}
+			_ = c.Printer.Print(messageLog)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
-			return nil, err
+			return err
 		}
 		c.Printer.Verbose("Deleting all the Servers...")
-
+		var multiErr error
 		for _, server := range *serversItems {
 			if id, ok := server.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting Server with id: %v from datacenter with id: %v... ", *id, dcId)
-				resp, err = c.CloudApiV5Services.Servers().Delete(dcId, *id)
-				if resp != nil {
+				resp, err := c.CloudApiV5Services.Servers().Delete(dcId, *id)
+				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+					continue
+				} else {
+					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
+		if multiErr != nil {
+			return multiErr
+		}
+		return nil
+	} else {
+		return errors.New("could not get items of Servers")
 	}
-	return resp, nil
 }
 
 // Output Printing

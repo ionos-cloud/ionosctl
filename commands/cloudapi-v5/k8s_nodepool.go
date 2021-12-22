@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 	"strconv"
@@ -365,31 +366,28 @@ func RunK8sNodePoolUpdate(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
 	clusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId))
 	nodepollId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllK8sNodepools(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DeleteAllK8sNodepools(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s node pool")
 		if err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting K8s Nodepool with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sNodePoolId)))
-		resp, err = c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, nodepollId)
+		resp, err := c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, nodepollId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	}
-	return c.Printer.Print("Status: Command node pool delete has been successfully executed")
 }
 
 func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, error) {
@@ -547,47 +545,56 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 	}
 }
 
-func DeleteAllK8sNodepools(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId))
 	_ = c.Printer.Print("K8sNodePools to be deleted:")
-	k8sNodePools, resp, err := c.CloudApiV5Services.K8s().ListNodePools(clusterId, resources.ListQueryParams{})
+	k8sNodePools, _, err := c.CloudApiV5Services.K8s().ListNodePools(clusterId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if k8sNodePoolsItems, ok := k8sNodePools.GetItemsOk(); ok && k8sNodePoolsItems != nil {
-		for _, dc := range *k8sNodePoolsItems {
-			if id, ok := dc.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("K8sNodePool Id: " + *id)
+		for _, nodePool := range *k8sNodePoolsItems {
+			var messageLog string
+			if id, ok := nodePool.GetIdOk(); ok && id != nil {
+				messageLog = fmt.Sprintf("K8sNodePool Id: %v", *id)
 			}
-			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+			if properties, ok := nodePool.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("K8sNodePool Name: " + *name)
+					messageLog = fmt.Sprintf("%v K8sNodePool Name: %v", messageLog, *name)
 				}
 			}
+			_ = c.Printer.Print(messageLog)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodePools"); err != nil {
-			return nil, err
+			return err
 		}
 		c.Printer.Verbose("Deleting all the K8sNodePools")
-
+		var multiErr error
 		for _, dc := range *k8sNodePoolsItems {
 			if id, ok := dc.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting K8sNodePool with id: %v...", *id)
-				resp, err = c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, *id)
-				if resp != nil {
+				resp, err := c.CloudApiV5Services.K8s().DeleteNodePool(clusterId, *id)
+				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+					continue
+				} else {
+					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
+		if multiErr != nil {
+			return multiErr
+		}
+		return nil
+	} else {
+		return errors.New("could not get items of K8sNodePools")
 	}
-	return resp, nil
 }
 
 // Output Printing

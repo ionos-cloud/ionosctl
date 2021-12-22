@@ -3,7 +3,9 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/query"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 
@@ -401,24 +403,21 @@ func RunFirewallRuleUpdate(c *core.CommandConfig) error {
 }
 
 func RunFirewallRuleDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
 	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgServerId))
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgNicId))
 	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgFirewallRuleId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllFirewallRules(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DeleteAllFirewallRules(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete firewall rule"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Firewall Rule with ID: %v from NIC with ID: %v; Server ID: %v; Datacenter ID: %v... ", fruleId, nicId, serverId, datacenterId)
-		resp, err = c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId)
+		resp, err := c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, fruleId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -429,9 +428,8 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getFirewallRulePrint(resp, c, nil))
 	}
-
-	return c.Printer.Print(getFirewallRulePrint(resp, c, nil))
 }
 
 // Get Firewall Rule Properties set used for create and update commands
@@ -485,48 +483,58 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 	return properties
 }
 
-func DeleteAllFirewallRules(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllFirewallRules(c *core.CommandConfig) error {
 	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgServerId))
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgNicId))
-	_ = c.Printer.Print("Firewallrules to be deleted:")
-	firewallrules, resp, err := c.CloudApiV5Services.FirewallRules().List(datacenterId, serverId, nicId, resources.ListQueryParams{})
+	_ = c.Printer.Print("Firewall Rules to be deleted:")
+	firewallRules, _, err := c.CloudApiV5Services.FirewallRules().List(datacenterId, serverId, nicId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if firewallrulestems, ok := firewallrules.GetItemsOk(); ok && firewallrulestems != nil {
-		for _, firewall := range *firewallrulestems {
+	if firewallRulesItems, ok := firewallRules.GetItemsOk(); ok && firewallRulesItems != nil {
+		for _, firewall := range *firewallRulesItems {
+			var messageLog string
 			if id, ok := firewall.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Firewallrule Id: " + *id)
+				messageLog = fmt.Sprintf("Firewall Rule Id: %v", *id)
 			}
 			if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Firewallrule Name: " + *name)
+					messageLog = fmt.Sprintf("%v Firewall Rule Name: %v", messageLog, *name)
 				}
 			}
+			_ = c.Printer.Print(messageLog)
 		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewallrules"); err != nil {
-			return nil, err
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewall Rules"); err != nil {
+			return err
 		}
-		c.Printer.Verbose("Deleting all the Firewallrules...")
-		for _, firewall := range *firewallrulestems {
+		c.Printer.Verbose("Deleting all the Firewall Rules...")
+		var multiErr error
+		for _, firewall := range *firewallRulesItems {
 			if id, ok := firewall.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting Firewall Rule with id: %v...", *id)
-				resp, err = c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
-				if resp != nil {
+				resp, err := c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
+				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+					continue
+				} else {
+					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
+		if multiErr != nil {
+			return multiErr
+		}
+		return nil
+	} else {
+		return errors.New("could not get items of Firewall Rules")
 	}
-	return resp, nil
 }
 
 // Output Printing

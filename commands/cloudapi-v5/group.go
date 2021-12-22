@@ -3,6 +3,8 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 
@@ -283,21 +285,18 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 }
 
 func RunGroupDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllGroups(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DeleteAllGroups(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
 			return err
 		}
 		groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgGroupId))
 		c.Printer.Verbose("Starting deleting Group with id: %v...", groupId)
-		resp, err = c.CloudApiV5Services.Groups().Delete(groupId)
+		resp, err := c.CloudApiV5Services.Groups().Delete(groupId)
 		if resp != nil {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -307,8 +306,8 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getGroupPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getGroupPrint(resp, c, nil))
 }
 
 func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
@@ -444,46 +443,55 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 	}
 }
 
-func DeleteAllGroups(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllGroups(c *core.CommandConfig) error {
 	_ = c.Printer.Print("Groups to be deleted:")
-	groups, resp, err := c.CloudApiV5Services.Groups().List(resources.ListQueryParams{})
+	groups, _, err := c.CloudApiV5Services.Groups().List(resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
 		for _, group := range *groupsItems {
+			var messageLog string
 			if id, ok := group.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Group Id: " + *id)
+				messageLog = fmt.Sprintf("Group Id: %v", *id)
 			}
 			if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Group Name: " + *name)
+					messageLog = fmt.Sprintf("%v Group Name: %v", messageLog, *name)
 				}
 			}
+			_ = c.Printer.Print(messageLog)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
-			return nil, err
+			return err
 		}
 		c.Printer.Verbose("Deleting all the Groups...")
-
+		var multiErr error
 		for _, group := range *groupsItems {
 			if id, ok := group.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting Group with id: %v...", *id)
-				resp, err = c.CloudApiV5Services.Groups().Delete(*id)
-				if resp != nil {
+				resp, err := c.CloudApiV5Services.Groups().Delete(*id)
+				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+					continue
+				} else {
+					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
+		if multiErr != nil {
+			return multiErr
+		}
+		return nil
+	} else {
+		return errors.New("could not get items of Groups")
 	}
-	return resp, nil
 }
 
 // Output Printing

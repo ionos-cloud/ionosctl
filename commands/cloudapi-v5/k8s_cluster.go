@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 
@@ -314,20 +315,17 @@ func RunK8sClusterUpdate(c *core.CommandConfig) error {
 }
 
 func RunK8sClusterDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllK8sClusters(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DeleteAllK8sClusters(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete k8s cluster"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting K8s cluster with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
-		resp, err = c.CloudApiV5Services.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
+		resp, err := c.CloudApiV5Services.K8s().DeleteCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgK8sClusterId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -337,8 +335,8 @@ func RunK8sClusterDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getK8sClusterPrint(resp, c, nil))
 }
 
 func getNewK8sCluster(c *core.CommandConfig) (*resources.K8sClusterForPost, error) {
@@ -440,46 +438,55 @@ func getK8sClusterInfo(oldUser *resources.K8sCluster, c *core.CommandConfig) res
 	}
 }
 
-func DeleteAllK8sClusters(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllK8sClusters(c *core.CommandConfig) error {
 	_ = c.Printer.Print("K8sClusters to be deleted:")
-	k8Clusters, resp, err := c.CloudApiV5Services.K8s().ListClusters(resources.ListQueryParams{})
+	k8Clusters, _, err := c.CloudApiV5Services.K8s().ListClusters(resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
 		for _, k8sCluster := range *k8sClustersItems {
+			var messageLog string
 			if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("K8sCluster Id: " + *id)
+				messageLog = fmt.Sprintf("K8sCluster Id: %v", *id)
 			}
 			if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" K8sCluster Name: " + *name)
+					messageLog = fmt.Sprintf("%v K8sCluster Name: %v", messageLog, *name)
 				}
 			}
+			_ = c.Printer.Print(messageLog)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sClusters"); err != nil {
-			return nil, err
+			return err
 		}
 		c.Printer.Verbose("Deleting all the K8sClusters...")
-
+		var multiErr error
 		for _, k8sCluster := range *k8sClustersItems {
 			if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting K8sCluster with id: %v...", *id)
-				resp, err = c.CloudApiV5Services.K8s().DeleteCluster(*id)
-				if resp != nil {
+				resp, err := c.CloudApiV5Services.K8s().DeleteCluster(*id)
+				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+					continue
+				} else {
+					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
+		if multiErr != nil {
+			return multiErr
+		}
+		return nil
+	} else {
+		return errors.New("could not get items of K8sClusters")
 	}
-	return resp, nil
 }
 
 // Output Printing

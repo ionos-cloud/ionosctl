@@ -3,6 +3,8 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
+	"fmt"
+	"go.uber.org/multierr"
 	"io"
 	"os"
 
@@ -261,74 +263,79 @@ func RunPccUpdate(c *core.CommandConfig) error {
 }
 
 func RunPccDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllPccs(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv5.ArgAll)) {
+		if err := DeleteAllPccs(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete private cross-connect"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Private cross connect with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
-		resp, err = c.CloudApiV5Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
+		resp, err := c.CloudApiV5Services.Pccs().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgPccId)))
 		if resp != nil {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
 		}
-
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getPccPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getPccPrint(resp, c, nil))
 }
 
-func DeleteAllPccs(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllPccs(c *core.CommandConfig) error {
 	_ = c.Printer.Print("PrivateCrossConnects to be deleted:")
-	pccs, resp, err := c.CloudApiV5Services.Pccs().List(resources.ListQueryParams{})
+	pccs, _, err := c.CloudApiV5Services.Pccs().List(resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
 		for _, pcc := range *pccsItems {
+			var messageLog string
 			if id, ok := pcc.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("PrivateCrossConnect Id: " + *id)
+				messageLog = fmt.Sprintf("PrivateCrossConnect Id: %v", *id)
 			}
 			if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" PrivateCrossConnect Name: " + *name)
+					messageLog = fmt.Sprintf("%v PrivateCrossConnect Name: %v", messageLog, *name)
 				}
 			}
+			_ = c.Printer.Print(messageLog)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the PrivateCrossConnects"); err != nil {
-			return nil, err
+			return err
 		}
 		c.Printer.Verbose("Deleting all the PrivateCrossConnects...")
-
+		var multiErr error
 		for _, pcc := range *pccsItems {
 			if id, ok := pcc.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting PrivateCrossConnect with id: %v...", *id)
-				resp, err = c.CloudApiV5Services.Pccs().Delete(*id)
-				if resp != nil {
+				resp, err := c.CloudApiV5Services.Pccs().Delete(*id)
+				if resp != nil && printer.GetId(resp) != "" {
 					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 				}
 				if err != nil {
-					return nil, err
+					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+					continue
+				} else {
+					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
 				}
 				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
+		if multiErr != nil {
+			return multiErr
+		}
+		return nil
+	} else {
+		return errors.New("could not get items of PCCs")
 	}
-	return resp, nil
 }
 
 func getPccInfo(oldUser *resources.PrivateCrossConnect, c *core.CommandConfig) *resources.PrivateCrossConnectProperties {
