@@ -8,14 +8,14 @@
 ## \[5.0.12\]
 
 * feature: added `token` commands, added support for Auth API, to generate, list, delete Tokens
-* dependency-update: added SDK-Go-Auth version v1.0.1
+* dependency-update: added SDK-Go-Auth version [v1.0.1](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.1)
 
 ## \[5.0.11\]
 
 * feature: added `--filters`, `--max-results`, `--order-by` options on all list commands
 * feature: added `-all` option for remove and detach commands
 * enhancement: added completion support for `--k8s-version` option
-* dependency-update: SDK-Go version from v5.1.7 to v5.1.10
+* dependency-update: SDK-Go version from [v5.1.7](https://github.com/ionos-cloud/sdk-go/releases/tag/v5.1.7) to [v5.1.10](https://github.com/ionos-cloud/sdk-go/releases/tag/v5.1.10)
 
 ## \[5.0.10\]
 
