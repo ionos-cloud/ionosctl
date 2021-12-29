@@ -398,14 +398,16 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) (*resources.Response, er
 	}
 	if natgatewaysItems, ok := flowlogs.GetItemsOk(); ok && natgatewaysItems != nil {
 		for _, natgateway := range *natgatewaysItems {
+			toPrint := ""
 			if id, ok := natgateway.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("NatGatewayFlowLog Id: " + *id)
+				toPrint += "NatGatewayFlowLog Id: " + *id
 			}
 			if properties, ok := natgateway.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("NatGatewayFlowLog Name: " + *name)
+					toPrint += " NatGatewayFlowLog Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all theNatGatewayFlowLogs"); err != nil {
@@ -427,6 +429,7 @@ func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) (*resources.Response, er
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

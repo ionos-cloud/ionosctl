@@ -434,14 +434,16 @@ func DeleteAllNics(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 		for _, nic := range *nicsItems {
+			toPrint := ""
 			if id, ok := nic.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Nic Id: " + *id)
+				toPrint += "Nic Id: " + *id
 			}
 			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Nic Name: " + *name)
+					toPrint += " Nic Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
@@ -466,6 +468,7 @@ func DeleteAllNics(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -754,14 +757,16 @@ func DetachAllNics(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 		for _, nic := range *nicsItems {
+			toPrint := ""
 			if id, ok := nic.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Nic Id: " + *id)
+				toPrint += "Nic Id: " + *id
 			}
 			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Nic Name: " + *name)
+					toPrint += " Nic Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Nics"); err != nil {
 			return nil, err
@@ -782,6 +787,7 @@ func DetachAllNics(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

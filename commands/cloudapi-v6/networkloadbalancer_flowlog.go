@@ -397,14 +397,16 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) (*resources.Res
 	}
 	if flowLogsItems, ok := flowLogs.GetItemsOk(); ok && flowLogsItems != nil {
 		for _, flowLog := range *flowLogsItems {
+			toPrint := ""
 			if id, ok := flowLog.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("NetworkLoadBalancerFlowLog Id: " + *id)
+				toPrint += "NetworkLoadBalancerFlowLog Id: " + *id
 			}
 			if properties, ok := flowLog.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("NetworkLoadBalancerFlowLog Name: " + *name)
+					toPrint += " NetworkLoadBalancerFlowLog Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NetworkLoadBalancerFlowLogs"); err != nil {
@@ -426,6 +428,7 @@ func DeleteAllNetworkLoadBalancerFlowLogs(c *core.CommandConfig) (*resources.Res
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

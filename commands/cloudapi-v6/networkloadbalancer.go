@@ -387,14 +387,16 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) (*resources.Response, 
 	}
 	if nlbItems, ok := networkLoadBalancers.GetItemsOk(); ok && nlbItems != nil {
 		for _, networkLoadBalancer := range *nlbItems {
+			toPrint := ""
 			if id, ok := networkLoadBalancer.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("NetworkLoadBalancer Id: " + *id)
+				toPrint += "NetworkLoadBalancer Id: " + *id
 			}
 			if properties, ok := networkLoadBalancer.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" NetworkLoadBalancer Name: " + *name)
+					toPrint += " NetworkLoadBalancer Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
@@ -416,6 +418,7 @@ func DeleteAllNetworkLoadBalancers(c *core.CommandConfig) (*resources.Response, 
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

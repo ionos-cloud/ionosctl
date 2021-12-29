@@ -399,14 +399,16 @@ func DeleteAllFlowlogs(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if flowlogsItems, ok := flowlogs.GetItemsOk(); ok && flowlogsItems != nil {
 		for _, backupUnit := range *flowlogsItems {
+			toPrint := ""
 			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Flowlog Id: " + *id)
+				toPrint += "Flowlog Id: " + *id
 			}
 			if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Flowlog Name: " + *name)
+					toPrint += " Flowlog Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the flow log"); err != nil {
@@ -428,6 +430,7 @@ func DeleteAllFlowlogs(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
