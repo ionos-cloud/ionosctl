@@ -579,14 +579,16 @@ func DeleteAllVolumes(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
 		for _, volume := range *volumesItems {
+			toPrint := ""
 			if id, ok := volume.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Volume Id: " + *id)
+				toPrint += "Volume Id: " + *id
 			}
 			if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Volume Name: " + *name)
+					toPrint += " Volume Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
@@ -609,6 +611,7 @@ func DeleteAllVolumes(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

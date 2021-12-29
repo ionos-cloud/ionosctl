@@ -556,14 +556,16 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if k8sNodePoolsItems, ok := k8sNodePools.GetItemsOk(); ok && k8sNodePoolsItems != nil {
 		for _, dc := range *k8sNodePoolsItems {
+			toPrint := ""
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("K8sNodePool Id: " + *id)
+				toPrint += "K8sNodePool Id: " + *id
 			}
 			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("K8sNodePool Name: " + *name)
+					toPrint += " K8sNodePool Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodePools"); err != nil {
@@ -585,6 +587,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

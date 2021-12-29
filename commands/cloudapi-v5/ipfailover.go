@@ -296,14 +296,16 @@ func RemoveAllIpFailovers(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if ipFailoversItems, ok := ipFailovers.GetItemsOk(); ok && ipFailoversItems != nil {
 		for _, ipFailover := range *ipFailoversItems {
+			toPrint := ""
 			if id, ok := ipFailover.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("IP Failover Id: " + *id)
+				toPrint += "IP Failover Id: " + *id
 			}
 			if properties, ok := ipFailover.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" IP Failover Name: " + *name)
+					toPrint += " IP Failover Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove all the IP Failovers"); err != nil {

@@ -302,14 +302,16 @@ func DetachllCdRoms(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if cdRomsItems, ok := csRoms.GetItemsOk(); ok && cdRomsItems != nil {
 		for _, cdRom := range *cdRomsItems {
+			toPrint := ""
 			if id, ok := cdRom.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("CD-ROM Id: " + *id)
+				toPrint += "CD-ROM Id: " + *id
 			}
 			if properties, ok := cdRom.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" CD-ROM Name: " + *name)
+					toPrint += " CD-ROM Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMS"); err != nil {
@@ -330,6 +332,7 @@ func DetachllCdRoms(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
