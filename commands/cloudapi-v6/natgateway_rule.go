@@ -439,14 +439,16 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) (*resources.Response, error
 	}
 	if natGatewayRuleItems, ok := natGatewayRules.GetItemsOk(); ok && natGatewayRuleItems != nil {
 		for _, natGateway := range *natGatewayRuleItems {
+			toPrint := ""
 			if id, ok := natGateway.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("NatGatewayRule Id: " + *id)
+				toPrint += "NatGatewayRule Id: " + *id
 			}
 			if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("NatGatewayRule Name: " + *name)
+					toPrint += " NatGatewayRule Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGatewayRules"); err != nil {
@@ -468,6 +470,7 @@ func DeleteAllNatgatewayRules(c *core.CommandConfig) (*resources.Response, error
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

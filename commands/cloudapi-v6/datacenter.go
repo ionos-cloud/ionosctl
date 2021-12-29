@@ -313,14 +313,16 @@ func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
 		for _, dc := range *datacentersItems {
+			toPrint := ""
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Datacenter Id: " + *id)
+				toPrint += "Datacenter Id: " + *id
 			}
 			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Datacenter Name: " + *name)
+					toPrint += " Datacenter Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
 			return nil, err
@@ -342,6 +344,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

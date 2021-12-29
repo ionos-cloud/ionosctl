@@ -457,14 +457,16 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) (*resour
 	}
 	if nlbForwardingRulesItems, ok := nlbForwardingRules.GetItemsOk(); ok && nlbForwardingRulesItems != nil {
 		for _, nlbForwardingRule := range *nlbForwardingRulesItems {
+			toPrint := ""
 			if id, ok := nlbForwardingRule.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("NetworkLoadBalancerForwardingRule Id: " + *id)
+				toPrint += "NetworkLoadBalancerForwardingRule Id: " + *id
 			}
 			if properties, ok := nlbForwardingRule.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("NetworkLoadBalancerForwardingRule Name: " + *name)
+					toPrint += " NetworkLoadBalancerForwardingRule Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
@@ -486,6 +488,7 @@ func DeleteAllNetworkLoadBalancerForwardingRules(c *core.CommandConfig) (*resour
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

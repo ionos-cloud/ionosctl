@@ -453,14 +453,16 @@ func DeleteAllSnapshots(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
 		for _, snapshot := range *snapshotsItems {
+			toPrint := ""
 			if id, ok := snapshot.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Snapshot Id: " + *id)
+				toPrint += "Snapshot Id: " + *id
 			}
 			if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Snapshot Name: " + *name)
+					toPrint += " Snapshot Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
@@ -483,6 +485,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

@@ -365,14 +365,16 @@ func DeleteAllNatgateways(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if natGatewayItems, ok := natGateways.GetItemsOk(); ok && natGatewayItems != nil {
 		for _, natGateway := range *natGatewayItems {
+			toPrint := ""
 			if id, ok := natGateway.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("NatGateway Id: " + *id)
+				toPrint += "NatGateway Id: " + *id
 			}
 			if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" NatGateway Name: " + *name)
+					toPrint += " NatGateway Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGateways"); err != nil {
@@ -394,6 +396,7 @@ func DeleteAllNatgateways(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

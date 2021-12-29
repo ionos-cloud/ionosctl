@@ -517,14 +517,16 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) (*resources.Response, error) 
 	}
 	if firewallrulestems, ok := firewallrules.GetItemsOk(); ok && firewallrulestems != nil {
 		for _, firewall := range *firewallrulestems {
+			toPrint := ""
 			if id, ok := firewall.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Firewallrule Id: " + *id)
+				toPrint += "Firewallrule Id: " + *id
 			}
 			if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Firewallrule Name: " + *name)
+					toPrint += " Firewallrule Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewallrules"); err != nil {
@@ -546,6 +548,7 @@ func DeleteAllFirewallRuses(c *core.CommandConfig) (*resources.Response, error) 
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

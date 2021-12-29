@@ -300,14 +300,16 @@ func RemoveAllNlbRuleTarget(c *core.CommandConfig) (*resources.Response, error) 
 	}
 	if forwardingRulesItems, ok := forwardingRules.GetItemsOk(); ok && forwardingRulesItems != nil {
 		for _, forwardingRule := range *forwardingRulesItems {
+			toPrint := ""
 			if id, ok := forwardingRule.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Forwarding Rule Target Id: " + *id)
+				toPrint += "Forwarding Rule Target Id: " + *id
 			}
 			if properties, ok := forwardingRule.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Forwarding Rule Target Name: " + *name)
+					toPrint += " Forwarding Rule Target Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove all the Forwarding Rule Targets"); err != nil {

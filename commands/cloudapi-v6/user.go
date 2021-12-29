@@ -372,17 +372,19 @@ func DeleteAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 		for _, user := range *usersItems {
+			toPrint := ""
 			if id, ok := user.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("User Id: " + *id)
+				toPrint += "User Id: " + *id
 			}
 			if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
 				if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
-					_ = c.Printer.Print("User First Name: " + *firstName)
+					toPrint += " User First Name: " + *firstName
 				}
 				if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
-					_ = c.Printer.Print("User Last Name: " + *lastName)
+					toPrint += " User Last Name: " + *lastName
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Users"); err != nil {
@@ -405,6 +407,7 @@ func DeleteAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -579,17 +582,19 @@ func RemoveAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 		for _, user := range *usersItems {
+			toPrint := ""
 			if id, ok := user.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("User Id: " + *id)
+				toPrint += "User Id: " + *id
 			}
 			if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
 				if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
-					_ = c.Printer.Print(" User Name: " + *firstName)
+					toPrint += " User First Name: " + *firstName
 				}
 				if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
-					_ = c.Printer.Print(" User Name: " + *lastName)
+					toPrint += " User Last Name: " + *lastName
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "removing all the Users"); err != nil {
@@ -611,6 +616,7 @@ func RemoveAllUsers(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

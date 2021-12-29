@@ -303,14 +303,16 @@ func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if ipBlocksItems, ok := ipBlocks.GetItemsOk(); ok && ipBlocksItems != nil {
 		for _, dc := range *ipBlocksItems {
+			toPrint := ""
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("IpBlock Id: " + *id)
+				toPrint += "IpBlock Id: " + *id
 			}
 			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("IpBlock Name: " + *name)
+					toPrint += " IpBlock Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
@@ -332,6 +334,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
