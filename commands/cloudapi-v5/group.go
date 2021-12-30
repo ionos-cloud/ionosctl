@@ -452,14 +452,16 @@ func DeleteAllGroups(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
 		for _, group := range *groupsItems {
+			toPrint := ""
 			if id, ok := group.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Group Id: " + *id)
+				toPrint += "Group Id: " + *id
 			}
 			if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Group Name: " + *name)
+					toPrint += " Group Name: " + *name
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
@@ -481,6 +483,7 @@ func DeleteAllGroups(c *core.CommandConfig) (*resources.Response, error) {
 					return nil, err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
