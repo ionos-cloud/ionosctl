@@ -406,6 +406,77 @@ func TestRunK8sNodeDeleteAll(t *testing.T) {
 	})
 }
 
+func TestRunK8sNodeDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sNodePoolId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sClusterId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.K8s.EXPECT().ListNodes(testNodeVar, testNodeVar, resources.ListQueryParams{}).Return(nodesTestList, &testResponse, testNodeErr)
+		err := RunK8sNodeDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunK8sNodeDeleteAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sNodePoolId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sClusterId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.K8s.EXPECT().ListNodes(testNodeVar, testNodeVar, resources.ListQueryParams{}).Return(resources.K8sNodes{}, &testResponse, nil)
+		err := RunK8sNodeDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunK8sNodeDeleteAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sNodePoolId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sClusterId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.K8s.EXPECT().ListNodes(testNodeVar, testNodeVar, resources.ListQueryParams{}).Return(
+			resources.K8sNodes{KubernetesNodes: ionoscloud.KubernetesNodes{Items: &[]ionoscloud.KubernetesNode{}}}, &testResponse, nil)
+		err := RunK8sNodeDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunK8sNodeDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sNodePoolId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgK8sClusterId), testNodeVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.K8s.EXPECT().ListNodes(testNodeVar, testNodeVar, resources.ListQueryParams{}).Return(nodesTestList, &testResponse, nil)
+		rm.CloudApiV5Mocks.K8s.EXPECT().DeleteNode(testNodeVar, testNodeVar, testNodeVar).Return(&testResponse, testNodeErr)
+		rm.CloudApiV5Mocks.K8s.EXPECT().DeleteNode(testNodeVar, testNodeVar, testNodeVar).Return(&testResponse, testNodeErr)
+		err := RunK8sNodeDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunK8sNodeDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

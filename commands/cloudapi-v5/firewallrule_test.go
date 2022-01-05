@@ -513,6 +513,95 @@ func TestRunFirewallRuleDeleteAll(t *testing.T) {
 	})
 }
 
+func TestRunFirewallRuleDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV5Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, resources.ListQueryParams{}).Return(
+			testFirewallRulesList, &testResponse, testFirewallRuleErr)
+		err := RunFirewallRuleDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunFirewallRuleDeleteAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV5Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, resources.ListQueryParams{}).Return(
+			resources.FirewallRules{}, &testResponse, nil)
+		err := RunFirewallRuleDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunFirewallRuleDeleteAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV5Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, resources.ListQueryParams{}).Return(
+			resources.FirewallRules{FirewallRules: ionoscloud.FirewallRules{Items: &[]ionoscloud.FirewallRule{}}}, &testResponse, nil)
+		err := RunFirewallRuleDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunFirewallRuleDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgDataCenterId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgServerId), testFirewallRuleVar)
+		viper.Set(core.GetGlobalFlagName(cfg.Resource, cloudapiv5.ArgNicId), testFirewallRuleVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		rm.CloudApiV5Mocks.FirewallRule.EXPECT().List(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, resources.ListQueryParams{}).Return(testFirewallRulesList, &testResponse, nil)
+		rm.CloudApiV5Mocks.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(&testResponse, testFirewallRuleErr)
+		rm.CloudApiV5Mocks.FirewallRule.EXPECT().Delete(testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar, testFirewallRuleVar).Return(&testResponse, nil)
+		err := RunFirewallRuleDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunFirewallRuleDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)

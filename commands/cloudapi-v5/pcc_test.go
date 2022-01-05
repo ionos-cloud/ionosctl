@@ -455,6 +455,77 @@ func TestRunPccDeleteAll(t *testing.T) {
 	})
 }
 
+func TestRunPccDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccsList, &testResponse, testPccErr)
+		err := RunPccDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunPccDeleteAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(resources.PrivateCrossConnects{}, &testResponse, nil)
+		err := RunPccDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunPccDeleteAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(
+			resources.PrivateCrossConnects{PrivateCrossConnects: ionoscloud.PrivateCrossConnects{Items: &[]ionoscloud.PrivateCrossConnect{}}}, &testResponse, nil)
+		err := RunPccDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunPccDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().List(resources.ListQueryParams{}).Return(pccsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, testPccErr)
+		rm.CloudApiV5Mocks.Pcc.EXPECT().Delete(testPccVar).Return(&testResponse, nil)
+		err := RunPccDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunPccDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
