@@ -118,7 +118,6 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) (*resources.Response, erro
 					}
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -237,7 +236,6 @@ func RemoveAllServerLabels(c *core.CommandConfig) (*resources.Response, error) {
 					}
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -355,7 +353,6 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) (*resources.Response, error) {
 					}
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -470,7 +467,6 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) (*resources.Response, error) 
 					}
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -581,7 +577,6 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) (*resources.Response, error)
 					}
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

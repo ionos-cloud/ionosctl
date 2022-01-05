@@ -442,7 +442,6 @@ func DeleteAllNics(c *core.CommandConfig) error {
 					return err
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr
@@ -780,7 +779,6 @@ func DetachAllNics(c *core.CommandConfig) error {
 					return err
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

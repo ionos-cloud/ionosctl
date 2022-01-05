@@ -411,7 +411,6 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 					return err
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr
@@ -624,7 +623,6 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 					return err
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr
