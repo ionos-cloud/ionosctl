@@ -285,6 +285,10 @@ To redirect all the output to `dev/null`, except for error messages, you can use
 
 For deletion/removal commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` or `-f` option.
 
+* Use the `--all` option
+
+For deletion/removal commands, you can use the `--all` flag to delete all the resources. The command iterates through all the resources and deletes them. If an error happens, it will be displayed after the entire iteration is done.
+
 * Use the `--cols` option
 
 To obtain only a specific field/column, or a collection of columns on output, you can use the `--cols` option with the list of desired fields.
