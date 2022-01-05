@@ -367,51 +367,57 @@ func RunLanDelete(c *core.CommandConfig) error {
 
 func DeleteAllLans(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
-	_ = c.Printer.Print("Lans to be deleted:")
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Getting Lans...")
 	lans, _, err := c.CloudApiV5Services.Lans().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
 	if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
-		for _, lan := range *lansItems {
-			toPrint := ""
-			if id, ok := lan.GetIdOk(); ok && id != nil {
-				toPrint += "Lan Id: " + *id
+		if len(*lansItems) > 0 {
+			_ = c.Printer.Print("Lans to be deleted:")
+			for _, lan := range *lansItems {
+				toPrint := ""
+				if id, ok := lan.GetIdOk(); ok && id != nil {
+					toPrint += "Lan Id: " + *id
+				}
+				if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Lan Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " Lan Name: " + *name
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Lans...")
+			var multiErr error
+			for _, lan := range *lansItems {
+				if id, ok := lan.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Lan with id: %v...", *id)
+					resp, err := c.CloudApiV5Services.Lans().Delete(dcId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Lans...")
-		var multiErr error
-		for _, lan := range *lansItems {
-			if id, ok := lan.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting Lan with id: %v...", *id)
-				resp, err := c.CloudApiV5Services.Lans().Delete(dcId, *id)
-				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
-					continue
-				} else {
-					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Lans found")
 		}
-		if multiErr != nil {
-			return multiErr
-		}
-		return nil
 	} else {
 		return errors.New("could not get items of Lans")
 	}

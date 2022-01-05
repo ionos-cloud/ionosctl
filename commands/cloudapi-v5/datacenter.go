@@ -301,51 +301,56 @@ func RunDataCenterDelete(c *core.CommandConfig) error {
 }
 
 func DeleteAllDatacenters(c *core.CommandConfig) error {
-	_ = c.Printer.Print("Datacenters to be deleted:")
+	c.Printer.Verbose("Getting Datacenters...")
 	datacenters, _, err := c.CloudApiV5Services.DataCenters().List(resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
 	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
-		for _, dc := range *datacentersItems {
-			toPrint := ""
-			if id, ok := dc.GetIdOk(); ok && id != nil {
-				toPrint += "Datacenter Id: " + *id
+		if len(*datacentersItems) > 0 {
+			_ = c.Printer.Print("Datacenters to be deleted:")
+			for _, dc := range *datacentersItems {
+				toPrint := ""
+				if id, ok := dc.GetIdOk(); ok && id != nil {
+					toPrint += "Datacenter Id: " + *id
+				}
+				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Datacenter Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " Datacenter Name: " + *name
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Datacenters...")
+			var multiErr error
+			for _, dc := range *datacentersItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
+					resp, err := c.CloudApiV5Services.DataCenters().Delete(*id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Datacenters...")
-		var multiErr error
-		for _, dc := range *datacentersItems {
-			if id, ok := dc.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
-				resp, err := c.CloudApiV5Services.DataCenters().Delete(*id)
-				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
-					continue
-				} else {
-					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Datacenters found")
 		}
-		if multiErr != nil {
-			return multiErr
-		}
-		return nil
 	} else {
 		return errors.New("could not get items of Datacenters")
 	}

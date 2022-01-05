@@ -345,52 +345,58 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 
 func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
-	_ = c.Printer.Print("LoadBalancers to be deleted:")
+	c.Printer.Verbose("Datacenter ID: %v", dcid)
+	c.Printer.Verbose("Getting LoadBalancers...")
 	loadBalancers, _, err := c.CloudApiV5Services.Loadbalancers().List(dcid, resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
 	if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
-		for _, lb := range *loadBalancersItems {
-			toPrint := ""
-			if id, ok := lb.GetIdOk(); ok && id != nil {
-				toPrint += "LoadBalancer Id: " + *id
+		if len(*loadBalancersItems) > 0 {
+			_ = c.Printer.Print("LoadBalancers to be deleted:")
+			for _, lb := range *loadBalancersItems {
+				toPrint := ""
+				if id, ok := lb.GetIdOk(); ok && id != nil {
+					toPrint += "LoadBalancer Id: " + *id
+				}
+				if properties, ok := lb.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " LoadBalancer Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := lb.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " LoadBalancer Name: " + *name
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the LoadBalancers...")
+			var multiErr error
+			for _, lb := range *loadBalancersItems {
+				if id, ok := lb.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Datacenter ID: %v", dcid)
+					c.Printer.Verbose("Starting deleting Load balancer with id: %v...", *id)
+					resp, err := c.CloudApiV5Services.Loadbalancers().Delete(dcid, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the LoadBalancers...")
-		var multiErr error
-		for _, lb := range *loadBalancersItems {
-			if id, ok := lb.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Datacenter ID: %v", dcid)
-				c.Printer.Verbose("Starting deleting Load balancer with id: %v...", *id)
-				resp, err := c.CloudApiV5Services.Loadbalancers().Delete(dcid, *id)
-				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
-					continue
-				} else {
-					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no LoadBalancers found")
 		}
-		if multiErr != nil {
-			return multiErr
-		}
-		return nil
 	} else {
 		return errors.New("could not get items of LoadBalancers")
 	}

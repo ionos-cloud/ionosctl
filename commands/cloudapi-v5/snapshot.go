@@ -441,51 +441,56 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 }
 
 func DeleteAllSnapshots(c *core.CommandConfig) error {
-	_ = c.Printer.Print("Snapshots to be deleted:")
+	c.Printer.Verbose("Getting Snapshots...")
 	snapshots, _, err := c.CloudApiV5Services.Snapshots().List(resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
 	if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
-		for _, snapshot := range *snapshotsItems {
-			toPrint := ""
-			if id, ok := snapshot.GetIdOk(); ok && id != nil {
-				toPrint += "Snapshot Id: " + *id
+		if len(*snapshotsItems) > 0 {
+			_ = c.Printer.Print("Snapshots to be deleted:")
+			for _, snapshot := range *snapshotsItems {
+				toPrint := ""
+				if id, ok := snapshot.GetIdOk(); ok && id != nil {
+					toPrint += "Snapshot Id: " + *id
+				}
+				if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Snapshot Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " Snapshot Name: " + *name
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Snapshots...")
+			var multiErr error
+			for _, snapshot := range *snapshotsItems {
+				if id, ok := snapshot.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Snapshot with id: %v...", *id)
+					resp, err := c.CloudApiV5Services.Snapshots().Delete(*id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Snapshots...")
-		var multiErr error
-		for _, snapshot := range *snapshotsItems {
-			if id, ok := snapshot.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting Snapshot with id: %v...", *id)
-				resp, err := c.CloudApiV5Services.Snapshots().Delete(*id)
-				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
-					continue
-				} else {
-					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Snapshots found")
 		}
-		if multiErr != nil {
-			return multiErr
-		}
-		return nil
 	} else {
 		return errors.New("could not get items of Snapshots")
 	}

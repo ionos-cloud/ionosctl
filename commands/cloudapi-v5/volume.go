@@ -570,53 +570,58 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 
 func DeleteAllVolumes(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
-	_ = c.Printer.Print("Volumes to be deleted:")
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Getting Volumes...")
 	volumes, _, err := c.CloudApiV5Services.Volumes().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
 	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
-		for _, volume := range *volumesItems {
-			toPrint := ""
-			if id, ok := volume.GetIdOk(); ok && id != nil {
-				toPrint += "Volume Id: " + *id
+		if len(*volumesItems) > 0 {
+			_ = c.Printer.Print("Volumes to be deleted:")
+			for _, volume := range *volumesItems {
+				toPrint := ""
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					toPrint += "Volume Id: " + *id
+				}
+				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Volume Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " Volume Name: " + *name
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Volumes...")
+			var multiErr error
+			for _, volume := range *volumesItems {
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Datacenter ID: %v", dcId)
+					c.Printer.Verbose("Starting deleting Volume with id: %v...", *id)
+					resp, err := c.CloudApiV5Services.Volumes().Delete(dcId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Volumes...")
-		var multiErr error
-		for _, volume := range *volumesItems {
-			if id, ok := volume.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Datacenter ID: %v", dcId)
-				c.Printer.Verbose("Starting deleting Volume with id: %v...", *id)
-				resp, err := c.CloudApiV5Services.Volumes().Delete(dcId, *id)
-				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
-					continue
-				} else {
-					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Volumes found")
 		}
-		if multiErr != nil {
-			return multiErr
-		}
-		return nil
 	} else {
 		return errors.New("could not get items of Volumes")
 	}
@@ -908,51 +913,58 @@ func RunServerVolumeDetach(c *core.CommandConfig) error {
 func DetachAllServerVolumes(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
-	_ = c.Printer.Print("Volumes to be detached:")
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Server ID: %v", serverId)
+	c.Printer.Verbose("Getting Volumes...")
 	volumes, _, err := c.CloudApiV5Services.Servers().ListVolumes(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
 	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
-		for _, volume := range *volumesItems {
-			var messageLog string
-			if id, ok := volume.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("Volume Id: %v", *id)
+		if len(*volumesItems) > 0 {
+			_ = c.Printer.Print("Volumes to be detached:")
+			for _, volume := range *volumesItems {
+				var messageLog string
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					messageLog = fmt.Sprintf("Volume Id: %v", *id)
+				}
+				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						messageLog = fmt.Sprintf("%v Volume Name: %v", messageLog, *name)
+					}
+				}
+				_ = c.Printer.Print(messageLog)
 			}
-			if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v Volume Name: %v", messageLog, *name)
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Volumes"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Detaching all the Volumes...")
+			var multiErr error
+			for _, volume := range *volumesItems {
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting detaching Volume with id: %v...", *id)
+					resp, err := c.CloudApiV5Services.Servers().DetachVolume(dcId, serverId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(messageLog)
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Volumes"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Detaching all the Volumes...")
-		var multiErr error
-		for _, volume := range *volumesItems {
-			if id, ok := volume.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting detaching Volume with id: %v...", *id)
-				resp, err := c.CloudApiV5Services.Servers().DetachVolume(dcId, serverId, *id)
-				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
-					continue
-				} else {
-					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Volumes found")
 		}
-		if multiErr != nil {
-			return multiErr
-		}
-		return nil
 	} else {
 		return errors.New("could not get items of Volumes")
 	}

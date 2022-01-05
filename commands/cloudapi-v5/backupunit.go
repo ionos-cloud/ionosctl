@@ -353,51 +353,56 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 }
 
 func DeleteAllBackupUnits(c *core.CommandConfig) error {
-	_ = c.Printer.Print("Backup Units to be deleted:")
+	c.Printer.Verbose("Getting Backup Units...")
 	backupUnits, _, err := c.CloudApiV5Services.BackupUnit().List(resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
 	if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
-		for _, backupUnit := range *backupUnitsItems {
-			toPrint := ""
-			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-				toPrint += "BackupUnit Id: " + *id
+		if len(*backupUnitsItems) > 0 {
+			_ = c.Printer.Print("Backup Units to be deleted:")
+			for _, backupUnit := range *backupUnitsItems {
+				toPrint := ""
+				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+					toPrint += "BackupUnit Id: " + *id
+				}
+				if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " BackupUnit Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " BackupUnit Name: " + *name
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the BackupUnits...")
+			var multiErr error
+			for _, backupUnit := range *backupUnitsItems {
+				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Backup Unit with id: %v...", *id)
+					resp, err := c.CloudApiV5Services.BackupUnit().Delete(*id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the BackupUnits...")
-		var multiErr error
-		for _, backupUnit := range *backupUnitsItems {
-			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting Backup Unit with id: %v...", *id)
-				resp, err := c.CloudApiV5Services.BackupUnit().Delete(*id)
-				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
-					continue
-				} else {
-					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Backup Units found")
 		}
-		if multiErr != nil {
-			return multiErr
-		}
-		return nil
 	} else {
 		return errors.New("could not get items of Backup Units")
 	}

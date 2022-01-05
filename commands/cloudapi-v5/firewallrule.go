@@ -488,51 +488,59 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgServerId))
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv5.ArgNicId))
-	_ = c.Printer.Print("Firewall Rules to be deleted:")
+	c.Printer.Verbose("Datacenter ID: %v", datacenterId)
+	c.Printer.Verbose("Server ID: %v", serverId)
+	c.Printer.Verbose("NIC with ID: %v", nicId)
+	c.Printer.Verbose("Getting Firewall Rules...")
 	firewallRules, _, err := c.CloudApiV5Services.FirewallRules().List(datacenterId, serverId, nicId, resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
-	if firewallrulesItems, ok := firewallRules.GetItemsOk(); ok && firewallrulesItems != nil {
-		for _, firewall := range *firewallrulesItems {
-			toPrint := ""
-			if id, ok := firewall.GetIdOk(); ok && id != nil {
-				toPrint += "Firewallrule Id: " + *id
+	if firewallRulesItems, ok := firewallRules.GetItemsOk(); ok && firewallRulesItems != nil {
+		if len(*firewallRulesItems) > 0 {
+			_ = c.Printer.Print("Firewall Rules to be deleted:")
+			for _, firewall := range *firewallRulesItems {
+				toPrint := ""
+				if id, ok := firewall.GetIdOk(); ok && id != nil {
+					toPrint += "Firewallrule Id: " + *id
+				}
+				if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Firewallrule Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " Firewallrule Name: " + *name
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewall Rules"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Firewall Rules...")
+			var multiErr error
+			for _, firewall := range *firewallRulesItems {
+				if id, ok := firewall.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Firewall Rule with id: %v...", *id)
+					resp, err := c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewall Rules"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Deleting all the Firewall Rules...")
-		var multiErr error
-		for _, firewall := range *firewallrulesItems {
-			if id, ok := firewall.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting Firewall Rule with id: %v...", *id)
-				resp, err := c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
-				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
-					continue
-				} else {
-					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Firewall Rule found")
 		}
-		if multiErr != nil {
-			return multiErr
-		}
-		return nil
 	} else {
 		return errors.New("could not get items of Firewall Rules")
 	}

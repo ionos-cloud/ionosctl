@@ -296,51 +296,55 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 func DetachAllCdRoms(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
-	_ = c.Printer.Print("CD-ROMS to be detached:")
 	cdroms, _, err := c.CloudApiV5Services.Servers().ListCdroms(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
 	if cdRomsItems, ok := cdroms.GetItemsOk(); ok && cdRomsItems != nil {
-		for _, cdRom := range *cdRomsItems {
-			toPrint := ""
-			if id, ok := cdRom.GetIdOk(); ok && id != nil {
-				toPrint += "CD-ROM Id: " + *id
+		if len(*cdRomsItems) > 0 {
+			_ = c.Printer.Print("CD-ROMS to be detached:")
+			for _, cdRom := range *cdRomsItems {
+				toPrint := ""
+				if id, ok := cdRom.GetIdOk(); ok && id != nil {
+					toPrint += "CD-ROM Id: " + *id
+				}
+				if properties, ok := cdRom.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " CD-ROM Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := cdRom.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " CD-ROM Name: " + *name
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMs"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Detaching all the CD-ROMs...")
+			var multiErr error
+			for _, cdRom := range *cdRomsItems {
+				if id, ok := cdRom.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting detaching CD-ROM with id: %v...", *id)
+					resp, err := c.CloudApiV5Services.Servers().DetachCdrom(dcId, serverId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMs"); err != nil {
-			return err
-		}
-		c.Printer.Verbose("Detaching all the CD-ROMs...")
-		var multiErr error
-		for _, cdRom := range *cdRomsItems {
-			if id, ok := cdRom.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting detaching CD-ROM with id: %v...", *id)
-				resp, err := c.CloudApiV5Services.Servers().DetachCdrom(dcId, serverId, *id)
-				if resp != nil && printer.GetId(resp) != "" {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
-					continue
-				} else {
-					_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no CD-ROMs found")
 		}
-		if multiErr != nil {
-			return multiErr
-		}
-		return nil
 	} else {
 		return errors.New("could not get items of CD-ROMs")
 	}
