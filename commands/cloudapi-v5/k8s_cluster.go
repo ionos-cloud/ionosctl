@@ -447,16 +447,16 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 	}
 	if k8sClustersItems, ok := k8Clusters.GetItemsOk(); ok && k8sClustersItems != nil {
 		for _, k8sCluster := range *k8sClustersItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := k8sCluster.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("K8sCluster Id: %v", *id)
+				toPrint += "K8sCluster Id: " + *id
 			}
 			if properties, ok := k8sCluster.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v K8sCluster Name: %v", messageLog, *name)
+					toPrint += " K8sCluster Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sClusters"); err != nil {
 			return err
@@ -480,6 +480,7 @@ func DeleteAllK8sClusters(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

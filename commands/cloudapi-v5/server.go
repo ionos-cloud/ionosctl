@@ -695,16 +695,16 @@ func DeleteAllServers(c *core.CommandConfig) error {
 	}
 	if serversItems, ok := servers.GetItemsOk(); ok && serversItems != nil {
 		for _, server := range *serversItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := server.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("Server Id: %v", *id)
+				toPrint += "Server Id: " + *id
 			}
 			if properties, ok := server.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v Server Name: %v", messageLog, *name)
+					toPrint += " Server Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Servers"); err != nil {
 			return err
@@ -728,6 +728,7 @@ func DeleteAllServers(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

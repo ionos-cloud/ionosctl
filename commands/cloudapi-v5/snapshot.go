@@ -448,16 +448,16 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 	}
 	if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
 		for _, snapshot := range *snapshotsItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := snapshot.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("Snapshot Id: %v", *id)
+				toPrint += "Snapshot Id: " + *id
 			}
 			if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v Snapshot Name: %v", messageLog, *name)
+					toPrint += " Snapshot Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
 			return err
@@ -481,6 +481,7 @@ func DeleteAllSnapshots(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

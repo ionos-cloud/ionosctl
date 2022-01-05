@@ -301,25 +301,25 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if cdromsItems, ok := cdroms.GetItemsOk(); ok && cdromsItems != nil {
-		for _, cdRom := range *cdromsItems {
-			var messageLog string
+	if cdRomsItems, ok := cdroms.GetItemsOk(); ok && cdRomsItems != nil {
+		for _, cdRom := range *cdRomsItems {
+			toPrint := ""
 			if id, ok := cdRom.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("CD-ROM Id: %v", *id)
+				toPrint += "CD-ROM Id: " + *id
 			}
 			if properties, ok := cdRom.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v CD-ROM Name: %v", messageLog, *name)
+					toPrint += " CD-ROM Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMs"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Detaching all the CD-ROMs...")
 		var multiErr error
-		for _, cdRom := range *cdromsItems {
+		for _, cdRom := range *cdRomsItems {
 			if id, ok := cdRom.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting detaching CD-ROM with id: %v...", *id)
 				resp, err := c.CloudApiV5Services.Servers().DetachCdrom(dcId, serverId, *id)
@@ -336,6 +336,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

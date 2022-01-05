@@ -308,16 +308,16 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 	}
 	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
 		for _, dc := range *datacentersItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := dc.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("Datacenter Id: %s", *id)
+				toPrint += "Datacenter Id: " + *id
 			}
 			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%s Datacenter Name: %s", messageLog, *name)
+					toPrint += " Datacenter Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
 			return err
@@ -341,6 +341,7 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

@@ -452,16 +452,16 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 	}
 	if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
 		for _, group := range *groupsItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := group.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("Group Id: %v", *id)
+				toPrint += "Group Id: " + *id
 			}
 			if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v Group Name: %v", messageLog, *name)
+					toPrint += " Group Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
 			return err
@@ -485,6 +485,7 @@ func DeleteAllGroups(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

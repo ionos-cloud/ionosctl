@@ -360,16 +360,16 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 	}
 	if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
 		for _, backupUnit := range *backupUnitsItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("Backup Unit Id: %v", *id)
+				toPrint += "BackupUnit Id: " + *id
 			}
 			if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v Backup Unit Name: %v", messageLog, *name)
+					toPrint += " BackupUnit Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
 			return err
@@ -393,6 +393,7 @@ func DeleteAllBackupUnits(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

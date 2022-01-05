@@ -374,16 +374,16 @@ func DeleteAllLans(c *core.CommandConfig) error {
 	}
 	if lansItems, ok := lans.GetItemsOk(); ok && lansItems != nil {
 		for _, lan := range *lansItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := lan.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("Lan Id: %v", *id)
+				toPrint += "Lan Id: " + *id
 			}
 			if properties, ok := lan.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v Lan Name: %v", messageLog, *name)
+					toPrint += " Lan Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
 			return err
@@ -407,6 +407,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

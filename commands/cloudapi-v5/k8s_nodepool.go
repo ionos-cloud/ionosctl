@@ -555,16 +555,16 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 	}
 	if k8sNodePoolsItems, ok := k8sNodePools.GetItemsOk(); ok && k8sNodePoolsItems != nil {
 		for _, nodePool := range *k8sNodePoolsItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := nodePool.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("K8sNodePool Id: %v", *id)
+				toPrint += "K8sNodePool Id: " + *id
 			}
 			if properties, ok := nodePool.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v K8sNodePool Name: %v", messageLog, *name)
+					toPrint += " K8sNodePool Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodePools"); err != nil {
 			return err
@@ -588,6 +588,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

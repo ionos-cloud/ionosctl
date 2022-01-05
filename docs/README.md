@@ -7,6 +7,9 @@ description: >-
 
 # IonosCTL CLI
 
+**NOTE:
+_Please consider using IONOSCTL v6 releases that are using IONOS Cloud API Version 6, the latest stable API version. New features and improvements will be integrated in IONOS Cloud API Version 6._**
+
 ## Overview
 
 IonosCTL is a tool to help you manage your IONOS Cloud resources directly from your terminal.

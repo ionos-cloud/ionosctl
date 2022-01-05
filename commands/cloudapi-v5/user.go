@@ -375,19 +375,19 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 	}
 	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 		for _, user := range *usersItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := user.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("User Id: %v", *id)
+				toPrint += "User Id: " + *id
 			}
 			if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
-				if lastnameOk, ok := properties.GetLastnameOk(); ok && lastnameOk != nil {
-					messageLog = fmt.Sprintf("%v User Last Name: %v", messageLog, *lastnameOk)
+				if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
+					toPrint += " User First Name: " + *firstName
 				}
-				if firstnameOk, ok := properties.GetFirstnameOk(); ok && firstnameOk != nil {
-					messageLog = fmt.Sprintf("%v User First Name: %v", messageLog, *firstnameOk)
+				if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
+					toPrint += " User Last Name: " + *lastName
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Users"); err != nil {
 			return err
@@ -411,6 +411,7 @@ func DeleteAllUsers(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr
@@ -587,19 +588,19 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 	}
 	if usersItems, ok := users.GetItemsOk(); ok && usersItems != nil {
 		for _, user := range *usersItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := user.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("User Id: %v", *id)
+				toPrint += "User Id: " + *id
 			}
 			if properties, ok := user.GetPropertiesOk(); ok && properties != nil {
-				if lastnameOk, ok := properties.GetLastnameOk(); ok && lastnameOk != nil {
-					messageLog = fmt.Sprintf("%v User Last Name: %v", messageLog, *lastnameOk)
+				if firstName, ok := properties.GetFirstnameOk(); ok && firstName != nil {
+					toPrint += " User Name: " + *firstName
 				}
-				if firstnameOk, ok := properties.GetFirstnameOk(); ok && firstnameOk != nil {
-					messageLog = fmt.Sprintf("%v User First Name: %v", messageLog, *firstnameOk)
+				if lastName, ok := properties.GetLastnameOk(); ok && lastName != nil {
+					toPrint += " User Name: " + *lastName
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "removing all the Users"); err != nil {
 			return err
@@ -623,6 +624,7 @@ func RemoveAllUsers(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

@@ -493,25 +493,25 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 	if err != nil {
 		return err
 	}
-	if firewallRulesItems, ok := firewallRules.GetItemsOk(); ok && firewallRulesItems != nil {
-		for _, firewall := range *firewallRulesItems {
-			var messageLog string
+	if firewallrulesItems, ok := firewallRules.GetItemsOk(); ok && firewallrulesItems != nil {
+		for _, firewall := range *firewallrulesItems {
+			toPrint := ""
 			if id, ok := firewall.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("Firewall Rule Id: %v", *id)
+				toPrint += "Firewallrule Id: " + *id
 			}
 			if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v Firewall Rule Name: %v", messageLog, *name)
+					toPrint += " Firewallrule Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewall Rules"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Deleting all the Firewall Rules...")
 		var multiErr error
-		for _, firewall := range *firewallRulesItems {
+		for _, firewall := range *firewallrulesItems {
 			if id, ok := firewall.GetIdOk(); ok && id != nil {
 				c.Printer.Verbose("Starting deleting Firewall Rule with id: %v...", *id)
 				resp, err := c.CloudApiV5Services.FirewallRules().Delete(datacenterId, serverId, nicId, *id)
@@ -528,6 +528,7 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

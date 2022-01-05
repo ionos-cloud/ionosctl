@@ -312,16 +312,16 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	}
 	if k8sNodesItems, ok := k8sNodes.GetItemsOk(); ok && k8sNodesItems != nil {
 		for _, node := range *k8sNodesItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := node.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("K8sNode Id: %v", *id)
+				toPrint += "K8sNodes Id: " + *id
 			}
 			if properties, ok := node.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v K8sNode Name: %v", messageLog, *name)
+					toPrint += " K8sNodes Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodes"); err != nil {
 			return err
@@ -346,6 +346,7 @@ func DeleteAllK8sNodes(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

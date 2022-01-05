@@ -577,16 +577,16 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 	}
 	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
 		for _, volume := range *volumesItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := volume.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("Volume Id: %v", *id)
+				toPrint += "Volume Id: " + *id
 			}
 			if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v Volume Name: %v", messageLog, *name)
+					toPrint += " Volume Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
@@ -612,6 +612,7 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

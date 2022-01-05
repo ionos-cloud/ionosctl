@@ -352,16 +352,16 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	}
 	if loadBalancersItems, ok := loadBalancers.GetItemsOk(); ok && loadBalancersItems != nil {
 		for _, lb := range *loadBalancersItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := lb.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("LoadBalancer Id: %v", *id)
+				toPrint += "LoadBalancer Id: " + *id
 			}
 			if properties, ok := lb.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v LoadBalancer Name: %v", messageLog, *name)
+					toPrint += " LoadBalancer Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
 			return err
@@ -386,6 +386,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

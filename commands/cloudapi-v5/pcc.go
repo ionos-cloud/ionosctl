@@ -296,16 +296,16 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 	}
 	if pccsItems, ok := pccs.GetItemsOk(); ok && pccsItems != nil {
 		for _, pcc := range *pccsItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := pcc.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("PrivateCrossConnect Id: %v", *id)
+				toPrint += "PrivateCrossConnect Id: " + *id
 			}
 			if properties, ok := pcc.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v PrivateCrossConnect Name: %v", messageLog, *name)
+					toPrint += " PrivateCrossConnect Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the PrivateCrossConnects"); err != nil {
 			return err
@@ -329,6 +329,7 @@ func DeleteAllPccs(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr

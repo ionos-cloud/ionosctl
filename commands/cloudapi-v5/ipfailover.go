@@ -3,7 +3,6 @@ package cloudapi_v5
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -291,16 +290,16 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 	}
 	if ipFailoversItems, ok := ipFailovers.GetItemsOk(); ok && ipFailoversItems != nil {
 		for _, ipFailover := range *ipFailoversItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := ipFailover.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("IP Failover Id: %v", *id)
+				toPrint += "IP Failover Id: " + *id
 			}
 			if properties, ok := ipFailover.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v IP Failover Name: %v", messageLog, *name)
+					toPrint += " IP Failover Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove all the IP Failovers"); err != nil {
 			return err

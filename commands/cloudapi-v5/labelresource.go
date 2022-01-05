@@ -86,14 +86,16 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) (*resources.Response, erro
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		for _, label := range *labelsItems {
+			toPrint := ""
 			if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
-					_ = c.Printer.Print(" Label Key: " + *key)
+					toPrint += "Label Key: " + *key
 				}
 				if value, ok := properties.GetValueOk(); ok && value != nil {
-					_ = c.Printer.Print(" Label Value: " + *value)
+					toPrint += " Label Value: " + *value
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Datacenter with Id: "+dcId); err != nil {
@@ -116,6 +118,7 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) (*resources.Response, erro
 					}
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -202,14 +205,16 @@ func RemoveAllServerLabels(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		for _, label := range *labelsItems {
+			toPrint := ""
 			if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
-					_ = c.Printer.Print(" Label Key: " + *key)
+					toPrint += "Label Key: " + *key
 				}
 				if value, ok := properties.GetValueOk(); ok && value != nil {
-					_ = c.Printer.Print(" Label Value: " + *value)
+					toPrint += " Label Value: " + *value
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Server with Id: "+serverId); err != nil {
@@ -231,8 +236,8 @@ func RemoveAllServerLabels(c *core.CommandConfig) (*resources.Response, error) {
 						return nil, err
 					}
 				}
-
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -318,14 +323,16 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) (*resources.Response, error) {
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		for _, label := range *labelsItems {
+			toPrint := ""
 			if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
-					_ = c.Printer.Print(" Label Key: " + *key)
+					toPrint += "Label Key: " + *key
 				}
 				if value, ok := properties.GetValueOk(); ok && value != nil {
-					_ = c.Printer.Print(" Label Value: " + *value)
+					toPrint += " Label Value: " + *value
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Volume with Id: "+volumeId); err != nil {
@@ -347,8 +354,8 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) (*resources.Response, error) {
 						return nil, err
 					}
 				}
-
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -431,14 +438,16 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) (*resources.Response, error) 
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		for _, label := range *labelsItems {
+			toPrint := ""
 			if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
-					_ = c.Printer.Print(" Label Key: " + *key)
+					toPrint += "Label Key: " + *key
 				}
 				if value, ok := properties.GetValueOk(); ok && value != nil {
-					_ = c.Printer.Print(" Label Value: " + *value)
+					toPrint += " Label Value: " + *value
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from IpBlock with Id: "+ipBlockId); err != nil {
@@ -460,8 +469,8 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) (*resources.Response, error) 
 						return nil, err
 					}
 				}
-
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -540,14 +549,16 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) (*resources.Response, error)
 	}
 	if labelsItems, ok := labels.GetItemsOk(); ok && labelsItems != nil {
 		for _, label := range *labelsItems {
+			toPrint := ""
 			if properties, ok := label.GetPropertiesOk(); ok && properties != nil {
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
-					_ = c.Printer.Print(" Label Key: " + *key)
+					toPrint += "Label Key: " + *key
 				}
 				if value, ok := properties.GetValueOk(); ok && value != nil {
-					_ = c.Printer.Print(" Label Value: " + *value)
+					toPrint += " Label Value: " + *value
 				}
 			}
+			_ = c.Printer.Print(toPrint)
 		}
 
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Snapshot with Id: "+snapshotId); err != nil {
@@ -569,8 +580,8 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) (*resources.Response, error)
 						return nil, err
 					}
 				}
-
 			}
+			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil

@@ -407,16 +407,16 @@ func DeleteAllNics(c *core.CommandConfig) error {
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 		for _, nic := range *nicsItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := nic.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("NIC Id: %v", *id)
+				toPrint += "Nic Id: " + *id
 			}
 			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v NIC Name: %v", messageLog, *name)
+					toPrint += " Nic Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NICs"); err != nil {
 			return err
@@ -442,6 +442,7 @@ func DeleteAllNics(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr
@@ -746,16 +747,16 @@ func DetachAllNics(c *core.CommandConfig) error {
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
 		for _, nic := range *nicsItems {
-			var messageLog string
+			toPrint := ""
 			if id, ok := nic.GetIdOk(); ok && id != nil {
-				messageLog = fmt.Sprintf("NIC Id: %v", *id)
+				toPrint += "Nic Id: " + *id
 			}
 			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 				if name, ok := properties.GetNameOk(); ok && name != nil {
-					messageLog = fmt.Sprintf("%v NIC Name: %v", messageLog, *name)
+					toPrint += " Nic Name: " + *name
 				}
 			}
-			_ = c.Printer.Print(messageLog)
+			_ = c.Printer.Print(toPrint)
 		}
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the NICs"); err != nil {
 			return err
@@ -779,6 +780,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 					return err
 				}
 			}
+			_ = c.Printer.Print("\n")
 		}
 		if multiErr != nil {
 			return multiErr
