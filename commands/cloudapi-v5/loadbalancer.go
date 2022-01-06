@@ -366,14 +366,13 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the LoadBalancers...")
 			var multiErr error
 			for _, lb := range *loadBalancersItems {
 				if id, ok := lb.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Datacenter ID: %v", dcid)
 					c.Printer.Verbose("Starting deleting Load balancer with id: %v...", *id)
 					resp, err := c.CloudApiV5Services.Loadbalancers().Delete(dcid, *id)
 					if resp != nil && printer.GetId(resp) != "" {

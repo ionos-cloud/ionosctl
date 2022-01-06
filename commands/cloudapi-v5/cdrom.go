@@ -296,6 +296,9 @@ func RunServerCdromDetach(c *core.CommandConfig) error {
 func DetachAllCdRoms(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv5.ArgServerId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Server ID: %v", serverId)
+	c.Printer.Verbose("Getting CD-ROMs...")
 	cdroms, _, err := c.CloudApiV5Services.Servers().ListCdroms(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
 		return err
@@ -315,7 +318,7 @@ func DetachAllCdRoms(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMs"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "detach all the CD-ROMs"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Detaching all the CD-ROMs...")

@@ -502,16 +502,16 @@ func DeleteAllFirewallRules(c *core.CommandConfig) error {
 			for _, firewall := range *firewallRulesItems {
 				toPrint := ""
 				if id, ok := firewall.GetIdOk(); ok && id != nil {
-					toPrint += "Firewallrule Id: " + *id
+					toPrint += "Firewall Rule Id: " + *id
 				}
 				if properties, ok := firewall.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Firewallrule Name: " + *name
+						toPrint += " Firewall Rule Name: " + *name
 					}
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewall Rules"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Firewall Rules"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the Firewall Rules...")

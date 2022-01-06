@@ -413,24 +413,22 @@ func DeleteAllNics(c *core.CommandConfig) error {
 			for _, nic := range *nicsItems {
 				toPrint := ""
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					toPrint += "Nic Id: " + *id
+					toPrint += "NIC Id: " + *id
 				}
 				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Nic Name: " + *name
+						toPrint += " NIC Name: " + *name
 					}
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NICs"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NICs"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the NICs...")
 			var multiErr error
 			for _, nic := range *nicsItems {
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Datacenter ID: %v", dcId)
-					c.Printer.Verbose("Server ID: %v", serverId)
 					c.Printer.Verbose("Starting deleting NIC with id: %v...", *id)
 					resp, err := c.CloudApiV5Services.Nics().Delete(dcId, serverId, *id)
 					if resp != nil && printer.GetId(resp) != "" {
@@ -760,11 +758,11 @@ func DetachAllNics(c *core.CommandConfig) error {
 			for _, nic := range *nicsItems {
 				toPrint := ""
 				if id, ok := nic.GetIdOk(); ok && id != nil {
-					toPrint += "Nic Id: " + *id
+					toPrint += "NIC Id: " + *id
 				}
 				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
 					if name, ok := properties.GetNameOk(); ok && name != nil {
-						toPrint += " Nic Name: " + *name
+						toPrint += " NIC Name: " + *name
 					}
 				}
 				_ = c.Printer.Print(toPrint)
@@ -772,7 +770,7 @@ func DetachAllNics(c *core.CommandConfig) error {
 			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the NICs"); err != nil {
 				return err
 			}
-			c.Printer.Verbose("Detaching all the Nics...")
+			c.Printer.Verbose("Detaching all the NICs...")
 			var multiErr error
 			for _, nic := range *nicsItems {
 				if id, ok := nic.GetIdOk(); ok && id != nil {

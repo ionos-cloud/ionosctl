@@ -305,7 +305,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove all the IP Failovers"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove all the IP Failovers"); err != nil {
 				return err
 			}
 			oldLan, _, err := c.CloudApiV5Services.Lans().Get(dcId, lanId)
@@ -332,7 +332,7 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 			return errors.New("no IP Failovers found")
 		}
 	} else {
-		return errors.New("could not get items of Datacenters")
+		return errors.New("could not get items of IP Failovers")
 	}
 }
 

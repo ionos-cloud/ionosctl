@@ -591,14 +591,13 @@ func DeleteAllVolumes(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the Volumes...")
 			var multiErr error
 			for _, volume := range *volumesItems {
 				if id, ok := volume.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("Datacenter ID: %v", dcId)
 					c.Printer.Verbose("Starting deleting Volume with id: %v...", *id)
 					resp, err := c.CloudApiV5Services.Volumes().Delete(dcId, *id)
 					if resp != nil && printer.GetId(resp) != "" {
@@ -936,7 +935,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Print(messageLog)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Volumes"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Volumes"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Detaching all the Volumes...")

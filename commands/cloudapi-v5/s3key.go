@@ -314,7 +314,6 @@ func DeleteAllS3Keys(c *core.CommandConfig) error {
 			var multiErr error
 			for _, s3Key := range *s3KeysItems {
 				if id, ok := s3Key.GetIdOk(); ok && id != nil {
-					c.Printer.Verbose("User ID: %v", userId)
 					c.Printer.Verbose("Starting deleting S3 keys with id: %v...", *id)
 					resp, err := c.CloudApiV5Services.S3Keys().Delete(userId, *id)
 					if resp != nil && printer.GetId(resp) != "" {
