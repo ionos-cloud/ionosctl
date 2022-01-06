@@ -283,48 +283,57 @@ func RemoveAllIpFailovers(c *core.CommandConfig) error {
 			IpFailover: &newIpFailover,
 		},
 	}
-	_ = c.Printer.Print("IP Failovers to be removed:")
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Lan ID: %v", lanId)
+	c.Printer.Verbose("Removing IP Failovers...")
 	ipFailovers, _, err := c.CloudApiV5Services.Lans().List(dcId, resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
 	if ipFailoversItems, ok := ipFailovers.GetItemsOk(); ok && ipFailoversItems != nil {
-		for _, ipFailover := range *ipFailoversItems {
-			toPrint := ""
-			if id, ok := ipFailover.GetIdOk(); ok && id != nil {
-				toPrint += "IP Failover Id: " + *id
+		if len(*ipFailoversItems) > 0 {
+			_ = c.Printer.Print("IP Failovers to be removed:")
+			for _, ipFailover := range *ipFailoversItems {
+				toPrint := ""
+				if id, ok := ipFailover.GetIdOk(); ok && id != nil {
+					toPrint += "IP Failover Id: " + *id
+				}
+				if properties, ok := ipFailover.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " IP Failover Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := ipFailover.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " IP Failover Name: " + *name
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove all the IP Failovers"); err != nil {
+				return err
+			}
+			oldLan, _, err := c.CloudApiV5Services.Lans().Get(dcId, lanId)
+			if err != nil {
+				return err
+			}
+			c.Printer.Verbose("Removing all the IP Failovers...")
+			if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
+				if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
+					_, resp, err := c.CloudApiV5Services.Lans().Update(dcId, lanId, lanProperties)
+					if resp != nil {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						return err
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						return err
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
+			return nil
+		} else {
+			return errors.New("no IP Failovers found")
 		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove all the IP Failovers"); err != nil {
-			return err
-		}
-		oldLan, _, err := c.CloudApiV5Services.Lans().Get(dcId, lanId)
-		if err != nil {
-			return err
-		}
-		c.Printer.Verbose("Removing all the IP Failovers...")
-		if properties, ok := oldLan.GetPropertiesOk(); ok && properties != nil {
-			if ipfailovers, ok := properties.GetIpFailoverOk(); ok && ipfailovers != nil {
-				_, resp, err := c.CloudApiV5Services.Lans().Update(dcId, lanId, lanProperties)
-				if resp != nil {
-					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
-				}
-				if err != nil {
-					return err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return err
-				}
-			}
-		}
+	} else {
+		return errors.New("could not get items of Datacenters")
 	}
-	return nil
 }
 
 func getIpFailoverInfo(c *core.CommandConfig) resources.LanProperties {
