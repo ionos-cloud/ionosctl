@@ -424,7 +424,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 	}
 }
 
-func DeleteAllNics(c *core.CommandConfig)  error {
+func DeleteAllNics(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
@@ -755,7 +755,7 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 	}
 }
 
-func DetachAllNics(c *core.CommandConfig)  error {
+func DetachAllNics(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)

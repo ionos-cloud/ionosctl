@@ -367,7 +367,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 	}
 }
 
-func DeleteAllLans(c *core.CommandConfig)  error {
+func DeleteAllLans(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting Lans...")

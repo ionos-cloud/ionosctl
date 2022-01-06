@@ -339,7 +339,7 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 	}
 }
 
-func DeleteAllLoadBalancers(c *core.CommandConfig)  error {
+func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	c.Printer.Verbose("Datacenter ID: %v", dcid)
 	c.Printer.Verbose("Getting LoadBalancers...")

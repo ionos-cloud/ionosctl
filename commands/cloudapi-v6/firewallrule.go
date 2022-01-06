@@ -506,7 +506,7 @@ func getFirewallRulePropertiesSet(c *core.CommandConfig) resources.FirewallRuleP
 	return properties
 }
 
-func DeleteAllFirewallRuses(c *core.CommandConfig)  error {
+func DeleteAllFirewallRuses(c *core.CommandConfig) error {
 	datacenterId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
