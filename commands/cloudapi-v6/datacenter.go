@@ -336,9 +336,8 @@ func DeleteAllDatacenters(c *core.CommandConfig) error {
 				if id, ok := dc.GetIdOk(); ok && id != nil {
 					c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
 					resp, err = c.CloudApiV6Services.DataCenters().Delete(*id)
-					if resp != nil {
-						c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
 						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))

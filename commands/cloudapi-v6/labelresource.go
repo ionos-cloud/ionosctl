@@ -95,7 +95,6 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) (*resources.Response, erro
 			}
 			_ = c.Printer.Print(toPrint)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Datacenter with Id: "+dcId); err != nil {
 			return nil, err
 		}
@@ -117,7 +116,6 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) (*resources.Response, erro
 					}
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -237,7 +235,6 @@ func RemoveAllServerLabels(c *core.CommandConfig) (*resources.Response, error) {
 				}
 
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -357,7 +354,6 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) (*resources.Response, error) {
 				}
 
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -447,7 +443,6 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) (*resources.Response, error) 
 			}
 			_ = c.Printer.Print(toPrint)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from IpBlock with Id: "+ipBlockId); err != nil {
 			return nil, err
 		}
@@ -469,7 +464,6 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) (*resources.Response, error) 
 					}
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
@@ -560,7 +554,6 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) (*resources.Response, error)
 			}
 			_ = c.Printer.Print(toPrint)
 		}
-
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Snapshot with Id: "+snapshotId); err != nil {
 			return nil, err
 		}
@@ -582,7 +575,6 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) (*resources.Response, error)
 					}
 				}
 			}
-			_ = c.Printer.Print("\n")
 		}
 	}
 	return resp, nil
