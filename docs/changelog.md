@@ -1,5 +1,9 @@
 # Changelog
 
+## \[6.0.1\] (upcoming release)
+
+* enhancement: `--all` option iterates through all resources even if it hits error
+
 ## \[6.0.0\]
 
 * feature: added `--password` on `ionosctl user update` command
