@@ -203,7 +203,7 @@ func RunIpBlockList(c *core.CommandConfig) error {
 	}
 	ipblocks, resp, err := c.CloudApiV6Services.IpBlocks().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -215,7 +215,7 @@ func RunIpBlockGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Ip block with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	i, resp, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -229,15 +229,12 @@ func RunIpBlockCreate(c *core.CommandConfig) error {
 	size := viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgSize))
 	c.Printer.Verbose("Properties set for creating the Ip block: Name: %v, Location: %v, Size: %v", name, loc, size)
 	i, resp, err := c.CloudApiV6Services.IpBlocks().Create(name, loc, size)
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
-
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
@@ -251,17 +248,13 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 		input.SetName(name)
 		c.Printer.Verbose("Property Name set: %v", name)
 	}
-	i, resp, err := c.CloudApiV6Services.IpBlocks().Update(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)),
-		input,
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	i, resp, err := c.CloudApiV6Services.IpBlocks().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)), input)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
@@ -282,8 +275,8 @@ func RunIpBlockDelete(c *core.CommandConfig) error {
 		}
 		c.Printer.Verbose("Starting deleting Ip block with ID: %v...", ipBlockId)
 		resp, err := c.CloudApiV6Services.IpBlocks().Delete(ipBlockId)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -316,7 +309,7 @@ func DeleteAllIpBlocks(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the IpBlocks"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the IpBlocks...")

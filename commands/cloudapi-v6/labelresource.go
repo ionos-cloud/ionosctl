@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
+	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils"
@@ -14,7 +15,7 @@ import (
 func RunDataCenterLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().DatacenterList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -28,7 +29,7 @@ func RunDataCenterLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().DatacenterGet(dcId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -42,8 +43,8 @@ func RunDataCenterLabelAdd(c *core.CommandConfig) error {
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Datacenter with id: %v...", labelKey, labelValue, dcId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().DatacenterCreate(dcId, labelKey, labelValue)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -65,8 +66,8 @@ func RunDataCenterLabelRemove(c *core.CommandConfig) error {
 		labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 		c.Printer.Verbose("Removing label with key: %v for Datacenter with id: %v...", labelKey, dcId)
 		resp, err = c.CloudApiV6Services.Labels().DatacenterDelete(dcId, labelKey)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -104,9 +105,8 @@ func RemoveAllDatacenterLabels(c *core.CommandConfig) (*resources.Response, erro
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
 					c.Printer.Verbose("Starting deleting Label with id: %v...", *key)
 					resp, err = c.CloudApiV6Services.Labels().DatacenterDelete(dcId, *key)
-					if resp != nil {
-						c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
 						return nil, err
@@ -127,7 +127,7 @@ func RunServerLabelsList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -142,7 +142,7 @@ func RunServerLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for Server with id: %v...", labelkey, serverId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().ServerGet(dcId, serverId, labelkey)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -157,8 +157,8 @@ func RunServerLabelAdd(c *core.CommandConfig) error {
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Server with id: %v...", labelKey, labelValue, serverId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().ServerCreate(dcId, serverId, labelKey, labelValue)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -181,8 +181,8 @@ func RunServerLabelRemove(c *core.CommandConfig) error {
 		labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 		c.Printer.Verbose("Removing label with key: %v for Server with id: %v...", labelKey, serverId)
 		resp, err = c.CloudApiV6Services.Labels().ServerDelete(dcId, serverId, labelKey)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -222,9 +222,8 @@ func RemoveAllServerLabels(c *core.CommandConfig) (*resources.Response, error) {
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
 					c.Printer.Verbose("Starting deleting Label with id: %v...", *key)
 					resp, err = c.CloudApiV6Services.Labels().ServerDelete(dcId, serverId, *key)
-					if resp != nil {
-						c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
 						return nil, err
@@ -246,7 +245,7 @@ func RunVolumeLabelsList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -261,7 +260,7 @@ func RunVolumeLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for Volume with id: %v...", labelKey, volumeId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().VolumeGet(dcId, volumeId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -276,8 +275,8 @@ func RunVolumeLabelAdd(c *core.CommandConfig) error {
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Volume with id: %v...", labelKey, labelValue, volumeId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().VolumeCreate(dcId, volumeId, labelKey, labelValue)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -300,8 +299,8 @@ func RunVolumeLabelRemove(c *core.CommandConfig) error {
 		labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 		c.Printer.Verbose("Removing label with key: %v for Volume with id: %v...", labelKey, volumeId)
 		resp, err = c.CloudApiV6Services.Labels().VolumeDelete(dcId, volumeId, labelKey)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -332,7 +331,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) (*resources.Response, error) {
 			_ = c.Printer.Print(toPrint)
 		}
 
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Volume with Id: "+volumeId); err != nil {
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Labels from Volume with Id: "+volumeId); err != nil {
 			return nil, err
 		}
 		c.Printer.Verbose("Deleting all the Labels from Volume with Id: %v...", volumeId)
@@ -341,9 +340,8 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) (*resources.Response, error) {
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
 					c.Printer.Verbose("Starting deleting Label with id: %v...", *key)
 					resp, err = c.CloudApiV6Services.Labels().VolumeDelete(dcId, volumeId, *key)
-					if resp != nil {
-						c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
 						return nil, err
@@ -362,7 +360,7 @@ func RemoveAllVolumeLabels(c *core.CommandConfig) (*resources.Response, error) {
 func RunIpBlockLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().IpBlockList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -376,7 +374,7 @@ func RunIpBlockLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().IpBlockGet(ipBlockId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -390,8 +388,8 @@ func RunIpBlockLabelAdd(c *core.CommandConfig) error {
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to IpBlock with id: %v...", labelKey, labelValue, ipBlockId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().IpBlockCreate(ipBlockId, labelKey, labelValue)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -413,8 +411,8 @@ func RunIpBlockLabelRemove(c *core.CommandConfig) error {
 		labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 		c.Printer.Verbose("Removing label with key: %v for IpBlock with id: %v...", labelKey, ipBlockId)
 		resp, err = c.CloudApiV6Services.Labels().IpBlockDelete(ipBlockId, labelKey)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -452,9 +450,8 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) (*resources.Response, error) 
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
 					c.Printer.Verbose("Starting deleting Label with id: %v...", *key)
 					resp, err = c.CloudApiV6Services.Labels().IpBlockDelete(ipBlockId, *key)
-					if resp != nil {
-						c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
 						return nil, err
@@ -472,7 +469,7 @@ func RemoveAllIpBlockLabels(c *core.CommandConfig) (*resources.Response, error) 
 func RunSnapshotLabelsList(c *core.CommandConfig) error {
 	labelDcs, resp, err := c.CloudApiV6Services.Labels().SnapshotList(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -486,7 +483,7 @@ func RunSnapshotLabelGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().SnapshotGet(snapshotId, labelKey)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -500,8 +497,8 @@ func RunSnapshotLabelAdd(c *core.CommandConfig) error {
 	labelValue := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 	c.Printer.Verbose("Adding label with key: %v and value: %v to Snapshot with id: %v...", labelKey, labelValue, snapshotId)
 	labelDc, resp, err := c.CloudApiV6Services.Labels().SnapshotCreate(snapshotId, labelKey, labelValue)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -523,8 +520,8 @@ func RunSnapshotLabelRemove(c *core.CommandConfig) error {
 		labelKey := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 		c.Printer.Verbose("Removing label with key: %v for Snapshot with id: %v...", labelKey, snapshotId)
 		resp, err = c.CloudApiV6Services.Labels().SnapshotDelete(snapshotId, labelKey)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -563,9 +560,8 @@ func RemoveAllSnapshotLabels(c *core.CommandConfig) (*resources.Response, error)
 				if key, ok := properties.GetKeyOk(); ok && key != nil {
 					c.Printer.Verbose("Starting deleting Label with id: %v...", *key)
 					resp, err = c.CloudApiV6Services.Labels().SnapshotDelete(snapshotId, *key)
-					if resp != nil {
-						c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-						c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 					}
 					if err != nil {
 						return nil, err

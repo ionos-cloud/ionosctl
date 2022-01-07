@@ -151,7 +151,7 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -168,22 +168,22 @@ func RunK8sNodePoolLanList(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolLanAdd(c *core.CommandConfig) error {
-	ng, resp, err := c.CloudApiV6Services.K8s().GetNodePool(
+	ng, _, err := c.CloudApiV6Services.K8s().GetNodePool(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
 	if err != nil {
 		return err
 	}
 	input := getNewK8sNodePoolLanInfo(c, ng)
-	ngNew, _, err := c.CloudApiV6Services.K8s().UpdateNodePool(
+	ngNew, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId)),
 		input,
 	)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -208,8 +208,8 @@ func RunK8sNodePoolLanRemove(c *core.CommandConfig) error {
 		}
 		input := removeK8sNodePoolLanInfo(c, ng)
 		_, resp, err := c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, input)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -271,7 +271,7 @@ func RemoveAllK8sNodePoolsLans(c *core.CommandConfig) error {
 		}
 		_, resp, err = c.CloudApiV6Services.K8s().UpdateNodePool(clusterId, nodePoolId, k8sNodePoolUpdated)
 		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
 		if err != nil {
 			return err
