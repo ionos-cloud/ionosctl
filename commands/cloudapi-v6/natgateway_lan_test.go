@@ -267,7 +267,6 @@ func TestRunNatGatewayLanRemoveAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testNatGatewayLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNatGatewayId), testNatGatewayLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.NatGateway.EXPECT().List(testNatGatewayLanVar, resources.ListQueryParams{}).Return(natgatewaysLanListTest, &testResponse, nil)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Get(testNatGatewayLanVar, testNatGatewayLanVar).Return(&natgatewayLanTest, &testResponse, nil)
 		rm.CloudApiV6Mocks.NatGateway.EXPECT().Update(testNatGatewayLanVar, testNatGatewayLanVar, natgatewayLanTestRemoveAll).Return(&natgatewayLanTest, nil, nil)
 		err := RunNatGatewayLanRemove(cfg)
