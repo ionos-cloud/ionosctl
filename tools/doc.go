@@ -23,17 +23,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	err := WriteDocs(commands.GetRootCmd(), dir)
-	if err != nil {
-		fmt.Printf("Error writing docs: %v\n", err)
-		os.Exit(1)
-	}
-
+	//err := WriteDocs(commands.GetRootCmd(), dir)
+	//if err != nil {
+	//	fmt.Printf("Error writing docs: %v\n", err)
+	//	os.Exit(1)
+	//}
 	for _, cmd := range commands.GetRootCmd().SubCommands() {
-		err := WriteDocs(cmd, dir)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			os.Exit(1)
+		if cmd.Name() != "dbaas" {
+			err := WriteDocs(cmd, dir)
+			if err != nil {
+				fmt.Printf("Error: %v\n", err)
+				os.Exit(1)
+			}
 		}
 	}
 }
