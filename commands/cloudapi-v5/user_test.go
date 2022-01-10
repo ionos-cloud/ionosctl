@@ -174,6 +174,32 @@ func TestPreRunUserIdErr(t *testing.T) {
 	})
 }
 
+func TestPreRunUserDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgUserId), testUserVar)
+		err := PreRunUserDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunUserDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunUserDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestPreRunUserNameEmailPwd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -437,6 +463,76 @@ func TestRunUserDeleteAll(t *testing.T) {
 	})
 }
 
+func TestRunUserDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(usersList, &testResponse, testUserErr)
+		err := RunUserDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunUserDeleteAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(resources.Users{}, &testResponse, nil)
+		err := RunUserDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunUserDeleteAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(resources.Users{Users: ionoscloud.Users{Items: &[]ionoscloud.User{}}}, &testResponse, nil)
+		err := RunUserDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunUserDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.User.EXPECT().List(resources.ListQueryParams{}).Return(usersList, &testResponse, nil)
+		rm.CloudApiV5Mocks.User.EXPECT().Delete(testUserVar).Return(&testResponse, testUserErr)
+		rm.CloudApiV5Mocks.User.EXPECT().Delete(testUserVar).Return(&testResponse, nil)
+		err := RunUserDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunUserDeleteErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -606,6 +702,81 @@ func TestRunGroupUserRemoveAll(t *testing.T) {
 		rm.CloudApiV5Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(&testResponse, nil)
 		err := RunGroupUserRemove(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupUserRemoveAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Group.EXPECT().ListUsers(testGroupVar).Return(groupUsersTestList, &testResponse, testUserErr)
+		err := RunGroupUserRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupUserRemoveAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Group.EXPECT().ListUsers(testGroupVar).Return(resources.GroupMembers{}, &testResponse, nil)
+		err := RunGroupUserRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupUserRemoveAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Group.EXPECT().ListUsers(testGroupVar).Return(
+			resources.GroupMembers{GroupMembers: ionoscloud.GroupMembers{Items: &[]ionoscloud.User{}}}, &testResponse, nil)
+		err := RunGroupUserRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupUserRemoveAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgGroupId), testGroupVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Group.EXPECT().ListUsers(testGroupVar).Return(groupUsersTestList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(&testResponse, testUserErr)
+		rm.CloudApiV5Mocks.Group.EXPECT().RemoveUser(testGroupVar, testUserVar).Return(&testResponse, nil)
+		err := RunGroupUserRemove(cfg)
+		assert.Error(t, err)
 	})
 }
 

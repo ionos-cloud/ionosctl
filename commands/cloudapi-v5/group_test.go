@@ -177,6 +177,32 @@ func TestPreRunGroupIdErr(t *testing.T) {
 	})
 }
 
+func TestPreRunGroupDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgGroupId), testGroupVar)
+		err := PreRunGroupDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunGroupDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunGroupDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestPreRunGroupUserIds(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -518,6 +544,72 @@ func TestRunGroupDeleteAll(t *testing.T) {
 		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, nil)
 		err := RunGroupDelete(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunGroupDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Group.EXPECT().List(resources.ListQueryParams{}).Return(groupsList, &testResponse, testGroupErr)
+		err := RunGroupDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupDeleteAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Group.EXPECT().List(resources.ListQueryParams{}).Return(resources.Groups{}, &testResponse, nil)
+		err := RunGroupDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupDeleteAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Group.EXPECT().List(resources.ListQueryParams{}).Return(resources.Groups{Groups: ionoscloud.Groups{Items: &[]ionoscloud.Group{}}}, &testResponse, nil)
+		err := RunGroupDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunGroupDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.Group.EXPECT().List(resources.ListQueryParams{}).Return(groupsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, testGroupErr)
+		rm.CloudApiV5Mocks.Group.EXPECT().Delete(testGroupVar).Return(&testResponse, testGroupErr)
+		err := RunGroupDelete(cfg)
+		assert.Error(t, err)
 	})
 }
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.0.14] (upcoming release)
+
+- enhancement: `--all` option iterates through all resources even if it hits error
+
 ## [5.0.13]
 
 - feature: added `--password` on `ionosctl user update` command

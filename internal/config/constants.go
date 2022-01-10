@@ -1,8 +1,12 @@
 package config
 
 const (
-	RequestInfoMessage = "Request ID: %v Execution Time: %v"
-	RequestTimeMessage = "Request Execution Time: %v"
+	RequestInfoMessage     = "Request ID: %v Execution Time: %v"
+	RequestTimeMessage     = "Request Execution Time: %v"
+	StatusDeletingAll      = "Status: Deleting %v with ID: %v..."
+	StatusRemovingAll      = "Status: Removing %v with ID: %v..."
+	DeleteAllAppendErr     = "error occurred removing %v with ID: %v. error: %w"
+	WaitDeleteAllAppendErr = "error occurred waiting for request on removing %v with ID: %v. error: %w"
 
 	ArgConfig              = "config"
 	ArgConfigShort         = "c"

@@ -159,6 +159,32 @@ func TestPreRunBackupUnitIdErr(t *testing.T) {
 	})
 }
 
+func TestPreRunBackupUnitDelete(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgBackupUnitId), testBackupUnitVar)
+		err := PreRunBackupUnitDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunBackupUnitDeleteAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		err := PreRunBackupUnitDelete(cfg)
+		assert.NoError(t, err)
+	})
+}
+
 func TestPreRunBackupUnitNameEmailPwd(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -439,6 +465,70 @@ func TestRunBackupUnitDeleteAll(t *testing.T) {
 		rm.CloudApiV5Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
 		err := RunBackupUnitDelete(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunBackupUnitDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnitsList, nil, testBackupUnitErr)
+		err := RunBackupUnitDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunBackupUnitDeleteAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(resources.BackupUnits{}, &testResponse, nil)
+		err := RunBackupUnitDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunBackupUnitDeleteAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(resources.BackupUnits{
+			BackupUnits: ionoscloud.BackupUnits{Items: &[]ionoscloud.BackupUnit{}},
+		}, nil, nil)
+		err := RunBackupUnitDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunBackupUnitDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv5.ArgAll), true)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().List(resources.ListQueryParams{}).Return(backupUnitsList, &testResponse, nil)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, testBackupUnitErr)
+		rm.CloudApiV5Mocks.BackupUnit.EXPECT().Delete(testBackUnitId).Return(&testResponse, nil)
+		err := RunBackupUnitDelete(cfg)
+		assert.Error(t, err)
 	})
 }
 
