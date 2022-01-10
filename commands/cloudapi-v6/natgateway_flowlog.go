@@ -2,7 +2,11 @@ package commands
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
+
+	"go.uber.org/multierr"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -289,7 +293,7 @@ func RunNatGatewayFlowLogList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -305,7 +309,7 @@ func RunNatGatewayFlowLogGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -324,9 +328,8 @@ func RunNatGatewayFlowLogCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -345,8 +348,8 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId)),
 		&input,
 	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -358,25 +361,22 @@ func RunNatGatewayFlowLogUpdate(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natgatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
 	flowlogId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFlowLogId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllNatGatewayFlowLogs(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllNatGatewayFlowLogs(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway flowlog"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting NatGatewayFlowLog with id: %v...", flowlogId)
-		resp, err = c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, flowlogId)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		resp, err := c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, flowlogId)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -384,53 +384,67 @@ func RunNatGatewayFlowLogDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getFlowLogPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getFlowLogPrint(resp, c, nil))
 }
 
-func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllNatGatewayFlowLogs(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natgatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
-	_ = c.Printer.Print("NatGatewayFlowLogs to be deleted:")
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("NatGateway ID: %v", natgatewayId)
+	c.Printer.Verbose("Getting NatGatewayFlowLogs...")
 	flowlogs, resp, err := c.CloudApiV6Services.NatGateways().ListFlowLogs(dcId, natgatewayId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if natgatewaysItems, ok := flowlogs.GetItemsOk(); ok && natgatewaysItems != nil {
-		for _, natgateway := range *natgatewaysItems {
-			toPrint := ""
-			if id, ok := natgateway.GetIdOk(); ok && id != nil {
-				toPrint += "NatGatewayFlowLog Id: " + *id
+		if len(*natgatewaysItems) > 0 {
+			_ = c.Printer.Print("NatGatewayFlowLog to be deleted:")
+			for _, natgateway := range *natgatewaysItems {
+				toPrint := ""
+				if id, ok := natgateway.GetIdOk(); ok && id != nil {
+					toPrint += "NatGatewayFlowLog Id: " + *id
+				}
+				if properties, ok := natgateway.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " NatGatewayFlowLog Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := natgateway.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " NatGatewayFlowLog Name: " + *name
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGatewayFlowLogs"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the NatGatewayFlowLogs...")
+			var multiErr error
+			for _, natgateway := range *natgatewaysItems {
+				if id, ok := natgateway.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting NatGatewayFlowLog with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all theNatGatewayFlowLogs"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the NatGatewayFlowLogs...")
-		for _, natgateway := range *natgatewaysItems {
-			if id, ok := natgateway.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting NatGatewayFlowLog with id: %v...", *id)
-				resp, err = c.CloudApiV6Services.NatGateways().DeleteFlowLog(dcId, natgatewayId, *id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
-			_ = c.Printer.Print("\n")
+			return nil
+		} else {
+			return errors.New("no NatGatewayFlowLogs found")
 		}
+	} else {
+		return errors.New("could not get items of NatGatewayFlowLogs")
 	}
-	return resp, nil
 }

@@ -3,8 +3,11 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
+
+	"go.uber.org/multierr"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -258,7 +261,7 @@ func RunSnapshotList(c *core.CommandConfig) error {
 	}
 	ss, resp, err := c.CloudApiV6Services.Snapshots().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -270,7 +273,7 @@ func RunSnapshotGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Snapshot with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	s, resp, err := c.CloudApiV6Services.Snapshots().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -289,9 +292,8 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 		dcId, volumeId, name, description, licenseType, secAuthProtection)
 
 	s, resp, err := c.CloudApiV6Services.Snapshots().Create(dcId, volumeId, name, description, licenseType, secAuthProtection)
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -306,8 +308,8 @@ func RunSnapshotCreate(c *core.CommandConfig) error {
 func RunSnapshotUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating Snapshot with id: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)))
 	s, resp, err := c.CloudApiV6Services.Snapshots().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)), getSnapshotPropertiesSet(c))
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -330,7 +332,7 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -342,23 +344,20 @@ func RunSnapshotRestore(c *core.CommandConfig) error {
 }
 
 func RunSnapshotDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	snapshotId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgSnapshotId))
-	if allFlag {
-		resp, err = DeleteAllSnapshots(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllSnapshots(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete snapshot"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Snapshot with id: %v...", snapshotId)
-		resp, err = c.CloudApiV6Services.Snapshots().Delete(snapshotId)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		resp, err := c.CloudApiV6Services.Snapshots().Delete(snapshotId)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -366,8 +365,8 @@ func RunSnapshotDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getSnapshotPrint(resp, c, nil))
 }
 
 func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotProperties {
@@ -445,50 +444,61 @@ func getSnapshotPropertiesSet(c *core.CommandConfig) resources.SnapshotPropertie
 	return input
 }
 
-func DeleteAllSnapshots(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Print("Snapshots to be deleted:")
+func DeleteAllSnapshots(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting Snapshots...")
 	snapshots, resp, err := c.CloudApiV6Services.Snapshots().List(resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if snapshotsItems, ok := snapshots.GetItemsOk(); ok && snapshotsItems != nil {
-		for _, snapshot := range *snapshotsItems {
-			toPrint := ""
-			if id, ok := snapshot.GetIdOk(); ok && id != nil {
-				toPrint += "Snapshot Id: " + *id
+		if len(*snapshotsItems) > 0 {
+			_ = c.Printer.Print("Snapshots to be deleted:")
+			for _, snapshot := range *snapshotsItems {
+				toPrint := ""
+				if id, ok := snapshot.GetIdOk(); ok && id != nil {
+					toPrint += "Snapshot Id: " + *id
+				}
+				if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Snapshot Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := snapshot.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					toPrint += " Snapshot Name: " + *name
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Snapshots...")
+			var multiErr error
+			for _, snapshot := range *snapshotsItems {
+				if id, ok := snapshot.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Snapshot with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.Snapshots().Delete(*id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-			_ = c.Printer.Print(toPrint)
-		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Snapshots"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Snapshots...")
-
-		for _, snapshot := range *snapshotsItems {
-			if id, ok := snapshot.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting Snapshot with id: %v...", *id)
-				resp, err = c.CloudApiV6Services.Snapshots().Delete(*id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
-			_ = c.Printer.Print("\n")
+			return nil
+		} else {
+			return errors.New("no Snapshots found")
 		}
+	} else {
+		return errors.New("could not get items of Snapshots")
 	}
-	return resp, nil
 }
 
 // Output Printing

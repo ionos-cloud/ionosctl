@@ -325,8 +325,6 @@ func TestRunNlbRuleTargetRemoveAll(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgRuleId), testNlbRuleTargetVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListForwardingRules(testNlbRuleTargetVar, testNlbRuleTargetVar, resources.ListQueryParams{}).
-			Return(testNlbRuleTargetList, &testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().GetForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar).
 			Return(&testNlbRuleTargetGetUpdated, &testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().UpdateForwardingRule(testNlbRuleTargetVar, testNlbRuleTargetVar, testNlbRuleTargetVar,

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 	"os"
 	"testing"
 
@@ -373,13 +374,87 @@ func TestRunNetworkLoadBalancerFlowLogDeleteAll(t *testing.T) {
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
-		//viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFlowLogId), testFlowLogVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogsList, &testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, nil)
 		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunNetworkLoadBalancerFlowLogDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogsList, nil, testFlowLogErr)
+		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunNetworkLoadBalancerFlowLogDeleteAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(resources.FlowLogs{}, &testResponse, nil)
+		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunNetworkLoadBalancerFlowLogDeleteAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(
+			resources.FlowLogs{FlowLogs: ionoscloud.FlowLogs{Items: &[]ionoscloud.FlowLog{}}}, &testResponse, nil)
+		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunNetworkLoadBalancerFlowLogDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgNetworkLoadBalancerId), testFlowLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().ListFlowLogs(testFlowLogVar, testFlowLogVar, resources.ListQueryParams{}).Return(testFlowLogsList, &testResponse, nil)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, testFlowLogErr)
+		rm.CloudApiV6Mocks.NetworkLoadBalancer.EXPECT().DeleteFlowLog(testFlowLogVar, testFlowLogVar, testFlowLogVar).Return(&testResponse, nil)
+		err := RunNetworkLoadBalancerFlowLogDelete(cfg)
+		assert.Error(t, err)
 	})
 }
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
@@ -57,9 +58,12 @@ func RunServerConsoleGet(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	c.Printer.Verbose("Getting Consoler URL for Server with ID: %v from Datacenter with ID: %v...", serverId, dcId)
-	t, _, err := c.CloudApiV6Services.Servers().GetRemoteConsoleUrl(dcId, serverId)
+	t, resp, err := c.CloudApiV6Services.Servers().GetRemoteConsoleUrl(dcId, serverId)
 	if err != nil {
 		return err
+	}
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	return c.Printer.Print(getConsolePrint(c, []resources.RemoteConsoleUrl{t}))
 }

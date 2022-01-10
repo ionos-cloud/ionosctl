@@ -222,8 +222,3 @@ const (
 	DefaultNicLanId        = 1
 	DefaultServerCPUFamily = "AMD_OPTERON"
 )
-
-// Verbose Flag const
-const (
-	RequestTimeMessage = "The execution time of the request is: %v"
-)
