@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.0.1]
+
+- enhancement: `--all` option iterates through all resources even if it hits error
+- enhancement: improved logs messages on `--all` option and request info and request info
+
+## [6.0.0]
+
+- feature: added `--password` on `ionosctl user update` command
+- feature: updated code for `ionosctl k8s nodepool` commands in sync with the changes from SDK Go
+- bug-fix: `ionosctl lan create` command supports now `--cols` option
+- dependency-update: added SDK-Go version `v6.0.0-beta.9` to `v6.0.0`
+
 ## [6.0.0-beta.8]
 
 - feature: added `token` commands, added support for Auth API, to generate, list, delete Tokens

@@ -93,7 +93,7 @@ type K8sService interface {
 	ReadKubeConfig(clusterId string) (string, *Response, error)
 	ListNodePools(clusterId string, params ListQueryParams) (K8sNodePools, *Response, error)
 	GetNodePool(clusterId, nodepoolId string) (*K8sNodePool, *Response, error)
-	CreateNodePool(clusterId string, nodepool K8sNodePool) (*K8sNodePool, *Response, error)
+	CreateNodePool(clusterId string, nodepool K8sNodePoolForPost) (*K8sNodePool, *Response, error)
 	UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNodePoolForPut) (*K8sNodePool, *Response, error)
 	DeleteNodePool(clusterId, nodepoolId string) (*Response, error)
 	DeleteNode(clusterId, nodepoolId, nodeId string) (*Response, error)
@@ -192,14 +192,14 @@ func (s *k8sService) GetNodePool(clusterId, nodepoolId string) (*K8sNodePool, *R
 	return &K8sNodePool{ns}, &Response{*res}, err
 }
 
-func (s *k8sService) CreateNodePool(clusterId string, nodepool K8sNodePool) (*K8sNodePool, *Response, error) {
-	req := s.client.KubernetesApi.K8sNodepoolsPost(s.context, clusterId).KubernetesNodePool(nodepool.KubernetesNodePool)
+func (s *k8sService) CreateNodePool(clusterId string, nodepool K8sNodePoolForPost) (*K8sNodePool, *Response, error) {
+	req := s.client.KubernetesApi.K8sNodepoolsPost(s.context, clusterId).KubernetesNodePool(nodepool.KubernetesNodePoolForPost)
 	ns, res, err := s.client.KubernetesApi.K8sNodepoolsPostExecute(req)
 	return &K8sNodePool{ns}, &Response{*res}, err
 }
 
 func (s *k8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNodePoolForPut) (*K8sNodePool, *Response, error) {
-	req := s.client.KubernetesApi.K8sNodepoolsPut(s.context, clusterId, nodepoolId).KubernetesNodePoolForPut(nodepool.KubernetesNodePoolForPut)
+	req := s.client.KubernetesApi.K8sNodepoolsPut(s.context, clusterId, nodepoolId).KubernetesNodePool(nodepool.KubernetesNodePoolForPut)
 	ns, res, err := s.client.KubernetesApi.K8sNodepoolsPutExecute(req)
 	return &K8sNodePool{ns}, &Response{*res}, err
 }

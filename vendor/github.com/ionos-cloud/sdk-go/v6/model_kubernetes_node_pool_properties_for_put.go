@@ -17,7 +17,7 @@ import (
 // KubernetesNodePoolPropertiesForPut struct for KubernetesNodePoolPropertiesForPut
 type KubernetesNodePoolPropertiesForPut struct {
 	// A Kubernetes node pool name. Valid Kubernetes node pool name must be 63 characters or less and must be empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.
-	Name *string `json:"name"`
+	Name *string `json:"name,omitempty"`
 	// The number of nodes that make up the node pool.
 	NodeCount *int32 `json:"nodeCount"`
 	// The Kubernetes version the nodepool is running. This imposes restrictions on what Kubernetes versions can be run in a cluster's nodepools. Additionally, not all Kubernetes versions are viable upgrade targets for all prior versions.

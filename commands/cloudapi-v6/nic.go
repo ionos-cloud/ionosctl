@@ -3,8 +3,11 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
+
+	"go.uber.org/multierr"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -276,7 +279,7 @@ func RunNicList(c *core.CommandConfig) error {
 		listQueryParams,
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -292,7 +295,7 @@ func RunNicGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -327,9 +330,8 @@ func RunNicCreate(c *core.CommandConfig) error {
 		},
 	}
 	n, resp, err := c.CloudApiV6Services.Nics().Create(dcId, serverId, input)
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -379,8 +381,8 @@ func RunNicUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
 		input,
 	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -393,82 +395,92 @@ func RunNicUpdate(c *core.CommandConfig) error {
 }
 
 func RunNicDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllNics(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllNics(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nic"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Nic with id: %v...", nicId)
-		resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		resp, err := c.CloudApiV6Services.Nics().Delete(dcId, serverId, nicId)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
 		}
-
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getNicPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getNicPrint(resp, c, nil))
 }
 
-func DeleteAllNics(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllNics(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	_ = c.Printer.Print("Nics to be deleted:")
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Server ID: %v", serverId)
+	c.Printer.Verbose("Getting NICs...")
 	nics, resp, err := c.CloudApiV6Services.Nics().List(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
-		for _, nic := range *nicsItems {
-			if id, ok := nic.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Nic Id: " + *id)
+		if len(*nicsItems) > 0 {
+			_ = c.Printer.Print("NICs to be deleted:")
+			for _, nic := range *nicsItems {
+				toPrint := ""
+				if id, ok := nic.GetIdOk(); ok && id != nil {
+					toPrint += "Nic Id: " + *id
+				}
+				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Nic Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Nic Name: " + *name)
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Nics...")
+			var multiErr error
+			for _, nic := range *nicsItems {
+				if id, ok := nic.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Nic with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Nics"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Nics...")
-
-		for _, nic := range *nicsItems {
-			if id, ok := nic.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Datacenter ID: %v", dcId)
-				c.Printer.Verbose("Server ID: %v", serverId)
-				c.Printer.Verbose("Starting deleting Nic with id: %v...", *id)
-				resp, err = c.CloudApiV6Services.Nics().Delete(dcId, serverId, *id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no NICs found")
 		}
+	} else {
+		return errors.New("could not get items of NICs")
 	}
-	return resp, nil
 }
 
 // LoadBalancer Nic Commands
@@ -716,19 +728,16 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 }
 
 func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
-	if allFlag {
-		resp, err = DetachAllNics(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DetachAllNics(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach nic from loadbalancer"); err != nil {
 			return err
 		}
-		resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(
+		resp, err := c.CloudApiV6Services.Loadbalancers().DetachNic(
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId)),
 			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId)),
@@ -736,55 +745,72 @@ func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 		if err != nil {
 			return err
 		}
-
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getNicPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getNicPrint(resp, c, nil))
 }
 
-func DetachAllNics(c *core.CommandConfig) (*resources.Response, error) {
+func DetachAllNics(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
-	_ = c.Printer.Print("Nics to be detached:")
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("LoadBalancer ID: %v", lbId)
+	c.Printer.Verbose("Getting NICs...")
 	nics, resp, err := c.CloudApiV6Services.Loadbalancers().ListNics(dcId, lbId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if nicsItems, ok := nics.GetItemsOk(); ok && nicsItems != nil {
-		for _, nic := range *nicsItems {
-			if id, ok := nic.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Nic Id: " + *id)
+		if len(*nicsItems) > 0 {
+			_ = c.Printer.Print("NICs to be detached:")
+			for _, nic := range *nicsItems {
+				toPrint := ""
+				if id, ok := nic.GetIdOk(); ok && id != nil {
+					toPrint += "Nic Id: " + *id
+				}
+				if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Nic Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := nic.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" Nic Name: " + *name)
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Nics"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Detaching all the Nics...")
+			var multiErr error
+			for _, nic := range *nicsItems {
+				if id, ok := nic.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting detaching Nic with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusRemovingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Nics"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Detaching all the Nics...")
-		for _, nic := range *nicsItems {
-			if id, ok := nic.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting detaching Nic with id: %v...", *id)
-				resp, err = c.CloudApiV6Services.Loadbalancers().DetachNic(dcId, lbId, *id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no NICs found")
 		}
+	} else {
+		return errors.New("could not get items of NICs")
 	}
-	return resp, nil
 }
 
 // Output Printing

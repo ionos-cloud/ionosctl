@@ -28,8 +28,6 @@ For `update` command:
 
 Use this command to update details about a specific User including their privileges.
 
-Note: The password attribute is immutable. It is not allowed in update requests. It is recommended that the new User log into the DCD and change their password.
-
 Required values to run command:
 
 * User Id
@@ -49,6 +47,7 @@ Required values to run command:
   -h, --help                Print usage
       --last-name string    The last name for the User
   -o, --output string       Desired output format [text|json] (default "text")
+  -p, --password string     The password for the User (must be at least 5 characters long)
   -q, --quiet               Quiet output
   -i, --user-id string      The unique User Id (required)
   -v, --verbose             Print step-by-step process when running command

@@ -51,7 +51,7 @@ func (mr *MockK8sServiceMockRecorder) CreateCluster(u interface{}) *gomock.Call 
 }
 
 // CreateNodePool mocks base method.
-func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePool) (*resources.K8sNodePool, *resources.Response, error) {
+func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePoolForPost) (*resources.K8sNodePool, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateNodePool", clusterId, nodepool)
 	ret0, _ := ret[0].(*resources.K8sNodePool)

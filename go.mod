@@ -9,12 +9,13 @@ require (
 	github.com/golang/mock v1.5.0
 	github.com/ionos-cloud/sdk-go-auth v1.0.1
 	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.0-beta.1
-	github.com/ionos-cloud/sdk-go/v6 v6.0.0-beta.9
+	github.com/ionos-cloud/sdk-go/v6 v6.0.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
+	go.uber.org/multierr v1.6.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
 )
