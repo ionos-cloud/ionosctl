@@ -3,6 +3,9 @@ package cloudapi_v5
 import (
 	"errors"
 	"fmt"
+
+	"go.uber.org/multierr"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v5/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
@@ -12,7 +15,6 @@ import (
 	cloudapiv5 "github.com/ionos-cloud/ionosctl/services/cloudapi-v5"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v5/resources"
 	"github.com/spf13/viper"
-	"go.uber.org/multierr"
 )
 
 func RunDataCenterLabelsList(c *core.CommandConfig) error {
