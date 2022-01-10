@@ -281,8 +281,7 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 	nodepoolId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId))
 	nodeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodeId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DelteAllK8sNodes(c)
-		if err != nil {
+		if err := DeleteAllK8sNodes(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
@@ -302,7 +301,7 @@ func RunK8sNodeDelete(c *core.CommandConfig) error {
 	}
 }
 
-func DelteAllK8sNodes(c *core.CommandConfig) error {
+func DeleteAllK8sNodes(c *core.CommandConfig) error {
 	clusterId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId))
 	nodepoolId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sNodePoolId))
 	c.Printer.Verbose("K8sCluster ID: %v", clusterId)
@@ -327,7 +326,7 @@ func DelteAllK8sNodes(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodes"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the K8sNodes"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the K8sNodes...")

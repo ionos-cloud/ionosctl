@@ -264,8 +264,7 @@ func RunPccUpdate(c *core.CommandConfig) error {
 func RunPccDelete(c *core.CommandConfig) error {
 	pccId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPccId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DeleteAllPccs(c)
-		if err != nil {
+		if err := DeleteAllPccs(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})

@@ -423,8 +423,7 @@ func RunFirewallRuleDelete(c *core.CommandConfig) error {
 	nicId := viper.GetString(core.GetGlobalFlagName(c.Resource, cloudapiv6.ArgNicId))
 	fruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgFirewallRuleId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DeleteAllFirewallRuses(c)
-		if err != nil {
+		if err := DeleteAllFirewallRuses(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})

@@ -342,8 +342,7 @@ func RunLanDelete(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	lanId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLanId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DeleteAllLans(c)
-		if err != nil {
+		if err := DeleteAllLans(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
@@ -389,7 +388,7 @@ func DeleteAllLans(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Lans"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the Lans...")

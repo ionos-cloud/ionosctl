@@ -264,8 +264,7 @@ func RunIpBlockUpdate(c *core.CommandConfig) error {
 func RunIpBlockDelete(c *core.CommandConfig) error {
 	ipBlockId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DeleteAllIpBlocks(c)
-		if err != nil {
+		if err := DeleteAllIpBlocks(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})

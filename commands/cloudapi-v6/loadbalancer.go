@@ -312,10 +312,9 @@ func RunLoadBalancerUpdate(c *core.CommandConfig) error {
 
 func RunLoadBalancerDelete(c *core.CommandConfig) error {
 	dcid := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	loadBlanacerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
+	loadBalancerId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLoadBalancerId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DeleteAllLoadBalancers(c)
-		if err != nil {
+		if err := DeleteAllLoadBalancers(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
@@ -323,8 +322,8 @@ func RunLoadBalancerDelete(c *core.CommandConfig) error {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete loadbalancer"); err != nil {
 			return err
 		}
-		c.Printer.Verbose("Starting deleting Load balancer with id: %v is deleting...", loadBlanacerId)
-		resp, err := c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBlanacerId)
+		c.Printer.Verbose("Starting deleting Load balancer with id: %v is deleting...", loadBalancerId)
+		resp, err := c.CloudApiV6Services.Loadbalancers().Delete(dcid, loadBalancerId)
 		if resp != nil && printer.GetId(resp) != "" {
 			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
@@ -361,7 +360,7 @@ func DeleteAllLoadBalancers(c *core.CommandConfig) error {
 				}
 				_ = c.Printer.Print(toPrint)
 			}
-			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the LoadBalancers"); err != nil {
 				return err
 			}
 			c.Printer.Verbose("Deleting all the LoadBalancers...")

@@ -265,8 +265,7 @@ func RunUserS3KeyDelete(c *core.CommandConfig) error {
 	userId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgUserId))
 	s3KeyId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgS3KeyId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DeleteAllS3keys(c)
-		if err != nil {
+		if err := DeleteAllS3keys(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})

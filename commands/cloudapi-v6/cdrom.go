@@ -267,8 +267,7 @@ func RunServerCdromGet(c *core.CommandConfig) error {
 
 func RunServerCdromDetach(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DetachAllCdRoms(c)
-		if err != nil {
+		if err := DetachAllCdRoms(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})

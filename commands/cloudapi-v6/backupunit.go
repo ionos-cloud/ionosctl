@@ -314,8 +314,7 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 
 func RunBackupUnitDelete(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DeleteAllBackupUnits(c)
-		if err != nil {
+		if err := DeleteAllBackupUnits(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})

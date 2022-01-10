@@ -399,8 +399,7 @@ func RunNicDelete(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	nicId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNicId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DeleteAllNics(c)
-		if err != nil {
+		if err := DeleteAllNics(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
@@ -730,8 +729,7 @@ func RunLoadBalancerNicGet(c *core.CommandConfig) error {
 
 func RunLoadBalancerNicDetach(c *core.CommandConfig) error {
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DetachAllNics(c)
-		if err != nil {
+		if err := DetachAllNics(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})

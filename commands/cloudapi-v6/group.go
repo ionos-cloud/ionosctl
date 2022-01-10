@@ -292,8 +292,7 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 func RunGroupDelete(c *core.CommandConfig) error {
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
 	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
-		err := DeleteAllGroups(c)
-		if err != nil {
+		if err := DeleteAllGroups(c); err != nil {
 			return err
 		}
 		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
