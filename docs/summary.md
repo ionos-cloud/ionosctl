@@ -207,3 +207,11 @@
     * [ShareGet](subcommands/user/share-get.md)
     * [ShareList](subcommands/user/share-list.md)
     * [ShareUpdate](subcommands/user/share-update.md)
+
+## Legal
+
+---
+
+* [Privacy policy](https://www.ionos.com/terms-gtc/terms-privacy/)
+* [Imprint](https://www.ionos.de/impressum)
+
