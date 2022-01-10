@@ -1,8 +1,9 @@
 # Changelog
 
-## [6.0.1] (upcoming release)
+## [6.0.1]
 
 - enhancement: `--all` option iterates through all resources even if it hits error
+- enhancement: improved logs messages on `--all` option and request info and request info
 
 ## [6.0.0]
 
