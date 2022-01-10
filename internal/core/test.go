@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	authv1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
-	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-pg"
+	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

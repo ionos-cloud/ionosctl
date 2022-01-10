@@ -7,7 +7,7 @@ import (
 
 	authv1 "github.com/ionos-cloud/ionosctl/commands/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
-	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/commands/pg"
+	"github.com/ionos-cloud/ionosctl/commands/dbaas"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/mitchellh/go-homedir"
@@ -196,8 +196,8 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
 	// Auth Command
 	rootCmd.AddCommand(authv1.TokenCmd())
-	// Add CloudApiDBaaSPgsql Commands
-	rootCmd.AddCommand(cloudapidbaaspgsql.DBaaSPgCmd())
+	// Add DBaaS Commands
+	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}

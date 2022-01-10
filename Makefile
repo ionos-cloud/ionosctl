@@ -2,7 +2,7 @@
 
 ## Include Services Makefile Targets
 include ./tools/cloudapi-v6/cloudapi_v6.mk
-include ./tools/dbaas-pg/dbaas_pg.mk
+include ./tools/dbaas-postgres/dbaas_postgres.mk
 include ./tools/auth-v1/auth_v1.mk
 
 export CGO_ENABLED = 0
@@ -22,10 +22,10 @@ test_unit:
 	@echo "DONE"
 
 .PHONY: test
-test: test_unit cloudapiv6_test auth_v1_test dbaas_pg_test
+test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test
 
 .PHONY: mocks_update
-mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_pg_mocks_update
+mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_pg_mocks_update
 	@echo "--- Update mocks ---"
 	@tools/regenerate_mocks.sh
 	@echo "DONE"
