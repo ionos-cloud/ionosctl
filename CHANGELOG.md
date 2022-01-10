@@ -1,8 +1,9 @@
 # Changelog
 
-## [5.0.14] (upcoming release)
+## [5.0.14]
 
 - enhancement: `--all` option iterates through all resources even if it hits error
+- enhancement: improved logs messages on `--all` option
 
 ## [5.0.13]
 
