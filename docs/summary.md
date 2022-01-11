@@ -123,6 +123,7 @@
     * [BackupunitGetSsoUrl](subcommands/backup/backupunit-get-sso-url.md)
     * [BackupunitUpdate](subcommands/backup/backupunit-update.md)
 * User Management
+    * [ContractGet](subcommands/user/contract-get.md)
     * [UserCreate](subcommands/user/user-create.md)
     * [UserDelete](subcommands/user/user-delete.md)
     * [UserGet](subcommands/user/user-get.md)

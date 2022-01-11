@@ -30,7 +30,7 @@ DOCS_OUT_AUTH=${DOCS_OUT_AUTH:-${DOCS_OUT}/authentication/}
 echo "Move Authentication documentation in ${DOCS_OUT_AUTH}"
 mkdir -p ${DOCS_OUT_AUTH}
 mv -f docs/subcommands/tmp/token-* ${DOCS_OUT_AUTH}
-mv -f docs/subcommands/tmp/contract-* ${DOCS_OUT_AUTH}
+cp docs/subcommands/tmp/contract-* ${DOCS_OUT_AUTH}
 mv -f docs/subcommands/tmp/login.md ${DOCS_OUT_AUTH}
 
 ## Kubernetes
@@ -53,6 +53,7 @@ mv -f docs/subcommands/tmp/user-* ${DOCS_OUT_USER}
 mv -f docs/subcommands/tmp/group-* ${DOCS_OUT_USER}
 mv -f docs/subcommands/tmp/resource-* ${DOCS_OUT_USER}
 mv -f docs/subcommands/tmp/share-* ${DOCS_OUT_USER}
+mv -f docs/subcommands/tmp/contract-* ${DOCS_OUT_USER}
 
 ## Compute Engine
 DOCS_OUT_COMPUTE_ENGINE=${DOCS_OUT_COMPUTE_ENGINE:-${DOCS_OUT}/compute-engine/}
