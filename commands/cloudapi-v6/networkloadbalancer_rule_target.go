@@ -71,6 +71,7 @@ func NlbRuleTargetCmd() *core.Command {
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddBoolFlag(cloudapiv6.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Add Command

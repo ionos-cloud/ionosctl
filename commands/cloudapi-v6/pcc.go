@@ -66,6 +66,7 @@ func PccCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.PccsFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddBoolFlag(cloudapiv6.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command

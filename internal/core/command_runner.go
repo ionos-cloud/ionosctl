@@ -24,7 +24,8 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		Example: info.Example,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			// Set Printer in sync with the Output Flag
-			p := getPrinter()
+			noHeaders, _ := cmd.Flags().GetBool(config2.ArgNoHeaders)
+			p := getPrinter(noHeaders)
 			// Set Command to Command Builder
 			// The cmd is passed to the PreCommandCfg
 			info.Command = &Command{Command: cmd}
@@ -35,7 +36,8 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			// Set Printer in sync with the Output Flag
-			p := getPrinter()
+			noHeaders, _ := cmd.Flags().GetBool(config2.ArgNoHeaders)
+			p := getPrinter(noHeaders)
 			// Set Buffers
 			cmd.SetIn(os.Stdin)
 			cmd.SetOut(p.GetStdout())
@@ -167,7 +169,7 @@ type CommandConfig struct {
 	Context context.Context
 }
 
-func getPrinter() printer.PrintService {
+func getPrinter(noHeaders bool) printer.PrintService {
 	var out io.Writer
 	if viper.GetBool(config2.ArgQuiet) {
 		var execOut bytes.Buffer
@@ -175,7 +177,7 @@ func getPrinter() printer.PrintService {
 	} else {
 		out = os.Stdout
 	}
-	printReg, err := printer.NewPrinterRegistry(out, os.Stderr)
+	printReg, err := printer.NewPrinterRegistry(out, os.Stderr, noHeaders)
 	clierror.CheckError(err, os.Stderr)
 	return printReg[viper.GetString(config2.ArgOutput)]
 }
