@@ -1,7 +1,7 @@
 ## This Makefile contains operations
 ## for CloudApiDBaaSPgsql resources:
 ## Tests, Mocks, Documentation
-DOCS_OUT_DBAAS_POSTGRES?=$(shell pwd)/docs/dbaas/postgres/
+DOCS_OUT_DBAAS_POSTGRES?=$(shell pwd)/docs/subcommands/dbaas/postgres/
 
 .PHONY: dbaas_postgres_test_unit
 dbaas_postgres_test_unit:

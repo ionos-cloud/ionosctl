@@ -173,6 +173,22 @@
     * [NetworkloadbalancerRuleTargetAdd](subcommands/networkloadbalancer/networkloadbalancer-rule-target-add.md)
     * [NetworkloadbalancerRuleTargetList](subcommands/networkloadbalancer/networkloadbalancer-rule-target-list.md)
     * [NetworkloadbalancerRuleTargetRemove](subcommands/networkloadbalancer/networkloadbalancer-rule-target-remove.md)
+* Database as a Service
+    * Postgres
+        * [ApiVersionGet](subcommands/dbaas/postgres/dbaas-postgres-api-version-get.md)
+        * [ApiVersionList](subcommands/dbaas/postgres/dbaas-postgres-api-version-list.md)
+        * [BackupGet](subcommands/dbaas/postgres/dbaas-postgres-backup-get.md)
+        * [BackupList](subcommands/dbaas/postgres/dbaas-postgres-backup-list.md)
+        * [ClusterBackupList](subcommands/dbaas/postgres/dbaas-postgres-cluster-backup-list.md)
+        * [ClusterCreate](subcommands/dbaas/postgres/dbaas-postgres-cluster-create.md)
+        * [ClusterDelete](subcommands/dbaas/postgres/dbaas-postgres-cluster-delete.md)
+        * [ClusterGet](subcommands/dbaas/postgres/dbaas-postgres-cluster-get.md)
+        * [ClusterList](subcommands/dbaas/postgres/dbaas-postgres-cluster-list.md)
+        * [ClusterRestore](subcommands/dbaas/postgres/dbaas-postgres-cluster-restore.md)
+        * [ClusterUpdate](subcommands/dbaas/postgres/dbaas-postgres-cluster-update.md)
+        * [LogsList](subcommands/dbaas/postgres/dbaas-postgres-logs-list.md)
+        * [VersionGet](subcommands/dbaas/postgres/dbaas-postgres-version-get.md)
+        * [VersionList](subcommands/dbaas/postgres/dbaas-postgres-version-list.md)
 * Managed Backup
     * [BackupunitCreate](subcommands/backup/backupunit-create.md)
     * [BackupunitDelete](subcommands/backup/backupunit-delete.md)
