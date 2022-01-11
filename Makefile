@@ -12,7 +12,7 @@ GOOS?=$(shell go env GOOS)
 GOARCH?=$(shell go env GOARCH)
 
 OUT_D?=$(shell pwd)/builds
-DOCS_OUT?=$(shell pwd)/docs/subcommands/
+DOCS_OUT?=$(shell pwd)/docs/subcommands
 
 .PHONY: test_unit
 test_unit:
@@ -31,9 +31,9 @@ mocks_update: cloudapiv5_mocks_update auth_v1_mocks_update
 
 .PHONY: docs_update
 docs_update:
-	@echo "--- Generate Markdown documentation in ${DOCS_OUT} ---"
+	@echo "--- Update documentation in ${DOCS_OUT} ---"
 	@mkdir -p ${DOCS_OUT}
-	@DOCS_OUT=${DOCS_OUT} go run tools/doc.go
+	@DOCS_OUT=${DOCS_OUT} tools/regenerate_doc.sh
 	@echo "DONE"
 
 .PHONY: gofmt_check
