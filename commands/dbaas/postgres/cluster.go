@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"go.uber.org/multierr"
+
 	"github.com/fatih/structs"
 	cloudapiv6completer "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/dbaas/postgres/completer"
@@ -419,13 +421,11 @@ func RunClusterRestore(c *core.CommandConfig) error {
 }
 
 func RunClusterDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
 	if viper.GetBool(core.GetFlagName(c.NS, config.ArgAll)) {
-		resp, err = ClusterDeleteAll(c)
-		if err != nil {
+		if err := ClusterDeleteAll(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		clusterId := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))
 		c.Printer.Verbose("Cluster ID: %v", clusterId)
@@ -433,56 +433,73 @@ func RunClusterDelete(c *core.CommandConfig) error {
 			return err
 		}
 		c.Printer.Verbose("Deleting Cluster...")
-		resp, err = c.CloudApiDbaasPgsqlServices.Clusters().Delete(clusterId)
+		resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Delete(clusterId)
 		if err != nil {
 			return err
 		}
 		if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId))); err != nil {
 			return err
 		}
+		return c.Printer.Print(getClusterPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getClusterPrint(resp, c, nil))
 }
 
-func ClusterDeleteAll(c *core.CommandConfig) (resp *resources.Response, err error) {
+func ClusterDeleteAll(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting all Clusters...")
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgName)) {
 		c.Printer.Verbose("Filtering based on Cluster Name: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
 	}
-	clusters, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
+	clusters, _, err := c.CloudApiDbaasPgsqlServices.Clusters().List(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgName)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if dataOk, ok := clusters.GetItemsOk(); ok && dataOk != nil {
-		for _, cluster := range *dataOk {
-			var log string
-			if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
-				if nameOk, ok := propertiesOk.GetDisplayNameOk(); ok && nameOk != nil {
-					log = fmt.Sprintf("Cluster Name: %s", *nameOk)
+		if len(*dataOk) > 0 {
+			_ = c.Printer.Print("Clusters to be deleted:")
+			for _, cluster := range *dataOk {
+				var log string
+				if propertiesOk, ok := cluster.GetPropertiesOk(); ok && propertiesOk != nil {
+					if nameOk, ok := propertiesOk.GetDisplayNameOk(); ok && nameOk != nil {
+						log = fmt.Sprintf("Cluster Name: %s", *nameOk)
+					}
+				}
+				if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
+					log = fmt.Sprintf("%s; Cluster ID: %s", log, *idOk)
+				}
+				c.Printer.Print(log)
+			}
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete ALL clusters"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Clusters...")
+			var multiErr error
+			for _, cluster := range *dataOk {
+				if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
+					c.Printer.Verbose("Cluster ID: %v", *idOk)
+					c.Printer.Verbose("Deleting Cluster...")
+					_, err = c.CloudApiDbaasPgsqlServices.Clusters().Delete(*idOk)
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *idOk, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *idOk))
+					}
+					if err = utils.WaitForDelete(c, waiter.ClusterDeleteInterrogator, *idOk); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *idOk, err))
+						continue
+					}
 				}
 			}
-			if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
-				log = fmt.Sprintf("%s; Cluster ID: %s", log, *idOk)
+			if multiErr != nil {
+				return multiErr
 			}
-			c.Printer.Print(log)
+			return nil
+		} else {
+			return errors.New("no Clusters found")
 		}
+	} else {
+		return errors.New("could not get items of Clusters")
 	}
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete ALL clusters"); err != nil {
-		return nil, err
-	}
-	if dataOk, ok := clusters.GetItemsOk(); ok && dataOk != nil {
-		for _, cluster := range *dataOk {
-			if idOk, ok := cluster.GetIdOk(); ok && idOk != nil {
-				c.Printer.Verbose("Cluster ID: %v", *idOk)
-				c.Printer.Verbose("Deleting Cluster...")
-				resp, err = c.CloudApiDbaasPgsqlServices.Clusters().Delete(*idOk)
-				if err != nil {
-					return resp, err
-				}
-			}
-		}
-	}
-	return resp, err
 }
 
 func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterRequest, error) {

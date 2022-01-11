@@ -1060,6 +1060,61 @@ func TestRunClusterDeleteAll(t *testing.T) {
 	})
 }
 
+func TestRunClusterDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
+		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().List(testClusterVar).Return(testClusters, nil, testClusterErr)
+		err := RunClusterDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunClusterDeleteAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
+		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().List(testClusterVar).Return(resources.ClusterList{}, nil, nil)
+		err := RunClusterDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunClusterDeleteAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgAll), true)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgName), testClusterVar)
+		rm.CloudApiDbaasPgsqlMocks.Cluster.EXPECT().List(testClusterVar).Return(
+			resources.ClusterList{ClusterList: sdkgo.ClusterList{Items: &[]sdkgo.ClusterResponse{}}}, nil, nil)
+		err := RunClusterDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunClusterDeleteAllErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
