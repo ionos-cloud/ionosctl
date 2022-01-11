@@ -33,7 +33,7 @@ mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update
 docs_update:
 	@echo "--- Update documentation in ${DOCS_OUT} ---"
 	@mkdir -p ${DOCS_OUT}
-	@DOCS_OUT=${DOCS_OUT} tools/doc.sh
+	@DOCS_OUT=${DOCS_OUT} tools/regenerate_doc.sh
 	@echo "DONE"
 
 .PHONY: gofmt_check
