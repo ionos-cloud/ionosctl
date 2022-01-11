@@ -127,7 +127,7 @@ ionosctl image list --location us/las --type HDD --licence-type LINUX`
 	*/
 	listIpBlockExample     = `ionosctl ipblock list`
 	getIpBlockExample      = `ionosctl ipblock get --ipblock-id IPBLOCK_ID`
-	createIpBlockExample   = `ionosctl ipblock create --ipblock-name NAME --ipblock-location LOCATION_ID --ipblock-size IPBLOCK_SIZE`
+	createIpBlockExample   = `ionosctl ipblock create --name NAME --location LOCATION_ID --size IPBLOCK_SIZE`
 	updateIpBlockExample   = `ionosctl ipblock update --ipblock-id IPBLOCK_ID --ipblock-name NAME`
 	deleteIpBlockExample   = `ionosctl ipblock delete --ipblock-id IPBLOCK_ID --wait-for-request`
 	listIpConsumersExample = `ionosctl ipconsumer list --ipblock-id IPBLOCK_ID`

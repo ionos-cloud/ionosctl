@@ -52,6 +52,6 @@ You can wait for the Request to be executed using `--wait-for-request` option.
 ## Examples
 
 ```text
-ionosctl ipblock create --ipblock-name NAME --ipblock-location LOCATION_ID --ipblock-size IPBLOCK_SIZE
+ionosctl ipblock create --name NAME --location LOCATION_ID --size IPBLOCK_SIZE
 ```
 
