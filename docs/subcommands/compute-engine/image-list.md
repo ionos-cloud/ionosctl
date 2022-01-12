@@ -48,6 +48,7 @@ Available Filters:
       --licence-type string   The licence type of the Image (deprecated)
   -l, --location string       The location of the Image (deprecated)
   -M, --max-results int       The maximum number of elements to return
+      --no-headers            When using text output, don't print headers
       --order-by string       Limits results to those containing a matching value for a specific property
   -o, --output string         Desired output format [text|json] (default "text")
   -q, --quiet                 Quiet output
