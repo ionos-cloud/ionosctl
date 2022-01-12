@@ -1,5 +1,10 @@
 # Changelog
 
+## \[6.0.2\]
+
+* enhancement: added `--no-headers` option for list commands, for text output (PR #153)
+* documentation: separate documentation per service (PR #148)
+
 ## \[6.0.1\]
 
 * enhancement: `--all` option iterates through all resources even if it hits error
