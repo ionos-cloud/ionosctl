@@ -39,7 +39,7 @@ func PgsqlVersionCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, pgsqlversionCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, pgsqlversionCmd, core.CommandBuilder{
 		Namespace:  "dbaas-postgres",
 		Resource:   "version",
 		Verb:       "list",
@@ -51,6 +51,7 @@ func PgsqlVersionCmd() *core.Command {
 		CmdRun:     RunPgsqlVersionList,
 		InitClient: true,
 	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command

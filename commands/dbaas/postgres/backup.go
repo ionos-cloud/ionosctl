@@ -41,7 +41,7 @@ func BackupCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, backupCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, backupCmd, core.CommandBuilder{
 		Namespace:  "dbaas-postgres",
 		Resource:   "backup",
 		Verb:       "list",
@@ -53,6 +53,7 @@ func BackupCmd() *core.Command {
 		CmdRun:     RunBackupList,
 		InitClient: true,
 	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -135,6 +136,7 @@ func ClusterBackupCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return allBackupCols, cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return clusterBackupCmd
 }

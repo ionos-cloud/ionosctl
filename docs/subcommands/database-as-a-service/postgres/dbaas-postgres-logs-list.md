@@ -44,6 +44,7 @@ Required values to run command:
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
   -l, --limit int           The maximal number of log lines to return. The command will print all logs, if this is not set
+      --no-headers          When using text output, don't print headers
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
   -s, --start-time string   The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z

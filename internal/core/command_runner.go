@@ -25,7 +25,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		Example: info.Example,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			// Set Printer in sync with the Output Flag
-			noHeaders, _ := cmd.Flags().GetBool(config2.ArgNoHeaders)
+			noHeaders, _ := cmd.Flags().GetBool(config.ArgNoHeaders)
 			p := getPrinter(noHeaders)
 			// Set Command to Command Builder
 			// The cmd is passed to the PreCommandCfg
@@ -37,7 +37,7 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			// Set Printer in sync with the Output Flag
-			noHeaders, _ := cmd.Flags().GetBool(config2.ArgNoHeaders)
+			noHeaders, _ := cmd.Flags().GetBool(config.ArgNoHeaders)
 			p := getPrinter(noHeaders)
 			// Set Buffers
 			cmd.SetIn(os.Stdin)
