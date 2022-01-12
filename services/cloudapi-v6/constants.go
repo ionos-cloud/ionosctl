@@ -138,7 +138,6 @@ const (
 	ArgOrderBy               = "order-by"
 	ArgMaxResults            = "max-results"
 	ArgMaxResultsShort       = "M"
-	ArgNoHeaders             = "no-headers"
 )
 
 // IDs Flags

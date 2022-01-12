@@ -54,7 +54,7 @@ func TokenCmd() *core.Command {
 		InitClient: true,
 	})
 	list.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the tokens are listed")
-	list.AddBoolFlag(authv1.ArgNoHeaders, "", false, "When using text output, don't print headers")
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command

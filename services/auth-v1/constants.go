@@ -10,7 +10,6 @@ const (
 	ArgCurrent      = "current"
 	ArgCurrentShort = "C"
 	ArgContractNo   = "contract"
-	ArgNoHeaders    = "no-headers"
 )
 
 const (
