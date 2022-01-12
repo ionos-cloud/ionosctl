@@ -58,6 +58,7 @@ func K8sNodePoolLanCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultK8sNodePoolLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Add Command

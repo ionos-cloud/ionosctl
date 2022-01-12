@@ -32,7 +32,7 @@ func PreCmdConfigTest(t *testing.T, writer io.Writer, preRunner PreCmdRunTest) {
 	if viper.GetString(config.ArgOutput) == "" {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	}
-	p, _ := printer.NewPrinterRegistry(writer, writer)
+	p, _ := printer.NewPrinterRegistry(writer, writer, false)
 	prt := p[viper.GetString(config.ArgOutput)]
 	preCmdCfg := &PreCommandConfig{
 		Command: &Command{
@@ -63,7 +63,7 @@ func CmdConfigTest(t *testing.T, writer io.Writer, runner CmdRunnerTest) {
 	if viper.GetString(config.ArgOutput) == "" {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 	}
-	printReg, _ := printer.NewPrinterRegistry(writer, writer)
+	printReg, _ := printer.NewPrinterRegistry(writer, writer, false)
 	prt := printReg[viper.GetString(config.ArgOutput)]
 	// Init Test Mock Resources and Services
 	testMocks := initMockResources(ctrl)
