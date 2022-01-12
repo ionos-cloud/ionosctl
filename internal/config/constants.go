@@ -36,6 +36,7 @@ const (
 	ArgUser                = "user"
 	ArgPassword            = "password"
 	ArgPasswordShort       = "p"
+	ArgNoHeaders           = "no-headers"
 
 	DefaultApiURL         = "https://api.ionos.com"
 	DefaultConfigFileName = "/config.json"

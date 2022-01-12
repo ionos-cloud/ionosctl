@@ -33,6 +33,7 @@ Use this command to list all Labels from all Resources under your account. If yo
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --ipblock-id string      The unique IpBlock Id
+      --no-headers             When using text output, don't print headers
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --resource-type string   Type of the resource to list labels from

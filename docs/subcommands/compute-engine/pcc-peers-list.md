@@ -35,6 +35,7 @@ Required values to run command:
   -c, --config string    Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
   -f, --force            Force command to execute without user input
   -h, --help             Print usage
+      --no-headers       When using text output, don't print headers
   -o, --output string    Desired output format [text|json] (default "text")
       --pcc-id string    The unique Private Cross-Connect Id (required)
   -q, --quiet            Quiet output
