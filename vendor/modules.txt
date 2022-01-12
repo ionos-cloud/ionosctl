@@ -35,7 +35,7 @@ github.com/inconshreveable/mousetrap
 # github.com/ionos-cloud/sdk-go-auth v1.0.1
 ## explicit
 github.com/ionos-cloud/sdk-go-auth
-# github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.0-beta.1 => /home/ana/go/src/github.com/ionos-cloud/dbaas/sdk-go
+# github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.0
 ## explicit
 github.com/ionos-cloud/sdk-go-dbaas-postgres
 # github.com/ionos-cloud/sdk-go/v6 v6.0.0
@@ -157,4 +157,3 @@ gopkg.in/ini.v1
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 gopkg.in/yaml.v3
-# github.com/ionos-cloud/sdk-go-dbaas-postgres => /home/ana/go/src/github.com/ionos-cloud/dbaas/sdk-go
