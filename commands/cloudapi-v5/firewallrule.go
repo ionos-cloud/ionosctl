@@ -82,6 +82,7 @@ func FirewallRuleCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.FirewallRulesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command

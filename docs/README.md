@@ -305,6 +305,10 @@ DATACENTER_ID3   us/las
 
 Note: When using `TAB` in autocompletion, on `--cols` option on a specific resource, the available columns for that resource will be displayed.
 
+* Use the `--no-headers` option
+
+To skip printing the column headers in output format `text`.
+
 * Use the `--verbose` option
 
 You will see step-by-step process when running a command.

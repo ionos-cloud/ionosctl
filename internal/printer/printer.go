@@ -29,7 +29,7 @@ type Registry map[string]PrintService
 
 var unknownTypeFormatErr = "unknown type format %s. Hint: use --output json|text"
 
-func NewPrinterRegistry(out, outErr io.Writer) (Registry, error) {
+func NewPrinterRegistry(out, outErr io.Writer, noHeaders bool) (Registry, error) {
 	if viper.GetString(config.ArgOutput) != TypeJSON.String() &&
 		viper.GetString(config.ArgOutput) != TypeText.String() {
 		return nil, errors.New(fmt.Sprintf(unknownTypeFormatErr, viper.GetString(config.ArgOutput)))
@@ -41,8 +41,9 @@ func NewPrinterRegistry(out, outErr io.Writer) (Registry, error) {
 			Stdout: out,
 		},
 		TypeText.String(): &TextPrinter{
-			Stderr: outErr,
-			Stdout: out,
+			Stderr:    outErr,
+			Stdout:    out,
+			NoHeaders: noHeaders,
 		},
 	}, nil
 }
@@ -110,15 +111,16 @@ func (p *JSONPrinter) SetStderr(writer io.Writer) {
 }
 
 type TextPrinter struct {
-	Stdout io.Writer
-	Stderr io.Writer
+	Stdout    io.Writer
+	Stderr    io.Writer
+	NoHeaders bool
 }
 
 func (p *TextPrinter) Print(v interface{}) error {
 	switch v.(type) {
 	case Result:
 		result := v.(Result)
-		if err := result.PrintText(p.Stdout); err != nil {
+		if err := result.PrintText(p.Stdout, p.NoHeaders); err != nil {
 			return err
 		}
 	case string:

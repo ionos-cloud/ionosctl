@@ -24,7 +24,7 @@ func TestNewPrinterJSON(t *testing.T) {
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	_, err := NewPrinterRegistry(w, w)
+	_, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 }
 
@@ -33,7 +33,7 @@ func TestNewPrinterText(t *testing.T) {
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	_, err := NewPrinterRegistry(w, w)
+	_, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 }
 
@@ -48,7 +48,7 @@ func TestPrinterPrintResultJson(t *testing.T) {
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["json"]
 	p.SetStderr(w)
@@ -74,7 +74,7 @@ func TestPrinterPrintStandardResultJson(t *testing.T) {
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["json"]
 	p.SetStderr(w)
@@ -101,7 +101,7 @@ func TestPrinterPrintDefaultJson(t *testing.T) {
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["json"]
 	p.SetStderr(w)
@@ -119,7 +119,7 @@ func TestPrinterPrintDefaultQuietJson(t *testing.T) {
 	viper.Set(config.ArgQuiet, true)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["json"]
 	p.SetStderr(w)
@@ -142,7 +142,7 @@ func TestPrinterResultJsonRequestId(t *testing.T) {
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["json"]
 	p.SetStderr(w)
@@ -174,7 +174,7 @@ func TestPrinterResultJsonRequestIdErr(t *testing.T) {
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["json"]
 	p.SetStderr(w)
@@ -200,7 +200,7 @@ func TestPrinterGetStdoutJSON(t *testing.T) {
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	out := reg["json"].GetStdout()
 	err = w.Flush()
@@ -213,7 +213,7 @@ func TestPrinterGetStderrJSON(t *testing.T) {
 	viper.Set(config.ArgOutput, "json")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	out := reg["json"].GetStderr()
 
@@ -228,7 +228,7 @@ func TestPrinterPrintResultText(t *testing.T) {
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["text"]
 	p.SetStderr(w)
@@ -251,7 +251,7 @@ func TestPrinterPrintResultTextRequestId(t *testing.T) {
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["text"]
 	p.SetStderr(w)
@@ -280,7 +280,7 @@ func TestPrinterPrintResultTextResource(t *testing.T) {
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["text"]
 	p.SetStderr(w)
@@ -303,7 +303,7 @@ func TestPrinterPrintResultTextWaitResource(t *testing.T) {
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["text"]
 	p.SetStderr(w)
@@ -326,7 +326,7 @@ func TestPrinterPrintResultTextWaitStateResource(t *testing.T) {
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["text"]
 	p.SetStderr(w)
@@ -354,7 +354,7 @@ func TestPrinterPrintResultTextKeyValue(t *testing.T) {
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["text"]
 	p.SetStderr(w)
@@ -378,13 +378,46 @@ func TestPrinterPrintResultTextKeyValue(t *testing.T) {
 	assert.True(t, re.Match(b.Bytes()))
 }
 
+func TestPrinterPrintResultTextKeyValueNoHeaders(t *testing.T) {
+	var (
+		b      bytes.Buffer
+		tabwrt = "123   dummy   true   1.230000\n"
+	)
+	viper.Set(config.ArgOutput, "text")
+	viper.Set(config.ArgQuiet, false)
+	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+	w := bufio.NewWriter(&b)
+	reg, err := NewPrinterRegistry(w, w, true)
+	assert.NoError(t, err)
+	p := reg["text"]
+	p.SetStderr(w)
+	p.SetStdout(w)
+	keyValueMap := map[string]interface{}{
+		"ID":          123,
+		"Name":        "dummy",
+		"Authorized":  true,
+		"Age[min]":    1.23,
+		"Description": "dummy",
+	}
+	res := Result{
+		Columns:  []string{"ID", "Name", "Authorized", "Age[min]"},
+		KeyValue: []map[string]interface{}{keyValueMap},
+	}
+
+	p.Print(res)
+	err = w.Flush()
+	assert.NoError(t, err)
+	re := regexp.MustCompile(tabwrt)
+	assert.Truef(t, re.Match(b.Bytes()), `%v != %v`, b.Bytes(), []byte(tabwrt))
+}
+
 func TestPrinterPrintDefaultText(t *testing.T) {
 	var b bytes.Buffer
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["text"]
 	p.SetStderr(w)
@@ -402,7 +435,7 @@ func TestPrinterUnknownFormatType(t *testing.T) {
 	viper.Set(config.ArgOutput, "dummy")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	_, err := NewPrinterRegistry(w, w)
+	_, err := NewPrinterRegistry(w, w, false)
 	assert.Error(t, err)
 	assert.True(t, err.Error() == `unknown type format dummy. Hint: use --output json|text`)
 }
@@ -413,7 +446,7 @@ func TestPrinterResultQuiet(t *testing.T) {
 	viper.Set(config.ArgQuiet, true)
 	viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	p := reg["text"]
 	p.SetStderr(w)
@@ -433,7 +466,7 @@ func TestPrinterGetStdoutText(t *testing.T) {
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	out := reg["text"].GetStdout()
 	err = w.Flush()
@@ -446,7 +479,7 @@ func TestPrinterGetStderrText(t *testing.T) {
 	viper.Set(config.ArgOutput, "text")
 	viper.Set(config.ArgQuiet, false)
 	w := bufio.NewWriter(&b)
-	reg, err := NewPrinterRegistry(w, w)
+	reg, err := NewPrinterRegistry(w, w, false)
 	assert.NoError(t, err)
 	out := reg["text"].GetStderr()
 	err = w.Flush()

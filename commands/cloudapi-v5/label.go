@@ -71,6 +71,7 @@ func LabelCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgResourceType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{cloudapiv5.DatacenterResource, cloudapiv5.VolumeResource, cloudapiv5.ServerResource, cloudapiv5.SnapshotResource, cloudapiv5.IpBlockResource}, cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command

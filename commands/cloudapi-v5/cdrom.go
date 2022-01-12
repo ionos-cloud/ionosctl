@@ -114,6 +114,7 @@ Required values to run command:
 	_ = listCdroms.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImagesFilters(), cobra.ShellCompDirectiveNoFileComp
 	})
+	listCdroms.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Cdrom Command

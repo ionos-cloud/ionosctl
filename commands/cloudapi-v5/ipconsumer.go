@@ -55,6 +55,7 @@ func IpconsumerCmd() *core.Command {
 	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapiv5.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	listResources.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return resourceCmd
 }
