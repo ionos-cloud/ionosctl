@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## Temporarily, the documentation for the CLI is updated using the current script.
+## Temporarily, the existing documentation for the CLI is updated using the current script.
 
 set -euo pipefail
 DOCS_OUT=${DOCS_OUT:-$(shell pwd)/docs/subcommands}

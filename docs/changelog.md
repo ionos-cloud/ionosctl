@@ -1,5 +1,17 @@
 # Changelog
 
+## \[6.1.0\] (upcoming release)
+
+* new service: **Database as a Service (DBaaS) - Postgres**
+    * added the CLI commands for DBaaS Postgres under `dbaas postgres` namespace:
+      * `ionosctl dbaas postgres cluster`
+      * `ionosctl dbaas postgres logs`
+      * `ionosctl dbaas postgres backup`
+      * `ionosctl dbaas postgres version`
+      * `ionosctl dbaas postgres api-version`
+* dependency-update: added SDK-Go-DBaaS Postgres
+  version [v1.0.0](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.0)
+
 ## \[6.0.2\]
 
 * enhancement: added `--no-headers` option for list commands, for text output (PR #153)
