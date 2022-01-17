@@ -1,9 +1,9 @@
 # Changelog
 
-## [6.1.0] (upcoming release)
+## [6.1.0]
 
 - new service: **Database as a Service (DBaaS) - Postgres**
-  - added the CLI commands for DBaaS Postgres under `dbaas postgres` namespace:
+  - added the CLI commands for DBaaS Postgres under `dbaas postgres` namespace (PR #155):
     - `ionosctl dbaas postgres cluster` 
     - `ionosctl dbaas postgres logs`
     - `ionosctl dbaas postgres backup`
