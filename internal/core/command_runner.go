@@ -10,7 +10,7 @@ import (
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	authV1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -170,7 +170,7 @@ type CommandConfig struct {
 	initCfg func(commandConfig *CommandConfig) error
 
 	// Services
-	CloudApiV6Services         cloudapi_v6.Services
+	CloudApiV6Services         cloudapiv6.Services
 	AuthV1Services             authV1.Services
 	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
 

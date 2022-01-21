@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"golang.org/x/crypto/ssh"
 	"io/ioutil"
+
+	"golang.org/x/crypto/ssh"
 )
 
 // ReadPublicKey from a specific path
