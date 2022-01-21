@@ -39,15 +39,19 @@ docs_update: dbaas_postgres_docs_update
 
 .PHONY: gofmt_check
 gofmt_check:
-	@echo "--- Ensure code adheres to gofmt, goimports and list files whose formatting differs(vendor directory excluded) ---"
+	@echo "--- Ensure code adheres to gofmt and list files whose formatting differs(vendor directory excluded) ---"
 	@if [ "$(shell echo $$(gofmt -l ${GOFILES_NOVENDOR}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES_NOVENDOR})) Hint: use \`make gofmt_update\`"; exit 1); fi
-	@if [ "$(shell echo $$(goimports -l ${GOFILES_NOVENDOR}))" != "" ]; then (echo "Format files: $(shell echo $$(goimports -l ${GOFILES_NOVENDOR})) Hint: use \`make gofmt_update\`"; exit 1); fi
 	@echo "DONE"
 
 .PHONY: gofmt_update
 gofmt_update:
-	@echo "--- Ensure code adheres to gofmt, goimports and change files accordingly(vendor directory excluded) ---"
+	@echo "--- Ensure code adheres to gofmt and change files accordingly(vendor directory excluded) ---"
 	@gofmt -w ${GOFILES_NOVENDOR}
+	@echo "DONE"
+
+.PHONY: goimports_update
+goimports_update:
+	@echo "--- Ensure code adheres to goimports and change files accordingly(vendor directory excluded) ---"
 	@goimports -w ${GOFILES_NOVENDOR}
 	@echo "DONE"
 
