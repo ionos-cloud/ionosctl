@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - release/v6
+      - master
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
