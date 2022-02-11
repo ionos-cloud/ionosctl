@@ -1,5 +1,9 @@
 # Changelog
 
+## [6.1.1]
+
+- bug-fix: `ionosctl k8s cluster` command supports now `--cols` option
+
 ## [6.1.0]
 
 - new service: **Database as a Service (DBaaS) - Postgres**
