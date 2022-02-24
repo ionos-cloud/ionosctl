@@ -1,9 +1,9 @@
 # Changelog
 
-## [6.1.2] (upcoming release)
+## [6.1.2]
 
-- enhancement: added `SynchronizationMode` as `--cols` option for `ionosctl dbaas postgres cluster` commands
-- enhancement: renamed methods for `ionosctl token` commands according to the new updates
+- enhancement: added `SynchronizationMode` as `--cols` option for dbaas postgres cluster commands
+- enhancement: renamed methods for token commands according to the new updates from [v1.0.2](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.2)
 - dependency-update: added SDK-Go-DBaaS Postgres version [v1.0.1](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.1)
 - dependency-update: added SDK-Go-Auth version [v1.0.3](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.3)
 
