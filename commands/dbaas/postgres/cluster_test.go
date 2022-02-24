@@ -123,7 +123,6 @@ var (
 				DisplayName:         &testClusterVar,
 				PostgresVersion:     &testClusterVar,
 				Location:            (*sdkgo.Location)(&testClusterVar),
-				BackupLocation:      &testBackupLocation,
 				SynchronizationMode: &testSyncModeVar,
 				Instances:           &testClusterIntVar,
 				Ram:                 &testClusterIntVar,
@@ -225,7 +224,6 @@ var (
 	testClusterIntVar         = int32(1)
 	testClusterIntNewVar      = int32(2)
 	testClusterStorageTypeVar = sdkgo.HDD
-	testBackupLocation        = sdkgo.DE
 	testClusterVar            = "test-cluster"
 	testClusterNewVar         = "test-cluster-new"
 	testClusterErr            = errors.New("test cluster error")
