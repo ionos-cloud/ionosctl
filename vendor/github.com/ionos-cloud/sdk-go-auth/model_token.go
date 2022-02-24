@@ -180,19 +180,15 @@ func (o *Token) HasExpirationDate() bool {
 
 func (o Token) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
 	if o.Href != nil {
 		toSerialize["href"] = o.Href
 	}
-
 	if o.CreatedDate != nil {
 		toSerialize["createdDate"] = o.CreatedDate
 	}
-
 	if o.ExpirationDate != nil {
 		toSerialize["expirationDate"] = o.ExpirationDate
 	}

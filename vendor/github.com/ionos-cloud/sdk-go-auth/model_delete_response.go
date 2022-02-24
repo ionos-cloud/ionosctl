@@ -59,7 +59,6 @@ func (o *DeleteResponse) HasSuccess() bool {
 
 func (o DeleteResponse) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Success != nil {
 		toSerialize["success"] = o.Success
 	}

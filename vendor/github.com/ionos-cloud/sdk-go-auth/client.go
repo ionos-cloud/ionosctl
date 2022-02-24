@@ -63,7 +63,7 @@ type APIClient struct {
 
 	// API Services
 
-	TokenApi *TokenApiService
+	TokensApi *TokensApiService
 }
 
 type service struct {
@@ -82,7 +82,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
-	c.TokenApi = (*TokenApiService)(&c.common)
+	c.TokensApi = (*TokensApiService)(&c.common)
 
 	return c
 }
@@ -201,6 +201,7 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 			log.Printf("%s\n", string(dump))
 		}
 
+		clonedRequest.Close = true
 		resp, err = c.cfg.HTTPClient.Do(clonedRequest)
 		if err != nil {
 			return resp, err

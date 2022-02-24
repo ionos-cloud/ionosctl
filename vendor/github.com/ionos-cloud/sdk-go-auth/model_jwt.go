@@ -60,7 +60,6 @@ func (o *Jwt) HasToken() bool {
 
 func (o Jwt) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Token != nil {
 		toSerialize["token"] = o.Token
 	}
