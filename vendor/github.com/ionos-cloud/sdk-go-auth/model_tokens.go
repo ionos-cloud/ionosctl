@@ -60,7 +60,6 @@ func (o *Tokens) HasTokens() bool {
 
 func (o Tokens) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Tokens != nil {
 		toSerialize["tokens"] = o.Tokens
 	}

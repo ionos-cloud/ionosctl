@@ -765,24 +765,25 @@ func getConnectionMessage(connection sdkgo.Connection) string {
 var (
 	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "Cidr", "Instances", "State"}
 	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "State", "PostgresVersion", "Instances", "Ram", "Cores",
-		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow"}
+		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow", "SynchronizationMode"}
 )
 
 type ClusterPrint struct {
-	ClusterId         string `json:"ClusterId,omitempty"`
-	Location          string `json:"Location,omitempty"`
-	State             string `json:"State,omitempty"`
-	DisplayName       string `json:"DisplayName,omitempty"`
-	PostgresVersion   string `json:"PostgresVersion,omitempty"`
-	Instances         int32  `json:"Instances,omitempty"`
-	Ram               string `json:"Ram,omitempty"`
-	Cores             int32  `json:"Cores,omitempty"`
-	StorageSize       string `json:"StorageSize,omitempty"`
-	StorageType       string `json:"StorageType,omitempty"`
-	DatacenterId      string `json:"DatacenterId,omitempty"`
-	LanId             string `json:"LanId,omitempty"`
-	Cidr              string `json:"Cidr,omitempty"`
-	MaintenanceWindow string `json:"MaintenanceWindow,omitempty"`
+	ClusterId           string `json:"ClusterId,omitempty"`
+	Location            string `json:"Location,omitempty"`
+	State               string `json:"State,omitempty"`
+	DisplayName         string `json:"DisplayName,omitempty"`
+	PostgresVersion     string `json:"PostgresVersion,omitempty"`
+	Instances           int32  `json:"Instances,omitempty"`
+	Ram                 string `json:"Ram,omitempty"`
+	Cores               int32  `json:"Cores,omitempty"`
+	StorageSize         string `json:"StorageSize,omitempty"`
+	StorageType         string `json:"StorageType,omitempty"`
+	DatacenterId        string `json:"DatacenterId,omitempty"`
+	LanId               string `json:"LanId,omitempty"`
+	Cidr                string `json:"Cidr,omitempty"`
+	MaintenanceWindow   string `json:"MaintenanceWindow,omitempty"`
+	SynchronizationMode string `json:"SynchronizationMode,omitempty"`
 }
 
 func getClusterPrint(resp *resources.Response, c *core.CommandConfig, dcs []resources.ClusterResponse) printer.Result {
@@ -811,20 +812,21 @@ func getClusterCols(flagName string, outErr io.Writer) []string {
 	}
 
 	columnsMap := map[string]string{
-		"ClusterId":         "ClusterId",
-		"DisplayName":       "DisplayName",
-		"Location":          "Location",
-		"PostgresVersion":   "PostgresVersion",
-		"State":             "State",
-		"Ram":               "Ram",
-		"Instances":         "Instances",
-		"Cores":             "Cores",
-		"StorageSize":       "StorageSize",
-		"StorageType":       "StorageType",
-		"DatacenterId":      "DatacenterId",
-		"LanId":             "LanId",
-		"Cidr":              "Cidr",
-		"MaintenanceWindow": "MaintenanceWindow",
+		"ClusterId":           "ClusterId",
+		"DisplayName":         "DisplayName",
+		"Location":            "Location",
+		"PostgresVersion":     "PostgresVersion",
+		"State":               "State",
+		"Ram":                 "Ram",
+		"Instances":           "Instances",
+		"Cores":               "Cores",
+		"StorageSize":         "StorageSize",
+		"StorageType":         "StorageType",
+		"DatacenterId":        "DatacenterId",
+		"LanId":               "LanId",
+		"Cidr":                "Cidr",
+		"MaintenanceWindow":   "MaintenanceWindow",
+		"SynchronizationMode": "SynchronizationMode",
 	}
 	var clusterCols []string
 	for _, k := range cols {
@@ -902,6 +904,9 @@ func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interf
 					maintenanceWindow = fmt.Sprintf("%s %s", maintenanceWindow, *timeOk)
 				}
 				clusterPrint.MaintenanceWindow = maintenanceWindow
+			}
+			if synchronizationModeOk, ok := propertiesOk.GetSynchronizationModeOk(); ok && synchronizationModeOk != nil {
+				clusterPrint.SynchronizationMode = string(*synchronizationModeOk)
 			}
 		}
 		if metadataOk, ok := cluster.GetMetadataOk(); ok && metadataOk != nil {

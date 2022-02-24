@@ -32,10 +32,10 @@ github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
-# github.com/ionos-cloud/sdk-go-auth v1.0.1
+# github.com/ionos-cloud/sdk-go-auth v1.0.3
 ## explicit
 github.com/ionos-cloud/sdk-go-auth
-# github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.0
+# github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.1
 ## explicit
 github.com/ionos-cloud/sdk-go-dbaas-postgres
 # github.com/ionos-cloud/sdk-go/v6 v6.0.0
@@ -100,7 +100,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 # golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
-# golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602
+# golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
 # golang.org/x/sys v0.0.0-20210510120138-977fb7262007
