@@ -765,7 +765,7 @@ func getConnectionMessage(connection sdkgo.Connection) string {
 var (
 	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "Cidr", "Instances", "State"}
 	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "State", "PostgresVersion", "Instances", "Ram", "Cores",
-		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow", "SynchronizationMode", "BackupLocation"}
+		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow", "SynchronizationMode"}
 )
 
 type ClusterPrint struct {
@@ -784,7 +784,7 @@ type ClusterPrint struct {
 	Cidr                string `json:"Cidr,omitempty"`
 	MaintenanceWindow   string `json:"MaintenanceWindow,omitempty"`
 	SynchronizationMode string `json:"SynchronizationMode,omitempty"`
-	BackupLocation      string `json:"BackupLocation,omitempty"`
+	// BackupLocation      string `json:"BackupLocation,omitempty"`
 }
 
 func getClusterPrint(resp *resources.Response, c *core.CommandConfig, dcs []resources.ClusterResponse) printer.Result {
@@ -828,7 +828,7 @@ func getClusterCols(flagName string, outErr io.Writer) []string {
 		"Cidr":                "Cidr",
 		"MaintenanceWindow":   "MaintenanceWindow",
 		"SynchronizationMode": "SynchronizationMode",
-		"BackupLocation":      "BackupLocation",
+		// "BackupLocation":      "BackupLocation",
 	}
 	var clusterCols []string
 	for _, k := range cols {
@@ -866,9 +866,9 @@ func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interf
 			if locationOk, ok := propertiesOk.GetLocationOk(); ok && locationOk != nil {
 				clusterPrint.Location = string(*locationOk)
 			}
-			if backupLocationOk, ok := propertiesOk.GetBackupLocationOk(); ok && backupLocationOk != nil {
-				clusterPrint.BackupLocation = string(*backupLocationOk)
-			}
+			// if backupLocationOk, ok := propertiesOk.GetBackupLocationOk(); ok && backupLocationOk != nil {
+			//	 clusterPrint.BackupLocation = string(*backupLocationOk)
+			// }
 			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
 				for _, vdcConnection := range *vdcConnectionsOk {
 					if vdcIdOk, ok := vdcConnection.GetDatacenterIdOk(); ok && vdcIdOk != nil {
