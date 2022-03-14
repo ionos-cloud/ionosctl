@@ -40,6 +40,7 @@ Required values to run command:
   -h, --help                   Print usage
       --ipblock-id string      The unique IpBlock Id
       --label-key string       The unique Label Key (required)
+      --no-headers             When using text output, don't print headers
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --resource-type string   Type of the resource to get label from (required)
