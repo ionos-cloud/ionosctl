@@ -84,6 +84,7 @@ func LocationCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	locationCmd.AddCommand(CpuCmd())
 

@@ -102,6 +102,7 @@ func ImageCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgImageId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ImageIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return imageCmd
 }

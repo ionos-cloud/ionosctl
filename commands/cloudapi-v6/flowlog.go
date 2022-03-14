@@ -118,6 +118,7 @@ func FlowlogCmd() *core.Command {
 			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgServerId)),
 			viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgNicId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Create Command
