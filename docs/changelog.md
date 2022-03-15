@@ -1,5 +1,9 @@
 # Changelog
 
+## \[6.1.3\]
+
+* enhancement: added `--no-headers` option for GET commands, for text output (PR [#158](https://github.com/ionos-cloud/ionosctl/pull/158))
+
 ## \[6.1.2\]
 
 * enhancement: added `SynchronizationMode` as `--cols` option for dbaas postgres cluster commands
