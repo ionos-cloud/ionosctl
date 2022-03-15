@@ -74,6 +74,7 @@ func BackupCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return backupCmd
 }

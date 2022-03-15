@@ -56,7 +56,7 @@ func APIVersionCmd() *core.Command {
 	/*
 		Get Command
 	*/
-	core.NewCommand(ctx, apiversionCmd, core.CommandBuilder{
+	get := core.NewCommand(ctx, apiversionCmd, core.CommandBuilder{
 		Namespace:  "dbaas-postgres",
 		Resource:   "api-version",
 		Verb:       "get",
@@ -68,6 +68,7 @@ func APIVersionCmd() *core.Command {
 		CmdRun:     RunAPIVersionGet,
 		InitClient: true,
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return apiversionCmd
 }
