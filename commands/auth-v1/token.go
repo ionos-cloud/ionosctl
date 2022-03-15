@@ -76,6 +76,7 @@ func TokenCmd() *core.Command {
 		return completer.TokensIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
 	get.AddIntFlag(authv1.ArgContractNo, "", 0, "Users with multiple contracts must provide the contract number, for which the token information is displayed")
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Generate/Create Command

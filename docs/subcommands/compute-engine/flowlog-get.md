@@ -47,6 +47,7 @@ Required values to run command:
   -f, --force                  Force command to execute without user input
   -h, --help                   Print usage
       --nic-id string          The unique NIC Id (required)
+      --no-headers             When using text output, don't print headers
   -o, --output string          Desired output format [text|json] (default "text")
   -q, --quiet                  Quiet output
       --server-id string       The unique Server Id (required)
