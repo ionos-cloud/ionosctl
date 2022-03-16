@@ -29,7 +29,7 @@ echo $PATH
 curl -sL https://github.com/ionos-cloud/ionosctl/releases/download/v<version>/ionosctl-<version>-linux-amd64.tar.gz | tar -xzv
 
 # Move the binary somewhere in your $PATH:
-sudo mv ~/ionosctl /usr/local/bin
+sudo mv ionosctl /usr/local/bin
 
 # Use the ionosctl CLI
 ionosctl help
