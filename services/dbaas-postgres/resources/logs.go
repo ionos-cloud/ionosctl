@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -11,9 +12,15 @@ type ClusterLogs struct {
 	sdkgo.ClusterLogs
 }
 
+type LogsQueryParams struct {
+	Direction          string
+	Limit              int32
+	StartTime, EndTime time.Time
+}
+
 // LogsService is a wrapper around ionoscloud.ClusterLogs
 type LogsService interface {
-	Get(clusterId string, limit int32, startTime, endTime time.Time) (*ClusterLogs, *Response, error)
+	Get(clusterId string, queryParams LogsQueryParams) (*ClusterLogs, *Response, error)
 }
 
 type logsService struct {
@@ -30,16 +37,19 @@ func NewLogsService(client *Client, ctx context.Context) LogsService {
 	}
 }
 
-func (svc *logsService) Get(clusterId string, limit int32, startTime, endTime time.Time) (*ClusterLogs, *Response, error) {
+func (svc *logsService) Get(clusterId string, queryParams LogsQueryParams) (*ClusterLogs, *Response, error) {
 	req := svc.client.LogsApi.ClusterLogsGet(svc.context, clusterId)
-	if !startTime.IsZero() {
-		req = req.Start(startTime)
+	if queryParams.Direction != "" {
+		req = req.Direction(strings.ToUpper(queryParams.Direction))
 	}
-	if !endTime.IsZero() {
-		req = req.End(endTime)
+	if !queryParams.StartTime.IsZero() {
+		req = req.Start(queryParams.StartTime)
 	}
-	if limit != 0 {
-		req = req.Limit(limit)
+	if !queryParams.EndTime.IsZero() {
+		req = req.End(queryParams.EndTime)
+	}
+	if queryParams.Limit != 0 {
+		req = req.Limit(queryParams.Limit)
 	}
 	logs, res, err := svc.client.LogsApi.ClusterLogsGetExecute(req)
 	return &ClusterLogs{logs}, &Response{*res}, err

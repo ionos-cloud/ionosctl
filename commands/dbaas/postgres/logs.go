@@ -55,6 +55,10 @@ func LogsCmd() *core.Command {
 	})
 	list.AddStringFlag(dbaaspg.ArgStartTime, dbaaspg.ArgStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
 	list.AddStringFlag(dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
+	list.AddStringFlag(dbaaspg.ArgDirection, dbaaspg.ArgDirectionShort, "BACKWARD", "The direction in which to scan through the logs. The logs are returned in order of the direction.")
+	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 0, "The maximal number of log lines to return. The command will print all logs, if this is not set")
 	list.AddStringFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -88,9 +92,17 @@ func RunClusterLogsList(c *core.CommandConfig) error {
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLimit)) {
 		c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)))
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgDirection)) {
+		c.Printer.Verbose("Direction: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection)))
+	}
 	c.Printer.Verbose("Getting Logs for the specified Cluster...")
 	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)),
-		viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)), startTime, endTime)
+		resources.LogsQueryParams{
+			Direction: viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection)),
+			Limit:     viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)),
+			StartTime: startTime,
+			EndTime:   endTime,
+		})
 	if err != nil {
 		return err
 	}

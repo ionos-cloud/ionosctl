@@ -6,7 +6,6 @@ package mock_resources
 
 import (
 	reflect "reflect"
-	time "time"
 
 	gomock "github.com/golang/mock/gomock"
 	resources "github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
@@ -36,9 +35,9 @@ func (m *MockLogsService) EXPECT() *MockLogsServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockLogsService) Get(clusterId string, limit int32, startTime, endTime time.Time) (*resources.ClusterLogs, *resources.Response, error) {
+func (m *MockLogsService) Get(clusterId string, queryParams resources.LogsQueryParams) (*resources.ClusterLogs, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", clusterId, limit, startTime, endTime)
+	ret := m.ctrl.Call(m, "Get", clusterId, queryParams)
 	ret0, _ := ret[0].(*resources.ClusterLogs)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -46,7 +45,7 @@ func (m *MockLogsService) Get(clusterId string, limit int32, startTime, endTime 
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockLogsServiceMockRecorder) Get(clusterId, limit, startTime, endTime interface{}) *gomock.Call {
+func (mr *MockLogsServiceMockRecorder) Get(clusterId, queryParams interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockLogsService)(nil).Get), clusterId, limit, startTime, endTime)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockLogsService)(nil).Get), clusterId, queryParams)
 }
