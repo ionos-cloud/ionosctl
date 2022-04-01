@@ -8,7 +8,7 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/golang/mock v1.5.0
 	github.com/ionos-cloud/sdk-go-auth v1.0.3
-	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.1
+	github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.2
 	github.com/ionos-cloud/sdk-go/v6 v6.0.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.2.1

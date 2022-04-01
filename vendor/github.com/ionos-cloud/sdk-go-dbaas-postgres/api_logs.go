@@ -32,21 +32,26 @@ type ApiClusterLogsGetRequest struct {
 	ctx        _context.Context
 	ApiService *LogsApiService
 	clusterId  string
-	limit      *int32
 	start      *time.Time
 	end        *time.Time
+	direction  *string
+	limit      *int32
 }
 
-func (r ApiClusterLogsGetRequest) Limit(limit int32) ApiClusterLogsGetRequest {
-	r.limit = &limit
-	return r
-}
 func (r ApiClusterLogsGetRequest) Start(start time.Time) ApiClusterLogsGetRequest {
 	r.start = &start
 	return r
 }
 func (r ApiClusterLogsGetRequest) End(end time.Time) ApiClusterLogsGetRequest {
 	r.end = &end
+	return r
+}
+func (r ApiClusterLogsGetRequest) Direction(direction string) ApiClusterLogsGetRequest {
+	r.direction = &direction
+	return r
+}
+func (r ApiClusterLogsGetRequest) Limit(limit int32) ApiClusterLogsGetRequest {
+	r.limit = &limit
 	return r
 }
 
@@ -95,14 +100,17 @@ func (a *LogsApiService) ClusterLogsGetExecute(r ApiClusterLogsGetRequest) (Clus
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
 
-	if r.limit != nil {
-		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
-	}
 	if r.start != nil {
 		localVarQueryParams.Add("start", parameterToString(*r.start, ""))
 	}
 	if r.end != nil {
 		localVarQueryParams.Add("end", parameterToString(*r.end, ""))
+	}
+	if r.direction != nil {
+		localVarQueryParams.Add("direction", parameterToString(*r.direction, ""))
+	}
+	if r.limit != nil {
+		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

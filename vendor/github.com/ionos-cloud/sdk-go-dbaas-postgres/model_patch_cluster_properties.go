@@ -32,6 +32,24 @@ type PatchClusterProperties struct {
 	Instances *int32 `json:"instances,omitempty"`
 }
 
+// NewPatchClusterProperties instantiates a new PatchClusterProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewPatchClusterProperties() *PatchClusterProperties {
+	this := PatchClusterProperties{}
+
+	return &this
+}
+
+// NewPatchClusterPropertiesWithDefaults instantiates a new PatchClusterProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewPatchClusterPropertiesWithDefaults() *PatchClusterProperties {
+	this := PatchClusterProperties{}
+	return &this
+}
+
 // GetCores returns the Cores field value
 // If the value is explicit nil, the zero value for int32 will be returned
 func (o *PatchClusterProperties) GetCores() *int32 {

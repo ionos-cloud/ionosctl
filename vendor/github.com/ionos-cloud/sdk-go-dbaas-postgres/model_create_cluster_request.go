@@ -20,6 +20,24 @@ type CreateClusterRequest struct {
 	Properties *CreateClusterProperties `json:"properties,omitempty"`
 }
 
+// NewCreateClusterRequest instantiates a new CreateClusterRequest object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewCreateClusterRequest() *CreateClusterRequest {
+	this := CreateClusterRequest{}
+
+	return &this
+}
+
+// NewCreateClusterRequestWithDefaults instantiates a new CreateClusterRequest object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewCreateClusterRequestWithDefaults() *CreateClusterRequest {
+	this := CreateClusterRequest{}
+	return &this
+}
+
 // GetMetadata returns the Metadata field value
 // If the value is explicit nil, the zero value for Metadata will be returned
 func (o *CreateClusterRequest) GetMetadata() *Metadata {

@@ -21,6 +21,27 @@ type DBUser struct {
 	Password *string `json:"password"`
 }
 
+// NewDBUser instantiates a new DBUser object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewDBUser(username string, password string) *DBUser {
+	this := DBUser{}
+
+	this.Username = &username
+	this.Password = &password
+
+	return &this
+}
+
+// NewDBUserWithDefaults instantiates a new DBUser object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewDBUserWithDefaults() *DBUser {
+	this := DBUser{}
+	return &this
+}
+
 // GetUsername returns the Username field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *DBUser) GetUsername() *string {

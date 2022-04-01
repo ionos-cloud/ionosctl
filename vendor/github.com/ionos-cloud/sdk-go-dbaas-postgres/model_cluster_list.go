@@ -27,6 +27,24 @@ type ClusterList struct {
 	Links *PaginationLinks `json:"_links,omitempty"`
 }
 
+// NewClusterList instantiates a new ClusterList object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewClusterList() *ClusterList {
+	this := ClusterList{}
+
+	return &this
+}
+
+// NewClusterListWithDefaults instantiates a new ClusterList object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewClusterListWithDefaults() *ClusterList {
+	this := ClusterList{}
+	return &this
+}
+
 // GetType returns the Type field value
 // If the value is explicit nil, the zero value for ResourceType will be returned
 func (o *ClusterList) GetType() *ResourceType {

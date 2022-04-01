@@ -36,7 +36,7 @@ import (
 )
 
 var (
-	jsonCheck = regexp.MustCompile(`(?i:(?:application|text)/(?:vnd\.[^;]+\+)?json)`)
+	jsonCheck = regexp.MustCompile(`(?i:(?:application|text)\/(?:vnd\.[^;]+|problem\+)?json)`)
 	xmlCheck  = regexp.MustCompile(`(?i:(?:application|text)/xml)`)
 )
 
@@ -248,7 +248,7 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 
 		if retryCount >= c.GetConfig().MaxRetries {
 			if c.cfg.Debug {
-				fmt.Printf("number of maximum retries exceeded (%d retries)\n", c.cfg.MaxRetries)
+				log.Printf("number of maximum retries exceeded (%d retries)\n", c.cfg.MaxRetries)
 			}
 			break
 		} else {
@@ -264,7 +264,7 @@ func (c *APIClient) backOff(t time.Duration) {
 		t = c.GetConfig().MaxWaitTime
 	}
 	if c.cfg.Debug {
-		fmt.Printf("sleeping %s before retrying request\n", t.String())
+		log.Printf("sleeping %s before retrying request\n", t.String())
 	}
 	time.Sleep(t)
 }
@@ -478,14 +478,14 @@ func (c *APIClient) decode(v interface{}, b []byte, contentType string) (err err
 					return err
 				}
 			} else {
-				errors.New("Unknown type with GetActualInstance but no unmarshalObj.UnmarshalJSON defined")
+				return errors.New("unknown type with GetActualInstance but no unmarshalObj.UnmarshalJSON defined")
 			}
 		} else if err = json.Unmarshal(b, v); err != nil { // simple model
 			return err
 		}
 		return nil
 	}
-	return errors.New("undefined response type")
+	return fmt.Errorf("undefined response type for content %s", contentType)
 }
 
 // Add a file to the multipart request
