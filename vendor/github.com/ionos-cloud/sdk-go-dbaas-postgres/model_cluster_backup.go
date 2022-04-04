@@ -29,6 +29,24 @@ type ClusterBackup struct {
 	EarliestRecoveryTargetTime *IonosTime `json:"earliestRecoveryTargetTime,omitempty"`
 }
 
+// NewClusterBackup instantiates a new ClusterBackup object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewClusterBackup() *ClusterBackup {
+	this := ClusterBackup{}
+
+	return &this
+}
+
+// NewClusterBackupWithDefaults instantiates a new ClusterBackup object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewClusterBackupWithDefaults() *ClusterBackup {
+	this := ClusterBackup{}
+	return &this
+}
+
 // GetId returns the Id field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ClusterBackup) GetId() *string {

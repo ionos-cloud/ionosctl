@@ -28,6 +28,24 @@ type Metadata struct {
 	State                *State     `json:"state,omitempty"`
 }
 
+// NewMetadata instantiates a new Metadata object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewMetadata() *Metadata {
+	this := Metadata{}
+
+	return &this
+}
+
+// NewMetadataWithDefaults instantiates a new Metadata object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewMetadataWithDefaults() *Metadata {
+	this := Metadata{}
+	return &this
+}
+
 // GetCreatedDate returns the CreatedDate field value
 // If the value is explicit nil, the zero value for time.Time will be returned
 func (o *Metadata) GetCreatedDate() *time.Time {

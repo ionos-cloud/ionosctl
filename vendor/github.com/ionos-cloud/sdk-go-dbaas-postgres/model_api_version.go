@@ -20,6 +20,24 @@ type APIVersion struct {
 	SwaggerUrl *string `json:"swaggerUrl,omitempty"`
 }
 
+// NewAPIVersion instantiates a new APIVersion object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewAPIVersion() *APIVersion {
+	this := APIVersion{}
+
+	return &this
+}
+
+// NewAPIVersionWithDefaults instantiates a new APIVersion object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewAPIVersionWithDefaults() *APIVersion {
+	this := APIVersion{}
+	return &this
+}
+
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *APIVersion) GetName() *string {

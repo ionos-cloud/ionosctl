@@ -1,5 +1,12 @@
 # Changelog
 
+## \[6.1.4\] (upcoming release)
+
+* enhancement: added `--backup-location` option for `ionosctl dbaas postgres cluster create` command
+* enhancement: added `--direction` option for `ionosctl dbaas postgres logs list` command
+* enhancement: added `--since` and `--until` option for `ionosctl dbaas postgres logs list` command, to easily specify timeframe for getting logs
+* dependency-update: added SDK-Go-DBaaS Postgres version [v1.0.2](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.2)
+
 ## \[6.1.3\]
 
 * enhancement: added `--no-headers` option for GET commands, for text output (PR [#158](https://github.com/ionos-cloud/ionosctl/pull/158))

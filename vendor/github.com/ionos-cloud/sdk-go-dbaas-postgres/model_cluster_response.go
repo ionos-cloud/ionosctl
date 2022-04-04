@@ -23,6 +23,24 @@ type ClusterResponse struct {
 	Properties *ClusterProperties `json:"properties,omitempty"`
 }
 
+// NewClusterResponse instantiates a new ClusterResponse object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewClusterResponse() *ClusterResponse {
+	this := ClusterResponse{}
+
+	return &this
+}
+
+// NewClusterResponseWithDefaults instantiates a new ClusterResponse object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewClusterResponseWithDefaults() *ClusterResponse {
+	this := ClusterResponse{}
+	return &this
+}
+
 // GetType returns the Type field value
 // If the value is explicit nil, the zero value for ResourceType will be returned
 func (o *ClusterResponse) GetType() *ResourceType {
