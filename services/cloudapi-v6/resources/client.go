@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const depthQueryParam = int32(5)
+
 type Client struct {
 	ionoscloud.APIClient
 }
@@ -35,6 +37,8 @@ func NewClientService(name, pwd, token, hostUrl string) (ClientService, error) {
 	}
 	clientConfig := ionoscloud.NewConfiguration(name, pwd, token, hostUrl)
 	clientConfig.UserAgent = fmt.Sprintf("%v_%v", viper.GetString(config.CLIHttpUserAgent), clientConfig.UserAgent)
+	// Set Depth Query Parameter globally
+	clientConfig.SetDepth(depthQueryParam)
 	return &clientService{
 		client: ionoscloud.NewAPIClient(clientConfig),
 	}, nil
