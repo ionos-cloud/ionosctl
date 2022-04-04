@@ -120,6 +120,10 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2GB", "3GB", "4GB", "5GB", "10GB", "16GB"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddStringFlag(dbaaspg.ArgBackupLocation, dbaaspg.ArgBackupLocationShort, "", "The S3 location where the backups will be stored")
+	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgBackupLocation, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"de", "eu-south-2", "eu-central-2"}, cobra.ShellCompDirectiveNoFileComp
+	})
 	create.AddStringFlag(dbaaspg.ArgSyncMode, dbaaspg.ArgSyncModeShort, "ASYNCHRONOUS", "Synchronization Mode. Represents different modes of replication")
 	_ = create.Command.RegisterFlagCompletionFunc(dbaaspg.ArgSyncMode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ASYNCHRONOUS", "SYNCHRONOUS", "STRICTLY_SYNCHRONOUS"}, cobra.ShellCompDirectiveNoFileComp
@@ -555,6 +559,10 @@ func getCreateClusterRequest(c *core.CommandConfig) (*resources.CreateClusterReq
 	storageType := sdkgo.StorageType(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStorageType)))
 	c.Printer.Verbose("StorageType: %v", storageType)
 	input.SetStorageType(storageType)
+	if viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)) != "" {
+		c.Printer.Verbose("Backup Location: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation)))
+		input.SetBackupLocation(sdkgo.BackupLocation(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgBackupLocation))))
+	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLocation)) {
 		location := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgLocation))
 		c.Printer.Verbose("Location: %v", location)
@@ -766,12 +774,13 @@ func getConnectionMessage(connection sdkgo.Connection) string {
 var (
 	defaultClusterCols = []string{"ClusterId", "DisplayName", "Location", "DatacenterId", "LanId", "Cidr", "Instances", "State"}
 	allClusterCols     = []string{"ClusterId", "DisplayName", "Location", "State", "PostgresVersion", "Instances", "Ram", "Cores",
-		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow", "SynchronizationMode"}
+		"StorageSize", "StorageType", "DatacenterId", "LanId", "Cidr", "MaintenanceWindow", "SynchronizationMode", "BackupLocation"}
 )
 
 type ClusterPrint struct {
 	ClusterId           string `json:"ClusterId,omitempty"`
 	Location            string `json:"Location,omitempty"`
+	BackupLocation      string `json:"BackupLocation,omitempty"`
 	State               string `json:"State,omitempty"`
 	DisplayName         string `json:"DisplayName,omitempty"`
 	PostgresVersion     string `json:"PostgresVersion,omitempty"`
@@ -815,6 +824,7 @@ func getClusterCols(flagName string, outErr io.Writer) []string {
 	columnsMap := map[string]string{
 		"ClusterId":           "ClusterId",
 		"DisplayName":         "DisplayName",
+		"BackupLocation":      "BackupLocation",
 		"Location":            "Location",
 		"PostgresVersion":     "PostgresVersion",
 		"State":               "State",
@@ -864,6 +874,9 @@ func getClustersKVMaps(clusters []resources.ClusterResponse) []map[string]interf
 			}
 			if locationOk, ok := propertiesOk.GetLocationOk(); ok && locationOk != nil {
 				clusterPrint.Location = string(*locationOk)
+			}
+			if backupLocationOk, ok := propertiesOk.GetBackupLocationOk(); ok && backupLocationOk != nil {
+				clusterPrint.BackupLocation = string(*backupLocationOk)
 			}
 			if vdcConnectionsOk, ok := propertiesOk.GetConnectionsOk(); ok && vdcConnectionsOk != nil {
 				for _, vdcConnection := range *vdcConnectionsOk {

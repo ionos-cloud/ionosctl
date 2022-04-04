@@ -21,6 +21,24 @@ type ErrorResponse struct {
 	Messages   *[]ErrorMessage `json:"messages,omitempty"`
 }
 
+// NewErrorResponse instantiates a new ErrorResponse object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewErrorResponse() *ErrorResponse {
+	this := ErrorResponse{}
+
+	return &this
+}
+
+// NewErrorResponseWithDefaults instantiates a new ErrorResponse object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewErrorResponseWithDefaults() *ErrorResponse {
+	this := ErrorResponse{}
+	return &this
+}
+
 // GetHttpStatus returns the HttpStatus field value
 // If the value is explicit nil, the zero value for int32 will be returned
 func (o *ErrorResponse) GetHttpStatus() *int32 {

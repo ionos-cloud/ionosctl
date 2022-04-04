@@ -21,6 +21,24 @@ type ClusterLogsMessages struct {
 	Message *string    `json:"message,omitempty"`
 }
 
+// NewClusterLogsMessages instantiates a new ClusterLogsMessages object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewClusterLogsMessages() *ClusterLogsMessages {
+	this := ClusterLogsMessages{}
+
+	return &this
+}
+
+// NewClusterLogsMessagesWithDefaults instantiates a new ClusterLogsMessages object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewClusterLogsMessagesWithDefaults() *ClusterLogsMessages {
+	this := ClusterLogsMessages{}
+	return &this
+}
+
 // GetTime returns the Time field value
 // If the value is explicit nil, the zero value for time.Time will be returned
 func (o *ClusterLogsMessages) GetTime() *time.Time {

@@ -19,6 +19,24 @@ type PostgresVersionList struct {
 	Data *[]PostgresVersionListData `json:"data,omitempty"`
 }
 
+// NewPostgresVersionList instantiates a new PostgresVersionList object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewPostgresVersionList() *PostgresVersionList {
+	this := PostgresVersionList{}
+
+	return &this
+}
+
+// NewPostgresVersionListWithDefaults instantiates a new PostgresVersionList object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewPostgresVersionListWithDefaults() *PostgresVersionList {
+	this := PostgresVersionList{}
+	return &this
+}
+
 // GetData returns the Data field value
 // If the value is explicit nil, the zero value for []PostgresVersionListData will be returned
 func (o *PostgresVersionList) GetData() *[]PostgresVersionListData {

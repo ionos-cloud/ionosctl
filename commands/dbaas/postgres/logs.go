@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,6 +20,11 @@ import (
 	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+const (
+	minuteSuffix = "m"
+	hourSuffix   = "h"
 )
 
 func LogsCmd() *core.Command {
@@ -53,9 +59,15 @@ func LogsCmd() *core.Command {
 		CmdRun:     RunClusterLogsList,
 		InitClient: true,
 	})
+	list.AddStringFlag(dbaaspg.ArgSince, dbaaspg.ArgSinceShort, "", "The start time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both start-time and since are set, start-time will be used.")
+	list.AddStringFlag(dbaaspg.ArgUntil, dbaaspg.ArgUntilShort, "", "The end time for the query using a time delta since the current moment: 2h - 2 hours ago, 20m - 20 minutes ago. Only hours and minutes are supported, and not at the same time. If both end-time and until are set, end-time will be used.")
 	list.AddStringFlag(dbaaspg.ArgStartTime, dbaaspg.ArgStartTimeShort, "", "The start time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
 	list.AddStringFlag(dbaaspg.ArgEndTime, dbaaspg.ArgEndTimeShort, "", "The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z")
-	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 0, "The maximal number of log lines to return. The command will print all logs, if this is not set")
+	list.AddStringFlag(dbaaspg.ArgDirection, dbaaspg.ArgDirectionShort, "BACKWARD", "The direction in which to scan through the logs. The logs are returned in order of the direction.")
+	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 100, "The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000")
 	list.AddStringFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -66,35 +78,86 @@ func LogsCmd() *core.Command {
 }
 
 func RunClusterLogsList(c *core.CommandConfig) error {
+	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+	queryParams, err := getLogsQueryParams(c)
+	if err != nil {
+		return err
+	}
+	c.Printer.Verbose("Getting Logs for the specified Cluster...")
+	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)), queryParams)
+	if err != nil {
+		return err
+	}
+	return c.Printer.Print(getClusterLogsPrint(c, clusterLogs))
+}
+
+func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, error) {
 	var (
 		startTime, endTime time.Time
 		err                error
 	)
-	c.Printer.Verbose("Cluster ID: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)))
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgSince)) && !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
+		since := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSince))
+		if strings.Contains(since, hourSuffix) {
+			noHours, err := strconv.Atoi(strings.TrimSuffix(since, hourSuffix))
+			if err != nil {
+				return nil, err
+			}
+			startTime = time.Now().UTC()
+			startTime = startTime.Add(-time.Hour * time.Duration(noHours))
+		}
+		if strings.Contains(since, minuteSuffix) {
+			noMinutes, err := strconv.Atoi(strings.TrimSuffix(since, minuteSuffix))
+			if err != nil {
+				return nil, err
+			}
+			startTime = time.Now().UTC()
+			startTime = startTime.Add(-time.Minute * time.Duration(noMinutes))
+		}
+		c.Printer.Verbose("Since: %v. StartTime [RFC3339 format]: %v", since, startTime)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgUntil)) && !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)) {
+		until := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgUntil))
+		if strings.Contains(until, hourSuffix) {
+			noHours, err := strconv.Atoi(strings.TrimSuffix(until, hourSuffix))
+			if err != nil {
+				return nil, err
+			}
+			endTime = time.Now().UTC()
+			endTime = endTime.Add(-time.Hour * time.Duration(noHours))
+		}
+		if strings.Contains(until, minuteSuffix) {
+			noMinutes, err := strconv.Atoi(strings.TrimSuffix(until, minuteSuffix))
+			if err != nil {
+				return nil, err
+			}
+			endTime = time.Now().UTC()
+			endTime = endTime.Add(-time.Minute * time.Duration(noMinutes))
+		}
+		c.Printer.Verbose("Until: %v. End Time [RFC3339 format]: %v", until, endTime)
+	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
 		c.Printer.Verbose("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
 		startTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)) {
 		c.Printer.Verbose("End Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)))
 		endTime, err = time.Parse(time.RFC3339, viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)))
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLimit)) {
-		c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)))
-	}
-	c.Printer.Verbose("Getting Logs for the specified Cluster...")
-	clusterLogs, _, err := c.CloudApiDbaasPgsqlServices.Logs().Get(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgClusterId)),
-		viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)), startTime, endTime)
-	if err != nil {
-		return err
-	}
-	return c.Printer.Print(getClusterLogsPrint(c, clusterLogs))
+	c.Printer.Verbose("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection))))
+	c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)))
+	return &resources.LogsQueryParams{
+		Direction: strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection))),
+		Limit:     viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)),
+		StartTime: startTime,
+		EndTime:   endTime,
+	}, nil
 }
 
 // Output Printing

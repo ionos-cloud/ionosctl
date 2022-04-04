@@ -19,6 +19,24 @@ type ClusterLogs struct {
 	Instances *[]ClusterLogsInstances `json:"instances,omitempty"`
 }
 
+// NewClusterLogs instantiates a new ClusterLogs object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewClusterLogs() *ClusterLogs {
+	this := ClusterLogs{}
+
+	return &this
+}
+
+// NewClusterLogsWithDefaults instantiates a new ClusterLogs object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewClusterLogsWithDefaults() *ClusterLogs {
+	this := ClusterLogs{}
+	return &this
+}
+
 // GetInstances returns the Instances field value
 // If the value is explicit nil, the zero value for []ClusterLogsInstances will be returned
 func (o *ClusterLogs) GetInstances() *[]ClusterLogsInstances {
