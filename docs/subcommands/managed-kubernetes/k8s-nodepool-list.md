@@ -30,7 +30,7 @@ Use this command to get a list of all contained NodePools in a selected Kubernet
 
 You can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.
 Available Filters:
-* filter by property: [name datacenterId nodeCount cpuFamily coresCount ramSize availabilityZone storageType storageSize k8sVersion maintenanceWindow autoScaling labels annotations publicIps availableUpgradeVersions]
+* filter by property: [name datacenterId nodeCount cpuFamily coresCount ramSize availabilityZone storageType storageSize k8sVersion maintenanceWindow autoScaling labels annotations publicIps availableUpgradeVersions gatewayIp]
 * filter by metadata: [etag createdDate createdBy createdByUserId lastModifiedDate lastModifiedBy lastModifiedByUserId state]
 
 Required values to run command:
