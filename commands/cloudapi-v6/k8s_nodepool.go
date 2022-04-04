@@ -116,10 +116,16 @@ You can wait for the Node Pool to be in "ACTIVE" state using ` + "`" + `--wait-f
 
 Note: If you want to attach multiple LANs to Node Pool, use ` + "`" + `--lan-ids=LAN_ID1,LAN_ID2` + "`" + ` flag. If you want to also set a Route Network, Route GatewayIp for LAN use ` + "`" + `ionosctl k8s nodepool lan add` + "`" + ` command for each LAN you want to add.
 
-Required values to run a command:
+Required values to run a command (for Public Kubernetes Cluster):
 
 * K8s Cluster Id
-* Datacenter Id`,
+* Datacenter Id
+
+Required values to run a command (for Private Kubernetes Cluster):
+
+* K8s Cluster Id
+* Datacenter Id
+* Gateway IP`,
 		Example:    createK8sNodePoolExample,
 		PreCmdRun:  PreRunK8sClusterDcIds,
 		CmdRun:     RunK8sNodePoolCreate,
@@ -142,6 +148,7 @@ Required values to run a command:
 	create.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	create.AddIntFlag(cloudapiv6.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the Node Pool should contain. Min 1, Max: Determined by the resource availability")
 	create.AddIntFlag(cloudapiv6.ArgCores, "", 2, "The total number of cores for the Node")
+	create.AddStringFlag(cloudapiv6.ArgGatewayIp, "", "", "Public IP address for the gateway performing source NAT for the node pool's nodes belonging to a private cluster. Required only if the node pool belongs to a private cluster.", core.RequiredFlagOption())
 	create.AddStringFlag(cloudapiv6.ArgRam, "", strconv.Itoa(2048), "RAM size for node, minimum size is 2048MB. Ram size must be set to multiple of 1024MB. e.g. --ram 2048 or --ram 2048MB")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRam, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"2048MB", "3GB", "4GB", "5GB", "10GB", "50GB", "100GB"}, cobra.ShellCompDirectiveNoFileComp
@@ -279,7 +286,9 @@ func PreRunK8sClusterNodePoolDelete(c *core.PreCommandConfig) error {
 }
 
 func PreRunK8sClusterDcIds(c *core.PreCommandConfig) error {
-	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgK8sClusterId, cloudapiv6.ArgDataCenterId)
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgK8sClusterId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgK8sClusterId, cloudapiv6.ArgGatewayIp})
 }
 
 func RunK8sNodePoolList(c *core.CommandConfig) error {
@@ -331,6 +340,16 @@ func RunK8sNodePoolGet(c *core.CommandConfig) error {
 }
 
 func RunK8sNodePoolCreate(c *core.CommandConfig) error {
+	// check if the Kubernetes Cluster is private and Gateway IP is set
+	c.Printer.Verbose("Checking if K8s Cluster: %v is public", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
+	public, err := c.CloudApiV6Services.K8s().IsPublicCluster(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgK8sClusterId)))
+	if err != nil {
+		return err
+	}
+	c.Printer.Verbose("Kubernetes Cluster public: %v", public)
+	if !public && !viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)) {
+		return errors.New("required option --gateway-ip for private Kubernetes Clusters is not set")
+	}
 	newNodePool, err := getNewK8sNodePool(c)
 	if err != nil {
 		return err
@@ -436,15 +455,29 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 	// Set Properties
 	nodePoolProperties := ionoscloud.KubernetesNodePoolPropertiesForPost{}
 	nodePoolProperties.SetName(name)
+	c.Printer.Verbose("Property Name set: %v", name)
 	nodePoolProperties.SetK8sVersion(k8sversion)
+	c.Printer.Verbose("Property K8sVersion set: %v", k8sversion)
 	nodePoolProperties.SetNodeCount(nodeCount)
+	c.Printer.Verbose("Property NodeCount set: %v", nodeCount)
 	nodePoolProperties.SetDatacenterId(dcId)
+	c.Printer.Verbose("Property DatacenterId set: %v", dcId)
 	nodePoolProperties.SetCpuFamily(cpuFamily)
+	c.Printer.Verbose("Property CPU Family set: %v", cpuFamily)
 	nodePoolProperties.SetCoresCount(cores)
+	c.Printer.Verbose("Property CoresCount set: %v", cores)
 	nodePoolProperties.SetRamSize(int32(ramSize))
+	c.Printer.Verbose("Property RAM Size set: %vMB", int32(ramSize))
 	nodePoolProperties.SetAvailabilityZone(availabilityZone)
+	c.Printer.Verbose("Property Availability Zone set: %v", availabilityZone)
 	nodePoolProperties.SetStorageSize(int32(storageSize))
+	c.Printer.Verbose("Property Storage Size set: %vGB", int32(storageSize))
 	nodePoolProperties.SetStorageType(storageType)
+	c.Printer.Verbose("Property Storage Type set: %v", storageType)
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)) {
+		nodePoolProperties.SetGatewayIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)))
+		c.Printer.Verbose("Property GatewayIP set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)))
+	}
 	// Add LANs
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
 		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
@@ -452,6 +485,8 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		dhcp := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgDhcp))
 		for _, lanId := range lanIds {
 			id := int32(lanId)
+			c.Printer.Verbose("Property Lan ID set: %v", id)
+			c.Printer.Verbose("Property Dhcp set: %v", dhcp)
 			newLans = append(newLans, ionoscloud.KubernetesNodePoolLan{
 				Id:   &id,
 				Dhcp: &dhcp,
@@ -637,7 +672,7 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 var defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 
 var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
-	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "PublicIps", "AvailableUpgradeVersions"}
+	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "PublicIps", "AvailableUpgradeVersions", "GatewayIp"}
 
 type K8sNodePoolPrint struct {
 	NodePoolId               string   `json:"NodePoolId,omitempty"`
@@ -657,6 +692,7 @@ type K8sNodePoolPrint struct {
 	AutoScaling              string   `json:"AutoScaling,omitempty"`
 	PublicIps                []string `json:"PublicIps,omitempty"`
 	AvailableUpgradeVersions []string `json:"AvailableUpgradeVersions,omitempty"`
+	GatewayIP                string   `json:"GatewayIp,omitempty"`
 }
 
 func getK8sNodePoolPrint(c *core.CommandConfig, k8ss []resources.K8sNodePool) printer.Result {
@@ -692,6 +728,7 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 			"AutoScaling":              "AutoScaling",
 			"PublicIps":                "PublicIps",
 			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
+			"GatewayIp":                "GatewayIp",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -733,61 +770,64 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 			uPrint.NodePoolId = *id
 		}
 		if properties, ok := u.GetPropertiesOk(); ok && properties != nil {
-			if name, ok := properties.GetNameOk(); ok && name != nil {
-				uPrint.Name = *name
+			if nameOk, ok := properties.GetNameOk(); ok && nameOk != nil {
+				uPrint.Name = *nameOk
 			}
-			if v, ok := properties.GetK8sVersionOk(); ok && v != nil {
-				uPrint.K8sVersion = *v
+			if versionOk, ok := properties.GetK8sVersionOk(); ok && versionOk != nil {
+				uPrint.K8sVersion = *versionOk
 			}
-			if v, ok := properties.GetDatacenterIdOk(); ok && v != nil {
-				uPrint.DatacenterId = *v
+			if datacenterIdOk, ok := properties.GetDatacenterIdOk(); ok && datacenterIdOk != nil {
+				uPrint.DatacenterId = *datacenterIdOk
 			}
-			if v, ok := properties.GetNodeCountOk(); ok && v != nil {
-				uPrint.NodeCount = *v
+			if nodeCountOk, ok := properties.GetNodeCountOk(); ok && nodeCountOk != nil {
+				uPrint.NodeCount = *nodeCountOk
 			}
-			if v, ok := properties.GetCpuFamilyOk(); ok && v != nil {
-				uPrint.CpuFamily = *v
+			if cpuFamilyOk, ok := properties.GetCpuFamilyOk(); ok && cpuFamilyOk != nil {
+				uPrint.CpuFamily = *cpuFamilyOk
 			}
-			if v, ok := properties.GetRamSizeOk(); ok && v != nil {
-				uPrint.RamSize = *v
+			if ramSizeOk, ok := properties.GetRamSizeOk(); ok && ramSizeOk != nil {
+				uPrint.RamSize = *ramSizeOk
 			}
-			if v, ok := properties.GetStorageTypeOk(); ok && v != nil {
-				uPrint.StorageType = *v
+			if storageTypeOk, ok := properties.GetStorageTypeOk(); ok && storageTypeOk != nil {
+				uPrint.StorageType = *storageTypeOk
 			}
-			if v, ok := properties.GetStorageSizeOk(); ok && v != nil {
-				uPrint.StorageSize = *v
+			if storageSizeOk, ok := properties.GetStorageSizeOk(); ok && storageSizeOk != nil {
+				uPrint.StorageSize = *storageSizeOk
 			}
-			if v, ok := properties.GetCoresCountOk(); ok && v != nil {
-				uPrint.CoresCount = *v
+			if coresCountOk, ok := properties.GetCoresCountOk(); ok && coresCountOk != nil {
+				uPrint.CoresCount = *coresCountOk
 			}
-			if v, ok := properties.GetPublicIpsOk(); ok && v != nil {
-				uPrint.PublicIps = *v
+			if publicIpsOk, ok := properties.GetPublicIpsOk(); ok && publicIpsOk != nil {
+				uPrint.PublicIps = *publicIpsOk
 			}
-			if v, ok := properties.GetAvailableUpgradeVersionsOk(); ok && v != nil {
-				uPrint.AvailableUpgradeVersions = *v
+			if availableUpgradeVersionsOk, ok := properties.GetAvailableUpgradeVersionsOk(); ok && availableUpgradeVersionsOk != nil {
+				uPrint.AvailableUpgradeVersions = *availableUpgradeVersionsOk
 			}
-			if v, ok := properties.GetAvailabilityZoneOk(); ok && v != nil {
-				uPrint.AvailabilityZone = *v
+			if availabilityZoneOk, ok := properties.GetAvailabilityZoneOk(); ok && availabilityZoneOk != nil {
+				uPrint.AvailabilityZone = *availabilityZoneOk
 			}
-			if maintenance, ok := properties.GetMaintenanceWindowOk(); ok && maintenance != nil {
-				if day, ok := maintenance.GetDayOfTheWeekOk(); ok && day != nil {
-					uPrint.MaintenanceWindow = *day
+			if gatewayIpOk, ok := properties.GetGatewayIpOk(); ok && gatewayIpOk != nil {
+				uPrint.GatewayIP = *gatewayIpOk
+			}
+			if maintenanceWindowOk, ok := properties.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
+				if dayOfTheWeekOk, ok := maintenanceWindowOk.GetDayOfTheWeekOk(); ok && dayOfTheWeekOk != nil {
+					uPrint.MaintenanceWindow = *dayOfTheWeekOk
 				}
-				if time, ok := maintenance.GetTimeOk(); ok && time != nil {
-					uPrint.MaintenanceWindow = uPrint.MaintenanceWindow + " " + *time
-				}
-			}
-			if autoScaling, ok := properties.GetAutoScalingOk(); ok && autoScaling != nil {
-				if min, ok := autoScaling.GetMinNodeCountOk(); ok && min != nil {
-					uPrint.AutoScaling = fmt.Sprintf("Min: %v", *min)
-				}
-				if max, ok := autoScaling.GetMaxNodeCountOk(); ok && max != nil {
-					uPrint.AutoScaling = fmt.Sprintf("%s Max: %v", uPrint.AutoScaling, *max)
+				if timeOk, ok := maintenanceWindowOk.GetTimeOk(); ok && timeOk != nil {
+					uPrint.MaintenanceWindow = uPrint.MaintenanceWindow + " " + *timeOk
 				}
 			}
-			if lans, ok := properties.GetLansOk(); ok && lans != nil {
+			if autoScalingOk, ok := properties.GetAutoScalingOk(); ok && autoScalingOk != nil {
+				if minNodeCountOk, ok := autoScalingOk.GetMinNodeCountOk(); ok && minNodeCountOk != nil {
+					uPrint.AutoScaling = fmt.Sprintf("Min: %v", *minNodeCountOk)
+				}
+				if maxNodeCountOk, ok := autoScalingOk.GetMaxNodeCountOk(); ok && maxNodeCountOk != nil {
+					uPrint.AutoScaling = fmt.Sprintf("%s Max: %v", uPrint.AutoScaling, *maxNodeCountOk)
+				}
+			}
+			if lansOk, ok := properties.GetLansOk(); ok && lansOk != nil {
 				lanIds := make([]int32, 0)
-				for _, lanItem := range *lans {
+				for _, lanItem := range *lansOk {
 					if lanId, ok := lanItem.GetIdOk(); ok && lanId != nil {
 						lanIds = append(lanIds, *lanId)
 					}
@@ -795,9 +835,9 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 				uPrint.LanIds = lanIds
 			}
 		}
-		if meta, ok := u.GetMetadataOk(); ok && meta != nil {
-			if state, ok := meta.GetStateOk(); ok && state != nil {
-				uPrint.State = *state
+		if metadataOk, ok := u.GetMetadataOk(); ok && metadataOk != nil {
+			if stateOk, ok := metadataOk.GetStateOk(); ok && stateOk != nil {
+				uPrint.State = *stateOk
 			}
 		}
 		o := structs.Map(uPrint)
