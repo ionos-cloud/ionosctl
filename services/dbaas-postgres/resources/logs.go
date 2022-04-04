@@ -2,7 +2,6 @@ package resources
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	sdkgo "github.com/ionos-cloud/sdk-go-dbaas-postgres"
@@ -50,7 +49,7 @@ func (svc *logsService) Get(clusterId string, queryParams *LogsQueryParams) (*Cl
 			req = req.Limit(queryParams.Limit)
 		}
 		if queryParams.Direction != "" {
-			req = req.Direction(strings.ToUpper(queryParams.Direction))
+			req = req.Direction(queryParams.Direction)
 		}
 	}
 	logs, res, err := svc.client.LogsApi.ClusterLogsGetExecute(req)

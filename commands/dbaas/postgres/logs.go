@@ -22,6 +22,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	minuteSuffix = "m"
+	hourSuffix   = "h"
+)
+
 func LogsCmd() *core.Command {
 	ctx := context.TODO()
 	clusterCmd := &core.Command{
@@ -62,7 +67,7 @@ func LogsCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BACKWARD", "FORWARD"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 0, "The maximal number of log lines to return. The command will print all logs, if this is not set")
+	list.AddIntFlag(dbaaspg.ArgLimit, dbaaspg.ArgLimitShort, 100, "The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000")
 	list.AddStringFlag(dbaaspg.ArgClusterId, dbaaspg.ArgIdShort, "", dbaaspg.ClusterId, core.RequiredFlagOption())
 	_ = list.Command.RegisterFlagCompletionFunc(dbaaspg.ArgClusterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ClustersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
@@ -93,45 +98,43 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 	)
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgSince)) && !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
 		since := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSince))
-		c.Printer.Verbose("Since: %v", since)
-		if strings.Contains(since, "h") {
-			noHours, err := strconv.Atoi(strings.TrimSuffix(since, "h"))
+		if strings.Contains(since, hourSuffix) {
+			noHours, err := strconv.Atoi(strings.TrimSuffix(since, hourSuffix))
 			if err != nil {
 				return nil, err
 			}
 			startTime = time.Now().UTC()
 			startTime = startTime.Add(-time.Hour * time.Duration(noHours))
 		}
-		if strings.Contains(since, "m") {
-			noMinutes, err := strconv.Atoi(strings.TrimSuffix(since, "m"))
+		if strings.Contains(since, minuteSuffix) {
+			noMinutes, err := strconv.Atoi(strings.TrimSuffix(since, minuteSuffix))
 			if err != nil {
 				return nil, err
 			}
 			startTime = time.Now().UTC()
 			startTime = startTime.Add(-time.Minute * time.Duration(noMinutes))
 		}
-		c.Printer.Verbose("StartTime: %v", startTime)
+		c.Printer.Verbose("Since: %v. StartTime [RFC3339 format]: %v", since, startTime)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgUntil)) && !viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgEndTime)) {
 		until := viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgUntil))
-		c.Printer.Verbose("Until: %v", until)
-		if strings.Contains(until, "h") {
-			noHours, err := strconv.Atoi(strings.TrimSuffix(until, "h"))
+		if strings.Contains(until, hourSuffix) {
+			noHours, err := strconv.Atoi(strings.TrimSuffix(until, hourSuffix))
 			if err != nil {
 				return nil, err
 			}
 			endTime = time.Now().UTC()
 			endTime = endTime.Add(-time.Hour * time.Duration(noHours))
 		}
-		if strings.Contains(until, "m") {
-			noMinutes, err := strconv.Atoi(strings.TrimSuffix(until, "m"))
+		if strings.Contains(until, minuteSuffix) {
+			noMinutes, err := strconv.Atoi(strings.TrimSuffix(until, minuteSuffix))
 			if err != nil {
 				return nil, err
 			}
 			endTime = time.Now().UTC()
 			endTime = endTime.Add(-time.Minute * time.Duration(noMinutes))
 		}
-		c.Printer.Verbose("EndTime: %v", endTime)
+		c.Printer.Verbose("Until: %v. End Time [RFC3339 format]: %v", until, endTime)
 	}
 	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)) {
 		c.Printer.Verbose("Start Time [RFC3339 format]: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgStartTime)))
@@ -147,14 +150,10 @@ func getLogsQueryParams(c *core.CommandConfig) (*resources.LogsQueryParams, erro
 			return nil, err
 		}
 	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgLimit)) {
-		c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)))
-	}
-	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgDirection)) {
-		c.Printer.Verbose("Direction: %v", viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection)))
-	}
+	c.Printer.Verbose("Direction: %v", strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection))))
+	c.Printer.Verbose("Limit: %v", viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)))
 	return &resources.LogsQueryParams{
-		Direction: viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection)),
+		Direction: strings.ToUpper(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgDirection))),
 		Limit:     viper.GetInt32(core.GetFlagName(c.NS, dbaaspg.ArgLimit)),
 		StartTime: startTime,
 		EndTime:   endTime,

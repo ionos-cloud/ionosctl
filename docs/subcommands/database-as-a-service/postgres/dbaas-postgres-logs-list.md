@@ -44,7 +44,7 @@ Required values to run command:
   -e, --end-time string     The end time for the query in RFC3339 format. Example: 2021-10-05T11:30:17.45Z
   -f, --force               Force command to execute without user input
   -h, --help                Print usage
-  -l, --limit int           The maximal number of log lines to return. The command will print all logs, if this is not set
+  -l, --limit int           The maximal number of log lines to return. If the limit is reached then log lines will be cut at the end (respecting the scan direction). Minimum: 1. Maximum: 5000 (default 100)
       --no-headers          When using text output, don't print headers
   -o, --output string       Desired output format [text|json] (default "text")
   -q, --quiet               Quiet output
