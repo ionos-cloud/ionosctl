@@ -20,7 +20,7 @@ type LogsQueryParams struct {
 
 // LogsService is a wrapper around ionoscloud.ClusterLogs
 type LogsService interface {
-	Get(clusterId string, queryParams LogsQueryParams) (*ClusterLogs, *Response, error)
+	Get(clusterId string, queryParams *LogsQueryParams) (*ClusterLogs, *Response, error)
 }
 
 type logsService struct {
@@ -37,19 +37,21 @@ func NewLogsService(client *Client, ctx context.Context) LogsService {
 	}
 }
 
-func (svc *logsService) Get(clusterId string, queryParams LogsQueryParams) (*ClusterLogs, *Response, error) {
+func (svc *logsService) Get(clusterId string, queryParams *LogsQueryParams) (*ClusterLogs, *Response, error) {
 	req := svc.client.LogsApi.ClusterLogsGet(svc.context, clusterId)
-	if queryParams.Direction != "" {
-		req = req.Direction(strings.ToUpper(queryParams.Direction))
-	}
-	if !queryParams.StartTime.IsZero() {
-		req = req.Start(queryParams.StartTime)
-	}
-	if !queryParams.EndTime.IsZero() {
-		req = req.End(queryParams.EndTime)
-	}
-	if queryParams.Limit != 0 {
-		req = req.Limit(queryParams.Limit)
+	if queryParams != nil {
+		if !queryParams.StartTime.IsZero() {
+			req = req.Start(queryParams.StartTime)
+		}
+		if !queryParams.EndTime.IsZero() {
+			req = req.End(queryParams.EndTime)
+		}
+		if queryParams.Limit != 0 {
+			req = req.Limit(queryParams.Limit)
+		}
+		if queryParams.Direction != "" {
+			req = req.Direction(strings.ToUpper(queryParams.Direction))
+		}
 	}
 	logs, res, err := svc.client.LogsApi.ClusterLogsGetExecute(req)
 	return &ClusterLogs{logs}, &Response{*res}, err

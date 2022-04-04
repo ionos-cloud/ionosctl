@@ -11,7 +11,7 @@ ionosctl dbaas postgres cluster create -D DATACENTER_ID -L LAN_ID -C CIDR -U DB_
 	deleteClusterExample  = `ionosctl dbaas postgres cluster delete -i CLUSTER_ID`
 	listBackupExample     = `ionosctl dbaas postgres backup list`
 	getBackupExample      = `ionosctl dbaas postgres backup get -i BACKUP_ID`
-	listLogsExample       = `ionosctl dbaas postgres logs list --cluster-id CLUSTER_ID`
+	listLogsExample       = `ionosctl dbaas postgres logs list --cluster-id CLUSTER_ID --since 5h --until 1h`
 	listVersionExample    = `ionosctl dbaas postgres version list`
 	getVersionExample     = `ionosctl dbaas postgres version get --cluster-id CLUSTER_ID`
 	listAPIVersionExample = `ionosctl dbaas postgres api-version list`

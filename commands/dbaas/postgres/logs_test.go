@@ -34,6 +34,8 @@ var (
 	}
 	testStartTimeVar    = "2021-01-01T00:00:00Z"
 	testEndTimeVar      = "2021-02-02T00:00:00Z"
+	testSinceVar        = "2h"
+	testUntilVar        = "1h"
 	testStartTime       = time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)
 	testEndTime         = time.Date(2021, 2, 2, 0, 0, 0, 0, time.UTC)
 	testLimitVar        = int32(1)
@@ -71,7 +73,29 @@ func TestRunClusterLogsGet(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLimit), testLimitVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDirection), testDirectionVar)
-		rm.CloudApiDbaasPgsqlMocks.Log.EXPECT().Get(testLogVar, testLogsQueryParams).Return(&testLogs, nil, nil)
+		rm.CloudApiDbaasPgsqlMocks.Log.EXPECT().Get(testLogVar, &testLogsQueryParams).Return(&testLogs, nil, nil)
+		err := RunClusterLogsList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunClusterLogsGetSinceUntilIgnored(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgServerUrl, config.DefaultApiURL)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testLogVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), testSinceVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), testUntilVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgStartTime), testStartTimeVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLimit), testLimitVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDirection), testDirectionVar)
+		rm.CloudApiDbaasPgsqlMocks.Log.EXPECT().Get(testLogVar, &testLogsQueryParams).Return(&testLogs, nil, nil)
 		err := RunClusterLogsList(cfg)
 		assert.NoError(t, err)
 	})
@@ -90,7 +114,7 @@ func TestRunClusterLogsGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgEndTime), testEndTimeVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgLimit), testLimitVar)
 		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgDirection), testDirectionVar)
-		rm.CloudApiDbaasPgsqlMocks.Log.EXPECT().Get(testLogVar, testLogsQueryParams).Return(&testLogs, nil, testLogErr)
+		rm.CloudApiDbaasPgsqlMocks.Log.EXPECT().Get(testLogVar, &testLogsQueryParams).Return(&testLogs, nil, testLogErr)
 		err := RunClusterLogsList(cfg)
 		assert.Error(t, err)
 	})

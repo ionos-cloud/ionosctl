@@ -35,7 +35,7 @@ func (m *MockLogsService) EXPECT() *MockLogsServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockLogsService) Get(clusterId string, queryParams resources.LogsQueryParams) (*resources.ClusterLogs, *resources.Response, error) {
+func (m *MockLogsService) Get(clusterId string, queryParams *resources.LogsQueryParams) (*resources.ClusterLogs, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", clusterId, queryParams)
 	ret0, _ := ret[0].(*resources.ClusterLogs)
