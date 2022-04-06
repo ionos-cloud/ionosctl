@@ -55,7 +55,7 @@ func LogsCmd() *core.Command {
 		ShortDesc:  "List Logs for a PostgreSQL Cluster",
 		Example:    listLogsExample,
 		LongDesc:   "Use this command to retrieve the Logs of a specified PostgreSQL Cluster. By default, the result will contain all Cluster Logs. You can specify the start time, end time or a limit for sorting Cluster Logs.\n\nRequired values to run command:\n\n* Cluster Id",
-		PreCmdRun:  PreRunClusterId,
+		PreCmdRun:  PreRunClusterLogsList,
 		CmdRun:     RunClusterLogsList,
 		InitClient: true,
 	})
@@ -75,6 +75,22 @@ func LogsCmd() *core.Command {
 	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return clusterCmd
+}
+
+func PreRunClusterLogsList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgSince)) {
+		if !strings.HasSuffix(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSince)), minuteSuffix) &&
+			!strings.HasSuffix(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgSince)), hourSuffix) {
+			return errors.New("--since option must have suffix h(hours) or m(minutes). e.g.: --since 2h")
+		}
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, dbaaspg.ArgUntil)) {
+		if !strings.HasSuffix(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgUntil)), minuteSuffix) &&
+			!strings.HasSuffix(viper.GetString(core.GetFlagName(c.NS, dbaaspg.ArgUntil)), hourSuffix) {
+			return errors.New("--until option must have suffix h(hours) or m(minutes). e.g.: --until 1h")
+		}
+	}
+	return core.CheckRequiredFlags(c.Command, c.NS, dbaaspg.ArgClusterId)
 }
 
 func RunClusterLogsList(c *core.CommandConfig) error {
