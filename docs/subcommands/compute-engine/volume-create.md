@@ -44,7 +44,7 @@ Required values to run command:
       --backupunit-id string       The unique Id of the Backup Unit that User has access to. It is mandatory to provide either 'public image' or 'imageAlias' in conjunction with this property
       --bus string                 The bus type of the Volume (default "VIRTIO")
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId DeviceNumber UserData] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
+                                   Available columns: [VolumeId Name Size Type LicenceType State Image Bus AvailabilityZone BackupunitId DeviceNumber UserData BootServerId] (default [VolumeId,Name,Size,Type,LicenceType,State,Image])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cpu-hot-plug               It is capable of CPU hot plug (no reboot required). E.g.: --cpu-hot-plug=true, --cpu-hot-plug=false
       --datacenter-id string       The unique Data Center Id (required)

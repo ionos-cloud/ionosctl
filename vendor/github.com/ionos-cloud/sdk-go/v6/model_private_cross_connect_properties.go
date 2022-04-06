@@ -26,6 +26,24 @@ type PrivateCrossConnectProperties struct {
 	ConnectableDatacenters *[]ConnectableDatacenter `json:"connectableDatacenters,omitempty"`
 }
 
+// NewPrivateCrossConnectProperties instantiates a new PrivateCrossConnectProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewPrivateCrossConnectProperties() *PrivateCrossConnectProperties {
+	this := PrivateCrossConnectProperties{}
+
+	return &this
+}
+
+// NewPrivateCrossConnectPropertiesWithDefaults instantiates a new PrivateCrossConnectProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewPrivateCrossConnectPropertiesWithDefaults() *PrivateCrossConnectProperties {
+	this := PrivateCrossConnectProperties{}
+	return &this
+}
+
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *PrivateCrossConnectProperties) GetName() *string {
@@ -180,19 +198,15 @@ func (o *PrivateCrossConnectProperties) HasConnectableDatacenters() bool {
 
 func (o PrivateCrossConnectProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
 	}
-
 	if o.Peers != nil {
 		toSerialize["peers"] = o.Peers
 	}
-
 	if o.ConnectableDatacenters != nil {
 		toSerialize["connectableDatacenters"] = o.ConnectableDatacenters
 	}

@@ -56,6 +56,26 @@ type ImageProperties struct {
 	CloudInit *string `json:"cloudInit,omitempty"`
 }
 
+// NewImageProperties instantiates a new ImageProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewImageProperties(licenceType string) *ImageProperties {
+	this := ImageProperties{}
+
+	this.LicenceType = &licenceType
+
+	return &this
+}
+
+// NewImagePropertiesWithDefaults instantiates a new ImageProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewImagePropertiesWithDefaults() *ImageProperties {
+	this := ImageProperties{}
+	return &this
+}
+
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ImageProperties) GetName() *string {
@@ -780,79 +800,60 @@ func (o *ImageProperties) HasCloudInit() bool {
 
 func (o ImageProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
 	}
-
 	if o.Location != nil {
 		toSerialize["location"] = o.Location
 	}
-
 	if o.Size != nil {
 		toSerialize["size"] = o.Size
 	}
-
 	if o.CpuHotPlug != nil {
 		toSerialize["cpuHotPlug"] = o.CpuHotPlug
 	}
-
 	if o.CpuHotUnplug != nil {
 		toSerialize["cpuHotUnplug"] = o.CpuHotUnplug
 	}
-
 	if o.RamHotPlug != nil {
 		toSerialize["ramHotPlug"] = o.RamHotPlug
 	}
-
 	if o.RamHotUnplug != nil {
 		toSerialize["ramHotUnplug"] = o.RamHotUnplug
 	}
-
 	if o.NicHotPlug != nil {
 		toSerialize["nicHotPlug"] = o.NicHotPlug
 	}
-
 	if o.NicHotUnplug != nil {
 		toSerialize["nicHotUnplug"] = o.NicHotUnplug
 	}
-
 	if o.DiscVirtioHotPlug != nil {
 		toSerialize["discVirtioHotPlug"] = o.DiscVirtioHotPlug
 	}
-
 	if o.DiscVirtioHotUnplug != nil {
 		toSerialize["discVirtioHotUnplug"] = o.DiscVirtioHotUnplug
 	}
-
 	if o.DiscScsiHotPlug != nil {
 		toSerialize["discScsiHotPlug"] = o.DiscScsiHotPlug
 	}
-
 	if o.DiscScsiHotUnplug != nil {
 		toSerialize["discScsiHotUnplug"] = o.DiscScsiHotUnplug
 	}
-
 	if o.LicenceType != nil {
 		toSerialize["licenceType"] = o.LicenceType
 	}
-
 	if o.ImageType != nil {
 		toSerialize["imageType"] = o.ImageType
 	}
-
 	if o.Public != nil {
 		toSerialize["public"] = o.Public
 	}
-
 	if o.ImageAliases != nil {
 		toSerialize["imageAliases"] = o.ImageAliases
 	}
-
 	if o.CloudInit != nil {
 		toSerialize["cloudInit"] = o.CloudInit
 	}

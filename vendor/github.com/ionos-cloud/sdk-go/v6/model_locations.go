@@ -22,8 +22,26 @@ type Locations struct {
 	Type *Type `json:"type,omitempty"`
 	// URL to the object representation (absolute path).
 	Href *string `json:"href,omitempty"`
-	// Array of items in that collection.
+	// Array of items in the collection.
 	Items *[]Location `json:"items,omitempty"`
+}
+
+// NewLocations instantiates a new Locations object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewLocations() *Locations {
+	this := Locations{}
+
+	return &this
+}
+
+// NewLocationsWithDefaults instantiates a new Locations object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewLocationsWithDefaults() *Locations {
+	this := Locations{}
+	return &this
 }
 
 // GetId returns the Id field value
@@ -180,19 +198,15 @@ func (o *Locations) HasItems() bool {
 
 func (o Locations) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
 	if o.Href != nil {
 		toSerialize["href"] = o.Href
 	}
-
 	if o.Items != nil {
 		toSerialize["items"] = o.Items
 	}

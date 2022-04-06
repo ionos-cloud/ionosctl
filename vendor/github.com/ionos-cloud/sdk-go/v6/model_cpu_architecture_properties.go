@@ -26,6 +26,24 @@ type CpuArchitectureProperties struct {
 	Vendor *string `json:"vendor,omitempty"`
 }
 
+// NewCpuArchitectureProperties instantiates a new CpuArchitectureProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewCpuArchitectureProperties() *CpuArchitectureProperties {
+	this := CpuArchitectureProperties{}
+
+	return &this
+}
+
+// NewCpuArchitecturePropertiesWithDefaults instantiates a new CpuArchitectureProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewCpuArchitecturePropertiesWithDefaults() *CpuArchitectureProperties {
+	this := CpuArchitectureProperties{}
+	return &this
+}
+
 // GetCpuFamily returns the CpuFamily field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *CpuArchitectureProperties) GetCpuFamily() *string {
@@ -180,19 +198,15 @@ func (o *CpuArchitectureProperties) HasVendor() bool {
 
 func (o CpuArchitectureProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.CpuFamily != nil {
 		toSerialize["cpuFamily"] = o.CpuFamily
 	}
-
 	if o.MaxCores != nil {
 		toSerialize["maxCores"] = o.MaxCores
 	}
-
 	if o.MaxRam != nil {
 		toSerialize["maxRam"] = o.MaxRam
 	}
-
 	if o.Vendor != nil {
 		toSerialize["vendor"] = o.Vendor
 	}

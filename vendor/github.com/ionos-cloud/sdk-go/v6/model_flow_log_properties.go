@@ -26,6 +26,29 @@ type FlowLogProperties struct {
 	Bucket *string `json:"bucket"`
 }
 
+// NewFlowLogProperties instantiates a new FlowLogProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewFlowLogProperties(name string, action string, direction string, bucket string) *FlowLogProperties {
+	this := FlowLogProperties{}
+
+	this.Name = &name
+	this.Action = &action
+	this.Direction = &direction
+	this.Bucket = &bucket
+
+	return &this
+}
+
+// NewFlowLogPropertiesWithDefaults instantiates a new FlowLogProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewFlowLogPropertiesWithDefaults() *FlowLogProperties {
+	this := FlowLogProperties{}
+	return &this
+}
+
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *FlowLogProperties) GetName() *string {
@@ -180,19 +203,15 @@ func (o *FlowLogProperties) HasBucket() bool {
 
 func (o FlowLogProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.Action != nil {
 		toSerialize["action"] = o.Action
 	}
-
 	if o.Direction != nil {
 		toSerialize["direction"] = o.Direction
 	}
-
 	if o.Bucket != nil {
 		toSerialize["bucket"] = o.Bucket
 	}

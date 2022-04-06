@@ -62,6 +62,47 @@ type ResourceLimits struct {
 	NatGatewayProvisioned *int32 `json:"natGatewayProvisioned"`
 }
 
+// NewResourceLimits instantiates a new ResourceLimits object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewResourceLimits(coresPerServer int32, coresPerContract int32, coresProvisioned int32, ramPerServer int32, ramPerContract int32, ramProvisioned int32, hddLimitPerVolume int64, hddLimitPerContract int64, hddVolumeProvisioned int64, ssdLimitPerVolume int64, ssdLimitPerContract int64, ssdVolumeProvisioned int64, dasVolumeProvisioned int64, reservableIps int32, reservedIpsOnContract int32, reservedIpsInUse int32, k8sClusterLimitTotal int32, k8sClustersProvisioned int32, nlbLimitTotal int32, nlbProvisioned int32, natGatewayLimitTotal int32, natGatewayProvisioned int32) *ResourceLimits {
+	this := ResourceLimits{}
+
+	this.CoresPerServer = &coresPerServer
+	this.CoresPerContract = &coresPerContract
+	this.CoresProvisioned = &coresProvisioned
+	this.RamPerServer = &ramPerServer
+	this.RamPerContract = &ramPerContract
+	this.RamProvisioned = &ramProvisioned
+	this.HddLimitPerVolume = &hddLimitPerVolume
+	this.HddLimitPerContract = &hddLimitPerContract
+	this.HddVolumeProvisioned = &hddVolumeProvisioned
+	this.SsdLimitPerVolume = &ssdLimitPerVolume
+	this.SsdLimitPerContract = &ssdLimitPerContract
+	this.SsdVolumeProvisioned = &ssdVolumeProvisioned
+	this.DasVolumeProvisioned = &dasVolumeProvisioned
+	this.ReservableIps = &reservableIps
+	this.ReservedIpsOnContract = &reservedIpsOnContract
+	this.ReservedIpsInUse = &reservedIpsInUse
+	this.K8sClusterLimitTotal = &k8sClusterLimitTotal
+	this.K8sClustersProvisioned = &k8sClustersProvisioned
+	this.NlbLimitTotal = &nlbLimitTotal
+	this.NlbProvisioned = &nlbProvisioned
+	this.NatGatewayLimitTotal = &natGatewayLimitTotal
+	this.NatGatewayProvisioned = &natGatewayProvisioned
+
+	return &this
+}
+
+// NewResourceLimitsWithDefaults instantiates a new ResourceLimits object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewResourceLimitsWithDefaults() *ResourceLimits {
+	this := ResourceLimits{}
+	return &this
+}
+
 // GetCoresPerServer returns the CoresPerServer field value
 // If the value is explicit nil, the zero value for int32 will be returned
 func (o *ResourceLimits) GetCoresPerServer() *int32 {
@@ -900,91 +941,69 @@ func (o *ResourceLimits) HasNatGatewayProvisioned() bool {
 
 func (o ResourceLimits) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.CoresPerServer != nil {
 		toSerialize["coresPerServer"] = o.CoresPerServer
 	}
-
 	if o.CoresPerContract != nil {
 		toSerialize["coresPerContract"] = o.CoresPerContract
 	}
-
 	if o.CoresProvisioned != nil {
 		toSerialize["coresProvisioned"] = o.CoresProvisioned
 	}
-
 	if o.RamPerServer != nil {
 		toSerialize["ramPerServer"] = o.RamPerServer
 	}
-
 	if o.RamPerContract != nil {
 		toSerialize["ramPerContract"] = o.RamPerContract
 	}
-
 	if o.RamProvisioned != nil {
 		toSerialize["ramProvisioned"] = o.RamProvisioned
 	}
-
 	if o.HddLimitPerVolume != nil {
 		toSerialize["hddLimitPerVolume"] = o.HddLimitPerVolume
 	}
-
 	if o.HddLimitPerContract != nil {
 		toSerialize["hddLimitPerContract"] = o.HddLimitPerContract
 	}
-
 	if o.HddVolumeProvisioned != nil {
 		toSerialize["hddVolumeProvisioned"] = o.HddVolumeProvisioned
 	}
-
 	if o.SsdLimitPerVolume != nil {
 		toSerialize["ssdLimitPerVolume"] = o.SsdLimitPerVolume
 	}
-
 	if o.SsdLimitPerContract != nil {
 		toSerialize["ssdLimitPerContract"] = o.SsdLimitPerContract
 	}
-
 	if o.SsdVolumeProvisioned != nil {
 		toSerialize["ssdVolumeProvisioned"] = o.SsdVolumeProvisioned
 	}
-
 	if o.DasVolumeProvisioned != nil {
 		toSerialize["dasVolumeProvisioned"] = o.DasVolumeProvisioned
 	}
-
 	if o.ReservableIps != nil {
 		toSerialize["reservableIps"] = o.ReservableIps
 	}
-
 	if o.ReservedIpsOnContract != nil {
 		toSerialize["reservedIpsOnContract"] = o.ReservedIpsOnContract
 	}
-
 	if o.ReservedIpsInUse != nil {
 		toSerialize["reservedIpsInUse"] = o.ReservedIpsInUse
 	}
-
 	if o.K8sClusterLimitTotal != nil {
 		toSerialize["k8sClusterLimitTotal"] = o.K8sClusterLimitTotal
 	}
-
 	if o.K8sClustersProvisioned != nil {
 		toSerialize["k8sClustersProvisioned"] = o.K8sClustersProvisioned
 	}
-
 	if o.NlbLimitTotal != nil {
 		toSerialize["nlbLimitTotal"] = o.NlbLimitTotal
 	}
-
 	if o.NlbProvisioned != nil {
 		toSerialize["nlbProvisioned"] = o.NlbProvisioned
 	}
-
 	if o.NatGatewayLimitTotal != nil {
 		toSerialize["natGatewayLimitTotal"] = o.NatGatewayLimitTotal
 	}
-
 	if o.NatGatewayProvisioned != nil {
 		toSerialize["natGatewayProvisioned"] = o.NatGatewayProvisioned
 	}

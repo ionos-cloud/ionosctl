@@ -35,6 +35,24 @@ type DatacenterElementMetadata struct {
 	State *string `json:"state,omitempty"`
 }
 
+// NewDatacenterElementMetadata instantiates a new DatacenterElementMetadata object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewDatacenterElementMetadata() *DatacenterElementMetadata {
+	this := DatacenterElementMetadata{}
+
+	return &this
+}
+
+// NewDatacenterElementMetadataWithDefaults instantiates a new DatacenterElementMetadata object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewDatacenterElementMetadataWithDefaults() *DatacenterElementMetadata {
+	this := DatacenterElementMetadata{}
+	return &this
+}
+
 // GetEtag returns the Etag field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *DatacenterElementMetadata) GetEtag() *string {
@@ -355,35 +373,27 @@ func (o *DatacenterElementMetadata) HasState() bool {
 
 func (o DatacenterElementMetadata) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Etag != nil {
 		toSerialize["etag"] = o.Etag
 	}
-
 	if o.CreatedDate != nil {
 		toSerialize["createdDate"] = o.CreatedDate
 	}
-
 	if o.CreatedBy != nil {
 		toSerialize["createdBy"] = o.CreatedBy
 	}
-
 	if o.CreatedByUserId != nil {
 		toSerialize["createdByUserId"] = o.CreatedByUserId
 	}
-
 	if o.LastModifiedDate != nil {
 		toSerialize["lastModifiedDate"] = o.LastModifiedDate
 	}
-
 	if o.LastModifiedBy != nil {
 		toSerialize["lastModifiedBy"] = o.LastModifiedBy
 	}
-
 	if o.LastModifiedByUserId != nil {
 		toSerialize["lastModifiedByUserId"] = o.LastModifiedByUserId
 	}
-
 	if o.State != nil {
 		toSerialize["state"] = o.State
 	}

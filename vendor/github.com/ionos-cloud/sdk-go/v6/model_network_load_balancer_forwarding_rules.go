@@ -22,13 +22,31 @@ type NetworkLoadBalancerForwardingRules struct {
 	Type *Type `json:"type,omitempty"`
 	// URL to the object representation (absolute path).
 	Href *string `json:"href,omitempty"`
-	// Array of items in that collection.
+	// Array of items in the collection.
 	Items *[]NetworkLoadBalancerForwardingRule `json:"items,omitempty"`
 	// The offset (if specified in the request).
 	Offset *float32 `json:"offset,omitempty"`
 	// The limit (if specified in the request).
 	Limit *float32         `json:"limit,omitempty"`
 	Links *PaginationLinks `json:"_links,omitempty"`
+}
+
+// NewNetworkLoadBalancerForwardingRules instantiates a new NetworkLoadBalancerForwardingRules object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewNetworkLoadBalancerForwardingRules() *NetworkLoadBalancerForwardingRules {
+	this := NetworkLoadBalancerForwardingRules{}
+
+	return &this
+}
+
+// NewNetworkLoadBalancerForwardingRulesWithDefaults instantiates a new NetworkLoadBalancerForwardingRules object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewNetworkLoadBalancerForwardingRulesWithDefaults() *NetworkLoadBalancerForwardingRules {
+	this := NetworkLoadBalancerForwardingRules{}
+	return &this
 }
 
 // GetId returns the Id field value
@@ -299,31 +317,24 @@ func (o *NetworkLoadBalancerForwardingRules) HasLinks() bool {
 
 func (o NetworkLoadBalancerForwardingRules) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
 	if o.Href != nil {
 		toSerialize["href"] = o.Href
 	}
-
 	if o.Items != nil {
 		toSerialize["items"] = o.Items
 	}
-
 	if o.Offset != nil {
 		toSerialize["offset"] = o.Offset
 	}
-
 	if o.Limit != nil {
 		toSerialize["limit"] = o.Limit
 	}
-
 	if o.Links != nil {
 		toSerialize["_links"] = o.Links
 	}

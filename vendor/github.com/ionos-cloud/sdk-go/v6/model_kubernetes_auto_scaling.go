@@ -22,6 +22,27 @@ type KubernetesAutoScaling struct {
 	MaxNodeCount *int32 `json:"maxNodeCount"`
 }
 
+// NewKubernetesAutoScaling instantiates a new KubernetesAutoScaling object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewKubernetesAutoScaling(minNodeCount int32, maxNodeCount int32) *KubernetesAutoScaling {
+	this := KubernetesAutoScaling{}
+
+	this.MinNodeCount = &minNodeCount
+	this.MaxNodeCount = &maxNodeCount
+
+	return &this
+}
+
+// NewKubernetesAutoScalingWithDefaults instantiates a new KubernetesAutoScaling object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewKubernetesAutoScalingWithDefaults() *KubernetesAutoScaling {
+	this := KubernetesAutoScaling{}
+	return &this
+}
+
 // GetMinNodeCount returns the MinNodeCount field value
 // If the value is explicit nil, the zero value for int32 will be returned
 func (o *KubernetesAutoScaling) GetMinNodeCount() *int32 {
@@ -100,11 +121,9 @@ func (o *KubernetesAutoScaling) HasMaxNodeCount() bool {
 
 func (o KubernetesAutoScaling) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.MinNodeCount != nil {
 		toSerialize["minNodeCount"] = o.MinNodeCount
 	}
-
 	if o.MaxNodeCount != nil {
 		toSerialize["maxNodeCount"] = o.MaxNodeCount
 	}

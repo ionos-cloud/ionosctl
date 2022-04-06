@@ -22,13 +22,35 @@ type Requests struct {
 	Type *Type `json:"type,omitempty"`
 	// URL to the object representation (absolute path).
 	Href *string `json:"href,omitempty"`
-	// Array of items in that collection.
+	// Array of items in the collection.
 	Items *[]Request `json:"items,omitempty"`
-	// The offset specified in the request (or, if none was specified, the default offset of 0)
+	// The offset, specified in the request (if not is specified, 0 is used by default).
 	Offset *float32 `json:"offset"`
-	// The limit specified in the request (if none was specified, use the endpoint's default pagination limit).
+	// The limit, specified in the request (if not specified, the endpoint's default pagination limit is used).
 	Limit *float32         `json:"limit"`
 	Links *PaginationLinks `json:"_links"`
+}
+
+// NewRequests instantiates a new Requests object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewRequests(offset float32, limit float32, links PaginationLinks) *Requests {
+	this := Requests{}
+
+	this.Offset = &offset
+	this.Limit = &limit
+	this.Links = &links
+
+	return &this
+}
+
+// NewRequestsWithDefaults instantiates a new Requests object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewRequestsWithDefaults() *Requests {
+	this := Requests{}
+	return &this
 }
 
 // GetId returns the Id field value
@@ -299,31 +321,24 @@ func (o *Requests) HasLinks() bool {
 
 func (o Requests) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
 	if o.Href != nil {
 		toSerialize["href"] = o.Href
 	}
-
 	if o.Items != nil {
 		toSerialize["items"] = o.Items
 	}
-
 	if o.Offset != nil {
 		toSerialize["offset"] = o.Offset
 	}
-
 	if o.Limit != nil {
 		toSerialize["limit"] = o.Limit
 	}
-
 	if o.Links != nil {
 		toSerialize["_links"] = o.Links
 	}

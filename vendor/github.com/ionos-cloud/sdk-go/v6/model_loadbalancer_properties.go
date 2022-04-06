@@ -24,6 +24,24 @@ type LoadbalancerProperties struct {
 	Dhcp *bool `json:"dhcp,omitempty"`
 }
 
+// NewLoadbalancerProperties instantiates a new LoadbalancerProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewLoadbalancerProperties() *LoadbalancerProperties {
+	this := LoadbalancerProperties{}
+
+	return &this
+}
+
+// NewLoadbalancerPropertiesWithDefaults instantiates a new LoadbalancerProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewLoadbalancerPropertiesWithDefaults() *LoadbalancerProperties {
+	this := LoadbalancerProperties{}
+	return &this
+}
+
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *LoadbalancerProperties) GetName() *string {
@@ -140,15 +158,10 @@ func (o *LoadbalancerProperties) HasDhcp() bool {
 
 func (o LoadbalancerProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
-	if o.Ip != nil {
-		toSerialize["ip"] = o.Ip
-	}
-
+	toSerialize["ip"] = o.Ip
 	if o.Dhcp != nil {
 		toSerialize["dhcp"] = o.Dhcp
 	}

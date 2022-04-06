@@ -22,8 +22,26 @@ type Groups struct {
 	Type *Type `json:"type,omitempty"`
 	// URL to the object representation (absolute path).
 	Href *string `json:"href,omitempty"`
-	// Array of items in that collection.
+	// Array of items in the collection.
 	Items *[]Group `json:"items,omitempty"`
+}
+
+// NewGroups instantiates a new Groups object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewGroups() *Groups {
+	this := Groups{}
+
+	return &this
+}
+
+// NewGroupsWithDefaults instantiates a new Groups object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewGroupsWithDefaults() *Groups {
+	this := Groups{}
+	return &this
 }
 
 // GetId returns the Id field value
@@ -180,19 +198,15 @@ func (o *Groups) HasItems() bool {
 
 func (o Groups) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}
-
 	if o.Href != nil {
 		toSerialize["href"] = o.Href
 	}
-
 	if o.Items != nil {
 		toSerialize["items"] = o.Items
 	}
