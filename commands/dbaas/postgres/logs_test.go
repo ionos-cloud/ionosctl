@@ -59,6 +59,51 @@ func TestLogCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunClusterLogsList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), testSinceVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), testUntilVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
+		err := PreRunClusterLogsList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunClusterLogsListSinceErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), "3min")
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), testUntilVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
+		err := PreRunClusterLogsList(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestPreRunClusterLogsListUntilErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgSince), testUntilVar)
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgUntil), "1min")
+		viper.Set(core.GetFlagName(cfg.NS, dbaaspg.ArgClusterId), testClusterVar)
+		err := PreRunClusterLogsList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunClusterLogsGet(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
