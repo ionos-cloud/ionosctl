@@ -18,17 +18,42 @@ import (
 type NetworkLoadBalancerForwardingRuleProperties struct {
 	// The name of the Network Load Balancer forwarding rule.
 	Name *string `json:"name"`
-	// Algorithm for the balancing.
+	// Balancing algorithm
 	Algorithm *string `json:"algorithm"`
-	// Protocol of the balancing.
+	// Balancing protocol
 	Protocol *string `json:"protocol"`
-	// Listening IP. (inbound)
+	// Listening (inbound) IP
 	ListenerIp *string `json:"listenerIp"`
-	// Listening port number. (inbound) (range: 1 to 65535)
+	// Listening (inbound) port number; valid range is 1 to 65535.
 	ListenerPort *int32                                        `json:"listenerPort"`
 	HealthCheck  *NetworkLoadBalancerForwardingRuleHealthCheck `json:"healthCheck,omitempty"`
-	// Array of items in that collection.
+	// Array of items in the collection.
 	Targets *[]NetworkLoadBalancerForwardingRuleTarget `json:"targets"`
+}
+
+// NewNetworkLoadBalancerForwardingRuleProperties instantiates a new NetworkLoadBalancerForwardingRuleProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewNetworkLoadBalancerForwardingRuleProperties(name string, algorithm string, protocol string, listenerIp string, listenerPort int32, targets []NetworkLoadBalancerForwardingRuleTarget) *NetworkLoadBalancerForwardingRuleProperties {
+	this := NetworkLoadBalancerForwardingRuleProperties{}
+
+	this.Name = &name
+	this.Algorithm = &algorithm
+	this.Protocol = &protocol
+	this.ListenerIp = &listenerIp
+	this.ListenerPort = &listenerPort
+	this.Targets = &targets
+
+	return &this
+}
+
+// NewNetworkLoadBalancerForwardingRulePropertiesWithDefaults instantiates a new NetworkLoadBalancerForwardingRuleProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewNetworkLoadBalancerForwardingRulePropertiesWithDefaults() *NetworkLoadBalancerForwardingRuleProperties {
+	this := NetworkLoadBalancerForwardingRuleProperties{}
+	return &this
 }
 
 // GetName returns the Name field value
@@ -299,31 +324,24 @@ func (o *NetworkLoadBalancerForwardingRuleProperties) HasTargets() bool {
 
 func (o NetworkLoadBalancerForwardingRuleProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.Algorithm != nil {
 		toSerialize["algorithm"] = o.Algorithm
 	}
-
 	if o.Protocol != nil {
 		toSerialize["protocol"] = o.Protocol
 	}
-
 	if o.ListenerIp != nil {
 		toSerialize["listenerIp"] = o.ListenerIp
 	}
-
 	if o.ListenerPort != nil {
 		toSerialize["listenerPort"] = o.ListenerPort
 	}
-
 	if o.HealthCheck != nil {
 		toSerialize["healthCheck"] = o.HealthCheck
 	}
-
 	if o.Targets != nil {
 		toSerialize["targets"] = o.Targets
 	}

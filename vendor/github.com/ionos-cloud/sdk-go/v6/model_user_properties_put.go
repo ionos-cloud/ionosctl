@@ -34,6 +34,24 @@ type UserPropertiesPut struct {
 	Active *bool `json:"active,omitempty"`
 }
 
+// NewUserPropertiesPut instantiates a new UserPropertiesPut object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewUserPropertiesPut() *UserPropertiesPut {
+	this := UserPropertiesPut{}
+
+	return &this
+}
+
+// NewUserPropertiesPutWithDefaults instantiates a new UserPropertiesPut object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewUserPropertiesPutWithDefaults() *UserPropertiesPut {
+	this := UserPropertiesPut{}
+	return &this
+}
+
 // GetFirstname returns the Firstname field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *UserPropertiesPut) GetFirstname() *string {
@@ -340,35 +358,27 @@ func (o *UserPropertiesPut) HasActive() bool {
 
 func (o UserPropertiesPut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Firstname != nil {
 		toSerialize["firstname"] = o.Firstname
 	}
-
 	if o.Lastname != nil {
 		toSerialize["lastname"] = o.Lastname
 	}
-
 	if o.Email != nil {
 		toSerialize["email"] = o.Email
 	}
-
 	if o.Password != nil {
 		toSerialize["password"] = o.Password
 	}
-
 	if o.Administrator != nil {
 		toSerialize["administrator"] = o.Administrator
 	}
-
 	if o.ForceSecAuth != nil {
 		toSerialize["forceSecAuth"] = o.ForceSecAuth
 	}
-
 	if o.SecAuthActive != nil {
 		toSerialize["secAuthActive"] = o.SecAuthActive
 	}
-
 	if o.Active != nil {
 		toSerialize["active"] = o.Active
 	}

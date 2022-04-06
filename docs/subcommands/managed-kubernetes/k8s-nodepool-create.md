@@ -32,10 +32,16 @@ You can wait for the Node Pool to be in "ACTIVE" state using `--wait-for-state` 
 
 Note: If you want to attach multiple LANs to Node Pool, use `--lan-ids=LAN_ID1,LAN_ID2` flag. If you want to also set a Route Network, Route GatewayIp for LAN use `ionosctl k8s nodepool lan add` command for each LAN you want to add.
 
-Required values to run a command:
+Required values to run a command (for Public Kubernetes Cluster):
 
 * K8s Cluster Id
 * Datacenter Id
+
+Required values to run a command (for Private Kubernetes Cluster):
+
+* K8s Cluster Id
+* Datacenter Id
+* Gateway IP
 
 ## Options
 
@@ -44,13 +50,14 @@ Required values to run a command:
   -z, --availability-zone string   The compute Availability Zone in which the Node should exist (default "AUTO")
       --cluster-id string          The unique K8s Cluster Id (required)
       --cols strings               Set of columns to be printed on output 
-                                   Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps PublicIps AvailableUpgradeVersions] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
+                                   Available columns: [NodePoolId Name K8sVersion DatacenterId NodeCount CpuFamily StorageType State LanIds CoresCount RamSize AvailabilityZone StorageSize MaintenanceWindow AutoScaling PublicIps AvailableUpgradeVersions GatewayIp] (default [NodePoolId,Name,K8sVersion,NodeCount,DatacenterId,State])
   -c, --config string              Configuration file used for authentication (default "$XDG_CONFIG_HOME/ionosctl/config.json")
       --cores int                  The total number of cores for the Node (default 2)
       --cpu-family string          CPU Type (default "AMD_OPTERON")
       --datacenter-id string       The unique Data Center Id (required)
       --dhcp                       Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false (default true)
   -f, --force                      Force command to execute without user input
+      --gateway-ip string          Public IP address for the gateway performing source NAT for the node pool's nodes belonging to a private cluster. Required only if the node pool belongs to a private cluster. (required)
   -h, --help                       Print usage
       --k8s-version string         The K8s version for the NodePool. If not set, the default one will be used
       --lan-ids ints               Collection of LAN Ids of existing LANs to be attached to worker Nodes

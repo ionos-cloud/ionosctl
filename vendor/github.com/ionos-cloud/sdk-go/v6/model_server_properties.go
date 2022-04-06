@@ -36,6 +36,27 @@ type ServerProperties struct {
 	Type *string `json:"type,omitempty"`
 }
 
+// NewServerProperties instantiates a new ServerProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewServerProperties(cores int32, ram int32) *ServerProperties {
+	this := ServerProperties{}
+
+	this.Cores = &cores
+	this.Ram = &ram
+
+	return &this
+}
+
+// NewServerPropertiesWithDefaults instantiates a new ServerProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewServerPropertiesWithDefaults() *ServerProperties {
+	this := ServerProperties{}
+	return &this
+}
+
 // GetTemplateUuid returns the TemplateUuid field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ServerProperties) GetTemplateUuid() *string {
@@ -418,43 +439,33 @@ func (o *ServerProperties) HasType() bool {
 
 func (o ServerProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.TemplateUuid != nil {
 		toSerialize["templateUuid"] = o.TemplateUuid
 	}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.Cores != nil {
 		toSerialize["cores"] = o.Cores
 	}
-
 	if o.Ram != nil {
 		toSerialize["ram"] = o.Ram
 	}
-
 	if o.AvailabilityZone != nil {
 		toSerialize["availabilityZone"] = o.AvailabilityZone
 	}
-
 	if o.VmState != nil {
 		toSerialize["vmState"] = o.VmState
 	}
-
 	if o.BootCdrom != nil {
 		toSerialize["bootCdrom"] = o.BootCdrom
 	}
-
 	if o.BootVolume != nil {
 		toSerialize["bootVolume"] = o.BootVolume
 	}
-
 	if o.CpuFamily != nil {
 		toSerialize["cpuFamily"] = o.CpuFamily
 	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}

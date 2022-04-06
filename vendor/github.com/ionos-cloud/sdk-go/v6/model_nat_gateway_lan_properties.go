@@ -22,6 +22,26 @@ type NatGatewayLanProperties struct {
 	GatewayIps *[]string `json:"gatewayIps,omitempty"`
 }
 
+// NewNatGatewayLanProperties instantiates a new NatGatewayLanProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewNatGatewayLanProperties(id int32) *NatGatewayLanProperties {
+	this := NatGatewayLanProperties{}
+
+	this.Id = &id
+
+	return &this
+}
+
+// NewNatGatewayLanPropertiesWithDefaults instantiates a new NatGatewayLanProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewNatGatewayLanPropertiesWithDefaults() *NatGatewayLanProperties {
+	this := NatGatewayLanProperties{}
+	return &this
+}
+
 // GetId returns the Id field value
 // If the value is explicit nil, the zero value for int32 will be returned
 func (o *NatGatewayLanProperties) GetId() *int32 {
@@ -100,11 +120,9 @@ func (o *NatGatewayLanProperties) HasGatewayIps() bool {
 
 func (o NatGatewayLanProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
-
 	if o.GatewayIps != nil {
 		toSerialize["gatewayIps"] = o.GatewayIps
 	}

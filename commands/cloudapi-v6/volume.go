@@ -975,7 +975,7 @@ func DetachAllServerVolumes(c *core.CommandConfig) error {
 var (
 	defaultVolumeCols = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image"}
 	allVolumeCols     = []string{"VolumeId", "Name", "Size", "Type", "LicenceType", "State", "Image", "Bus", "AvailabilityZone", "BackupunitId",
-		"DeviceNumber", "UserData"}
+		"DeviceNumber", "UserData", "BootServerId"}
 )
 
 type VolumePrint struct {
@@ -991,6 +991,7 @@ type VolumePrint struct {
 	DeviceNumber     int64  `json:"DeviceNumber,omitempty"`
 	BackupunitId     string `json:"BackupunitId,omitempty"`
 	UserData         string `json:"UserData,omitempty"`
+	BootServerId     string `json:"BootServerId,omitempty"`
 }
 
 func getVolumePrint(resp *resources.Response, c *core.CommandConfig, vols []resources.Volume) printer.Result {
@@ -1037,6 +1038,7 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 		"DeviceNumber":     "DeviceNumber",
 		"BackupunitId":     "BackupunitId",
 		"UserData":         "UserData",
+		"BootServerId":     "BootServerId",
 	}
 	var volumeCols []string
 	for _, k := range cols {
@@ -1113,6 +1115,9 @@ func getVolumesKVMaps(vs []resources.Volume) []map[string]interface{} {
 			}
 			if deviceNumberOk, ok := propertiesOk.GetDeviceNumberOk(); ok && deviceNumberOk != nil {
 				volumePrint.DeviceNumber = *deviceNumberOk
+			}
+			if bootServerOk, ok := propertiesOk.GetBootServerOk(); ok && bootServerOk != nil {
+				volumePrint.BootServerId = *bootServerOk
 			}
 		}
 		if metadataOk, ok := v.GetMetadataOk(); ok && metadataOk != nil {

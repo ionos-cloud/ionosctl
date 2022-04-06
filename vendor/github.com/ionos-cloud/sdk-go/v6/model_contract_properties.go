@@ -27,6 +27,24 @@ type ContractProperties struct {
 	ResourceLimits *ResourceLimits `json:"resourceLimits,omitempty"`
 }
 
+// NewContractProperties instantiates a new ContractProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewContractProperties() *ContractProperties {
+	this := ContractProperties{}
+
+	return &this
+}
+
+// NewContractPropertiesWithDefaults instantiates a new ContractProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewContractPropertiesWithDefaults() *ContractProperties {
+	this := ContractProperties{}
+	return &this
+}
+
 // GetContractNumber returns the ContractNumber field value
 // If the value is explicit nil, the zero value for int64 will be returned
 func (o *ContractProperties) GetContractNumber() *int64 {
@@ -219,23 +237,18 @@ func (o *ContractProperties) HasResourceLimits() bool {
 
 func (o ContractProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.ContractNumber != nil {
 		toSerialize["contractNumber"] = o.ContractNumber
 	}
-
 	if o.Owner != nil {
 		toSerialize["owner"] = o.Owner
 	}
-
 	if o.Status != nil {
 		toSerialize["status"] = o.Status
 	}
-
 	if o.RegDomain != nil {
 		toSerialize["regDomain"] = o.RegDomain
 	}
-
 	if o.ResourceLimits != nil {
 		toSerialize["resourceLimits"] = o.ResourceLimits
 	}

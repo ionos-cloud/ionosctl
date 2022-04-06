@@ -34,8 +34,28 @@ type FirewallruleProperties struct {
 	PortRangeStart *int32 `json:"portRangeStart,omitempty"`
 	// Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd null to allow all ports.
 	PortRangeEnd *int32 `json:"portRangeEnd,omitempty"`
-	// The type of firewall rule. If not specified, the default INGRESS value is taken.
+	// The type of the firewall rule. If not specified, the default INGRESS value is used.
 	Type *string `json:"type,omitempty"`
+}
+
+// NewFirewallruleProperties instantiates a new FirewallruleProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewFirewallruleProperties(protocol string) *FirewallruleProperties {
+	this := FirewallruleProperties{}
+
+	this.Protocol = &protocol
+
+	return &this
+}
+
+// NewFirewallrulePropertiesWithDefaults instantiates a new FirewallruleProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewFirewallrulePropertiesWithDefaults() *FirewallruleProperties {
+	this := FirewallruleProperties{}
+	return &this
 }
 
 // GetName returns the Name field value
@@ -420,43 +440,23 @@ func (o *FirewallruleProperties) HasType() bool {
 
 func (o FirewallruleProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.Protocol != nil {
 		toSerialize["protocol"] = o.Protocol
 	}
-
-	if o.SourceMac != nil {
-		toSerialize["sourceMac"] = o.SourceMac
-	}
-
-	if o.SourceIp != nil {
-		toSerialize["sourceIp"] = o.SourceIp
-	}
-
-	if o.TargetIp != nil {
-		toSerialize["targetIp"] = o.TargetIp
-	}
-
-	if o.IcmpCode != nil {
-		toSerialize["icmpCode"] = o.IcmpCode
-	}
-
-	if o.IcmpType != nil {
-		toSerialize["icmpType"] = o.IcmpType
-	}
-
+	toSerialize["sourceMac"] = o.SourceMac
+	toSerialize["sourceIp"] = o.SourceIp
+	toSerialize["targetIp"] = o.TargetIp
+	toSerialize["icmpCode"] = o.IcmpCode
+	toSerialize["icmpType"] = o.IcmpType
 	if o.PortRangeStart != nil {
 		toSerialize["portRangeStart"] = o.PortRangeStart
 	}
-
 	if o.PortRangeEnd != nil {
 		toSerialize["portRangeEnd"] = o.PortRangeEnd
 	}
-
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
 	}

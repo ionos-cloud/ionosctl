@@ -24,6 +24,24 @@ type DataCenterEntities struct {
 	Natgateways          *NatGateways          `json:"natgateways,omitempty"`
 }
 
+// NewDataCenterEntities instantiates a new DataCenterEntities object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewDataCenterEntities() *DataCenterEntities {
+	this := DataCenterEntities{}
+
+	return &this
+}
+
+// NewDataCenterEntitiesWithDefaults instantiates a new DataCenterEntities object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewDataCenterEntitiesWithDefaults() *DataCenterEntities {
+	this := DataCenterEntities{}
+	return &this
+}
+
 // GetServers returns the Servers field value
 // If the value is explicit nil, the zero value for Servers will be returned
 func (o *DataCenterEntities) GetServers() *Servers {
@@ -254,27 +272,21 @@ func (o *DataCenterEntities) HasNatgateways() bool {
 
 func (o DataCenterEntities) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Servers != nil {
 		toSerialize["servers"] = o.Servers
 	}
-
 	if o.Volumes != nil {
 		toSerialize["volumes"] = o.Volumes
 	}
-
 	if o.Loadbalancers != nil {
 		toSerialize["loadbalancers"] = o.Loadbalancers
 	}
-
 	if o.Lans != nil {
 		toSerialize["lans"] = o.Lans
 	}
-
 	if o.Networkloadbalancers != nil {
 		toSerialize["networkloadbalancers"] = o.Networkloadbalancers
 	}
-
 	if o.Natgateways != nil {
 		toSerialize["natgateways"] = o.Natgateways
 	}

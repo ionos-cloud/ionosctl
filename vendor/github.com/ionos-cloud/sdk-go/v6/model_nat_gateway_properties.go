@@ -20,8 +20,29 @@ type NatGatewayProperties struct {
 	Name *string `json:"name"`
 	// Collection of public IP addresses of the NAT Gateway. Should be customer reserved IP addresses in that location.
 	PublicIps *[]string `json:"publicIps"`
-	// Collection of LANs connected to the NAT Gateway. IPs must contain valid subnet mask. If user will not provide any IP then system will generate an IP with /24 subnet.
+	// Collection of LANs connected to the NAT Gateway. IPs must contain a valid subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.
 	Lans *[]NatGatewayLanProperties `json:"lans,omitempty"`
+}
+
+// NewNatGatewayProperties instantiates a new NatGatewayProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewNatGatewayProperties(name string, publicIps []string) *NatGatewayProperties {
+	this := NatGatewayProperties{}
+
+	this.Name = &name
+	this.PublicIps = &publicIps
+
+	return &this
+}
+
+// NewNatGatewayPropertiesWithDefaults instantiates a new NatGatewayProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewNatGatewayPropertiesWithDefaults() *NatGatewayProperties {
+	this := NatGatewayProperties{}
+	return &this
 }
 
 // GetName returns the Name field value
@@ -140,15 +161,12 @@ func (o *NatGatewayProperties) HasLans() bool {
 
 func (o NatGatewayProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.PublicIps != nil {
 		toSerialize["publicIps"] = o.PublicIps
 	}
-
 	if o.Lans != nil {
 		toSerialize["lans"] = o.Lans
 	}

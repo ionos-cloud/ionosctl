@@ -5,7 +5,11 @@
 * enhancement: added `--backup-location` option for `ionosctl dbaas postgres cluster create` command
 * enhancement: added `--direction` option for `ionosctl dbaas postgres logs list` command
 * enhancement: added `--since` and `--until` option for `ionosctl dbaas postgres logs list` command, to easily specify timeframe for getting logs
+* enhancement: added `--public` option for `ionosctl k8s cluster create` command
+* enhancement: added `--gateway-ip` option for `ionosctl k8s nodepool create` command
+* enhancement: added `BootServerId` value for `--cols` option for `ionosctl volume` commands
 * dependency-update: added SDK-Go-DBaaS Postgres version [v1.0.2](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.2)
+* dependency-update: added SDK-Go version [v6.0.2](https://github.com/ionos-cloud/sdk-go/releases/tag/v6.0.2)
 
 ## \[6.1.3\]
 

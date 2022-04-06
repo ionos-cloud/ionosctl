@@ -27,6 +27,24 @@ type IpConsumer struct {
 	K8sClusterUuid  *string `json:"k8sClusterUuid,omitempty"`
 }
 
+// NewIpConsumer instantiates a new IpConsumer object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewIpConsumer() *IpConsumer {
+	this := IpConsumer{}
+
+	return &this
+}
+
+// NewIpConsumerWithDefaults instantiates a new IpConsumer object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewIpConsumerWithDefaults() *IpConsumer {
+	this := IpConsumer{}
+	return &this
+}
+
 // GetIp returns the Ip field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *IpConsumer) GetIp() *string {
@@ -371,39 +389,30 @@ func (o *IpConsumer) HasK8sClusterUuid() bool {
 
 func (o IpConsumer) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Ip != nil {
 		toSerialize["ip"] = o.Ip
 	}
-
 	if o.Mac != nil {
 		toSerialize["mac"] = o.Mac
 	}
-
 	if o.NicId != nil {
 		toSerialize["nicId"] = o.NicId
 	}
-
 	if o.ServerId != nil {
 		toSerialize["serverId"] = o.ServerId
 	}
-
 	if o.ServerName != nil {
 		toSerialize["serverName"] = o.ServerName
 	}
-
 	if o.DatacenterId != nil {
 		toSerialize["datacenterId"] = o.DatacenterId
 	}
-
 	if o.DatacenterName != nil {
 		toSerialize["datacenterName"] = o.DatacenterName
 	}
-
 	if o.K8sNodePoolUuid != nil {
 		toSerialize["k8sNodePoolUuid"] = o.K8sNodePoolUuid
 	}
-
 	if o.K8sClusterUuid != nil {
 		toSerialize["k8sClusterUuid"] = o.K8sClusterUuid
 	}

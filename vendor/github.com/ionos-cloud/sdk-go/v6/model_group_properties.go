@@ -44,6 +44,24 @@ type GroupProperties struct {
 	AccessAndManageCertificates *bool `json:"accessAndManageCertificates,omitempty"`
 }
 
+// NewGroupProperties instantiates a new GroupProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewGroupProperties() *GroupProperties {
+	this := GroupProperties{}
+
+	return &this
+}
+
+// NewGroupPropertiesWithDefaults instantiates a new GroupProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewGroupPropertiesWithDefaults() *GroupProperties {
+	this := GroupProperties{}
+	return &this
+}
+
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *GroupProperties) GetName() *string {
@@ -540,55 +558,42 @@ func (o *GroupProperties) HasAccessAndManageCertificates() bool {
 
 func (o GroupProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.CreateDataCenter != nil {
 		toSerialize["createDataCenter"] = o.CreateDataCenter
 	}
-
 	if o.CreateSnapshot != nil {
 		toSerialize["createSnapshot"] = o.CreateSnapshot
 	}
-
 	if o.ReserveIp != nil {
 		toSerialize["reserveIp"] = o.ReserveIp
 	}
-
 	if o.AccessActivityLog != nil {
 		toSerialize["accessActivityLog"] = o.AccessActivityLog
 	}
-
 	if o.CreatePcc != nil {
 		toSerialize["createPcc"] = o.CreatePcc
 	}
-
 	if o.S3Privilege != nil {
 		toSerialize["s3Privilege"] = o.S3Privilege
 	}
-
 	if o.CreateBackupUnit != nil {
 		toSerialize["createBackupUnit"] = o.CreateBackupUnit
 	}
-
 	if o.CreateInternetAccess != nil {
 		toSerialize["createInternetAccess"] = o.CreateInternetAccess
 	}
-
 	if o.CreateK8sCluster != nil {
 		toSerialize["createK8sCluster"] = o.CreateK8sCluster
 	}
-
 	if o.CreateFlowLog != nil {
 		toSerialize["createFlowLog"] = o.CreateFlowLog
 	}
-
 	if o.AccessAndManageMonitoring != nil {
 		toSerialize["accessAndManageMonitoring"] = o.AccessAndManageMonitoring
 	}
-
 	if o.AccessAndManageCertificates != nil {
 		toSerialize["accessAndManageCertificates"] = o.AccessAndManageCertificates
 	}

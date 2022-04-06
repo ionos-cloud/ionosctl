@@ -24,6 +24,24 @@ type Info struct {
 	Version *string `json:"version,omitempty"`
 }
 
+// NewInfo instantiates a new Info object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewInfo() *Info {
+	this := Info{}
+
+	return &this
+}
+
+// NewInfoWithDefaults instantiates a new Info object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewInfoWithDefaults() *Info {
+	this := Info{}
+	return &this
+}
+
 // GetHref returns the Href field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *Info) GetHref() *string {
@@ -140,15 +158,12 @@ func (o *Info) HasVersion() bool {
 
 func (o Info) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Href != nil {
 		toSerialize["href"] = o.Href
 	}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.Version != nil {
 		toSerialize["version"] = o.Version
 	}
