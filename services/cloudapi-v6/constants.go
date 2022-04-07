@@ -90,6 +90,8 @@ const (
 	ArgSourceIp              = "source-ip"
 	ArgDestinationIp         = "destination-ip"
 	ArgDestinationIpShort    = "D"
+	ArgTargetIp              = "target-ip"
+	ArgTargetPort            = "target-port"
 	ArgPort                  = "port"
 	ArgPortShort             = "P"
 	ArgWeight                = "weight"

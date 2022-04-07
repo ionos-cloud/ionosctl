@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -11,11 +10,11 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
-	"github.com/ionos-cloud/ionosctl/internal/utils"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -149,7 +148,7 @@ func RunTargetGroupTargetList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Targets from TargetGroup")
 	targetGroups, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -196,7 +195,7 @@ func RunTargetGroupTargetAdd(c *core.CommandConfig) error {
 		},
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -250,7 +249,7 @@ func RunTargetGroupTargetRemove(c *core.CommandConfig) error {
 		c.Printer.Verbose("Updating TargetGroup with the new Targets")
 		_, resp, err = c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), &propertiesUpdated)
 		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -289,7 +288,7 @@ func RemoveAllTargetGroupTarget(c *core.CommandConfig) (*resources.Response, err
 			&resources.TargetGroupProperties{TargetGroupProperties: *propertiesOk})
 		if resp != nil {
 			c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
 		if err != nil {
 			return nil, err
@@ -309,15 +308,15 @@ func getTargetGroupTargetInfo(c *core.CommandConfig) resources.TargetGroupTarget
 	c.Printer.Verbose("Property Port for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgPort)))
 	target.SetWeight(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
 	c.Printer.Verbose("Property Weight for Target set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgWeight)))
-	targetHealth := resources.TargetGroupTargetHealthCheck{}
-	targetHealth.SetMaintenance(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenance)))
-	c.Printer.Verbose("Property Maintenance for TargetHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenance)))
-	targetHealth.SetCheck(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCheck)))
-	c.Printer.Verbose("Property Check for TargetHealthCheck set: %v", viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCheck)))
-	targetHealth.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
-	c.Printer.Verbose("Property CheckInterval for TargetHealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
-	target.SetHealthCheck(targetHealth.TargetGroupTargetHealthCheck)
-	c.Printer.Verbose("Setting HealthCheck for Target")
+	//targetHealth := resources.TargetGroupTargetHealthCheck{}
+	//targetHealth.SetMaintenance(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenance)))
+	//c.Printer.Verbose("Property Maintenance for TargetHealthCheck set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgMaintenance)))
+	//targetHealth.SetCheck(viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCheck)))
+	//c.Printer.Verbose("Property Check for TargetHealthCheck set: %v", viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgCheck)))
+	//targetHealth.SetCheckInterval(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
+	//c.Printer.Verbose("Property CheckInterval for TargetHealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckInterval)))
+	//target.SetHealthCheck(targetHealth.TargetGroupTargetHealthCheck)
+	//c.Printer.Verbose("Setting HealthCheck for Target")
 	return target
 }
 
@@ -448,16 +447,16 @@ func getTargetGroupTargetKVMap(target resources.TargetGroupTarget) map[string]in
 	if weight, ok := target.GetWeightOk(); ok && weight != nil {
 		targetPrint.Weight = *weight
 	}
-	if health, ok := target.GetHealthCheckOk(); ok && health != nil {
-		if check, ok := health.GetCheckOk(); ok && check != nil {
-			targetPrint.Check = *check
-		}
-		if checkInterval, ok := health.GetCheckIntervalOk(); ok && checkInterval != nil {
-			targetPrint.CheckInterval = fmt.Sprintf("%vms", *checkInterval)
-		}
-		if maintenance, ok := health.GetMaintenanceOk(); ok && maintenance != nil {
-			targetPrint.Maintenance = *maintenance
-		}
-	}
+	//if health, ok := target.GetHealthCheckOk(); ok && health != nil {
+	//	if check, ok := health.GetCheckOk(); ok && check != nil {
+	//		targetPrint.Check = *check
+	//	}
+	//	if checkInterval, ok := health.GetCheckIntervalOk(); ok && checkInterval != nil {
+	//		targetPrint.CheckInterval = fmt.Sprintf("%vms", *checkInterval)
+	//	}
+	//	if maintenance, ok := health.GetMaintenanceOk(); ok && maintenance != nil {
+	//		targetPrint.Maintenance = *maintenance
+	//	}
+	//}
 	return structs.Map(targetPrint)
 }

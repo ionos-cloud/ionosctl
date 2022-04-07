@@ -3,7 +3,7 @@ package auth_v1
 import (
 	"context"
 
-	"github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
 	"github.com/ionos-cloud/ionosctl/services/auth-v1/resources"
 	"github.com/spf13/viper"
 )

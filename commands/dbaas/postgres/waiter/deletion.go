@@ -1,6 +1,6 @@
 package waiter
 
-import "github.com/ionos-cloud/ionosctl/internal/core"
+import "github.com/ionos-cloud/ionosctl/pkg/core"
 
 func ClusterDeleteInterrogator(c *core.CommandConfig, objId string) (*int, error) {
 	_, resp, err := c.CloudApiDbaasPgsqlServices.Clusters().Get(objId)

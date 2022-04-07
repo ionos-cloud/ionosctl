@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	v6resources "github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	dbaaspg "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
 	"github.com/ionos-cloud/ionosctl/services/dbaas-postgres/resources"

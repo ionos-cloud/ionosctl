@@ -6,8 +6,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
 	"github.com/spf13/viper"
 )
 

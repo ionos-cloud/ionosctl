@@ -10,11 +10,11 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/printer"
-	"github.com/ionos-cloud/ionosctl/internal/utils"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/printer"
+	"github.com/ionos-cloud/ionosctl/pkg/utils"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -217,7 +217,7 @@ func RunTargetGroupList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting TargetGroups")
 	ss, resp, err := c.CloudApiV6Services.TargetGroups().List()
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -230,7 +230,7 @@ func RunTargetGroupGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting TargetGroup")
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -242,7 +242,7 @@ func RunTargetGroupCreate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Creating TargetGroup")
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Create(getTargetGroupNew(c))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -258,7 +258,7 @@ func RunTargetGroupUpdate(c *core.CommandConfig) error {
 	c.Printer.Verbose("Updating TargetGroup")
 	s, resp, err := c.CloudApiV6Services.TargetGroups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)), getTargetGroupPropertiesSet(c))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -288,7 +288,7 @@ func RunTargetGroupDelete(c *core.CommandConfig) error {
 		c.Printer.Verbose("Deleting TargetGroup")
 		resp, err = c.CloudApiV6Services.TargetGroups().Delete(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgTargetGroupId)))
 		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -327,7 +327,7 @@ func DeleteAllTargetGroup(c *core.CommandConfig) (*resources.Response, error) {
 				resp, err = c.CloudApiV6Services.TargetGroups().Delete(*idOk)
 				if resp != nil {
 					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+					c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 				}
 				if err != nil {
 					return nil, err
@@ -355,10 +355,10 @@ func getTargetGroupNew(c *core.CommandConfig) resources.TargetGroup {
 	// Set Properties for Health Check for Target Group
 	inputHealthCheck.SetCheckTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
 	c.Printer.Verbose("Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
-	inputHealthCheck.SetConnectTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
-	c.Printer.Verbose("Property ConnectTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
-	inputHealthCheck.SetTargetTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
-	c.Printer.Verbose("Property TargetTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
+	//inputHealthCheck.SetConnectTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
+	//c.Printer.Verbose("Property ConnectTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
+	//inputHealthCheck.SetTargetTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
+	//c.Printer.Verbose("Property TargetTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
 	inputHealthCheck.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
 	c.Printer.Verbose("Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
 	// Set Health Check for Target Group
@@ -414,14 +414,14 @@ func getTargetGroupPropertiesSet(c *core.CommandConfig) *resources.TargetGroupPr
 			inputHealthCheck.SetCheckTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
 			c.Printer.Verbose("Property CheckTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgCheckTimeout)))
 		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)) {
-			inputHealthCheck.SetConnectTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
-			c.Printer.Verbose("Property ConnectTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
-		}
-		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)) {
-			inputHealthCheck.SetTargetTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
-			c.Printer.Verbose("Property TargetTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
-		}
+		//if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)) {
+		//	inputHealthCheck.SetConnectTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
+		//	c.Printer.Verbose("Property ConnectTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgConnectionTimeout)))
+		//}
+		//if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)) {
+		//	inputHealthCheck.SetTargetTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
+		//	c.Printer.Verbose("Property TargetTimeout for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgTargetTimeout)))
+		//}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)) {
 			inputHealthCheck.SetRetries(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
 			c.Printer.Verbose("Property Retries for HealthCheck set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgRetries)))
@@ -592,12 +592,12 @@ func getTargetGroupKVMap(s resources.TargetGroup) map[string]interface{} {
 			if checkTimeoutOk, ok := healthCheckOk.GetCheckTimeoutOk(); ok && checkTimeoutOk != nil {
 				targetGroupPrint.CheckTimeout = fmt.Sprintf("%dms", *checkTimeoutOk)
 			}
-			if connectTimeoutOk, ok := healthCheckOk.GetConnectTimeoutOk(); ok && connectTimeoutOk != nil {
-				targetGroupPrint.ConnectTimeout = fmt.Sprintf("%dms", *connectTimeoutOk)
-			}
-			if targetTimeoutOk, ok := healthCheckOk.GetTargetTimeoutOk(); ok && targetTimeoutOk != nil {
-				targetGroupPrint.TargetTimeout = fmt.Sprintf("%dms", *targetTimeoutOk)
-			}
+			//if connectTimeoutOk, ok := healthCheckOk.GetConnectTimeoutOk(); ok && connectTimeoutOk != nil {
+			//	targetGroupPrint.ConnectTimeout = fmt.Sprintf("%dms", *connectTimeoutOk)
+			//}
+			//if targetTimeoutOk, ok := healthCheckOk.GetTargetTimeoutOk(); ok && targetTimeoutOk != nil {
+			//	targetGroupPrint.TargetTimeout = fmt.Sprintf("%dms", *targetTimeoutOk)
+			//}
 			if retriesOk, ok := healthCheckOk.GetRetriesOk(); ok && retriesOk != nil {
 				targetGroupPrint.Retries = *retriesOk
 			}

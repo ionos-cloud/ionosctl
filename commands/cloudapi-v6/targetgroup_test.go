@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ionos-cloud/ionosctl/internal/config"
-	"github.com/ionos-cloud/ionosctl/internal/core"
-	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
+	"github.com/ionos-cloud/ionosctl/pkg/config"
+	"github.com/ionos-cloud/ionosctl/pkg/core"
+	"github.com/ionos-cloud/ionosctl/pkg/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
@@ -27,10 +27,10 @@ var (
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
 				HealthCheck: &ionoscloud.TargetGroupHealthCheck{
-					CheckTimeout:   &testTargetGroupTimeout,
-					ConnectTimeout: &testTargetGroupTimeout,
-					TargetTimeout:  &testTargetGroupTimeout,
-					Retries:        &testTargetGroupRetries,
+					CheckTimeout: &testTargetGroupTimeout,
+					//ConnectTimeout: &testTargetGroupTimeout,
+					//TargetTimeout:  &testTargetGroupTimeout,
+					Retries: &testTargetGroupRetries,
 				},
 				HttpHealthCheck: &ionoscloud.TargetGroupHttpHealthCheck{
 					Path:      &testTargetGroupVar,
@@ -53,10 +53,10 @@ var (
 				Algorithm: &testTargetGroupVar,
 				Protocol:  &testTargetGroupVar,
 				HealthCheck: &ionoscloud.TargetGroupHealthCheck{
-					CheckTimeout:   &testTargetGroupTimeout,
-					ConnectTimeout: &testTargetGroupTimeout,
-					TargetTimeout:  &testTargetGroupTimeout,
-					Retries:        &testTargetGroupRetries,
+					CheckTimeout: &testTargetGroupTimeout,
+					//ConnectTimeout: &testTargetGroupTimeout,
+					//TargetTimeout:  &testTargetGroupTimeout,
+					Retries: &testTargetGroupRetries,
 				},
 				HttpHealthCheck: &ionoscloud.TargetGroupHttpHealthCheck{
 					Path:      &testTargetGroupVar,
@@ -81,10 +81,10 @@ var (
 			Algorithm: &testTargetGroupNewVar,
 			Protocol:  &testTargetGroupNewVar,
 			HealthCheck: &ionoscloud.TargetGroupHealthCheck{
-				CheckTimeout:   &testTargetGroupNewTimeout,
-				ConnectTimeout: &testTargetGroupNewTimeout,
-				TargetTimeout:  &testTargetGroupNewTimeout,
-				Retries:        &testTargetGroupNewRetries,
+				CheckTimeout: &testTargetGroupNewTimeout,
+				//ConnectTimeout: &testTargetGroupNewTimeout,
+				//TargetTimeout:  &testTargetGroupNewTimeout,
+				Retries: &testTargetGroupNewRetries,
 			},
 			HttpHealthCheck: &ionoscloud.TargetGroupHttpHealthCheck{
 				Path:      &testTargetGroupNewVar,
