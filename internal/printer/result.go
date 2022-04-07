@@ -29,7 +29,7 @@ type Result struct {
 	ApiResponse *resources.Response
 }
 
-func (prt *Result) PrintText(out io.Writer) error {
+func (prt *Result) PrintText(out io.Writer, noHeaders bool) error {
 	var resultPrint ResultPrint
 	if prt.Resource != "" && prt.Verb != "" {
 		resultPrint.Message = standardSuccessMsg(prt.Resource, prt.Verb, prt.WaitForRequest, prt.WaitForState)
@@ -44,7 +44,7 @@ func (prt *Result) PrintText(out io.Writer) error {
 		resultPrint.RequestId = requestId
 	}
 	if prt.KeyValue != nil && prt.Columns != nil {
-		err := printText(out, prt.Columns, prt.KeyValue)
+		err := printText(out, prt.Columns, prt.KeyValue, noHeaders)
 		if err != nil {
 			return err
 		}
@@ -118,17 +118,19 @@ func statusMsg(writer io.Writer, msg string, args ...interface{}) {
 	}
 }
 
-func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{}) error {
+func printText(out io.Writer, cols []string, keyValueMap []map[string]interface{}, noHeaders bool) error {
 	w := new(tabwriter.Writer)
 	w.Init(out, 5, 0, 3, ' ', tabwriter.StripEscape)
 
-	var headers []string
-	for _, col := range cols {
-		headers = append(headers, col)
-	}
-	_, err := fmt.Fprintln(w, strings.Join(headers, "\t"))
-	if err != nil {
-		return err
+	if !noHeaders {
+		var headers []string
+		for _, col := range cols {
+			headers = append(headers, col)
+		}
+		_, err := fmt.Fprintln(w, strings.Join(headers, "\t"))
+		if err != nil {
+			return err
+		}
 	}
 
 	for _, r := range keyValueMap {

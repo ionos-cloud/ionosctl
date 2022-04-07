@@ -3,11 +3,15 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
+	"go.uber.org/multierr"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -48,9 +52,9 @@ func NatgatewayCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List NAT Gateways",
-		LongDesc:   "Use this command to list NAT Gateways from a specified Virtual Data Center.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to list NAT Gateways from a specified Virtual Data Center.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.NATGatewaysFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listNatGatewayExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunNATGatewayList,
 		CmdRun:     RunNatGatewayList,
 		InitClient: true,
 	})
@@ -58,6 +62,16 @@ func NatgatewayCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NATGatewaysFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.NATGatewaysFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -84,6 +98,7 @@ func NatgatewayCmd() *core.Command {
 	})
 	get.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for specified NAT Gateway to be in AVAILABLE state")
 	get.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for waiting for NAT Gateway to be in AVAILABLE state [seconds]")
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Create Command
@@ -192,6 +207,16 @@ Required values to run command:
 	return natgatewayCmd
 }
 
+func PreRunNATGatewayList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.NATGatewaysFilters(), completer.NATGatewaysFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcIdsNatGatewayIps(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgIps)
 }
@@ -208,9 +233,17 @@ func PreRunNatGatewayDelete(c *core.PreCommandConfig) error {
 }
 
 func RunNatGatewayList(c *core.CommandConfig) error {
-	natgateways, resp, err := c.CloudApiV6Services.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	natgateways, resp, err := c.CloudApiV6Services.NatGateways().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -228,7 +261,7 @@ func RunNatGatewayGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -249,9 +282,8 @@ func RunNatGatewayCreate(c *core.CommandConfig) error {
 			},
 		},
 	)
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -269,8 +301,8 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 		*input,
 	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -282,24 +314,21 @@ func RunNatGatewayUpdate(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllNatgateways(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllNatgateways(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete nat gateway"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starring deleting NatGateway with id: %v...", natGatewayId)
-		resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		resp, err := c.CloudApiV6Services.NatGateways().Delete(dcId, natGatewayId)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -307,8 +336,8 @@ func RunNatGatewayDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getNatGatewayPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getNatGatewayPrint(resp, c, nil))
 }
 
 func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties {
@@ -328,47 +357,63 @@ func getNewNatGatewayInfo(c *core.CommandConfig) *resources.NatGatewayProperties
 	}
 }
 
-func DeleteAllNatgateways(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllNatgateways(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	_ = c.Printer.Print("NatGateways to be deleted:")
-	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId)
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Getting NatGateways...")
+	natGateways, resp, err := c.CloudApiV6Services.NatGateways().List(dcId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if natGatewayItems, ok := natGateways.GetItemsOk(); ok && natGatewayItems != nil {
-		for _, natGateway := range *natGatewayItems {
-			if id, ok := natGateway.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("NatGateway Id: " + *id)
+		if len(*natGatewayItems) > 0 {
+			_ = c.Printer.Print("NatGateway to be deleted:")
+			for _, natGateway := range *natGatewayItems {
+				toPrint := ""
+				if id, ok := natGateway.GetIdOk(); ok && id != nil {
+					toPrint += "NatGateway Id: " + *id
+				}
+				if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " NatGateway Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print(" NatGateway Name: " + *name)
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGateways"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the NatGateways...")
+			var multiErr error
+			for _, natGateway := range *natGatewayItems {
+				if id, ok := natGateway.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting NatGateway with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the NatGateways"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the BackupUnits...")
-		for _, natGateway := range *natGatewayItems {
-			if id, ok := natGateway.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting NatGateway with id: %v...", *id)
-				resp, err = c.CloudApiV6Services.NatGateways().Delete(dcId, *id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no NatGateways found")
 		}
+	} else {
+		return errors.New("could not get items of NatGateway")
 	}
-	return resp, err
 }
 
 // Output Printing
@@ -408,7 +453,6 @@ func getNatGatewaysCols(flagName string, outErr io.Writer) []string {
 	} else {
 		return defaultNatGatewayCols
 	}
-
 	columnsMap := map[string]string{
 		"NatGatewayId": "NatGatewayId",
 		"Name":         "Name",
@@ -428,11 +472,13 @@ func getNatGatewaysCols(flagName string, outErr io.Writer) []string {
 }
 
 func getNatGateways(natgateways resources.NatGateways) []resources.NatGateway {
-	ss := make([]resources.NatGateway, 0)
-	for _, s := range *natgateways.Items {
-		ss = append(ss, resources.NatGateway{NatGateway: s})
+	natGatewayObjs := make([]resources.NatGateway, 0)
+	if items, ok := natgateways.GetItemsOk(); ok && items != nil {
+		for _, natGateway := range *items {
+			natGatewayObjs = append(natGatewayObjs, resources.NatGateway{NatGateway: natGateway})
+		}
 	}
-	return ss
+	return natGatewayObjs
 }
 
 func getNatGatewaysKVMaps(ss []resources.NatGateway) []map[string]interface{} {

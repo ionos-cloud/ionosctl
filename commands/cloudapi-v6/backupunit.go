@@ -3,11 +3,15 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
+	"go.uber.org/multierr"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -44,18 +48,28 @@ func BackupunitCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, backupUnitCmd, core.CommandBuilder{
 		Namespace:  "backupunit",
 		Resource:   "backupunit",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List BackupUnits",
-		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.",
+		LongDesc:   "Use this command to get a list of existing BackupUnits available on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.BackupUnitsFiltersUsage(),
 		Example:    listBackupUnitsExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunBackupUnitList,
 		CmdRun:     RunBackupUnitList,
 		InitClient: true,
 	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.BackupUnitsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -76,6 +90,7 @@ func BackupunitCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgBackupUnitId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.BackupUnitsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get SSO URL Command
@@ -188,6 +203,13 @@ Required values to run command:
 	return backupUnitCmd
 }
 
+func PreRunBackupUnitList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.BackupUnitsFilters(), completer.BackupUnitsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunBackupUnitId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgBackupUnitId)
 }
@@ -204,9 +226,17 @@ func PreRunBackupUnitNameEmailPwd(c *core.PreCommandConfig) error {
 }
 
 func RunBackupUnitList(c *core.CommandConfig) error {
-	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -218,7 +248,7 @@ func RunBackupUnitGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	u, resp, err := c.CloudApiV6Services.BackupUnit().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -230,7 +260,7 @@ func RunBackupUnitGetSsoUrl(c *core.CommandConfig) error {
 	c.Printer.Verbose("Backup unit with id: %v is getting... ", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	u, resp, err := c.CloudApiV6Services.BackupUnit().GetSsoUrl(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -253,9 +283,8 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 	}
 	c.Printer.Verbose("Properties set for creating the Backup Unit: Name: %v , Email: %v", name, email)
 	u, resp, err := c.CloudApiV6Services.BackupUnit().Create(newBackupUnit)
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -273,8 +302,8 @@ func RunBackupUnitCreate(c *core.CommandConfig) error {
 func RunBackupUnitUpdate(c *core.CommandConfig) error {
 	newProperties := getBackupUnitInfo(c)
 	backupUnitUpd, resp, err := c.CloudApiV6Services.BackupUnit().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId)), *newProperties)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -286,23 +315,20 @@ func RunBackupUnitUpdate(c *core.CommandConfig) error {
 }
 
 func RunBackupUnitDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllBackupUnits(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllBackupUnits(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		backupunitId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgBackupUnitId))
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete backup unit"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Backup unit with id: %v...", backupunitId)
-		resp, err = c.CloudApiV6Services.BackupUnit().Delete(backupunitId)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		resp, err := c.CloudApiV6Services.BackupUnit().Delete(backupunitId)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -310,8 +336,8 @@ func RunBackupUnitDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getBackupUnitPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getBackupUnitPrint(resp, c, nil))
 }
 
 func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
@@ -329,46 +355,61 @@ func getBackupUnitInfo(c *core.CommandConfig) *resources.BackupUnitProperties {
 	return &properties
 }
 
-func DeleteAllBackupUnits(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Print("Backup Unitts to be deleted:")
-	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List()
+func DeleteAllBackupUnits(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting Backup Units...")
+	backupUnits, resp, err := c.CloudApiV6Services.BackupUnit().List(resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if backupUnitsItems, ok := backupUnits.GetItemsOk(); ok && backupUnitsItems != nil {
-		for _, backupUnit := range *backupUnitsItems {
-			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("BackupUnit Id: " + *id)
+		if len(*backupUnitsItems) > 0 {
+			_ = c.Printer.Print("Backup Units to be deleted:")
+			for _, backupUnit := range *backupUnitsItems {
+				toPrint := ""
+				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+					toPrint += "BackupUnit Id: " + *id
+				}
+				if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " BackupUnit Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := backupUnit.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("BackupUnit Name: " + *name)
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the BackupUnits...")
+			var multiErr error
+			for _, backupUnit := range *backupUnitsItems {
+				if id, ok := backupUnit.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Backup unit with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.BackupUnit().Delete(*id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Backup Units"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the BackupUnits...")
-		for _, backupUnit := range *backupUnitsItems {
-			if id, ok := backupUnit.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting Backup unit with id: %v...", *id)
-				resp, err = c.CloudApiV6Services.BackupUnit().Delete(*id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Backup Units found")
 		}
+	} else {
+		return errors.New("could not get items of Backup Units")
 	}
-	return resp, err
 }
 
 // Output Printing

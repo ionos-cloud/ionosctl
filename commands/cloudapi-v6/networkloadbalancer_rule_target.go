@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
@@ -70,6 +71,7 @@ func NlbRuleTargetCmd() *core.Command {
 			viper.GetString(core.GetFlagName(list.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		), cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Add Command
@@ -143,7 +145,7 @@ Required values to run command:
 * Target Ip
 * Target Port`,
 		Example:    removeNetworkLoadBalancerRuleTargetExample,
-		PreCmdRun:  PreRunNetworkLoadBalancerRuleTarget,
+		PreCmdRun:  PreRunNetworkLoadBalancerRuleTargetRemove,
 		CmdRun:     RunNlbRuleTargetRemove,
 		InitClient: true,
 	})
@@ -164,12 +166,20 @@ Required values to run command:
 	removeCmd.AddStringFlag(cloudapiv6.ArgPort, cloudapiv6.ArgPortShort, "", "Port of the balanced target service. Range: 1 to 65535", core.RequiredFlagOption())
 	removeCmd.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Target deletion to be executed")
 	removeCmd.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.NlbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Target deletion [seconds]")
+	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all Forwarding Rule Targets.")
 
 	return nlbRuleTargetCmd
 }
 
 func PreRunNetworkLoadBalancerRuleTarget(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgIp, cloudapiv6.ArgPort)
+}
+
+func PreRunNetworkLoadBalancerRuleTargetRemove(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgTargetIp, cloudapiv6.ArgTargetPort},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNetworkLoadBalancerId, cloudapiv6.ArgRuleId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunNlbRuleTargetList(c *core.CommandConfig) error {
@@ -179,7 +189,7 @@ func RunNlbRuleTargetList(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -202,8 +212,8 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
 	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -235,38 +245,105 @@ func RunNlbRuleTargetAdd(c *core.CommandConfig) error {
 }
 
 func RunNlbRuleTargetRemove(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete forwarding rule target"); err != nil {
-		return err
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := RemoveAllNlbRuleTarget(c); err != nil {
+			return err
+		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete forwarding rule target"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("NlbRuleTarget with id: %v is removing...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
+		frOld, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+		)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		proper, err := getRuleTargetsRemove(c, frOld)
+		if err != nil {
+			return err
+		}
+		_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
+			viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
+			proper,
+		)
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
+		return c.Printer.Print(getRuleTargetPrint(resp, c, nil))
 	}
-	c.Printer.Verbose("NlbRuleTarget with id: %v is removing...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)))
-	frOld, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
-	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-	}
+}
+
+func RemoveAllNlbRuleTarget(c *core.CommandConfig) error {
+	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+	nlbId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId))
+	ruleId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId))
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("NetworkLoadBalancer ID: %v", nlbId)
+	c.Printer.Verbose("NetworkLoadBalancerForwardingRule ID: %v", ruleId)
+	c.Printer.Verbose("Getting NetworkLoadBalancerForwardingRule...")
+	forwardingRule, resp, err := c.CloudApiV6Services.NetworkLoadBalancers().GetForwardingRule(dcId, nlbId, ruleId)
 	if err != nil {
 		return err
 	}
-	proper, err := getRuleTargetsRemove(c, frOld)
-	if err != nil {
-		return err
+	if forwardingRuleProperties, ok := forwardingRule.GetPropertiesOk(); ok && forwardingRuleProperties != nil {
+		if targets, ok := forwardingRuleProperties.GetTargetsOk(); ok && targets != nil {
+			if len(*targets) > 0 {
+				_ = c.Printer.Print("Forwarding Rule Targets to be removed:")
+				for _, target := range *targets {
+					toPrint := ""
+					if ipOk, ok := target.GetIpOk(); ok && ipOk != nil {
+						toPrint += " Forwarding Rule Target IP: " + *ipOk
+					}
+					if portOk, ok := target.GetPortOk(); ok && portOk != nil {
+						toPrint += " Forwarding Rule Target Port: " + strconv.Itoa(int(*portOk))
+					}
+					_ = c.Printer.Print(toPrint)
+				}
+			} else {
+				return errors.New("no Forwarding Rule Targets found")
+			}
+		} else {
+			return errors.New("could not get items of Forwarding Rule Targets")
+		}
+		if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove all the Forwarding Rule Targets"); err != nil {
+			return err
+		}
+		c.Printer.Verbose("Removing all the Forwarding Rule Targets...")
+		targetItems := make([]ionoscloud.NetworkLoadBalancerForwardingRuleTarget, 0)
+		if properties, ok := forwardingRule.GetPropertiesOk(); ok && properties != nil {
+			if targets, ok := properties.GetTargetsOk(); ok && targets != nil {
+				nlbFwRuleProp := &resources.NetworkLoadBalancerForwardingRuleProperties{
+					NetworkLoadBalancerForwardingRuleProperties: ionoscloud.NetworkLoadBalancerForwardingRuleProperties{
+						Targets: &targetItems,
+					},
+				}
+				_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(dcId, nlbId, ruleId, nlbFwRuleProp)
+				if resp != nil && printer.GetId(resp) != "" {
+					c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+				}
+				if err != nil {
+					return err
+				}
+				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+					return err
+				}
+			}
+		}
 	}
-	_, resp, err = c.CloudApiV6Services.NetworkLoadBalancers().UpdateForwardingRule(
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNetworkLoadBalancerId)),
-		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgRuleId)),
-		proper,
-	)
-	if err != nil {
-		return err
-	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
-	}
-	return c.Printer.Print(getRuleTargetPrint(resp, c, nil))
+	return nil
 }
 
 func getRuleTargetInfo(c *core.CommandConfig) resources.NetworkLoadBalancerForwardingRuleTarget {

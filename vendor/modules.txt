@@ -32,7 +32,13 @@ github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
-# github.com/ionos-cloud/sdk-go/v6 v6.0.0-beta.7 => ../v6/sdk-go
+# github.com/ionos-cloud/sdk-go-auth v1.0.3
+## explicit
+github.com/ionos-cloud/sdk-go-auth
+# github.com/ionos-cloud/sdk-go-dbaas-postgres v1.0.2
+## explicit
+github.com/ionos-cloud/sdk-go-dbaas-postgres
+# github.com/ionos-cloud/sdk-go/v6 v6.0.0
 ## explicit
 github.com/ionos-cloud/sdk-go/v6
 # github.com/magiconair/properties v1.8.5
@@ -75,6 +81,11 @@ github.com/spf13/viper
 github.com/stretchr/testify/assert
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
+# go.uber.org/atomic v1.7.0
+go.uber.org/atomic
+# go.uber.org/multierr v1.6.0
+## explicit
+go.uber.org/multierr
 # golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 ## explicit
 golang.org/x/crypto/blowfish
@@ -89,7 +100,7 @@ golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 # golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
-# golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602
+# golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
 # golang.org/x/sys v0.0.0-20210510120138-977fb7262007
@@ -146,4 +157,3 @@ gopkg.in/ini.v1
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 gopkg.in/yaml.v3
-# github.com/ionos-cloud/sdk-go/v6 => ../v6/sdk-go

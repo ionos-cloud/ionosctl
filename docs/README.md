@@ -29,7 +29,7 @@ echo $PATH
 curl -sL https://github.com/ionos-cloud/ionosctl/releases/download/v<version>/ionosctl-<version>-linux-amd64.tar.gz | tar -xzv
 
 # Move the binary somewhere in your $PATH:
-sudo mv ~/ionosctl /usr/local/bin
+sudo mv ionosctl /usr/local/bin
 
 # Use the ionosctl CLI
 ionosctl help
@@ -136,6 +136,15 @@ After a successful authentication, you will no longer need to provide credential
 * Windows: `%APPDATA%\ionosctl\config.json`
 
   and retrieved every time you will perform an action on your account.
+
+### Environment Variables
+
+Environment Variable | Description
+--- | --- 
+`IONOS_USERNAME` | Specify the username used to login, to authenticate against the IONOS Cloud API | 
+`IONOS_PASSWORD` | Specify the password used to login, to authenticate against the IONOS Cloud API | 
+`IONOS_TOKEN` | Specify the token used to login, if a token is being used instead of username and password |
+`IONOS_API_URL` | Specify the API URL. It will overwrite the API endpoint default value `api.ionos.com`. Note: the host URL does not contain the `/cloudapi/v5` path, so it should _not_ be included in the `IONOS_API_URL` environment variable | 
 
 ### Enabling Shell Auto-Completion
 
@@ -271,6 +280,10 @@ To redirect all the output to `dev/null`, except for error messages, you can use
 
 For deletion/removal commands, you will need to provide a confirmation to perform the action. To force the command to execute without a confirmation, you can use `--force` or `-f` option.
 
+* Use the `--all` option
+
+For deletion/removal commands, you can use the `--all` flag to delete all the resources. The command iterates through all the resources and deletes them. If an error happens, it will be displayed after the entire iteration is done.
+
 * Use the `--cols` option
 
 To obtain only a specific field/column, or a collection of columns on output, you can use the `--cols` option with the list of desired fields.
@@ -287,11 +300,19 @@ DATACENTER_ID3   us/las
 
 Note: When using `TAB` in autocompletion, on `--cols` option on a specific resource, the available columns for that resource will be displayed.
 
+* Use the `--no-headers` option
+
+To skip printing the column headers in output format `text`.
+
 * Use the `--verbose` option
 
 You will see step-by-step process when running a command.
 
 This flag can be used with any command(in general create, read, update, delete, but it's available also for the other specific command) of any resource.
+
+* Use the `--filters` option
+
+You can use the filters option for the list commands, in order to filter the results based on properties or on metadata information. In order to set one or multiple filters, you must use the following format: `--filters KEY1=VALUE1,KEY2=VALUE2`. You can also use the `--max-results` or `--order-by` options.
 
 ### Help Information
 

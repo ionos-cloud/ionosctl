@@ -3,11 +3,15 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
+	"go.uber.org/multierr"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -42,18 +46,28 @@ func GroupCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, groupCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, groupCmd, core.CommandBuilder{
 		Namespace:  "group",
 		Resource:   "group",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Groups",
-		LongDesc:   "Use this command to get a list of available Groups available on your account.",
+		LongDesc:   "Use this command to get a list of available Groups available on your account\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.GroupsFiltersUsage(),
 		Example:    listGroupExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunGroupList,
 		CmdRun:     RunGroupList,
 		InitClient: true,
 	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.GroupsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.GroupsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -74,6 +88,7 @@ func GroupCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.GroupsIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Create Command
@@ -179,6 +194,13 @@ Required values to run command:
 	return groupCmd
 }
 
+func PreRunGroupList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.GroupsFilters(), completer.GroupsFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunGroupId(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgGroupId)
 }
@@ -195,9 +217,17 @@ func PreRunGroupUserIds(c *core.PreCommandConfig) error {
 }
 
 func RunGroupList(c *core.CommandConfig) error {
-	groups, resp, err := c.CloudApiV6Services.Groups().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	groups, resp, err := c.CloudApiV6Services.Groups().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -209,7 +239,7 @@ func RunGroupGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Group with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	u, resp, err := c.CloudApiV6Services.Groups().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -225,9 +255,8 @@ func RunGroupCreate(c *core.CommandConfig) error {
 		},
 	}
 	u, resp, err := c.CloudApiV6Services.Groups().Create(newGroup)
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -250,8 +279,8 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 		},
 	}
 	groupUpd, resp, err := c.CloudApiV6Services.Groups().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId)), newGroup)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -263,23 +292,20 @@ func RunGroupUpdate(c *core.CommandConfig) error {
 }
 
 func RunGroupDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
 	groupId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGroupId))
-	if allFlag {
-		resp, err = DeleteAllGroups(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllGroups(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete group"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Group with id: %v...", groupId)
-		resp, err = c.CloudApiV6Services.Groups().Delete(groupId)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		resp, err := c.CloudApiV6Services.Groups().Delete(groupId)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
@@ -287,8 +313,8 @@ func RunGroupDelete(c *core.CommandConfig) error {
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getGroupPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getGroupPrint(resp, c, nil))
 }
 
 func getGroupCreateInfo(c *core.CommandConfig) *resources.GroupProperties {
@@ -459,47 +485,61 @@ func getGroupUpdateInfo(oldGroup *resources.Group, c *core.CommandConfig) *resou
 	}
 }
 
-func DeleteAllGroups(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Print("Groups to be deleted:")
-	groups, resp, err := c.CloudApiV6Services.Groups().List()
+func DeleteAllGroups(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting Groups...")
+	groups, resp, err := c.CloudApiV6Services.Groups().List(resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if groupsItems, ok := groups.GetItemsOk(); ok && groupsItems != nil {
-		for _, group := range *groupsItems {
-			if id, ok := group.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Group Id: " + *id)
+		if len(*groupsItems) > 0 {
+			_ = c.Printer.Print("Groups to be deleted:")
+			for _, group := range *groupsItems {
+				toPrint := ""
+				if id, ok := group.GetIdOk(); ok && id != nil {
+					toPrint += "Group Id: " + *id
+				}
+				if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Group Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := group.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Group Name: " + *name)
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Groups...")
+			var multiErr error
+			for _, group := range *groupsItems {
+				if id, ok := group.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Group with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.Groups().Delete(*id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-		}
-
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Groups"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Groups...")
-
-		for _, group := range *groupsItems {
-			if id, ok := group.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting Group with id: %v...", *id)
-				resp, err = c.CloudApiV6Services.Groups().Delete(*id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Groups found")
 		}
+	} else {
+		return errors.New("could not get items of Groups")
 	}
-	return resp, err
 }
 
 // Output Printing

@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -28,7 +29,7 @@ type Lans struct {
 
 // LansService is a wrapper around ionoscloud.Lan
 type LansService interface {
-	List(datacenterId string) (Lans, *Response, error)
+	List(datacenterId string, params ListQueryParams) (Lans, *Response, error)
 	Get(datacenterId, lanId string) (*Lan, *Response, error)
 	Create(datacenterId string, input LanPost) (*LanPost, *Response, error)
 	Update(datacenterId, lanId string, input LanProperties) (*Lan, *Response, error)
@@ -49,32 +50,45 @@ func NewLanService(client *Client, ctx context.Context) LansService {
 	}
 }
 
-func (ls *lansService) List(datacenterId string) (Lans, *Response, error) {
-	req := ls.client.LansApi.DatacentersLansGet(ls.context, datacenterId)
-	lans, resp, err := ls.client.LansApi.DatacentersLansGetExecute(req)
+func (ls *lansService) List(datacenterId string, params ListQueryParams) (Lans, *Response, error) {
+	req := ls.client.LANsApi.DatacentersLansGet(ls.context, datacenterId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
+	lans, resp, err := ls.client.LANsApi.DatacentersLansGetExecute(req)
 	return Lans{lans}, &Response{*resp}, err
 }
 
 func (ls *lansService) Get(datacenterId, lanId string) (*Lan, *Response, error) {
-	req := ls.client.LansApi.DatacentersLansFindById(ls.context, datacenterId, lanId)
-	lan, resp, err := ls.client.LansApi.DatacentersLansFindByIdExecute(req)
+	req := ls.client.LANsApi.DatacentersLansFindById(ls.context, datacenterId, lanId)
+	lan, resp, err := ls.client.LANsApi.DatacentersLansFindByIdExecute(req)
 	return &Lan{lan}, &Response{*resp}, err
 }
 
 func (ls *lansService) Create(datacenterId string, input LanPost) (*LanPost, *Response, error) {
-	req := ls.client.LansApi.DatacentersLansPost(ls.context, datacenterId).Lan(input.LanPost)
-	lan, resp, err := ls.client.LansApi.DatacentersLansPostExecute(req)
+	req := ls.client.LANsApi.DatacentersLansPost(ls.context, datacenterId).Lan(input.LanPost)
+	lan, resp, err := ls.client.LANsApi.DatacentersLansPostExecute(req)
 	return &LanPost{lan}, &Response{*resp}, err
 }
 
 func (ls *lansService) Update(datacenterId, lanId string, input LanProperties) (*Lan, *Response, error) {
-	req := ls.client.LansApi.DatacentersLansPatch(ls.context, datacenterId, lanId).Lan(input.LanProperties)
-	lan, resp, err := ls.client.LansApi.DatacentersLansPatchExecute(req)
+	req := ls.client.LANsApi.DatacentersLansPatch(ls.context, datacenterId, lanId).Lan(input.LanProperties)
+	lan, resp, err := ls.client.LANsApi.DatacentersLansPatchExecute(req)
 	return &Lan{lan}, &Response{*resp}, err
 }
 
 func (ls *lansService) Delete(datacenterId, lanId string) (*Response, error) {
-	req := ls.client.LansApi.DatacentersLansDelete(ls.context, datacenterId, lanId)
-	resp, err := ls.client.LansApi.DatacentersLansDeleteExecute(req)
+	req := ls.client.LANsApi.DatacentersLansDelete(ls.context, datacenterId, lanId)
+	resp, err := ls.client.LANsApi.DatacentersLansDeleteExecute(req)
 	return &Response{*resp}, err
 }

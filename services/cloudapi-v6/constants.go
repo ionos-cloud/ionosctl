@@ -135,6 +135,11 @@ const (
 	ArgGatewayIp             = "gateway-ip"
 	ArgLatest                = "latest"
 	ArgMethod                = "method"
+	ArgFilters               = "filters"
+	ArgFiltersShort          = "F"
+	ArgOrderBy               = "order-by"
+	ArgMaxResults            = "max-results"
+	ArgMaxResultsShort       = "M"
 	ArgCheckTimeout          = "check-timeout"
 	ArgPath                  = "path"
 	ArgMatchType             = "match-type"
@@ -244,9 +249,4 @@ const (
 	DefaultVolumeSize      = 10
 	DefaultNicLanId        = 1
 	DefaultServerCPUFamily = "AMD_OPTERON"
-)
-
-// Verbose Flag const
-const (
-	RequestTimeMessage = "The execution time of the request is: %v"
 )

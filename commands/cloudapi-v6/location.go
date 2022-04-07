@@ -9,9 +9,11 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
+	"github.com/ionos-cloud/ionosctl/internal/utils"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6/resources"
@@ -40,18 +42,28 @@ func LocationCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, locationCmd, core.CommandBuilder{
+	list := core.NewCommand(ctx, locationCmd, core.CommandBuilder{
 		Namespace:  "location",
 		Resource:   "location",
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Locations",
-		LongDesc:   "Use this command to get a list of available locations to create objects on.",
+		LongDesc:   "Use this command to get a list of available locations to create objects on.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.LocationsFiltersUsage(),
 		Example:    listLocationExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunLocationsList,
 		CmdRun:     RunLocationList,
 		InitClient: true,
 	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.LocationsFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -72,10 +84,18 @@ func LocationCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgLocationId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.LocationIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	locationCmd.AddCommand(CpuCmd())
 
 	return locationCmd
+}
+
+func PreRunLocationsList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.LocationsFilters(), completer.LocationsFiltersUsage())
+	}
+	return nil
 }
 
 func PreRunLocationId(c *core.PreCommandConfig) error {
@@ -83,9 +103,17 @@ func PreRunLocationId(c *core.PreCommandConfig) error {
 }
 
 func RunLocationList(c *core.CommandConfig) error {
-	locations, resp, err := c.CloudApiV6Services.Locations().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	locations, resp, err := c.CloudApiV6Services.Locations().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -106,7 +134,7 @@ func RunLocationGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Location with id: %v is getting...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocationId)))
 	loc, resp, err := c.CloudApiV6Services.Locations().GetByRegionAndLocationId(ids[0], ids[1])
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -169,11 +197,13 @@ func getLocation(u *resources.Location) []resources.Location {
 }
 
 func getLocations(locations resources.Locations) []resources.Location {
-	dc := make([]resources.Location, 0)
-	for _, d := range *locations.Items {
-		dc = append(dc, resources.Location{Location: d})
+	locationObjs := make([]resources.Location, 0)
+	if items, ok := locations.GetItemsOk(); ok && items != nil {
+		for _, location := range *items {
+			locationObjs = append(locationObjs, resources.Location{Location: location})
+		}
 	}
-	return dc
+	return locationObjs
 }
 
 func getLocationsKVMaps(dcs []resources.Location) []map[string]interface{} {

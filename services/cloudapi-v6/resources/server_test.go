@@ -16,7 +16,13 @@ func TestNewServerService(t *testing.T) {
 	t.Run("list_servers_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		serverSvc := NewServerService(svc.Get(), ctx)
-		_, _, err := serverSvc.List(testServerResourceVar)
+		_, _, err := serverSvc.List(testServerResourceVar, ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("list_servers_filters_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		serverSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := serverSvc.List(testServerResourceVar, testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("get_server_error", func(t *testing.T) {
@@ -97,7 +103,13 @@ func TestNewServerService(t *testing.T) {
 	t.Run("list_volumes_server_error", func(t *testing.T) {
 		svc := getTestClient(t)
 		serverSvc := NewServerService(svc.Get(), ctx)
-		_, _, err := serverSvc.ListVolumes(testServerResourceVar, testServerResourceVar)
+		_, _, err := serverSvc.ListVolumes(testServerResourceVar, testServerResourceVar, ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("list_volumes_filters_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		serverSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := serverSvc.ListVolumes(testServerResourceVar, testServerResourceVar, testListQueryParam)
 		assert.Error(t, err)
 	})
 	t.Run("get_volume_server_error", func(t *testing.T) {
@@ -110,6 +122,36 @@ func TestNewServerService(t *testing.T) {
 		svc := getTestClient(t)
 		serverSvc := NewServerService(svc.Get(), ctx)
 		_, err := serverSvc.DetachVolume(testServerResourceVar, testServerResourceVar, testServerResourceVar)
+		assert.Error(t, err)
+	})
+	t.Run("attach_cdrom_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		serverSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := serverSvc.AttachCdrom(testServerResourceVar, testServerResourceVar, testServerResourceVar)
+		assert.Error(t, err)
+	})
+	t.Run("list_cdroms_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		serverSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := serverSvc.ListCdroms(testServerResourceVar, testServerResourceVar, ListQueryParams{})
+		assert.Error(t, err)
+	})
+	t.Run("list_cdroms_filters_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		serverSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := serverSvc.ListCdroms(testServerResourceVar, testServerResourceVar, testListQueryParam)
+		assert.Error(t, err)
+	})
+	t.Run("get_cdrom_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		serverSvc := NewServerService(svc.Get(), ctx)
+		_, _, err := serverSvc.GetCdrom(testServerResourceVar, testServerResourceVar, testServerResourceVar)
+		assert.Error(t, err)
+	})
+	t.Run("detach_cdrom_server_error", func(t *testing.T) {
+		svc := getTestClient(t)
+		serverSvc := NewServerService(svc.Get(), ctx)
+		_, err := serverSvc.DetachCdrom(testServerResourceVar, testServerResourceVar, testServerResourceVar)
 		assert.Error(t, err)
 	})
 }

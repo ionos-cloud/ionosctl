@@ -51,7 +51,7 @@ func (mr *MockK8sServiceMockRecorder) CreateCluster(u interface{}) *gomock.Call 
 }
 
 // CreateNodePool mocks base method.
-func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePool) (*resources.K8sNodePool, *resources.Response, error) {
+func (m *MockK8sService) CreateNodePool(clusterId string, nodepool resources.K8sNodePoolForPost) (*resources.K8sNodePool, *resources.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateNodePool", clusterId, nodepool)
 	ret0, _ := ret[0].(*resources.K8sNodePool)
@@ -176,9 +176,9 @@ func (mr *MockK8sServiceMockRecorder) GetVersion() *gomock.Call {
 }
 
 // ListClusters mocks base method.
-func (m *MockK8sService) ListClusters() (resources.K8sClusters, *resources.Response, error) {
+func (m *MockK8sService) ListClusters(params resources.ListQueryParams) (resources.K8sClusters, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListClusters")
+	ret := m.ctrl.Call(m, "ListClusters", params)
 	ret0, _ := ret[0].(resources.K8sClusters)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -186,15 +186,15 @@ func (m *MockK8sService) ListClusters() (resources.K8sClusters, *resources.Respo
 }
 
 // ListClusters indicates an expected call of ListClusters.
-func (mr *MockK8sServiceMockRecorder) ListClusters() *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) ListClusters(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockK8sService)(nil).ListClusters))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockK8sService)(nil).ListClusters), params)
 }
 
 // ListNodePools mocks base method.
-func (m *MockK8sService) ListNodePools(clusterId string) (resources.K8sNodePools, *resources.Response, error) {
+func (m *MockK8sService) ListNodePools(clusterId string, params resources.ListQueryParams) (resources.K8sNodePools, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListNodePools", clusterId)
+	ret := m.ctrl.Call(m, "ListNodePools", clusterId, params)
 	ret0, _ := ret[0].(resources.K8sNodePools)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -202,15 +202,15 @@ func (m *MockK8sService) ListNodePools(clusterId string) (resources.K8sNodePools
 }
 
 // ListNodePools indicates an expected call of ListNodePools.
-func (mr *MockK8sServiceMockRecorder) ListNodePools(clusterId interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) ListNodePools(clusterId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNodePools", reflect.TypeOf((*MockK8sService)(nil).ListNodePools), clusterId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNodePools", reflect.TypeOf((*MockK8sService)(nil).ListNodePools), clusterId, params)
 }
 
 // ListNodes mocks base method.
-func (m *MockK8sService) ListNodes(clusterId, nodepoolId string) (resources.K8sNodes, *resources.Response, error) {
+func (m *MockK8sService) ListNodes(clusterId, nodepoolId string, params resources.ListQueryParams) (resources.K8sNodes, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListNodes", clusterId, nodepoolId)
+	ret := m.ctrl.Call(m, "ListNodes", clusterId, nodepoolId, params)
 	ret0, _ := ret[0].(resources.K8sNodes)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -218,9 +218,9 @@ func (m *MockK8sService) ListNodes(clusterId, nodepoolId string) (resources.K8sN
 }
 
 // ListNodes indicates an expected call of ListNodes.
-func (mr *MockK8sServiceMockRecorder) ListNodes(clusterId, nodepoolId interface{}) *gomock.Call {
+func (mr *MockK8sServiceMockRecorder) ListNodes(clusterId, nodepoolId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNodes", reflect.TypeOf((*MockK8sService)(nil).ListNodes), clusterId, nodepoolId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNodes", reflect.TypeOf((*MockK8sService)(nil).ListNodes), clusterId, nodepoolId, params)
 }
 
 // ListVersions mocks base method.

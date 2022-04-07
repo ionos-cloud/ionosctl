@@ -64,6 +64,7 @@ Required values to run command:
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Add Command
@@ -129,7 +130,7 @@ Required values to run command:
 * NAT Gateway Id
 * Lan Id`,
 		Example:    removeNatGatewayLanExample,
-		PreCmdRun:  PreRunDcNatGatewayLanIds,
+		PreCmdRun:  PreRunDcNatGatewayLanRemove,
 		CmdRun:     RunNatGatewayLanRemove,
 		InitClient: true,
 	})
@@ -151,6 +152,7 @@ Required values to run command:
 	_ = removeCmd.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return defaultNatGatewayLanCols, cobra.ShellCompDirectiveNoFileComp
 	})
+	removeCmd.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Remove all NAT Gateway Lans.")
 
 	return natgatewayLanCmd
 }
@@ -159,13 +161,20 @@ func PreRunDcNatGatewayLanIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgLanId)
 }
 
+func PreRunDcNatGatewayLanRemove(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgLanId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgNatGatewayId, cloudapiv6.ArgAll},
+	)
+}
+
 func RunNatGatewayLanList(c *core.CommandConfig) error {
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Get(
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -183,8 +192,8 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 	c.Printer.Verbose("Adding NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
 	input := getNewNatGatewayLanInfo(c, ng)
 	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -196,28 +205,88 @@ func RunNatGatewayLanAdd(c *core.CommandConfig) error {
 }
 
 func RunNatGatewayLanRemove(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove nat gateway lan"); err != nil {
-		return err
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := RemoveAllNatGatewayLans(c); err != nil {
+			return err
+		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "remove nat gateway lan"); err != nil {
+			return err
+		}
+		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+		natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
+		ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
+		if err != nil {
+			return err
+		}
+		c.Printer.Verbose("Removing NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
+		input := removeNatGatewayLanInfo(c, ng)
+		ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
+		return c.Printer.Print(getNatGatewayLanPrint(resp, c, nil))
 	}
+}
+
+func RemoveAllNatGatewayLans(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	natGatewayId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgNatGatewayId))
-	ng, _, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("NatGateway ID: %v", natGatewayId)
+	c.Printer.Verbose("Getting NatGateway...")
+	natGateway, resp, err := c.CloudApiV6Services.NatGateways().Get(dcId, natGatewayId)
 	if err != nil {
 		return err
 	}
-	c.Printer.Verbose("Removing NatGateway with id %v to Datacenter with id: %v", natGatewayId, dcId)
-	input := removeNatGatewayLanInfo(c, ng)
-	ng, resp, err := c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *input)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if natGatewayProperties, ok := natGateway.GetPropertiesOk(); ok && natGatewayProperties != nil {
+		if lansOk, ok := natGatewayProperties.GetLansOk(); ok && lansOk != nil {
+			if len(*lansOk) > 0 {
+				_ = c.Printer.Print("NAT Gateways Lan to be removed:")
+				for _, lan := range *lansOk {
+					if id, ok := lan.GetIdOk(); ok && id != nil {
+						_ = c.Printer.Print("NAT Gateways Lan Id: " + string(*id))
+					}
+				}
+			} else {
+				return errors.New("no NAT Gateways Lans found")
+			}
+		} else {
+			return errors.New("could not get items of NAT Gateways Lans")
+		}
 	}
-	if err != nil {
+	if err = utils.AskForConfirm(c.Stdin, c.Printer, "remove all the NAT Gateways Lans"); err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	c.Printer.Verbose("Removing all the NAT Gateways Lans...")
+	proper := make([]ionoscloud.NatGatewayLanProperties, 0)
+	if natGateway != nil {
+		if properties, ok := natGateway.GetPropertiesOk(); ok && properties != nil {
+			natGatewaysProps := &resources.NatGatewayProperties{
+				NatGatewayProperties: ionoscloud.NatGatewayProperties{
+					Lans: &proper,
+				},
+			}
+			natGateway, resp, err = c.CloudApiV6Services.NatGateways().Update(dcId, natGatewayId, *natGatewaysProps)
+			if resp != nil && printer.GetId(resp) != "" {
+				c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+			}
+			if err != nil {
+				return err
+			}
+			if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+				return err
+			}
+		}
 	}
-	return c.Printer.Print(getNatGatewayLanPrint(resp, c, nil))
+	return nil
 }
 
 func getNewNatGatewayLanInfo(c *core.CommandConfig, oldNg *resources.NatGateway) *resources.NatGatewayProperties {

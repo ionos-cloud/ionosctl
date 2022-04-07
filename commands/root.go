@@ -5,13 +5,17 @@ import (
 	"os"
 	"strings"
 
+	authv1 "github.com/ionos-cloud/ionosctl/commands/auth-v1"
 	cloudapiv6 "github.com/ionos-cloud/ionosctl/commands/cloudapi-v6"
+	"github.com/ionos-cloud/ionosctl/commands/dbaas"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+const CLIVersionDev = "DEV"
 
 var (
 	// RootCmd is the root level command that all other commands attach to
@@ -74,6 +78,11 @@ func init() {
 	// Init version
 	initVersion()
 	rootCmd.Command.Version = IonosctlVersion.GetVersion()
+	if rootCmd.Command.Version != CLIVersionDev {
+		viper.Set(config.CLIHttpUserAgent, fmt.Sprintf("ionosctl/v%v", IonosctlVersion.GetVersion()))
+	} else {
+		viper.Set(config.CLIHttpUserAgent, fmt.Sprintf("ionosctl/%v", IonosctlVersion.GetVersion()))
+	}
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -134,7 +143,7 @@ func initVersion() {
 		IonosctlVersion.version = Version
 	}
 	if Label == "" {
-		IonosctlVersion.label = "DEV"
+		IonosctlVersion.label = CLIVersionDev
 	} else {
 		IonosctlVersion.label = Label
 	}
@@ -187,6 +196,10 @@ func addCommands() {
 	rootCmd.AddCommand(cloudapiv6.K8sCmd())
 	rootCmd.AddCommand(cloudapiv6.TargetGroupCmd())
 	rootCmd.AddCommand(cloudapiv6.TemplateCmd())
+	// Auth Command
+	rootCmd.AddCommand(authv1.TokenCmd())
+	// Add DBaaS Commands
+	rootCmd.AddCommand(dbaas.DataBaseServiceCmd())
 }
 
 const helpTemplate = `USAGE: {{if .Runnable}}

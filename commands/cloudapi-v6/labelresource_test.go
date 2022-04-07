@@ -29,6 +29,15 @@ var (
 			Items: &[]ionoscloud.LabelResource{testLabelResource},
 		},
 	}
+	testLabelResourcesList = resources.LabelResources{
+		LabelResources: ionoscloud.LabelResources{
+			Id: &testLabelVar,
+			Items: &[]ionoscloud.LabelResource{
+				testLabelResource,
+				testLabelResource,
+			},
+		},
+	}
 	testLabelResourceRes = resources.LabelResource{LabelResource: testLabelResource}
 	testLabelResourceVar = "test-label-resource"
 	testLabelResourceErr = errors.New("label resource test error")
@@ -140,6 +149,96 @@ func TestRunDatacenterLabelRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
 		err := RunDataCenterLabelRemove(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunDatacenterLabelRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterList(testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunDataCenterLabelRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunDatacenterLabelRemoveAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterList(testLabelResourceVar).Return(testLabelResourcesList, nil, testLabelResourceErr)
+		err := RunDataCenterLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunDatacenterLabelRemoveAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterList(testLabelResourceVar).Return(resources.LabelResources{}, &testResponse, nil)
+		err := RunDataCenterLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunDatacenterLabelRemoveAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterList(testLabelResourceVar).Return(
+			resources.LabelResources{LabelResources: ionoscloud.LabelResources{Items: &[]ionoscloud.LabelResource{}}}, &testResponse, nil)
+		err := RunDataCenterLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunDatacenterLabelRemoveAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterList(testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, testLabelResourceErr)
+		rm.CloudApiV6Mocks.Label.EXPECT().DatacenterDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunDataCenterLabelRemove(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -267,6 +366,96 @@ func TestRunIpBlockLabelRemove(t *testing.T) {
 	})
 }
 
+func TestRunIpBlockLabelRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockList(testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunIpBlockLabelRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunIpBlockLabelRemoveAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockList(testLabelResourceVar).Return(testLabelResourcesList, nil, testLabelResourceErr)
+		err := RunIpBlockLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunIpBlockLabelRemoveAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockList(testLabelResourceVar).Return(resources.LabelResources{}, &testResponse, nil)
+		err := RunIpBlockLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunIpBlockLabelRemoveAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockList(testLabelResourceVar).Return(
+			resources.LabelResources{LabelResources: ionoscloud.LabelResources{Items: &[]ionoscloud.LabelResource{}}}, &testResponse, nil)
+		err := RunIpBlockLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunIpBlockLabelRemoveAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgIpBlockId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockList(testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, testLabelResourceErr)
+		rm.CloudApiV6Mocks.Label.EXPECT().IpBlockDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunIpBlockLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunIpBlockLabelRemoveErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -388,6 +577,96 @@ func TestRunSnapshotLabelRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
 		err := RunSnapshotLabelRemove(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunSnapshotLabelRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotList(testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunSnapshotLabelRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunSnapshotLabelRemoveAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotList(testLabelResourceVar).Return(testLabelResourcesList, nil, testLabelResourceErr)
+		err := RunSnapshotLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunSnapshotLabelRemoveAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotList(testLabelResourceVar).Return(resources.LabelResources{}, &testResponse, nil)
+		err := RunSnapshotLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunSnapshotLabelRemoveAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotList(testLabelResourceVar).Return(
+			resources.LabelResources{LabelResources: ionoscloud.LabelResources{Items: &[]ionoscloud.LabelResource{}}}, &testResponse, nil)
+		err := RunSnapshotLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunSnapshotLabelRemoveAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgSnapshotId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotList(testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, testLabelResourceErr)
+		rm.CloudApiV6Mocks.Label.EXPECT().SnapshotDelete(testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunSnapshotLabelRemove(cfg)
+		assert.Error(t, err)
 	})
 }
 
@@ -523,6 +802,102 @@ func TestRunServerLabelRemove(t *testing.T) {
 	})
 }
 
+func TestRunServerLabelRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
+		//viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunServerLabelRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunServerLabelRemoveAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerList(testLabelResourceVar, testLabelResourceVar).Return(resources.LabelResources{}, &testResponse, nil)
+		err := RunServerLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerLabelRemoveAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResourcesList, nil, testLabelResourceErr)
+		err := RunServerLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerLabelRemoveAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerList(testLabelResourceVar, testLabelResourceVar).Return(
+			resources.LabelResources{LabelResources: ionoscloud.LabelResources{Items: &[]ionoscloud.LabelResource{}}}, &testResponse, nil)
+		err := RunServerLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunServerLabelRemoveAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgServerId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testResponse, testLabelResourceErr)
+		rm.CloudApiV6Mocks.Label.EXPECT().ServerDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunServerLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunServerLabelRemoveErr(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -653,6 +1028,101 @@ func TestRunVolumeLabelRemove(t *testing.T) {
 		rm.CloudApiV6Mocks.Label.EXPECT().VolumeDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
 		err := RunVolumeLabelRemove(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunVolumeLabelRemoveAll(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunVolumeLabelRemove(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunVolumeLabelRemoveAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResourcesList, nil, testLabelResourceErr)
+		err := RunVolumeLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunVolumeLabelRemoveAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeList(testLabelResourceVar, testLabelResourceVar).Return(resources.LabelResources{}, &testResponse, nil)
+		err := RunVolumeLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunVolumeLabelRemoveAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeList(testLabelResourceVar, testLabelResourceVar).Return(
+			resources.LabelResources{LabelResources: ionoscloud.LabelResources{Items: &[]ionoscloud.LabelResource{}}}, &testResponse, nil)
+		err := RunVolumeLabelRemove(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunVolumeLabelRemoveAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgVolumeId), testLabelResourceVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeList(testLabelResourceVar, testLabelResourceVar).Return(testLabelResourcesList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testResponse, testLabelResourceErr)
+		rm.CloudApiV6Mocks.Label.EXPECT().VolumeDelete(testLabelResourceVar, testLabelResourceVar, testLabelResourceVar).Return(&testResponse, nil)
+		err := RunVolumeLabelRemove(cfg)
+		assert.Error(t, err)
 	})
 }
 

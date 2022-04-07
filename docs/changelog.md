@@ -1,5 +1,67 @@
 # Changelog
 
+## \[6.1.4\] (upcoming release)
+
+* enhancement: added `--backup-location` option for `ionosctl dbaas postgres cluster create` command
+* enhancement: added `--direction` option for `ionosctl dbaas postgres logs list` command
+* enhancement: added `--since` and `--until` option for `ionosctl dbaas postgres logs list` command, to easily specify timeframe for getting logs
+* dependency-update: added SDK-Go-DBaaS Postgres version [v1.0.2](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.2)
+
+## \[6.1.3\]
+
+* enhancement: added `--no-headers` option for GET commands, for text output (PR [#158](https://github.com/ionos-cloud/ionosctl/pull/158))
+
+## \[6.1.2\]
+
+* enhancement: added `SynchronizationMode` as `--cols` option for dbaas postgres cluster commands
+* enhancement: renamed methods for token commands according to the new updates from [v1.0.2](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.2)
+* dependency-update: added SDK-Go-DBaaS Postgres version [v1.0.1](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.1)
+* dependency-update: added SDK-Go-Auth version [v1.0.3](https://github.com/ionos-cloud/sdk-go-auth/releases/tag/v1.0.3)
+
+## \[6.1.1\]
+
+* bug-fix: `ionosctl k8s cluster` command supports now `--cols` option
+
+## \[6.1.0\]
+
+* new service: **Database as a Service (DBaaS) - Postgres**
+    * added the CLI commands for DBaaS Postgres under `dbaas postgres` namespace (PR [#155](https://github.com/ionos-cloud/ionosctl/pull/155)):
+      * `ionosctl dbaas postgres cluster`
+      * `ionosctl dbaas postgres logs`
+      * `ionosctl dbaas postgres backup`
+      * `ionosctl dbaas postgres version`
+      * `ionosctl dbaas postgres api-version`
+* dependency-update: added SDK-Go-DBaaS Postgres version [v1.0.0](https://github.com/ionos-cloud/sdk-go-dbaas-postgres/releases/tag/v1.0.0)
+
+## \[6.0.2\]
+
+* enhancement: added `--no-headers` option for list commands, for text output (PR [#153](https://github.com/ionos-cloud/ionosctl/pull/153))
+* documentation: separate documentation per service (PR [#148](https://github.com/ionos-cloud/ionosctl/pull/148))
+
+## \[6.0.1\]
+
+* enhancement: `--all` option iterates through all resources even if it hits error
+* enhancement: improved logs messages on `--all` option and request info
+
+## \[6.0.0\]
+
+* feature: added `--password` on `ionosctl user update` command
+* feature: updated code for `ionosctl k8s nodepool` commands in sync with the changes from SDK Go
+* bug-fix: `ionosctl lan create` command supports now `--cols` option
+* dependency-update: added SDK-Go version `v6.0.0-beta.9` to `v6.0.0`
+
+## \[6.0.0-beta.8\]
+
+* feature: added `token` commands, added support for Auth API, to generate, list, delete Tokens
+* dependency-update: added SDK-Go-Auth version v1.0.1
+
+## \[6.0.0-beta.7\]
+
+* feature: added `--filters`, `--max-results`, `--order-by` options on all list commands
+* feature: added `-all` option for remove and detach commands
+* enhancement: added completion support for `--k8s-version` option
+* dependency-update: SDK-Go version from v6.0.0-beta.6 to v6.0.0-beta.9
+
 ## \[6.0.0-beta.6\]
 
 * bug-fix: fixed `login` command to support username and password or token authentication

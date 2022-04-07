@@ -8,8 +8,11 @@ import (
 	"os"
 	"strconv"
 
+	"go.uber.org/multierr"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -50,9 +53,9 @@ func VolumeCmd() *core.Command {
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List Volumes",
-		LongDesc:   "Use this command to list all Volumes from a Data Center on your account.\n\nRequired values to run command:\n\n* Data Center Id",
+		LongDesc:   "Use this command to list all Volumes from a Data Center on your account.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id",
 		Example:    listVolumeExample,
-		PreCmdRun:  PreRunDataCenterId,
+		PreCmdRun:  PreRunVolumeList,
 		CmdRun:     RunVolumeList,
 		InitClient: true,
 	})
@@ -60,6 +63,16 @@ func VolumeCmd() *core.Command {
 	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -84,6 +97,7 @@ func VolumeCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgVolumeId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.VolumesIds(os.Stderr, viper.GetString(core.GetFlagName(get.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Create Command
@@ -238,6 +252,16 @@ Required values to run command:
 	return volumeCmd
 }
 
+func PreRunVolumeList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.VolumesFilters(), completer.VolumesFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcVolumeIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgVolumeId)
 }
@@ -267,9 +291,28 @@ func PreRunVolumeCreate(c *core.PreCommandConfig) error {
 
 func RunVolumeList(c *core.CommandConfig) error {
 	c.Printer.Verbose("Listing Volumes from Datacenter with ID: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
-	volumes, resp, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["size"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.GigaBytes)
+				if err != nil {
+					return err
+				}
+				filters["size"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	volumes, resp, err := c.CloudApiV6Services.Volumes().List(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -285,7 +328,7 @@ func RunVolumeGet(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)),
 	)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -299,9 +342,8 @@ func RunVolumeCreate(c *core.CommandConfig) error {
 		return err
 	}
 	vol, resp, err := c.CloudApiV6Services.Volumes().Create(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)), *input)
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -319,8 +361,8 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 	}
 	vol, resp, err := c.CloudApiV6Services.Volumes().Update(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId)), *input)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -332,34 +374,30 @@ func RunVolumeUpdate(c *core.CommandConfig) error {
 }
 
 func RunVolumeDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllVolumes(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllVolumes(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
 		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete volume"); err != nil {
 			return err
 		}
 		c.Printer.Verbose("Starting deleting Volume with id: %v...", volumeId)
-		resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, volumeId)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		resp, err := c.CloudApiV6Services.Volumes().Delete(dcId, volumeId)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
 		}
-
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getVolumePrint(resp, c, nil))
 	}
-	return c.Printer.Print(getVolumePrint(resp, c, nil))
 }
 
 func getNewVolume(c *core.CommandConfig) (*resources.Volume, error) {
@@ -521,48 +559,61 @@ func getVolumeInfo(c *core.CommandConfig) (*resources.VolumeProperties, error) {
 	return &input, nil
 }
 
-func DeleteAllVolumes(c *core.CommandConfig) (*resources.Response, error) {
+func DeleteAllVolumes(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
-	fmt.Printf("Volumes to be deleted:")
-	volumes, resp, err := c.CloudApiV6Services.Volumes().List(dcId)
+	c.Printer.Verbose("Datacenter ID: %v", dcId)
+	c.Printer.Verbose("Getting Volumes...")
+	volumes, resp, err := c.CloudApiV6Services.Volumes().List(dcId, resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
-		for _, volume := range *volumesItems {
-			if id, ok := volume.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Volume Id: " + *id)
-			}
-			if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Volume Name: " + *name)
+		if len(*volumesItems) > 0 {
+			_ = c.Printer.Print("Volumes to be deleted:")
+			for _, volume := range *volumesItems {
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					_ = c.Printer.Print("Volume Id: " + *id)
+				}
+				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						_ = c.Printer.Print("Volume Name: " + *name)
+					}
 				}
 			}
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Volumes...")
-
-		for _, volume := range *volumesItems {
-			if id, ok := volume.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Datacenter ID: %v", dcId)
-				c.Printer.Verbose("Starting deleting Volume with id: %v is...", *id)
-				resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Volumes"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Volumes...")
+			var multiErr error
+			for _, volume := range *volumesItems {
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Volume with id: %v is...", *id)
+					resp, err = c.CloudApiV6Services.Volumes().Delete(dcId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
+			if multiErr != nil {
+				return multiErr
+			}
+			return nil
+		} else {
+			return errors.New("no Volumes found")
 		}
+	} else {
+		return errors.New("could not get items of Volumes")
 	}
-	return resp, err
 }
 
 // Server Volume Commands
@@ -630,9 +681,9 @@ Required values to run command:
 		Verb:       "list",
 		Aliases:    []string{"l", "ls"},
 		ShortDesc:  "List attached Volumes from a Server",
-		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
+		LongDesc:   "Use this command to retrieve a list of Volumes attached to the Server.\n\nYou can filter the results using `--filters` option. Use the following format to set filters: `--filters KEY1=VALUE1,KEY2=VALUE2`.\n" + completer.VolumesFiltersUsage() + "\n\nRequired values to run command:\n\n* Data Center Id\n* Server Id",
 		Example:    listVolumesServerExample,
-		PreCmdRun:  PreRunDcServerIds,
+		PreCmdRun:  PreRunServerVolumeList,
 		CmdRun:     RunServerVolumesList,
 		InitClient: true,
 	})
@@ -648,6 +699,16 @@ Required values to run command:
 	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgServerId, func(cmd *cobra.Command, ags []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ServersIds(os.Stderr, viper.GetString(core.GetFlagName(listVolumes.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
+	listVolumes.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	listVolumes.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	listVolumes.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = listVolumes.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.VolumesFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	listVolumes.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Volume Command
@@ -700,7 +761,7 @@ Required values to run command:
 * Server Id
 * Volume Id`,
 		Example:    detachVolumeServerExample,
-		PreCmdRun:  PreRunDcServerVolumeIds,
+		PreCmdRun:  PreRunDcServerVolumeDetach,
 		CmdRun:     RunServerVolumeDetach,
 		InitClient: true,
 	})
@@ -723,12 +784,30 @@ Required values to run command:
 	})
 	detachVolume.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Volume detachment to be executed")
 	detachVolume.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, config.DefaultTimeoutSeconds, "Timeout option for Request for Volume detachment [seconds]")
+	detachVolume.AddBoolFlag(cloudapiv6.ArgAll, cloudapiv6.ArgAllShort, false, "Detach all Volumes.")
 
 	return serverVolumeCmd
 }
 
+func PreRunServerVolumeList(c *core.PreCommandConfig) error {
+	if err := core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId); err != nil {
+		return err
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.VolumesFilters(), completer.VolumesFiltersUsage())
+	}
+	return nil
+}
+
 func PreRunDcServerVolumeIds(c *core.PreCommandConfig) error {
 	return core.CheckRequiredFlags(c.Command, c.NS, cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgVolumeId)
+}
+
+func PreRunDcServerVolumeDetach(c *core.PreCommandConfig) error {
+	return core.CheckRequiredFlagsSets(c.Command, c.NS,
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgVolumeId},
+		[]string{cloudapiv6.ArgDataCenterId, cloudapiv6.ArgServerId, cloudapiv6.ArgAll},
+	)
 }
 
 func RunServerVolumeAttach(c *core.CommandConfig) error {
@@ -738,6 +817,9 @@ func RunServerVolumeAttach(c *core.CommandConfig) error {
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Attaching Volume with ID: %v to Server with ID: %v...", volumeId, serverId)
 	attachedVol, resp, err := c.CloudApiV6Services.Servers().AttachVolume(dcId, serverId, volumeId)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -753,7 +835,29 @@ func RunServerVolumesList(c *core.CommandConfig) error {
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Listing attached Volumes from Server with ID: %v...", serverId)
-	attachedVols, _, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId)
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		if listQueryParams.Filters != nil {
+			filters := *listQueryParams.Filters
+			if val, ok := filters["size"]; ok {
+				convertedSize, err := utils.ConvertSize(val, utils.GigaBytes)
+				if err != nil {
+					return err
+				}
+				filters["size"] = strconv.Itoa(convertedSize)
+				listQueryParams.Filters = &filters
+			}
+		}
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	attachedVols, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId, listQueryParams)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -766,7 +870,10 @@ func RunServerVolumeGet(c *core.CommandConfig) error {
 	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
 	c.Printer.Verbose("Getting attached Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
-	attachedVol, _, err := c.CloudApiV6Services.Servers().GetVolume(dcId, serverId, volumeId)
+	attachedVol, resp, err := c.CloudApiV6Services.Servers().GetVolume(dcId, serverId, volumeId)
+	if resp != nil {
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
+	}
 	if err != nil {
 		return err
 	}
@@ -774,22 +881,93 @@ func RunServerVolumeGet(c *core.CommandConfig) error {
 }
 
 func RunServerVolumeDetach(c *core.CommandConfig) error {
-	if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server"); err != nil {
-		return err
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DetachAllServerVolumes(c); err != nil {
+			return err
+		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
+	} else {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach volume from server"); err != nil {
+			return err
+		}
+		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
+		serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
+		volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
+		c.Printer.Verbose("Datacenter ID: %v", dcId)
+		c.Printer.Verbose("Detaching Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
+		resp, err := c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, volumeId)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+		}
+		if err != nil {
+			return err
+		}
+		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+			return err
+		}
+		return c.Printer.Print(getVolumePrint(resp, c, nil))
 	}
+}
+
+func DetachAllServerVolumes(c *core.CommandConfig) error {
 	dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 	serverId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgServerId))
-	volumeId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgVolumeId))
 	c.Printer.Verbose("Datacenter ID: %v", dcId)
-	c.Printer.Verbose("Detaching Volume with ID: %v from Server with ID: %v...", volumeId, serverId)
-	resp, err := c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, volumeId)
+	c.Printer.Verbose("Server ID: %v", serverId)
+	c.Printer.Verbose("Getting Volumes...")
+	volumes, resp, err := c.CloudApiV6Services.Servers().ListVolumes(dcId, serverId, resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}
-	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-		return err
+	if volumesItems, ok := volumes.GetItemsOk(); ok && volumesItems != nil {
+		if len(*volumesItems) > 0 {
+			_ = c.Printer.Print("Volumes to be detached:")
+			for _, volume := range *volumesItems {
+				toPrint := ""
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					toPrint += "Volume Id: " + *id
+				}
+				if properties, ok := volume.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Volume Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
+			}
+			if err := utils.AskForConfirm(c.Stdin, c.Printer, "detach all the Volumes"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Detaching all the Volumes...")
+			var multiErr error
+			for _, volume := range *volumesItems {
+				if id, ok := volume.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting detaching Volume with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.Servers().DetachVolume(dcId, serverId, *id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusRemovingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.WaitDeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
+				}
+			}
+			if multiErr != nil {
+				return multiErr
+			}
+			return nil
+		} else {
+			return errors.New("no Volumes found")
+		}
+	} else {
+		return errors.New("could not get items of Volumes")
 	}
-	return c.Printer.Print(getVolumePrint(resp, c, nil))
 }
 
 // Output Printing
@@ -873,11 +1051,13 @@ func getVolumesCols(flagName string, outErr io.Writer) []string {
 }
 
 func getVolumes(volumes resources.Volumes) []resources.Volume {
-	vs := make([]resources.Volume, 0)
-	for _, s := range *volumes.Items {
-		vs = append(vs, resources.Volume{Volume: s})
+	volumeObjs := make([]resources.Volume, 0)
+	if items, ok := volumes.GetItemsOk(); ok && items != nil {
+		for _, volume := range *items {
+			volumeObjs = append(volumeObjs, resources.Volume{Volume: volume})
+		}
 	}
-	return vs
+	return volumeObjs
 }
 
 func getVolume(vol *resources.Volume) []resources.Volume {

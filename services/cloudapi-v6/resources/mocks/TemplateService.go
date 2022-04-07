@@ -51,9 +51,9 @@ func (mr *MockTemplatesServiceMockRecorder) Get(templateId interface{}) *gomock.
 }
 
 // List mocks base method.
-func (m *MockTemplatesService) List() (resources.Templates, *resources.Response, error) {
+func (m *MockTemplatesService) List(params resources.ListQueryParams) (resources.Templates, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", params)
 	ret0, _ := ret[0].(resources.Templates)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -61,7 +61,7 @@ func (m *MockTemplatesService) List() (resources.Templates, *resources.Response,
 }
 
 // List indicates an expected call of List.
-func (mr *MockTemplatesServiceMockRecorder) List() *gomock.Call {
+func (mr *MockTemplatesServiceMockRecorder) List(params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTemplatesService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTemplatesService)(nil).List), params)
 }

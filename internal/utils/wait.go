@@ -19,6 +19,7 @@ const (
 
 const (
 	stateProgressCircleTpl   = `{{ etime . }} {{ "Waiting for state" }}{{ cycle . "." ".. " "..." "...." }}`
+	deleteProgressCircleTpl  = `{{ etime . }} {{ "Waiting for deletion" }}{{ cycle . "." ".. " "..." "...." }}`
 	requestProgressCircleTpl = `{{ etime . }} {{ "Waiting for request" }}{{ cycle . "." ".. " "..." "...." }}`
 )
 
@@ -100,6 +101,49 @@ func WaitForState(c *core2.CommandConfig, interrogator InterrogateStateFunc, res
 		} else {
 			c.Printer.Print(waitingForStateMsg)
 			_, errCh := WatchStateProgress(ctxTimeout, c, interrogator, resourceId)
+			if err := <-errCh; err != nil {
+				c.Printer.Print(failed)
+				return err
+			}
+			c.Printer.Print(done)
+		}
+		return nil
+	}
+}
+
+type InterrogateDeletionFunc func(c *core2.CommandConfig, resourceId string) (*int, error)
+
+func WaitForDelete(c *core2.CommandConfig, interrogator InterrogateDeletionFunc, resourceId string) error {
+	if !viper.GetBool(core2.GetFlagName(c.NS, config.ArgWaitForDelete)) {
+		// Double Check: return if flag not set
+		return nil
+	} else {
+		// Set context timeout
+		timeout := viper.GetInt(core2.GetFlagName(c.NS, config.ArgTimeout))
+		if timeout == 0 {
+			timeout = config.DefaultTimeoutSeconds
+		}
+		ctxTimeout, cancel := context.WithTimeout(c.Context, time.Duration(timeout)*time.Second)
+		defer cancel()
+
+		// Check the output format
+		if viper.GetString(config.ArgOutput) == printer.TypeText.String() {
+			progress := pb.New(1)
+			progress.SetWriter(c.Printer.GetStdout())
+			progress.SetTemplateString(deleteProgressCircleTpl)
+			progress.Start()
+			defer progress.Finish()
+
+			// WaitForDelete monitors the http Response Status Code.
+			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
+			if err := <-errCh; err != nil {
+				progress.SetTemplateString(deleteProgressCircleTpl + " " + failed)
+				return err
+			}
+			progress.SetTemplateString(deleteProgressCircleTpl + " " + done)
+		} else {
+			c.Printer.Print(waitingForStateMsg)
+			_, errCh := WatchDeletionProgress(ctxTimeout, c, interrogator, resourceId)
 			if err := <-errCh; err != nil {
 				c.Printer.Print(failed)
 				return err

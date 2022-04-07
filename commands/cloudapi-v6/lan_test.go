@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"testing"
@@ -88,6 +89,50 @@ func TestLanCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestPreRunLansList(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		err := PreRunLansList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunLansListFilters(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("createdBy=%s", testQueryParamVar)})
+		err := PreRunLansList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPreRunLansListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.PreCmdConfigTest(t, w, func(cfg *core.PreCommandConfig) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		err := PreRunLansList(cfg)
+		assert.Error(t, err)
+	})
+}
+
 func TestRunLanList(t *testing.T) {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
@@ -97,7 +142,25 @@ func TestRunLanList(t *testing.T) {
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgVerbose, true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar).Return(ls, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, resources.ListQueryParams{}).Return(ls, &testResponse, nil)
+		err := RunLanList(cfg)
+		assert.NoError(t, err)
+	})
+}
+
+func TestRunLanListQueryParams(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgVerbose, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgFilters), []string{fmt.Sprintf("%s=%s", testQueryParamVar, testQueryParamVar)})
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgOrderBy), testQueryParamVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgMaxResults), testMaxResultsVar)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, testListQueryParam).Return(resources.Lans{}, &testResponse, nil)
 		err := RunLanList(cfg)
 		assert.NoError(t, err)
 	})
@@ -111,7 +174,7 @@ func TestRunLanListErr(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
-		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar).Return(ls, nil, testLanErr)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, resources.ListQueryParams{}).Return(ls, nil, testLanErr)
 		err := RunLanList(cfg)
 		assert.Error(t, err)
 	})
@@ -311,17 +374,85 @@ func TestRunLanDeleteAll(t *testing.T) {
 		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
 		viper.Set(config.ArgQuiet, false)
 		viper.Set(config.ArgForce, true)
-		//viper.Set(config.ArgVerbose, true)
-		//viper.Set(config.ArgServerUrl, config.DefaultApiURL)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
-		// testLanVar
-		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar).Return(lansList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, resources.ListQueryParams{}).Return(lansList, &testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Delete(testLanVar, testLanVar).Return(&testResponse, nil)
 		rm.CloudApiV6Mocks.Lan.EXPECT().Delete(testLanVar, testLanVar).Return(&testResponse, nil)
 		err := RunLanDelete(cfg)
 		assert.NoError(t, err)
+	})
+}
+
+func TestRunLanDeleteAllListErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, resources.ListQueryParams{}).Return(lansList, nil, testLanErr)
+		err := RunLanDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunLanDeleteAllItemsErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, resources.ListQueryParams{}).Return(resources.Lans{}, &testResponse, nil)
+		err := RunLanDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunLanDeleteAllLenErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, resources.ListQueryParams{}).Return(
+			resources.Lans{Lans: ionoscloud.Lans{Items: &[]ionoscloud.Lan{}}}, &testResponse, nil)
+		err := RunLanDelete(cfg)
+		assert.Error(t, err)
+	})
+}
+
+func TestRunLanDeleteAllErr(t *testing.T) {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b)
+	core.CmdConfigTest(t, w, func(cfg *core.CommandConfig, rm *core.ResourcesMocksTest) {
+		viper.Reset()
+		viper.Set(config.ArgOutput, config.DefaultOutputFormat)
+		viper.Set(config.ArgQuiet, false)
+		viper.Set(config.ArgForce, true)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDataCenterId), testLanVar)
+		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForRequest), false)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAll), true)
+		rm.CloudApiV6Mocks.Lan.EXPECT().List(testLanVar, resources.ListQueryParams{}).Return(lansList, &testResponse, nil)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Delete(testLanVar, testLanVar).Return(&testResponse, testLanErr)
+		rm.CloudApiV6Mocks.Lan.EXPECT().Delete(testLanVar, testLanVar).Return(&testResponse, nil)
+		err := RunLanDelete(cfg)
+		assert.Error(t, err)
 	})
 }
 

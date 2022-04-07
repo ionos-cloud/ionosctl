@@ -6,10 +6,12 @@ import (
 	"io"
 	"os"
 
-	config2 "github.com/ionos-cloud/ionosctl/internal/config"
+	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/printer"
 	"github.com/ionos-cloud/ionosctl/internal/utils/clierror"
-	"github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
+	authV1 "github.com/ionos-cloud/ionosctl/services/auth-v1"
+	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
+	cloudapidbaaspgsql "github.com/ionos-cloud/ionosctl/services/dbaas-postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -23,7 +25,8 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		Example: info.Example,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			// Set Printer in sync with the Output Flag
-			p := getPrinter()
+			noHeaders, _ := cmd.Flags().GetBool(config.ArgNoHeaders)
+			p := getPrinter(noHeaders)
 			// Set Command to Command Builder
 			// The cmd is passed to the PreCommandCfg
 			info.Command = &Command{Command: cmd}
@@ -34,7 +37,8 @@ func NewCommand(ctx context.Context, parent *Command, info CommandBuilder) *Comm
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			// Set Printer in sync with the Output Flag
-			p := getPrinter()
+			noHeaders, _ := cmd.Flags().GetBool(config.ArgNoHeaders)
+			p := getPrinter(noHeaders)
 			// Set Buffers
 			cmd.SetIn(os.Stdin)
 			cmd.SetOut(p.GetStdout())
@@ -108,7 +112,7 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 		// Define cmd Command Config function for Command
 		initCfg: func(c *CommandConfig) error {
 			// Load configuration file or Env Variables once
-			if err := config2.Load(); err != nil {
+			if err := config.Load(); err != nil {
 				return err
 			}
 			// Init Clients and Services
@@ -117,6 +121,20 @@ func NewCommandCfg(ctx context.Context, in io.Reader, p printer.PrintService, in
 				return err
 			}
 			if err = c.CloudApiV6Services.InitServices(computeClient); err != nil {
+				return err
+			}
+			authClient, err := c.AuthV1Services.InitClient()
+			if err != nil {
+				return err
+			}
+			if err = c.AuthV1Services.InitServices(authClient); err != nil {
+				return err
+			}
+			dbaasPgsqlClient, err := c.CloudApiDbaasPgsqlServices.InitClient()
+			if err != nil {
+				return err
+			}
+			if err = c.CloudApiDbaasPgsqlServices.InitServices(dbaasPgsqlClient); err != nil {
 				return err
 			}
 			return nil
@@ -152,21 +170,23 @@ type CommandConfig struct {
 	initCfg func(commandConfig *CommandConfig) error
 
 	// Services
-	CloudApiV6Services cloudapi_v6.Services
+	CloudApiV6Services         cloudapiv6.Services
+	AuthV1Services             authV1.Services
+	CloudApiDbaasPgsqlServices cloudapidbaaspgsql.Services
 
 	// Context
 	Context context.Context
 }
 
-func getPrinter() printer.PrintService {
+func getPrinter(noHeaders bool) printer.PrintService {
 	var out io.Writer
-	if viper.GetBool(config2.ArgQuiet) {
+	if viper.GetBool(config.ArgQuiet) {
 		var execOut bytes.Buffer
 		out = &execOut
 	} else {
 		out = os.Stdout
 	}
-	printReg, err := printer.NewPrinterRegistry(out, os.Stderr)
+	printReg, err := printer.NewPrinterRegistry(out, os.Stderr, noHeaders)
 	clierror.CheckError(err, os.Stderr)
-	return printReg[viper.GetString(config2.ArgOutput)]
+	return printReg[viper.GetString(config.ArgOutput)]
 }

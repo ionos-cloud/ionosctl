@@ -82,9 +82,9 @@ func (mr *MockFirewallRulesServiceMockRecorder) Get(datacenterId, serverId, nicI
 }
 
 // List mocks base method.
-func (m *MockFirewallRulesService) List(datacenterId, serverId, nicId string) (resources.FirewallRules, *resources.Response, error) {
+func (m *MockFirewallRulesService) List(datacenterId, serverId, nicId string, params resources.ListQueryParams) (resources.FirewallRules, *resources.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", datacenterId, serverId, nicId)
+	ret := m.ctrl.Call(m, "List", datacenterId, serverId, nicId, params)
 	ret0, _ := ret[0].(resources.FirewallRules)
 	ret1, _ := ret[1].(*resources.Response)
 	ret2, _ := ret[2].(error)
@@ -92,9 +92,9 @@ func (m *MockFirewallRulesService) List(datacenterId, serverId, nicId string) (r
 }
 
 // List indicates an expected call of List.
-func (mr *MockFirewallRulesServiceMockRecorder) List(datacenterId, serverId, nicId interface{}) *gomock.Call {
+func (mr *MockFirewallRulesServiceMockRecorder) List(datacenterId, serverId, nicId, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockFirewallRulesService)(nil).List), datacenterId, serverId, nicId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockFirewallRulesService)(nil).List), datacenterId, serverId, nicId, params)
 }
 
 // Update mocks base method.

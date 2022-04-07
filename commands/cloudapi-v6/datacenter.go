@@ -3,11 +3,15 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
+	"go.uber.org/multierr"
+
 	"github.com/fatih/structs"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/completer"
+	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/query"
 	"github.com/ionos-cloud/ionosctl/commands/cloudapi-v6/waiter"
 	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
@@ -41,18 +45,31 @@ func DatacenterCmd() *core.Command {
 	/*
 		List Command
 	*/
-	core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
-		Namespace:  "datacenter",
-		Resource:   "datacenter",
-		Verb:       "list",
-		Aliases:    []string{"l", "ls"},
-		ShortDesc:  "List Data Centers",
-		LongDesc:   "Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account.",
+	list := core.NewCommand(ctx, datacenterCmd, core.CommandBuilder{
+		Namespace: "datacenter",
+		Resource:  "datacenter",
+		Verb:      "list",
+		Aliases:   []string{"l", "ls"},
+		ShortDesc: "List Data Centers",
+		LongDesc: `Use this command to retrieve a complete list of Virtual Data Centers provisioned under your account. You can setup multiple query parameters.
+
+You can filter the results using ` + "`" + `--filters` + "`" + ` option. Use the following format to set filters: ` + "`" + `--filters KEY1=VALUE1,KEY2=VALUE2` + "`" + `
+` + completer.DataCentersFiltersUsage(),
 		Example:    listDatacenterExample,
-		PreCmdRun:  core.NoPreRun,
+		PreCmdRun:  PreRunDataCenterList,
 		CmdRun:     RunDataCenterList,
 		InitClient: true,
 	})
+	list.AddIntFlag(cloudapiv6.ArgMaxResults, cloudapiv6.ArgMaxResultsShort, 0, "The maximum number of elements to return")
+	list.AddStringFlag(cloudapiv6.ArgOrderBy, "", "", "Limits results to those containing a matching value for a specific property")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgOrderBy, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddStringSliceFlag(cloudapiv6.ArgFilters, cloudapiv6.ArgFiltersShort, []string{""}, "Limits results to those containing a matching value for a specific property. Use the following format to set filters: --filters KEY1=VALUE1,KEY2=VALUE2")
+	_ = list.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgFilters, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completer.DataCentersFilters(), cobra.ShellCompDirectiveNoFileComp
+	})
+	list.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Get Command
@@ -73,6 +90,7 @@ func DatacenterCmd() *core.Command {
 	_ = get.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	get.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	/*
 		Create Command
@@ -175,10 +193,25 @@ func PreRunDataCenterDelete(c *core.PreCommandConfig) error {
 	)
 }
 
+func PreRunDataCenterList(c *core.PreCommandConfig) error {
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgFilters)) {
+		return query.ValidateFilters(c, completer.DataCentersFilters(), completer.DataCentersFiltersUsage())
+	}
+	return nil
+}
+
 func RunDataCenterList(c *core.CommandConfig) error {
-	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List()
+	// Add Query Parameters for GET Requests
+	listQueryParams, err := query.GetListQueryParams(c)
+	if err != nil {
+		return err
+	}
+	if !structs.IsZero(listQueryParams) {
+		c.Printer.Verbose("Query Parameters set: %v", utils.GetPropertiesKVSet(listQueryParams))
+	}
+	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(listQueryParams)
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -190,7 +223,7 @@ func RunDataCenterGet(c *core.CommandConfig) error {
 	c.Printer.Verbose("Getting Datacenter with ID: %v...", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -204,14 +237,12 @@ func RunDataCenterCreate(c *core.CommandConfig) error {
 	loc := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLocation))
 	c.Printer.Verbose("Properties set for creating the datacenter: Name: %v, Description: %v, Location: %v", name, description, loc)
 	dc, resp, err := c.CloudApiV6Services.DataCenters().Create(name, description, loc)
-	if resp != nil {
-		c.Printer.Verbose("Request href: %v ", resp.Header.Get("location"))
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
@@ -234,13 +265,12 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 		viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId)),
 		input,
 	)
-	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+	if resp != nil && printer.GetId(resp) != "" {
+		c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
-
 	if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 		return err
 	}
@@ -248,75 +278,86 @@ func RunDataCenterUpdate(c *core.CommandConfig) error {
 }
 
 func RunDataCenterDelete(c *core.CommandConfig) error {
-	var resp *resources.Response
-	var err error
-	allFlag := viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll))
-	if allFlag {
-		resp, err = DeleteAllDatacenters(c)
-		if err != nil {
+	if viper.GetBool(core.GetFlagName(c.NS, cloudapiv6.ArgAll)) {
+		if err := DeleteAllDatacenters(c); err != nil {
 			return err
 		}
+		return c.Printer.Print(printer.Result{Resource: c.Resource, Verb: c.Verb})
 	} else {
-		if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
+		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete data center"); err != nil {
 			return err
 		}
 		dcId := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgDataCenterId))
 		c.Printer.Verbose("Starting deleting Datacenter with ID: %v...", dcId)
-		resp, err = c.CloudApiV6Services.DataCenters().Delete(dcId)
-		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		resp, err := c.CloudApiV6Services.DataCenters().Delete(dcId)
+		if resp != nil && printer.GetId(resp) != "" {
+			c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
 		}
 		if err != nil {
 			return err
 		}
-
 		if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
 			return err
 		}
+		return c.Printer.Print(getDataCenterPrint(resp, c, nil))
 	}
-	return c.Printer.Print(getDataCenterPrint(resp, c, nil))
 }
 
-func DeleteAllDatacenters(c *core.CommandConfig) (*resources.Response, error) {
-	_ = c.Printer.Print("Datacenters to be deleted:")
-	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List()
+func DeleteAllDatacenters(c *core.CommandConfig) error {
+	c.Printer.Verbose("Getting Datacenters...")
+	datacenters, resp, err := c.CloudApiV6Services.DataCenters().List(resources.ListQueryParams{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if datacentersItems, ok := datacenters.GetItemsOk(); ok && datacentersItems != nil {
-		for _, dc := range *datacentersItems {
-			if id, ok := dc.GetIdOk(); ok && id != nil {
-				_ = c.Printer.Print("Datacenter Id: " + *id)
+		if len(*datacentersItems) > 0 {
+			_ = c.Printer.Print("Datacenters to be deleted:")
+			for _, dc := range *datacentersItems {
+				toPrint := ""
+				if id, ok := dc.GetIdOk(); ok && id != nil {
+					toPrint += "Datacenter Id: " + *id
+				}
+				if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
+					if name, ok := properties.GetNameOk(); ok && name != nil {
+						toPrint += " Datacenter Name: " + *name
+					}
+				}
+				_ = c.Printer.Print(toPrint)
 			}
-			if properties, ok := dc.GetPropertiesOk(); ok && properties != nil {
-				if name, ok := properties.GetNameOk(); ok && name != nil {
-					_ = c.Printer.Print("Datacenter Name: " + *name)
+			if err = utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
+				return err
+			}
+			c.Printer.Verbose("Deleting all the Datacenters...")
+			var multiErr error
+			for _, dc := range *datacentersItems {
+				if id, ok := dc.GetIdOk(); ok && id != nil {
+					c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
+					resp, err = c.CloudApiV6Services.DataCenters().Delete(*id)
+					if resp != nil && printer.GetId(resp) != "" {
+						c.Printer.Verbose(config.RequestInfoMessage, printer.GetId(resp), resp.RequestTime)
+					}
+					if err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					} else {
+						_ = c.Printer.Print(fmt.Sprintf(config.StatusDeletingAll, c.Resource, *id))
+					}
+					if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
+						multiErr = multierr.Append(multiErr, fmt.Errorf(config.DeleteAllAppendErr, c.Resource, *id, err))
+						continue
+					}
 				}
 			}
-		}
-		if err := utils.AskForConfirm(c.Stdin, c.Printer, "delete all the Datacenters"); err != nil {
-			return nil, err
-		}
-		c.Printer.Verbose("Deleting all the Datacenters...")
-
-		for _, dc := range *datacentersItems {
-			if id, ok := dc.GetIdOk(); ok && id != nil {
-				c.Printer.Verbose("Starting deleting Datacenter with id: %v...", *id)
-				resp, err = c.CloudApiV6Services.DataCenters().Delete(*id)
-				if resp != nil {
-					c.Printer.Verbose("Request Id: %v", printer.GetId(resp))
-					c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
-				}
-				if err != nil {
-					return nil, err
-				}
-				if err = utils.WaitForRequest(c, waiter.RequestInterrogator, printer.GetId(resp)); err != nil {
-					return nil, err
-				}
+			if multiErr != nil {
+				return multiErr
 			}
+			return nil
+		} else {
+			return errors.New("no Datacenters found")
 		}
+	} else {
+		return errors.New("could not get items of Datacenters")
 	}
-	return resp, err
 }
 
 // Output Printing
@@ -389,8 +430,10 @@ func getDataCenterCols(flagName string, outErr io.Writer) []string {
 
 func getDataCenters(datacenters resources.Datacenters) []resources.Datacenter {
 	dc := make([]resources.Datacenter, 0)
-	for _, d := range *datacenters.Items {
-		dc = append(dc, resources.Datacenter{Datacenter: d})
+	if items, ok := datacenters.GetItemsOk(); ok && items != nil {
+		for _, datacenter := range *items {
+			dc = append(dc, resources.Datacenter{Datacenter: datacenter})
+		}
 	}
 	return dc
 }

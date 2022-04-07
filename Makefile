@@ -2,6 +2,8 @@
 
 ## Include Services Makefile Targets
 include ./tools/cloudapi-v6/cloudapi_v6.mk
+include ./tools/dbaas-postgres/dbaas_postgres.mk
+include ./tools/auth-v1/auth_v1.mk
 
 export CGO_ENABLED = 0
 export GO111MODULE := on
@@ -11,7 +13,7 @@ GOOS?=$(shell go env GOOS)
 GOARCH?=$(shell go env GOARCH)
 
 OUT_D?=$(shell pwd)/builds
-DOCS_OUT?=$(shell pwd)/docs/subcommands/
+DOCS_OUT?=$(shell pwd)/docs/subcommands
 
 .PHONY: test_unit
 test_unit:
@@ -20,24 +22,24 @@ test_unit:
 	@echo "DONE"
 
 .PHONY: test
-test: test_unit cloudapiv6_test
+test: test_unit cloudapiv6_test auth_v1_test dbaas_postgres_test
 
 .PHONY: mocks_update
-mocks_update: cloudapiv6_mocks_update
+mocks_update: cloudapiv6_mocks_update auth_v1_mocks_update dbaas_postgres_mocks_update
 	@echo "--- Update mocks ---"
 	@tools/regenerate_mocks.sh
 	@echo "DONE"
 
 .PHONY: docs_update
-docs_update:
-	@echo "--- Generate Markdown documentation in ${DOCS_OUT} ---"
+docs_update: dbaas_postgres_docs_update
+	@echo "--- Update documentation in ${DOCS_OUT} ---"
 	@mkdir -p ${DOCS_OUT}
-	@DOCS_OUT=${DOCS_OUT} go run tools/doc.go
+	@DOCS_OUT=${DOCS_OUT} tools/regenerate_doc.sh
 	@echo "DONE"
 
 .PHONY: gofmt_check
 gofmt_check:
-	@echo "--- Ensure code adheres to gofmt and list files whose formatting differs from gofmt's(vendor directory excluded) ---"
+	@echo "--- Ensure code adheres to gofmt and list files whose formatting differs(vendor directory excluded) ---"
 	@if [ "$(shell echo $$(gofmt -l ${GOFILES_NOVENDOR}))" != "" ]; then (echo "Format files: $(shell echo $$(gofmt -l ${GOFILES_NOVENDOR})) Hint: use \`make gofmt_update\`"; exit 1); fi
 	@echo "DONE"
 
@@ -45,6 +47,12 @@ gofmt_check:
 gofmt_update:
 	@echo "--- Ensure code adheres to gofmt and change files accordingly(vendor directory excluded) ---"
 	@gofmt -w ${GOFILES_NOVENDOR}
+	@echo "DONE"
+
+.PHONY: goimports_update
+goimports_update:
+	@echo "--- Ensure code adheres to goimports and change files accordingly(vendor directory excluded) ---"
+	@goimports -w ${GOFILES_NOVENDOR}
 	@echo "DONE"
 
 .PHONY: vendor_status

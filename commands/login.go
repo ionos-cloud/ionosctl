@@ -125,7 +125,7 @@ func RunLoginUser(c *core.CommandConfig) error {
 	// Check the auth is correct
 	c.Printer.Verbose("Checking authentication...")
 	dcsSvc := resources.NewDataCenterService(clientSvc.Get(), context.TODO())
-	_, _, err = dcsSvc.List()
+	_, _, err = dcsSvc.List(resources.ListQueryParams{})
 	if err != nil {
 		return err
 	}

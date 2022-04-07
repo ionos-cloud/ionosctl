@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -84,21 +85,21 @@ type K8sMaintenanceWindow struct {
 
 // K8sService is a wrapper around ionoscloud.K8s
 type K8sService interface {
-	ListClusters() (K8sClusters, *Response, error)
+	ListClusters(params ListQueryParams) (K8sClusters, *Response, error)
 	GetCluster(clusterId string) (*K8sCluster, *Response, error)
 	CreateCluster(u K8sClusterForPost) (*K8sCluster, *Response, error)
 	UpdateCluster(clusterId string, input K8sClusterForPut) (*K8sCluster, *Response, error)
 	DeleteCluster(clusterId string) (*Response, error)
 	ReadKubeConfig(clusterId string) (string, *Response, error)
-	ListNodePools(clusterId string) (K8sNodePools, *Response, error)
+	ListNodePools(clusterId string, params ListQueryParams) (K8sNodePools, *Response, error)
 	GetNodePool(clusterId, nodepoolId string) (*K8sNodePool, *Response, error)
-	CreateNodePool(clusterId string, nodepool K8sNodePool) (*K8sNodePool, *Response, error)
+	CreateNodePool(clusterId string, nodepool K8sNodePoolForPost) (*K8sNodePool, *Response, error)
 	UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNodePoolForPut) (*K8sNodePool, *Response, error)
 	DeleteNodePool(clusterId, nodepoolId string) (*Response, error)
 	DeleteNode(clusterId, nodepoolId, nodeId string) (*Response, error)
 	RecreateNode(clusterId, nodepoolId, nodeId string) (*Response, error)
 	GetNode(clusterId, nodepoolId, nodeId string) (*K8sNode, *Response, error)
-	ListNodes(clusterId, nodepoolId string) (K8sNodes, *Response, error)
+	ListNodes(clusterId, nodepoolId string, params ListQueryParams) (K8sNodes, *Response, error)
 	ListVersions() ([]string, *Response, error)
 	GetVersion() (string, *Response, error)
 }
@@ -117,8 +118,21 @@ func NewK8sService(client *Client, ctx context.Context) K8sService {
 	}
 }
 
-func (s *k8sService) ListClusters() (K8sClusters, *Response, error) {
+func (s *k8sService) ListClusters(params ListQueryParams) (K8sClusters, *Response, error) {
 	req := s.client.KubernetesApi.K8sGet(s.context)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	dcs, res, err := s.client.KubernetesApi.K8sGetExecute(req)
 	return K8sClusters{dcs}, &Response{*res}, err
 }
@@ -153,8 +167,21 @@ func (s *k8sService) ReadKubeConfig(clusterId string) (string, *Response, error)
 	return file, &Response{*res}, err
 }
 
-func (s *k8sService) ListNodePools(clusterId string) (K8sNodePools, *Response, error) {
+func (s *k8sService) ListNodePools(clusterId string, params ListQueryParams) (K8sNodePools, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsGet(s.context, clusterId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	ns, res, err := s.client.KubernetesApi.K8sNodepoolsGetExecute(req)
 	return K8sNodePools{ns}, &Response{*res}, err
 }
@@ -165,14 +192,14 @@ func (s *k8sService) GetNodePool(clusterId, nodepoolId string) (*K8sNodePool, *R
 	return &K8sNodePool{ns}, &Response{*res}, err
 }
 
-func (s *k8sService) CreateNodePool(clusterId string, nodepool K8sNodePool) (*K8sNodePool, *Response, error) {
-	req := s.client.KubernetesApi.K8sNodepoolsPost(s.context, clusterId).KubernetesNodePool(nodepool.KubernetesNodePool)
+func (s *k8sService) CreateNodePool(clusterId string, nodepool K8sNodePoolForPost) (*K8sNodePool, *Response, error) {
+	req := s.client.KubernetesApi.K8sNodepoolsPost(s.context, clusterId).KubernetesNodePool(nodepool.KubernetesNodePoolForPost)
 	ns, res, err := s.client.KubernetesApi.K8sNodepoolsPostExecute(req)
 	return &K8sNodePool{ns}, &Response{*res}, err
 }
 
 func (s *k8sService) UpdateNodePool(clusterId, nodepoolId string, nodepool K8sNodePoolForPut) (*K8sNodePool, *Response, error) {
-	req := s.client.KubernetesApi.K8sNodepoolsPut(s.context, clusterId, nodepoolId).KubernetesNodePoolForPut(nodepool.KubernetesNodePoolForPut)
+	req := s.client.KubernetesApi.K8sNodepoolsPut(s.context, clusterId, nodepoolId).KubernetesNodePool(nodepool.KubernetesNodePoolForPut)
 	ns, res, err := s.client.KubernetesApi.K8sNodepoolsPutExecute(req)
 	return &K8sNodePool{ns}, &Response{*res}, err
 }
@@ -201,8 +228,21 @@ func (s *k8sService) GetNode(clusterId, nodepoolId, nodeId string) (*K8sNode, *R
 	return &K8sNode{n}, &Response{*res}, err
 }
 
-func (s *k8sService) ListNodes(clusterId, nodepoolId string) (K8sNodes, *Response, error) {
+func (s *k8sService) ListNodes(clusterId, nodepoolId string, params ListQueryParams) (K8sNodes, *Response, error) {
 	req := s.client.KubernetesApi.K8sNodepoolsNodesGet(s.context, clusterId, nodepoolId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	ns, res, err := s.client.KubernetesApi.K8sNodepoolsNodesGetExecute(req)
 	return K8sNodes{ns}, &Response{*res}, err
 }

@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 
+	"github.com/fatih/structs"
 	ionoscloud "github.com/ionos-cloud/sdk-go/v6"
 )
 
@@ -36,17 +37,17 @@ type NatGateways struct {
 
 // NatGatewaysService is a wrapper around ionoscloud.NatGateway
 type NatGatewaysService interface {
-	List(datacenterId string) (NatGateways, *Response, error)
+	List(datacenterId string, params ListQueryParams) (NatGateways, *Response, error)
 	Get(datacenterId, natGatewayId string) (*NatGateway, *Response, error)
 	Create(datacenterId string, input NatGateway) (*NatGateway, *Response, error)
 	Update(datacenterId, natGatewayId string, input NatGatewayProperties) (*NatGateway, *Response, error)
 	Delete(datacenterId, natGatewayId string) (*Response, error)
-	ListRules(datacenterId, natGatewayId string) (NatGatewayRules, *Response, error)
+	ListRules(datacenterId, natGatewayId string, params ListQueryParams) (NatGatewayRules, *Response, error)
 	GetRule(datacenterId, natGatewayId, ruleId string) (*NatGatewayRule, *Response, error)
 	CreateRule(datacenterId, natGatewayId string, input NatGatewayRule) (*NatGatewayRule, *Response, error)
 	UpdateRule(datacenterId, natGatewayId, ruleId string, input NatGatewayRuleProperties) (*NatGatewayRule, *Response, error)
 	DeleteRule(datacenterId, natGatewayId, ruleId string) (*Response, error)
-	ListFlowLogs(datacenterId, natGatewayId string) (FlowLogs, *Response, error)
+	ListFlowLogs(datacenterId, natGatewayId string, params ListQueryParams) (FlowLogs, *Response, error)
 	GetFlowLog(datacenterId, natGatewayId, flowlogId string) (*FlowLog, *Response, error)
 	CreateFlowLog(datacenterId, natGatewayId string, input FlowLog) (*FlowLog, *Response, error)
 	UpdateFlowLog(datacenterId, natGatewayId, flowlogId string, input *FlowLogProperties) (*FlowLog, *Response, error)
@@ -67,8 +68,21 @@ func NewNatGatewayService(client *Client, ctx context.Context) NatGatewaysServic
 	}
 }
 
-func (ds *natGatewaysService) List(datacenterId string) (NatGateways, *Response, error) {
+func (ds *natGatewaysService) List(datacenterId string, params ListQueryParams) (NatGateways, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysGet(ds.context, datacenterId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysGetExecute(req)
 	return NatGateways{s}, &Response{*res}, err
 }
@@ -97,8 +111,21 @@ func (ds *natGatewaysService) Delete(datacenterId, natGatewayId string) (*Respon
 	return &Response{*res}, err
 }
 
-func (ds *natGatewaysService) ListRules(datacenterId, natGatewayId string) (NatGatewayRules, *Response, error) {
+func (ds *natGatewaysService) ListRules(datacenterId, natGatewayId string, params ListQueryParams) (NatGatewayRules, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesGet(ds.context, datacenterId, natGatewayId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysRulesGetExecute(req)
 	return NatGatewayRules{s}, &Response{*res}, err
 }
@@ -127,8 +154,21 @@ func (ds *natGatewaysService) DeleteRule(datacenterId, natGatewayId, ruleId stri
 	return &Response{*res}, err
 }
 
-func (ds *natGatewaysService) ListFlowLogs(datacenterId, natGatewayId string) (FlowLogs, *Response, error) {
+func (ds *natGatewaysService) ListFlowLogs(datacenterId, natGatewayId string, params ListQueryParams) (FlowLogs, *Response, error) {
 	req := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsGet(ds.context, datacenterId, natGatewayId)
+	if !structs.IsZero(params) {
+		if params.Filters != nil {
+			for k, v := range *params.Filters {
+				req = req.Filter(k, v)
+			}
+		}
+		if params.OrderBy != nil {
+			req = req.OrderBy(*params.OrderBy)
+		}
+		if params.MaxResults != nil {
+			req = req.MaxResults(*params.MaxResults)
+		}
+	}
 	s, res, err := ds.client.NATGatewaysApi.DatacentersNatgatewaysFlowlogsGetExecute(req)
 	return FlowLogs{s}, &Response{*res}, err
 }

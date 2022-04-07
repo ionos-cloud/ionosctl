@@ -2,9 +2,9 @@ package commands
 
 import (
 	"context"
-	cloudapiv6 "github.com/ionos-cloud/ionosctl/services/cloudapi-v6"
 	"strings"
 
+	"github.com/ionos-cloud/ionosctl/internal/config"
 	"github.com/ionos-cloud/ionosctl/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -59,7 +59,7 @@ func K8sVersionCmd() *core.Command {
 func RunK8sVersionList(c *core.CommandConfig) error {
 	u, resp, err := c.CloudApiV6Services.K8s().ListVersions()
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
@@ -80,7 +80,7 @@ func getK8sVersion(c *core.CommandConfig) (string, error) {
 		k8sversion = strings.ReplaceAll(k8sversion, "\"", "")
 		k8sversion = strings.ReplaceAll(k8sversion, "\n", "")
 		if resp != nil {
-			c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+			c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 		}
 		return k8sversion, nil
 	} else {

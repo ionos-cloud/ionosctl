@@ -55,6 +55,7 @@ func IpconsumerCmd() *core.Command {
 	_ = listResources.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgIpBlockId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.IpBlocksIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
+	listResources.AddBoolFlag(config.ArgNoHeaders, "", false, "When using text output, don't print headers")
 
 	return resourceCmd
 }
@@ -62,12 +63,11 @@ func IpconsumerCmd() *core.Command {
 func RunIpConsumersList(c *core.CommandConfig) error {
 	ipBlock, resp, err := c.CloudApiV6Services.IpBlocks().Get(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgIpBlockId)))
 	if resp != nil {
-		c.Printer.Verbose(cloudapiv6.RequestTimeMessage, resp.RequestTime)
+		c.Printer.Verbose(config.RequestTimeMessage, resp.RequestTime)
 	}
 	if err != nil {
 		return err
 	}
-
 	if properties, ok := ipBlock.GetPropertiesOk(); ok && properties != nil {
 		if ipCons, ok := properties.GetIpConsumersOk(); ok && ipCons != nil {
 			ipsConsumers := make([]resources.IpConsumer, 0)

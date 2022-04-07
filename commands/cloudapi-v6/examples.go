@@ -12,15 +12,12 @@ const (
 		Data Center Examples
 	*/
 	listDatacenterExample = `ionosctl datacenter list
-
 ionosctl datacenter list --cols "DatacenterId,Name,Location,Version"`
 	getDatacenterExample    = `ionosctl datacenter get --datacenter-id DATACENTER_ID`
 	createDatacenterExample = `ionosctl datacenter create --name NAME --location LOCATION_ID
-
 ionosctl datacenter create --name NAME --location LOCATION_ID --wait-for-request`
 	updateDatacenterExample = `ionosctl datacenter update --datacenter-id DATACENTER_ID --description DESCRIPTION --cols "DatacenterId,Description"`
 	deleteDatacenterExample = `ionosctl datacenter delete --datacenter-id DATACENTER_ID
-
 ionosctl datacenter delete --datacenter-id DATACENTER_ID --force --wait-for-request`
 
 	/*
@@ -130,7 +127,7 @@ ionosctl image list --location us/las --type HDD --licence-type LINUX`
 	*/
 	listIpBlockExample     = `ionosctl ipblock list`
 	getIpBlockExample      = `ionosctl ipblock get --ipblock-id IPBLOCK_ID`
-	createIpBlockExample   = `ionosctl ipblock create --ipblock-name NAME --ipblock-location LOCATION_ID --ipblock-size IPBLOCK_SIZE`
+	createIpBlockExample   = `ionosctl ipblock create --name NAME --location LOCATION_ID --size IPBLOCK_SIZE`
 	updateIpBlockExample   = `ionosctl ipblock update --ipblock-id IPBLOCK_ID --ipblock-name NAME`
 	deleteIpBlockExample   = `ionosctl ipblock delete --ipblock-id IPBLOCK_ID --wait-for-request`
 	listIpConsumersExample = `ionosctl ipconsumer list --ipblock-id IPBLOCK_ID`
