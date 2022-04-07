@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.1.4] (upcoming release)
+## [6.1.4] (April 2022)
 
 - enhancement: added `--backup-location` option for `ionosctl dbaas postgres cluster create` command
 - enhancement: added `--direction` option for `ionosctl dbaas postgres logs list` command
