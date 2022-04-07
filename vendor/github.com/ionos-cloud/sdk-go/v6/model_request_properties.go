@@ -22,6 +22,24 @@ type RequestProperties struct {
 	Url     *string            `json:"url,omitempty"`
 }
 
+// NewRequestProperties instantiates a new RequestProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewRequestProperties() *RequestProperties {
+	this := RequestProperties{}
+
+	return &this
+}
+
+// NewRequestPropertiesWithDefaults instantiates a new RequestProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewRequestPropertiesWithDefaults() *RequestProperties {
+	this := RequestProperties{}
+	return &this
+}
+
 // GetMethod returns the Method field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *RequestProperties) GetMethod() *string {
@@ -176,19 +194,15 @@ func (o *RequestProperties) HasUrl() bool {
 
 func (o RequestProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Method != nil {
 		toSerialize["method"] = o.Method
 	}
-
 	if o.Headers != nil {
 		toSerialize["headers"] = o.Headers
 	}
-
 	if o.Body != nil {
 		toSerialize["body"] = o.Body
 	}
-
 	if o.Url != nil {
 		toSerialize["url"] = o.Url
 	}

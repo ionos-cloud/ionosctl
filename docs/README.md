@@ -39,7 +39,7 @@ For Windows users, you can download the latest release available on [Release Pag
 
 #### Building a local version\(on a Linux machine\)
 
-If you have a Go environment \(Go 1.14, Go 1.15, Go 1.16\) configured, you can build and install the development version of `ionosctl` with:
+If you have a Go environment \(e.g. Go 1.17\) configured, you can build and install the development version of `ionosctl` with:
 
 ```text
 git clone https://github.com/ionos-cloud/ionosctl.git

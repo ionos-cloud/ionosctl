@@ -26,6 +26,24 @@ type RequestMetadata struct {
 	RequestStatus *RequestStatus `json:"requestStatus,omitempty"`
 }
 
+// NewRequestMetadata instantiates a new RequestMetadata object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewRequestMetadata() *RequestMetadata {
+	this := RequestMetadata{}
+
+	return &this
+}
+
+// NewRequestMetadataWithDefaults instantiates a new RequestMetadata object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewRequestMetadataWithDefaults() *RequestMetadata {
+	this := RequestMetadata{}
+	return &this
+}
+
 // GetCreatedDate returns the CreatedDate field value
 // If the value is explicit nil, the zero value for time.Time will be returned
 func (o *RequestMetadata) GetCreatedDate() *time.Time {
@@ -187,19 +205,15 @@ func (o *RequestMetadata) HasRequestStatus() bool {
 
 func (o RequestMetadata) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.CreatedDate != nil {
 		toSerialize["createdDate"] = o.CreatedDate
 	}
-
 	if o.CreatedBy != nil {
 		toSerialize["createdBy"] = o.CreatedBy
 	}
-
 	if o.Etag != nil {
 		toSerialize["etag"] = o.Etag
 	}
-
 	if o.RequestStatus != nil {
 		toSerialize["requestStatus"] = o.RequestStatus
 	}

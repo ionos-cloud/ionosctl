@@ -22,6 +22,24 @@ type ResourceProperties struct {
 	SecAuthProtection *bool `json:"secAuthProtection,omitempty"`
 }
 
+// NewResourceProperties instantiates a new ResourceProperties object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewResourceProperties() *ResourceProperties {
+	this := ResourceProperties{}
+
+	return &this
+}
+
+// NewResourcePropertiesWithDefaults instantiates a new ResourceProperties object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewResourcePropertiesWithDefaults() *ResourceProperties {
+	this := ResourceProperties{}
+	return &this
+}
+
 // GetName returns the Name field value
 // If the value is explicit nil, the zero value for string will be returned
 func (o *ResourceProperties) GetName() *string {
@@ -100,11 +118,9 @@ func (o *ResourceProperties) HasSecAuthProtection() bool {
 
 func (o ResourceProperties) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-
 	if o.SecAuthProtection != nil {
 		toSerialize["secAuthProtection"] = o.SecAuthProtection
 	}

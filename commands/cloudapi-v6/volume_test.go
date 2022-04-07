@@ -44,6 +44,7 @@ var (
 			DiscVirtioHotPlug:   &testVolumeBoolVar,
 			DiscVirtioHotUnplug: &testVolumeBoolVar,
 			DeviceNumber:        &testDeviceNumberVolumeVar,
+			BootServer:          &testVolumeVar,
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &testVolumeVar,
@@ -68,6 +69,7 @@ var (
 			NicHotUnplug:        &testVolumeBoolVar,
 			DiscVirtioHotPlug:   &testVolumeBoolVar,
 			DiscVirtioHotUnplug: &testVolumeBoolVar,
+			BootServer:          &testVolumeVar,
 		},
 		Metadata: &ionoscloud.DatacenterElementMetadata{
 			State: &testVolumeVar,
