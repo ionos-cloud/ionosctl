@@ -52,7 +52,7 @@ The path that you need to add is the path to the folder where you unzipped the i
 
 #### Building a local version(on a Linux machine)
 
-If you have a Go environment (Go 1.14, Go 1.15, Go 1.16) configured, you can build and install the development version of `ionosctl` with:
+If you have a Go environment (e.g. Go 1.17) configured, you can build and install the development version of `ionosctl` with:
 
 ```
 git clone https://github.com/ionos-cloud/ionosctl.git
