@@ -51,5 +51,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
-replace github.com/ionos-cloud/sdk-go/v6 => ../v6/sdk-go
+replace github.com/ionos-cloud/sdk-go/v6 => ../../../../../sdk/alb
 
