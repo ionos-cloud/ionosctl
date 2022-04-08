@@ -330,6 +330,16 @@ ionosctl [command] -h
 
 ### Testing
 
+#### What Are We Testing?
+
+The purpose of our unit tests is to ensure that properties set via flags are handled as expected before sending API Requests. The tests are integrated into [GitHub Actions](https://github.com/ionos-cloud/ionosctl/actions) that run at every PR, commit and release.
+
+We understand the importance of testing, and we put our best efforts to add integration tests as well.
+
+#### How to Run Tests Locally
+
+In order to run the tests locally, you can simply run:
+
 ```text
 make test
 ```
@@ -342,7 +352,7 @@ For each runnable command, use `ionosctl [command] --help`, `ionosctl [command] 
 
 #### Local version
 
-To uninstall a local version built with the steps from [Installing Ionosctl](README.md#building-a-local-version), use:
+To uninstall a local version built with the steps from [Installing Ionosctl](README.md#building-a-local-versionon-a-linux-machine), use:
 
 ```text
 make clean
