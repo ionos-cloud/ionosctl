@@ -109,37 +109,37 @@ Required values to run command:
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgRuleId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.AlbForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgDataCenterId)), viper.GetString(core.GetFlagName(add.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name of a Application Load Balancer http rule; unique per forwarding rule", core.RequiredFlagOption())
-	add.AddStringFlag(cloudapiv6.ArgType, "", "", "Type of the Http Rule", core.RequiredFlagOption())
+	add.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The unique name of the Application Load Balancer HTTP rule.", core.RequiredFlagOption())
+	add.AddStringFlag(cloudapiv6.ArgType, "", "", "Type of the HTTP rule.", core.RequiredFlagOption())
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"FORWARD", "STATIC", "REDIRECT"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgTargetGroupId, "", "", "The ID of the target group; mandatory and only valid for FORWARD action")
+	add.AddStringFlag(cloudapiv6.ArgTargetGroupId, "", "", "he ID of the target group; mandatory and only valid for FORWARD actions.")
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgTargetGroupId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.TargetGroupIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddBoolFlag(cloudapiv6.ArgQuery, cloudapiv6.ArgQueryShort, false, "Default is false; must be true for REDIRECT action")
-	add.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "www.ionos.com", "The location for redirecting; mandatory and valid only for REDIRECT action")
-	add.AddIntFlag(cloudapiv6.ArgStatusCode, "", 301, "Valid only for action REDIRECT and STATIC; on REDIRECT action default is 301 and it can take the values 301, 302, 303, 307, 308; on STATIC action default is 503 and it can take a value between 200 and 599")
+	add.AddBoolFlag(cloudapiv6.ArgQuery, cloudapiv6.ArgQueryShort, false, "Default is false; valid only for REDIRECT actions.")
+	add.AddStringFlag(cloudapiv6.ArgLocation, cloudapiv6.ArgLocationShort, "www.ionos.com", "The location for redirecting; mandatory and valid only for REDIRECT actions.")
+	add.AddIntFlag(cloudapiv6.ArgStatusCode, "", 301, "Valid only for REDIRECT and STATIC actions. For REDIRECT actions, default is 301 and possible values are 301, 302, 303, 307, and 308. For STATIC actions, default is 503 and valid range is 200 to 599.")
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgStatusCode, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"301", "302", "303", "308", "200", "503", "599"}, cobra.ShellCompDirectiveNoFileComp
+		return []string{"301", "302", "303", "307", "308", "200", "503", "599"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgMessage, cloudapiv6.ArgMessageShort, "Application Down", "The response message of the request; mandatory for STATIC action")
-	add.AddStringFlag(cloudapiv6.ArgContentType, "", "application/json", "Valid only for action STATIC")
+	add.AddStringFlag(cloudapiv6.ArgMessage, cloudapiv6.ArgMessageShort, "Application Down", "The response message of the request; mandatory for STATIC actions.")
+	add.AddStringFlag(cloudapiv6.ArgContentType, "", "application/json", "Valid only for STATIC actions.")
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgContentType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"application/json", "text/html"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgCondition, cloudapiv6.ArgConditionShort, "STARTS_WITH", "Matching rule for the Http Rule condition attribute; mandatory for HEADER, PATH, QUERY, METHOD, HOST and COOKIE types; must be null when type is SOURCE_IP")
+	add.AddStringFlag(cloudapiv6.ArgCondition, cloudapiv6.ArgConditionShort, "STARTS_WITH", "Matching rule for the HTTP rule condition attribute; mandatory for HEADER, PATH, QUERY, METHOD, HOST, and COOKIE types; must be null when type is SOURCE_IP.")
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgCondition, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"EXISTS", "CONTAINS", "EQUALS", "MATCHES", "STARTS_WITH", "ENDS_WITH"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddStringFlag(cloudapiv6.ArgConditionType, cloudapiv6.ArgConditionTypeShort, "HEADER", "Type of the Http Rule condition")
+	add.AddStringFlag(cloudapiv6.ArgConditionType, cloudapiv6.ArgConditionTypeShort, "HEADER", "Type of the HTTP rule condition.")
 	_ = add.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgConditionType, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"HEADER", "PATH", "QUERY", "METHOD", "HOST", "COOKIE", "SOURCE_IP"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	add.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "Specifies whether the condition is negated or not; default: false")
-	add.AddStringFlag(cloudapiv6.ArgConditionKey, cloudapiv6.ArgConditionKeyShort, "forward-at", "Must be null when type is PATH, METHOD, HOST or SOURCE_IP. Key can only be set when type is COOKIES, HEADER, QUERY")
-	add.AddStringFlag(cloudapiv6.ArgConditionValue, cloudapiv6.ArgConditionValueShort, "Friday", "Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS; should be a valid CIDR if provided and if type is SOURCE_IP")
+	add.AddBoolFlag(cloudapiv6.ArgNegate, "", false, "Specifies whether the condition is negated or not; the default is False.")
+	add.AddStringFlag(cloudapiv6.ArgConditionKey, cloudapiv6.ArgConditionKeyShort, "forward-at", "Must be null when type is PATH, METHOD, HOST, or SOURCE_IP. Key can only be set when type is COOKIES, HEADER, or QUERY.")
+	add.AddStringFlag(cloudapiv6.ArgConditionValue, cloudapiv6.ArgConditionValueShort, "Friday", "Mandatory for conditions CONTAINS, EQUALS, MATCHES, STARTS_WITH, ENDS_WITH; must be null when condition is EXISTS; should be a valid CIDR if provided and if type is SOURCE_IP.")
 	add.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule Http Rule creation to be executed")
 	add.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule Http Rule creation [seconds]")
 

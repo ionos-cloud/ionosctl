@@ -58,7 +58,7 @@ func ApplicationLoadBalancerRuleCmd() *core.Command {
 	})
 	list.AddStringSliceFlag(config.ArgCols, "", defaultAlbForwardingRuleCols, printer.ColsMessage(defaultAlbForwardingRuleCols))
 	_ = list.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultAlbForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
+		return allAlbForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -91,7 +91,7 @@ func ApplicationLoadBalancerRuleCmd() *core.Command {
 	})
 	get.AddStringSliceFlag(config.ArgCols, "", defaultAlbForwardingRuleCols, printer.ColsMessage(defaultAlbForwardingRuleCols))
 	_ = get.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultAlbForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
+		return allAlbForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -126,17 +126,20 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgApplicationLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ApplicationLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Forwarding Rule", "The name for the Forwarding Rule")
-	create.AddStringFlag(cloudapiv6.ArgProtocol, cloudapiv6.ArgProtocolShort, "HTTP", "Protocol of the balancing")
-	create.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening IP (inbound)", core.RequiredFlagOption())
-	create.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening port number. (inbound) Range: 1 to 65535", core.RequiredFlagOption())
-	create.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "[Health Check] ClientTimeout is expressed in milliseconds. This inactivity timeout applies when the client is expected to acknowledge or send data")
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Forwarding Rule", "The name of the Application Load Balancer forwarding rule.")
+	create.AddStringFlag(cloudapiv6.ArgProtocol, cloudapiv6.ArgProtocolShort, "HTTP", "Balancing protocol.")
+	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgProtocol, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"HTTP"}, cobra.ShellCompDirectiveNoFileComp
+	})
+	create.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening (inbound) IP.", core.RequiredFlagOption())
+	create.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening (inbound) port number; valid range is 1 to 65535.", core.RequiredFlagOption())
+	create.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "The maximum time in milliseconds to wait for the client to acknowledge or send data; default is 50,000 (50 seconds).")
 	create.AddStringSliceFlag(cloudapiv6.ArgServerCertificates, "", []string{""}, "Server Certificates")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Forwarding Rule creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule creation [seconds]")
 	create.AddStringSliceFlag(config.ArgCols, "", defaultAlbForwardingRuleCols, printer.ColsMessage(defaultAlbForwardingRuleCols))
 	_ = create.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultAlbForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
+		return allAlbForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -175,16 +178,16 @@ Required values to run command:
 		return completer.AlbForwardingRulesIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name for the Forwarding Rule")
-	update.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening IP (inbound)")
-	update.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening port number. (inbound) Range: 1 to 65535")
-	update.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "[Health Check] ClientTimeout is expressed in milliseconds. This inactivity timeout applies when the client is expected to acknowledge or send data")
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name of the Application Load Balancer forwarding rule.")
+	update.AddStringFlag(cloudapiv6.ArgListenerIp, "", "", "Listening (inbound) IP.")
+	update.AddIntFlag(cloudapiv6.ArgListenerPort, "", 8080, "Listening (inbound) port number; valid range is 1 to 65535.")
+	update.AddIntFlag(cloudapiv6.ArgClientTimeout, "", 50, "The maximum time in milliseconds to wait for the client to acknowledge or send data; default is 50,000 (50 seconds).")
 	update.AddStringSliceFlag(cloudapiv6.ArgServerCertificates, "", []string{""}, "Server Certificates")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, cloudapiv6.DefaultWait, "Wait for the Request for Forwarding Rule update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Forwarding Rule update [seconds]")
 	update.AddStringSliceFlag(config.ArgCols, "", defaultAlbForwardingRuleCols, printer.ColsMessage(defaultAlbForwardingRuleCols))
 	_ = update.Command.RegisterFlagCompletionFunc(config.ArgCols, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return defaultAlbForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
+		return allAlbForwardingRuleCols, cobra.ShellCompDirectiveNoFileComp
 	})
 
 	/*
@@ -446,13 +449,10 @@ func getAlbForwardingRulePropertiesSet(c *core.CommandConfig) *resources.Applica
 		input.SetServerCertificates(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)))
 		c.Printer.Verbose("Property ServerCertificates set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgServerCertificates)))
 	}
-	//if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)) {
-	//	inputHealthCheck := ionoscloud.ApplicationLoadBalancerForwardingRuleHealthCheck{}
-	//	inputHealthCheck.SetClientTimeout(viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)))
-	//	c.Printer.Verbose("Property Health Check - Client Timeout set: %v", viper.GetInt32(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)))
-	//	input.SetHealthCheck(inputHealthCheck)
-	//	c.Printer.Verbose("Setting Health Check to Forwarding Rule")
-	//}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)) {
+		input.SetServerCertificates(viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)))
+		c.Printer.Verbose("Property Client Timeout set: %v", viper.GetStringSlice(core.GetFlagName(c.NS, cloudapiv6.ArgClientTimeout)))
+	}
 	return &resources.ApplicationLoadBalancerForwardingRuleProperties{
 		ApplicationLoadBalancerForwardingRuleProperties: input,
 	}
@@ -461,6 +461,7 @@ func getAlbForwardingRulePropertiesSet(c *core.CommandConfig) *resources.Applica
 // Output Printing
 
 var defaultAlbForwardingRuleCols = []string{"ForwardingRuleId", "Name", "Protocol", "ListenerIp", "ListenerPort", "ServerCertificates", "State"}
+var allAlbForwardingRuleCols = []string{"ForwardingRuleId", "Name", "Protocol", "ListenerIp", "ListenerPort", "ClientTimeout", "ServerCertificates", "State"}
 
 type AlbForwardingRulePrint struct {
 	ForwardingRuleId   string   `json:"ForwardingRuleId,omitempty"`
@@ -468,6 +469,7 @@ type AlbForwardingRulePrint struct {
 	Protocol           string   `json:"Protocol,omitempty"`
 	ListenerIp         string   `json:"ListenerIp,omitempty"`
 	ListenerPort       int32    `json:"ListenerPort,omitempty"`
+	ClientTimeout      int32    `json:"ClientTimeout,omitempty"`
 	ServerCertificates []string `json:"ServerCertificates,omitempty"`
 	State              string   `json:"State,omitempty"`
 }
@@ -505,6 +507,7 @@ func getAlbForwardingRulesCols(flagName string, outErr io.Writer) []string {
 		"Protocol":           "Protocol",
 		"ListenerIp":         "ListenerIp",
 		"ListenerPort":       "ListenerPort",
+		"ClientTimeout":      "ClientTimeout",
 		"ServerCertificates": "ServerCertificates",
 		"State":              "State",
 	}
@@ -547,6 +550,9 @@ func getAlbForwardingRulesKVMaps(ss []resources.ApplicationLoadBalancerForwardin
 			}
 			if protocolOk, ok := propertiesOk.GetProtocolOk(); ok && protocolOk != nil {
 				forwardingRulePrint.Protocol = *protocolOk
+			}
+			if clientTimeoutOk, ok := propertiesOk.GetClientTimeoutOk(); ok && clientTimeoutOk != nil {
+				forwardingRulePrint.ClientTimeout = *clientTimeoutOk
 			}
 			if serverCertificatesOk, ok := propertiesOk.GetServerCertificatesOk(); ok && serverCertificatesOk != nil {
 				forwardingRulePrint.ServerCertificates = *serverCertificatesOk

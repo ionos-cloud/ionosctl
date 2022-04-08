@@ -65,8 +65,8 @@ func ApplicationLoadBalancerFlowLogCmd() *core.Command {
 		Resource:   "flowlog",
 		Verb:       "get",
 		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Application Load Balancer FlowLog",
-		LongDesc:   "Use this command to get information about a specified Application Load Balancer FlowLog from a Application Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Application Load Balancer FlowLog Id",
+		ShortDesc:  "Get an Application Load Balancer FlowLog",
+		LongDesc:   "Use this command to get information about a specified Application Load Balancer FlowLog from an Application Load Balancer.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id\n* Application Load Balancer FlowLog Id",
 		Example:    getApplicationLoadBalancerFlowLogExample,
 		PreCmdRun:  PreRunDcApplicationLoadBalancerFlowLogIds,
 		CmdRun:     RunApplicationLoadBalancerFlowLogGet,
@@ -98,8 +98,8 @@ func ApplicationLoadBalancerFlowLogCmd() *core.Command {
 		Resource:  "flowlog",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create a Application Load Balancer FlowLog",
-		LongDesc: `Use this command to create a Application Load Balancer FlowLog in a specified Application Load Balancer.
+		ShortDesc: "Create an Application Load Balancer FlowLog",
+		LongDesc: `Use this command to create an Application Load Balancer FlowLog in a specified Application Load Balancer.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
@@ -121,16 +121,16 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgApplicationLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ApplicationLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(create.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed ALB Flow Log", "The name for the FlowLog")
-	create.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "ALL", "Specifies the traffic Action pattern")
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed ALB Flow Log", "The name of the Application Load Balancer FlowLog.")
+	create.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "ALL", "Specifies the traffic action pattern.")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "INGRESS", "Specifies the traffic Direction pattern")
+	create.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "INGRESS", "Specifies the traffic direction pattern.")
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket", core.RequiredFlagOption())
+	create.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 bucket name of an existing IONOS Cloud S3 bucket.", core.RequiredFlagOption())
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Application Load Balancer FlowLog creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Application Load Balancer FlowLog creation [seconds]")
 	create.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols, printer.ColsMessage(defaultFlowLogCols))
@@ -146,8 +146,8 @@ Required values to run command:
 		Resource:  "flowlog",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Application Load Balancer FlowLog",
-		LongDesc: `Use this command to update a specified Application Load Balancer FlowLog from a Application Load Balancer.
+		ShortDesc: "Update an Application Load Balancer FlowLog",
+		LongDesc: `Use this command to update a specified Application Load Balancer FlowLog from an Application Load Balancer.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
@@ -174,16 +174,16 @@ Required values to run command:
 		return completer.ApplicationLoadBalancerFlowLogsIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId)),
 			viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgApplicationLoadBalancerId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "Name of the Application Load Balancer FlowLog")
-	update.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "", "Specifies the traffic Action pattern")
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "", "The name of the Application Load Balancer FlowLog.")
+	update.AddStringFlag(cloudapiv6.ArgAction, cloudapiv6.ArgActionShort, "", "Specifies the traffic action pattern.")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgAction, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"ALL", "REJECTED", "ACCEPTED"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "", "Specifies the traffic Direction pattern")
+	update.AddStringFlag(cloudapiv6.ArgDirection, cloudapiv6.ArgDirectionShort, "", "Specifies the traffic direction pattern.")
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDirection, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"BIDIRECTIONAL", "INGRESS", "EGRESS"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 Bucket name of an existing IONOS Cloud S3 Bucket")
+	update.AddStringFlag(cloudapiv6.ArgS3Bucket, cloudapiv6.ArgS3BucketShort, "", "S3 bucket name of an existing IONOS Cloud S3 bucket.")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Application Load Balancer FlowLog update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Application Load Balancer FlowLog update [seconds]")
 	update.AddStringSliceFlag(config.ArgCols, "", defaultFlowLogCols, printer.ColsMessage(defaultFlowLogCols))
@@ -199,8 +199,8 @@ Required values to run command:
 		Resource:  "flowlog",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
-		ShortDesc: "Delete a Application Load Balancer FlowLog",
-		LongDesc: `Use this command to delete a specified Application Load Balancer FlowLog from a Application Load Balancer.
+		ShortDesc: "Delete an Application Load Balancer FlowLog",
+		LongDesc: `Use this command to delete a specified Application Load Balancer FlowLog from an Application Load Balancer.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
 

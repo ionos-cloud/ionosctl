@@ -67,7 +67,7 @@ func ApplicationLoadBalancerCmd() *core.Command {
 		Resource:   "applicationloadbalancer",
 		Verb:       "get",
 		Aliases:    []string{"g"},
-		ShortDesc:  "Get a Application Load Balancer",
+		ShortDesc:  "Get an Application Load Balancer",
 		LongDesc:   "Use this command to get information about a specified Application Load Balancer from a Virtual Data Center. You can also wait for Application Load Balancer to get in AVAILABLE state using `--wait-for-state` option.\n\nRequired values to run command:\n\n* Data Center Id\n* Application Load Balancer Id",
 		Example:    getApplicationLoadBalancerExample,
 		PreCmdRun:  PreRunDcApplicationLoadBalancerIds,
@@ -93,8 +93,8 @@ func ApplicationLoadBalancerCmd() *core.Command {
 		Resource:  "applicationloadbalancer",
 		Verb:      "create",
 		Aliases:   []string{"c"},
-		ShortDesc: "Create a Application Load Balancer",
-		LongDesc: `Use this command to create a Application Load Balancer in a specified Virtual Data Center.
+		ShortDesc: "Create an Application Load Balancer",
+		LongDesc: `Use this command to create an Application Load Balancer in a specified Virtual Data Center.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` option.
 
@@ -110,11 +110,11 @@ Required values to run command:
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgDataCenterId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.DataCentersIds(os.Stderr), cobra.ShellCompDirectiveNoFileComp
 	})
-	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Application Load Balancer", "Name of the Application Load Balancer")
-	create.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "Id of the listening LAN. (inbound)")
-	create.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "Id of the balanced private target LAN. (outbound)")
-	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "Collection of IP addresses of the Application Load Balancer. (inbound and outbound) IP of the Listener Lan must be a customer reserved IP for the public Load Balancer and private IP for the private Load Balancer")
-	create.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", []string{""}, "Collection of private IP addresses with subnet mask of the Application Load Balancer. IPs must contain valid subnet mask. If user will not provide any IP then the system will generate one IP with /24 subnet")
+	create.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Unnamed Application Load Balancer", "The name of the Application Load Balancer.")
+	create.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "ID of the listening (inbound) LAN.")
+	create.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "ID of the balanced private target LAN (outbound).")
+	create.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers.")
+	create.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", []string{""}, "Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.")
 	create.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Application Load Balancer creation to be executed")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Application Load Balancer creation [seconds]")
 
@@ -126,7 +126,7 @@ Required values to run command:
 		Resource:  "applicationloadbalancer",
 		Verb:      "update",
 		Aliases:   []string{"u", "up"},
-		ShortDesc: "Update a Application Load Balancer",
+		ShortDesc: "Update an Application Load Balancer",
 		LongDesc: `Use this command to update a specified Application Load Balancer from a Virtual Data Center.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` or ` + "`" + `-w` + "`" + ` option.
@@ -148,11 +148,11 @@ Required values to run command:
 	_ = update.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgApplicationLoadBalancerId, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return completer.ApplicationLoadBalancersIds(os.Stderr, viper.GetString(core.GetFlagName(update.NS, cloudapiv6.ArgDataCenterId))), cobra.ShellCompDirectiveNoFileComp
 	})
-	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Application Load Balancer", "Name of the Application Load Balancer")
-	update.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "Id of the listening LAN. (inbound)")
-	update.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "Id of the balanced private target LAN. (outbound)")
-	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "Collection of IP addresses of the Application Load Balancer. (inbound and outbound) IP of the Listener Lan must be a customer reserved IP for the public Load Balancer and private IP for the private Load Balancer")
-	update.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", []string{""}, "Collection of private IP addresses with subnet mask of the Application Load Balancer. IPs must contain valid subnet mask. If user will not provide any IP then the system will generate one IP with /24 subnet")
+	update.AddStringFlag(cloudapiv6.ArgName, cloudapiv6.ArgNameShort, "Application Load Balancer", "The name of the Application Load Balancer.")
+	update.AddIntFlag(cloudapiv6.ArgListenerLan, "", 2, "ID of the listening (inbound) LAN.")
+	update.AddIntFlag(cloudapiv6.ArgTargetLan, "", 1, "ID of the balanced private target LAN (outbound).")
+	update.AddStringSliceFlag(cloudapiv6.ArgIps, "", []string{""}, "Collection of the Application Load Balancer IP addresses. (Inbound and outbound) IPs of the listenerLan are customer-reserved public IPs for the public Load Balancers, and private IPs for the private Load Balancers.")
+	update.AddStringSliceFlag(cloudapiv6.ArgPrivateIps, "", []string{""}, "Collection of private IP addresses with the subnet mask of the Application Load Balancer. IPs must contain valid a subnet mask. If no IP is provided, the system will generate an IP with /24 subnet.")
 	update.AddBoolFlag(config.ArgWaitForRequest, config.ArgWaitForRequestShort, config.DefaultWait, "Wait for the Request for Application Load Balancer update to be executed")
 	update.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.LbTimeoutSeconds, "Timeout option for Request for Application Load Balancer update [seconds]")
 
@@ -164,7 +164,7 @@ Required values to run command:
 		Resource:  "applicationloadbalancer",
 		Verb:      "delete",
 		Aliases:   []string{"d"},
-		ShortDesc: "Delete a Application Load Balancer",
+		ShortDesc: "Delete an Application Load Balancer",
 		LongDesc: `Use this command to delete a specified Application Load Balancer from a Virtual Data Center.
 
 You can wait for the Request to be executed using ` + "`" + `--wait-for-request` + "`" + ` or ` + "`" + `-w` + "`" + ` option. You can force the command to execute without user input using ` + "`" + `--force` + "`" + ` option.
