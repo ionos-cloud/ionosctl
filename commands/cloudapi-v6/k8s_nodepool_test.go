@@ -33,6 +33,8 @@ var (
 				StorageType:      &testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
 				CoresCount:       &testNodepoolIntVar,
+				Annotations:      &testNodepoolKVMap,
+				Labels:           &testNodepoolKVMap,
 				Lans: &[]ionoscloud.KubernetesNodePoolLan{
 					{
 						Id:   &testNodepoolIntVar,
@@ -72,6 +74,8 @@ var (
 				StorageType:      &testNodepoolVar,
 				K8sVersion:       &testNodepoolVar,
 				CoresCount:       &testNodepoolIntVar,
+				Annotations:      &testNodepoolKVMap,
+				Labels:           &testNodepoolKVMap,
 				Lans: &[]ionoscloud.KubernetesNodePoolLan{
 					{
 						Id:   &testNodepoolIntVar,
@@ -226,8 +230,8 @@ var (
 					MinNodeCount: &testNodepoolIntNewVar,
 					MaxNodeCount: &testNodepoolIntNewVar,
 				},
-				Annotations: &nodepoolTestMap,
-				Labels:      &nodepoolTestMap,
+				Annotations: &testNodepoolKVNewMap,
+				Labels:      &testNodepoolKVNewMap,
 				MaintenanceWindow: &ionoscloud.KubernetesMaintenanceWindow{
 					DayOfTheWeek: &testNodepoolNewVar,
 					Time:         &testNodepoolNewVar,
@@ -246,9 +250,6 @@ var (
 			},
 		},
 	}
-	nodepoolTestMap = map[string]string{
-		testNodepoolNewVar: testNodepoolNewVar,
-	}
 	nodepoolTestUpdateNew = resources.K8sNodePoolForPut{
 		KubernetesNodePoolForPut: ionoscloud.KubernetesNodePoolForPut{
 			Properties: &ionoscloud.KubernetesNodePoolPropertiesForPut{
@@ -262,8 +263,8 @@ var (
 					DayOfTheWeek: &testNodepoolNewVar,
 					Time:         &testNodepoolNewVar,
 				},
-				Annotations: &nodepoolTestMap,
-				Labels:      &nodepoolTestMap,
+				Annotations: &testNodepoolKVNewMap,
+				Labels:      &testNodepoolKVNewMap,
 				Lans: &[]ionoscloud.KubernetesNodePoolLan{
 					{
 						Id:   &testNodepoolIntVar,
@@ -296,6 +297,8 @@ var (
 			},
 		},
 	}
+	testNodepoolKVMap     = map[string]string{testNodepoolVar: testNodepoolVar}
+	testNodepoolKVNewMap  = map[string]string{testNodepoolNewVar: testNodepoolNewVar}
 	testNodepoolIntVar    = int32(1)
 	testNodepoolIntNewVar = int32(1)
 	testNodepoolVar       = "test-nodepool"
@@ -573,6 +576,8 @@ func TestRunK8sNodePoolCreate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
 		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTest, &testResponse, nil)
 		err := RunK8sNodePoolCreate(cfg)
@@ -675,6 +680,8 @@ func TestRunK8sNodePoolCreateWait(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
 		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTestId, nil, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestId, nil, nil)
@@ -705,6 +712,8 @@ func TestRunK8sNodePoolCreateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
 		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTestId, nil, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestId, nil, nil)
@@ -735,6 +744,8 @@ func TestRunK8sNodePoolCreateWaitStateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
 		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTestId, nil, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().GetNodePool(testNodepoolVar, testNodepoolVar).Return(&nodepoolTestId, nil, testNodepoolErr)
@@ -764,6 +775,8 @@ func TestRunK8sNodePoolCreateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLanIds), []int{int(testNodepoolIntVar)})
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgDhcp), testK8sNodePoolLanBoolVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVMap)
 		rm.CloudApiV6Mocks.K8s.EXPECT().IsPublicCluster(testNodepoolVar).Return(true, nil)
 		rm.CloudApiV6Mocks.K8s.EXPECT().CreateNodePool(testNodepoolVar, nodepoolTestPost).Return(&nodepoolTest, nil, testNodepoolErr)
 		err := RunK8sNodePoolCreate(cfg)
@@ -783,10 +796,8 @@ func TestRunK8sNodePoolUpdate(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceDay), testNodepoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceTime), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationKey), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testNodepoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVNewMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVNewMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeCount), testNodepoolIntNewVar)
@@ -814,10 +825,8 @@ func TestRunK8sNodePoolUpdateWait(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceDay), testNodepoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceTime), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationKey), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testNodepoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVNewMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVNewMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeCount), testNodepoolIntNewVar)
@@ -846,10 +855,8 @@ func TestRunK8sNodePoolUpdateWaitErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), true)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceDay), testNodepoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceTime), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationKey), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testNodepoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVNewMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVNewMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeCount), testNodepoolIntNewVar)
@@ -894,10 +901,8 @@ func TestRunK8sNodePoolUpdateErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sVersion), testNodepoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceDay), testNodepoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceTime), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationKey), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testNodepoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVNewMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVNewMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeCount), testNodepoolIntNewVar)
@@ -924,10 +929,8 @@ func TestRunK8sNodePoolUpdateGetErr(t *testing.T) {
 		viper.Set(core.GetFlagName(cfg.NS, config.ArgWaitForState), false)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceDay), testNodepoolNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaintenanceTime), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationKey), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sAnnotationValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelValue), testNodepoolNewVar)
-		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabelKey), testNodepoolNewVar)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgAnnotations), testNodepoolKVNewMap)
+		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgLabels), testNodepoolKVNewMap)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMinNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sMaxNodeCount), testNodepoolIntNewVar)
 		viper.Set(core.GetFlagName(cfg.NS, cloudapiv6.ArgK8sNodeCount), testNodepoolIntNewVar)

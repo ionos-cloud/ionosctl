@@ -698,27 +698,30 @@ func DeleteAllK8sNodepools(c *core.CommandConfig) error {
 var defaultK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "NodeCount", "DatacenterId", "State"}
 
 var allK8sNodePoolCols = []string{"NodePoolId", "Name", "K8sVersion", "DatacenterId", "NodeCount", "CpuFamily", "StorageType", "State", "LanIds",
-	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions", "GatewayIp"}
+	"CoresCount", "RamSize", "AvailabilityZone", "StorageSize", "MaintenanceWindow", "AutoScaling", "PublicIps", "AvailableUpgradeVersions", "GatewayIp",
+	"Annotations", "Labels"}
 
 type K8sNodePoolPrint struct {
-	NodePoolId               string   `json:"NodePoolId,omitempty"`
-	Name                     string   `json:"Name,omitempty"`
-	K8sVersion               string   `json:"K8sVersion,omitempty"`
-	DatacenterId             string   `json:"DatacenterId,omitempty"`
-	NodeCount                int32    `json:"NodeCount,omitempty"`
-	CpuFamily                string   `json:"CpuFamily,omitempty"`
-	StorageType              string   `json:"StorageType,omitempty"`
-	State                    string   `json:"State,omitempty"`
-	LanIds                   []int32  `json:"LanIds,omitempty"`
-	CoresCount               int32    `json:"CoresCount,omitempty"`
-	RamSize                  int32    `json:"RamSize,omitempty"`
-	AvailabilityZone         string   `json:"AvailabilityZone,omitempty"`
-	StorageSize              int32    `json:"StorageSize,omitempty"`
-	MaintenanceWindow        string   `json:"MaintenanceWindow,omitempty"`
-	AutoScaling              string   `json:"AutoScaling,omitempty"`
-	PublicIps                []string `json:"PublicIps,omitempty"`
-	AvailableUpgradeVersions []string `json:"AvailableUpgradeVersions,omitempty"`
-	GatewayIP                string   `json:"GatewayIp,omitempty"`
+	NodePoolId               string            `json:"NodePoolId,omitempty"`
+	Name                     string            `json:"Name,omitempty"`
+	K8sVersion               string            `json:"K8sVersion,omitempty"`
+	DatacenterId             string            `json:"DatacenterId,omitempty"`
+	NodeCount                int32             `json:"NodeCount,omitempty"`
+	CpuFamily                string            `json:"CpuFamily,omitempty"`
+	StorageType              string            `json:"StorageType,omitempty"`
+	State                    string            `json:"State,omitempty"`
+	LanIds                   []int32           `json:"LanIds,omitempty"`
+	CoresCount               int32             `json:"CoresCount,omitempty"`
+	RamSize                  int32             `json:"RamSize,omitempty"`
+	AvailabilityZone         string            `json:"AvailabilityZone,omitempty"`
+	StorageSize              int32             `json:"StorageSize,omitempty"`
+	MaintenanceWindow        string            `json:"MaintenanceWindow,omitempty"`
+	AutoScaling              string            `json:"AutoScaling,omitempty"`
+	PublicIps                []string          `json:"PublicIps,omitempty"`
+	AvailableUpgradeVersions []string          `json:"AvailableUpgradeVersions,omitempty"`
+	GatewayIP                string            `json:"GatewayIp,omitempty"`
+	Annotations              map[string]string `json:"Annotations,omitempty"`
+	Labels                   map[string]string `json:"Labels,omitempty"`
 }
 
 func getK8sNodePoolPrint(c *core.CommandConfig, k8ss []resources.K8sNodePool) printer.Result {
@@ -755,6 +758,8 @@ func getK8sNodePoolCols(flagName string, outErr io.Writer) []string {
 			"PublicIps":                "PublicIps",
 			"AvailableUpgradeVersions": "AvailableUpgradeVersions",
 			"GatewayIp":                "GatewayIp",
+			"Annotations":              "Annotations",
+			"Labels":                   "Labels",
 		}
 		for _, k := range viper.GetStringSlice(flagName) {
 			col := columnsMap[k]
@@ -834,6 +839,12 @@ func getK8sNodePoolsKVMaps(us []resources.K8sNodePool) []map[string]interface{} 
 			}
 			if gatewayIpOk, ok := properties.GetGatewayIpOk(); ok && gatewayIpOk != nil {
 				uPrint.GatewayIP = *gatewayIpOk
+			}
+			if annotationsOk, ok := properties.GetAnnotationsOk(); ok && annotationsOk != nil {
+				uPrint.Annotations = *annotationsOk
+			}
+			if labelsOk, ok := properties.GetLabelsOk(); ok && labelsOk != nil {
+				uPrint.Labels = *labelsOk
 			}
 			if maintenanceWindowOk, ok := properties.GetMaintenanceWindowOk(); ok && maintenanceWindowOk != nil {
 				if dayOfTheWeekOk, ok := maintenanceWindowOk.GetDayOfTheWeekOk(); ok && dayOfTheWeekOk != nil {
