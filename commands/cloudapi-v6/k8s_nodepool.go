@@ -584,7 +584,7 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey)) &&
 			viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue)) {
 			key := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-			value := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
+			value := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
 			propertiesUpdated.SetLabels(map[string]string{
 				key: value,
 			})
