@@ -169,6 +169,8 @@ Required values to run a command (for Private Kubernetes Cluster):
 	_ = create.Command.RegisterFlagCompletionFunc(cloudapiv6.ArgStorageSize, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"10GB", "20GB", "50GB", "100GB", "1TB"}, cobra.ShellCompDirectiveNoFileComp
 	})
+	create.AddStringToStringFlag(cloudapiv6.ArgLabels, cloudapiv6.ArgLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
+	create.AddStringToStringFlag(cloudapiv6.ArgAnnotations, cloudapiv6.ArgAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 	create.AddBoolFlag(config.ArgWaitForState, config.ArgWaitForStateShort, config.DefaultWait, "Wait for the new NodePool to be in ACTIVE state")
 	create.AddIntFlag(config.ArgTimeout, config.ArgTimeoutShort, cloudapiv6.K8sTimeoutSeconds, "Timeout option for waiting for NodePool to be in ACTIVE state[seconds]")
 
@@ -206,6 +208,8 @@ Required values to run command:
 	update.AddIntFlag(cloudapiv6.ArgK8sNodeCount, "", 1, "The number of worker Nodes that the NodePool should contain")
 	update.AddIntFlag(cloudapiv6.ArgK8sMinNodeCount, "", 1, "The minimum number of worker Nodes that the managed NodePool can scale in. Should be set together with --max-node-count")
 	update.AddIntFlag(cloudapiv6.ArgK8sMaxNodeCount, "", 1, "The maximum number of worker Nodes that the managed NodePool can scale out. Should be set together with --min-node-count")
+	update.AddStringToStringFlag(cloudapiv6.ArgLabels, cloudapiv6.ArgLabelsShort, map[string]string{}, "Labels to set on a NodePool. It will overwrite the existing labels, if there are any. Use the following format: --labels KEY=VALUE,KEY=VALUE")
+	update.AddStringToStringFlag(cloudapiv6.ArgAnnotations, cloudapiv6.ArgAnnotationsShort, map[string]string{}, "Annotations to set on a NodePool. It will overwrite the existing annotations, if there are any. Use the following format: --annotations KEY=VALUE,KEY=VALUE")
 	update.AddStringFlag(cloudapiv6.ArgLabelKey, "", "", "Label key. Must be set together with --label-value")
 	update.AddStringFlag(cloudapiv6.ArgLabelValue, "", "", "Label value. Must be set together with --label-key")
 	update.AddStringFlag(cloudapiv6.ArgK8sAnnotationKey, "", "", "Annotation key. Must be set together with --annotation-value")
@@ -215,7 +219,7 @@ Required values to run command:
 		return []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	update.AddStringFlag(cloudapiv6.ArgK8sMaintenanceTime, "", "", "The time for Maintenance Window has the HH:mm:ss format as following: 08:00:00")
-	update.AddStringSliceFlag(cloudapiv6.ArgPublicIps, "", []string{""}, "Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2")
+	update.AddStringSliceFlag(cloudapiv6.ArgPublicIps, "", []string{}, "Reserved public IP address to be used by the Nodes. IPs must be from same location as the Data Center used for the Node Pool. Usage: --public-ips IP1,IP2")
 	update.AddIntSliceFlag(cloudapiv6.ArgLanIds, "", []int{}, "Collection of LAN Ids of existing LANs to be attached to worker Nodes. It will be added to the existing LANs attached")
 	update.AddBoolFlag(cloudapiv6.ArgDhcp, "", true, "Indicates if the Kubernetes Node Pool LANs will reserve an IP using DHCP. E.g.: --dhcp=true, --dhcp=false")
 	update.AddStringFlag(cloudapiv6.ArgK8sClusterId, "", "", cloudapiv6.K8sClusterId, core.RequiredFlagOption())
@@ -478,6 +482,16 @@ func getNewK8sNodePool(c *core.CommandConfig) (*resources.K8sNodePoolForPost, er
 		nodePoolProperties.SetGatewayIp(viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)))
 		c.Printer.Verbose("Property GatewayIP set: %v", viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgGatewayIp)))
 	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabels)) {
+		keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgLabels))
+		nodePoolProperties.SetLabels(keyValueMapLabels)
+		c.Printer.Verbose("Property Labels set: %v", keyValueMapLabels)
+	}
+	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations)) {
+		keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations))
+		nodePoolProperties.SetAnnotations(keyValueMapAnnotations)
+		c.Printer.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
+	}
 	// Add LANs
 	if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
 		newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
@@ -568,11 +582,21 @@ func getNewK8sNodePoolUpdated(oldUser *resources.K8sNodePool, c *core.CommandCon
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey)) &&
 			viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue)) {
 			key := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
-			value := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelValue))
+			value := viper.GetString(core.GetFlagName(c.NS, cloudapiv6.ArgLabelKey))
 			propertiesUpdated.SetLabels(map[string]string{
 				key: value,
 			})
 			c.Printer.Verbose("Property Labels set: key: %v, value: %v", key, value)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLabels)) {
+			keyValueMapLabels := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgLabels))
+			propertiesUpdated.SetLabels(keyValueMapLabels)
+			c.Printer.Verbose("Property Labels set: %v", keyValueMapLabels)
+		}
+		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations)) {
+			keyValueMapAnnotations := viper.GetStringMapString(core.GetFlagName(c.NS, cloudapiv6.ArgAnnotations))
+			propertiesUpdated.SetAnnotations(keyValueMapAnnotations)
+			c.Printer.Verbose("Property Annotations set: %v", keyValueMapAnnotations)
 		}
 		if viper.IsSet(core.GetFlagName(c.NS, cloudapiv6.ArgLanIds)) {
 			newLans := make([]ionoscloud.KubernetesNodePoolLan, 0)
